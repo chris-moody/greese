@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+storybook-static/
+playwright-report/
+test-results/
+.turbo/
+.DS_Store
+*.log
+.env
+.env.local
+.firebase/
+.npmrc
+.npmrc.local
