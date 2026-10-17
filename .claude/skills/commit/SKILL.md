@@ -81,8 +81,13 @@ Avoid vague subjects: "update files", "fix stuff", "wip", "changes".
 2. **Plan atomic commits.** Each one is one logical change that builds and
    passes tests on its own, grouped by scope and type. List the planned
    messages before you commit anything.
-3. **Stage explicitly, by path.** Use `git add <paths>`, not `git add -A`, so
-   unrelated files don't ride along. Check with `git diff --cached --stat`.
+3. **Stage explicitly, by path, onto a clean index.** First check that
+   `git diff --cached --name-only` is empty, because `git commit` takes
+   *everything* staged. A leftover `git mv` or `git rm` will otherwise slip
+   into an unrelated commit. Then run `git add -A -- <paths>` (`-A` so
+   deletions and renames are included, the path list so unrelated files are
+   not). Before every commit, review `git diff --cached --name-status`, and if
+   a `git add` fails, stop rather than commit whatever happens to be staged.
 4. **Add a changeset when it's needed.** Any `feat`, `fix` or `perf` to a
    published package (`@sauce-ui/react`, `@sauce-ui/tokens`) needs one in
    `.changeset/`. Create it with `npm run changeset`, or by hand, and commit
@@ -91,7 +96,11 @@ Avoid vague subjects: "update files", "fix stuff", "wip", "changes".
    `-m`, never a second one, because that would create a body.
 6. **If the hook rejects the message,** fix the message and commit again.
    Never use `--no-verify`.
-7. **Never amend or rewrite** commits that have been pushed. Commit or push
+7. **Keep each commit buildable.** If a file mixes two commits' changes,
+   stage an intermediate version of it. `git hash-object -w <tmp>` plus
+   `git update-index --cacheinfo 100644,<sha>,<path>` does this without
+   interactive staging.
+8. **Never amend or rewrite** commits that have been pushed. Commit or push
    only when the user asks.
 
 To check a message without committing:
