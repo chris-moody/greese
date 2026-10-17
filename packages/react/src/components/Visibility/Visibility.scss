@@ -1,0 +1,28 @@
+@use 'sass:map';
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  // Layout-neutral wrapper when not using asChild.
+  .sauce-Visibility {
+    display: contents;
+  }
+}
+
+// Utilities, so hiding beats a component's own display (asChild on a Stack).
+@layer sauce.utilities {
+  @each $bp, $min in mixins.$breakpoints {
+    @if $min > 0 {
+      @include mixins.down($bp) {
+        .sauce-Visibility--hide-below-#{$bp} {
+          display: none;
+        }
+      }
+
+      @include mixins.up($bp) {
+        .sauce-Visibility--hide-from-#{$bp} {
+          display: none;
+        }
+      }
+    }
+  }
+}

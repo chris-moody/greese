@@ -1,0 +1,28 @@
+@use 'sass:map';
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-Container {
+    inline-size: 100%;
+    margin-inline: auto;
+
+    // Safe areas are physical (notch on the left or right in landscape).
+    padding-right: max(var(--sauce-space-4), env(safe-area-inset-right));
+    padding-left: max(var(--sauce-space-4), env(safe-area-inset-left));
+
+    @include mixins.up(md) {
+      padding-right: max(var(--sauce-space-6), env(safe-area-inset-right));
+      padding-left: max(var(--sauce-space-6), env(safe-area-inset-left));
+    }
+  }
+
+  @each $size in (sm, md, lg, xl) {
+    .sauce-Container--size-#{$size} {
+      max-inline-size: map.get(mixins.$breakpoints, $size);
+    }
+  }
+
+  .sauce-Container--size-full {
+    max-inline-size: none;
+  }
+}

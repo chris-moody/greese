@@ -64,15 +64,31 @@ You can also theme in plain CSS, with no JavaScript:
 Every library rule sits in `@layer sauce.*`, so unlayered CSS in your app always
 wins over it. You never need `!important`.
 
-## Responsive values
+## Layout
 
-Layout components (arriving in the next release) take responsive props: one
-value, or a value per breakpoint, mobile-first, the
-same way MUI does:
+`Box`, `Stack`, `Grid` + `GridItem`, `Container`, `Center`, `Spacer`,
+`Divider`, `Show`/`Hide` and `AspectRatio`. They're all server-component safe
+and accept `asChild`.
 
 ```tsx
-<Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 2, lg: '2.5rem' }} />
+<Container>
+  <Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 2, md: 4 }} align="center">
+    <Box p={4} maxW="40rem">…</Box>
+  </Stack>
+  <Grid minChildWidth="14rem" gap={4}>…</Grid>
+  <Show above="md"><DesktopNav /></Show>
+</Container>
 ```
+
+Box style props (`m`, `p` and their `x`/`y`/`t`/`b`/`s`/`e` sides, `gap`,
+`w`, `maxW`, `display`, `textAlign`) work on every layout component. Spacing
+takes a scale token (`0`–`8`) or any CSS length. `<Grid container>` makes
+`GridItem` spans respond to the grid's own width instead of the viewport.
+
+## Responsive values
+
+Every responsive prop takes one value, or a value per breakpoint,
+mobile-first, the same way MUI does:
 
 | Breakpoint | `xs` | `sm` | `md` | `lg` | `xl` |
 |---|---|---|---|---|---|

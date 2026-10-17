@@ -1,0 +1,22 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-AspectRatio {
+    position: relative;
+    overflow: hidden;
+
+    > :is(img, video, iframe, picture, canvas, svg) {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+      border: 0;
+    }
+  }
+
+  .sauce-AspectRatio--contain > :is(img, video, picture, canvas, svg) {
+    object-fit: contain;
+  }
+
+  @include mixins.responsive-prop('sauce-AspectRatio', 'ratio', aspect-ratio);
+}

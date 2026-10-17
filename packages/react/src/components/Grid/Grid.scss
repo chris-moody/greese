@@ -1,0 +1,86 @@
+@use 'sass:map';
+@use '../../styles/mixins';
+
+$column-counts: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+
+@function column-tokens() {
+  $map: ();
+
+  @each $n in $column-counts {
+    $map: map.set($map, $n, repeat(#{$n}, minmax(0, 1fr)));
+  }
+
+  @return $map;
+}
+
+@function span-tokens() {
+  $map: (
+    full: #{'1 / -1'},
+  );
+
+  @each $n in $column-counts {
+    $map: map.set($map, $n, span #{$n} / span #{$n});
+  }
+
+  @return $map;
+}
+
+@layer sauce.components {
+  .sauce-Grid {
+    display: grid;
+    min-inline-size: 0;
+  }
+
+  .sauce-Grid--container {
+    container-type: inline-size;
+  }
+
+  .sauce-GridItem {
+    min-inline-size: 0;
+  }
+
+  @include mixins.responsive-prop(
+    'sauce-Grid',
+    'columns',
+    grid-template-columns,
+    column-tokens()
+  );
+
+  // After `columns`, so it wins where both apply.
+  @include mixins.responsive-prop(
+    'sauce-Grid',
+    'min-child',
+    grid-template-columns,
+    $template: 'repeat(auto-fill, minmax(min(VALUE, 100%), 1fr))'
+  );
+  @include mixins.responsive-prop('sauce-Grid', 'gap', gap, mixins.space-tokens());
+  @include mixins.responsive-prop(
+    'sauce-Grid',
+    'align',
+    align-items,
+    (
+      start: start,
+      center: center,
+      end: end,
+      stretch: stretch,
+    )
+  );
+  @include mixins.responsive-prop(
+    'sauce-Grid',
+    'justify',
+    justify-items,
+    (
+      start: start,
+      center: center,
+      end: end,
+      stretch: stretch,
+    )
+  );
+  @include mixins.responsive-prop(
+    'sauce-GridItem',
+    'span',
+    grid-column,
+    span-tokens(),
+    $container-scope: '.sauce-Grid--container >'
+  );
+}

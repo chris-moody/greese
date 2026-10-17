@@ -1,0 +1,11 @@
+@layer sauce.components {
+  .sauce-Center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sauce-Center--inline {
+    display: inline-flex;
+  }
+}

@@ -1,0 +1,22 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-Divider {
+    @include mixins.component-root;
+
+    flex-shrink: 0;
+    align-self: stretch;
+    margin: 0;
+    border: 0;
+    border-block-start: 1px solid var(--sauce-color-border);
+
+    &[data-orientation='vertical'] {
+      align-self: stretch;
+      inline-size: 0;
+      block-size: auto;
+      min-block-size: 1em;
+      border-block-start: 0;
+      border-inline-start: 1px solid var(--sauce-color-border);
+    }
+  }
+}

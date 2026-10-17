@@ -1,0 +1,63 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-Box {
+    @include mixins.component-root;
+  }
+}
+
+// Style props are utilities: they win over any component's own styles (a
+// Container's default gutter, say) regardless of source order.
+@layer sauce.utilities {
+  $space: (
+    m: margin,
+    mx: margin-inline,
+    my: margin-block,
+    mt: margin-block-start,
+    mb: margin-block-end,
+    ms: margin-inline-start,
+    me: margin-inline-end,
+    p: padding,
+    px: padding-inline,
+    py: padding-block,
+    pt: padding-block-start,
+    pb: padding-block-end,
+    ps: padding-inline-start,
+    pe: padding-inline-end,
+    gap: gap,
+  );
+
+  @each $prop, $property in $space {
+    @include mixins.responsive-prop('sauce-Box', $prop, $property);
+  }
+
+  @include mixins.responsive-prop('sauce-Box', 'w', inline-size);
+  @include mixins.responsive-prop('sauce-Box', 'max-w', max-inline-size);
+  @include mixins.responsive-prop(
+    'sauce-Box',
+    'display',
+    display,
+    (
+      block: block,
+      inline: inline,
+      inline-block: inline-block,
+      flex: flex,
+      inline-flex: inline-flex,
+      grid: grid,
+      inline-grid: inline-grid,
+      none: none,
+      contents: contents,
+    )
+  );
+  @include mixins.responsive-prop(
+    'sauce-Box',
+    'text-align',
+    text-align,
+    (
+      start: start,
+      center: center,
+      end: end,
+      justify: justify,
+    )
+  );
+}

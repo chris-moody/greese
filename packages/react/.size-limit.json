@@ -4,7 +4,7 @@
     "path": "dist/index.js",
     "import": "*",
     "ignore": ["react", "react-dom"],
-    "limit": "4 kB"
+    "limit": "5 kB"
   },
   {
     "name": "JS: tree-shaken { VisuallyHidden }",
@@ -12,6 +12,13 @@
     "import": "{ VisuallyHidden }",
     "ignore": ["react", "react-dom"],
     "limit": "300 B"
+  },
+  {
+    "name": "JS: tree-shaken { Stack }",
+    "path": "dist/index.js",
+    "import": "{ Stack }",
+    "ignore": ["react", "react-dom"],
+    "limit": "1.5 kB"
   },
   {
     "name": "JS: tree-shaken { ThemeProvider }",
@@ -31,7 +38,7 @@
     "name": "CSS: sauce-ui.css",
     "path": "dist/sauce-ui.css",
     "rolldown": false,
-    "limit": "3 kB"
+    "limit": "6 kB"
   },
   {
     "name": "CSS: base.css",
