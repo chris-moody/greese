@@ -1,0 +1,43 @@
+{
+  "name": "@sauce-ui/tokens",
+  "version": "0.0.0",
+  "description": "Design tokens for SauceUI as CSS custom properties, Sass maps, and TypeScript constants.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "LICENSE",
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./tokens.css": "./dist/tokens.css",
+    "./scss": "./dist/_tokens.scss",
+    "./scss/layers": "./dist/_layers.scss",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build": "npm run clean && tsc -p tsconfig.build.json && node scripts/build-css.ts",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src scripts --max-warnings 0",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@sauce-ui/eslint-config": "*",
+    "@sauce-ui/typescript-config": "*",
+    "@types/node": "^24.0.0",
+    "eslint": "^9.39.0",
+    "jsdom": "^30.1.3",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.5"
+  }
+}

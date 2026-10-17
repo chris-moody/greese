@@ -1,0 +1,144 @@
+/**
+ * Design tokens. The single source of truth for every visual value in SauceUI.
+ *
+ * `scripts/build-css.ts` turns this module into dist/tokens.css and
+ * dist/_tokens.scss; `createTheme()` overrides any of it at runtime-free cost.
+ *
+ * Semantic names (canvas, surface, fg, accent) rather than palette names
+ * (blue-500) so light/dark and future rebrands change one layer, not markup.
+ *
+ * Keep this file free of runtime imports: the build script runs it directly
+ * under Node's type stripping.
+ */
+
+/** Light and dark values for one semantic role. */
+export interface TokenPair {
+  light: string
+  dark: string
+}
+
+export const color = {
+  canvas: { light: '#ffffff', dark: '#0b0d10' },
+  surface: { light: '#f5f6f8', dark: '#14181d' },
+  surfaceOverlay: { light: '#ffffff', dark: '#1c2127' },
+  fg: { light: '#14181d', dark: '#e9edf2' },
+  fgMuted: { light: '#5b6572', dark: '#9aa5b1' },
+  border: { light: '#dfe3e8', dark: '#2a3038' },
+  borderStrong: { light: '#b8c0ca', dark: '#4a5360' },
+  accent: { light: '#2771e0', dark: '#81b2ff' },
+  accentStrong: { light: '#1356b8', dark: '#aaccff' },
+  onAccent: { light: '#ffffff', dark: '#0b0d10' },
+  focusRing: { light: '#2771e0', dark: '#aaccff' },
+  positive: { light: '#007231', dark: '#61cf7e' },
+  negative: { light: '#ae0914', dark: '#ff8b7f' },
+  warning: { light: '#8a5f00', dark: '#feb93d' },
+  info: { light: '#00668f', dark: '#5ac0f7' },
+} as const satisfies Record<string, TokenPair>
+
+export type ColorRole = keyof typeof color
+
+/** Spacing scale, indexed: `space[2]` is `--sauce-space-2`. */
+export const space = {
+  0: '0',
+  1: '0.25rem',
+  2: '0.5rem',
+  3: '0.75rem',
+  4: '1rem',
+  5: '1.5rem',
+  6: '2rem',
+  7: '3rem',
+  8: '4rem',
+} as const
+
+export type SpaceToken = keyof typeof space
+
+export const radius = {
+  none: '0',
+  sm: '4px',
+  md: '8px',
+  lg: '16px',
+  pill: '999px',
+} as const
+
+export const font = {
+  body: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+  mono: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+} as const
+
+export const fontSize = {
+  xs: '0.75rem',
+  sm: '0.875rem',
+  md: '1rem',
+  lg: '1.125rem',
+  xl: '1.25rem',
+  '2xl': '1.5rem',
+  '3xl': '1.875rem',
+  '4xl': '2.25rem',
+} as const
+
+export const fontWeight = {
+  regular: '400',
+  medium: '500',
+  semibold: '600',
+  bold: '700',
+} as const
+
+export const lineHeight = { tight: '1.25', snug: '1.375', normal: '1.5' } as const
+
+export const shadow = {
+  sm: '0 1px 2px rgb(0 0 0 / 0.08)',
+  md: '0 4px 12px rgb(0 0 0 / 0.12)',
+  lg: '0 12px 32px rgb(0 0 0 / 0.18)',
+} as const
+
+export const zIndex = {
+  dropdown: '1000',
+  sticky: '1100',
+  overlay: '1300',
+  modal: '1400',
+  popover: '1500',
+  toast: '1600',
+  tooltip: '1700',
+} as const
+
+/** Collapsed to near-zero under `prefers-reduced-motion: reduce`. */
+export const duration = { fast: '120ms', normal: '200ms', slow: '320ms' } as const
+
+export const easing = {
+  standard: 'cubic-bezier(0.2, 0, 0, 1)',
+  enter: 'cubic-bezier(0, 0, 0, 1)',
+  exit: 'cubic-bezier(0.3, 0, 1, 1)',
+} as const
+
+/**
+ * Scheme-independent token groups, keyed by the custom-property group name:
+ * `fontSize.lg` is `--sauce-font-size-lg`.
+ */
+export const scalarTokens = {
+  space,
+  radius,
+  font,
+  fontSize,
+  fontWeight,
+  lineHeight,
+  shadow,
+  zIndex,
+  duration,
+  easing,
+} as const
+
+export type ScalarGroup = keyof typeof scalarTokens
+
+/**
+ * Mobile-first breakpoints: each value is a `min-width` in px. Matches MUI's
+ * defaults so responsive props port across unchanged.
+ *
+ * Media queries cannot read custom properties, so these are compile-time
+ * constants in the CSS; changing them means recompiling the SCSS.
+ */
+export const breakpoints = { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 } as const
+
+export type Breakpoint = keyof typeof breakpoints
+
+/** Breakpoint keys, smallest first. */
+export const breakpointKeys = Object.keys(breakpoints) as Breakpoint[]
