@@ -1,0 +1,67 @@
+# SauceUI
+
+Mobile-first, TypeScript-first React components with zero-runtime styling:
+static CSS compiled at build time, themed with CSS custom properties.
+
+| Package | |
+|---|---|
+| [`@sauce-ui/react`](packages/react) | Components, hooks, and the compiled stylesheet |
+| [`@sauce-ui/tokens`](packages/tokens) | Design tokens as CSS variables, Sass maps, and TS constants |
+
+Plan and architecture: [docs/DEVELOPMENT_PLAN.md](docs/DEVELOPMENT_PLAN.md).
+
+## Workspace
+
+| Path | |
+|---|---|
+| `packages/react`, `packages/tokens` | Published packages |
+| `packages/eslint-config`, `packages/typescript-config` | Internal shared config |
+| `apps/docs` | Storybook. Uses the library **source**, so edits hot-reload |
+| `apps/playground` | Vite app that uses the **built** `dist/`, the same way a real consumer does. Playwright e2e and perf benchmarks run against it |
+
+## Setup
+
+Requires Node 24 (`nvm use`) and npm.
+
+```bash
+npm install
+npx playwright install chromium   # once, for e2e
+```
+
+## Commands
+
+| Command | |
+|---|---|
+| `npm run dev` | Storybook on :6006 and the playground dev server |
+| `npm run build` | Builds every package and app (turbo, cached) |
+| `npm test` | Unit tests (Vitest + jsdom) |
+| `npm run test:e2e` | Real-browser tests (Playwright, mobile and desktop) on :4310 |
+| `npm run check-types` / `npm run lint` | |
+| `npm run size` | Fails if the bundle-size budgets in `packages/react/.size-limit.json` are exceeded |
+| `npm run changeset` | Records a release note for a change to a published package |
+
+## Commits
+
+Commits follow [Conventional Commits](https://www.conventionalcommits.org) as one
+line, `type(scope): subject`, with no body or trailers:
+
+```
+feat(react): add Stack with responsive direction and gap props
+```
+
+`commitlint.config.mjs` holds the rules, including the allowed types and
+scopes. A git hook (husky, installed by `npm install`) checks every commit
+locally, and CI checks pull requests. The full guide is in
+[.claude/skills/commit/SKILL.md](.claude/skills/commit/SKILL.md), which Claude
+Code also uses as its `/commit` skill.
+
+## Releasing
+
+Changesets on `main` produce a "Version Packages" PR, and merging it publishes
+to npm (`.github/workflows/release.yml`). `@sauce-ui/react` and
+`@sauce-ui/tokens` share one version number.
+
+## Docs hosting
+
+`firebase deploy --only hosting` publishes `apps/docs/storybook-static`, so run
+`npm run build` first.
