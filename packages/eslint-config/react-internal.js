@@ -39,6 +39,9 @@ export const config = [
     plugins: { '@typescript-eslint': tseslint.plugin },
     rules: {
       ...tseslint.configs.recommended.rules,
+      // TypeScript already reports undefined names, and this rule misfires on
+      // type-only globals (typescript-eslint recommends turning it off).
+      'no-undef': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
