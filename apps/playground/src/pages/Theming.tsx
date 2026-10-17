@@ -6,6 +6,8 @@ import {
   VisuallyHidden,
   type ColorScheme,
 } from '@sauce-ui/react'
+import '@sauce-ui/react/base.css'
+import '@sauce-ui/react/styles.css'
 
 const brand = createTheme({
   name: 'brand',
@@ -47,8 +49,8 @@ const SchemeControls = () => {
   )
 }
 
-/** Smoke and theming test page. Phase 2 adds the performance benchmark routes. */
-export const App = (): JSX.Element => (
+/** Smoke and theming fixtures for e2e/smoke.spec.ts and e2e/theming.spec.ts. */
+export const Theming = (): JSX.Element => (
   <main>
     <h1>SauceUI playground</h1>
     <button type="button" data-testid="icon-button">

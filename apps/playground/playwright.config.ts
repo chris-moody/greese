@@ -13,6 +13,10 @@ export default defineConfig({
   projects: [
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
+    // The CSS relies on Baseline 2024 features (@property, container queries,
+    // cascade layers): verify them in every engine, not just Chromium.
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
   webServer: {
     command: 'npm run build && npm run preview',

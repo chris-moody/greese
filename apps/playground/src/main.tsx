@@ -1,11 +1,22 @@
-import { StrictMode } from 'react'
+import { lazy, StrictMode, Suspense, type ComponentType } from 'react'
 import { createRoot } from 'react-dom/client'
-import '@sauce-ui/react/base.css'
-import '@sauce-ui/react/styles.css'
-import { App } from './App.tsx'
+
+/**
+ * `?page=<name>` picks a page; each is its own chunk and imports its own CSS,
+ * so pages never load stylesheets they don't use.
+ */
+const pages: Record<string, () => Promise<{ default: ComponentType }>> = {
+  theming: () => import('./pages/Theming.tsx').then((m) => ({ default: m.Theming })),
+  layout: () => import('./pages/Layout.tsx').then((m) => ({ default: m.Layout })),
+}
+
+const name = new URLSearchParams(location.search).get('page') ?? 'theming'
+const Page = lazy(pages[name] ?? pages.theming!)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <Suspense>
+      <Page />
+    </Suspense>
   </StrictMode>
 )

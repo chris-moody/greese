@@ -57,8 +57,9 @@ const assertAll = async (page: Page, pageMode: Mode, os: Mode) => {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/?page=theming')
   await page.evaluate(() => localStorage.clear())
+  await page.getByTestId('default').waitFor()
 })
 
 for (const os of ['light', 'dark'] as const) {
@@ -104,6 +105,7 @@ test('a saved scheme is applied before first paint on reload', async ({ page }) 
 })
 
 test('theme CSS is injected once per theme, in <head>', async ({ page }) => {
+  await page.getByTestId('brand').waitFor()
   const hrefs = await page
     .locator('head style[data-href^="sauce-theme-"]')
     .evaluateAll((els) => els.map((el) => el.getAttribute('data-href')))
