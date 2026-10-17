@@ -23,6 +23,19 @@ $breakpoints: tokens.$breakpoints;
   }
 }
 
+/// Styles apply below `$bp` only: the complement of `up($bp)`.
+@mixin down($bp) {
+  $min: map.get($breakpoints, $bp);
+
+  @if not $min or $min <= 0 {
+    @error 'down() needs a breakpoint above xs, got `#{$bp}`.';
+  }
+
+  @media (width < $min) {
+    @content;
+  }
+}
+
 /// The custom property holding one breakpoint's value of a responsive prop.
 /// Must match `responsiveVar()` in src/utils/responsive.ts.
 @function responsive-var($block, $prop, $bp) {
@@ -49,13 +62,32 @@ $breakpoints: tokens.$breakpoints;
   }
 }
 
+/// `$template` with its `VALUE` placeholder replaced, or `$value` alone.
+@function _fill($template, $value) {
+  @if not $template {
+    @return $value;
+  }
+
+  $at: string.index($template, 'VALUE');
+
+  @return string.unquote(
+    string.slice($template, 1, $at - 1) + '#{$value}' + string.slice($template, $at + 5)
+  );
+}
+
 /// A responsive prop: one custom property per breakpoint, read through a
 /// mobile-first fallback chain (docs/adr/0001-styling-model.md).
 ///
-/// Emits:
-///   - on `.#{$block}`: each per-breakpoint variable reset to `initial`, so
-///     nested instances never inherit a parent's values, plus the chain;
+/// Everything hangs off the "uses" class `.#{$block}--#{$prop}`, which
+/// `resolveResponsive()` adds only when the prop is set, so unused props cost
+/// an element nothing and never override its defaults. Emits:
+///   - an `@property` registration per breakpoint variable with
+///     `inherits: false`, so nested instances never see a parent's values and
+///     changing a value never restyles descendants;
+///   - on the uses class, the chain;
 ///   - one media query per breakpoint re-reading the chain from there down;
+///   - with `$container-scope`, the same chain under container queries, for
+///     elements inside that scope (higher specificity, so it wins there);
 ///   - for each `$tokens` entry and breakpoint, a class that sets the variable:
 ///     `.#{$block}--#{bp}-#{$prop}-#{key}`. Classes never set the property
 ///     itself, or the chain at larger breakpoints would override them.
@@ -63,31 +95,69 @@ $breakpoints: tokens.$breakpoints;
 /// Values not in `$tokens` arrive as inline custom properties from
 /// `resolveResponsive()`.
 ///
-/// @param $block      component root class, without the dot: 'sauce-Stack'
-/// @param $prop       prop segment in class and variable names: 'gap'
-/// @param $properties CSS property, or list of them, that read the chain
-/// @param $tokens     map of token key to CSS value, one class each
-/// @param $fallback   value when no breakpoint sets the prop; null leaves the
-///                    property unset (its initial or inherited value)
+/// @param $block           component root class, without the dot: 'sauce-Stack'
+/// @param $prop            prop segment in class and variable names: 'gap'
+/// @param $properties      CSS property, or list of them, that read the chain
+/// @param $tokens          map of token key to CSS value, one class each
+/// @param $fallback        value when no breakpoint applies; null leaves the
+///                         property unset (its initial or inherited value)
+/// @param $template        wraps the chain: 'repeat(auto-fill, minmax(VALUE, 1fr))'
+/// @param $container-scope selector prefix whose container-query variant
+///                         applies: '.sauce-Grid--container >'
 ///
 /// Use it at the top level of a layer block, not nested in a selector.
-@mixin responsive-prop($block, $prop, $properties, $tokens: (), $fallback: null) {
-  .#{$block} {
-    @each $bp, $_ in $breakpoints {
-      #{responsive-var($block, $prop, $bp)}: initial;
-    }
+@mixin responsive-prop(
+  $block,
+  $prop,
+  $properties,
+  $tokens: (),
+  $fallback: null,
+  $template: null,
+  $container-scope: null
+) {
+  $uses: '.#{$block}--#{$prop}';
 
+  // Registered as non-inheriting: nested instances never see a parent's
+  // values, and changing them never forces descendants to restyle.
+  @each $bp, $_ in $breakpoints {
+    @property #{responsive-var($block, $prop, $bp)} {
+      syntax: '*';
+      inherits: false;
+    }
+  }
+
+  #{$uses} {
     @each $property in $properties {
-      #{$property}: _chain($block, $prop, xs, $fallback);
+      #{$property}: _fill($template, _chain($block, $prop, xs, $fallback));
     }
   }
 
   @each $bp, $min in $breakpoints {
     @if $min > 0 {
       @include up($bp) {
-        .#{$block} {
+        #{$uses} {
           @each $property in $properties {
-            #{$property}: _chain($block, $prop, $bp, $fallback);
+            #{$property}: _fill($template, _chain($block, $prop, $bp, $fallback));
+          }
+        }
+      }
+    }
+  }
+
+  @if $container-scope {
+    #{$container-scope} #{$uses} {
+      @each $property in $properties {
+        #{$property}: _fill($template, _chain($block, $prop, xs, $fallback));
+      }
+    }
+
+    @each $bp, $min in $breakpoints {
+      @if $min > 0 {
+        @container (width >= #{$min}) {
+          #{$container-scope} #{$uses} {
+            @each $property in $properties {
+              #{$property}: _fill($template, _chain($block, $prop, $bp, $fallback));
+            }
           }
         }
       }

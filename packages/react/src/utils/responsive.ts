@@ -26,7 +26,16 @@ export interface ResponsiveConfig<T extends ResponsiveValue = ResponsiveValue> {
    * mixin). Others become inline custom properties. Default: every value.
    */
   readonly isToken?: (value: T) => boolean
+  /** CSS for a value set as an inline variable. Default: `String(value)`. */
+  readonly toCss?: (value: T) => string
 }
+
+/**
+ * "Uses" class, added whenever the prop is set at any breakpoint. The SCSS
+ * hangs the prop's rules off it, so unset props cost nothing.
+ */
+export const responsivePropClass = (block: string, prop: string): string =>
+  `${block}--${prop}`
 
 /** Class that sets one breakpoint's value. Must match the SCSS mixin. */
 export const responsiveClass = (
@@ -42,6 +51,13 @@ export const responsiveVar = (block: string, prop: string, bp: Breakpoint): stri
 
 export const isSpaceToken = (value: ResponsiveValue): boolean =>
   typeof value === 'number' && Object.hasOwn(space, value)
+
+/** A spacing value as CSS: tokens become `var(--sauce-space-N)`. */
+export const spaceToCss = (value: ResponsiveValue): string =>
+  typeof value === 'number' ? `var(--sauce-space-${value})` : value
+
+/** For props whose values always go inline (no pre-generated classes). */
+export const neverToken = (): boolean => false
 
 /** One responsive prop's value paired with its (module-level, static) config. */
 export type ResponsiveEntry = readonly [
@@ -71,6 +87,9 @@ const isPerBreakpoint = (
  *   className: cx('sauce-Stack', props.className),
  *   style: props.style,
  * })
+ * // gap={{ xs: 2, md: '13px' }} →
+ * //   className: 'sauce-Stack sauce-Stack--gap sauce-Stack--xs-gap-2'
+ * //   style:     { '--sauce-stack-gap-md': '13px' }
  * ```
  *
  * `base.style` wins over generated variables, so callers can always override.
@@ -82,22 +101,28 @@ export const resolveResponsive = (
   let className = base.className ?? ''
   let vars: Record<string, string> | undefined
 
+  const addClass = (cls: string): void => {
+    className = className ? `${className} ${cls}` : cls
+  }
+
   const add = (
     config: ResponsiveConfig,
     bp: Breakpoint,
     value: ResponsiveValue
   ): void => {
     if (!config.isToken || config.isToken(value)) {
-      const cls = responsiveClass(config.block, bp, config.prop, value)
-      className = className ? `${className} ${cls}` : cls
+      addClass(responsiveClass(config.block, bp, config.prop, value))
     } else {
       vars ??= {}
-      vars[responsiveVar(config.block, config.prop, bp)] = String(value)
+      vars[responsiveVar(config.block, config.prop, bp)] = config.toCss
+        ? config.toCss(value)
+        : String(value)
     }
   }
 
   for (const [value, config] of entries) {
     if (value == null) continue
+    addClass(responsivePropClass(config.block, config.prop))
     if (isPerBreakpoint(value)) {
       for (const bp of breakpointKeys) {
         const v = value[bp]

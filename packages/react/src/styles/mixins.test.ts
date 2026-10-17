@@ -16,10 +16,18 @@ describe('responsive-prop mixin', () => {
     @include mixins.responsive-prop('sauce-Test', 'direction', flex-direction, (row: row, column: column), column);
   `)
 
-  it('resets every breakpoint variable on the block so nested instances never inherit', () => {
+  it('hangs everything off the uses class, never the block class', () => {
+    expect(css).not.toMatch(/^\.sauce-Test \{/m)
+    expect(css).toMatch(/^\.sauce-Test--gap \{/m)
+  })
+
+  it('registers every breakpoint variable as non-inheriting, so nested instances never leak', () => {
     for (const bp of ['xs', 'sm', 'md', 'lg', 'xl']) {
-      expect(css).toContain(`${responsiveVar('sauce-Test', 'gap', bp as 'xs')}: initial;`)
+      expect(css).toContain(
+        `@property ${responsiveVar('sauce-Test', 'gap', bp as 'xs')} {\n  syntax: "*";\n  inherits: false;\n}`
+      )
     }
+    expect(css).not.toContain(': initial;')
   })
 
   it('reads a mobile-first fallback chain, with the fallback at the end', () => {
@@ -28,7 +36,7 @@ describe('responsive-prop mixin', () => {
       'flex-direction: var(--sauce-test-direction-md, var(--sauce-test-direction-sm, var(--sauce-test-direction-xs, column)));'
     )
     expect(css).toMatch(
-      /@media \(width >= 900px\) \{\s+\.sauce-Test \{\s+gap: var\(--sauce-test-gap-md,/
+      /@media \(width >= 900px\) \{\s+\.sauce-Test--gap \{\s+gap: var\(--sauce-test-gap-md,/
     )
   })
 
@@ -51,6 +59,41 @@ describe('responsive-prop mixin', () => {
       ],
     ])
     for (const cls of className.split(' ')) expect(css).toContain(`.${cls} {`)
+  })
+})
+
+describe('responsive-prop options', () => {
+  it('wraps the chain in a template', () => {
+    const css =
+      compile(`@include mixins.responsive-prop('sauce-T', 'min', grid-template-columns,
+      $template: 'repeat(auto-fill, minmax(min(VALUE, 100%), 1fr))');`)
+    expect(css).toContain(
+      'grid-template-columns: repeat(auto-fill, minmax(min(var(--sauce-t-min-xs), 100%), 1fr));'
+    )
+  })
+
+  it('adds container-query variants under a scope, winning by specificity', () => {
+    const css = compile(`@include mixins.responsive-prop('sauce-I', 'span', grid-column,
+      (2: span 2), $container-scope: '.sauce-G--container >');`)
+    expect(css).toContain(
+      '.sauce-G--container > .sauce-I--span {\n  grid-column: var(--sauce-i-span-xs);'
+    )
+    expect(css).toMatch(
+      /@container \(width >= 900px\) \{\s+\.sauce-G--container > \.sauce-I--span \{\s+grid-column: var\(--sauce-i-span-md,/
+    )
+    // The viewport variant is still there for grids that are not containers.
+    expect(css).toMatch(/@media \(width >= 900px\) \{\s+\.sauce-I--span \{/)
+  })
+})
+
+describe('down mixin', () => {
+  it('emits a max-range query and rejects xs', () => {
+    expect(compile('.a { @include mixins.down(md) { color: red; } }')).toContain(
+      '@media (width < 900px)'
+    )
+    expect(() => compile('.a { @include mixins.down(xs) { color: red; } }')).toThrow(
+      /down\(\) needs a breakpoint above xs/
+    )
   })
 })
 
