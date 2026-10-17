@@ -1,0 +1,31 @@
+{
+  "name": "docs",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "storybook dev -p 6006 --no-open",
+    "build": "storybook build -o storybook-static --quiet",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint stories .storybook --max-warnings 0"
+  },
+  "dependencies": {
+    "@sauce-ui/react": "0.0.0",
+    "@sauce-ui/tokens": "0.0.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@sauce-ui/eslint-config": "*",
+    "@sauce-ui/typescript-config": "*",
+    "@storybook/react-vite": "^10.6.2",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.0",
+    "sass-embedded": "^1.105.2",
+    "storybook": "^10.6.2",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.4"
+  }
+}
