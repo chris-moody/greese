@@ -1,0 +1,32 @@
+{
+  "extends": ["stylelint-config-standard-scss"],
+  "rules": {
+    "selector-class-pattern": [
+      "^sauce-[A-Z][A-Za-z]*(--[a-z0-9-]+)?$",
+      { "message": "Use sauce-Block or sauce-Block--modifier (got \"%s\")" }
+    ],
+    "custom-property-pattern": [
+      "^sauce-[a-z0-9-]+$",
+      { "message": "Custom properties are --sauce-kebab-case (got \"%s\")" }
+    ],
+    "color-no-hex": [
+      true,
+      { "message": "Use a --sauce-color-* token, not a raw colour" }
+    ],
+    "color-named": [
+      "never",
+      { "message": "Use a --sauce-color-* token, not a raw colour" }
+    ],
+    "function-disallowed-list": [
+      ["rgb", "rgba", "hsl", "hsla", "hwb", "lab", "lch", "oklab", "oklch", "color"],
+      { "message": "Use a --sauce-color-* token, not a raw colour" }
+    ],
+    "property-no-vendor-prefix": [
+      true,
+      { "ignoreProperties": ["tap-highlight-color", "font-smoothing"] }
+    ],
+    "scss/dollar-variable-pattern": "^_?[a-z][a-z0-9-]*$",
+    "scss/at-function-pattern": "^_?[a-z][a-z0-9-]*$",
+    "scss/at-mixin-pattern": "^_?[a-z][a-z0-9-]*$"
+  }
+}

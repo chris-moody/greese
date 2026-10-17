@@ -1,0 +1,89 @@
+# @sauce-ui/react
+
+Mobile-first, TypeScript-first React components. All styling is static CSS
+compiled at build time and themed with CSS custom properties, so there is no
+CSS-in-JS runtime.
+
+```bash
+npm install @sauce-ui/react
+```
+
+```tsx
+// Once, at your app root:
+import '@sauce-ui/react/base.css' // optional: reset + body defaults
+import '@sauce-ui/react/styles.css' // tokens + component styles
+```
+
+Requires React 19. `styles.css` styles only `.sauce-*` classes. Import
+`base.css` too if SauceUI owns the whole page.
+
+## Colour scheme
+
+The scheme follows the OS by default. To let users choose:
+
+```tsx
+import { getSchemeScript, useColorScheme } from '@sauce-ui/react'
+
+// In <head>, so a saved choice applies before first paint:
+<script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
+
+// Anywhere:
+const { scheme, resolvedScheme, setScheme } = useColorScheme()
+setScheme('dark') // 'light' | 'dark' | 'system'
+```
+
+## Themes
+
+```tsx
+import { createTheme, ThemeProvider } from '@sauce-ui/react'
+
+// At module scope: builds static CSS once.
+const brand = createTheme({
+  name: 'brand',
+  color: { accent: { light: '#7c3aed', dark: '#c4b5fd' } },
+  radius: { md: '12px' },
+})
+
+<ThemeProvider theme={brand}>…</ThemeProvider>
+<ThemeProvider scheme="dark">…force dark for this section…</ThemeProvider>
+```
+
+The provider adds no layout box (`display: contents`). Use `asChild` to scope
+your own element instead. Providers can be nested. Themes replace each other
+rather than stacking, so to extend a theme, create a new one with more
+overrides.
+
+You can also theme in plain CSS, with no JavaScript:
+
+```css
+:root {
+  --sauce-color-accent: #7c3aed;
+}
+```
+
+Every library rule sits in `@layer sauce.*`, so unlayered CSS in your app always
+wins over it. You never need `!important`.
+
+## Responsive values
+
+Layout components (arriving in the next release) take responsive props: one
+value, or a value per breakpoint, mobile-first, the
+same way MUI does:
+
+```tsx
+<Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 2, lg: '2.5rem' }} />
+```
+
+| Breakpoint | `xs` | `sm` | `md` | `lg` | `xl` |
+|---|---|---|---|---|---|
+| min-width | 0 | 600px | 900px | 1200px | 1536px |
+
+Prefer CSS-driven responsive props. When the rendered tree itself must change,
+use `useBreakpoint()`, `useBreakpointValue()` or `useMediaQuery()`.
+
+## Utilities
+
+- `Slot` and `composeRefs` power `asChild`.
+- `useControllableState` supports controlled and uncontrolled state.
+- `cx` joins class names.
+- `VisuallyHidden` hides content visually but keeps it for screen readers.

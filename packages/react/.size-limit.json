@@ -1,0 +1,42 @@
+[
+  {
+    "name": "JS: whole library",
+    "path": "dist/index.js",
+    "import": "*",
+    "ignore": ["react", "react-dom"],
+    "limit": "4 kB"
+  },
+  {
+    "name": "JS: tree-shaken { VisuallyHidden }",
+    "path": "dist/index.js",
+    "import": "{ VisuallyHidden }",
+    "ignore": ["react", "react-dom"],
+    "limit": "300 B"
+  },
+  {
+    "name": "JS: tree-shaken { ThemeProvider }",
+    "path": "dist/index.js",
+    "import": "{ ThemeProvider }",
+    "ignore": ["react", "react-dom"],
+    "limit": "1 kB"
+  },
+  {
+    "name": "JS: tree-shaken { ThemeProvider, createTheme } (includes default tokens)",
+    "path": "dist/index.js",
+    "import": "{ ThemeProvider, createTheme }",
+    "ignore": ["react", "react-dom"],
+    "limit": "2.25 kB"
+  },
+  {
+    "name": "CSS: sauce-ui.css",
+    "path": "dist/sauce-ui.css",
+    "rolldown": false,
+    "limit": "3 kB"
+  },
+  {
+    "name": "CSS: base.css",
+    "path": "dist/base.css",
+    "rolldown": false,
+    "limit": "1 kB"
+  }
+]

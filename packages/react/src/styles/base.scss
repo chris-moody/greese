@@ -1,0 +1,80 @@
+// Opt-in global styles, compiled to dist/base.css: a light reset plus page
+// defaults wired to the tokens. Import it only if SauceUI owns the page.
+// Usage:
+//   import '@sauce-ui/react/base.css'
+//   import '@sauce-ui/react/styles.css'
+@use 'pkg:@sauce-ui/tokens/scss/layers';
+
+@layer sauce.reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    min-block-size: 100dvh;
+    margin: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  figure,
+  blockquote,
+  dl,
+  dd {
+    margin: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    overflow-wrap: break-word;
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-inline-size: 100%;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+}
+
+@layer sauce.base {
+  body {
+    font-family: var(--sauce-font-body);
+    font-size: var(--sauce-font-size-md);
+    line-height: var(--sauce-line-height-normal);
+    color: var(--sauce-color-fg);
+    background-color: var(--sauce-color-canvas);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--sauce-color-focus-ring);
+    outline-offset: 2px;
+  }
+}

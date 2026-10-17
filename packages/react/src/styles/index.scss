@@ -1,0 +1,6 @@
+// Entry point compiled to dist/sauce-ui.css: tokens and component styles.
+// It styles only `.sauce-*` classes, never bare elements. The opt-in global
+// reset and body styles live in base.scss (dist/base.css).
+@use 'pkg:@sauce-ui/tokens/scss';
+@use '../components/ThemeProvider/ThemeProvider';
+@use '../components/VisuallyHidden/VisuallyHidden';

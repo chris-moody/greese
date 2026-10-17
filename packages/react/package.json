@@ -1,0 +1,66 @@
+{
+  "name": "@sauce-ui/react",
+  "version": "0.0.0",
+  "description": "Mobile-first, TypeScript-first React components with zero-runtime, CSS-variable theming.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "LICENSE",
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": "./dist/sauce-ui.css",
+    "./base.css": "./dist/base.css",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build": "npm run clean && npm run build:js && npm run build:css",
+    "build:js": "tsc -p tsconfig.build.json",
+    "build:css": "sass --pkg-importer=node --no-source-map src/styles/index.scss:dist/sauce-ui.css src/styles/base.scss:dist/base.css",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src --max-warnings 0 && stylelint \"src/**/*.scss\" --max-warnings 0",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "size": "size-limit"
+  },
+  "dependencies": {
+    "@sauce-ui/tokens": "0.0.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@sauce-ui/eslint-config": "*",
+    "@sauce-ui/typescript-config": "*",
+    "@size-limit/preset-small-lib": "^14.2.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitest/coverage-v8": "^5.0.5",
+    "axe-core": "^4.14.0",
+    "eslint": "^9.39.0",
+    "jsdom": "^30.1.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "sass-embedded": "^1.105.2",
+    "size-limit": "^14.2.0",
+    "stylelint": "^17.16.0",
+    "stylelint-config-standard-scss": "^17.0.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.5"
+  }
+}
