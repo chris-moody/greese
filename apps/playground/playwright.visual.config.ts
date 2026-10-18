@@ -18,7 +18,16 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
   fullyParallel: true,
-  expect: { toHaveScreenshot: { maxDiffPixelRatio: 0.002, animations: 'disabled' } },
+  // threshold is the per-pixel colour tolerance (0–1). Playwright's default
+  // (0.2) treats pale tints as unchanged: a badge background stretching
+  // across a card passed. Rendering here is deterministic, so be strict.
+  expect: {
+    toHaveScreenshot: {
+      threshold: 0.02,
+      maxDiffPixelRatio: 0.001,
+      animations: 'disabled',
+    },
+  },
   use: {
     baseURL: 'http://localhost:4320',
     browserName: 'chromium',
