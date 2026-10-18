@@ -18,7 +18,31 @@ const PageScheme = ({
 }
 
 const preview: Preview = {
-  parameters: { layout: 'padded' },
+  // A generated docs page (props table, every story) for each component.
+  tags: ['autodocs'],
+  parameters: {
+    layout: 'padded',
+    options: {
+      storySort: {
+        order: [
+          'Guides',
+          [
+            'Introduction',
+            'Getting started',
+            'Theming',
+            'Responsive props',
+            'Accessibility',
+            'Migrating from MUI',
+          ],
+          'Foundations',
+          'Layout',
+          'Forms',
+          'Content',
+          'Overlays',
+        ],
+      },
+    },
+  },
   globalTypes: {
     scheme: {
       description: 'Colour scheme',

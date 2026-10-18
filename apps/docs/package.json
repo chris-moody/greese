@@ -10,20 +10,22 @@
     "lint": "eslint stories .storybook --max-warnings 0"
   },
   "dependencies": {
-    "@sauce-ui/react": "0.0.0",
-    "@sauce-ui/tokens": "0.0.0",
+    "@sauce-ui/react": "*",
+    "@sauce-ui/tokens": "*",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@sauce-ui/eslint-config": "*",
     "@sauce-ui/typescript-config": "*",
+    "@storybook/addon-docs": "^10.6.2",
     "@storybook/react-vite": "^10.6.2",
     "@types/node": "^24.0.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "eslint": "^9.39.0",
     "react-hook-form": "7.89.0",
+    "remark-gfm": "^4.0.1",
     "sass-embedded": "^1.105.2",
     "storybook": "^10.6.2",
     "typescript": "~6.0.3",

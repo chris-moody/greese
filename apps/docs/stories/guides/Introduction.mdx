@@ -1,0 +1,23 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/Introduction" />
+
+# SauceUI
+
+Mobile-first, TypeScript-first React components with **zero-runtime styling**.
+All CSS is compiled at build time and themed with CSS custom properties; at runtime
+components only toggle class names and set a few inline variables. No CSS-in-JS, no
+style injection, no runtime dependencies beyond React.
+
+- **Fast.** Against MUI on 2,000 responsive Stacks: 2.2× less main-thread script on
+  load, 3.5× less per update, interactions about 2× faster.
+- **Responsive like MUI.** `direction={{ xs: 'column', md: 'row' }}` on any layout
+  prop, resolved by static CSS.
+- **Native first.** Real `<button>`, `<input>`, `<select>`, `<dialog>`, `<details>` and
+  the Popover API: keyboard, forms, autofill and phone pickers work out of the box.
+- **Accessible by default.** WAI-ARIA patterns, tested with axe and in Chromium,
+  Firefox, WebKit and an emulated iPhone.
+
+Start with [Getting started](?path=/docs/guides-getting-started--docs), then browse
+**Layout**, **Forms**, **Content** and **Overlays**. Use the toolbar's **Scheme**
+switch to see everything in light and dark.

@@ -1,12 +1,22 @@
 import { fileURLToPath } from 'node:url'
 import type { StorybookConfig } from '@storybook/react-vite'
+import remarkGfm from 'remark-gfm'
 import { NodePackageImporter } from 'sass-embedded'
 
 const reactSrc = fileURLToPath(new URL('../../../packages/react/src', import.meta.url))
 
 const config: StorybookConfig = {
   framework: '@storybook/react-vite',
-  stories: ['../stories/**/*.stories.tsx'],
+  addons: [
+    {
+      name: '@storybook/addon-docs',
+      // GitHub-flavoured Markdown (tables) in the MDX guides.
+      options: {
+        mdxPluginOptions: { mdxCompileOptions: { remarkPlugins: [remarkGfm] } },
+      },
+    },
+  ],
+  stories: ['../stories/**/*.mdx', '../stories/**/*.stories.tsx'],
   /**
    * Point @sauce-ui/react at its source (TS + SCSS) instead of dist/, so edits
    * hot-reload with no rebuild. apps/playground covers the built package.

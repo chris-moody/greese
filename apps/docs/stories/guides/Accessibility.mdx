@@ -1,0 +1,37 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/Accessibility" />
+
+# Accessibility
+
+What SauceUI guarantees, and what stays your job.
+
+## Built in
+
+- **Native semantics.** Controls are real `<button>`, `<input>`, `<select>`,
+  `<textarea>`, `<dialog>` and `<details>` elements, restyled, with native keyboard
+  behaviour, form submission and screen-reader roles.
+- **Labelled fields.** `Field`/`TextField` wire label, description and error to the
+  control (`aria-describedby`, `aria-invalid`). Descriptions are never folded into a
+  checkbox's name.
+- **WAI-ARIA patterns** for Tabs, Menu, Accordion, Dialog and Tooltip (WCAG 1.4.13:
+  hoverable, dismissible with Escape).
+- **Focus.** A visible focus ring on every control; dialogs trap and *reliably*
+  return focus (including Safari, which doesn't focus buttons on click).
+- **Touch.** 44×44px hit areas on coarse pointers; control text never below 16px on
+  phones, so iOS doesn't zoom.
+- **Motion.** Durations collapse under `prefers-reduced-motion`; spinners pulse
+  instead of spinning; skeletons stop shimmering.
+- **Announcements.** Toasts announce through always-present live regions (assertive for
+  errors) and stay usable above open dialogs. Static alerts don't interrupt.
+- **Tested** with axe in unit tests and with keyboard and touch in Chromium, Firefox,
+  WebKit and an emulated iPhone.
+
+## Your job
+
+- Give every `IconButton` a `label` (required by its types), images real `alt` text,
+  embeds a `title`, and menus/tab lists an `aria-label`.
+- Don't put essential information only in tooltips: touch users can't hover.
+- Keep text contrast when theming: the default palette meets WCAG AA; custom colours
+  are yours to check.
+- Use `Heading level` for the document outline and `size` for looks.

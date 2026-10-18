@@ -1,0 +1,71 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/Theming" />
+
+# Theming
+
+Every visual value is a `--sauce-*` custom property: `--sauce-color-accent`,
+`--sauce-space-4`, `--sauce-radius-md`, `--sauce-font-size-lg`, … (see
+**Foundations/Tokens**). All library rules live in `@layer sauce.*`, so your unlayered
+CSS always wins: no `!important`, no specificity battles.
+
+## In plain CSS
+
+```css
+:root {
+  --sauce-color-accent: #7c3aed;
+  --sauce-radius-md: 12px;
+}
+```
+
+## Scoped themes: `createTheme` + `ThemeProvider`
+
+```tsx
+import { createTheme, ThemeProvider } from '@sauce-ui/react'
+
+// Module scope: builds static CSS once.
+const brand = createTheme({
+  name: 'brand',
+  color: { accent: { light: '#7c3aed', dark: '#c4b5fd' } },
+  radius: { md: '12px' },
+})
+
+<ThemeProvider theme={brand}>…</ThemeProvider>
+<ThemeProvider scheme="dark">…this section is always dark…</ThemeProvider>
+```
+
+- The provider adds no layout box (`display: contents`); `asChild` scopes your own element.
+- Theme CSS is injected once via React 19's `<style href precedence>`: hoisted,
+  de-duplicated and SSR-safe. Nothing is computed per render.
+- **Themes replace, they don't stack**: each is the defaults plus its overrides. To
+  extend one, create another with more overrides.
+- Nest freely: a scheme-only provider inside a theme keeps the theme, and vice versa.
+
+## Per component
+
+Components expose variables you can override on any instance, e.g. buttons:
+
+```css
+.danger-zone .sauce-Button {
+  --sauce-button-tone: var(--sauce-color-negative);
+}
+```
+
+## Custom breakpoints
+
+Breakpoint values compile into media queries, so they are set at build time. Keep the
+keys (`xs`–`xl`), change the values:
+
+```scss
+@use 'pkg:@sauce-ui/react/scss' with (
+  $breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px)
+);
+```
+
+```ts
+import { configureBreakpoints } from '@sauce-ui/react'
+configureBreakpoints({ sm: 480, md: 768, lg: 1024, xl: 1440 }) // before rendering
+```
+
+Compile with Sass's `NodePackageImporter` (`pkg:` URLs), e.g. Vite:
+`css: { preprocessorOptions: { scss: { importers: [new NodePackageImporter()] } } }`.

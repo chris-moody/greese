@@ -1,0 +1,56 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/Getting started" />
+
+# Getting started
+
+```bash
+npm install @sauce-ui/react
+```
+
+Requires React 19. Import the stylesheet once, at your app root:
+
+```tsx
+import '@sauce-ui/react/base.css'   // optional: reset + body defaults, if SauceUI owns the page
+import '@sauce-ui/react/styles.css' // tokens + every component
+```
+
+Then use components anywhere. Layout and display components are server-component
+safe; interactive ones are marked `'use client'`.
+
+```tsx
+import { Button, Stack, TextField } from '@sauce-ui/react'
+
+export const SignIn = () => (
+  <Stack gap={4} maxW="24rem">
+    <TextField label="Email" type="email" name="email" required />
+    <Button type="submit" fullWidth={{ xs: true, sm: false }}>Sign in</Button>
+  </Stack>
+)
+```
+
+## Only the CSS you use
+
+`styles.css` is about 13 kB brotli for everything. To ship less, import per-component
+stylesheets instead. Each one pulls in the shared core and the components it builds
+on, and bundlers de-duplicate the shared imports:
+
+```tsx
+import '@sauce-ui/react/css/Button.css'
+import '@sauce-ui/react/css/TextField.css'
+import '@sauce-ui/react/css/Dialog.css'   // also brings IconButton, Button, VisuallyHidden
+```
+
+## Dark mode without a flash
+
+The scheme follows the OS by default. To let users choose, add the pre-paint script
+to `<head>` and call `useColorScheme()`:
+
+```tsx
+import { getSchemeScript, useColorScheme } from '@sauce-ui/react'
+
+<script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
+
+const { setScheme } = useColorScheme()
+setScheme('dark') // 'light' | 'dark' | 'system'
+```

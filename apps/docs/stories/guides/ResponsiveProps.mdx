@@ -1,0 +1,42 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/Responsive props" />
+
+# Responsive props
+
+Layout and visual props take one value, or a value per breakpoint. Mobile-first: each
+value applies from its breakpoint upward until a larger one overrides it.
+
+```tsx
+<Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 2, lg: '2.5rem' }} />
+<Grid columns={{ xs: 1, sm: 2, lg: 4 }} gap={4} />
+<Box p={{ xs: 4, md: 6 }} display={{ xs: 'none', md: 'block' }} />
+<Button fullWidth={{ xs: true, md: false }}>Save</Button>
+```
+
+| Breakpoint | `xs` | `sm` | `md` | `lg` | `xl` |
+|---|---|---|---|---|---|
+| min-width | 0 | 600px | 900px | 1200px | 1536px |
+
+## How it stays fast
+
+No CSS is generated at runtime. Each value becomes either a **class** (scale tokens and
+enums, pre-generated) or an **inline custom property** (any other length), which static
+CSS reads through a mobile-first fallback chain:
+
+```css
+.sauce-Stack--gap { gap: var(--sauce-stack-gap-md, var(--sauce-stack-gap-sm, var(--sauce-stack-gap-xs))); }
+```
+
+The variables are registered non-inheriting, so nested components never leak values
+into each other.
+
+## Beyond the viewport
+
+- **Container queries**: `<Grid container>` makes `GridItem` spans respond to the grid's
+  own width, so the same grid adapts in a sidebar and on a full page.
+- **Intrinsic layout**: `<Grid minChildWidth="14rem">` fits as many columns as there is
+  room for, with no breakpoints at all.
+- **Show / Hide**: `<Show above="md">` toggles with CSS, so no hydration mismatch.
+- **When the tree must change** (not just its styles), use `useBreakpoint()`,
+  `useBreakpointValue()` or `useMediaQuery()`.
