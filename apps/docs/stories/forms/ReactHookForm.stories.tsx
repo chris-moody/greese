@@ -57,9 +57,10 @@ const SignUpForm = () => {
   )
 }
 
-const meta = { title: 'Forms/React Hook Form', component: SignUpForm } satisfies Meta<
-  typeof SignUpForm
->
+const meta = {
+  title: 'Forms/Recipes/React Hook Form',
+  component: SignUpForm,
+} satisfies Meta<typeof SignUpForm>
 export default meta
 
 export const Registration: StoryObj<typeof meta> = {}

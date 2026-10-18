@@ -14,9 +14,9 @@ value applies from its breakpoint upward until a larger one overrides it.
 <Button fullWidth={{ xs: true, md: false }}>Save</Button>
 ```
 
-| Breakpoint | `xs` | `sm` | `md` | `lg` | `xl` |
-|---|---|---|---|---|---|
-| min-width | 0 | 600px | 900px | 1200px | 1536px |
+| Breakpoint | `xs` | `sm`  | `md`  | `lg`   | `xl`   |
+| ---------- | ---- | ----- | ----- | ------ | ------ |
+| min-width  | 0    | 600px | 900px | 1200px | 1536px |
 
 ## How it stays fast
 
@@ -25,7 +25,9 @@ enums, pre-generated) or an **inline custom property** (any other length), which
 CSS reads through a mobile-first fallback chain:
 
 ```css
-.sauce-Stack--gap { gap: var(--sauce-stack-gap-md, var(--sauce-stack-gap-sm, var(--sauce-stack-gap-xs))); }
+.sauce-Stack--gap {
+  gap: var(--sauce-stack-gap-md, var(--sauce-stack-gap-sm, var(--sauce-stack-gap-xs)));
+}
 ```
 
 The variables are registered non-inheriting, so nested components never leak values

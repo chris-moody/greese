@@ -5,16 +5,29 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFoot,
   TableHead,
   TableHeaderCell,
   TableRow,
   type SortDirection,
 } from '@sauce-ui/react'
 
-const meta = { title: 'Content/Table' } satisfies Meta
+const meta = {
+  title: 'Content/Table',
+  component: Table,
+  subcomponents: {
+    TableHead,
+    TableBody,
+    TableFoot,
+    TableRow,
+    TableHeaderCell,
+    TableCell,
+  },
+  args: { caption: 'Invoices' },
+} satisfies Meta<typeof Table>
 export default meta
 
-type Story = StoryObj
+type Story = StoryObj<typeof meta>
 
 const invoices = [
   { id: 'INV-001', client: 'Acme Ltd', status: 'Paid', total: 1200 },

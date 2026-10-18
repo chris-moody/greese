@@ -1,8 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Grid, GridItem } from '@sauce-ui/react'
-import { Tile } from './shared.tsx'
+import { Tile } from '../_shared/fixtures.tsx'
 
-const meta = { title: 'Layout/Grid', component: Grid } satisfies Meta<typeof Grid>
+const meta = {
+  title: 'Layout/Grid',
+  component: Grid,
+  subcomponents: { GridItem },
+} satisfies Meta<typeof Grid>
 export default meta
 
 type Story = StoryObj<typeof meta>

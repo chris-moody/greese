@@ -11,7 +11,7 @@ npm install @sauce-ui/react
 Requires React 19. Import the stylesheet once, at your app root:
 
 ```tsx
-import '@sauce-ui/react/base.css'   // optional: reset + body defaults, if SauceUI owns the page
+import '@sauce-ui/react/base.css' // optional: reset + body defaults, if SauceUI owns the page
 import '@sauce-ui/react/styles.css' // tokens + every component
 ```
 
@@ -24,7 +24,9 @@ import { Button, Stack, TextField } from '@sauce-ui/react'
 export const SignIn = () => (
   <Stack gap={4} maxW="24rem">
     <TextField label="Email" type="email" name="email" required />
-    <Button type="submit" fullWidth={{ xs: true, sm: false }}>Sign in</Button>
+    <Button type="submit" fullWidth={{ xs: true, sm: false }}>
+      Sign in
+    </Button>
   </Stack>
 )
 ```
@@ -38,7 +40,7 @@ on, and bundlers de-duplicate the shared imports:
 ```tsx
 import '@sauce-ui/react/css/Button.css'
 import '@sauce-ui/react/css/TextField.css'
-import '@sauce-ui/react/css/Dialog.css'   // also brings IconButton, Button, VisuallyHidden
+import '@sauce-ui/react/css/Dialog.css' // also brings IconButton, Button, VisuallyHidden
 ```
 
 ## Dark mode without a flash
@@ -49,7 +51,7 @@ to `<head>` and call `useColorScheme()`:
 ```tsx
 import { getSchemeScript, useColorScheme } from '@sauce-ui/react'
 
-<script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
+;<script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
 
 const { setScheme } = useColorScheme()
 setScheme('dark') // 'light' | 'dark' | 'system'

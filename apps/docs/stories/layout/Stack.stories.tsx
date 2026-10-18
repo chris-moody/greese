@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Divider, Spacer, Stack } from '@sauce-ui/react'
-import { Tile } from './shared.tsx'
+import { Tile } from '../_shared/fixtures.tsx'
 
 const meta = {
   title: 'Layout/Stack',

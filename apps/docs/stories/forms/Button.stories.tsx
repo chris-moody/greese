@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button, ButtonGroup, IconButton, Stack, ToggleButton } from '@sauce-ui/react'
-import { ArrowIcon, PlusIcon, TrashIcon } from './icons.tsx'
+import { Button, IconButton, Stack } from '@sauce-ui/react'
+import { ArrowIcon, PlusIcon, TrashIcon } from '../_shared/fixtures.tsx'
 
 const meta = {
   title: 'Forms/Button',
@@ -63,22 +63,4 @@ export const IconsSizesAndStates: Story = {
 /** Full width on phones, natural width from md. */
 export const ResponsiveFullWidth: Story = {
   args: { fullWidth: { xs: true, md: false } },
-}
-
-export const Groups: Story = {
-  render: () => (
-    <Stack gap={3}>
-      <ButtonGroup aria-label="Text formatting" attached>
-        <ToggleButton defaultPressed>Bold</ToggleButton>
-        <ToggleButton>Italic</ToggleButton>
-        <ToggleButton>Underline</ToggleButton>
-      </ButtonGroup>
-      <ButtonGroup aria-label="Actions">
-        <Button variant="outline" tone="neutral">
-          Cancel
-        </Button>
-        <Button>Confirm</Button>
-      </ButtonGroup>
-    </Stack>
-  ),
 }
