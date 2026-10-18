@@ -3,22 +3,56 @@
 A small keyframe and timeline animation library for the web: about 5 kB
 (brotli), no dependencies, no framework.
 
-- **Keyframe-based**, WAAPI-style: `{ opacity: [0, 1] }` or frames with
+- **Keyframe-based**, WAAPI-style: `{ opacity: [0, 1] }`, or frames with
   `offset` and `ease`.
 - **Timelines** that play, pause, seek, reverse, scale time, repeat, yoyo and
   **nest**.
 - Animates **CSS properties, individual transforms, custom properties, text,
   SVG attributes and plain objects**.
-- **Stagger**, **`splitText`** (accessible), GSAP-style **eases** and
+- **Stagger**, an accessible **`splitText`**, GSAP-style **eases** and
   **positions**.
+- **`fromPixels`** plays animation authored in GLOP's Pixels studio.
 - **Respects `prefers-reduced-motion`** by default.
+
+## Install: pick your form
+
+**npm, with any bundler (ESM, tree-shaken, typed):**
 
 ```bash
 npm install @greese-ui/greese
 ```
 
-It ships with [`@greese-ui/react`](../react), which re-exports it, so GreeseUI
-users already have it.
+```ts
+import { animate, timeline } from '@greese-ui/greese'
+```
+
+**With GreeseUI:** `@greese-ui/react` depends on it and re-exports `animate`,
+`timeline`, `ease`, `cubicBezier` and `splitText`. It also adds a `greese`
+prop on every component. There's nothing extra to install.
+
+**From a CDN, as an ES module (no build step):**
+
+```html
+<script type="module">
+  import { animate } from 'https://cdn.jsdelivr.net/npm/@greese-ui/greese@0.1/+esm'
+  animate('h1', { opacity: [0, 1], y: [20, 0] })
+</script>
+```
+
+**As a classic `<script>` (defines `window.greese`):**
+
+```html
+<script src="https://unpkg.com/@greese-ui/greese@0.1/dist/greese.global.js"></script>
+<script>
+  greese.animate('h1', { opacity: [0, 1], y: [20, 0] })
+</script>
+```
+
+**In Node and on servers:** importing touches no DOM. Without an animation
+frame, timelines don't play on their own; drive plain objects with
+`seek()` or `progress()`, for tests or offline frame rendering.
+
+## Use
 
 ```ts
 import { animate, timeline, splitText } from '@greese-ui/greese'
@@ -38,19 +72,33 @@ page.pause().progress(0.5).reverse() // play backwards from halfway
 await page // resolves when it completes
 ```
 
-|           |                                                                                                                                                                                             |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Build     | `.to`, `.from`, `.fromTo`, `.animate` (keyframes), `.set`, `.add` (timeline or callback), `.call`, `.label`                                                                                 |
-| Control   | `play`, `pause`, `resume`, `reverse`, `restart`, `seek`, `progress`, `time`, `timeScale`, `kill`, `invalidate`, `await`                                                                     |
-| Options   | `paused`, `repeat`, `yoyo`, `repeatDelay`, `timeScale`, `reducedMotion`, `onUpdate`, `onComplete`                                                                                           |
-| Positions | `1.5`, `'+=0.2'`, `'-=0.2'`, `'<'`, `'>-0.1'`, `'label+=0.5'`                                                                                                                               |
-| Eases     | `'out'` (default), `'power1'`–`'power4'`, `'sine'`, `'expo'`, `'circ'`, `'back'`, `'elastic'`, `'bounce'` with `.in`/`.out`/`.inOut`; CSS names; `steps(n)`; cubic-bézier arrays; functions |
+In a framework, build the timeline after mount and `kill()` it on unmount;
+`kill()` also restores what it animated. The guide has React, Vue, Svelte and
+plain JavaScript examples.
+
+| | |
+|---|---|
+| Build | `.to`, `.from`, `.fromTo`, `.animate` (keyframes), `.set`, `.add` (timeline or callback), `.call`, `.label` |
+| Control | `play`, `pause`, `resume`, `reverse`, `restart`, `seek`, `progress`, `time`, `timeScale`, `kill`, `invalidate`, `await` |
+| Options | `paused`, `repeat`, `yoyo`, `repeatDelay`, `timeScale`, `reducedMotion`, `onUpdate`, `onComplete` |
+| Positions | `1.5`, `'+=0.2'`, `'-=0.2'`, `'<'`, `'>-0.1'`, `'label+=0.5'` |
+| Eases | `'out'` (default), `'power1'`–`'power4'`, `'sine'`, `'expo'`, `'circ'`, `'back'`, `'elastic'`, `'bounce'` with `.in`/`.out`/`.inOut`; CSS names; `steps(n)`; cubic-bézier arrays; functions |
+| Extras | `splitText(el, { by })`, `fromPixels(animation, targets)`, `ease(name)`, `mix(a, b)` |
 
 Times are seconds. Transforms use the individual CSS `translate`, `rotate` and
 `scale` properties, so they never fight your CSS `transform`. Colours mix in
 OKLab.
 
-Full guide: **Guides/Animation** in the GreeseUI docs. Design decisions:
+## Sizes (brotli)
+
+| Entry | Size |
+|---|---|
+| `animate` / `timeline` | 5 kB |
+| Everything (with `splitText`, `fromPixels`) | 5.9 kB |
+| `ease` alone | 0.85 kB |
+| `greese.global.js` (`<script>`) | 6.3 kB |
+
+Full guide: **Guides/greese.js** in the GreeseUI docs. Design decisions:
 [ADR 0008](../../docs/adr/0008-greese-js-animation.md).
 
 MIT licensed.

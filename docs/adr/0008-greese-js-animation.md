@@ -122,7 +122,8 @@ readers read words, not letters.
 ## Consequences
 
 - **Size (brotli):**
-  - everything: 5.4 kB, with a 5.5 kB budget;
+  - everything: 5.4 kB, with a 5.5 kB budget (5.9 kB and 6.5 kB after the
+    addendum below);
   - `animate`: 5 kB, with a 5.25 kB budget;
   - `ease` alone: 0.85 kB.
   - The timeline core is about 2.5 kB, value mixing (colours, units, text)
@@ -143,3 +144,25 @@ readers read words, not letters.
     DOM.
 - **Docs:** the **Guides/Animation** guide and **Motion/greese.js** demos with
   play, pause, reverse, scrub and speed controls.
+
+## Addendum (2026-10-18): `fromPixels` and a `<script>` build
+
+- **`fromPixels(animation, targets, options)`** turns GLOP Pixels layer
+  timelines into one greese.js timeline:
+  - frames become seconds at the document's fps;
+  - channels map `rotation` → `rotate` (shortest arc, as in Pixels' angle
+    mode) and `alpha` → `opacity`, and any channel can be renamed;
+  - tween types become eases (`steps(1)` for holds and `step`; real
+    elastic, bounce and back curves where Pixels' own renderer plays linear);
+  - spans aren't read.
+
+  It's structurally typed, so GLOP documents pass straight in, with no
+  dependency on GLOP. It adds about 0.5 kB, tree-shaken away when unused.
+- **`dist/greese.global.js`** is an esbuild IIFE that defines
+  `window.greese`, for pages with no bundler. It's exported as
+  `@greese-ui/greese/global` and is the `unpkg`/`jsdelivr` default.
+  - Size: 6.3 kB, with a 6.75 kB budget.
+  - `verify:packages` runs it in a bare VM context.
+- **Budgets:**
+  - everything: 6.5 kB (measured 5.9 kB);
+  - `animate`: unchanged at 5 kB.
