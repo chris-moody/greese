@@ -5,6 +5,15 @@
  * time, repeat, yoyo and nest.
  */
 export { cubicBezier, ease, type Ease, type EaseFn } from './ease.ts'
+export {
+  fromPixels,
+  type FromPixelsOptions,
+  type PixelsAnimation,
+  type PixelsKeyframe,
+  type PixelsLayer,
+  type PixelsTween,
+  type PixelsTweenType,
+} from './pixels.ts'
 export { splitText, type SplitText, type SplitTextOptions } from './split.ts'
 export { toTargets, type Target, type Targets } from './target.ts'
 export {

@@ -7,6 +7,9 @@ import {
   parseColor,
   splitText,
   timeline,
+  fromPixels,
+  type PixelsAnimation,
+  type PixelsKeyframe,
 } from './index.ts'
 import { mixText } from './value.ts'
 
@@ -325,5 +328,72 @@ describe('splitText', () => {
       'Hi',
       'there',
     ])
+  })
+})
+
+describe('fromPixels', () => {
+  // Shaped like a GLOP Pixels symbol animation: 10 fps, keyframes + tweens.
+  const animation: PixelsAnimation = {
+    fps: 10,
+    layers: [
+      {
+        id: 'body',
+        timeline: {
+          frames: [
+            {
+              id: 'a',
+              frame: 0,
+              kind: 'keyframe',
+              values: { x: 0, rotation: 350, alpha: 0 },
+            },
+            {
+              id: 'b',
+              frame: 10,
+              kind: 'keyframe',
+              values: { x: 100, rotation: 10, alpha: 1 },
+            },
+            { id: 'c', frame: 20, kind: 'keyframe', values: { x: 50 } },
+            { id: 's', frame: 0, kind: 'span', duration: 5 } as PixelsKeyframe,
+          ],
+          tweens: [
+            { startKeyframeId: 'a', endKeyframeId: 'b', type: 'linear', enabled: true },
+            // b → c has no tween: a hold until frame 20.
+          ],
+        },
+      },
+      {
+        id: 'glow',
+        channel: '--glow',
+        timeline: {
+          frames: [
+            { id: 'g1', frame: 0, value: 0 },
+            { id: 'g2', frame: 10, value: 1 },
+          ],
+          tweens: [{ startKeyframeId: 'g1', endKeyframeId: 'g2', type: 'easeInOut' }],
+        },
+      },
+    ],
+  }
+
+  it('maps channels, frames to seconds, tweens to eases, and holds', () => {
+    const body = { x: 0, rotate: 0, opacity: 1 }
+    const glow = { '--glow': 0 }
+    const tl = fromPixels(animation, { body, glow })
+    expect(tl.duration()).toBe(2)
+    tl.seek(0.5)
+    expect(body.x).toBe(50)
+    // Shortest arc: 350° → 10° goes through 360, not back through 180.
+    expect(body.rotate).toBe(360)
+    expect(body.opacity).toBe(0.5)
+    expect(glow['--glow']).toBe(0.5) // ease-in-out is symmetric at the midpoint
+    tl.seek(1.5)
+    expect(body.x).toBe(100) // held: no tween from b to c
+    tl.seek(2)
+    expect(body.x).toBe(50)
+  })
+
+  it('loops like Pixels playback and skips layers without targets', () => {
+    const tl = fromPixels({ ...animation, loop: true }, { body: { x: 0 } })
+    expect(tl.totalDuration()).toBe(Infinity)
   })
 })
