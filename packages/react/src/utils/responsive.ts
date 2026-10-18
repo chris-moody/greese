@@ -1,5 +1,10 @@
 import type { CSSProperties } from 'react'
-import { breakpointKeys, space, type Breakpoint, type SpaceToken } from '@greese-ui/tokens'
+import {
+  breakpointKeys,
+  space,
+  type Breakpoint,
+  type SpaceToken,
+} from '@greese-ui/tokens'
 
 /**
  * A prop that takes one value, or a value per breakpoint (mobile-first: each

@@ -141,7 +141,10 @@ describe('resolveResponsive', () => {
     }
     expect(resolveResponsive([[{ xs: 4, md: '2rem' }, space]])).toEqual({
       className: 'greese-Box--p',
-      style: { '--greese-box-p-xs': 'var(--greese-space-4)', '--greese-box-p-md': '2rem' },
+      style: {
+        '--greese-box-p-xs': 'var(--greese-space-4)',
+        '--greese-box-p-md': '2rem',
+      },
     })
   })
 })

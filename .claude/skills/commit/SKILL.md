@@ -49,7 +49,7 @@ how you get there without tripping either.
 | ------------------------------------ | ------------------------------------------------------------------------ |
 | `react`                              | `packages/react`                                                         |
 | `tokens`                             | `packages/tokens`                                                        |
-| `greese`                              | `packages/greese` (greese.js)                                              |
+| `greese`                             | `packages/greese` (greese.js)                                            |
 | `docs`                               | `apps/docs` (Storybook) and `docs/`                                      |
 | `playground`                         | `apps/playground`                                                        |
 | `eslint-config`, `typescript-config` | the matching `packages/*`                                                |

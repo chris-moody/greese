@@ -114,7 +114,9 @@ describe('Stack', () => {
       ].sort()
     )
     expect(stack.style.getPropertyValue('--greese-stack-gap-lg')).toBe('13px')
-    expect(stack.style.getPropertyValue('--greese-box-p-xs')).toBe('var(--greese-space-4)')
+    expect(stack.style.getPropertyValue('--greese-box-p-xs')).toBe(
+      'var(--greese-space-4)'
+    )
   })
 })
 
