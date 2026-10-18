@@ -11,6 +11,7 @@ const pages: Record<string, () => Promise<{ default: ComponentType }>> = {
   forms: () => import('./pages/Forms.tsx').then((m) => ({ default: m.Forms })),
   content: () => import('./pages/Content.tsx').then((m) => ({ default: m.Content })),
   overlays: () => import('./pages/Overlays.tsx').then((m) => ({ default: m.Overlays })),
+  gaps: () => import('./pages/Gaps.tsx').then((m) => ({ default: m.Gaps })),
   'bench-sauce': () =>
     import('./pages/bench/SauceBench.tsx').then((m) => ({ default: m.SauceBench })),
   'bench-mui': () =>
