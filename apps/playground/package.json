@@ -10,17 +10,21 @@
     "check-types": "tsc --noEmit",
     "lint": "eslint src e2e bench --max-warnings 0",
     "test:e2e": "playwright test",
-    "bench": "npm run build && node bench/run.ts"
+    "bench": "npm run build && node bench/run.ts",
+    "test:visual": "playwright test -c playwright.visual.config.ts",
+    "test:visual:update": "playwright test -c playwright.visual.config.ts --update-snapshots",
+    "lighthouse": "lhci autorun"
   },
   "dependencies": {
-    "@sauce-ui/react": "0.0.0",
-    "@sauce-ui/tokens": "0.0.0",
+    "@sauce-ui/react": "*",
+    "@sauce-ui/tokens": "*",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
+    "@lhci/cli": "^0.15.1",
     "@mui/material": "9.4.0",
     "@playwright/test": "^1.64.1",
     "@sauce-ui/eslint-config": "*",

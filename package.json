@@ -18,7 +18,8 @@
     "release": "turbo run build --filter=./packages/* && changeset publish",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,scss}\"",
     "prepare": "husky",
-    "commitlint": "commitlint"
+    "commitlint": "commitlint",
+    "test:visual": "turbo run test:visual"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",

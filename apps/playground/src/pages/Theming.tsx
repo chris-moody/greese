@@ -15,19 +15,23 @@ const brand = createTheme({
 })
 const rounded = createTheme({ name: 'rounded', radius: { md: '2px' } })
 
-/** Exposes the resolved tokens at this point in the tree for e2e assertions. */
+/**
+ * Exposes the resolved tokens at this point in the tree for e2e assertions.
+ * A decorative swatch, not text: the fixture themes mix colours on purpose,
+ * and the tests read computed styles.
+ */
 const Probe = ({ id, children }: { id: string; children?: ReactNode }) => (
   <div>
-    <p
+    <div
       data-testid={id}
+      aria-hidden="true"
       style={{
+        blockSize: '1.5rem',
         color: 'var(--sauce-color-accent)',
         backgroundColor: 'var(--sauce-color-surface)',
         borderRadius: 'var(--sauce-radius-md)',
       }}
-    >
-      {id}
-    </p>
+    />
     {children}
   </div>
 )
