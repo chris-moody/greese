@@ -104,6 +104,7 @@ for (const [bp, width] of Object.entries(WIDTHS) as Array<[Bp, number]>) {
       expect(await visible('show-above-md')).toBe(atLeast(bp, 'md'))
       expect(await visible('hide-above-md')).toBe(!atLeast(bp, 'md'))
       expect(await visible('show-sm-to-lg')).toBe(atLeast(bp, 'sm') && !atLeast(bp, 'lg'))
+      expect(await visible('hide-sm-to-lg')).toBe(!atLeast(bp, 'sm') || atLeast(bp, 'lg'))
     })
 
     test('Container caps width; px overrides its gutter', async ({ page }) => {

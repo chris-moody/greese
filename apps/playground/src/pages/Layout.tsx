@@ -110,6 +110,9 @@ export const Layout = (): JSX.Element => (
       <Show above="sm" below="lg" asChild>
         <span data-testid="show-sm-to-lg">sm to lg</span>
       </Show>
+      <Hide above="sm" below="lg" asChild>
+        <span data-testid="hide-sm-to-lg">not sm to lg</span>
+      </Hide>
     </Fixture>
 
     <Fixture name="container">
