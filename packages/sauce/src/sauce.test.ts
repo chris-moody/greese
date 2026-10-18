@@ -1,0 +1,329 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  animate,
+  cubicBezier,
+  ease,
+  mix,
+  parseColor,
+  splitText,
+  timeline,
+} from './index.ts'
+import { mixText } from './value.ts'
+
+const flushMicrotasks = () => Promise.resolve()
+
+describe('ease', () => {
+  it('resolves names, beziers and functions', () => {
+    expect(ease('linear')(0.3)).toBe(0.3)
+    expect(ease('power1.in')(0.5)).toBeCloseTo(0.25)
+    expect(ease('in')(0.5)).toBeCloseTo(0.125) // power2
+    expect(ease('out')(0.5)).toBeCloseTo(0.875)
+    expect(ease('power2.inOut')(0.25)).toBeCloseTo(0.0625)
+    expect(ease('power2.inOut')(0.75)).toBeCloseTo(0.9375)
+    expect(ease('steps(4)')(0.3)).toBe(0.25)
+    expect(ease([0, 0, 1, 1])(0.4)).toBeCloseTo(0.4)
+    expect(ease((t) => t * t)(0.5)).toBe(0.25)
+    for (const name of [
+      'back.out(2)',
+      'elastic.out(1.2, 0.4)',
+      'bounce.inOut',
+      'expo.out',
+      'ease-in-out',
+    ]) {
+      const f = ease(name)
+      expect(f(0)).toBeCloseTo(0)
+      expect(f(1)).toBeCloseTo(1)
+    }
+    expect(ease('back.out')(0.5)).toBeGreaterThan(1) // overshoots
+    expect(() => ease('wobble.out')).toThrow(/unknown ease/)
+  })
+
+  it('matches CSS ease at its midpoint', () => {
+    expect(cubicBezier(0.25, 0.1, 0.25, 1)(0.5)).toBeCloseTo(0.8024, 3)
+  })
+})
+
+describe('mix', () => {
+  it('interpolates numbers, units and number-shaped strings', () => {
+    expect(mix(0, 10)(0.25)).toBe(2.5)
+    expect(mix('10px', '30px')(0.5)).toBe('20px')
+    expect(mix('0', '12rem')(0.5)).toBe('6rem')
+    expect(mix('blur(0px) brightness(1)', 'blur(8px) brightness(2)')(0.5)).toBe(
+      'blur(4px) brightness(1.5)'
+    )
+    expect(mix(0.1, 0.2)(1)).toBe(0.2) // no float noise
+  })
+
+  it('mixes colours in OKLab and keeps the ends exact', () => {
+    expect(mix('#ff0000', 'rgb(0, 0, 255)')(0)).toBe('rgb(255 0 0 / 1)')
+    expect(mix('#ff0000', 'rgb(0, 0, 255)')(1)).toBe('rgb(0 0 255 / 1)')
+    expect(mix('#000', '#fff')(0.5)).toMatch(/^rgb\((\d+) \1 \1 \/ 1\)$/)
+    expect(mix('transparent', '#fff')(0.5)).toMatch(/\/ 0\.5\)$/)
+    expect(parseColor('rgb(10 20 30 / 50%)')).toEqual([10, 20, 30, 0.5])
+  })
+
+  it('switches discrete values, keeping shown values shown', () => {
+    expect(mix('block', 'flex')(0.4)).toBe('block')
+    expect(mix('block', 'flex')(0.6)).toBe('flex')
+    expect(mix('none', 'block')(0.01)).toBe('block')
+    expect(mix('block', 'none')(0.99)).toBe('block')
+    expect(mix('block', 'none')(1)).toBe('none')
+    expect(mix('10px', '50%')(0.5)).toBe('50%')
+  })
+
+  it('counts, types and retypes text', () => {
+    expect(mixText('0', '1000')(0.5)).toBe('500')
+    expect(mixText('0', '9.99')(0.5)).toBe('5.00')
+    expect(mixText('', 'Hello')(0.6)).toBe('Hel')
+    expect(mixText('Hello', 'Help')(0.25)).toBe('Hel'.slice(0, 3)) // deleting first
+    expect(mixText('Hello', 'Help')(1)).toBe('Help')
+  })
+})
+
+describe('timeline on plain objects', () => {
+  it('sequences, seeks and reports progress', () => {
+    const o = { x: 0, y: 0 }
+    const tl = timeline({ paused: true })
+      .to(o, { x: 100, duration: 1, ease: 'linear' })
+      .to(o, { y: 50, duration: 1, ease: 'linear' })
+    expect(tl.duration()).toBe(2)
+    tl.seek(0.5)
+    expect(o).toEqual({ x: 50, y: 0 })
+    tl.seek(1.5)
+    expect(o).toEqual({ x: 100, y: 25 })
+    tl.progress(1)
+    expect(o).toEqual({ x: 100, y: 50 })
+    // Seeking back restores values the later animation hadn't touched yet.
+    tl.seek(0.25)
+    expect(o).toEqual({ x: 25, y: 0 })
+  })
+
+  it('places children with positions and labels', () => {
+    const o = { a: 0, b: 0, c: 0, d: 0 }
+    const tl = timeline({ paused: true })
+      .to(o, { a: 1, duration: 1 })
+      .label('mid', 0.5)
+      .to(o, { b: 1, duration: 1 }, '<') // with the previous start
+      .to(o, { c: 1, duration: 1 }, 'mid+=1')
+      .to(o, { d: 1, duration: 0.5 }, '>-0.25')
+    expect(tl.duration()).toBe(2.75)
+    tl.seek(1.6)
+    expect(o.c).toBeGreaterThan(0)
+    expect(o.d).toBe(0)
+    tl.seek('mid')
+    expect(tl.time()).toBe(0.5)
+  })
+
+  it('animates keyframe arrays with offsets and per-frame eases', () => {
+    const o = { v: 0 }
+    const tl = timeline({ paused: true }).animate(
+      o,
+      [{ v: 0, ease: 'linear' }, { v: 10, offset: 0.8, ease: 'linear' }, { v: 0 }],
+      { duration: 1 }
+    )
+    tl.seek(0.4)
+    expect(o.v).toBeCloseTo(5)
+    tl.seek(0.8)
+    expect(o.v).toBe(10)
+    tl.seek(1)
+    expect(o.v).toBe(0)
+  })
+
+  it('animates property-indexed keyframes, evenly spaced', () => {
+    const o = { x: 0, y: 0 }
+    timeline({ paused: true })
+      .animate(o, { x: [0, 10, 0], y: [5, 15] }, { duration: 1, ease: 'linear' })
+      .seek(0.5)
+    expect(o).toEqual({ x: 10, y: 10 })
+  })
+
+  it('staggers targets, from either end or the centre', () => {
+    const items = [{ v: 0 }, { v: 0 }, { v: 0 }]
+    const tl = timeline({ paused: true }).to(items, {
+      v: 1,
+      duration: 1,
+      ease: 'linear',
+      stagger: { each: 0.5, from: 'center' },
+    })
+    expect(tl.duration()).toBe(1.5)
+    tl.seek(0.5)
+    expect(items.map((i) => i.v)).toEqual([0, 0.5, 0])
+  })
+
+  it('shows from-values immediately and returns to the original', () => {
+    const o = { v: 7 }
+    const tl = timeline({ paused: true }).from(
+      o,
+      { v: 0, duration: 1, ease: 'linear' },
+      1
+    )
+    expect(o.v).toBe(0)
+    tl.seek(1.5)
+    expect(o.v).toBe(3.5)
+    tl.seek(2)
+    expect(o.v).toBe(7)
+  })
+
+  it('repeats, delays and yoyos', () => {
+    const o = { v: 0 }
+    const tl = timeline({ paused: true, repeat: 2, repeatDelay: 0.5, yoyo: true }).to(o, {
+      v: 10,
+      duration: 1,
+      ease: 'linear',
+    })
+    expect(tl.totalDuration()).toBe(4)
+    tl.seek(1.25) // in the delay after play 1: holds the end
+    expect(o.v).toBe(10)
+    tl.seek(1.75) // play 2 runs backwards
+    expect(o.v).toBe(7.5)
+    tl.seek(3.5) // play 3 forwards again
+    expect(o.v).toBe(5)
+  })
+
+  it('nests timelines through their own repeat and time scale', () => {
+    const o = { v: 0 }
+    const child = timeline({ repeat: 1 }).to(o, { v: 10, duration: 1, ease: 'linear' })
+    child.timeScale(2) // 2 plays of 1s at double speed: 1s in the parent
+    const parent = timeline({ paused: true }).add(child, 1)
+    expect(parent.duration()).toBe(2)
+    parent.seek(1.25)
+    expect(o.v).toBe(5)
+    parent.seek(1.75) // second play of the child
+    expect(o.v).toBe(5)
+    parent.seek(0.5) // before the child: original value back
+    expect(o.v).toBe(0)
+    expect(child.isActive()).toBe(false)
+  })
+
+  it('kills, restoring original values', () => {
+    const o = { v: 3 }
+    const tl = timeline({ paused: true }).to(o, { v: 10, duration: 1 })
+    tl.progress(1)
+    expect(o.v).toBe(10)
+    tl.kill()
+    expect(o.v).toBe(3)
+  })
+})
+
+describe('playback', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({
+      toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],
+    })
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('autoplays on the next frame, completes and resolves', async () => {
+    const o = { v: 0 }
+    const onComplete = vi.fn()
+    const tl = animate(o, { v: [0, 10] }, { duration: 0.1, ease: 'linear', onComplete })
+    await flushMicrotasks()
+    expect(tl.isActive()).toBe(true)
+    vi.advanceTimersByTime(50)
+    expect(o.v).toBeGreaterThan(0)
+    expect(o.v).toBeLessThan(10)
+    vi.advanceTimersByTime(100)
+    expect(o.v).toBe(10)
+    expect(onComplete).toHaveBeenCalledOnce()
+    await tl
+    expect(tl.progress()).toBe(1)
+  })
+
+  it('pauses before the first frame when asked', async () => {
+    const o = { v: 0 }
+    const tl = timeline().to(o, { v: 10, duration: 0.1 })
+    tl.pause()
+    await flushMicrotasks()
+    vi.advanceTimersByTime(200)
+    expect(o.v).toBe(0)
+  })
+
+  it('reverses, and runs callbacks when passed but not when seeking', async () => {
+    const o = { v: 0 }
+    const cue = vi.fn()
+    const tl = timeline({ paused: true })
+      .to(o, { v: 10, duration: 0.2, ease: 'linear' })
+      .call(cue, 0.1)
+    tl.seek(0.15)
+    expect(cue).not.toHaveBeenCalled()
+    tl.reverse()
+    vi.advanceTimersByTime(300)
+    expect(o.v).toBe(0)
+    expect(cue).toHaveBeenCalledOnce()
+    tl.timeScale(2).play()
+    vi.advanceTimersByTime(120) // 0.2s of timeline at double speed
+    expect(o.v).toBe(10)
+    expect(cue).toHaveBeenCalledTimes(2)
+  })
+
+  it('jumps to the end under reduced motion unless told not to', async () => {
+    const matchMedia = vi.fn(() => ({ matches: true }))
+    vi.stubGlobal('matchMedia', matchMedia)
+    const o = { v: 0 }
+    animate(o, { v: 10 }, { duration: 5 })
+    await flushMicrotasks()
+    expect(o.v).toBe(10)
+    const p = { v: 0 }
+    const tl = animate(p, { v: 10 }, { duration: 5, reducedMotion: 'ignore' })
+    await flushMicrotasks()
+    expect(tl.isActive()).toBe(true)
+    tl.kill()
+    vi.unstubAllGlobals()
+  })
+})
+
+describe('elements', () => {
+  it('writes individual transforms, styles, variables, text and attributes', () => {
+    const el = document.createElement('div')
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+    svg.setAttribute('r', '0')
+    document.body.append(el, svg)
+    timeline({ paused: true })
+      .to(el, {
+        x: 40,
+        y: 10,
+        rotate: 90,
+        scale: 2,
+        opacity: 0.5,
+        width: 100,
+        duration: 1,
+        ease: 'linear',
+      })
+      .to(el, { '--glow': 1, text: '42', duration: 1, ease: 'linear' }, 0)
+      .to(svg, { r: 20, duration: 1, ease: 'linear' }, 0)
+      .seek(0.5)
+    expect(el.style.translate).toBe('20px 5px')
+    expect(el.style.rotate).toBe('45deg')
+    expect(el.style.scale).toBe('1.5 1.5')
+    expect(el.style.opacity).toBe('0.75')
+    expect(el.style.getPropertyValue('--glow')).toBe('0.5')
+    expect(el.textContent).toBe('21')
+    expect(svg.getAttribute('r')).toBe('10')
+  })
+
+  it('accepts selectors and lists', () => {
+    document.body.innerHTML = '<i class="dot"></i><i class="dot"></i>'
+    timeline({ paused: true }).set('.dot', { opacity: 0 }).seek(0)
+    const dots = document.querySelectorAll<HTMLElement>('.dot')
+    expect([...dots].map((d) => d.style.opacity)).toEqual(['0', '0'])
+  })
+})
+
+describe('splitText', () => {
+  it('splits into characters per word and keeps one accessible copy', () => {
+    const p = document.createElement('p')
+    p.innerHTML = 'Hi <b>there</b>'
+    const { elements, revert } = splitText(p)
+    expect(elements.map((e) => e.textContent).join('')).toBe('Hithere')
+    expect(p.querySelector('[aria-hidden="true"]')).not.toBeNull()
+    expect(p.textContent).toContain('Hi there')
+    revert()
+    expect(p.innerHTML).toBe('Hi <b>there</b>')
+    expect(splitText(p, { by: 'words' }).elements.map((e) => e.textContent)).toEqual([
+      'Hi',
+      'there',
+    ])
+  })
+})
