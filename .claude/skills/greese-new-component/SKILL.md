@@ -51,6 +51,10 @@ has a check.
    missing.
 5. Pure helpers (formatters, maths, parsers) go in the component file,
    exported, so tests and consumers can use them.
+6. Give it the `greese` prop: `extends …, GreeseProps`, destructure `greese`,
+   and `return withGreese(<root …/>, greese)`. For a trigger plus a floating
+   surface (Popover, Tooltip), wrap the surface. Box-based components inherit
+   it. `check-types` fails if you forget.
 
 **Check:** `npm run build -w @greese-ui/react` writes
 `dist/css/<Name>.css` with the right `@import`s (the dependency graph is
@@ -117,7 +121,7 @@ wrapping, overflow.
 
 ## 8. Budgets, docs, changeset
 
-- **Size:** add a `.size-limit.json` entry for interactive components; see
+- **Size:** add a `.size-limit.cjs` entry (with `modifyRolldownConfig: external`) for interactive components; see
   `greese-lightweight`.
 - **Docs:**
   - add it to `packages/react/README.md` in the right section;

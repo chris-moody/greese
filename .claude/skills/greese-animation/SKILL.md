@@ -1,6 +1,6 @@
 ---
 name: greese-animation
-description: Working on greese.js (packages/greese) or adding motion to GreeseUI - the timeline/track model and its invariants, value mixing, adapters, tests, size budget, and when to use CSS instead. Use for any change to packages/greese, for animation features, or for the planned `greese` prop.
+description: Working on greese.js (packages/greese) or adding motion to GreeseUI - the timeline/track model and its invariants, value mixing, adapters, tests, size budget, and when to use CSS instead. Use for any change to packages/greese, for animation features, or for the `greese` prop (utils/greese.ts, components/Motion).
 ---
 
 # greese.js and motion in GreeseUI
@@ -65,7 +65,7 @@ motion, `docs/plans/GREESE_PROP_PLAN.md`.
   - in Playwright, never return a timeline from `page.evaluate`, because
     it's a thenable and would be awaited.
 - **Size:** `npm run build -w @greese-ui/greese && npm run size -w @greese-ui/greese`.
-  The budget is 5.5 kB for everything. Measure per module (see
+  The budget is 6.5 kB for everything (`animate` alone 5.25 kB). Measure per module (see
   `greese-lightweight`) before adding features. GSAP-scale features (plugins,
   ScrollTrigger, morphing, physics) are out of scope.
 - **Docs:**
@@ -76,13 +76,29 @@ motion, `docs/plans/GREESE_PROP_PLAN.md`.
   - ADR 0008 for decisions.
 - **Changeset:** `'@greese-ui/greese': minor | patch`. Commit scope `greese`.
 
-## Motion in components (the planned `greese` prop)
+## Motion in components: the `greese` prop (ADR 0009)
 
-Follow `docs/plans/GREESE_PROP_PLAN.md`:
+| File                                 | Role                                                                                                                                                   |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `utils/greese.ts`                    | Types, `resolveGreese` (pure: classes + `--greese-motion-*` variables), `withGreese` (clones the root; adds the island only when JavaScript is needed) |
+| `components/Motion/Motion.scss`      | CSS presets, stagger `:nth-child` indices, `--greese-ease-*`, exit classes; all behind `prefers-reduced-motion: no-preference`                         |
+| `components/Motion/GreeseIsland.tsx` | The client island: Slot onto the root, marks out-of-view `inView` targets pending before paint, loads the runtime                                      |
+| `components/Motion/registry.ts`      | `loadGreeseRuntime()`: the registered runtime, or a dynamic import (a lazy chunk)                                                                      |
+| `components/Motion/greeseRuntime.ts` | Reveals, interactions, text effects, keyframe entrances, timelines                                                                                     |
+| `src/greese.ts`                      | The `@greese-ui/react/greese` opt-in: registers the runtime eagerly                                                                                    |
 
-- Tier 1 is CSS presets with inline variables and no engine;
-- Tier 2 is the greese.js engine, opt-in, never statically imported by
-  components;
-- Tier 3 is full timelines.
+**Rules:**
 
-Until that plan is approved, don't add a `greese` prop to components ad hoc.
+- **New presets** go in CSS first (a `@keyframes` and a class), and are
+  mirrored as keyframes in `presetKeyframes()` for when greese.js plays them.
+- **Defaults** are `var()` fallbacks, never declarations on `.greese-Motion`,
+  so ancestors can tune them.
+- **Fill mode** is `backwards`, never `both`: overlays' exit transitions
+  depend on it.
+- **Anything new needing JavaScript** must keep the island path lazy and the
+  resolver pure (it runs in Server Components).
+- **Tests:**
+  - unit: `src/components/motion.test.tsx`;
+  - browsers: `apps/playground/e2e/greese-prop.spec.ts`;
+  - visual snapshots run with reduced motion, so stories show final
+    states.

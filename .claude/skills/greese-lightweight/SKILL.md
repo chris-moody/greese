@@ -25,14 +25,23 @@ budgets and ADR 0008 covers greese.js.
 
 ## Budgets (brotli)
 
-| What                                      | Budget            | Where                             |
-| ----------------------------------------- | ----------------- | --------------------------------- |
-| All components (greese.js excluded)        | 20 kB             | `packages/react/.size-limit.json` |
-| All components + greese.js                 | 26 kB             | same                              |
-| Each listed component, tree-shaken        | 0.3–3.5 kB        | same                              |
-| `greese-ui.css`                            | 16 kB             | same                              |
-| `base.css`                                | 1 kB              | same                              |
-| greese.js: everything / `animate` / `ease` | 5.5 / 5.25 / 1 kB | `packages/greese/.size-limit.json` |
+| What                                                    | Budget                   | Where                              |
+| ------------------------------------------------------- | ------------------------ | ---------------------------------- |
+| All components (greese.js excluded)                     | 22 kB                    | `packages/react/.size-limit.cjs`   |
+| All components + greese.js                              | 26 kB                    | same                               |
+| Each listed component, tree-shaken                      | 0.3–4.75 kB              | same                               |
+| `greese` prop runtime (lazy chunk)                      | 7 kB                     | same                               |
+| `greese-ui.css`                                         | 18 kB                    | same                               |
+| `base.css`                                              | 1 kB                     | same                               |
+| greese.js: everything / `animate` / `ease` / `<script>` | 6.5 / 5.25 / 1 / 6.75 kB | `packages/greese/.size-limit.json` |
+
+Every component entry includes the `greese` prop's shared static part (about
+0.75 kB: resolver + island). The runtime is a lazy chunk, behind a dynamic
+`import()`. size-limit doesn't split chunks, so component entries keep it
+external (`modifyRolldownConfig: external`) and it's measured on its own.
+Keep it lazy: a static import of `greeseRuntime.ts` or greese.js from any
+component would add about 6 kB to every app (`verify:packages` checks this
+in a real Vite build).
 
 New interactive components get their own entry, set about 10% above the
 measured size. **Raising a budget** is a decision: say why in the commit, and

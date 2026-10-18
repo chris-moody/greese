@@ -41,13 +41,13 @@ greese.base, greese.components, greese.utilities`. Never write unlayered
 
 ## Values
 
-| Use                                                                           | Not                                                                                |
-| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `var(--greese-color-fg)`, `-surface`, `-accent`, `-border`, `-focus-ring`…     | Hex, `rgb()`, named colours (stylelint `color-no-hex`, `function-disallowed-list`) |
-| `color-mix(in oklab, var(--greese-color-accent) 14%, transparent)` for tints   | New colour tokens for every tint                                                   |
+| Use                                                                              | Not                                                                                |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `var(--greese-color-fg)`, `-surface`, `-accent`, `-border`, `-focus-ring`…       | Hex, `rgb()`, named colours (stylelint `color-no-hex`, `function-disallowed-list`) |
+| `color-mix(in oklab, var(--greese-color-accent) 14%, transparent)` for tints     | New colour tokens for every tint                                                   |
 | `var(--greese-space-N)`, `var(--greese-radius-md)`, `var(--greese-font-size-sm)` | Magic numbers, except for genuinely component-specific sizes                       |
-| `var(--greese-duration-fast)` + `var(--greese-easing-standard)`                 | Literal durations: the tokens collapse under reduced motion                        |
-| `inline-size`, `margin-inline-start`, `inset-inline-end`, `:dir(rtl)`         | `width` (for writing-mode-sensitive sizes), `left`, `margin-left`                  |
+| `var(--greese-duration-fast)` + `var(--greese-easing-standard)`                  | Literal durations: the tokens collapse under reduced motion                        |
+| `inline-size`, `margin-inline-start`, `inset-inline-end`, `:dir(rtl)`            | `width` (for writing-mode-sensitive sizes), `left`, `margin-left`                  |
 
 If a component genuinely needs literal colours (ColorPicker's spectrum and
 checkerboard), disable the rule _for that file_ with a comment saying why.
@@ -119,7 +119,7 @@ nested instances get `@property { syntax: '*'; inherits: false; }`.
 cd packages/react
 npx stylelint "src/**/*.scss" --fix && npm run lint
 npm run build            # catches unbundled stylesheets and unknown classes
-npm run size             # CSS budgets: greese-ui.css ≤ 16 kB brotli
+npm run size             # CSS budgets: greese-ui.css ≤ 18 kB brotli
 ```
 
 Then re-record and look at the visual baselines for affected stories, in

@@ -26,16 +26,16 @@ cd apps/playground && npx lhci autorun && cd ../..
 VERIFY_TMP=<scratch dir> npm run verify:packages
 ```
 
-| Gate              | Proves                                                                                                                                     | Typical failure                                                                                             |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| Gate              | Proves                                                                                                                                      | Typical failure                                                                                             |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `build`           | TS compiles; CSS compiles; every rendered class has a stylesheet; every stylesheet is in `greese-ui.css`; Storybook builds                  | "Classes with no stylesheet", "Stylesheets missing from styles/index.scss"                                  |
-| `check-types`     | Types across packages, scripts and stories                                                                                                 | A prop renamed without updating stories                                                                     |
-| `lint`            | ESLint (zero warnings), stylelint, docs **story coverage**                                                                                 | Raw colours, `--_vars`, irregular whitespace, a component without a story                                   |
-| `test`            | Unit + axe; coverage gate on `resolveResponsive`                                                                                           |                                                                                                             |
-| `size`            | Budgets                                                                                                                                    | See `greese-lightweight`                                                                                     |
-| `test:e2e`        | Real layout, focus, top layer, touch, in 5 projects                                                                                        | If many unrelated tests hang for the same minutes at once, it was the machine (sleep), not the code; re-run |
-| `test:visual`     | Every story × light/dark × phone/desktop, against baselines                                                                                | A story changed: re-record and _look_                                                                       |
-| Lighthouse        | Perf/a11y/best practices ≥ 0.95, LCP < 2 s, TBT < 100 ms, CLS < 0.05 on every playground page                                              | New playground pages must be added to `lighthouserc.cjs`                                                    |
+| `check-types`     | Types across packages, scripts and stories                                                                                                  | A prop renamed without updating stories                                                                     |
+| `lint`            | ESLint (zero warnings), stylelint, docs **story coverage**                                                                                  | Raw colours, `--_vars`, irregular whitespace, a component without a story                                   |
+| `test`            | Unit + axe; coverage gate on `resolveResponsive`                                                                                            |                                                                                                             |
+| `size`            | Budgets (`packages/react/.size-limit.cjs`, `packages/greese/.size-limit.json`)                                                              | See `greese-lightweight`                                                                                    |
+| `test:e2e`        | Real layout, focus, top layer, touch, in 5 projects                                                                                         | If many unrelated tests hang for the same minutes at once, it was the machine (sleep), not the code; re-run |
+| `test:visual`     | Every story × light/dark × phone/desktop, against baselines                                                                                 | A story changed: re-record and _look_                                                                       |
+| Lighthouse        | Perf/a11y/best practices ≥ 0.95, LCP < 2 s, TBT < 100 ms, CLS < 0.05 on every playground page                                               | New playground pages must be added to `lighthouserc.cjs`                                                    |
 | `verify:packages` | The packed tarballs work as a consumer installs them (Node ESM/SSR, types, SCSS, per-component CSS, Vite bundling, greese.js without a DOM) | A new package not added to the pack list                                                                    |
 
 ## Visual baselines
@@ -52,6 +52,11 @@ npm run test:visual   # then compare twice for stability
   CI Visual workflow's `update` run.
 - When story IDs change (renamed or moved stories), delete the old baselines
   for them.
+- The visual suite runs with `prefers-reduced-motion: reduce`, so motion
+  stories snapshot their final state.
+- `e2e/scrollbars.spec.ts` runs Chromium with real, space-taking scrollbars
+  (other engines skip it). Use it for anything touching the scroll lock or
+  edge-anchored overlays.
 - **Always open a sample of new screenshots**, in light and dark, phone and
   desktop. They have caught stretched badges, invisible dark swatches,
   wrapped text and missing stylesheets that every other gate passed.

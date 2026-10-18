@@ -21,23 +21,24 @@ ADR wins: fix this file in the same change.
 | ADR                                 | Governs                                                              |
 | ----------------------------------- | -------------------------------------------------------------------- |
 | 0001 styling model                  | SCSS + CSS variables, cascade layers, responsive props, class naming |
-| 0002 colour scheme and theming      | tokens, `data-greese-scheme`, `createTheme`, ThemeProvider            |
+| 0002 colour scheme and theming      | tokens, `data-greese-scheme`, `createTheme`, ThemeProvider           |
 | 0003 native form controls           | native inputs, Field wiring, `onValueChange`                         |
 | 0004 content and disclosure         | `<details>`, media, text components                                  |
 | 0005 overlays and positioning       | `<dialog>`, Popover API, anchor positioning, focus return            |
 | 0006 distribution and quality gates | per-component CSS, budgets, visual/e2e/Lighthouse gates              |
 | 0007 component gaps                 | Combobox, NumberField, DateField, Table, SegmentedControl            |
-| 0008 greese.js                       | the animation package (`packages/greese`)                             |
+| 0008 greese.js                      | the animation package (`packages/greese`)                            |
+| 0009 the `greese` prop              | motion on every component: CSS presets, lazy runtime, coverage check |
 
 ## Workspace
 
-| Path              | What                                                                                         |
-| ----------------- | -------------------------------------------------------------------------------------------- |
+| Path              | What                                                                                          |
+| ----------------- | --------------------------------------------------------------------------------------------- |
 | `packages/tokens` | `@greese-ui/tokens`: tokens in `src/tokens.ts`, `createTheme`, scheme script                  |
 | `packages/react`  | `@greese-ui/react`: components in `src/components/<Name>/<Name>.tsx` + `<Name>.scss`          |
-| `packages/greese`  | `@greese-ui/greese` (greese.js): animation; no dependencies, no React                           |
-| `apps/docs`       | Storybook: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`         |
-| `apps/playground` | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                        |
+| `packages/greese` | `@greese-ui/greese` (greese.js): animation; no dependencies, no React                         |
+| `apps/docs`       | Storybook: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`          |
+| `apps/playground` | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                         |
 
 Use npm, never yarn. Node ≥ 24.
 
@@ -47,6 +48,13 @@ Use npm, never yarn. Node ≥ 24.
   has styles). Export it from `src/components/index.ts`, alphabetically.
   Register its stylesheet in `src/styles/index.scss`; the build fails if you
   don't.
+- **The `greese` prop:** every component that draws something extends
+  `GreeseProps`, destructures `greese`, and returns
+  `withGreese(<root …/>, greese)` from `utils/greese.ts`. Box-based
+  components get it through Box. The check in `src/test/greeseCoverage.ts`
+  fails `check-types` for any exported component without it; extend its
+  `Excluded` list only for components with no box of their own. Never
+  import the runtime or greese.js statically from a component (ADR 0009).
 - **`'use client'`** goes at the top only if the component uses hooks, state
   or event handlers. Layout and text components stay server-component safe.
 - **Props:**
@@ -137,7 +145,7 @@ See the `greese-styles` skill for detail. In short:
 ## Size
 
 See the `greese-lightweight` skill. Every new interactive component gets a
-`.size-limit.json` entry. Budgets are only raised deliberately, with the
+`.size-limit.cjs` entry. Budgets are only raised deliberately, with the
 reason in the commit and, if large, in an ADR.
 
 ## Shipping
