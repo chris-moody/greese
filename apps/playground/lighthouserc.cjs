@@ -9,7 +9,7 @@
  */
 const { chromium } = require('@playwright/test')
 
-const pages = ['theming', 'layout', 'forms', 'content', 'overlays', 'gaps']
+const pages = ['theming', 'layout', 'forms', 'content', 'overlays', 'gaps', 'additions']
 
 module.exports = {
   ci: {
