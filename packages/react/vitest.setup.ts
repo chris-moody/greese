@@ -8,6 +8,8 @@ import { installTopLayer } from './src/test/topLayer.ts'
 if (typeof window !== 'undefined') {
   installMatchMedia()
   installTopLayer()
+  // jsdom has no layout, so no scrolling either.
+  Element.prototype.scrollIntoView ??= () => {}
 }
 
 // Testing Library only auto-cleans when test globals are enabled; they are not.
