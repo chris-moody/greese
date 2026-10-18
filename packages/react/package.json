@@ -1,6 +1,6 @@
 {
   "name": "@sauce-ui/react",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Mobile-first, TypeScript-first React components with zero-runtime, CSS-variable theming.",
   "keywords": [
     "react",
@@ -54,7 +54,7 @@
     "size": "size-limit"
   },
   "dependencies": {
-    "@sauce-ui/tokens": "0.0.0"
+    "@sauce-ui/tokens": "1.0.0"
   },
   "peerDependencies": {
     "react": "^19.0.0",
