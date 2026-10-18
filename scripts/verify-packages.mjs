@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Proves the packages work as published: packs @sauce-ui/tokens and
- * @sauce-ui/react, installs the tarballs into an empty project, and checks
+ * Proves the packages work as published: packs @sauce-ui/tokens,
+ * @sauce-ui/sauce (sauce.js) and @sauce-ui/react, installs the tarballs into an empty project, and checks
  * what a consumer would do with them.
  *
  *   npm run build && npm run verify:packages
@@ -33,6 +33,8 @@ try {
       '-w',
       '@sauce-ui/tokens',
       '-w',
+      '@sauce-ui/sauce',
+      '-w',
       '@sauce-ui/react',
       '--pack-destination',
       work,
@@ -48,7 +50,7 @@ try {
       type: 'module',
       dependencies: Object.fromEntries(
         tarballs.map((t) => [
-          t.startsWith('sauce-ui-tokens') ? '@sauce-ui/tokens' : '@sauce-ui/react',
+          `@sauce-ui/${/^sauce-ui-(tokens|sauce|react)-/.exec(t)[1]}`,
           `file:./${t}`,
         ])
       ),
@@ -76,15 +78,20 @@ try {
     join(work, 'ssr.mjs'),
     `import { createElement } from 'react'
 import { renderToString } from 'react-dom/server'
-import { Button, Stack, createTheme } from '@sauce-ui/react'
+import { Button, Stack, createTheme, timeline } from '@sauce-ui/react'
 import { breakpoints } from '@sauce-ui/tokens'
+import { animate } from '@sauce-ui/sauce'
+// sauce.js imports and runs without a DOM: plain objects animate on a server.
+const o = { v: 0 }
+timeline({ paused: true }).to(o, { v: 10, duration: 1, ease: 'linear' }).seek(0.5)
+if (o.v !== 5 || typeof animate !== 'function') throw new Error('sauce.js')
 const html = renderToString(createElement(Stack, { gap: 2, direction: { md: 'row' } }, createElement(Button, null, 'Hi')))
 if (!html.includes('sauce-Stack--md-direction-row') || !html.includes('sauce-Button')) throw new Error(html)
 if (breakpoints.md !== 900 || !createTheme({ name: 'x' }).css.includes('@layer sauce.theme')) throw new Error('tokens')
 `
   )
   run('node', ['ssr.mjs'], work)
-  ok('Node ESM import + server render')
+  ok('Node ESM import + server render; sauce.js runs without a DOM')
 
   // 3. Types, under both module resolutions consumers use.
   writeFileSync(
