@@ -32,6 +32,9 @@ export default defineConfig({
     baseURL: 'http://localhost:4320',
     browserName: 'chromium',
     deviceScaleFactor: 1,
+    // Snapshots show each story's final state: motion (the greese prop, text
+    // effects) is skipped, and screenshots already finish CSS animations.
+    reducedMotion: 'reduce',
   },
   projects: [
     {

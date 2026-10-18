@@ -1,5 +1,14 @@
-import { useEffect, useRef, type JSX } from 'react'
-import { Button, splitText, timeline, type Timeline } from '@greese-ui/react'
+import { useEffect, useRef, type CSSProperties, type JSX } from 'react'
+import {
+  Button,
+  Card,
+  Dialog,
+  splitText,
+  Stack,
+  Text,
+  timeline,
+  type Timeline,
+} from '@greese-ui/react'
 import '@greese-ui/react/base.css'
 import '@greese-ui/react/styles.css'
 
@@ -56,6 +65,39 @@ export const Motion = (): JSX.Element => {
       <span ref={count} data-testid="count">
         0
       </span>
+
+      {/* The greese prop (e2e/greese-prop.spec.ts). */}
+      <Card data-testid="enter" greese={{ enter: 'fade-up', duration: 10 }}>
+        Fades up on load
+      </Card>
+      <div style={{ '--greese-motion-duration': '7s' } as CSSProperties}>
+        <Card data-testid="tuned" greese="fade">
+          Tuned by an ancestor
+        </Card>
+      </div>
+      <Stack data-testid="stagger" greese={{ enter: 'fade', stagger: 0.1, duration: 10 }}>
+        <span>one</span>
+        <span>two</span>
+        <span>three</span>
+      </Stack>
+      <Button data-testid="hover" greese={{ hover: 'lift', press: 'squish' }}>
+        Hover me
+      </Button>
+      <Dialog
+        trigger={<Button>Open exit dialog</Button>}
+        title="Exit test"
+        greese={{ enter: 'scale-in', exit: 'scale-out' }}
+      />
+      <div style={{ blockSize: '150vh' }} />
+      <Card data-testid="reveal" greese={{ inView: 'fade-up', duration: 10 }}>
+        Revealed on scroll
+      </Card>
+      <Text
+        data-testid="count-text"
+        greese={{ text: 'count', inView: 'fade', duration: 0.3 }}
+      >
+        2048
+      </Text>
     </main>
   )
 }
