@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import { describe, expect, it } from 'vitest'
 import {
   isSpaceToken,
+  mapResponsive,
   neverToken,
   resolveResponsive,
   responsiveClass,
@@ -39,6 +40,23 @@ describe('spaceToCss / neverToken', () => {
     expect(spaceToCss(4)).toBe('var(--sauce-space-4)')
     expect(spaceToCss('13px')).toBe('13px')
     expect(neverToken()).toBe(false)
+  })
+})
+
+describe('mapResponsive', () => {
+  const toKey = (full: boolean) => (full ? 'full' : 'auto')
+
+  it('maps a single value or each breakpoint, keeping the shape', () => {
+    expect(mapResponsive(true, toKey)).toBe('full')
+    expect(mapResponsive({ xs: true, md: false, lg: undefined }, toKey)).toEqual({
+      xs: 'full',
+      md: 'auto',
+    })
+  })
+
+  it('passes undefined and null through untouched', () => {
+    expect(mapResponsive(undefined, toKey)).toBeUndefined()
+    expect(mapResponsive(null as unknown as boolean, (v) => v)).toBeNull()
   })
 })
 

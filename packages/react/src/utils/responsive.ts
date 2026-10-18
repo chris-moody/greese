@@ -59,6 +59,20 @@ export const spaceToCss = (value: ResponsiveValue): string =>
 /** For props whose values always go inline (no pre-generated classes). */
 export const neverToken = (): boolean => false
 
+/** Maps every breakpoint's value of a responsive prop, keeping its shape. */
+export const mapResponsive = <T, U>(
+  value: Responsive<T> | undefined,
+  map: (value: T) => U
+): Responsive<U> | undefined => {
+  if (value === undefined) return undefined
+  if (typeof value !== 'object' || value === null) return map(value as T)
+  const out: Partial<Record<Breakpoint, U>> = {}
+  for (const [bp, v] of Object.entries(value) as Array<[Breakpoint, T | undefined]>) {
+    if (v !== undefined) out[bp] = map(v)
+  }
+  return out
+}
+
 /** One responsive prop's value paired with its (module-level, static) config. */
 export type ResponsiveEntry = readonly [
   value: Responsive<ResponsiveValue> | null | undefined,

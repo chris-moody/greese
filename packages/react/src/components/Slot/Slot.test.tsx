@@ -1,7 +1,7 @@
 import { createRef } from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import { composeRefs, Slot } from './Slot.tsx'
+import { composeRefs, Slot, Slottable } from './Slot.tsx'
 
 describe('Slot', () => {
   it('renders the child element with merged props, child winning', () => {
@@ -73,6 +73,36 @@ describe('Slot', () => {
         </Slot>
       )
     ).toThrow(/exactly one React element/)
+  })
+})
+
+describe('Slottable', () => {
+  it('makes its child the host and places siblings around the host children', () => {
+    render(
+      <Slot className="from-slot">
+        <i>before</i>
+        <Slottable>
+          <a href="/x" className="from-child">
+            label
+          </a>
+        </Slottable>
+        <i>after</i>
+      </Slot>
+    )
+    const link = screen.getByRole('link')
+    expect(link).toHaveClass('from-slot', 'from-child')
+    expect(link.textContent).toBe('beforelabelafter')
+  })
+
+  it('renders nothing when its child is not an element, and passes through outside a Slot', () => {
+    const { container } = render(
+      <Slot>
+        <Slottable>text</Slottable>
+      </Slot>
+    )
+    expect(container).toBeEmptyDOMElement()
+    render(<Slottable>plain</Slottable>)
+    expect(screen.getByText('plain')).toBeInTheDocument()
   })
 })
 

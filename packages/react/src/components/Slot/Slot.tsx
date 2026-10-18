@@ -25,6 +25,26 @@ export interface SlotProps extends HTMLAttributes<HTMLElement> {
  * are composed.
  */
 export const Slot = ({ children, ref, ...slotProps }: SlotProps): ReactNode => {
+  // With a <Slottable>, its child is the host and the Slot's other children
+  // (a Button's icons, say) are placed around the host's own children.
+  const parts = Children.toArray(children)
+  const slottable = parts.find(isSlottable)
+  if (slottable) {
+    const host = slottable.props.children
+    if (!isValidElement(host)) return null
+    const hostElement = host as ReactElement<Record<string, unknown>>
+    return cloneElement(
+      hostElement,
+      {
+        ...mergeProps(slotProps as Record<string, unknown>, hostElement.props),
+        ref: composeRefs(ref, hostElement.props.ref as Ref<HTMLElement> | undefined),
+      },
+      ...parts.map((part) =>
+        part === slottable ? (hostElement.props.children as ReactNode) : part
+      )
+    )
+  }
+
   if (!isValidElement(children)) {
     if (Children.count(children) > 1) {
       throw new Error('Slot (asChild) expects exactly one React element child.')
@@ -38,6 +58,23 @@ export const Slot = ({ children, ref, ...slotProps }: SlotProps): ReactNode => {
     ref: composeRefs(ref, childProps.ref as Ref<HTMLElement> | undefined),
   })
 }
+
+/**
+ * Marks which child of a Slot is the host element. Components that add their
+ * own content (icons, spinners) wrap `children` in it, so `asChild` still works:
+ *
+ * ```tsx
+ * <Root>{icon}<Slottable>{children}</Slottable></Root>
+ * ```
+ *
+ * Outside a Slot it renders its children unchanged.
+ */
+export const Slottable = ({ children }: { children?: ReactNode }): ReactNode => children
+
+const isSlottable = (
+  node: ReturnType<typeof Children.toArray>[number]
+): node is ReactElement<{ children?: ReactNode }> =>
+  isValidElement(node) && node.type === Slottable
 
 const HANDLER = /^on[A-Z]/
 
