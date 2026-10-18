@@ -2,6 +2,14 @@
   "name": "@sauce-ui/tokens",
   "version": "0.0.0",
   "description": "Design tokens for SauceUI as CSS custom properties, Sass maps, and TypeScript constants.",
+  "keywords": [
+    "design-tokens",
+    "css-variables",
+    "theme",
+    "dark-mode",
+    "sass"
+  ],
+  "author": "Chris Moody",
   "license": "MIT",
   "type": "module",
   "sideEffects": [
@@ -19,6 +27,7 @@
     "./tokens.css": "./dist/tokens.css",
     "./scss": "./dist/_tokens.scss",
     "./scss/layers": "./dist/_layers.scss",
+    "./scss/maps": "./dist/_maps.scss",
     "./package.json": "./package.json"
   },
   "publishConfig": {

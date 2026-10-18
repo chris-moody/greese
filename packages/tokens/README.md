@@ -7,6 +7,7 @@ SauceUI's design tokens, in three forms:
 | `@sauce-ui/tokens/tokens.css` | `--sauce-*` custom properties, in `@layer sauce.tokens` |
 | `@sauce-ui/tokens/scss` | The same CSS, plus `$breakpoints` and `$space-keys` Sass maps |
 | `@sauce-ui/tokens/scss/layers` | Only the cascade layer order statement |
+| `@sauce-ui/tokens/scss/maps` | Only the Sass maps; emits no CSS |
 | `@sauce-ui/tokens` | TypeScript constants (`color`, `space`, `radius`, `fontSize`, `shadow`, `breakpoints`, …), `createTheme()` and `getSchemeScript()` |
 
 You only need this package directly if you use the tokens without
