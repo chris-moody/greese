@@ -22,39 +22,40 @@ how you get there without tripping either.
 - **The subject:**
   - is imperative and lower-case, with no trailing period;
   - has 15 or more characters, and the whole header is at most 100;
-  - says *what changed and where*, specifically enough to stand alone in a
+  - says _what changed and where_, specifically enough to stand alone in a
     changelog.
 - **Breaking change:** add `!` before the colon, for example
   `feat(react)!: rename Stack spacing prop to gap`.
 
 ## Type: pick the first that fits
 
-| Type | When |
-|---|---|
-| `feat` | New user-facing capability in a published package or app |
-| `fix` | Bug fix in shipped behaviour |
-| `perf` | Faster or smaller with no behaviour change |
-| `refactor` | Code restructuring with no behaviour change |
-| `test` | Tests only |
-| `docs` | Documentation only (READMEs, ADRs, plan, stories' prose) |
-| `build` | Build system, package exports, compilers, bundling |
-| `ci` | GitHub workflows |
-| `chore` | Repo upkeep that fits nothing above (configs, tooling) |
-| `style` | Formatting only |
-| `revert` | Reverting an earlier commit: `revert: feat(react): add Stack` |
+| Type       | When                                                          |
+| ---------- | ------------------------------------------------------------- |
+| `feat`     | New user-facing capability in a published package or app      |
+| `fix`      | Bug fix in shipped behaviour                                  |
+| `perf`     | Faster or smaller with no behaviour change                    |
+| `refactor` | Code restructuring with no behaviour change                   |
+| `test`     | Tests only                                                    |
+| `docs`     | Documentation only (READMEs, ADRs, plan, stories' prose)      |
+| `build`    | Build system, package exports, compilers, bundling            |
+| `ci`       | GitHub workflows                                              |
+| `chore`    | Repo upkeep that fits nothing above (configs, tooling)        |
+| `style`    | Formatting only                                               |
+| `revert`   | Reverting an earlier commit: `revert: feat(react): add Stack` |
 
 ## Scope: where the change lives
 
-| Scope | Path |
-|---|---|
-| `react` | `packages/react` |
-| `tokens` | `packages/tokens` |
-| `docs` | `apps/docs` (Storybook) and `docs/` |
-| `playground` | `apps/playground` |
-| `eslint-config`, `typescript-config` | the matching `packages/*` |
-| `repo` | root config and tooling (turbo, prettier, commitlint, husky, `.claude/`) |
-| `deps` | dependency bumps only |
-| `release` | Changesets version and release commits |
+| Scope                                | Path                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| `react`                              | `packages/react`                                                         |
+| `tokens`                             | `packages/tokens`                                                        |
+| `sauce`                              | `packages/sauce` (sauce.js)                                              |
+| `docs`                               | `apps/docs` (Storybook) and `docs/`                                      |
+| `playground`                         | `apps/playground`                                                        |
+| `eslint-config`, `typescript-config` | the matching `packages/*`                                                |
+| `repo`                               | root config and tooling (turbo, prettier, commitlint, husky, `.claude/`) |
+| `deps`                               | dependency bumps only                                                    |
+| `release`                            | Changesets version and release commits                                   |
 
 Omit the scope only when a change genuinely spans the whole repo. If it spans
 two packages, prefer two commits.
@@ -83,13 +84,13 @@ Avoid vague subjects: "update files", "fix stuff", "wip", "changes".
    messages before you commit anything.
 3. **Stage explicitly, by path, onto a clean index.** First check that
    `git diff --cached --name-only` is empty, because `git commit` takes
-   *everything* staged. A leftover `git mv` or `git rm` will otherwise slip
+   _everything_ staged. A leftover `git mv` or `git rm` will otherwise slip
    into an unrelated commit. Then run `git add -A -- <paths>` (`-A` so
    deletions and renames are included, the path list so unrelated files are
    not). Before every commit, review `git diff --cached --name-status`, and if
    a `git add` fails, stop rather than commit whatever happens to be staged.
 4. **Add a changeset when it's needed.** Any `feat`, `fix` or `perf` to a
-   published package (`@sauce-ui/react`, `@sauce-ui/tokens`) needs one in
+   published package (`@sauce-ui/react`, `@sauce-ui/tokens`, `@sauce-ui/sauce`) needs one in
    `.changeset/`. Create it with `npm run changeset`, or by hand, and commit
    it with the change.
 5. **Commit:** `git commit -m "<type>(<scope>): <subject>"`. Use exactly one
