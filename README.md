@@ -38,6 +38,10 @@ npx playwright install chromium   # once, for e2e
 | `npm run test:e2e` | Real-browser tests (Playwright, mobile and desktop) on :4310 |
 | `npm run check-types` / `npm run lint` | |
 | `npm run size` | Fails if the bundle-size budgets in `packages/react/.size-limit.json` are exceeded |
+| `npm run test:visual` | Visual regression for every story (builds Storybook first) |
+| `npm run lighthouse -w playground` | Lighthouse budgets on the playground pages (after `npm run build`) |
+| `npm run verify:packages` | Packs both packages and checks them in a clean consumer project |
+| `npm run bench -w playground` | SauceUI vs MUI performance benchmark |
 | `npm run changeset` | Records a release note for a change to a published package |
 
 ## Commits
@@ -60,6 +64,13 @@ Code also uses as its `/commit` skill.
 Changesets on `main` produce a "Version Packages" PR, and merging it publishes
 to npm (`.github/workflows/release.yml`). `@sauce-ui/react` and
 `@sauce-ui/tokens` share one version number.
+
+## Documentation
+
+Run `npm run dev` and open http://localhost:6006. You'll find guides (getting
+started, theming, responsive props, accessibility, migrating from MUI), a docs
+page for every component, and live stories. Decisions are recorded in
+[docs/adr](docs/adr).
 
 ## Docs hosting
 
