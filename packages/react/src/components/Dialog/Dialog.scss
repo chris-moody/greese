@@ -183,6 +183,9 @@ $widths: (
         $radius: map.get($g, radius);
 
         .sauce-Drawer--#{$bp}-placement-#{$placement} {
+          // Read by the swipe-to-close handler: which way a drag dismisses.
+          --sauce-drawer-edge: #{$placement};
+
           inset-block: map.get($g, inset-block);
           inset-inline: map.get($g, inset-inline);
           inline-size: map.get($g, inline-size);
@@ -203,6 +206,36 @@ $widths: (
               translate: map.get($g, from);
             }
           }
+        }
+      }
+    }
+  }
+
+  // Swipe-to-close starts on the header; it must not pan the page.
+  .sauce-Drawer .sauce-Dialog-header {
+    position: relative;
+    touch-action: none;
+  }
+
+  // A grab handle on bottom sheets, at every breakpoint where they are bottom.
+  @each $bp, $_ in mixins.$breakpoints {
+    @include mixins.up($bp) {
+      .sauce-Drawer--#{$bp}-placement-bottom .sauce-Dialog-header::before {
+        position: absolute;
+        inset-block-start: calc(-1 * var(--sauce-space-3));
+        inset-inline: 0;
+        display: block;
+        inline-size: 2.5rem;
+        block-size: 4px;
+        margin-inline: auto;
+        content: '';
+        background-color: var(--sauce-color-border-strong);
+        border-radius: var(--sauce-radius-pill);
+      }
+
+      @each $placement in (start, end, top) {
+        .sauce-Drawer--#{$bp}-placement-#{$placement} .sauce-Dialog-header::before {
+          display: none;
         }
       }
     }

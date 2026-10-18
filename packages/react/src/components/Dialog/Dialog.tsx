@@ -1,6 +1,7 @@
 'use client'
 import {
   useId,
+  useCallback,
   useLayoutEffect,
   useRef,
   type ComponentPropsWithRef,
@@ -8,6 +9,7 @@ import {
   type MouseEvent,
   type ReactElement,
   type ReactNode,
+  type RefCallback,
   type SyntheticEvent,
 } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
@@ -205,6 +207,11 @@ export interface DrawerProps extends ModalBaseProps {
    * @default 'end'
    */
   placement?: Responsive<DrawerPlacement>
+  /**
+   * Drag the header (or a bottom sheet's handle) toward the edge to dismiss.
+   * @default true
+   */
+  swipeToClose?: boolean
 }
 
 const PLACEMENT: ResponsiveConfig = { block: 'sauce-Drawer', prop: 'placement' }
@@ -215,13 +222,139 @@ const PLACEMENT: ResponsiveConfig = { block: 'sauce-Drawer', prop: 'placement' }
  */
 export const Drawer = ({
   placement = 'end',
+  swipeToClose = true,
   className,
   style,
+  ref,
   ...props
 }: DrawerProps): JSX.Element => {
+  const swipe = useSwipeToClose(swipeToClose)
   const resolved = resolveResponsive([[placement, PLACEMENT]], {
     className: cx('sauce-Dialog', 'sauce-Drawer', className),
     style,
   })
-  return <ModalBase {...props} className={resolved.className} style={resolved.style} />
+  return (
+    <ModalBase
+      {...props}
+      ref={composeRefs<HTMLDialogElement>(swipe, ref)}
+      className={resolved.className}
+      style={resolved.style}
+    />
+  )
 }
+
+type Edge = 'top' | 'bottom' | 'start' | 'end'
+
+/** Which way a drag dismisses, given the edge the drawer is on. */
+export const dismissDirection = (
+  edge: string,
+  rtl: boolean
+): { axis: 'x' | 'y'; sign: 1 | -1 } | null => {
+  switch (edge as Edge) {
+    case 'bottom':
+      return { axis: 'y', sign: 1 }
+    case 'top':
+      return { axis: 'y', sign: -1 }
+    case 'end':
+      return { axis: 'x', sign: rtl ? -1 : 1 }
+    case 'start':
+      return { axis: 'x', sign: rtl ? 1 : -1 }
+    default:
+      return null
+  }
+}
+
+/** Should a drag of `distance` px over `ms` close a drawer `size` px deep? */
+export const shouldDismiss = (distance: number, size: number, ms: number): boolean =>
+  distance > size * 0.3 || (distance > 20 && distance / Math.max(ms, 1) > 0.5)
+
+/**
+ * Drag the header (or the sheet's handle) toward the edge to dismiss. The
+ * edge comes from CSS (`--sauce-drawer-edge`), so it follows a responsive
+ * placement. Drags never start on the body, which keeps scrolling content.
+ */
+const useSwipeToClose = (enabled: boolean): RefCallback<HTMLDialogElement> =>
+  useCallback(
+    (dialog: HTMLDialogElement | null) => {
+      if (!dialog || !enabled) return
+      let drag: {
+        id: number
+        x: number
+        y: number
+        time: number
+        axis: 'x' | 'y'
+        sign: 1 | -1
+        size: number
+        distance: number
+      } | null = null
+
+      const reset = () => {
+        dialog.style.transition = ''
+        dialog.style.translate = ''
+      }
+
+      const down = (event: PointerEvent) => {
+        const target = event.target as Element
+        if (
+          !target.closest('.sauce-Dialog-header') ||
+          target.closest('button, a, input, select, textarea')
+        )
+          return
+        const styles = getComputedStyle(dialog)
+        const direction = dismissDirection(
+          styles.getPropertyValue('--sauce-drawer-edge').trim(),
+          styles.direction === 'rtl'
+        )
+        if (!direction) return
+        const box = dialog.getBoundingClientRect()
+        drag = {
+          id: event.pointerId,
+          x: event.clientX,
+          y: event.clientY,
+          time: event.timeStamp,
+          ...direction,
+          size: direction.axis === 'y' ? box.height : box.width,
+          distance: 0,
+        }
+        dialog.setPointerCapture(event.pointerId)
+      }
+
+      const move = (event: PointerEvent) => {
+        if (!drag || event.pointerId !== drag.id) return
+        const raw = drag.axis === 'y' ? event.clientY - drag.y : event.clientX - drag.x
+        drag.distance = Math.max(0, raw * drag.sign)
+        const offset = `${drag.distance * drag.sign}px`
+        dialog.style.transition = 'none'
+        dialog.style.translate = drag.axis === 'y' ? `0 ${offset}` : `${offset} 0`
+      }
+
+      const up = (event: PointerEvent) => {
+        if (!drag || event.pointerId !== drag.id) return
+        const { distance, size, time } = drag
+        drag = null
+        dialog.style.transition = ''
+        // Close first, then drop the inline offset: the exit transition then
+        // continues from where the finger let go.
+        if (
+          event.type === 'pointerup' &&
+          shouldDismiss(distance, size, event.timeStamp - time)
+        ) {
+          dialog.close()
+        }
+        dialog.style.translate = ''
+      }
+
+      dialog.addEventListener('pointerdown', down)
+      dialog.addEventListener('pointermove', move)
+      dialog.addEventListener('pointerup', up)
+      dialog.addEventListener('pointercancel', up)
+      return () => {
+        dialog.removeEventListener('pointerdown', down)
+        dialog.removeEventListener('pointermove', move)
+        dialog.removeEventListener('pointerup', up)
+        dialog.removeEventListener('pointercancel', up)
+        reset()
+      }
+    },
+    [enabled]
+  )
