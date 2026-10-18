@@ -1,10 +1,17 @@
 [
   {
-    "name": "JS: whole library",
+    "name": "JS: whole library (components)",
+    "path": "dist/index.js",
+    "import": "*",
+    "ignore": ["react", "react-dom", "@sauce-ui/sauce"],
+    "limit": "20 kB"
+  },
+  {
+    "name": "JS: whole library, with sauce.js",
     "path": "dist/index.js",
     "import": "*",
     "ignore": ["react", "react-dom"],
-    "limit": "20 kB"
+    "limit": "26 kB"
   },
   {
     "name": "JS: tree-shaken { VisuallyHidden }",

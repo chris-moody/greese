@@ -54,6 +54,7 @@
     "size": "size-limit"
   },
   "dependencies": {
+    "@sauce-ui/sauce": "0.0.0",
     "@sauce-ui/tokens": "1.0.0"
   },
   "peerDependencies": {

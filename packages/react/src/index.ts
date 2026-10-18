@@ -38,3 +38,22 @@ export {
   type Theme,
   type ThemeOptions,
 } from '@sauce-ui/tokens'
+
+// sauce.js, bundled: the animation library (@sauce-ui/sauce), re-exported so
+// one install covers both. Tree-shaken away when unused.
+export {
+  animate,
+  cubicBezier,
+  ease,
+  splitText,
+  timeline,
+  Timeline,
+  type AnimateOptions,
+  type Ease,
+  type Keyframe,
+  type Keyframes,
+  type Position,
+  type SplitText,
+  type StaggerOptions,
+  type TimelineOptions,
+} from '@sauce-ui/sauce'
