@@ -4,7 +4,8 @@ export type Value = number | string
 /** Interpolates between two fixed values: `t` 0 gives `from`, 1 gives `to`. */
 export type Mixer = (t: number) => Value
 
-const NUM = /-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/gi
+/** A number and its unit, if any: `-1.5rem`, `50%`, `0.25`, `1e-3s`. */
+const NUMBER_UNIT = /(-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?)([a-z%]*)/gi
 const lerp = (a: number, b: number, t: number): number => a + (b - a) * t
 // Six significant decimals: finer is invisible, and float noise
 // ("0.30000000000000004px") shouldn't reach the DOM.
@@ -113,6 +114,9 @@ export const mixText = (from: Value, to: Value): Mixer => {
  * - numbers, and strings with the same shape whose numbers differ
  *   (`10px` → `40px`, `blur(0px)` → `blur(8px)`, `inset(0 0 0 0)` → …);
  *   a bare number takes the other end's unit (`0` → `12rem`);
+ * - different units, per number: `16px` → `2rem`, `0px` → `50%`,
+ *   `100px` → `50vw`, `200ms` → `1s`, blended with `calc()` so the browser
+ *   converts them exactly where the value is used (no measuring);
  * - colours, mixed in OKLab;
  * - anything else switches halfway, except that `none`/`hidden` give way to
  *   the shown value for the whole tween (as CSS does for `display`).
@@ -129,33 +133,32 @@ export const mix = (from: Value, to: Value): Mixer => {
     const [la, lb] = [toOklab(ca), toOklab(cb)]
     return (t) => fromOklab(la.map((v, i) => lerp(v, lb[i]!, t)) as Rgba)
   }
-  const shape = (s: string) => s.replace(NUM, '#')
-  let nb = b.match(NUM)?.map(Number) ?? []
+  // Numbers with their units: `16px`, `2rem`, `50%`, `0.5`, `90deg`.
+  const tokens = (s: string): Array<[number, string]> =>
+    [...s.matchAll(NUMBER_UNIT)].map((m) => [Number(m[1]), m[2]!.toLowerCase()])
+  const shape = (s: string) => s.replace(NUMBER_UNIT, '#')
   // An unset value (an undeclared custom property reads as '') starts from
   // zero in the other end's shape.
-  const na = a.trim() ? (a.match(NUM)?.map(Number) ?? []) : nb.map(() => 0)
-  if (!b.trim()) nb = na.map(() => 0)
-  let template = shape(b.trim() ? b : a)
-  if (
-    na.length &&
-    na.length === nb.length &&
-    a.trim() &&
-    b.trim() &&
-    shape(a) !== template
-  ) {
-    // `0` against `10px`: a lone unitless number borrows the other's unit.
-    if (na.length === 1 && (a.trim() === String(na[0]) || b.trim() === String(nb[0]))) {
-      template = b.trim() === String(nb[0]) ? shape(a) : template
-    } else {
-      return discrete(from, to)
-    }
-  }
-  if (!na.length || na.length !== nb.length) return discrete(from, to)
+  const ta = a.trim() ? tokens(a) : tokens(b).map(([, u]): [number, string] => [0, u])
+  const tb = b.trim() ? tokens(b) : ta.map(([, u]): [number, string] => [0, u])
+  const template = shape(b.trim() ? b : a)
+  if (!ta.length || ta.length !== tb.length) return discrete(from, to)
+  if (a.trim() && b.trim() && shape(a) !== template) return discrete(from, to)
   const parts = template.split('#')
+  const pairs = ta.map(([va, ua], i) => {
+    const [vb, ub] = tb[i]!
+    // A unitless number takes the other end's unit (`0` against `12rem`).
+    return { va, vb, ua: ua || ub, ub: ub || ua }
+  })
   return (t) =>
-    parts.reduce(
-      (out, part, i) =>
-        out + part + (i < na.length ? String(round(lerp(na[i]!, nb[i]!, t))) : ''),
-      ''
-    )
+    parts.reduce((out, part, i) => {
+      const p = pairs[i]
+      if (!p) return out + part
+      if (p.ua === p.ub) return out + part + round(lerp(p.va, p.vb, t)) + p.ua
+      // Different units (px → rem, px → %, px → vw, ms → s): CSS blends them
+      // exactly, in the context the value is used in.
+      if (t <= 0) return out + part + p.va + p.ua
+      if (t >= 1) return out + part + p.vb + p.ub
+      return `${out}${part}calc(${p.va}${p.ua} * ${round(1 - t)} + ${p.vb}${p.ub} * ${round(t)})`
+    }, '')
 }

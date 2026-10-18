@@ -57,6 +57,20 @@ describe('mix', () => {
     expect(mix(0.1, 0.2)(1)).toBe(0.2) // no float noise
   })
 
+  it('blends different units with calc(), exact at both ends', () => {
+    const radius = mix('16px', '2rem')
+    expect(radius(0)).toBe('16px')
+    expect(radius(0.25)).toBe('calc(16px * 0.75 + 2rem * 0.25)')
+    expect(radius(1)).toBe('2rem')
+    expect(mix('100px', '50vw')(0.5)).toBe('calc(100px * 0.5 + 50vw * 0.5)')
+    expect(mix('0px', '50%')(0.5)).toBe('calc(0px * 0.5 + 50% * 0.5)')
+    // Per number: same units interpolate, different ones blend.
+    expect(mix('10px 20px', '1rem 40px')(0.5)).toBe('calc(10px * 0.5 + 1rem * 0.5) 30px')
+    expect(mix('blur(4px)', 'blur(1rem)')(0.5)).toBe('blur(calc(4px * 0.5 + 1rem * 0.5))')
+    // A bare number still takes the other end's unit.
+    expect(mix('0', '50%')(0.5)).toBe('25%')
+  })
+
   it('mixes colours in OKLab and keeps the ends exact', () => {
     expect(mix('#ff0000', 'rgb(0, 0, 255)')(0)).toBe('rgb(255 0 0 / 1)')
     expect(mix('#ff0000', 'rgb(0, 0, 255)')(1)).toBe('rgb(0 0 255 / 1)')
@@ -71,7 +85,7 @@ describe('mix', () => {
     expect(mix('none', 'block')(0.01)).toBe('block')
     expect(mix('block', 'none')(0.99)).toBe('block')
     expect(mix('block', 'none')(1)).toBe('none')
-    expect(mix('10px', '50%')(0.5)).toBe('50%')
+    expect(mix('auto', '50%')(0.6)).toBe('50%') // no number to blend from
   })
 
   it('counts, types and retypes text', () => {
