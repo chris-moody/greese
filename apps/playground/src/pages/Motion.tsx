@@ -16,6 +16,8 @@ declare global {
   interface Window {
     /** The fixture timeline, for e2e/motion.spec.ts to drive. */
     motion?: Timeline
+    /** Mixed-unit fixture: px → rem token, px → vw width. */
+    units?: Timeline
   }
 }
 
@@ -24,6 +26,7 @@ export const Motion = (): JSX.Element => {
   const box = useRef<HTMLDivElement>(null)
   const label = useRef<HTMLParagraphElement>(null)
   const count = useRef<HTMLSpanElement>(null)
+  const unitsBox = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const { elements, revert } = splitText(label.current!)
@@ -39,6 +42,12 @@ export const Motion = (): JSX.Element => {
       .to(count.current, { text: '100', duration: 1, ease: 'linear' }, 0)
       .from(elements, { opacity: 0, y: 8, duration: 0.2, stagger: 0.05 }, 0)
     window.motion = tl
+    window.units = timeline({ paused: true }).to(unitsBox.current, {
+      '--greese-radius-lg': '2rem',
+      width: '50vw',
+      duration: 1,
+      ease: 'linear',
+    })
     return () => {
       tl.kill()
       revert()
@@ -59,6 +68,16 @@ export const Motion = (): JSX.Element => {
       >
         <Button size="sm">Accent</Button>
       </div>
+      <div
+        ref={unitsBox}
+        data-testid="units"
+        style={{
+          inlineSize: '100px',
+          blockSize: '2rem',
+          borderRadius: 'var(--greese-radius-lg)',
+          background: 'var(--greese-color-accent)',
+        }}
+      />
       <p ref={label} data-testid="label">
         Hello world
       </p>

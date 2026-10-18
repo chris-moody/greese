@@ -83,3 +83,29 @@ test('split text stays one readable string for assistive technology', async ({
   const first = label.locator('[aria-hidden="true"] span span').first()
   expect(await first.evaluate((el) => getComputedStyle(el).opacity)).toBe('0')
 })
+
+test('mixed units blend smoothly: a px radius token to rem, a px width to vw', async ({
+  page,
+}) => {
+  const at = async (p: number) => {
+    await page.evaluate((progress) => {
+      window.units!.progress(progress)
+    }, p)
+    return page.getByTestId('units').evaluate((el) => {
+      const s = getComputedStyle(el)
+      return { radius: parseFloat(s.borderTopLeftRadius), width: parseFloat(s.width) }
+    })
+  }
+  const vw = await page.evaluate(() => innerWidth)
+  const rem = await page.evaluate(() =>
+    parseFloat(getComputedStyle(document.documentElement).fontSize)
+  )
+  expect(await at(0)).toEqual({ radius: 16, width: 100 })
+  // Halfway: exactly between, with no jump (16px → 2rem, 100px → 50vw).
+  const mid = await at(0.5)
+  expect(mid.radius).toBeCloseTo((16 + 2 * rem) / 2, 1)
+  expect(mid.width).toBeCloseTo((100 + vw / 2) / 2, 0)
+  const quarter = await at(0.25)
+  expect(quarter.radius).toBeCloseTo(16 * 0.75 + 2 * rem * 0.25, 1)
+  expect(await at(1)).toEqual({ radius: 2 * rem, width: vw / 2 })
+})
