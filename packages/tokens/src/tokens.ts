@@ -34,6 +34,8 @@ export const color = {
   onNegative: { light: '#ffffff', dark: '#0b0d10' },
   warning: { light: '#8a5f00', dark: '#feb93d' },
   info: { light: '#00668f', dark: '#5ac0f7' },
+  /** Dims the page behind modal dialogs and drawers. */
+  scrim: { light: 'rgb(11 13 16 / 0.45)', dark: 'rgb(0 0 0 / 0.6)' },
 } as const satisfies Record<string, TokenPair>
 
 export type ColorRole = keyof typeof color
