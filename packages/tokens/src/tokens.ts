@@ -31,6 +31,7 @@ export const color = {
   focusRing: { light: '#2771e0', dark: '#aaccff' },
   positive: { light: '#007231', dark: '#61cf7e' },
   negative: { light: '#ae0914', dark: '#ff8b7f' },
+  onNegative: { light: '#ffffff', dark: '#0b0d10' },
   warning: { light: '#8a5f00', dark: '#feb93d' },
   info: { light: '#00668f', dark: '#5ac0f7' },
 } as const satisfies Record<string, TokenPair>
