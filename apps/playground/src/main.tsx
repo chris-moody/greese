@@ -12,6 +12,7 @@ const pages: Record<string, () => Promise<{ default: ComponentType }>> = {
   content: () => import('./pages/Content.tsx').then((m) => ({ default: m.Content })),
   overlays: () => import('./pages/Overlays.tsx').then((m) => ({ default: m.Overlays })),
   gaps: () => import('./pages/Gaps.tsx').then((m) => ({ default: m.Gaps })),
+  motion: () => import('./pages/Motion.tsx').then((m) => ({ default: m.Motion })),
   additions: () =>
     import('./pages/Additions.tsx').then((m) => ({ default: m.Additions })),
   'bench-sauce': () =>
