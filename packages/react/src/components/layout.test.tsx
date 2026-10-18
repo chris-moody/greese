@@ -215,6 +215,12 @@ describe('Show and Hide', () => {
         <Hide below="sm">
           <span>hide-below</span>
         </Hide>
+        <Hide above="sm" below="lg">
+          <span>hide-range</span>
+        </Hide>
+        <Hide above="lg" below="sm">
+          <span>hide-outside</span>
+        </Hide>
       </>
     )
     const wrapper = (text: string) => screen.getByText(text).parentElement!
@@ -234,6 +240,16 @@ describe('Show and Hide', () => {
     expect(classes(wrapper('hide-below'))).toEqual([
       'sauce-Visibility',
       'sauce-Visibility--hide-below-sm',
+    ])
+    // Both bounds: hidden only between them, not at every width.
+    expect(classes(wrapper('hide-range'))).toEqual([
+      'sauce-Visibility',
+      'sauce-Visibility--hide-sm-to-lg',
+    ])
+    expect(classes(wrapper('hide-outside'))).toEqual([
+      'sauce-Visibility',
+      'sauce-Visibility--hide-below-sm',
+      'sauce-Visibility--hide-from-lg',
     ])
   })
 

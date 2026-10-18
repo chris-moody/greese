@@ -23,6 +23,17 @@
           display: none;
         }
       }
+
+      // Hide's range: from $bp up to (not including) each larger breakpoint.
+      @each $to, $max in mixins.$breakpoints {
+        @if $max > $min {
+          @media (width >= $min) and (width < $max) {
+            .sauce-Visibility--hide-#{$bp}-to-#{$to} {
+              display: none;
+            }
+          }
+        }
+      }
     }
   }
 }

@@ -17,10 +17,13 @@ export interface VisibilityProps {
   children?: ReactNode
 }
 
+const order: BreakpointBoundary[] = ['sm', 'md', 'lg', 'xl']
+
 const render = (
   hideBelow: BreakpointBoundary | undefined,
   hideFrom: BreakpointBoundary | undefined,
-  { asChild, className, children }: VisibilityProps
+  { asChild, className, children }: VisibilityProps,
+  hideBetween?: [BreakpointBoundary, BreakpointBoundary]
 ): JSX.Element => {
   const Root = (asChild ? Slot : 'div') as typeof Slot
   return (
@@ -29,6 +32,7 @@ const render = (
         !asChild && 'sauce-Visibility',
         hideBelow && `sauce-Visibility--hide-below-${hideBelow}`,
         hideFrom && `sauce-Visibility--hide-from-${hideFrom}`,
+        hideBetween && `sauce-Visibility--hide-${hideBetween[0]}-to-${hideBetween[1]}`,
         className
       )}
     >
@@ -52,6 +56,16 @@ const render = (
 export const Show = (props: VisibilityProps): JSX.Element =>
   render(props.above, props.below, props)
 
-/** The inverse of Show: hides children from `above` upward and/or `below` a breakpoint. */
-export const Hide = (props: VisibilityProps): JSX.Element =>
-  render(props.below, props.above, props)
+/**
+ * The inverse of Show: hides children from `above` upward and/or `below` a
+ * breakpoint. With both, and `above` the smaller, it hides only between them.
+ */
+export const Hide = (props: VisibilityProps): JSX.Element => {
+  const { above, below } = props
+  // A range is an intersection, which two independent hide classes (a union)
+  // can't express: they would hide at every width.
+  if (above && below && order.indexOf(above) < order.indexOf(below)) {
+    return render(undefined, undefined, props, [above, below])
+  }
+  return render(below, above, props)
+}
