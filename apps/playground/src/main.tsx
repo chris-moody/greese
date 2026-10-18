@@ -8,6 +8,7 @@ import { createRoot } from 'react-dom/client'
 const pages: Record<string, () => Promise<{ default: ComponentType }>> = {
   theming: () => import('./pages/Theming.tsx').then((m) => ({ default: m.Theming })),
   layout: () => import('./pages/Layout.tsx').then((m) => ({ default: m.Layout })),
+  forms: () => import('./pages/Forms.tsx').then((m) => ({ default: m.Forms })),
   'bench-sauce': () =>
     import('./pages/bench/SauceBench.tsx').then((m) => ({ default: m.SauceBench })),
   'bench-mui': () =>

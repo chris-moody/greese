@@ -17,6 +17,8 @@ export default defineConfig({
     // cascade layers): verify them in every engine, not just Chromium.
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    // iOS Safari smoke test: WebKit with a phone viewport and touch.
+    { name: 'iphone', use: { ...devices['iPhone 15'] } },
   ],
   webServer: {
     command: 'npm run build && npm run preview',
