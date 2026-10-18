@@ -43,6 +43,8 @@ jobs:
       - run: npm ci --no-audit --no-fund
 
       - run: npm run build
+      - name: Verify the packages as a consumer installs them
+        run: npm run verify:packages
       - run: npm run check-types
       - run: npm run lint
       - run: npm test
@@ -51,10 +53,14 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:e2e
+      - name: Lighthouse budgets
+        run: npm run lighthouse -w playground
 
       - if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: apps/playground/playwright-report
+          path: |
+            apps/playground/playwright-report
+            apps/playground/lighthouse-report
           retention-days: 7

@@ -1,0 +1,57 @@
+# Visual regression: every Storybook story, light/dark x phone/desktop, in the
+# official Playwright image so rendering is identical on every run.
+#
+# First time (and after intentional visual changes): run this workflow
+# manually with "update" ticked, download the "linux-baselines" artifact into
+# apps/playground/e2e/__screenshots__/linux/, review and commit it.
+name: Visual
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      update:
+        description: Record new baselines instead of comparing
+        type: boolean
+        default: false
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.64.1-noble
+    env:
+      HOME: /root
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx turbo run build --filter=docs
+
+      - name: Record baselines
+        if: inputs.update
+        run: npm run test:visual:update -w playground
+      - uses: actions/upload-artifact@v4
+        if: inputs.update
+        with:
+          name: linux-baselines
+          path: apps/playground/e2e/__screenshots__/linux
+
+      - name: Check for baselines
+        id: baselines
+        if: ${{ !inputs.update }}
+        run: |
+          if [ -d apps/playground/e2e/__screenshots__/linux ]; then echo "present=true" >> "$GITHUB_OUTPUT"
+          else echo "::notice title=No Linux visual baselines::Run the Visual workflow with 'update' and commit the artifact."; fi
+      - name: Compare against baselines
+        if: steps.baselines.outputs.present == 'true'
+        run: npm run test:visual -w playground
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: visual-report
+          path: apps/playground/playwright-report
+          retention-days: 7
