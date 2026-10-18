@@ -74,6 +74,7 @@ const preview: Preview = {
             'Responsive props',
             'Accessibility',
             'Animation',
+            'greese.js',
             'Migrating from MUI',
           ],
           'Foundations',

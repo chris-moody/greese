@@ -24,12 +24,12 @@ This guide covers, in order:
 
 ## How it fits together
 
-| Layer | What it holds | Set by |
-|---|---|---|
-| `greese.tokens` | Default token values, light and dark | `styles.css` |
-| `greese.theme` | Your themes' token values | `createTheme` + `ThemeProvider` |
-| `greese.components` | Component styles, which read tokens | `styles.css` or `css/<Name>.css` |
-| (unlayered) | Your own CSS | You |
+| Layer               | What it holds                        | Set by                           |
+| ------------------- | ------------------------------------ | -------------------------------- |
+| `greese.tokens`     | Default token values, light and dark | `styles.css`                     |
+| `greese.theme`      | Your themes' token values            | `createTheme` + `ThemeProvider`  |
+| `greese.components` | Component styles, which read tokens  | `styles.css` or `css/<Name>.css` |
+| (unlayered)         | Your own CSS                         | You                              |
 
 All library CSS lives in [cascade layers](https://developer.mozilla.org/docs/Web/CSS/@layer).
 Unlayered CSS always beats layered CSS whatever the specificity, so your
@@ -90,7 +90,7 @@ first paint. Put this inline script in `<head>`, before your stylesheets:
 ```tsx
 import { getSchemeScript } from '@greese-ui/react'
 
-<head>
+;<head>
   <script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
 </head>
 ```
@@ -106,7 +106,12 @@ Because the script changes `<html>` before React hydrates, add
 
 ```tsx
 'use client'
-import { SegmentedControl, Segment, useColorScheme, type ColorScheme } from '@greese-ui/react'
+import {
+  SegmentedControl,
+  Segment,
+  useColorScheme,
+  type ColorScheme,
+} from '@greese-ui/react'
 
 export function SchemeToggle() {
   const { scheme, setScheme } = useColorScheme()
@@ -145,12 +150,12 @@ the root:
 Every colour token has a light and a dark value. Which one applies is decided
 per element:
 
-| Situation | Result |
-|---|---|
-| No `data-greese-scheme` anywhere | Follows the OS (`prefers-color-scheme`) |
-| `data-greese-scheme="dark"` on `<html>` (set by `useColorScheme`) | Whole page dark |
-| `<ThemeProvider scheme="dark">` around a section | That section dark, whatever the page is |
-| `scheme="system"` on a provider inside a forced-dark page | That section follows the OS again |
+| Situation                                                         | Result                                  |
+| ----------------------------------------------------------------- | --------------------------------------- |
+| No `data-greese-scheme` anywhere                                  | Follows the OS (`prefers-color-scheme`) |
+| `data-greese-scheme="dark"` on `<html>` (set by `useColorScheme`) | Whole page dark                         |
+| `<ThemeProvider scheme="dark">` around a section                  | That section dark, whatever the page is |
+| `scheme="system"` on a provider inside a forced-dark page         | That section follows the OS again       |
 
 Schemes nest, so a light card inside a dark hero is just a nested provider:
 
@@ -295,16 +300,17 @@ on the component, a class, or any ancestor:
 }
 ```
 
-| Component | Variables |
-|---|---|
-| Button, IconButton | `--greese-button-tone`, `--greese-button-on-tone` (variants derive from these), `--greese-button-height`, `--greese-button-padding` |
-| Input, Select, Textarea, FileInput | `--greese-input-height`, `--greese-input-padding`, `--greese-select-height`, `--greese-select-padding`, `--greese-textarea-padding`, `--greese-file-height`, `--greese-file-padding` |
-| Card | `--greese-card-padding` |
-| Dialog | `--greese-dialog-width` |
-| Sidebar | `--greese-sidebar-width` |
-| Avatar, Spinner, Progress | `--greese-avatar-size`, `--greese-spinner-size`, `--greese-progress-height` |
-| Slider, ColorPicker | `--greese-slider-thumb`, `--greese-colorpicker-thumb` |
-| SegmentedControl, Table | `--greese-segment-height`, `--greese-table-cell-padding` |
+| Component                          | Variables                                                                                                                                                                                                                      |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Button, IconButton                 | `--greese-button-tone`, `--greese-button-on-tone` (variants derive from these), `--greese-button-height`, `--greese-button-padding`                                                                                            |
+| Input, Select, Textarea, FileInput | `--greese-input-height`, `--greese-input-padding`, `--greese-select-height`, `--greese-select-padding`, `--greese-textarea-padding`, `--greese-file-height`, `--greese-file-padding`                                           |
+| Card                               | `--greese-card-padding`                                                                                                                                                                                                        |
+| Dialog                             | `--greese-dialog-width`                                                                                                                                                                                                        |
+| Sidebar                            | `--greese-sidebar-width`                                                                                                                                                                                                       |
+| Avatar, Spinner, Progress          | `--greese-avatar-size`, `--greese-spinner-size`, `--greese-progress-height`                                                                                                                                                    |
+| Slider, ColorPicker                | `--greese-slider-thumb`, `--greese-colorpicker-thumb`                                                                                                                                                                          |
+| SegmentedControl, Table            | `--greese-segment-height`, `--greese-table-cell-padding`                                                                                                                                                                       |
+| Motion (the `greese` prop)         | `--greese-motion-duration`, `--greese-motion-delay`, `--greese-motion-distance`, `--greese-motion-ease`, and the named curves `--greese-ease-in`, `-out`, `-in-out`. Set on `:root` or any ancestor (see **Guides/Animation**) |
 
 Class names (`greese-Button`, `greese-Card`, …) are stable, prefixed and never
 hashed, so they're safe to target. Avoid targeting internal parts
@@ -401,7 +407,9 @@ writeFileSync('public/brand.css', brand.css)
 
 ```html
 <link rel="stylesheet" href="/brand.css" />
-<html data-greese-theme="brand">…</html>
+<html data-greese-theme="brand">
+  …
+</html>
 ```
 
 `@greese-ui/tokens/tokens.css` has the default tokens on their own, for
@@ -412,18 +420,18 @@ non-React code that should match.
 The live values, with swatches, are under **Foundations/Tokens**. The
 property name is `--greese-<group>-<key>`, with camelCase keys in kebab case.
 
-| Group | `createTheme` key | Keys |
-|---|---|---|
-| Colour | `color` | `canvas`, `surface`, `surfaceOverlay`, `fg`, `fgMuted`, `border`, `borderStrong`, `accent`, `accentStrong`, `onAccent`, `focusRing`, `positive`, `negative`, `onNegative`, `warning`, `info`, `scrim` |
-| Spacing | `space` | `0`–`8` (`0`, `0.25rem`, `0.5rem`, `0.75rem`, `1rem`, `1.5rem`, `2rem`, `3rem`, `4rem`) |
-| Radius | `radius` | `none`, `sm`, `md`, `lg`, `pill` |
-| Font family | `font` | `body`, `mono` |
-| Font size | `fontSize` | `xs`, `sm`, `md`, `lg`, `xl`, `2xl`, `3xl`, `4xl` |
-| Font weight | `fontWeight` | `regular`, `medium`, `semibold`, `bold` |
-| Line height | `lineHeight` | `tight`, `snug`, `normal` |
-| Shadow | `shadow` | `sm`, `md`, `lg` |
-| Stacking | `zIndex` | `dropdown`, `sticky`, `overlay`, `modal`, `popover`, `toast`, `tooltip` |
-| Motion | `duration`, `easing` | `fast`, `normal`, `slow`; `standard`, `enter`, `exit` |
+| Group       | `createTheme` key    | Keys                                                                                                                                                                                                  |
+| ----------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Colour      | `color`              | `canvas`, `surface`, `surfaceOverlay`, `fg`, `fgMuted`, `border`, `borderStrong`, `accent`, `accentStrong`, `onAccent`, `focusRing`, `positive`, `negative`, `onNegative`, `warning`, `info`, `scrim` |
+| Spacing     | `space`              | `0`–`8` (`0`, `0.25rem`, `0.5rem`, `0.75rem`, `1rem`, `1.5rem`, `2rem`, `3rem`, `4rem`)                                                                                                               |
+| Radius      | `radius`             | `none`, `sm`, `md`, `lg`, `pill`                                                                                                                                                                      |
+| Font family | `font`               | `body`, `mono`                                                                                                                                                                                        |
+| Font size   | `fontSize`           | `xs`, `sm`, `md`, `lg`, `xl`, `2xl`, `3xl`, `4xl`                                                                                                                                                     |
+| Font weight | `fontWeight`         | `regular`, `medium`, `semibold`, `bold`                                                                                                                                                               |
+| Line height | `lineHeight`         | `tight`, `snug`, `normal`                                                                                                                                                                             |
+| Shadow      | `shadow`             | `sm`, `md`, `lg`                                                                                                                                                                                      |
+| Stacking    | `zIndex`             | `dropdown`, `sticky`, `overlay`, `modal`, `popover`, `toast`, `tooltip`                                                                                                                               |
+| Motion      | `duration`, `easing` | `fast`, `normal`, `slow`; `standard`, `enter`, `exit`                                                                                                                                                 |
 
 Durations collapse to near zero under `prefers-reduced-motion: reduce`, in
 themes too.
@@ -435,13 +443,13 @@ Coming from MUI? `palette.primary.main` is `accent`,
 
 ## Troubleshooting
 
-| Symptom | Cause and fix |
-|---|---|
-| Dark-mode users see a white flash on load | Add `getSchemeScript()` to `<head>`, before stylesheets |
-| Hydration warning about `data-greese-scheme` | Add `suppressHydrationWarning` to `<html>` |
+| Symptom                                                                   | Cause and fix                                                                             |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Dark-mode users see a white flash on load                                 | Add `getSchemeScript()` to `<head>`, before stylesheets                                   |
+| Hydration warning about `data-greese-scheme`                              | Add `suppressHydrationWarning` to `<html>`                                                |
 | My `:root` colour override is ignored in dark mode or in a scheme section | Use `createTheme`, or mirror the scheme selectors ([plain CSS](#overriding-in-plain-css)) |
-| My `:root` override is ignored inside a `ThemeProvider` | Themes declare every token; put the override in the theme |
-| A nested theme lost the outer theme's overrides | Themes replace, not stack; spread the outer theme's options into the inner one |
-| The page background doesn't change with the scheme | Import `base.css`, or set `background: var(--greese-color-canvas)` yourself |
-| The saved choice isn't restored | `useColorScheme` and `getSchemeScript` must use the same `storageKey` |
-| Breakpoint changes have no effect on components | Recompile the SCSS with `$breakpoints`; `configureBreakpoints` only affects JS |
+| My `:root` override is ignored inside a `ThemeProvider`                   | Themes declare every token; put the override in the theme                                 |
+| A nested theme lost the outer theme's overrides                           | Themes replace, not stack; spread the outer theme's options into the inner one            |
+| The page background doesn't change with the scheme                        | Import `base.css`, or set `background: var(--greese-color-canvas)` yourself               |
+| The saved choice isn't restored                                           | `useColorScheme` and `getSchemeScript` must use the same `storageKey`                     |
+| Breakpoint changes have no effect on components                           | Recompile the SCSS with `$breakpoints`; `configureBreakpoints` only affects JS            |

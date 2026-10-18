@@ -2,204 +2,187 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 <Meta title="Guides/Animation" />
 
-# Animation with greese.js
+# Animation in GreeseUI
 
-greese.js (`@greese-ui/greese`) is GreeseUI's animation library: keyframes,
-organised into timelines you can play, pause, seek, reverse, speed up and
-nest. It's about 5 kB (brotli) and has no dependencies. `@greese-ui/react`
-depends on it and re-exports the main API, so it's already installed:
+GreeseUI animates on three levels, from least to most code:
 
-```ts
-import { animate, timeline, splitText, ease } from '@greese-ui/react'
-// or, without GreeseUI's components:
-import { animate, timeline } from '@greese-ui/greese'
+| Level                              | What                                                                                                            | Costs                                                                          |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **The `greese` prop**              | Presets and options on any component: entrances, scroll reveals, hover/press/focus, text effects, overlay exits | Presets: CSS only. Interactions and text: a small runtime, loaded on first use |
+| **`<Motion>` and `useTimeline()`** | The prop for any element; a greese.js timeline tied to a component's lifetime                                   | The same, plus what you build                                                  |
+| **greese.js directly**             | Full timelines, re-exported from `@greese-ui/react`                                                             | About 5 kB, only if imported                                                   |
+
+The live demos are under **Motion/greese prop** and **Motion/greese.js**.
+greese.js on its own, in every install form, is covered in
+**Guides/greese.js**.
+
+## Do you need any of it?
+
+Components already animate their own states (menus, dialogs, toasts,
+tooltips) with CSS. That runs off the main thread, and the `--greese-duration-*`
+tokens collapse it under reduced motion. Add motion where it helps
+someone follow what changed, not everywhere.
+
+## The `greese` prop
+
+Every GreeseUI component that draws something accepts `greese`. That's all of
+them except Slot, VisuallyHidden, Break, Spacer, Show/Hide, ThemeProvider and
+Toaster; a type check in the build enforces it.
+
+```tsx
+<Card greese="fade-up" />                                    // enter preset
+<Card greese={{ inView: 'fade-up' }} />                      // when scrolled into view
+<Stack greese={{ enter: 'fade-up', stagger: 0.05 }}>…</Stack> // children in turn
+<Button greese={{ hover: 'lift', press: 'squish' }} />       // interaction feedback
+<Heading greese={{ text: 'split' }}>Served fast</Heading>    // text effects
+<Dialog greese={{ enter: 'pop', exit: 'scale-out' }} … />    // overlay enter and exit
 ```
 
-Bundlers drop it entirely if you never import it. See the live demos under
-**Motion/greese.js**.
+### Options
 
-## Do you need JavaScript at all?
+| Option                    | Values                                                                                                                                                          | Needs JavaScript?             |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `enter`                   | A preset (below), or greese.js keyframes                                                                                                                        | Presets: no. Keyframes: yes   |
+| `inView`                  | A preset or keyframes; plays when scrolled into view. Elements already in view stay as they are                                                                 | Yes (an IntersectionObserver) |
+| `once`                    | `inView` plays only the first time (default `true`)                                                                                                             |                               |
+| `exit`                    | `'fade'`, `'fade-down'`, `'fade-up'`, `'scale-out'`: how an overlay (Dialog, Popover, Menu, Tooltip) leaves                                                     | No                            |
+| `hover`, `press`, `focus` | `'lift'`, `'squish'`, `'tilt'`, `'glow'`, or keyframes. Plays and reverses; interruptible. Hover ignores touch                                                  | Yes                           |
+| `text`                    | `'type'`, `'count'`, `'split'`, for plain-text content                                                                                                          | Yes                           |
+| `duration`, `delay`       | Seconds. Defaults: 0.5 for entrances, 0.2 for interactions                                                                                                      |                               |
+| `ease`                    | Any greese.js ease. `linear`, `in`, `out`, `inOut`, the CSS keywords and bézier arrays stay CSS-only; others (`elastic.out`…) switch the entrance to JavaScript |                               |
+| `distance`                | How far `fade-up`/`-down`/`-start`/`-end` travel (default `'1rem'`)                                                                                             |                               |
+| `stagger`                 | Seconds between children: animates the children instead of the element                                                                                          |                               |
+| `timeline`                | `(tl, el) => void`: fill a greese.js timeline yourself. It plays on enter, or on reveal with `inView`                                                           | Yes                           |
 
-Prefer CSS when it's enough: `transition` for state changes, and
-`@keyframes` for loops. GreeseUI's own components animate that way.
-They run off the main thread for `transform` and `opacity`, and respect
-`prefers-reduced-motion` through the tokens (`--greese-duration-*` collapse to
-near zero).
+**Entrance presets:** `fade`, `fade-up`, `fade-down`, `fade-start`,
+`fade-end` (these follow the writing direction), `scale-in`, `blur-in`,
+`slide-up` and `pop`.
 
-Reach for greese.js when you need what CSS can't do:
+### How it stays light
 
-- sequencing across elements;
-- scrubbing, seeking or reversing;
-- staggering lists;
-- counting text, or splitting it into letters;
-- nested timelines;
-- animating non-CSS things (canvas state, scroll position, an object your code
-  reads).
+- **CSS presets have no JavaScript.** `greese="fade-up"` resolves to a class
+  and a few custom properties during render. That works in Server
+  Components, the first paint is already animating, and nothing flashes.
+- **The runtime loads only when needed.** Interactions, scroll reveals, text
+  effects, keyframes and timelines need a small runtime plus greese.js
+  (about 6.4 kB together). Components load it with a dynamic `import()`, so
+  your bundler puts it in its own chunk, fetched the first time a prop needs
+  it. A page with no such prop never downloads it.
+- **The cost to every component** is about 0.75 kB (brotli), paid once per
+  app. That's the resolver and the client island that attaches the runtime.
 
-## The one-call API
+### Loading the runtime up front
 
-```ts
-animate('.card', { opacity: [0, 1], y: [16, 0] }, { duration: 0.4, stagger: 0.05 })
-```
-
-`animate(targets, keyframes, options)` builds a timeline, plays it on the
-next frame and returns it.
-
-- **Targets**: a selector, an element, a list of elements (NodeList, array),
-  or any object.
-- **Times are seconds**, as in GSAP (WAAPI uses milliseconds).
-- **Keyframes** come in two forms, as with `element.animate()`:
-  - **Property lists**: `{ opacity: [0, 1], x: [0, 40, 20] }`. Values are
-    spaced evenly; a single value animates from the current one.
-  - **Frames**: `[{ scale: 1 }, { scale: 1.2, offset: 0.3, ease: 'in' }, { scale: 1 }]`.
-    `offset` (0–1) places a frame (missing offsets are spaced evenly), and a
-    frame's `ease` applies until the next frame.
-
-## Timelines
+A JavaScript entrance (keyframes, text effects, timelines) can't start until
+the runtime arrives. If that's on the first screen, import it once at your
+entry point, so it's in the main bundle and attaches before the first paint:
 
 ```ts
-const intro = timeline()
-  .to('.title', { opacity: 1, y: 0, duration: 0.6 })
-  .from('.card', { opacity: 0, y: 24, stagger: 0.08 }, '-=0.3')
-  .call(() => track('intro-done'))
+// main.tsx, or app/layout.tsx
+import '@greese-ui/react/greese'
 ```
 
-| Method                                              | Does                                                                           |
-| --------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `.to(targets, vars, position?)`                     | Animates from current values to `vars`                                         |
-| `.from(targets, vars, position?)`                   | From `vars` to current values; `vars` show until it starts, so nothing flashes |
-| `.fromTo(targets, from, to, position?)`             | Both ends explicit                                                             |
-| `.animate(targets, keyframes, options?, position?)` | Keyframes, as above                                                            |
-| `.set(targets, vars, position?)`                    | Sets values at a point in time                                                 |
-| `.add(timeline \| fn, position?)`                   | Nests a timeline, or schedules a callback                                      |
-| `.call(fn, position?)`                              | Runs `fn` when the playhead passes, in either direction                        |
-| `.label(name, position?)`                           | Names a time                                                                   |
+Without it, everything still works; the runtime simply loads on first use.
 
-`vars` holds property values plus `duration` (default `0.5`), `ease` (default
-`'out'`) and `stagger`.
+### Server Components and SSR
 
-**Positions** place each child:
+- Presets and options render on the server: the classes and variables are in
+  the HTML, and the animation starts with the first paint.
+- Interactions, reveals and text effects attach after hydration.
+- `timeline` takes a function, and functions can't cross from a Server
+  Component to the client. Use it from a client component (`'use client'`).
 
-| Position                   | Means                                                |
-| -------------------------- | ---------------------------------------------------- |
-| omitted                    | At the end: calls run in sequence                    |
-| `1.5`                      | At 1.5 s                                             |
-| `'+=0.2'` / `'-=0.2'`      | 0.2 s after / before the current end                 |
-| `'<'` / `'<0.1'`           | With / 0.1 s after the previous child's start        |
-| `'>'` / `'>-0.2'`          | At / 0.2 s before the previous child's end           |
-| `'intro'` / `'intro+=0.5'` | At / after a label (labels can't contain `+` or `-`) |
+### Per-component CSS
 
-### Controls
-
-`play(from?)`, `pause()`, `resume()`, `reverse(from?)`, `restart()`,
-`seek(timeOrLabel)`, `progress(0–1)`, `time(s)`, `timeScale(n)`,
-`duration()`, `totalDuration()`, `isActive()`, `invalidate()`, and `kill()`,
-which stops and restores every animated property.
-
-Options: `paused`, `repeat` (`-1` is forever), `yoyo`, `repeatDelay`,
-`timeScale`, `reducedMotion`, `onUpdate`, `onComplete`.
-
-A timeline is awaitable: `await animate(el, …)` resolves when it completes. It
-resolves with no value, so returning a timeline from an `async` function or a
-`then` callback waits for it to finish. That's usually what you want, but
-don't return a _paused_ timeline from one.
-
-### Nesting
+With `@greese-ui/react/styles.css`, the presets are included. If you import
+per-component stylesheets instead, add the presets once:
 
 ```ts
-const spin = timeline({ repeat: 2 }).to(icon, { rotate: 360, ease: 'linear' })
-const page = timeline().add(spin).add(slideIn.timeScale(2), '<0.3')
-page.reverse() // plays everything backwards, nested timelines included
+import '@greese-ui/react/css/Motion.css'
 ```
 
-A nested timeline stops running its own clock and is driven by its parent,
-through its own `repeat`, `yoyo` and `timeScale`.
+### Reduced motion
 
-## What can be animated
+Under `prefers-reduced-motion: reduce`:
 
-| Property                                             | Notes                                                                                                                                                                     |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `x`, `y`, `z`, `rotate`, `scale`, `scaleX`, `scaleY` | Written to the individual `translate`, `rotate` and `scale` properties: they compose without a matrix and don't fight a `transform` from your CSS. Numbers mean px or deg |
-| CSS properties, camelCase                            | `opacity`, `width`, `backgroundColor`, `filter`, `clipPath`, `boxShadow`… Bare numbers mean px, except unitless properties such as `opacity`                              |
-| `'--custom-properties'`                              | Including GreeseUI tokens: animate `--greese-color-accent` and every component that reads it follows                                                                        |
-| `text`                                               | Counts between numbers (`'0'` → `'12480'`), types on or deletes, or retypes                                                                                               |
-| SVG attributes the element has                       | `r`, `cx`, `d` (when point counts match)…                                                                                                                                 |
-| Numeric element properties                           | `scrollTop`, `scrollLeft`                                                                                                                                                 |
-| Any object property                                  | Canvas, WebGL or game state your code reads each frame                                                                                                                    |
+- CSS presets don't run, and nothing is ever hidden;
+- interactions don't move;
+- text stays as written;
+- scroll reveals show at once;
+- `timeline` jumps to its end.
 
-**How values interpolate:**
+You don't need to check the media query yourself.
 
-- **Numbers inside strings** interpolate when both ends have the same shape:
-  `blur(0px)` → `blur(8px)`, `inset(0 0 0 0)` → `inset(0 50% 0 0)`.
-- **A bare `0`** takes the other end's unit.
-- **Colours** mix in OKLab, so midpoints stay vivid, not muddy.
-- **Anything else** switches halfway, except `none`/`hidden`, which give way
-  to the shown value for the whole animation, as CSS does for `display`.
+### Tuning motion globally
 
-### Text
+The presets read CSS custom properties. Override them in your CSS (for
+example per brand) and every `greese` prop follows:
+
+```css
+:root {
+  --greese-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1); /* the default ease */
+}
+.calm {
+  --greese-motion-duration: 0.8s;
+  --greese-motion-distance: 0.5rem;
+}
+```
+
+| Variable                              | Default                                       |
+| ------------------------------------- | --------------------------------------------- |
+| `--greese-motion-duration`            | `0.5s`                                        |
+| `--greese-motion-delay`               | `0s`                                          |
+| `--greese-motion-distance`            | `1rem`                                        |
+| `--greese-motion-ease`                | `var(--greese-ease-out)`                      |
+| `--greese-ease-in`, `-out`, `-in-out` | The power2 curves behind `in`, `out`, `inOut` |
+
+A per-instance option (`greese={{ duration: 0.3 }}`) wins over these.
+
+## `<Motion>`: the prop for any element
+
+```tsx
+import { Motion } from '@greese-ui/react'
+
+<Motion greese="fade-up"><img src={hero} alt="" /></Motion>      // wraps in a <div>
+<Motion asChild greese={{ hover: 'lift' }}><a href="/pricing">Pricing</a></Motion>
+```
+
+## `useTimeline()`: a greese.js timeline per component
+
+It builds after mount (so refs are set), rebuilds when its dependencies
+change, and kills on unmount, which restores everything it animated.
+
+```tsx
+'use client'
+import { useRef } from 'react'
+import { Button, useTimeline } from '@greese-ui/react'
+
+export function Shake() {
+  const box = useRef<HTMLDivElement>(null)
+  const tl = useTimeline(
+    (tl) => tl.animate(box.current, { x: [0, -8, 8, -4, 0] }, { duration: 0.4 }),
+    [],
+    { paused: true }
+  )
+  return (
+    <>
+      <div ref={box}>Wrong password</div>
+      <Button onClick={() => tl?.restart()}>Try again</Button>
+    </>
+  )
+}
+```
+
+## greese.js directly
+
+Everything in **Guides/greese.js** works with GreeseUI components and
+tokens. Animate a token and every component that reads it follows:
 
 ```ts
-const { elements, revert } = splitText(heading) // or { by: 'words' }
-timeline().from(elements, { opacity: 0, y: 12, stagger: 0.03 })
+import { timeline } from '@greese-ui/react'
+
+timeline({ repeat: 1, yoyo: true }).to('.promo', {
+  '--greese-color-accent': '#e11d48',
+  duration: 1,
+})
 ```
-
-The pieces are hidden from assistive technology, and the full sentence is
-kept once, visually hidden, so screen readers read words, not letters.
-Characters stay grouped per word, so lines still wrap normally. Use it on
-plain text; markup inside is flattened. `revert()` restores the original.
-
-## Eases
-
-| Ease                                                                        | Use                                              |
-| --------------------------------------------------------------------------- | ------------------------------------------------ |
-| `'out'` (default), `'in'`, `'inOut'`                                        | power2: a good general curve                     |
-| `'power1'`–`'power4'`, `'sine'`, `'expo'`, `'circ'` + `.in`/`.out`/`.inOut` | Gentler to sharper curves                        |
-| `'back.out(2)'`                                                             | Overshoots, then settles (the number is how far) |
-| `'elastic.out(1.2, 0.4)'`                                                   | Springs (amplitude, period)                      |
-| `'bounce.out'`                                                              | Bounces to rest                                  |
-| `'linear'`, `'ease'`, `'ease-in-out'`, `'steps(4)'`                         | The CSS names                                    |
-| `[0.2, 0, 0, 1]` or a function                                              | Any cubic-bézier, or your own curve              |
-
-Named eases match GSAP's, so GLOP code ports directly.
-
-## Accessibility: reduced motion
-
-When the user asks for reduced motion (`prefers-reduced-motion: reduce`), a
-timeline jumps straight to its end when played. The final state still applies;
-only the movement is skipped. For motion that carries meaning, such as a
-progress indicator, opt out per timeline:
-
-```ts
-timeline({ reducedMotion: 'ignore' })
-```
-
-## Performance
-
-greese.js samples values on the main thread, once per frame, through a single
-shared `requestAnimationFrame` loop that runs only while something plays. It
-batches each element's writes, so a frame does one style write per property.
-It reads computed styles only once per property, for the starting value, and
-never during playback.
-
-- Prefer `x`/`y`/`scale`/`rotate` and `opacity` over `width`, `top` or
-  `margin`: the browser can then skip layout.
-- For long-running decorative loops, CSS `@keyframes` costs less: it runs off
-  the main thread.
-- Starting values are read once, the first time a property is sampled. After
-  the page changes underneath (a resize), call `invalidate()`.
-
-## Coming from GSAP or GLOP
-
-| GSAP                                                              | greese.js                                                 |
-| ----------------------------------------------------------------- | -------------------------------------------------------- |
-| `gsap.to(t, vars)`                                                | `animate(t, vars)`, or `timeline().to(t, vars)`          |
-| `gsap.timeline()` + `.to/.from/.fromTo/.set/.add/.call/.addLabel` | `timeline()` + the same, with `.label`                   |
-| Position parameter                                                | The same syntax                                          |
-| `stagger: 0.1`, `{ each, from }`                                  | The same (`from: 'start' \| 'end' \| 'center' \| index`) |
-| `gsap.killTweensOf(t)`                                            | Keep the timeline and call `kill()`                      |
-| `SplitText`                                                       | `splitText`                                              |
-| Plugins, ScrollTrigger, MotionPath, morphing                      | Not included                                             |
-
-The model follows GLOP's Pixels timeline: per-property keyframe tracks
-sampled purely by time, nested timelines mapped through repeat and time scale
-(Pixels' spans), and OKLab colour mixing (Pixels mixes in OKLCH).
