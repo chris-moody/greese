@@ -1,0 +1,94 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-SegmentedControl {
+    @include mixins.component-root;
+
+    display: inline-block;
+    min-inline-size: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+
+    > legend {
+      padding: 0;
+      margin-block-end: var(--sauce-space-2);
+    }
+  }
+
+  .sauce-SegmentedControl--full {
+    display: block;
+  }
+
+  .sauce-SegmentedControl-track {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    background-color: var(--sauce-color-surface);
+    border: 1px solid var(--sauce-color-border);
+    border-radius: var(--sauce-radius-md);
+  }
+
+  .sauce-SegmentedControl--size-sm {
+    --sauce-segment-height: 1.75rem;
+
+    font-size: var(--sauce-font-size-sm);
+  }
+
+  .sauce-SegmentedControl--size-md {
+    --sauce-segment-height: 2.25rem;
+
+    font-size: var(--sauce-font-size-sm);
+  }
+
+  .sauce-Segment {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--sauce-segment-height);
+    padding-inline: var(--sauce-space-3);
+    font-weight: var(--sauce-font-weight-medium);
+    color: var(--sauce-color-fg-muted);
+    white-space: nowrap;
+    cursor: pointer;
+    border-radius: calc(var(--sauce-radius-md) - 3px);
+    transition:
+      background-color var(--sauce-duration-fast) var(--sauce-easing-standard),
+      color var(--sauce-duration-fast) var(--sauce-easing-standard);
+
+    @include mixins.hover {
+      color: var(--sauce-color-fg);
+    }
+
+    &:has(:checked) {
+      color: var(--sauce-color-fg);
+      background-color: var(--sauce-color-surface-overlay);
+      box-shadow: var(--sauce-shadow-sm);
+    }
+
+    &:has(:focus-visible) {
+      outline: 2px solid var(--sauce-color-focus-ring);
+      outline-offset: 1px;
+    }
+
+    &:has(:disabled) {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    @media (pointer: coarse) {
+      min-block-size: 2.75rem;
+    }
+  }
+
+  // The real radio covers the segment: it takes clicks, taps and focus.
+  .sauce-Segment-input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    cursor: inherit;
+    opacity: 0;
+  }
+}

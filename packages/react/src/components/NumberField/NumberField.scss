@@ -1,0 +1,44 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-NumberField .sauce-Input-control {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sauce-NumberField-steppers {
+    display: inline-flex;
+    gap: 2px;
+    margin-inline-end: calc(-1 * var(--sauce-space-2));
+  }
+
+  .sauce-NumberField-step {
+    @include mixins.touch-target;
+
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    padding: 0;
+    color: var(--sauce-color-fg-muted);
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-radius: var(--sauce-radius-sm);
+
+    > svg {
+      inline-size: 1rem;
+      block-size: 1rem;
+    }
+
+    @include mixins.hover {
+      color: var(--sauce-color-fg);
+      background-color: color-mix(in oklab, var(--sauce-color-fg) 8%, transparent);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+}

@@ -4,7 +4,7 @@
     "path": "dist/index.js",
     "import": "*",
     "ignore": ["react", "react-dom"],
-    "limit": "15 kB"
+    "limit": "18 kB"
   },
   {
     "name": "JS: tree-shaken { VisuallyHidden }",
@@ -63,6 +63,27 @@
     "limit": "2.5 kB"
   },
   {
+    "name": "JS: tree-shaken { Combobox }",
+    "path": "dist/index.js",
+    "import": "{ Combobox }",
+    "ignore": ["react", "react-dom"],
+    "limit": "3.5 kB"
+  },
+  {
+    "name": "JS: tree-shaken { NumberField }",
+    "path": "dist/index.js",
+    "import": "{ NumberField }",
+    "ignore": ["react", "react-dom"],
+    "limit": "2.5 kB"
+  },
+  {
+    "name": "JS: tree-shaken { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell }",
+    "path": "dist/index.js",
+    "import": "{ Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell }",
+    "ignore": ["react", "react-dom"],
+    "limit": "1.5 kB"
+  },
+  {
     "name": "JS: tree-shaken { ThemeProvider }",
     "path": "dist/index.js",
     "import": "{ ThemeProvider }",
@@ -80,7 +101,7 @@
     "name": "CSS: sauce-ui.css",
     "path": "dist/sauce-ui.css",
     "rolldown": false,
-    "limit": "14.5 kB"
+    "limit": "16 kB"
   },
   {
     "name": "CSS: base.css",

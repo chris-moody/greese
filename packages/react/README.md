@@ -110,6 +110,10 @@ input, so `react-hook-form`'s `register()` needs no adapters.
 <IconButton label="Close"><XIcon /></IconButton>
 ```
 
+Also: `Combobox` (searchable select), `NumberField` (spinbutton with
+steppers), `DateField` (native date and time pickers), `SegmentedControl`, and
+`Table` primitives with sortable headers and a stacked card layout on phones.
+
 `Field` connects its label, description and error to its control. Call
 `useFieldControl()` to make your own controls Field-aware. On touch screens,
 control text is never smaller than 16px (so iOS doesn't zoom) and hit areas
