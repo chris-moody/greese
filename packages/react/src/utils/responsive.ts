@@ -76,8 +76,9 @@ export const mapResponsive = <T, U>(
 /** One responsive prop's value paired with its (module-level, static) config. */
 export type ResponsiveEntry = readonly [
   value: Responsive<ResponsiveValue> | null | undefined,
-  // Configs are invariant in T; `any` lets entries of different value types share an array.
-  config: ResponsiveConfig<any>,
+  // `never`: every ResponsiveConfig<T> is assignable here (its functions only
+  // take values), so entries of different value types share one array.
+  config: ResponsiveConfig<never>,
 ]
 
 export interface ResolvedResponsive {
@@ -134,8 +135,10 @@ export const resolveResponsive = (
     }
   }
 
-  for (const [value, config] of entries) {
+  for (const [value, entryConfig] of entries) {
     if (value == null) continue
+    // Safe: each entry pairs a value with the config written for its type.
+    const config = entryConfig as unknown as ResponsiveConfig
     addClass(responsivePropClass(config.block, config.prop))
     if (isPerBreakpoint(value)) {
       for (const bp of breakpointKeys) {
