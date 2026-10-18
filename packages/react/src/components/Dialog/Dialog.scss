@@ -10,10 +10,14 @@ $widths: (
 );
 
 @layer greese.components {
-  // Scroll lock with no JS: the page stops scrolling while a modal is open.
+  // Scroll lock: the page stops scrolling while a modal is open. The
+  // scrollbar goes, rather than leaving a reserved gutter: browsers clip the
+  // top layer at a gutter, which left an undimmed strip and a gap beside end
+  // drawers wherever scrollbars always show. Padding by the scrollbar's width
+  // (measured on open) keeps the page from shifting.
   :root:has(.greese-Dialog:modal) {
+    padding-inline-end: var(--greese-scrollbar-gap, 0);
     overflow: hidden;
-    scrollbar-gutter: stable;
   }
 
   .greese-Dialog {

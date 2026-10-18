@@ -35,7 +35,16 @@ The browser provides the top layer, the focus trap, the inert background,
 Escape to close and `::backdrop`. We add:
 
 - **Scroll lock in CSS:** `:root:has(.greese-Dialog:modal) { overflow: hidden }`.
-  There's no JS, and no lock is left behind if a component unmounts mid-open.
+  No lock is left behind if a component unmounts mid-open. Where scrollbars
+  take space (Windows, macOS with a mouse), removing the scrollbar would shift
+  the page. A reserved gutter (`scrollbar-gutter: stable`) avoids the shift
+  but can't be painted over: browsers clip the top layer at the gutter, so the
+  backdrop left an undimmed strip and end drawers stopped short of the edge.
+  So the lock removes the scrollbar, and the page is padded by its width
+  (`--greese-scrollbar-gap`, measured just before the first modal opens: one
+  line of JS). That keeps the page still while the backdrop and drawers
+  reach the screen edge. `e2e/scrollbars.spec.ts` checks this with real
+  scrollbars.
 - **Always dismissible:** `closedby="any"`. Where that isn't supported, a
   click outside the dialog's box closes it. Escape, the backdrop and the close
   button always close a dialog or drawer; there is no way to turn that off. A

@@ -19,6 +19,14 @@ test('dialog: traps focus, blocks the page, locks scroll, and returns focus on E
   expect(
     await page.evaluate(() => getComputedStyle(document.documentElement).overflow)
   ).toBe('hidden')
+  // The scrim covers the whole screen (the backdrop hit-tests as its dialog).
+  expect(
+    await page.evaluate(
+      () =>
+        document.elementFromPoint(innerWidth - 1, innerHeight / 2)?.closest('dialog') !==
+        null
+    )
+  ).toBe(true)
 
   // Tab past the end: focus may pass through the browser's own UI (body), as
   // native modals do, but never reaches the page behind.

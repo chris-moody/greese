@@ -85,6 +85,13 @@ const ModalBase = ({
       if (!returnTo.current && document.activeElement !== document.body) {
         returnTo.current = document.activeElement as HTMLElement | null
       }
+      // The scroll lock (Dialog.scss) removes the page scrollbar so the
+      // backdrop and edge drawers reach the screen edge; pad by its width so
+      // the page doesn't shift. Measured before the first modal locks.
+      const root = document.documentElement
+      if (!document.querySelector('.greese-Dialog:modal')) {
+        root.style.setProperty('--greese-scrollbar-gap', `${innerWidth - root.clientWidth}px`)
+      }
       el.showModal()
     }
     if (!open && el.open) el.close()
