@@ -4,59 +4,362 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 # Theming
 
-Every visual value is a `--sauce-*` custom property: `--sauce-color-accent`,
-`--sauce-space-4`, `--sauce-radius-md`, `--sauce-font-size-lg`, … (see
-**Foundations/Tokens**). All library rules live in `@layer sauce.*`, so your unlayered
-CSS always wins: no `!important`, no specificity battles.
+SauceUI's look is a set of design tokens. Each one is a CSS custom property
+(`--sauce-color-accent`, `--sauce-space-4`, `--sauce-radius-md`, …), and every
+component reads them. To theme the library, you change token values. There's
+no theme object in React state, no re-render when the theme changes, and no
+CSS-in-JS runtime.
 
-## In plain CSS
+This guide covers, in order:
 
-```css
-:root {
-  --sauce-color-accent: #7c3aed;
-  --sauce-radius-md: 12px;
+1. [Setup](#setup): the steps every app needs, and the optional ones.
+2. [Light and dark](#light-and-dark): following the OS, a user toggle, and no
+   flash on load.
+3. [Brand themes](#brand-themes-createtheme): `createTheme` and `ThemeProvider`.
+4. [Overriding in plain CSS](#overriding-in-plain-css), for one-off changes.
+5. [Per-component variables](#per-component-variables).
+6. [Server rendering and frameworks](#server-rendering-and-frameworks).
+7. [Custom breakpoints](#custom-breakpoints) and [without React](#without-react).
+8. [Token reference](#token-reference) and [troubleshooting](#troubleshooting).
+
+## How it fits together
+
+| Layer | What it holds | Set by |
+|---|---|---|
+| `sauce.tokens` | Default token values, light and dark | `styles.css` |
+| `sauce.theme` | Your themes' token values | `createTheme` + `ThemeProvider` |
+| `sauce.components` | Component styles, which read tokens | `styles.css` or `css/<Name>.css` |
+| (unlayered) | Your own CSS | You |
+
+All library CSS lives in [cascade layers](https://developer.mozilla.org/docs/Web/CSS/@layer).
+Unlayered CSS always beats layered CSS whatever the specificity, so your
+stylesheet wins without `!important`.
+
+Two attributes drive everything, and they work on any element, `<html>`
+included:
+
+- `data-sauce-scheme="light" | "dark" | "system"` forces a colour scheme for
+  that subtree. With no attribute anywhere, the page follows the OS.
+- `data-sauce-theme="<name>"` applies a theme from `createTheme`.
+
+## Setup
+
+### 1. Install (required)
+
+```sh
+npm install @sauce-ui/react
+```
+
+`@sauce-ui/tokens` comes with it. React 19 is a peer dependency.
+
+### 2. Load the styles (required)
+
+Pick **one** of these:
+
+```ts
+// Everything (about 13 kB brotli). Simplest.
+import '@sauce-ui/react/styles.css'
+```
+
+```ts
+// Only what you use: each file @imports the tokens and the components it
+// builds on, and bundlers de-duplicate shared imports.
+import '@sauce-ui/react/css/Button.css'
+import '@sauce-ui/react/css/Dialog.css'
+```
+
+Optionally, also load the reset and page defaults (box-sizing, body font and
+colours, `canvas` background):
+
+```ts
+import '@sauce-ui/react/base.css'
+```
+
+Without `base.css`, components are still fully styled. Your page background
+just won't switch with the colour scheme unless you set it yourself, for
+example with `body { background: var(--sauce-color-canvas); color: var(--sauce-color-fg) }`.
+
+At this point everything follows the OS light/dark setting. **No provider is
+required.** The remaining steps are optional.
+
+### 3. Stop the dark-mode flash (recommended if users can choose a scheme)
+
+If you let users pick a scheme, their saved choice must apply before the
+first paint. Put this inline script in `<head>`, before your stylesheets:
+
+```tsx
+import { getSchemeScript } from '@sauce-ui/react'
+
+<head>
+  <script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
+</head>
+```
+
+It reads `localStorage` and sets `data-sauce-scheme` on `<html>`. It's a few
+hundred bytes, and it never throws, even when storage is blocked. If your CSP
+blocks inline scripts, add a nonce or hash for it.
+
+Because the script changes `<html>` before React hydrates, add
+`suppressHydrationWarning` to your `<html>` element in server-rendered apps.
+
+### 4. Add a scheme toggle (optional)
+
+```tsx
+'use client'
+import { SegmentedControl, Segment, useColorScheme, type ColorScheme } from '@sauce-ui/react'
+
+export function SchemeToggle() {
+  const { scheme, setScheme } = useColorScheme()
+  return (
+    <SegmentedControl
+      label="Theme"
+      value={scheme}
+      onValueChange={(value) => setScheme(value as ColorScheme)}
+    >
+      <Segment value="system">System</Segment>
+      <Segment value="light">Light</Segment>
+      <Segment value="dark">Dark</Segment>
+    </SegmentedControl>
+  )
 }
 ```
 
-## Scoped themes: `createTheme` + `ThemeProvider`
+`setScheme` writes one attribute and saves the choice. `resolvedScheme` tells
+you what's actually showing (`system` resolved against the OS). If you pass a
+custom `storageKey` to `useColorScheme`, pass the same one to
+`getSchemeScript`.
+
+### 5. Add a brand theme (optional)
+
+See [Brand themes](#brand-themes-createtheme). To theme the whole app, wrap
+the root:
+
+```tsx
+<ThemeProvider theme={brand} asChild>
+  <body>…</body>
+</ThemeProvider>
+```
+
+## Light and dark
+
+Every colour token has a light and a dark value. Which one applies is decided
+per element:
+
+| Situation | Result |
+|---|---|
+| No `data-sauce-scheme` anywhere | Follows the OS (`prefers-color-scheme`) |
+| `data-sauce-scheme="dark"` on `<html>` (set by `useColorScheme`) | Whole page dark |
+| `<ThemeProvider scheme="dark">` around a section | That section dark, whatever the page is |
+| `scheme="system"` on a provider inside a forced-dark page | That section follows the OS again |
+
+Schemes nest, so a light card inside a dark hero is just a nested provider:
+
+```tsx
+<ThemeProvider scheme="dark">
+  <Hero>
+    <ThemeProvider scheme="light">
+      <Card>…</Card>
+    </ThemeProvider>
+  </Hero>
+</ThemeProvider>
+```
+
+The scheme also sets CSS `color-scheme`, so native scrollbars, form controls
+and date pickers match.
+
+## Brand themes: `createTheme`
 
 ```tsx
 import { createTheme, ThemeProvider } from '@sauce-ui/react'
 
-// Module scope: builds static CSS once.
-const brand = createTheme({
+// At module scope: it builds a static CSS string once.
+export const brand = createTheme({
   name: 'brand',
-  color: { accent: { light: '#7c3aed', dark: '#c4b5fd' } },
-  radius: { md: '12px' },
+  color: {
+    // A light/dark pair…
+    accent: { light: '#7c3aed', dark: '#c4b5fd' },
+    accentStrong: { light: '#6d28d9', dark: '#ddd6fe' },
+    focusRing: { light: '#7c3aed', dark: '#c4b5fd' },
+    // …or one value for both schemes.
+    onAccent: '#ffffff',
+  },
+  radius: { sm: '6px', md: '12px', lg: '20px' },
+  font: { body: "'Inter', system-ui, sans-serif" },
 })
 
 <ThemeProvider theme={brand}>…</ThemeProvider>
-<ThemeProvider scheme="dark">…this section is always dark…</ThemeProvider>
 ```
 
-- The provider adds no layout box (`display: contents`); `asChild` scopes your own element.
-- Theme CSS is injected once via React 19's `<style href precedence>`: hoisted,
-  de-duplicated and SSR-safe. Nothing is computed per render.
-- **Themes replace, they don't stack**: each is the defaults plus its overrides. To
-  extend one, create another with more overrides.
-- Nest freely: a scheme-only provider inside a theme keeps the theme, and vice versa.
+What to know:
 
-## Per component
+- **Any token can be overridden.** Colours take a string or a
+  `{ light, dark }` pair. Every other group (`space`, `radius`, `font`,
+  `fontSize`, `fontWeight`, `lineHeight`, `shadow`, `zIndex`, `duration`,
+  `easing`) takes strings. Values can be any CSS: `oklch(…)`, `var(--x)`,
+  `clamp(…)`. Characters that could break out of a declaration (`;`, `{`,
+  `}`, `<`, `>`) throw.
+- **Themes replace, they don't stack.** A theme is the defaults plus its
+  overrides, and it declares every token. Nesting `ThemeProvider theme={a}`
+  inside `theme={b}` gives you exactly `a`. To extend a theme, spread your
+  options: `createTheme({ ...brandOptions, name: 'brand-compact', space: { … } })`.
+- **Theme and scheme are independent.** A scheme-only provider inside a theme
+  keeps the theme, and vice versa.
+- **Derived states follow.** Hover, active, soft and outline variants are
+  computed from the tone with `color-mix()`. Change `accent`, and every
+  button, link, focus ring and selected state updates, in both schemes.
+- **Contrast is your responsibility.** Pair `accent` with an `onAccent` that
+  reads on it, and `negative` with `onNegative`. Check both schemes.
+- **No cost per render.** `ThemeProvider` renders a `<style href precedence>`
+  that React 19 hoists into `<head>` and de-duplicates, plus two attributes.
+  The wrapper is `display: contents`; use `asChild` to put the attributes on
+  your own element instead.
+- `name` scopes the CSS (`[data-sauce-theme="brand"]`). Use letters, digits
+  and `-`, and give each theme a unique name.
 
-Components expose variables you can override on any instance, e.g. buttons:
+Read the nearest provider's theme and scheme with `useThemeScope()`, for
+example to pick a matching chart palette.
+
+### Several themes on one page
+
+```tsx
+const ocean = createTheme({ name: 'ocean', color: { accent: '#0891b2' } })
+const sunset = createTheme({ name: 'sunset', color: { accent: '#ea580c' } })
+
+<ThemeProvider theme={ocean}><Pricing plan="pro" /></ThemeProvider>
+<ThemeProvider theme={sunset}><Pricing plan="team" /></ThemeProvider>
+```
+
+Each theme's CSS is injected once, however many providers use it.
+
+## Overriding in plain CSS
+
+For a quick change, set tokens in your own (unlayered) stylesheet.
+Scheme-independent tokens are simple:
 
 ```css
+:root {
+  --sauce-radius-md: 12px;
+  --sauce-font-body: 'Inter', system-ui, sans-serif;
+}
+```
+
+**Colours need care.** The default dark values are declared on
+`[data-sauce-scheme]` elements and under `prefers-color-scheme: dark`. A plain
+`:root { --sauce-color-accent: … }` would therefore apply in dark mode too,
+and be ignored inside any `<ThemeProvider scheme>`. Mirror the library's
+selectors:
+
+```css
+:root,
+[data-sauce-scheme='light'],
+[data-sauce-scheme='system'] {
+  --sauce-color-accent: #7c3aed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-sauce-scheme='light']),
+  [data-sauce-scheme='system'] {
+    --sauce-color-accent: #c4b5fd;
+  }
+}
+
+[data-sauce-scheme='dark'] {
+  --sauce-color-accent: #c4b5fd;
+}
+```
+
+`createTheme` generates exactly this for you, so prefer it for colours.
+
+Also note that a `ThemeProvider` theme declares every token on its own
+element, so `:root` overrides don't reach inside one. Put the override in the
+theme instead.
+
+## Per-component variables
+
+Some components expose variables for things a token can't express. Set them
+on the component, a class, or any ancestor:
+
+```css
+/* Every button in this area uses the negative tone. */
 .danger-zone .sauce-Button {
   --sauce-button-tone: var(--sauce-color-negative);
+  --sauce-button-on-tone: var(--sauce-color-on-negative);
 }
+
+/* A wider sidebar and roomier cards. */
+.app {
+  --sauce-sidebar-width: 18rem;
+}
+.sauce-Card {
+  --sauce-card-padding: var(--sauce-space-6);
+}
+```
+
+| Component | Variables |
+|---|---|
+| Button, IconButton | `--sauce-button-tone`, `--sauce-button-on-tone` (variants derive from these), `--sauce-button-height`, `--sauce-button-padding` |
+| Input, Select, Textarea, FileInput | `--sauce-input-height`, `--sauce-input-padding`, `--sauce-select-height`, `--sauce-select-padding`, `--sauce-textarea-padding`, `--sauce-file-height`, `--sauce-file-padding` |
+| Card | `--sauce-card-padding` |
+| Dialog | `--sauce-dialog-width` |
+| Sidebar | `--sauce-sidebar-width` |
+| Avatar, Spinner, Progress | `--sauce-avatar-size`, `--sauce-spinner-size`, `--sauce-progress-height` |
+| Slider, ColorPicker | `--sauce-slider-thumb`, `--sauce-colorpicker-thumb` |
+| SegmentedControl, Table | `--sauce-segment-height`, `--sauce-table-cell-padding` |
+
+Class names (`sauce-Button`, `sauce-Card`, …) are stable, prefixed and never
+hashed, so they're safe to target. Avoid targeting internal parts
+(`sauce-Dialog-title`); those may change in a minor release.
+
+## Server rendering and frameworks
+
+Theming is plain CSS plus attributes, so it renders on the server with no
+extra setup. Two things to get right:
+
+- Put `getSchemeScript()` in `<head>` and add `suppressHydrationWarning` to
+  `<html>` (see [step 3](#3-stop-the-dark-mode-flash-recommended-if-users-can-choose-a-scheme)).
+- Call `createTheme` at module scope, never during render.
+
+**Next.js (App Router)**, `app/layout.tsx`:
+
+```tsx
+import { getSchemeScript, ThemeProvider } from '@sauce-ui/react'
+import '@sauce-ui/react/base.css'
+import '@sauce-ui/react/styles.css'
+import { brand } from './theme'
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
+      </head>
+      <ThemeProvider theme={brand} asChild>
+        <body>{children}</body>
+      </ThemeProvider>
+    </html>
+  )
+}
+```
+
+`ThemeProvider` is a client component; a server-component layout can render
+it as shown. A component that calls `useColorScheme` needs `'use client'`.
+
+**Vite / single-page apps**: put the script tag in `index.html`, inline:
+
+```html
+<script>
+  /* paste the output of getSchemeScript() here, or inject it at build time */
+</script>
 ```
 
 ## Custom breakpoints
 
-Breakpoint values compile into media queries, so they are set at build time. Keep the
-keys (`xs`–`xl`), change the values:
+Breakpoint values compile into media queries, so they're set at build time,
+not in a theme. Keep the keys (`xs`–`xl`) and change the values, in both SCSS
+and JS:
 
 ```scss
+// your-styles.scss, instead of importing styles.css
 @use 'pkg:@sauce-ui/react/scss' with (
   $breakpoints: (
     xs: 0px,
@@ -69,9 +372,76 @@ keys (`xs`–`xl`), change the values:
 ```
 
 ```ts
+// Before the first render: hooks and Sidebar read these in JS.
 import { configureBreakpoints } from '@sauce-ui/react'
-configureBreakpoints({ sm: 480, md: 768, lg: 1024, xl: 1440 }) // before rendering
+configureBreakpoints({ sm: 480, md: 768, lg: 1024, xl: 1440 })
 ```
 
-Compile with Sass's `NodePackageImporter` (`pkg:` URLs), e.g. Vite:
-`css: { preprocessorOptions: { scss: { importers: [new NodePackageImporter()] } } }`.
+Compile with Sass's `NodePackageImporter`, which resolves `pkg:` URLs. In Vite:
+
+```ts
+import { NodePackageImporter } from 'sass-embedded'
+
+export default defineConfig({
+  css: { preprocessorOptions: { scss: { importers: [new NodePackageImporter()] } } },
+})
+```
+
+## Without React
+
+A theme is just a string. Serve `brand.css` yourself (write it at build time,
+or inline it from the server) and set the attribute:
+
+```ts
+import { writeFileSync } from 'node:fs'
+import { brand } from './theme'
+
+writeFileSync('public/brand.css', brand.css)
+```
+
+```html
+<link rel="stylesheet" href="/brand.css" />
+<html data-sauce-theme="brand">…</html>
+```
+
+`@sauce-ui/tokens/tokens.css` has the default tokens on their own, for
+non-React code that should match.
+
+## Token reference
+
+The live values, with swatches, are under **Foundations/Tokens**. The
+property name is `--sauce-<group>-<key>`, with camelCase keys in kebab case.
+
+| Group | `createTheme` key | Keys |
+|---|---|---|
+| Colour | `color` | `canvas`, `surface`, `surfaceOverlay`, `fg`, `fgMuted`, `border`, `borderStrong`, `accent`, `accentStrong`, `onAccent`, `focusRing`, `positive`, `negative`, `onNegative`, `warning`, `info`, `scrim` |
+| Spacing | `space` | `0`–`8` (`0`, `0.25rem`, `0.5rem`, `0.75rem`, `1rem`, `1.5rem`, `2rem`, `3rem`, `4rem`) |
+| Radius | `radius` | `none`, `sm`, `md`, `lg`, `pill` |
+| Font family | `font` | `body`, `mono` |
+| Font size | `fontSize` | `xs`, `sm`, `md`, `lg`, `xl`, `2xl`, `3xl`, `4xl` |
+| Font weight | `fontWeight` | `regular`, `medium`, `semibold`, `bold` |
+| Line height | `lineHeight` | `tight`, `snug`, `normal` |
+| Shadow | `shadow` | `sm`, `md`, `lg` |
+| Stacking | `zIndex` | `dropdown`, `sticky`, `overlay`, `modal`, `popover`, `toast`, `tooltip` |
+| Motion | `duration`, `easing` | `fast`, `normal`, `slow`; `standard`, `enter`, `exit` |
+
+Durations collapse to near zero under `prefers-reduced-motion: reduce`, in
+themes too.
+
+Coming from MUI? `palette.primary.main` is `accent`,
+`palette.background.default` is `canvas`, `palette.background.paper` is
+`surface`, `palette.text.secondary` is `fgMuted`, and `palette.error.main` is
+`negative`.
+
+## Troubleshooting
+
+| Symptom | Cause and fix |
+|---|---|
+| Dark-mode users see a white flash on load | Add `getSchemeScript()` to `<head>`, before stylesheets |
+| Hydration warning about `data-sauce-scheme` | Add `suppressHydrationWarning` to `<html>` |
+| My `:root` colour override is ignored in dark mode or in a scheme section | Use `createTheme`, or mirror the scheme selectors ([plain CSS](#overriding-in-plain-css)) |
+| My `:root` override is ignored inside a `ThemeProvider` | Themes declare every token; put the override in the theme |
+| A nested theme lost the outer theme's overrides | Themes replace, not stack; spread the outer theme's options into the inner one |
+| The page background doesn't change with the scheme | Import `base.css`, or set `background: var(--sauce-color-canvas)` yourself |
+| The saved choice isn't restored | `useColorScheme` and `getSchemeScript` must use the same `storageKey` |
+| Breakpoint changes have no effect on components | Recompile the SCSS with `$breakpoints`; `configureBreakpoints` only affects JS |
