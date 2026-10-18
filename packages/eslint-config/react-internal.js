@@ -25,6 +25,8 @@ export const config = [
       ...pluginReactHooks.configs.recommended.rules,
       // Unnecessary with the modern JSX transform.
       'react/react-in-jsx-scope': 'off',
+      // Valid React 19 attributes the plugin does not know yet.
+      'react/no-unknown-property': ['error', { ignore: ['closedby'] }],
       // NOTE: 'react-hooks/react-compiler' is intentionally NOT enabled. In
       // eslint-plugin-react-hooks v6 that rule id is not registered by the
       // default plugin export, and referencing it fails the entire lint run
