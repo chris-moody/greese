@@ -1,0 +1,60 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-Skeleton {
+    display: block;
+    inline-size: var(--sauce-skeleton-width, 100%);
+    block-size: var(--sauce-skeleton-height, 1rem);
+    background-color: var(--sauce-color-surface);
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--sauce-color-fg) 6%, transparent),
+      transparent
+    );
+    background-repeat: no-repeat;
+    background-size: 50% 100%;
+    border-radius: var(--sauce-radius-sm);
+
+    @include mixins.motion-safe {
+      animation: sauce-skeleton-shimmer 1.4s ease-in-out infinite;
+    }
+  }
+
+  .sauce-Skeleton--text {
+    block-size: var(--sauce-skeleton-height, 1lh);
+    background-clip: content-box;
+    padding-block: 0.2lh;
+  }
+
+  .sauce-Skeleton--rect {
+    block-size: var(--sauce-skeleton-height, 8rem);
+    border-radius: var(--sauce-radius-md);
+  }
+
+  .sauce-Skeleton--circle {
+    inline-size: var(--sauce-skeleton-width, 2.5rem);
+    block-size: var(--sauce-skeleton-height, var(--sauce-skeleton-width, 2.5rem));
+    border-radius: 50%;
+  }
+
+  .sauce-Skeleton-lines {
+    display: flex;
+    flex-direction: column;
+    inline-size: var(--sauce-skeleton-width, 100%);
+
+    > :last-child:not(:only-child) {
+      inline-size: 60%;
+    }
+  }
+
+  @keyframes sauce-skeleton-shimmer {
+    from {
+      background-position: -100% 0;
+    }
+
+    to {
+      background-position: 200% 0;
+    }
+  }
+}

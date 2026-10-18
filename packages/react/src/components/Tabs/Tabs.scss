@@ -1,0 +1,87 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-Tabs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sauce-space-4);
+
+    &[data-orientation='vertical'] {
+      flex-direction: row;
+    }
+  }
+
+  // Phones: tabs that don't fit scroll sideways rather than wrap or squash.
+  .sauce-TabList {
+    display: flex;
+    gap: var(--sauce-space-1);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    border-block-end: 1px solid var(--sauce-color-border);
+
+    [data-orientation='vertical'] > & {
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: visible;
+      border-block-end: 0;
+      border-inline-end: 1px solid var(--sauce-color-border);
+    }
+  }
+
+  .sauce-Tab {
+    @include mixins.touch-target;
+
+    position: relative;
+    flex-shrink: 0;
+    min-block-size: 2.5rem;
+    padding-inline: var(--sauce-space-3);
+    font: inherit;
+    font-weight: var(--sauce-font-weight-medium);
+    color: var(--sauce-color-fg-muted);
+    white-space: nowrap;
+    cursor: pointer;
+    scroll-snap-align: start;
+    background: none;
+    border: 0;
+    border-radius: var(--sauce-radius-sm) var(--sauce-radius-sm) 0 0;
+    box-shadow: inset 0 -2px 0 transparent;
+    transition:
+      color var(--sauce-duration-fast) var(--sauce-easing-standard),
+      box-shadow var(--sauce-duration-fast) var(--sauce-easing-standard);
+
+    @include mixins.focus-ring(-2px);
+
+    @include mixins.hover {
+      color: var(--sauce-color-fg);
+    }
+
+    &[aria-selected='true'] {
+      color: var(--sauce-color-fg);
+      box-shadow: inset 0 -2px 0 var(--sauce-color-accent);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    [data-orientation='vertical'] & {
+      text-align: start;
+      border-radius: var(--sauce-radius-sm) 0 0 var(--sauce-radius-sm);
+
+      &[aria-selected='true'] {
+        box-shadow: inset -2px 0 0 var(--sauce-color-accent);
+      }
+    }
+  }
+
+  .sauce-TabPanel {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    border-radius: var(--sauce-radius-sm);
+
+    @include mixins.focus-ring;
+  }
+}

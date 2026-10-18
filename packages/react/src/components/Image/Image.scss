@@ -1,0 +1,46 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-Image {
+    @include mixins.component-root;
+
+    display: block;
+    max-inline-size: 100%;
+    overflow: hidden;
+    background-position: center;
+    background-size: cover;
+
+    > img {
+      display: block;
+      max-inline-size: 100%;
+      block-size: auto;
+    }
+  }
+
+  // With a ratio, the frame sets the size and the image fills it.
+  .sauce-Image--framed > img,
+  .sauce-Image--fallback {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  .sauce-Image--contain > img {
+    object-fit: contain;
+  }
+
+  .sauce-Image--fallback {
+    display: grid;
+    place-items: center;
+    color: var(--sauce-color-fg-muted);
+    background-color: var(--sauce-color-surface);
+  }
+
+  @each $radius in (none, sm, md, lg, pill) {
+    .sauce-Image--radius-#{$radius} {
+      border-radius: var(--sauce-radius-#{$radius});
+    }
+  }
+
+  @include mixins.responsive-prop('sauce-Image', 'ratio', aspect-ratio);
+}

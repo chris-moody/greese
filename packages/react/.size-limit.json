@@ -4,7 +4,7 @@
     "path": "dist/index.js",
     "import": "*",
     "ignore": ["react", "react-dom"],
-    "limit": "8 kB"
+    "limit": "11 kB"
   },
   {
     "name": "JS: tree-shaken { VisuallyHidden }",
@@ -35,6 +35,13 @@
     "limit": "1.5 kB"
   },
   {
+    "name": "JS: tree-shaken { Tabs, TabList, Tab, TabPanel }",
+    "path": "dist/index.js",
+    "import": "{ Tabs, TabList, Tab, TabPanel }",
+    "ignore": ["react", "react-dom"],
+    "limit": "1.5 kB"
+  },
+  {
     "name": "JS: tree-shaken { ThemeProvider }",
     "path": "dist/index.js",
     "import": "{ ThemeProvider }",
@@ -52,7 +59,7 @@
     "name": "CSS: sauce-ui.css",
     "path": "dist/sauce-ui.css",
     "rolldown": false,
-    "limit": "9 kB"
+    "limit": "12 kB"
   },
   {
     "name": "CSS: base.css",

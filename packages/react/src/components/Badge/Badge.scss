@@ -1,0 +1,38 @@
+@use '../../styles/tones';
+
+@layer sauce.components {
+  @include tones.classes(
+    'sauce-Badge',
+    'sauce-badge-tone',
+    (neutral, accent, positive, negative, warning, info)
+  );
+
+  .sauce-Badge {
+    display: inline-flex;
+    gap: var(--sauce-space-1);
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    font-size: var(--sauce-font-size-xs);
+    font-weight: var(--sauce-font-weight-semibold);
+    line-height: var(--sauce-line-height-snug);
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    border-radius: var(--sauce-radius-pill);
+  }
+
+  .sauce-Badge--soft {
+    color: var(--sauce-badge-tone);
+    background-color: color-mix(in oklab, var(--sauce-badge-tone) 14%, transparent);
+  }
+
+  .sauce-Badge--solid {
+    color: var(--sauce-badge-tone-on);
+    background-color: var(--sauce-badge-tone);
+  }
+
+  .sauce-Badge--outline {
+    color: var(--sauce-badge-tone);
+    border-color: color-mix(in oklab, var(--sauce-badge-tone) 55%, transparent);
+  }
+}

@@ -1,0 +1,86 @@
+@use '../../styles/mixins';
+
+$sizes: (
+  sm: 1.5rem,
+  md: 2.25rem,
+  lg: 3rem,
+  xl: 4rem,
+);
+
+@layer sauce.components {
+  .sauce-Avatar {
+    @include mixins.component-root;
+
+    display: inline-flex;
+    flex-shrink: 0;
+    inline-size: var(--sauce-avatar-size);
+    block-size: var(--sauce-avatar-size);
+    overflow: hidden;
+    font-size: calc(var(--sauce-avatar-size) * 0.4);
+    font-weight: var(--sauce-font-weight-semibold);
+    line-height: 1;
+    vertical-align: middle;
+    user-select: none;
+    border-radius: 50%;
+
+    > img {
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+    }
+  }
+
+  @each $size, $value in $sizes {
+    .sauce-Avatar--#{$size} {
+      --sauce-avatar-size: #{$value};
+    }
+  }
+
+  .sauce-Avatar--square {
+    border-radius: var(--sauce-radius-md);
+  }
+
+  .sauce-Avatar-fallback {
+    display: grid;
+    place-items: center;
+    inline-size: 100%;
+    block-size: 100%;
+    color: var(--sauce-color-accent);
+    background-color: color-mix(
+      in oklab,
+      var(--sauce-color-accent) 16%,
+      var(--sauce-color-canvas)
+    );
+  }
+
+  .sauce-Avatar--count .sauce-Avatar-fallback {
+    color: var(--sauce-color-fg-muted);
+    background-color: var(--sauce-color-surface);
+  }
+
+  .sauce-AvatarGroup {
+    display: inline-flex;
+    align-items: center;
+    isolation: isolate;
+  }
+
+  @each $size, $value in $sizes {
+    .sauce-AvatarGroup--#{$size} {
+      --sauce-avatar-size: #{$value};
+    }
+  }
+
+  .sauce-AvatarGroup-item {
+    position: relative;
+    display: inline-flex;
+    border-radius: 50%;
+
+    > .sauce-Avatar {
+      box-shadow: 0 0 0 2px var(--sauce-color-canvas);
+    }
+
+    & + & {
+      margin-inline-start: calc(var(--sauce-avatar-size) * -0.25);
+    }
+  }
+}

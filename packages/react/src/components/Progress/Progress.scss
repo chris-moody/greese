@@ -1,0 +1,76 @@
+@use '../../styles/mixins';
+
+/* stylelint-disable selector-no-vendor-prefix */
+
+@layer sauce.components {
+  .sauce-Progress {
+    @include mixins.component-root;
+
+    display: block;
+    inline-size: 100%;
+    block-size: var(--sauce-progress-height);
+    overflow: hidden;
+    color: var(--sauce-color-accent);
+    background-color: var(--sauce-color-border);
+    border: 0;
+    border-radius: var(--sauce-radius-pill);
+    appearance: none;
+
+    &::-webkit-progress-bar {
+      background-color: var(--sauce-color-border);
+    }
+
+    &::-webkit-progress-value {
+      background-color: var(--sauce-color-accent);
+      border-radius: var(--sauce-radius-pill);
+      transition: inline-size var(--sauce-duration-normal) var(--sauce-easing-standard);
+    }
+
+    &::-moz-progress-bar {
+      background-color: var(--sauce-color-accent);
+      border-radius: var(--sauce-radius-pill);
+    }
+
+    // Indeterminate: a band sweeping across.
+    &:indeterminate {
+      background-image: linear-gradient(
+        to right,
+        transparent 0%,
+        var(--sauce-color-accent) 50%,
+        transparent 100%
+      );
+      background-repeat: no-repeat;
+      background-size: 40% 100%;
+
+      @include mixins.motion-safe {
+        animation: sauce-progress-sweep 1.2s var(--sauce-easing-standard) infinite;
+      }
+    }
+
+    &:indeterminate::-webkit-progress-bar {
+      background-color: transparent;
+    }
+
+    &:indeterminate::-moz-progress-bar {
+      background-color: transparent;
+    }
+  }
+
+  .sauce-Progress--sm {
+    --sauce-progress-height: 0.25rem;
+  }
+
+  .sauce-Progress--md {
+    --sauce-progress-height: 0.5rem;
+  }
+
+  @keyframes sauce-progress-sweep {
+    from {
+      background-position: -60% 0;
+    }
+
+    to {
+      background-position: 160% 0;
+    }
+  }
+}

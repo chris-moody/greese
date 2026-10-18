@@ -1,0 +1,50 @@
+@use 'sass:list';
+@use 'sass:map';
+@use '../../styles/mixins';
+@use '../../styles/tones';
+
+$font-sizes: (xs, sm, md, lg, xl, 2xl, 3xl, 4xl);
+
+@function size-tokens() {
+  $map: ();
+
+  @each $size in $font-sizes {
+    $map: map.set($map, $size, var(--sauce-font-size-#{$size}));
+  }
+
+  @return $map;
+}
+
+@layer sauce.components {
+  .sauce-Text {
+    margin: 0;
+  }
+
+  @each $weight in (regular, medium, semibold, bold) {
+    .sauce-Text--#{$weight} {
+      font-weight: var(--sauce-font-weight-#{$weight});
+    }
+  }
+
+  @each $tone, $pair in tones.$tones {
+    .sauce-Text--#{$tone} {
+      color: list.nth($pair, 1);
+    }
+  }
+
+  .sauce-Text--truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sauce-Text--clamp {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--sauce-text-lines);
+    line-clamp: var(--sauce-text-lines);
+  }
+
+  @include mixins.responsive-prop('sauce-Text', 'size', font-size, size-tokens());
+}

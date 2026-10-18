@@ -1,0 +1,28 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-Code {
+    padding: 0.1em 0.35em;
+    font-family: var(--sauce-font-mono);
+    font-size: 0.875em;
+    background-color: var(--sauce-color-surface);
+    border: 1px solid var(--sauce-color-border);
+    border-radius: var(--sauce-radius-sm);
+  }
+
+  .sauce-Code--block {
+    @include mixins.component-root;
+    @include mixins.focus-ring;
+
+    padding: var(--sauce-space-4);
+    margin: 0;
+    overflow-x: auto;
+    font-size: var(--sauce-font-size-sm);
+    line-height: var(--sauce-line-height-normal);
+    border-radius: var(--sauce-radius-md);
+
+    > code {
+      font: inherit;
+    }
+  }
+}

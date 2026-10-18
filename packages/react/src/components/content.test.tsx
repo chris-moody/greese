@@ -1,0 +1,456 @@
+import { fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { renderToString } from 'react-dom/server'
+import { describe, expect, it, vi } from 'vitest'
+import { expectNoAxeViolations } from '../test/axe.ts'
+import { Accordion, AccordionItem } from './Accordion/Accordion.tsx'
+import { Alert } from './Alert/Alert.tsx'
+import { Avatar, AvatarGroup, initials } from './Avatar/Avatar.tsx'
+import { Badge } from './Badge/Badge.tsx'
+import { Card, CardMedia } from './Card/Card.tsx'
+import { Chip } from './Chip/Chip.tsx'
+import { Code } from './Code/Code.tsx'
+import { Collapsible } from './Collapsible/Collapsible.tsx'
+import { Heading } from './Heading/Heading.tsx'
+import { Icon } from './Icon/Icon.tsx'
+import { Image, isPlaceholderColor } from './Image/Image.tsx'
+import { Link } from './Link/Link.tsx'
+import { Embed, Video } from './Media/Media.tsx'
+import { Progress } from './Progress/Progress.tsx'
+import { Skeleton } from './Skeleton/Skeleton.tsx'
+import { Spinner } from './Spinner/Spinner.tsx'
+import { Tab, TabList, TabPanel, Tabs } from './Tabs/Tabs.tsx'
+import { Text } from './Text/Text.tsx'
+
+describe('typography', () => {
+  it('Text is a paragraph with responsive size, tone and truncation', () => {
+    render(
+      <Text size={{ xs: 'sm', md: 'lg' }} tone="muted" weight="semibold" truncate={2}>
+        Body
+      </Text>
+    )
+    const text = screen.getByText('Body')
+    expect(text.tagName).toBe('P')
+    expect(text).toHaveClass(
+      'sauce-Text--muted',
+      'sauce-Text--semibold',
+      'sauce-Text--clamp',
+      'sauce-Text--xs-size-sm',
+      'sauce-Text--md-size-lg'
+    )
+    expect(text.style.getPropertyValue('--sauce-text-lines')).toBe('2')
+  })
+
+  it('Text renders other elements with asChild', () => {
+    render(
+      <Text asChild truncate>
+        <span>Inline</span>
+      </Text>
+    )
+    expect(screen.getByText('Inline').tagName).toBe('SPAN')
+    expect(screen.getByText('Inline')).toHaveClass('sauce-Text--truncate')
+  })
+
+  it('Heading separates outline level from visual size', () => {
+    render(
+      <Heading level={1} size="xl">
+        Page
+      </Heading>
+    )
+    const heading = screen.getByRole('heading', { level: 1, name: 'Page' })
+    expect(heading).toHaveClass('sauce-Heading--level-1', 'sauce-Heading--xs-size-xl')
+  })
+
+  it('Link styles anchors and router links alike', () => {
+    render(
+      <>
+        <Link href="/a">Plain</Link>
+        <Link asChild underline="hover" tone="neutral">
+          <a href="/b">Routed</a>
+        </Link>
+      </>
+    )
+    expect(screen.getByRole('link', { name: 'Plain' })).toHaveClass('sauce-Link--accent')
+    expect(screen.getByRole('link', { name: 'Routed' })).toHaveClass(
+      'sauce-Link--neutral',
+      'sauce-Link--underline-hover'
+    )
+  })
+
+  it('Code blocks are focusable so they can be scrolled by keyboard', () => {
+    render(
+      <>
+        <Code>inline</Code>
+        <Code block>block</Code>
+      </>
+    )
+    expect(screen.getByText('inline').tagName).toBe('CODE')
+    const pre = screen.getByText('block').parentElement!
+    expect(pre.tagName).toBe('PRE')
+    expect(pre).toHaveAttribute('tabindex', '0')
+  })
+})
+
+describe('Card and media', () => {
+  it('Card exposes padding to CardMedia and takes Box props', () => {
+    render(
+      <Card data-testid="card" variant="elevated" padding={{ xs: 3, md: 6 }} interactive>
+        <CardMedia data-testid="media" />
+      </Card>
+    )
+    const card = screen.getByTestId('card')
+    expect(card).toHaveClass(
+      'sauce-Box',
+      'sauce-Card--elevated',
+      'sauce-Card--interactive'
+    )
+    expect(card.style.getPropertyValue('--sauce-card-padding-md')).toBe(
+      'var(--sauce-space-6)'
+    )
+    expect(screen.getByTestId('media')).toHaveClass('sauce-CardMedia')
+  })
+
+  it('Image is lazy by default and eager at high priority for LCP', () => {
+    render(
+      <>
+        <Image alt="lazy" src="a.jpg" />
+        <Image alt="hero" src="b.jpg" priority />
+      </>
+    )
+    expect(screen.getByAltText('lazy')).toHaveAttribute('loading', 'lazy')
+    expect(screen.getByAltText('lazy')).toHaveAttribute('decoding', 'async')
+    expect(screen.getByAltText('hero')).toHaveAttribute('loading', 'eager')
+    expect(screen.getByAltText('hero')).toHaveAttribute('fetchpriority', 'high')
+  })
+
+  it('Image puts the placeholder behind the image, in CSS', () => {
+    render(
+      <>
+        <Image
+          alt="blur"
+          src="a.jpg"
+          placeholder="data:image/png;base64,AAA"
+          ratio={16 / 9}
+        />
+        <Image alt="tint" src="b.jpg" placeholder="#eee" />
+      </>
+    )
+    const blur = screen.getByAltText('blur').parentElement!
+    expect(blur.style.backgroundImage).toContain('data:image/png;base64,AAA')
+    expect(blur).toHaveClass('sauce-Image--framed')
+    expect(screen.getByAltText('tint').parentElement!.style.backgroundColor).toBe(
+      'rgb(238, 238, 238)'
+    )
+    expect(isPlaceholderColor('oklch(0.9 0 0)')).toBe(true)
+    expect(isPlaceholderColor('/img/tiny.jpg')).toBe(false)
+  })
+
+  it('Image swaps in its fallback when loading fails', () => {
+    render(<Image alt="broken" src="x.jpg" fallback="No image" />)
+    fireEvent.error(screen.getByAltText('broken'))
+    expect(screen.getByText('No image')).toHaveClass('sauce-Image--fallback')
+  })
+
+  it('Video plays inline on iOS; Embed lazy-loads and requires a title', () => {
+    render(
+      <>
+        <Video data-testid="video" src="clip.mp4" />
+        <Embed title="Demo" src="https://example.com/embed" />
+      </>
+    )
+    const video = screen.getByTestId('video')
+    expect(video).toHaveAttribute('playsinline')
+    expect(video).toHaveAttribute('controls')
+    expect(screen.getByTitle('Demo')).toHaveAttribute('loading', 'lazy')
+  })
+
+  it('Icon is decorative unless labelled', () => {
+    render(
+      <>
+        <Icon data-testid="decorative">
+          <svg />
+        </Icon>
+        <Icon label="Verified" size="2rem">
+          <svg />
+        </Icon>
+      </>
+    )
+    expect(screen.getByTestId('decorative')).toHaveAttribute('aria-hidden', 'true')
+    const named = screen.getByRole('img', { name: 'Verified' })
+    expect(named.style.getPropertyValue('--sauce-icon-size')).toBe('2rem')
+  })
+})
+
+describe('Avatar', () => {
+  it('derives initials', () => {
+    expect(initials('Ada Lovelace')).toBe('AL')
+    expect(initials('  grace  brewster murray hopper ')).toBe('GH')
+    expect(initials('Prince')).toBe('P')
+    expect(initials('')).toBe('')
+  })
+
+  it('shows the image, then initials if it fails, named either way', () => {
+    render(<Avatar name="Ada Lovelace" src="ada.jpg" />)
+    fireEvent.error(screen.getByRole('img', { name: 'Ada Lovelace' }))
+    const fallback = screen.getByRole('img', { name: 'Ada Lovelace' })
+    expect(fallback).toHaveTextContent('AL')
+  })
+
+  it('groups avatars and counts the overflow', () => {
+    render(
+      <AvatarGroup aria-label="Shared with" max={2}>
+        <Avatar name="A B" />
+        <Avatar name="C D" />
+        <Avatar name="E F" />
+        <Avatar name="G H" />
+      </AvatarGroup>
+    )
+    const group = screen.getByRole('group', { name: 'Shared with' })
+    expect(group.querySelectorAll('.sauce-Avatar')).toHaveLength(3)
+    expect(screen.getByRole('img', { name: '2 more' })).toHaveTextContent('+2')
+  })
+})
+
+describe('Collapsible and Accordion', () => {
+  it('is a native details/summary that reports toggles', () => {
+    const onOpenChange = vi.fn()
+    render(
+      <Collapsible title="More" onOpenChange={onOpenChange}>
+        Hidden content
+      </Collapsible>
+    )
+    const details = screen.getByText('More').closest('details')!
+    expect(details.open).toBe(false)
+    details.open = true
+    fireEvent(details, new Event('toggle'))
+    expect(onOpenChange).toHaveBeenCalledWith(true)
+  })
+
+  it('exclusive accordions share a native details name; others do not', () => {
+    render(
+      <>
+        <Accordion exclusive>
+          <AccordionItem title="One">1</AccordionItem>
+          <AccordionItem title="Two" defaultOpen>
+            2
+          </AccordionItem>
+        </Accordion>
+        <Accordion>
+          <AccordionItem title="Free">3</AccordionItem>
+        </Accordion>
+      </>
+    )
+    const one = screen.getByText('One').closest('details')!
+    const two = screen.getByText('Two').closest('details')!
+    // jsdom lacks the .name property; real exclusivity is covered in e2e.
+    expect(one.getAttribute('name')).toBeTruthy()
+    expect(one.getAttribute('name')).toBe(two.getAttribute('name'))
+    expect(two.open).toBe(true)
+    expect(screen.getByText('Free').closest('details')).not.toHaveAttribute('name')
+  })
+})
+
+describe('Tabs', () => {
+  const Example = (props: {
+    activation?: 'automatic' | 'manual'
+    onValueChange?: (v: string) => void
+  }) => (
+    <Tabs defaultValue="a" {...props}>
+      <TabList aria-label="Sections">
+        <Tab value="a">Alpha</Tab>
+        <Tab value="b">Beta</Tab>
+        <Tab value="c" disabled>
+          Gamma
+        </Tab>
+        <Tab value="d">Delta</Tab>
+      </TabList>
+      <TabPanel value="a">Panel A</TabPanel>
+      <TabPanel value="b">Panel B</TabPanel>
+      <TabPanel value="d">Panel D</TabPanel>
+    </Tabs>
+  )
+
+  it('wires tabs to panels and keeps one tab stop', () => {
+    render(<Example />)
+    const alpha = screen.getByRole('tab', { name: 'Alpha' })
+    expect(alpha).toHaveAttribute('aria-selected', 'true')
+    expect(alpha).toHaveAttribute('tabindex', '0')
+    expect(screen.getByRole('tab', { name: 'Beta' })).toHaveAttribute('tabindex', '-1')
+    const panel = screen.getByRole('tabpanel', { name: 'Alpha' })
+    expect(panel).toHaveTextContent('Panel A')
+    expect(alpha).toHaveAttribute('aria-controls', panel.id)
+    expect(screen.getByText('Panel B')).not.toBeVisible()
+  })
+
+  it('moves with arrows (skipping disabled tabs), wraps, and jumps with Home/End', async () => {
+    const onValueChange = vi.fn()
+    render(<Example onValueChange={onValueChange} />)
+    await userEvent.tab()
+    expect(screen.getByRole('tab', { name: 'Alpha' })).toHaveFocus()
+    await userEvent.keyboard('{ArrowRight}')
+    expect(screen.getByRole('tab', { name: 'Beta' })).toHaveFocus()
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('Panel B')
+    await userEvent.keyboard('{ArrowRight}')
+    expect(screen.getByRole('tab', { name: 'Delta' })).toHaveFocus()
+    await userEvent.keyboard('{ArrowRight}')
+    expect(screen.getByRole('tab', { name: 'Alpha' })).toHaveFocus()
+    await userEvent.keyboard('{End}')
+    expect(screen.getByRole('tab', { name: 'Delta' })).toHaveFocus()
+    await userEvent.keyboard('{Home}{ArrowLeft}')
+    expect(screen.getByRole('tab', { name: 'Delta' })).toHaveFocus()
+    expect(onValueChange.mock.calls.map(([v]) => v)).toEqual([
+      'b',
+      'd',
+      'a',
+      'd',
+      'a',
+      'd',
+    ])
+  })
+
+  it('in manual mode, arrows only move focus until Enter', async () => {
+    render(<Example activation="manual" />)
+    await userEvent.tab()
+    await userEvent.keyboard('{ArrowRight}')
+    expect(screen.getByRole('tab', { name: 'Beta' })).toHaveFocus()
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('Panel A')
+    await userEvent.keyboard('{Enter}')
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('Panel B')
+  })
+
+  it('throws a clear error outside Tabs', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    expect(() => render(<Tab value="x">x</Tab>)).toThrow(
+      '<Tab> must be used inside <Tabs>.'
+    )
+  })
+
+  it('renders every panel on the server', () => {
+    const html = renderToString(<Example />)
+    expect(html).toContain('Panel B')
+  })
+})
+
+describe('feedback', () => {
+  it('Alert stays quiet by default and announces on request', () => {
+    const onDismiss = vi.fn()
+    render(
+      <>
+        <Alert title="Saved" tone="positive" data-testid="quiet">
+          Changes saved.
+        </Alert>
+        <Alert title="Failed" tone="negative" announce onDismiss={onDismiss}>
+          Try again.
+        </Alert>
+        <Alert title="Heads up" tone="info" announce />
+      </>
+    )
+    expect(screen.getByTestId('quiet')).not.toHaveAttribute('role')
+    expect(screen.getByRole('alert')).toHaveTextContent('Failed')
+    expect(screen.getByRole('status')).toHaveTextContent('Heads up')
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }))
+    expect(onDismiss).toHaveBeenCalled()
+  })
+
+  it('Badge applies tone and variant', () => {
+    render(
+      <Badge tone="positive" variant="solid">
+        Live
+      </Badge>
+    )
+    expect(screen.getByText('Live')).toHaveClass(
+      'sauce-Badge--positive',
+      'sauce-Badge--solid'
+    )
+  })
+
+  it('Chip removes with a named button and toggles when selectable', async () => {
+    const onRemove = vi.fn()
+    const onSelectedChange = vi.fn()
+    render(
+      <>
+        <Chip onRemove={onRemove}>Design</Chip>
+        <Chip selectable onSelectedChange={onSelectedChange}>
+          In stock
+        </Chip>
+      </>
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Remove Design' }))
+    expect(onRemove).toHaveBeenCalled()
+    const toggle = screen.getByRole('button', { name: 'In stock' })
+    await userEvent.click(toggle)
+    expect(toggle).toHaveAttribute('aria-pressed', 'true')
+    expect(toggle.parentElement).toHaveClass('sauce-Chip--selected')
+    expect(onSelectedChange).toHaveBeenCalledWith(true)
+  })
+
+  it('Spinner and Progress are announced; Skeleton is hidden', () => {
+    render(
+      <>
+        <Spinner label="Fetching results" />
+        <Progress aria-label="Upload" value={40} />
+        <Progress aria-label="Working" />
+        <Skeleton data-testid="lines" lines={3} />
+      </>
+    )
+    expect(screen.getByRole('status', { name: 'Fetching results' })).toBeInTheDocument()
+    expect(screen.getByRole('progressbar', { name: 'Upload' })).toHaveAttribute(
+      'value',
+      '40'
+    )
+    expect(screen.getByRole('progressbar', { name: 'Working' })).not.toHaveAttribute(
+      'value'
+    )
+    const lines = screen.getByTestId('lines')
+    expect(lines).toHaveAttribute('aria-hidden', 'true')
+    expect(lines.children).toHaveLength(3)
+  })
+
+  it('Skeleton passes sizes as variables', () => {
+    render(<Skeleton data-testid="s" shape="circle" width="3rem" />)
+    const s = screen.getByTestId('s')
+    expect(s).toHaveClass('sauce-Skeleton--circle')
+    expect(s.style.getPropertyValue('--sauce-skeleton-width')).toBe('3rem')
+  })
+})
+
+describe('Phase 4 accessibility', () => {
+  it('has no axe violations', async () => {
+    const { container } = render(
+      <main>
+        <Heading level={1}>Title</Heading>
+        <Text>
+          Read the <Link href="/docs">docs</Link> or run <Code>npm i</Code>.
+        </Text>
+        <Card>
+          <CardMedia>
+            <Image alt="Cover" src="data:," ratio={2} />
+          </CardMedia>
+          <Badge>New</Badge>
+        </Card>
+        <Accordion exclusive>
+          <AccordionItem title="Shipping">Ships in 2 days.</AccordionItem>
+        </Accordion>
+        <Tabs defaultValue="a">
+          <TabList aria-label="Views">
+            <Tab value="a">A</Tab>
+            <Tab value="b">B</Tab>
+          </TabList>
+          <TabPanel value="a">A content</TabPanel>
+          <TabPanel value="b">B content</TabPanel>
+        </Tabs>
+        <Alert title="Note" onDismiss={() => {}}>
+          Hello
+        </Alert>
+        <AvatarGroup aria-label="Team">
+          <Avatar name="Ada Lovelace" />
+        </AvatarGroup>
+        <Chip onRemove={() => {}}>Tag</Chip>
+        <Progress aria-label="Progress" value={50} />
+        <Spinner />
+        <Skeleton />
+      </main>
+    )
+    await expectNoAxeViolations(container)
+  })
+})

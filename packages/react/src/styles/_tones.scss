@@ -1,0 +1,48 @@
+@use 'sass:list';
+
+// Colour roles shared by content components (Text, Link, Badge, Alert, Chip).
+// A tone sets two variables on the component: the colour and the colour of
+// content drawn on top of it.
+
+$tones: (
+  neutral: (
+    var(--sauce-color-fg),
+    var(--sauce-color-canvas),
+  ),
+  muted: (
+    var(--sauce-color-fg-muted),
+    var(--sauce-color-canvas),
+  ),
+  accent: (
+    var(--sauce-color-accent),
+    var(--sauce-color-on-accent),
+  ),
+  positive: (
+    var(--sauce-color-positive),
+    var(--sauce-color-canvas),
+  ),
+  negative: (
+    var(--sauce-color-negative),
+    var(--sauce-color-on-negative),
+  ),
+  warning: (
+    var(--sauce-color-warning),
+    var(--sauce-color-canvas),
+  ),
+  info: (
+    var(--sauce-color-info),
+    var(--sauce-color-canvas),
+  ),
+);
+
+/// Emits `.#{$block}--#{tone}` classes setting `--#{$var}` and `--#{$var}-on`.
+@mixin classes($block, $var, $only: null) {
+  @each $tone, $pair in $tones {
+    @if not $only or list.index($only, $tone) {
+      .#{$block}--#{$tone} {
+        --#{$var}: #{list.nth($pair, 1)};
+        --#{$var}-on: #{list.nth($pair, 2)};
+      }
+    }
+  }
+}

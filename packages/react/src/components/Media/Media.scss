@@ -1,0 +1,7 @@
+@layer sauce.components {
+  .sauce-Video,
+  .sauce-Embed {
+    background-color: var(--sauce-color-surface);
+    border-radius: var(--sauce-radius-md);
+  }
+}

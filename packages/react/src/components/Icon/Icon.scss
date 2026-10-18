@@ -1,0 +1,12 @@
+@layer sauce.components {
+  .sauce-Icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    vertical-align: middle;
+
+    > svg {
+      inline-size: var(--sauce-icon-size, 1.25em);
+      block-size: var(--sauce-icon-size, 1.25em);
+    }
+  }
+}

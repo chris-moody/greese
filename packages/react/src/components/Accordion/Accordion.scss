@@ -1,0 +1,9 @@
+@layer sauce.components {
+  .sauce-Accordion {
+    border-block-start: 1px solid var(--sauce-color-border);
+  }
+
+  .sauce-AccordionItem {
+    border-block-end: 1px solid var(--sauce-color-border);
+  }
+}

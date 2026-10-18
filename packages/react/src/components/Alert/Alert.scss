@@ -1,0 +1,71 @@
+@use '../../styles/tones';
+
+@layer sauce.components {
+  @include tones.classes(
+    'sauce-Alert',
+    'sauce-alert-tone',
+    (info, positive, warning, negative, neutral)
+  );
+
+  .sauce-Alert {
+    display: flex;
+    gap: var(--sauce-space-3);
+    align-items: flex-start;
+    padding: var(--sauce-space-3) var(--sauce-space-4);
+    font-size: var(--sauce-font-size-sm);
+    line-height: var(--sauce-line-height-snug);
+    color: var(--sauce-color-fg);
+    border: 1px solid transparent;
+    border-radius: var(--sauce-radius-md);
+  }
+
+  .sauce-Alert--soft {
+    background-color: color-mix(
+      in oklab,
+      var(--sauce-alert-tone) 10%,
+      var(--sauce-color-canvas)
+    );
+    border-color: color-mix(in oklab, var(--sauce-alert-tone) 25%, transparent);
+  }
+
+  .sauce-Alert--outline {
+    border-color: var(--sauce-alert-tone);
+  }
+
+  .sauce-Alert-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-block: 0.1em;
+    color: var(--sauce-alert-tone);
+
+    > svg {
+      inline-size: 1.25em;
+      block-size: 1.25em;
+    }
+  }
+
+  .sauce-Alert-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--sauce-space-1);
+    min-inline-size: 0;
+  }
+
+  .sauce-Alert-title {
+    margin: 0;
+    font-weight: var(--sauce-font-weight-semibold);
+  }
+
+  .sauce-Alert-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sauce-space-2);
+    margin-block-start: var(--sauce-space-2);
+  }
+
+  .sauce-Alert-dismiss {
+    margin-block: calc(-1 * var(--sauce-space-1));
+    margin-inline-end: calc(-1 * var(--sauce-space-2));
+  }
+}

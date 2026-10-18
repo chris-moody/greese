@@ -1,0 +1,62 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-Collapsible {
+    @include mixins.component-root;
+
+    // Animate open/close where supported (Chromium); elsewhere it snaps.
+    interpolate-size: allow-keywords;
+
+    &::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size var(--sauce-duration-normal) var(--sauce-easing-standard),
+        content-visibility var(--sauce-duration-normal) allow-discrete;
+    }
+
+    &[open]::details-content {
+      block-size: auto;
+    }
+  }
+
+  .sauce-Collapsible-trigger {
+    display: flex;
+    gap: var(--sauce-space-3);
+    align-items: center;
+    justify-content: space-between;
+    min-block-size: 2.75rem;
+    padding-block: var(--sauce-space-3);
+    font-weight: var(--sauce-font-weight-semibold);
+    cursor: pointer;
+    list-style: none;
+    border-radius: var(--sauce-radius-sm);
+
+    @include mixins.focus-ring;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  .sauce-Collapsible-chevron {
+    flex-shrink: 0;
+    inline-size: 1.25em;
+    block-size: 1.25em;
+    fill: none;
+    stroke: currentcolor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.75;
+    transition: rotate var(--sauce-duration-normal) var(--sauce-easing-standard);
+
+    [open] > .sauce-Collapsible-trigger > & {
+      rotate: 180deg;
+    }
+  }
+
+  .sauce-Collapsible-content {
+    padding-block-end: var(--sauce-space-4);
+    color: var(--sauce-color-fg-muted);
+  }
+}

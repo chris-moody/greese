@@ -1,0 +1,39 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-Link {
+    color: var(--sauce-color-accent);
+    text-decoration-line: underline;
+    text-decoration-thickness: from-font;
+    text-underline-offset: 0.2em;
+    border-radius: var(--sauce-radius-sm);
+    transition: color var(--sauce-duration-fast) var(--sauce-easing-standard);
+
+    @include mixins.focus-ring(1px);
+
+    @include mixins.hover {
+      color: var(--sauce-color-accent-strong);
+    }
+  }
+
+  .sauce-Link--neutral {
+    color: inherit;
+
+    @include mixins.hover {
+      color: inherit;
+      text-decoration-thickness: 2px;
+    }
+  }
+
+  .sauce-Link--underline-hover {
+    text-decoration-line: none;
+
+    @include mixins.hover {
+      text-decoration-line: underline;
+    }
+
+    &:focus-visible {
+      text-decoration-line: underline;
+    }
+  }
+}
