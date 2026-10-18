@@ -1,0 +1,163 @@
+// The `greese` prop's CSS presets (utils/greese.ts): entrances and scroll
+// reveals with no JavaScript. Every rule sits behind
+// `prefers-reduced-motion: no-preference`, so reduced motion means no motion.
+// Configuration arrives as inline custom properties on the element.
+
+$presets: (
+  'fade',
+  'fade-up',
+  'fade-down',
+  'fade-start',
+  'fade-end',
+  'scale-in',
+  'blur-in',
+  'slide-up',
+  'pop'
+);
+
+@layer greese.utilities {
+  // Named eases the `greese` prop can use without JavaScript (power2 for the
+  // in/out/inOut shorthands, as in greese.js).
+  :root {
+    --greese-ease-linear: linear;
+    --greese-ease-ease: ease;
+    --greese-ease-ease-in: ease-in;
+    --greese-ease-ease-out: ease-out;
+    --greese-ease-ease-in-out: ease-in-out;
+    --greese-ease-in: cubic-bezier(0.32, 0, 0.67, 0);
+    --greese-ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+    --greese-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  // Defaults are var() fallbacks, not declarations here, so values set on an
+  // ancestor (or :root) are inherited and tune every preset beneath it; a
+  // per-instance option (inline) still wins.
+  .greese-Motion:dir(rtl) {
+    --greese-motion-dir: -1;
+  }
+
+  // Exit presets for overlays: read by the floating enter-exit mixin.
+  .greese-Motion--exit-fade-down {
+    --greese-motion-exit-translate: 0 var(--greese-motion-distance, 1rem);
+  }
+
+  .greese-Motion--exit-fade-up {
+    --greese-motion-exit-translate: 0 calc(-1 * var(--greese-motion-distance, 1rem));
+  }
+
+  .greese-Motion--exit-scale-out {
+    --greese-motion-exit-scale: 0.95;
+  }
+
+  // Stagger: each child's position, for the delay. Children past 24 share
+  // the last slot.
+  @for $i from 1 through 24 {
+    .greese-Motion--stagger > :nth-child(#{$i}) {
+      --greese-motion-index: #{$i - 1};
+    }
+  }
+
+  .greese-Motion--stagger > :nth-child(n + 25) {
+    --greese-motion-index: 24;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @each $preset in $presets {
+      // `backwards`: the first frame applies during the delay; afterwards the
+      // element's own styles rule again (presets end at its natural state).
+      .greese-Motion--enter-#{$preset}:not(.greese-Motion--stagger),
+      .greese-Motion--enter-#{$preset}.greese-Motion--stagger > *,
+      .greese-Motion--view-#{$preset}[data-greese-view='in']:not(.greese-Motion--stagger),
+      .greese-Motion--view-#{$preset}.greese-Motion--stagger[data-greese-view='in'] > * {
+        --greese-motion-offset: calc(
+          var(--greese-motion-index, 0) * var(--greese-motion-stagger, 0s)
+        );
+
+        animation: greese-#{$preset}
+          var(--greese-motion-duration, 0.5s)
+          var(--greese-motion-ease, var(--greese-ease-out))
+          calc(var(--greese-motion-delay, 0s) + var(--greese-motion-offset))
+          backwards;
+      }
+
+      // Waiting to scroll into view (set by the runtime, never without JS).
+      .greese-Motion--view-#{$preset}[data-greese-view='pending']:not(
+          .greese-Motion--stagger
+        ),
+      .greese-Motion--view-#{$preset}.greese-Motion--stagger[data-greese-view='pending']
+        > * {
+        opacity: 0;
+      }
+    }
+
+    @keyframes greese-fade {
+      from {
+        opacity: 0;
+      }
+    }
+
+    @keyframes greese-fade-up {
+      from {
+        opacity: 0;
+        translate: 0 var(--greese-motion-distance, 1rem);
+      }
+    }
+
+    @keyframes greese-fade-down {
+      from {
+        opacity: 0;
+        translate: 0 calc(-1 * var(--greese-motion-distance, 1rem));
+      }
+    }
+
+    @keyframes greese-fade-start {
+      from {
+        opacity: 0;
+        translate: calc(
+            -1 * var(--greese-motion-dir, 1) * var(--greese-motion-distance, 1rem)
+          )
+          0;
+      }
+    }
+
+    @keyframes greese-fade-end {
+      from {
+        opacity: 0;
+        translate: calc(var(--greese-motion-dir, 1) * var(--greese-motion-distance, 1rem))
+          0;
+      }
+    }
+
+    @keyframes greese-scale-in {
+      from {
+        opacity: 0;
+        scale: 0.92;
+      }
+    }
+
+    @keyframes greese-blur-in {
+      from {
+        opacity: 0;
+        filter: blur(8px);
+      }
+    }
+
+    @keyframes greese-slide-up {
+      from {
+        translate: 0 100%;
+      }
+    }
+
+    @keyframes greese-pop {
+      0% {
+        opacity: 0;
+        scale: 0.8;
+      }
+
+      60% {
+        opacity: 1;
+        scale: 1.04;
+      }
+    }
+  }
+}

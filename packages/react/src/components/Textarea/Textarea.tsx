@@ -3,8 +3,9 @@ import type { ComponentPropsWithRef, CSSProperties, JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
 import type { ControlSize } from '../Button/Button.tsx'
 import { useFieldControl } from '../Field/Field.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface TextareaProps extends ComponentPropsWithRef<'textarea'> {
+export interface TextareaProps extends GreeseProps, ComponentPropsWithRef<'textarea'> {
   /** @default 'md' */
   size?: ControlSize
   invalid?: boolean
@@ -19,6 +20,7 @@ export interface TextareaProps extends ComponentPropsWithRef<'textarea'> {
 
 /** A native `<textarea>`, Field-aware, that grows with its content. */
 export const Textarea = ({
+  greese,
   size = 'md',
   invalid,
   autosize = true,
@@ -39,7 +41,7 @@ export const Textarea = ({
     disabled,
     'aria-describedby': describedBy,
   })
-  return (
+  return withGreese(
     <textarea
       {...props}
       {...control}
@@ -57,6 +59,7 @@ export const Textarea = ({
           ...style,
         } as CSSProperties
       }
-    />
+    />,
+    greese
   )
 }

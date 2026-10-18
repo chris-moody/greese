@@ -14,7 +14,8 @@
   .greese-Select-control {
     flex: 1 1 auto;
     min-inline-size: 0;
-    padding-inline: var(--greese-select-padding) calc(var(--greese-select-padding) + 1.5em);
+    padding-inline: var(--greese-select-padding)
+      calc(var(--greese-select-padding) + 1.5em);
     font: inherit;
     color: inherit;
     cursor: pointer;

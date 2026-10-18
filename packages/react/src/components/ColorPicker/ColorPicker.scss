@@ -92,7 +92,10 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
     inline-size: 2.25rem;
     block-size: 2.25rem;
     background:
-      linear-gradient(var(--greese-colorpicker-current), var(--greese-colorpicker-current)),
+      linear-gradient(
+        var(--greese-colorpicker-current),
+        var(--greese-colorpicker-current)
+      ),
       $checker;
     border-radius: 50%;
 

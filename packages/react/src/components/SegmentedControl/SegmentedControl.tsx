@@ -10,6 +10,7 @@ import {
 } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 interface SegmentedContextValue {
   name: string
@@ -19,10 +20,10 @@ interface SegmentedContextValue {
 
 const SegmentedContext = createContext<SegmentedContextValue | null>(null)
 
-export interface SegmentedControlProps extends Omit<
-  ComponentPropsWithRef<'fieldset'>,
-  'onChange' | 'defaultValue'
-> {
+export interface SegmentedControlProps
+  extends
+    GreeseProps,
+    Omit<ComponentPropsWithRef<'fieldset'>, 'onChange' | 'defaultValue'> {
   /** Names the group for assistive tech. Hidden visually unless `hideLabel={false}`. */
   label: ReactNode
   /** @default true */
@@ -50,6 +51,7 @@ export interface SegmentedControlProps extends Omit<
  * ```
  */
 export const SegmentedControl = ({
+  greese,
   label,
   hideLabel = true,
   name,
@@ -72,7 +74,7 @@ export const SegmentedControl = ({
     () => ({ name: name ?? generated, value, select: setValue }),
     [name, generated, value, setValue]
   )
-  return (
+  return withGreese(
     <fieldset
       role="radiogroup"
       {...props}
@@ -89,20 +91,22 @@ export const SegmentedControl = ({
       <SegmentedContext value={context}>
         <div className="greese-SegmentedControl-track">{children}</div>
       </SegmentedContext>
-    </fieldset>
+    </fieldset>,
+    greese
   )
 }
 
-export interface SegmentProps extends Omit<
-  ComponentPropsWithRef<'input'>,
-  'type' | 'value' | 'children'
-> {
+export interface SegmentProps
+  extends
+    GreeseProps,
+    Omit<ComponentPropsWithRef<'input'>, 'type' | 'value' | 'children'> {
   value: string
   children: ReactNode
 }
 
 /** One option of a SegmentedControl. */
 export const Segment = ({
+  greese,
   value,
   children,
   className,
@@ -111,7 +115,7 @@ export const Segment = ({
 }: SegmentProps): JSX.Element => {
   const group = use(SegmentedContext)
   if (!group) throw new Error('<Segment> must be used inside <SegmentedControl>.')
-  return (
+  return withGreese(
     <label className={cx('greese-Segment', className)}>
       <input
         {...props}
@@ -126,6 +130,7 @@ export const Segment = ({
         }}
       />
       <span className="greese-Segment-label">{children}</span>
-    </label>
+    </label>,
+    greese
   )
 }

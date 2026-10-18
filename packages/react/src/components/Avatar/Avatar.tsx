@@ -8,10 +8,12 @@ import {
   type RefCallback,
 } from 'react'
 import { cx } from '../../utils/cx.ts'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl'
 
-export interface AvatarProps extends Omit<ComponentPropsWithRef<'span'>, 'children'> {
+export interface AvatarProps
+  extends Omit<ComponentPropsWithRef<'span'>, 'children'>, GreeseProps {
   /** The person or thing: used for the alt text and the initials fallback. */
   name: string
   src?: string
@@ -39,6 +41,7 @@ export const Avatar = ({
   shape = 'circle',
   fallback,
   className,
+  greese,
   ...props
 }: AvatarProps): JSX.Element => {
   const [failedSrc, setFailedSrc] = useState<string>()
@@ -49,7 +52,7 @@ export const Avatar = ({
     if (img?.complete && img.naturalWidth === 0 && img.currentSrc) setFailedSrc(src)
   }
 
-  return (
+  return withGreese(
     <span
       {...props}
       className={cx(
@@ -73,11 +76,12 @@ export const Avatar = ({
           {fallback ?? <span aria-hidden="true">{initials(name)}</span>}
         </span>
       )}
-    </span>
+    </span>,
+    greese
   )
 }
 
-export interface AvatarGroupProps extends ComponentPropsWithRef<'div'> {
+export interface AvatarGroupProps extends ComponentPropsWithRef<'div'>, GreeseProps {
   /** Show at most this many, then a "+N" count. */
   max?: number
   /** @default 'md' */
@@ -94,6 +98,7 @@ export const AvatarGroup = ({
   size = 'md',
   className,
   children,
+  greese,
   ...props
 }: AvatarGroupProps): JSX.Element => {
   const items = Children.toArray(children)
@@ -103,7 +108,7 @@ export const AvatarGroup = ({
   // Earlier avatars stack on top, so each one's face (or initials) stays
   // visible; DOM and reading order are unchanged.
   const layer = (index: number) => ({ zIndex: total - index })
-  return (
+  return withGreese(
     <div
       role="group"
       {...props}
@@ -117,7 +122,11 @@ export const AvatarGroup = ({
       {hidden > 0 && (
         <span className="greese-AvatarGroup-item" style={layer(shown.length)}>
           <span
-            className={cx('greese-Avatar', `greese-Avatar--${size}`, 'greese-Avatar--count')}
+            className={cx(
+              'greese-Avatar',
+              `greese-Avatar--${size}`,
+              'greese-Avatar--count'
+            )}
           >
             <span
               role="img"
@@ -129,6 +138,7 @@ export const AvatarGroup = ({
           </span>
         </span>
       )}
-    </div>
+    </div>,
+    greese
   )
 }

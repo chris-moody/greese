@@ -20,11 +20,10 @@ import {
 } from '../ChoiceGroup/ChoiceGroup.tsx'
 import { useFieldControl } from '../Field/Field.tsx'
 import { composeRefs } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface CheckboxProps extends Omit<
-  ComponentPropsWithRef<'input'>,
-  'type' | 'size'
-> {
+export interface CheckboxProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'input'>, 'type' | 'size'> {
   /** Text beside the box. Without it, give the checkbox an `aria-label`. */
   label?: ReactNode
   /** Secondary text under the label, announced with the checkbox. */
@@ -52,6 +51,7 @@ const CheckboxGroupContext = createContext<CheckboxGroupContextValue | null>(nul
  * CheckboxGroup (pass `value`).
  */
 export const Checkbox = ({
+  greese,
   label,
   description,
   indeterminate,
@@ -92,7 +92,7 @@ export const Checkbox = ({
     ? { name: group.name, checked: group.value.includes(String(props.value)) }
     : {}
 
-  return (
+  return withGreese(
     <div
       className={cx('greese-Checkbox', className)}
       style={style}
@@ -123,11 +123,12 @@ export const Checkbox = ({
         description={description}
         descriptionId={descriptionId}
       />
-    </div>
+    </div>,
+    greese
   )
 }
 
-export interface CheckboxGroupProps extends ChoiceGroupProps {
+export interface CheckboxGroupProps extends GreeseProps, ChoiceGroupProps {
   /** Shared `name` for native form submission. */
   name?: string
   /** Checked values (each Checkbox's `value`). */
@@ -148,6 +149,7 @@ export interface CheckboxGroupProps extends ChoiceGroupProps {
  * ```
  */
 export const CheckboxGroup = ({
+  greese,
   name,
   value: valueProp,
   defaultValue = [],
@@ -163,7 +165,7 @@ export const CheckboxGroup = ({
     onChange: onValueChange,
   })
   const isInvalid = invalid ?? Boolean(error)
-  return (
+  return withGreese(
     <ChoiceGroupShell {...props} error={error} invalid={isInvalid}>
       {({ describedBy }) => (
         <CheckboxGroupProvider
@@ -176,7 +178,8 @@ export const CheckboxGroup = ({
           {children}
         </CheckboxGroupProvider>
       )}
-    </ChoiceGroupShell>
+    </ChoiceGroupShell>,
+    greese
   )
 }
 

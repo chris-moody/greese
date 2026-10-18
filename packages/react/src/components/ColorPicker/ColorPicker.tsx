@@ -17,11 +17,10 @@ import {
   type HsvColor,
   type RgbColor,
 } from './colorMath.ts'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface ColorPickerProps extends Omit<
-  ComponentPropsWithRef<'div'>,
-  'defaultValue' | 'onChange'
-> {
+export interface ColorPickerProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'div'>, 'defaultValue' | 'onChange'> {
   /** Hex colour (`#rrggbb`, or `#rrggbbaa` with transparency), controlled. */
   value?: string
   /** Hex colour, uncontrolled. @default '#3b82f6' */
@@ -56,6 +55,7 @@ const clamp01 = (n: number): number => Math.min(Math.max(n, 0), 1)
  * For a compact field, put it in a Popover with a swatch button as trigger.
  */
 export const ColorPicker = ({
+  greese,
   value,
   defaultValue = '#3b82f6',
   onValueChange,
@@ -121,7 +121,7 @@ export const ColorPicker = ({
   }
 
   const opaque = toHex({ ...hsv, a: 1 }, false)
-  return (
+  return withGreese(
     <div
       role="group"
       aria-label={label}
@@ -229,7 +229,8 @@ export const ColorPicker = ({
           ))}
         </div>
       )}
-    </div>
+    </div>,
+    greese
   )
 }
 

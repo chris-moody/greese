@@ -18,7 +18,8 @@
   "license": "MIT",
   "type": "module",
   "sideEffects": [
-    "*.css"
+    "*.css",
+    "./dist/greese.js"
   ],
   "files": [
     "LICENSE",
@@ -30,6 +31,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./greese": {
+      "types": "./dist/greese.d.ts",
+      "default": "./dist/greese.js"
     },
     "./styles.css": "./dist/greese-ui.css",
     "./base.css": "./dist/base.css",

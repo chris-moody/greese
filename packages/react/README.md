@@ -147,6 +147,29 @@ are at least 44px.
 toast({ title: 'Archived', action: { label: 'Undo', onClick: restore } })
 ```
 
+## Motion: the `greese` prop and greese.js
+
+Every component that draws something accepts `greese`:
+
+```tsx
+<Card greese="fade-up" />                                    // entrance preset: CSS only
+<Stack greese={{ inView: 'fade-up', stagger: 0.05 }}>…</Stack> // reveal on scroll, children in turn
+<Button greese={{ hover: 'lift', press: 'squish' }} />       // interactions
+<Heading greese={{ text: 'split' }}>Served fast</Heading>    // text effects
+<Dialog greese={{ enter: 'pop', exit: 'scale-out' }} … />    // overlay enter and exit
+```
+
+- **Entrance presets are pure CSS:** they render in Server Components and
+  cost no JavaScript.
+- **Everything else loads a small runtime plus greese.js** (about 6.4 kB,
+  brotli) as a lazy chunk, the first time a prop needs it. Add
+  `import '@greese-ui/react/greese'` at your entry to load it up front.
+- **Reduced motion is respected throughout.**
+- **`<Motion>` gives any element the prop.**
+- **`useTimeline()`** ties a timeline to a component's lifetime.
+- **greese.js** (`@greese-ui/greese`) is re-exported (`animate`, `timeline`,
+  `ease`, `splitText`) for full keyframe timelines.
+
 ## Responsive values
 
 Every responsive prop takes one value, or a value per breakpoint,

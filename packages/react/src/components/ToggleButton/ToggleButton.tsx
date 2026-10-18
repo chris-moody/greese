@@ -3,8 +3,9 @@ import type { JSX, MouseEvent } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
 import { Button, type ButtonProps } from '../Button/Button.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface ToggleButtonProps extends Omit<ButtonProps, 'asChild'> {
+export interface ToggleButtonProps extends GreeseProps, Omit<ButtonProps, 'asChild'> {
   /** Controlled pressed state. */
   pressed?: boolean
   /** Initial pressed state when uncontrolled. */
@@ -17,6 +18,7 @@ export interface ToggleButtonProps extends Omit<ButtonProps, 'asChild'> {
  * Group several in an attached ButtonGroup for a segmented control.
  */
 export const ToggleButton = ({
+  greese,
   pressed: pressedProp,
   defaultPressed = false,
   onPressedChange,
@@ -31,7 +33,7 @@ export const ToggleButton = ({
     defaultValue: defaultPressed,
     onChange: onPressedChange,
   })
-  return (
+  return withGreese(
     <Button
       {...props}
       variant={variant}
@@ -42,6 +44,7 @@ export const ToggleButton = ({
         onClick?.(event)
         if (!event.defaultPrevented) setPressed((p) => !p)
       }}
-    />
+    />,
+    greese
   )
 }

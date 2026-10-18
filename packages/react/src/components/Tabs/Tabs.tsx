@@ -10,6 +10,7 @@ import {
 } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 interface TabsContextValue {
   baseId: string
@@ -31,10 +32,8 @@ const useTabs = (component: string): TabsContextValue => {
 const idFor = (base: string, kind: 'tab' | 'panel', value: string) =>
   `${base}-${kind}-${value.replace(/[^\w-]/g, '_')}`
 
-export interface TabsProps extends Omit<
-  ComponentPropsWithRef<'div'>,
-  'defaultValue' | 'dir'
-> {
+export interface TabsProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'div'>, 'defaultValue' | 'dir'> {
   value?: string
   defaultValue?: string
   onValueChange?: (value: string) => void
@@ -65,6 +64,7 @@ export interface TabsProps extends Omit<
  * ```
  */
 export const Tabs = ({
+  greese,
   value: valueProp,
   defaultValue,
   onValueChange,
@@ -83,23 +83,25 @@ export const Tabs = ({
     () => ({ baseId, value, select: setValue, orientation, activation }),
     [baseId, value, setValue, orientation, activation]
   )
-  return (
+  return withGreese(
     <TabsContext value={context}>
       <div
         {...props}
         data-orientation={orientation}
         className={cx('greese-Tabs', className)}
       />
-    </TabsContext>
+    </TabsContext>,
+    greese
   )
 }
 
 /** The row (or column) of tabs. Give it an `aria-label`. */
 export const TabList = ({
+  greese,
   className,
   onKeyDown,
   ...props
-}: ComponentPropsWithRef<'div'>): JSX.Element => {
+}: ComponentPropsWithRef<'div'> & GreeseProps): JSX.Element => {
   const { orientation, activation, select } = useTabs('TabList')
 
   const move = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -134,26 +136,34 @@ export const TabList = ({
     if (activation === 'automatic' && tab.dataset.value) select(tab.dataset.value)
   }
 
-  return (
+  return withGreese(
     <div
       role="tablist"
       aria-orientation={orientation}
       {...props}
       onKeyDown={move}
       className={cx('greese-TabList', className)}
-    />
+    />,
+    greese
   )
 }
 
-export interface TabProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
+export interface TabProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'button'>, 'value'> {
   value: string
 }
 
 /** One tab. Only the selected tab is in the Tab order. */
-export const Tab = ({ value, className, onClick, ...props }: TabProps): JSX.Element => {
+export const Tab = ({
+  greese,
+  value,
+  className,
+  onClick,
+  ...props
+}: TabProps): JSX.Element => {
   const { baseId, value: selected, select } = useTabs('Tab')
   const isSelected = selected === value
-  return (
+  return withGreese(
     <button
       type="button"
       role="tab"
@@ -168,11 +178,12 @@ export const Tab = ({ value, className, onClick, ...props }: TabProps): JSX.Elem
         onClick?.(event)
         if (!event.defaultPrevented) select(value)
       }}
-    />
+    />,
+    greese
   )
 }
 
-export interface TabPanelProps extends ComponentPropsWithRef<'div'> {
+export interface TabPanelProps extends GreeseProps, ComponentPropsWithRef<'div'> {
   value: string
 }
 
@@ -180,9 +191,14 @@ export interface TabPanelProps extends ComponentPropsWithRef<'div'> {
  * The content for one tab. Focusable, so keyboard users can reach content
  * with no focusable elements of its own.
  */
-export const TabPanel = ({ value, className, ...props }: TabPanelProps): JSX.Element => {
+export const TabPanel = ({
+  greese,
+  value,
+  className,
+  ...props
+}: TabPanelProps): JSX.Element => {
   const { baseId, value: selected } = useTabs('TabPanel')
-  return (
+  return withGreese(
     <div
       role="tabpanel"
       tabIndex={0}
@@ -191,6 +207,7 @@ export const TabPanel = ({ value, className, ...props }: TabPanelProps): JSX.Ele
       aria-labelledby={idFor(baseId, 'tab', value)}
       hidden={selected !== value}
       className={cx('greese-TabPanel', className)}
-    />
+    />,
+    greese
   )
 }

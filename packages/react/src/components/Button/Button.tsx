@@ -7,12 +7,13 @@ import {
   type ResponsiveConfig,
 } from '../../utils/responsive.ts'
 import { Slot, Slottable } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export type ButtonVariant = 'solid' | 'soft' | 'outline' | 'ghost'
 export type ButtonTone = 'accent' | 'neutral' | 'negative'
 export type ControlSize = 'sm' | 'md' | 'lg'
 
-export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
+export interface ButtonProps extends GreeseProps, ComponentPropsWithoutRef<'button'> {
   ref?: Ref<HTMLButtonElement>
   /** @default 'solid' */
   variant?: ButtonVariant
@@ -48,6 +49,7 @@ const FULL_WIDTH: ResponsiveConfig = { block: 'greese-Button', prop: 'width' }
  * ```
  */
 export const Button = ({
+  greese,
   variant = 'solid',
   tone = 'accent',
   size = 'md',
@@ -80,7 +82,7 @@ export const Button = ({
   const inert = loading || (asChild && disabled)
   const Root = (asChild ? Slot : 'button') as typeof Slot
 
-  return (
+  return withGreese(
     <Root
       {...props}
       ref={props.ref as Ref<HTMLElement>}
@@ -110,6 +112,7 @@ export const Button = ({
           {endIcon}
         </span>
       )}
-    </Root>
+    </Root>,
+    greese
   )
 }

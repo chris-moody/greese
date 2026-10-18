@@ -1,7 +1,9 @@
 import type { ComponentPropsWithRef, JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface ProgressProps extends Omit<ComponentPropsWithRef<'progress'>, 'value'> {
+export interface ProgressProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'progress'>, 'value'> {
   /** Omit for an indeterminate (unknown duration) bar. */
   value?: number
   /** @default 100 */
@@ -15,16 +17,19 @@ export interface ProgressProps extends Omit<ComponentPropsWithRef<'progress'>, '
  * a Field, `aria-label` or `aria-labelledby`.
  */
 export const Progress = ({
+  greese,
   value,
   max = 100,
   size = 'md',
   className,
   ...props
-}: ProgressProps): JSX.Element => (
-  <progress
-    {...props}
-    max={max}
-    value={value}
-    className={cx('greese-Progress', `greese-Progress--${size}`, className)}
-  />
-)
+}: ProgressProps): JSX.Element =>
+  withGreese(
+    <progress
+      {...props}
+      max={max}
+      value={value}
+      className={cx('greese-Progress', `greese-Progress--${size}`, className)}
+    />,
+    greese
+  )

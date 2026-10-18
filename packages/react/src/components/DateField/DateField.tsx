@@ -2,10 +2,11 @@
 import type { JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { TextField, type TextFieldProps } from '../TextField/TextField.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export type DateFieldType = 'date' | 'time' | 'datetime-local' | 'month' | 'week'
 
-export interface DateFieldProps extends Omit<TextFieldProps, 'type'> {
+export interface DateFieldProps extends GreeseProps, Omit<TextFieldProps, 'type'> {
   /** @default 'date' */
   type?: DateFieldType
 }
@@ -21,9 +22,12 @@ export interface DateFieldProps extends Omit<TextFieldProps, 'type'> {
  * ```
  */
 export const DateField = ({
+  greese,
   type = 'date',
   className,
   ...props
-}: DateFieldProps): JSX.Element => (
-  <TextField {...props} type={type} className={cx('greese-DateField', className)} />
-)
+}: DateFieldProps): JSX.Element =>
+  withGreese(
+    <TextField {...props} type={type} className={cx('greese-DateField', className)} />,
+    greese
+  )

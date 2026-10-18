@@ -6,13 +6,14 @@ import {
   type ResponsiveConfig,
 } from '../../utils/responsive.ts'
 import { Slot } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export type FontSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl'
 export type FontWeight = 'regular' | 'medium' | 'semibold' | 'bold'
 export type TextTone =
   'neutral' | 'muted' | 'accent' | 'positive' | 'negative' | 'warning' | 'info'
 
-export interface TextProps extends ComponentPropsWithoutRef<'p'> {
+export interface TextProps extends ComponentPropsWithoutRef<'p'>, GreeseProps {
   ref?: Ref<HTMLElement>
   /** Font size from the scale, per breakpoint if needed. */
   size?: Responsive<FontSize>
@@ -36,6 +37,7 @@ const SIZE: ResponsiveConfig = { block: 'greese-Text', prop: 'size' }
  * ```
  */
 export const Text = ({
+  greese,
   size,
   weight,
   tone,
@@ -60,5 +62,8 @@ export const Text = ({
         : style,
   })
   const Root = (asChild ? Slot : 'p') as typeof Slot
-  return <Root {...props} className={resolved.className} style={resolved.style} />
+  return withGreese(
+    <Root {...props} className={resolved.className} style={resolved.style} />,
+    greese
+  )
 }

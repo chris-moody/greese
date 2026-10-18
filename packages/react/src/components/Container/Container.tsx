@@ -1,10 +1,11 @@
 import type { JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { Box, type BoxProps } from '../Box/Box.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export type ContainerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full'
 
-export interface ContainerProps extends BoxProps {
+export interface ContainerProps extends GreeseProps, BoxProps {
   /** Maximum width, matching the breakpoint of the same name. @default 'lg' */
   size?: ContainerSize
 }
@@ -16,12 +17,15 @@ export interface ContainerProps extends BoxProps {
  * Accepts every Box style prop (`px` overrides the gutter) and `asChild`.
  */
 export const Container = ({
+  greese,
   size = 'lg',
   className,
   ...props
-}: ContainerProps): JSX.Element => (
-  <Box
-    {...props}
-    className={cx('greese-Container', `greese-Container--size-${size}`, className)}
-  />
-)
+}: ContainerProps): JSX.Element =>
+  withGreese(
+    <Box
+      {...props}
+      className={cx('greese-Container', `greese-Container--size-${size}`, className)}
+    />,
+    greese
+  )

@@ -12,11 +12,10 @@ import { useControllableState } from '../../hooks/useControllableState.ts'
 import { useAnchoredPopover, type Placement } from '../../utils/anchor.ts'
 import { cx } from '../../utils/cx.ts'
 import { composeRefs, Slot } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface PopoverProps extends Omit<
-  ComponentPropsWithRef<'div'>,
-  'popover' | 'onToggle'
-> {
+export interface PopoverProps
+  extends Omit<ComponentPropsWithRef<'div'>, 'popover' | 'onToggle'>, GreeseProps {
   /** The element that toggles it: usually a Button. */
   trigger: ReactElement
   /** @default 'bottom-start' */
@@ -34,6 +33,7 @@ export interface PopoverProps extends Omit<
  * from the trigger into the content. Positioned by CSS anchor positioning.
  */
 export const Popover = ({
+  greese,
   trigger,
   placement = 'bottom-start',
   open: openProp,
@@ -73,19 +73,22 @@ export const Popover = ({
       >
         {trigger}
       </Slot>
-      <div
-        {...props}
-        id={id}
-        ref={composeRefs<HTMLDivElement>(popover, anchor.floatingRef, ref)}
-        popover="auto"
-        role="dialog"
-        aria-label={label}
-        className={cx('greese-Popover', className)}
-        style={{ ...anchor.floatingStyle, ...style }}
-        onToggle={(event: ToggleEvent<HTMLDivElement>) =>
-          setOpen(event.newState === 'open')
-        }
-      />
+      {withGreese(
+        <div
+          {...props}
+          id={id}
+          ref={composeRefs<HTMLDivElement>(popover, anchor.floatingRef, ref)}
+          popover="auto"
+          role="dialog"
+          aria-label={label}
+          className={cx('greese-Popover', className)}
+          style={{ ...anchor.floatingStyle, ...style }}
+          onToggle={(event: ToggleEvent<HTMLDivElement>) =>
+            setOpen(event.newState === 'open')
+          }
+        />,
+        greese
+      )}
     </>
   )
 }

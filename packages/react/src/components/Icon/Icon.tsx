@@ -1,7 +1,8 @@
 import type { ComponentPropsWithRef, CSSProperties, JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface IconProps extends ComponentPropsWithRef<'span'> {
+export interface IconProps extends GreeseProps, ComponentPropsWithRef<'span'> {
   /**
    * Accessible name. Without it the icon is decorative (`aria-hidden`), which
    * is right when text sits beside it.
@@ -21,16 +22,19 @@ export interface IconProps extends ComponentPropsWithRef<'span'> {
  * ```
  */
 export const Icon = ({
+  greese,
   label,
   size,
   className,
   style,
   ...props
-}: IconProps): JSX.Element => (
-  <span
-    {...props}
-    {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}
-    className={cx('greese-Icon', className)}
-    style={size ? ({ '--greese-icon-size': size, ...style } as CSSProperties) : style}
-  />
-)
+}: IconProps): JSX.Element =>
+  withGreese(
+    <span
+      {...props}
+      {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}
+      className={cx('greese-Icon', className)}
+      style={size ? ({ '--greese-icon-size': size, ...style } as CSSProperties) : style}
+    />,
+    greese
+  )

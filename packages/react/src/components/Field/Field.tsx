@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react'
 import { cx } from '../../utils/cx.ts'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 interface FieldContextValue {
   id: string
@@ -56,7 +57,8 @@ export const useFieldControl = ({
   }
 }
 
-export interface FieldProps extends Omit<ComponentPropsWithRef<'div'>, 'id'> {
+export interface FieldProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'div'>, 'id'> {
   /** The visible label. Always required: use `hideLabel` to hide it visually. */
   label: ReactNode
   /** Hint text below the label, announced with the control. */
@@ -84,6 +86,7 @@ export interface FieldProps extends Omit<ComponentPropsWithRef<'div'>, 'id'> {
  * ```
  */
 export const Field = ({
+  greese,
   label,
   description,
   error,
@@ -107,7 +110,7 @@ export const Field = ({
     [id, descriptionId, errorId, isInvalid, required, disabled]
   )
 
-  return (
+  return withGreese(
     <div
       {...props}
       className={cx('greese-Field', className)}
@@ -136,6 +139,7 @@ export const Field = ({
           {error}
         </p>
       )}
-    </div>
+    </div>,
+    greese
   )
 }

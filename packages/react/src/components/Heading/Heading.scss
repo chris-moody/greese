@@ -52,5 +52,10 @@ $defaults: (
   }
 
   // After the defaults, so an explicit size wins at every breakpoint.
-  @include mixins.responsive-prop('greese-Heading', 'size', font-size, type.size-tokens());
+  @include mixins.responsive-prop(
+    'greese-Heading',
+    'size',
+    font-size,
+    type.size-tokens()
+  );
 }

@@ -8,8 +8,9 @@ import {
 } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { Slot } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface BreadcrumbsProps extends ComponentPropsWithRef<'nav'> {
+export interface BreadcrumbsProps extends GreeseProps, ComponentPropsWithRef<'nav'> {
   /** Collapse the middle into "…" beyond this many items; the button expands them. */
   maxItems?: number
   /** @default 'Breadcrumb' */
@@ -24,6 +25,7 @@ export interface BreadcrumbsProps extends ComponentPropsWithRef<'nav'> {
  * ordered list. Separators are CSS and silent to screen readers.
  */
 export const Breadcrumbs = ({
+  greese,
   maxItems,
   label = 'Breadcrumb',
   expandLabel = 'Show full path',
@@ -51,14 +53,15 @@ export const Breadcrumbs = ({
       ]
     : items
 
-  return (
+  return withGreese(
     <nav {...props} aria-label={label} className={cx('greese-Breadcrumbs', className)}>
       <ol className="greese-Breadcrumbs-list">{shown}</ol>
-    </nav>
+    </nav>,
+    greese
   )
 }
 
-export interface BreadcrumbItemProps extends ComponentPropsWithRef<'a'> {
+export interface BreadcrumbItemProps extends GreeseProps, ComponentPropsWithRef<'a'> {
   /** The current page: rendered as text with `aria-current="page"`. Implied when there is no `href`. */
   current?: boolean
   /** Render your router's link. */
@@ -67,6 +70,7 @@ export interface BreadcrumbItemProps extends ComponentPropsWithRef<'a'> {
 
 /** One step in Breadcrumbs. */
 export const BreadcrumbItem = ({
+  greese,
   current,
   asChild,
   className,
@@ -75,7 +79,7 @@ export const BreadcrumbItem = ({
 }: BreadcrumbItemProps): JSX.Element => {
   const isCurrent = current ?? (!props.href && !asChild)
   const Link = (asChild ? Slot : 'a') as typeof Slot
-  return (
+  return withGreese(
     <li className={cx('greese-BreadcrumbItem', className)}>
       {isCurrent ? (
         <span aria-current="page" className="greese-BreadcrumbItem-current">
@@ -86,6 +90,7 @@ export const BreadcrumbItem = ({
           {children}
         </Link>
       )}
-    </li>
+    </li>,
+    greese
   )
 }

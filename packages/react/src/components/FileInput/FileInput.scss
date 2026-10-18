@@ -25,7 +25,8 @@
       background-color: transparent;
       border: 1px solid var(--greese-color-border-strong);
       border-radius: var(--greese-radius-md);
-      transition: background-color var(--greese-duration-fast) var(--greese-easing-standard);
+      transition: background-color var(--greese-duration-fast)
+        var(--greese-easing-standard);
     }
 
     @include mixins.hover {

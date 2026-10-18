@@ -15,6 +15,7 @@ import { cx } from '../../utils/cx.ts'
 import { MenuGlyph } from '../../utils/glyphs.tsx'
 import { IconButton, type IconButtonProps } from '../IconButton/IconButton.tsx'
 import { composeRefs } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 /** Breakpoints at which the sidebar can become persistent. */
 export type SidebarBreakpoint = 'sm' | 'md' | 'lg' | 'xl'
@@ -26,7 +27,7 @@ interface SidebarContextValue {
 
 const SidebarContext = createContext<SidebarContextValue | null>(null)
 
-export interface SidebarLayoutProps extends ComponentPropsWithRef<'div'> {
+export interface SidebarLayoutProps extends GreeseProps, ComponentPropsWithRef<'div'> {
   /** From this breakpoint the sidebar is always visible; below it, off-canvas. @default 'md' */
   breakpoint?: SidebarBreakpoint
 }
@@ -37,12 +38,13 @@ export interface SidebarLayoutProps extends ComponentPropsWithRef<'div'> {
  * the content (which can include an AppBar holding the trigger).
  */
 export const SidebarLayout = ({
+  greese,
   breakpoint = 'md',
   className,
   ...props
 }: SidebarLayoutProps): JSX.Element => {
   const id = `${useId()}-sidebar`
-  return (
+  return withGreese(
     <SidebarContext value={{ id, breakpoint }}>
       <div
         {...props}
@@ -52,11 +54,13 @@ export const SidebarLayout = ({
           className
         )}
       />
-    </SidebarContext>
+    </SidebarContext>,
+    greese
   )
 }
 
-export interface SidebarProps extends Omit<ComponentPropsWithRef<'aside'>, 'popover'> {
+export interface SidebarProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'aside'>, 'popover'> {
   /** Names the landmark, e.g. "Main navigation". */
   label: string
   /** Narrow rail mode on wide screens (content decides what to show). */
@@ -70,6 +74,7 @@ export interface SidebarProps extends Omit<ComponentPropsWithRef<'aside'>, 'popo
  * a sticky column from the breakpoint up.
  */
 export const Sidebar = ({
+  greese,
   label,
   collapsed,
   className,
@@ -92,7 +97,7 @@ export const Sidebar = ({
     return () => query.removeEventListener('change', onChange)
   }, [breakpoint])
 
-  return (
+  return withGreese(
     <aside
       {...props}
       id={context?.id ?? props.id}
@@ -108,11 +113,13 @@ export const Sidebar = ({
           el.hidePopover()
         }
       }}
-    />
+    />,
+    greese
   )
 }
 
-export interface SidebarTriggerProps extends Omit<IconButtonProps, 'label' | 'children'> {
+export interface SidebarTriggerProps
+  extends GreeseProps, Omit<IconButtonProps, 'label' | 'children'> {
   /** @default 'Open navigation' */
   label?: string
   /** Your menu icon. A built-in one is used if omitted. */
@@ -121,13 +128,14 @@ export interface SidebarTriggerProps extends Omit<IconButtonProps, 'label' | 'ch
 
 /** Opens the off-canvas sidebar; hidden once the sidebar is persistent. */
 export const SidebarTrigger = ({
+  greese,
   label = 'Open navigation',
   className,
   children,
   ...props
 }: SidebarTriggerProps): JSX.Element => {
   const context = use(SidebarContext)
-  return (
+  return withGreese(
     <IconButton
       {...props}
       label={label}
@@ -139,6 +147,7 @@ export const SidebarTrigger = ({
       )}
     >
       {children ?? <MenuGlyph />}
-    </IconButton>
+    </IconButton>,
+    greese
   )
 }

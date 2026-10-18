@@ -1,7 +1,8 @@
 import type { ComponentPropsWithRef, CSSProperties, JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface SkeletonProps extends ComponentPropsWithRef<'span'> {
+export interface SkeletonProps extends GreeseProps, ComponentPropsWithRef<'span'> {
   /** @default 'text' */
   shape?: 'text' | 'rect' | 'circle'
   /** Any CSS length. Text defaults to full width; circles to 2.5rem. */
@@ -18,6 +19,7 @@ export interface SkeletonProps extends ComponentPropsWithRef<'span'> {
  * instead. The shimmer stops under reduced motion.
  */
 export const Skeleton = ({
+  greese,
   shape = 'text',
   width,
   height,
@@ -46,12 +48,13 @@ export const Skeleton = ({
       </span>
     )
   }
-  return (
+  return withGreese(
     <span
       aria-hidden="true"
       {...props}
       className={cx('greese-Skeleton', `greese-Skeleton--${shape}`, className)}
       style={sized}
-    />
+    />,
+    greese
   )
 }

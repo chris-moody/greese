@@ -1,10 +1,11 @@
 import type { ComponentPropsWithRef, JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export type BadgeTone =
   'neutral' | 'accent' | 'positive' | 'negative' | 'warning' | 'info'
 
-export interface BadgeProps extends ComponentPropsWithRef<'span'> {
+export interface BadgeProps extends GreeseProps, ComponentPropsWithRef<'span'> {
   /** @default 'neutral' */
   tone?: BadgeTone
   /** @default 'soft' */
@@ -16,18 +17,21 @@ export interface BadgeProps extends ComponentPropsWithRef<'span'> {
  * selectable labels use Chip.
  */
 export const Badge = ({
+  greese,
   tone = 'neutral',
   variant = 'soft',
   className,
   ...props
-}: BadgeProps): JSX.Element => (
-  <span
-    {...props}
-    className={cx(
-      'greese-Badge',
-      `greese-Badge--${tone}`,
-      `greese-Badge--${variant}`,
-      className
-    )}
-  />
-)
+}: BadgeProps): JSX.Element =>
+  withGreese(
+    <span
+      {...props}
+      className={cx(
+        'greese-Badge',
+        `greese-Badge--${tone}`,
+        `greese-Badge--${variant}`,
+        className
+      )}
+    />,
+    greese
+  )

@@ -26,7 +26,8 @@
       inline-size: auto;
     }
 
-    &[data-orientation='horizontal'] > :is(.greese-Button, .greese-Select, .greese-Input) {
+    &[data-orientation='horizontal']
+      > :is(.greese-Button, .greese-Select, .greese-Input) {
       &:not(:first-child) {
         margin-inline-start: -1px;
         border-start-start-radius: 0;

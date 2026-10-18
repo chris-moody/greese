@@ -10,6 +10,7 @@ import {
 } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { SortGlyph } from '../../utils/glyphs.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 /** Below this breakpoint, rows stack into cards. */
 export type TableStackBreakpoint = 'sm' | 'md' | 'lg'
@@ -19,7 +20,7 @@ export type TableStackBreakpoint = 'sm' | 'md' | 'lg'
 const StackedContext = createContext(false)
 const role = (stacked: boolean, value: string) => (stacked ? value : undefined)
 
-export interface TableProps extends ComponentPropsWithRef<'table'> {
+export interface TableProps extends GreeseProps, ComponentPropsWithRef<'table'> {
   /** Names the table (rendered as `<caption>`). Required: tables need a name. */
   caption: ReactNode
   /** Keep the caption for assistive tech but hide it on screen. */
@@ -55,6 +56,7 @@ export interface TableProps extends ComponentPropsWithRef<'table'> {
  * ```
  */
 export const Table = ({
+  greese,
   caption,
   hideCaption,
   density = 'comfortable',
@@ -70,7 +72,7 @@ export const Table = ({
 }: TableProps): JSX.Element => {
   const captionId = useId()
   const stacked = stackBelow !== undefined
-  return (
+  return withGreese(
     <div
       role="region"
       aria-labelledby={captionId}
@@ -100,36 +102,48 @@ export const Table = ({
         </caption>
         <StackedContext value={stacked}>{children}</StackedContext>
       </table>
-    </div>
+    </div>,
+    greese
   )
 }
 
-export const TableHead = (props: ComponentPropsWithRef<'thead'>): JSX.Element => (
-  <thead role={role(use(StackedContext), 'rowgroup')} {...props} />
-)
+export const TableHead = ({
+  greese,
+  ...props
+}: ComponentPropsWithRef<'thead'> & GreeseProps): JSX.Element =>
+  withGreese(<thead role={role(use(StackedContext), 'rowgroup')} {...props} />, greese)
 
-export const TableBody = (props: ComponentPropsWithRef<'tbody'>): JSX.Element => (
-  <tbody role={role(use(StackedContext), 'rowgroup')} {...props} />
-)
+/** Rows here can enter in sequence: `greese={{ enter: 'fade-up', stagger: 0.04 }}`. */
+export const TableBody = ({
+  greese,
+  ...props
+}: ComponentPropsWithRef<'tbody'> & GreeseProps): JSX.Element =>
+  withGreese(<tbody role={role(use(StackedContext), 'rowgroup')} {...props} />, greese)
 
-export const TableFoot = (props: ComponentPropsWithRef<'tfoot'>): JSX.Element => (
-  <tfoot role={role(use(StackedContext), 'rowgroup')} {...props} />
-)
+export const TableFoot = ({
+  greese,
+  ...props
+}: ComponentPropsWithRef<'tfoot'> & GreeseProps): JSX.Element =>
+  withGreese(<tfoot role={role(use(StackedContext), 'rowgroup')} {...props} />, greese)
 
 export const TableRow = ({
+  greese,
   className,
   ...props
-}: ComponentPropsWithRef<'tr'>): JSX.Element => (
-  <tr
-    role={role(use(StackedContext), 'row')}
-    {...props}
-    className={cx('greese-TableRow', className)}
-  />
-)
+}: ComponentPropsWithRef<'tr'> & GreeseProps): JSX.Element =>
+  withGreese(
+    <tr
+      role={role(use(StackedContext), 'row')}
+      {...props}
+      className={cx('greese-TableRow', className)}
+    />,
+    greese
+  )
 
 export type SortDirection = 'ascending' | 'descending' | 'none'
 
-export interface TableHeaderCellProps extends Omit<ComponentPropsWithRef<'th'>, 'align'> {
+export interface TableHeaderCellProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'th'>, 'align'> {
   /** Current sort of this column. Set `ascending`/`descending` on one column only. */
   sort?: SortDirection
   /** Makes the header a sort button. */
@@ -141,6 +155,7 @@ export interface TableHeaderCellProps extends Omit<ComponentPropsWithRef<'th'>, 
 
 /** A column header; sortable with `onSort` (announced through `aria-sort`). */
 export const TableHeaderCell = ({
+  greese,
   sort,
   onSort,
   align,
@@ -148,32 +163,35 @@ export const TableHeaderCell = ({
   className,
   children,
   ...props
-}: TableHeaderCellProps): JSX.Element => (
-  <th
-    role={role(use(StackedContext), scope === 'row' ? 'rowheader' : 'columnheader')}
-    scope={scope}
-    aria-sort={sort === 'ascending' || sort === 'descending' ? sort : undefined}
-    {...props}
-    data-align={align && align !== 'start' ? align : undefined}
-    className={cx('greese-TableHeaderCell', className)}
-  >
-    {onSort ? (
-      <button
-        type="button"
-        className="greese-TableHeaderCell-sort"
-        data-sort={sort ?? 'none'}
-        onClick={onSort}
-      >
-        {children}
-        <SortGlyph />
-      </button>
-    ) : (
-      children
-    )}
-  </th>
-)
+}: TableHeaderCellProps): JSX.Element =>
+  withGreese(
+    <th
+      role={role(use(StackedContext), scope === 'row' ? 'rowheader' : 'columnheader')}
+      scope={scope}
+      aria-sort={sort === 'ascending' || sort === 'descending' ? sort : undefined}
+      {...props}
+      data-align={align && align !== 'start' ? align : undefined}
+      className={cx('greese-TableHeaderCell', className)}
+    >
+      {onSort ? (
+        <button
+          type="button"
+          className="greese-TableHeaderCell-sort"
+          data-sort={sort ?? 'none'}
+          onClick={onSort}
+        >
+          {children}
+          <SortGlyph />
+        </button>
+      ) : (
+        children
+      )}
+    </th>,
+    greese
+  )
 
-export interface TableCellProps extends Omit<ComponentPropsWithRef<'td'>, 'align'> {
+export interface TableCellProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'td'>, 'align'> {
   /** The column name, shown beside the value when rows stack into cards. */
   label?: string
   /** @default 'start' */
@@ -181,16 +199,19 @@ export interface TableCellProps extends Omit<ComponentPropsWithRef<'td'>, 'align
 }
 
 export const TableCell = ({
+  greese,
   label,
   align,
   className,
   ...props
-}: TableCellProps): JSX.Element => (
-  <td
-    role={role(use(StackedContext), 'cell')}
-    data-label={label}
-    {...props}
-    data-align={align && align !== 'start' ? align : undefined}
-    className={cx('greese-TableCell', className)}
-  />
-)
+}: TableCellProps): JSX.Element =>
+  withGreese(
+    <td
+      role={role(use(StackedContext), 'cell')}
+      data-label={label}
+      {...props}
+      data-align={align && align !== 'start' ? align : undefined}
+      className={cx('greese-TableCell', className)}
+    />,
+    greese
+  )

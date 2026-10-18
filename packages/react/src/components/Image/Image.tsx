@@ -15,8 +15,10 @@ import {
   type ResponsiveConfig,
 } from '../../utils/responsive.ts'
 import { composeRefs } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface ImageProps extends Omit<ComponentPropsWithRef<'img'>, 'placeholder'> {
+export interface ImageProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'img'>, 'placeholder'> {
   /** Required: describe the image, or `""` if it is decorative. */
   alt: string
   /** Width / height. Reserves space before loading, so nothing shifts (no CLS). */
@@ -53,6 +55,7 @@ const isColor = (value: string) => !/^(data:|https?:|\/|\.)/.test(value)
  * through to the image.
  */
 export const Image = ({
+  greese,
   ratio,
   fit = 'cover',
   placeholder,
@@ -104,7 +107,7 @@ export const Image = ({
     )
   }
 
-  return (
+  return withGreese(
     <span className={resolved.className} style={resolved.style}>
       <img
         {...props}
@@ -117,7 +120,8 @@ export const Image = ({
           onError?.(event)
         }}
       />
-    </span>
+    </span>,
+    greese
   )
 }
 

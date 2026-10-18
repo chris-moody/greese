@@ -3,8 +3,10 @@ import type { ComponentPropsWithRef, JSX, MouseEvent, ReactNode } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
 import { CloseGlyph } from '../../utils/glyphs.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface ChipProps extends Omit<ComponentPropsWithRef<'span'>, 'children'> {
+export interface ChipProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'span'>, 'children'> {
   children: ReactNode
   /** Leading icon or avatar. */
   icon?: ReactNode
@@ -28,6 +30,7 @@ export interface ChipProps extends Omit<ComponentPropsWithRef<'span'>, 'children
  * ```
  */
 export const Chip = ({
+  greese,
   children,
   icon,
   onRemove,
@@ -56,7 +59,7 @@ export const Chip = ({
     </>
   )
 
-  return (
+  return withGreese(
     <span
       {...props}
       className={cx(
@@ -92,6 +95,7 @@ export const Chip = ({
           <CloseGlyph />
         </button>
       )}
-    </span>
+    </span>,
+    greese
   )
 }

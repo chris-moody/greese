@@ -12,8 +12,9 @@ import {
 import { useAnchoredPopover, type Placement } from '../../utils/anchor.ts'
 import { cx } from '../../utils/cx.ts'
 import { composeRefs, Slot } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface TooltipProps {
+export interface TooltipProps extends GreeseProps {
   /** The tooltip text: supplementary, never essential (touch users won't see it). */
   content: ReactNode
   /** The element it describes: must be focusable (a Button, a link). */
@@ -34,6 +35,7 @@ export interface TooltipProps {
  * the tooltip adds a visible hint for sighted mouse users.
  */
 export const Tooltip = ({
+  greese,
   content,
   children,
   placement = 'top',
@@ -87,18 +89,21 @@ export const Tooltip = ({
       >
         {children}
       </Slot>
-      <div
-        id={id}
-        ref={composeRefs<HTMLDivElement>(tip, anchor.floatingRef)}
-        popover="manual"
-        role="tooltip"
-        className={cx('greese-Tooltip', className)}
-        style={anchor.floatingStyle}
-        onPointerEnter={() => clearTimeout(timer.current)}
-        onPointerLeave={() => hide(100)}
-      >
-        {content}
-      </div>
+      {withGreese(
+        <div
+          id={id}
+          ref={composeRefs<HTMLDivElement>(tip, anchor.floatingRef)}
+          popover="manual"
+          role="tooltip"
+          className={cx('greese-Tooltip', className)}
+          style={anchor.floatingStyle}
+          onPointerEnter={() => clearTimeout(timer.current)}
+          onPointerLeave={() => hide(100)}
+        >
+          {content}
+        </div>,
+        greese
+      )}
     </>
   )
 }

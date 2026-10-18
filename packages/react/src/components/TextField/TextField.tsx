@@ -2,8 +2,9 @@
 import type { JSX, ReactNode } from 'react'
 import { Field } from '../Field/Field.tsx'
 import { Input, type InputProps } from '../Input/Input.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface TextFieldProps extends InputProps {
+export interface TextFieldProps extends GreeseProps, InputProps {
   label: ReactNode
   description?: ReactNode
   error?: ReactNode
@@ -19,6 +20,7 @@ export interface TextFieldProps extends InputProps {
  * ```
  */
 export const TextField = ({
+  greese,
   label,
   description,
   error,
@@ -30,19 +32,21 @@ export const TextField = ({
   style,
   id,
   ...props
-}: TextFieldProps): JSX.Element => (
-  <Field
-    label={label}
-    description={description}
-    error={error}
-    hideLabel={hideLabel}
-    required={required}
-    disabled={disabled}
-    invalid={invalid}
-    controlId={id}
-    className={className}
-    style={style}
-  >
-    <Input {...props} />
-  </Field>
-)
+}: TextFieldProps): JSX.Element =>
+  withGreese(
+    <Field
+      label={label}
+      description={description}
+      error={error}
+      hideLabel={hideLabel}
+      required={required}
+      disabled={disabled}
+      invalid={invalid}
+      controlId={id}
+      className={className}
+      style={style}
+    >
+      <Input {...props} />
+    </Field>,
+    greese
+  )

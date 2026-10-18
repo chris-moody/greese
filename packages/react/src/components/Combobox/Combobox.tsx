@@ -19,6 +19,7 @@ import { ChevronGlyph } from '../../utils/glyphs.tsx'
 import { Field } from '../Field/Field.tsx'
 import { Input, type InputProps } from '../Input/Input.tsx'
 import { composeRefs } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface ComboboxOption {
   value: string
@@ -26,10 +27,10 @@ export interface ComboboxOption {
   disabled?: boolean
 }
 
-export interface ComboboxProps extends Omit<
-  InputProps,
-  'value' | 'defaultValue' | 'onChange' | 'type' | 'endAdornment'
-> {
+export interface ComboboxProps
+  extends
+    GreeseProps,
+    Omit<InputProps, 'value' | 'defaultValue' | 'onChange' | 'type' | 'endAdornment'> {
   label: ReactNode
   description?: ReactNode
   error?: ReactNode
@@ -76,6 +77,7 @@ export const defaultComboboxFilter = (option: ComboboxOption, text: string): boo
  * ```
  */
 export const Combobox = ({
+  greese,
   label,
   description,
   error,
@@ -185,7 +187,7 @@ export const Combobox = ({
 
   const selectedIndex = options.findIndex((o) => o.value === value)
 
-  return (
+  return withGreese(
     <Field
       label={label}
       description={description}
@@ -327,6 +329,7 @@ export const Combobox = ({
       <span className="greese-VisuallyHidden" aria-live="polite">
         {open && filtering ? resultsLabel(visible.length) : ''}
       </span>
-    </Field>
+    </Field>,
+    greese
   )
 }

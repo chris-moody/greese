@@ -2,6 +2,7 @@
 import { useLayoutEffect, useRef, useState, type ChangeEvent, type JSX } from 'react'
 import { Input, type InputProps } from '../Input/Input.tsx'
 import { composeRefs } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 /**
  * Mask placeholders. Every other character in a mask is a literal, written
@@ -121,10 +122,8 @@ const applyEdit = (
   }
 }
 
-export interface MaskedInputProps extends Omit<
-  InputProps,
-  'value' | 'defaultValue' | 'maxLength'
-> {
+export interface MaskedInputProps
+  extends GreeseProps, Omit<InputProps, 'value' | 'defaultValue' | 'maxLength'> {
   /**
    * The pattern. Placeholders: `9` a digit, `a`/`A` a letter, `h`/`H` a hex
    * digit, `*` a letter or digit. Anything else is a literal the user never
@@ -156,6 +155,7 @@ export interface MaskedInputProps extends Omit<
  * the formatted text; read the raw value from `onValueChange` if you need it.
  */
 export const MaskedInput = ({
+  greese,
   mask,
   maskChar = '_',
   value,
@@ -210,7 +210,7 @@ export const MaskedInput = ({
     }
   }
 
-  return (
+  return withGreese(
     <Input
       autoComplete="off"
       {...props}
@@ -218,6 +218,7 @@ export const MaskedInput = ({
       inputMode={inputMode ?? (digitsOnly ? 'numeric' : undefined)}
       value={display}
       onChange={handleChange}
-    />
+    />,
+    greese
   )
 }

@@ -1,11 +1,12 @@
 import type { JSX, ReactNode } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { Button, type ButtonProps } from '../Button/Button.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface IconButtonProps extends Omit<
-  ButtonProps,
-  'startIcon' | 'endIcon' | 'children' | 'fullWidth'
-> {
+export interface IconButtonProps
+  extends
+    GreeseProps,
+    Omit<ButtonProps, 'startIcon' | 'endIcon' | 'children' | 'fullWidth'> {
   /**
    * The accessible name, required: an icon alone says nothing to a screen
    * reader. Applied as `aria-label`.
@@ -23,22 +24,25 @@ export interface IconButtonProps extends Omit<
  * ```
  */
 export const IconButton = ({
+  greese,
   label,
   variant = 'ghost',
   tone = 'neutral',
   className,
   children,
   ...props
-}: IconButtonProps): JSX.Element => (
-  <Button
-    {...props}
-    variant={variant}
-    tone={tone}
-    aria-label={label}
-    className={cx('greese-IconButton', className)}
-  >
-    <span className="greese-Button-icon" aria-hidden="true">
-      {children}
-    </span>
-  </Button>
-)
+}: IconButtonProps): JSX.Element =>
+  withGreese(
+    <Button
+      {...props}
+      variant={variant}
+      tone={tone}
+      aria-label={label}
+      className={cx('greese-IconButton', className)}
+    >
+      <span className="greese-Button-icon" aria-hidden="true">
+        {children}
+      </span>
+    </Button>,
+    greese
+  )

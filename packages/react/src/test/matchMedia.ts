@@ -6,15 +6,17 @@
 interface Env {
   width: number
   dark: boolean
+  reducedMotion: boolean
 }
 
-const env: Env = { width: 1024, dark: false }
+const env: Env = { width: 1024, dark: false, reducedMotion: false }
 const lists: FakeList[] = []
 
 const evaluate = (query: string): boolean => {
   const min = /\(min-width:\s*(\d+)px\)/.exec(query)
   if (min) return env.width >= Number(min[1])
   if (query.includes('prefers-color-scheme: dark')) return env.dark
+  if (query.includes('prefers-reduced-motion: reduce')) return env.reducedMotion
   return false
 }
 

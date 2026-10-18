@@ -10,8 +10,10 @@ import { cx } from '../../utils/cx.ts'
 import type { ControlSize } from '../Button/Button.tsx'
 import { useFieldControl } from '../Field/Field.tsx'
 import { composeRefs } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface InputProps extends Omit<ComponentPropsWithRef<'input'>, 'size'> {
+export interface InputProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'input'>, 'size'> {
   /** @default 'md' */
   size?: ControlSize
   /** Mark invalid (also set by a surrounding Field's `error`). */
@@ -28,6 +30,7 @@ export interface InputProps extends Omit<ComponentPropsWithRef<'input'>, 'size'>
  * works with native forms and form libraries as-is.
  */
 export const Input = ({
+  greese,
   size = 'md',
   invalid,
   startAdornment,
@@ -63,7 +66,7 @@ export const Input = ({
     inputRef.current?.focus()
   }
 
-  return (
+  return withGreese(
     <div
       className={cx('greese-Input', `greese-Input--size-${size}`, className)}
       style={style}
@@ -79,6 +82,7 @@ export const Input = ({
         className="greese-Input-control"
       />
       {endAdornment && <span className="greese-Input-adornment">{endAdornment}</span>}
-    </div>
+    </div>,
+    greese
   )
 }

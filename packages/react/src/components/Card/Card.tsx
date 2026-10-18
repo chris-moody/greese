@@ -9,6 +9,7 @@ import {
   type SpaceValue,
 } from '../../utils/responsive.ts'
 import { Box, type BoxProps } from '../Box/Box.tsx'
+import { withGreese } from '../../utils/greese.ts'
 
 export interface CardProps extends BoxProps {
   /** @default 'outline' */
@@ -63,6 +64,5 @@ export const Card = ({
  * Media that runs edge to edge in a Card, ignoring its padding. As the first
  * child it also takes the card's top corners.
  */
-export const CardMedia = ({ className, ...props }: BoxProps): JSX.Element => (
-  <Box {...props} className={cx('greese-CardMedia', className)} />
-)
+export const CardMedia = ({ greese, className, ...props }: BoxProps): JSX.Element =>
+  withGreese(<Box {...props} className={cx('greese-CardMedia', className)} />, greese)

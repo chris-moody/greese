@@ -16,13 +16,12 @@ import {
 import { useAnchoredPopover, type Placement } from '../../utils/anchor.ts'
 import { cx } from '../../utils/cx.ts'
 import { composeRefs, Slot } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 const MenuContext = createContext<{ close: () => void } | null>(null)
 
-export interface MenuProps extends Omit<
-  ComponentPropsWithRef<'div'>,
-  'popover' | 'onToggle'
-> {
+export interface MenuProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'div'>, 'popover' | 'onToggle'> {
   /** The menu button: usually a Button. */
   trigger: ReactElement
   /** @default 'bottom-start' */
@@ -49,6 +48,7 @@ const items = (menu: HTMLElement) =>
  * ```
  */
 export const Menu = ({
+  greese,
   trigger,
   placement = 'bottom-start',
   onOpenChange,
@@ -98,7 +98,7 @@ export const Menu = ({
     event.preventDefault()
   }
 
-  return (
+  return withGreese(
     <MenuContext value={{ close }}>
       <Slot
         ref={anchor.triggerRef}
@@ -138,11 +138,13 @@ export const Menu = ({
           }
         }}
       />
-    </MenuContext>
+    </MenuContext>,
+    greese
   )
 }
 
-export interface MenuItemProps extends Omit<ComponentPropsWithRef<'button'>, 'onSelect'> {
+export interface MenuItemProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'button'>, 'onSelect'> {
   /** Called when chosen by click, Enter or Space; the menu then closes. */
   onSelect?: () => void
   /** `negative` for destructive actions. */
@@ -153,6 +155,7 @@ export interface MenuItemProps extends Omit<ComponentPropsWithRef<'button'>, 'on
 
 /** One action in a Menu. Disabled items stay visible but are skipped by the keyboard. */
 export const MenuItem = ({
+  greese,
   onSelect,
   tone = 'neutral',
   asChild,
@@ -163,7 +166,7 @@ export const MenuItem = ({
 }: MenuItemProps): JSX.Element => {
   const menu = use(MenuContext)
   const Root = (asChild ? Slot : 'button') as typeof Slot
-  return (
+  return withGreese(
     <Root
       {...(!asChild && { type: 'button' })}
       {...props}
@@ -185,14 +188,18 @@ export const MenuItem = ({
         onSelect?.()
         menu?.close()
       }}
-    />
+    />,
+    greese
   )
 }
 
 /** A divider between groups of menu items. */
 export const MenuSeparator = ({
+  greese,
   className,
   ...props
-}: ComponentPropsWithRef<'div'>): JSX.Element => (
-  <div role="separator" {...props} className={cx('greese-MenuSeparator', className)} />
-)
+}: ComponentPropsWithRef<'div'> & GreeseProps): JSX.Element =>
+  withGreese(
+    <div role="separator" {...props} className={cx('greese-MenuSeparator', className)} />,
+    greese
+  )

@@ -4,6 +4,7 @@ import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
 import { ChevronGlyph } from '../../utils/glyphs.tsx'
 import { Button } from '../Button/Button.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export type PageItem = number | 'ellipsis-start' | 'ellipsis-end'
 
@@ -41,7 +42,8 @@ export const paginationRange = (
   ]
 }
 
-export interface PaginationProps extends Omit<ComponentPropsWithRef<'nav'>, 'onChange'> {
+export interface PaginationProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'nav'>, 'onChange'> {
   /** Total pages. */
   count: number
   page?: number
@@ -68,6 +70,7 @@ export interface PaginationProps extends Omit<ComponentPropsWithRef<'nav'>, 'onC
  * `sm` it shows the full range.
  */
 export const Pagination = ({
+  greese,
   count,
   page: pageProp,
   defaultPage = 1,
@@ -109,7 +112,7 @@ export const Pagination = ({
     )
   }
 
-  return (
+  return withGreese(
     <nav {...props} aria-label={label} className={cx('greese-Pagination', className)}>
       <ul className="greese-Pagination-list">
         <li>
@@ -147,6 +150,7 @@ export const Pagination = ({
           })}
         </li>
       </ul>
-    </nav>
+    </nav>,
+    greese
   )
 }

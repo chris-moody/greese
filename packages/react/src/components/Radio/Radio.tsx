@@ -17,6 +17,7 @@ import {
   type ChoiceGroupProps,
 } from '../ChoiceGroup/ChoiceGroup.tsx'
 import { useFieldControl } from '../Field/Field.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 interface RadioGroupContextValue {
   name: string
@@ -29,10 +30,8 @@ interface RadioGroupContextValue {
 
 const RadioGroupContext = createContext<RadioGroupContextValue | null>(null)
 
-export interface RadioProps extends Omit<
-  ComponentPropsWithRef<'input'>,
-  'type' | 'size' | 'value'
-> {
+export interface RadioProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'input'>, 'type' | 'size' | 'value'> {
   value: string
   label?: ReactNode
   description?: ReactNode
@@ -44,6 +43,7 @@ export interface RadioProps extends Omit<
  * `name`, so arrow keys move the selection as the platform expects.
  */
 export const Radio = ({
+  greese,
   label,
   description,
   invalid,
@@ -73,7 +73,7 @@ export const Radio = ({
     ? { name: group.name, checked: group.value === props.value }
     : {}
 
-  return (
+  return withGreese(
     <div
       className={cx('greese-Radio', className)}
       style={style}
@@ -98,11 +98,12 @@ export const Radio = ({
         description={description}
         descriptionId={descriptionId}
       />
-    </div>
+    </div>,
+    greese
   )
 }
 
-export interface RadioGroupProps extends ChoiceGroupProps {
+export interface RadioGroupProps extends GreeseProps, ChoiceGroupProps {
   /** Shared `name`; generated when omitted. */
   name?: string
   value?: string
@@ -121,6 +122,7 @@ export interface RadioGroupProps extends ChoiceGroupProps {
  * ```
  */
 export const RadioGroup = ({
+  greese,
   name,
   value: valueProp,
   defaultValue,
@@ -138,7 +140,7 @@ export const RadioGroup = ({
     onChange: onValueChange as ((value: string | undefined) => void) | undefined,
   })
   const isInvalid = invalid ?? Boolean(error)
-  return (
+  return withGreese(
     <ChoiceGroupShell
       {...props}
       error={error}
@@ -158,7 +160,8 @@ export const RadioGroup = ({
           {children}
         </RadioGroupProvider>
       )}
-    </ChoiceGroupShell>
+    </ChoiceGroupShell>,
+    greese
   )
 }
 

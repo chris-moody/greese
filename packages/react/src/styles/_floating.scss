@@ -24,10 +24,12 @@
 
 /// Fade (and optionally slide) in on open and out on close, including the
 /// top-layer exit, where supported. Instant elsewhere and under reduced motion.
+/// The exit can be restyled per instance with the `greese` prop's `exit`.
 @mixin enter-exit($open-selector, $from-translate: 0 0) {
   transition:
     opacity var(--greese-duration-fast) var(--greese-easing-standard),
     translate var(--greese-duration-fast) var(--greese-easing-standard),
+    scale var(--greese-duration-fast) var(--greese-easing-standard),
     display var(--greese-duration-fast) allow-discrete,
     overlay var(--greese-duration-fast) allow-discrete;
 
@@ -41,8 +43,10 @@
     }
   }
 
+  // The `greese` prop's `exit` presets set these (utils/greese.ts).
   &:not(#{$open-selector}) {
     opacity: 0;
-    translate: $from-translate;
+    translate: var(--greese-motion-exit-translate, #{$from-translate});
+    scale: var(--greese-motion-exit-scale, 1);
   }
 }

@@ -4,11 +4,10 @@ import { useId } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { ChoiceText } from '../ChoiceGroup/ChoiceGroup.tsx'
 import { useFieldControl } from '../Field/Field.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface SwitchProps extends Omit<
-  ComponentPropsWithRef<'input'>,
-  'type' | 'size'
-> {
+export interface SwitchProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'input'>, 'type' | 'size'> {
   /** Text beside the switch. Without it, give the switch an `aria-label`. */
   label?: ReactNode
   description?: ReactNode
@@ -22,6 +21,7 @@ export interface SwitchProps extends Omit<
  * checkbox.
  */
 export const Switch = ({
+  greese,
   label,
   description,
   invalid,
@@ -43,7 +43,7 @@ export const Switch = ({
     disabled,
     'aria-describedby': cx(describedBy, description ? descriptionId : undefined),
   })
-  return (
+  return withGreese(
     <div
       className={cx('greese-Switch', className)}
       style={style}
@@ -69,6 +69,7 @@ export const Switch = ({
         description={description}
         descriptionId={descriptionId}
       />
-    </div>
+    </div>,
+    greese
   )
 }

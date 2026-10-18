@@ -5,6 +5,7 @@ import type { ControlSize } from '../Button/Button.tsx'
 import { ButtonGroup, type ButtonGroupProps } from '../ButtonGroup/ButtonGroup.tsx'
 import { IconButton } from '../IconButton/IconButton.tsx'
 import { Select, type SelectProps } from '../Select/Select.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface ActionSelectOption {
   value: string
@@ -14,10 +15,10 @@ export interface ActionSelectOption {
   disabled?: boolean
 }
 
-export interface ActionSelectProps extends Omit<
-  ButtonGroupProps,
-  'onChange' | 'defaultValue' | 'attached' | 'orientation'
-> {
+export interface ActionSelectProps
+  extends
+    GreeseProps,
+    Omit<ButtonGroupProps, 'onChange' | 'defaultValue' | 'attached' | 'orientation'> {
   /** The choices. Or pass `<option>` / `<optgroup>` children instead. */
   options?: readonly ActionSelectOption[]
   children?: ReactNode
@@ -84,6 +85,7 @@ const renderOptions = (options: readonly ActionSelectOption[]): ReactNode[] => {
  * The select is native: the platform picker on phones, typeahead everywhere.
  */
 export const ActionSelect = ({
+  greese,
   options,
   children,
   value,
@@ -98,30 +100,32 @@ export const ActionSelect = ({
   selectProps,
   className,
   ...props
-}: ActionSelectProps): JSX.Element => (
-  <ButtonGroup {...props} attached className={cx('greese-ActionSelect', className)}>
-    <IconButton
-      label={actionLabel}
-      variant="outline"
-      tone="neutral"
-      size={size}
-      disabled={disabled}
-      onClick={onAction}
-    >
-      {icon}
-    </IconButton>
-    <Select
-      aria-label={selectLabel}
-      {...selectProps}
-      size={size}
-      disabled={disabled}
-      value={value}
-      defaultValue={defaultValue}
-      onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-        onValueChange?.(event.target.value)
-      }
-    >
-      {options ? renderOptions(options) : children}
-    </Select>
-  </ButtonGroup>
-)
+}: ActionSelectProps): JSX.Element =>
+  withGreese(
+    <ButtonGroup {...props} attached className={cx('greese-ActionSelect', className)}>
+      <IconButton
+        label={actionLabel}
+        variant="outline"
+        tone="neutral"
+        size={size}
+        disabled={disabled}
+        onClick={onAction}
+      >
+        {icon}
+      </IconButton>
+      <Select
+        aria-label={selectLabel}
+        {...selectProps}
+        size={size}
+        disabled={disabled}
+        value={value}
+        defaultValue={defaultValue}
+        onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+          onValueChange?.(event.target.value)
+        }
+      >
+        {options ? renderOptions(options) : children}
+      </Select>
+    </ButtonGroup>,
+    greese
+  )

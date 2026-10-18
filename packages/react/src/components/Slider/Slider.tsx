@@ -2,11 +2,12 @@
 import type { ChangeEvent, ComponentPropsWithRef, CSSProperties, JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { useFieldControl } from '../Field/Field.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface SliderProps extends Omit<
-  ComponentPropsWithRef<'input'>,
-  'type' | 'size' | 'value' | 'defaultValue'
-> {
+export interface SliderProps
+  extends
+    GreeseProps,
+    Omit<ComponentPropsWithRef<'input'>, 'type' | 'size' | 'value' | 'defaultValue'> {
   value?: number
   defaultValue?: number
   /** @default 0 */
@@ -35,6 +36,7 @@ const fill = (value: number, min: number, max: number): string => {
  * element while dragging: no React re-render per step when uncontrolled.
  */
 export const Slider = ({
+  greese,
   value,
   defaultValue,
   min = 0,
@@ -59,7 +61,7 @@ export const Slider = ({
     'aria-describedby': describedBy,
   })
   const initial = value ?? defaultValue ?? (min + max) / 2
-  return (
+  return withGreese(
     <input
       {...props}
       {...control}
@@ -77,6 +79,7 @@ export const Slider = ({
         onChange?.(event)
         onValueChange?.(next)
       }}
-    />
+    />,
+    greese
   )
 }

@@ -13,19 +13,23 @@ import { cx } from '../../utils/cx.ts'
 import { MinusGlyph, PlusGlyph } from '../../utils/glyphs.tsx'
 import { composeRefs } from '../Slot/Slot.tsx'
 import { TextField, type TextFieldProps } from '../TextField/TextField.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface NumberFieldProps extends Omit<
-  TextFieldProps,
-  | 'type'
-  | 'value'
-  | 'defaultValue'
-  | 'onChange'
-  | 'endAdornment'
-  | 'inputMode'
-  | 'min'
-  | 'max'
-  | 'step'
-> {
+export interface NumberFieldProps
+  extends
+    GreeseProps,
+    Omit<
+      TextFieldProps,
+      | 'type'
+      | 'value'
+      | 'defaultValue'
+      | 'onChange'
+      | 'endAdornment'
+      | 'inputMode'
+      | 'min'
+      | 'max'
+      | 'step'
+    > {
   value?: number | null
   defaultValue?: number | null
   /** Called with the committed number, or `null` when cleared. */
@@ -61,6 +65,7 @@ export const parseNumber = (text: string): number | null => {
  * a number reverts to the last valid value.
  */
 export const NumberField = ({
+  greese,
   value: valueProp,
   defaultValue = null,
   onValueChange,
@@ -146,7 +151,7 @@ export const NumberField = ({
     </button>
   )
 
-  return (
+  return withGreese(
     <TextField
       {...props}
       ref={composeRefs(input, ref)}
@@ -189,6 +194,7 @@ export const NumberField = ({
           {stepper(step, incrementLabel, atMax, <PlusGlyph />)}
         </span>
       }
-    />
+    />,
+    greese
   )
 }

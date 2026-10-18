@@ -22,6 +22,7 @@ import {
 } from '../../utils/responsive.ts'
 import { IconButton } from '../IconButton/IconButton.tsx'
 import { composeRefs, Slot } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 interface ModalBaseProps extends Omit<ComponentPropsWithRef<'dialog'>, 'title' | 'open'> {
   /** Controlled open state. */
@@ -90,7 +91,10 @@ const ModalBase = ({
       // the page doesn't shift. Measured before the first modal locks.
       const root = document.documentElement
       if (!document.querySelector('.greese-Dialog:modal')) {
-        root.style.setProperty('--greese-scrollbar-gap', `${innerWidth - root.clientWidth}px`)
+        root.style.setProperty(
+          '--greese-scrollbar-gap',
+          `${innerWidth - root.clientWidth}px`
+        )
       }
       el.showModal()
     }
@@ -175,7 +179,7 @@ const ModalBase = ({
   )
 }
 
-export interface DialogProps extends ModalBaseProps {
+export interface DialogProps extends GreeseProps, ModalBaseProps {
   /** Maximum width. `full` fills the viewport on every screen. @default 'md' */
   size?: 'sm' | 'md' | 'lg' | 'full'
 }
@@ -195,19 +199,22 @@ export interface DialogProps extends ModalBaseProps {
  * ```
  */
 export const Dialog = ({
+  greese,
   size = 'md',
   className,
   ...props
-}: DialogProps): JSX.Element => (
-  <ModalBase
-    {...props}
-    className={cx('greese-Dialog', `greese-Dialog--size-${size}`, className)}
-  />
-)
+}: DialogProps): JSX.Element =>
+  withGreese(
+    <ModalBase
+      {...props}
+      className={cx('greese-Dialog', `greese-Dialog--size-${size}`, className)}
+    />,
+    greese
+  )
 
 export type DrawerPlacement = 'start' | 'end' | 'top' | 'bottom'
 
-export interface DrawerProps extends ModalBaseProps {
+export interface DrawerProps extends GreeseProps, ModalBaseProps {
   /**
    * The edge it slides from, per breakpoint if needed, e.g. a bottom sheet on
    * phones and a side panel from `md`: `{ xs: 'bottom', md: 'end' }`.
@@ -228,6 +235,7 @@ const PLACEMENT: ResponsiveConfig = { block: 'greese-Drawer', prop: 'placement' 
  * Dialog. Bottom placement is a mobile sheet, padded for the home indicator.
  */
 export const Drawer = ({
+  greese,
   placement = 'end',
   swipeToClose = true,
   className,
@@ -240,13 +248,14 @@ export const Drawer = ({
     className: cx('greese-Dialog', 'greese-Drawer', className),
     style,
   })
-  return (
+  return withGreese(
     <ModalBase
       {...props}
       ref={composeRefs<HTMLDialogElement>(swipe, ref)}
       className={resolved.className}
       style={resolved.style}
-    />
+    />,
+    greese
   )
 }
 

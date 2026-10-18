@@ -7,10 +7,11 @@ import {
 } from '../../utils/responsive.ts'
 import { Slot } from '../Slot/Slot.tsx'
 import type { FontSize, TextTone } from '../Text/Text.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6
 
-export interface HeadingProps extends ComponentPropsWithoutRef<'h2'> {
+export interface HeadingProps extends ComponentPropsWithoutRef<'h2'>, GreeseProps {
   ref?: Ref<HTMLHeadingElement>
   /** Document outline level: renders `<h1>`–`<h6>`. @default 2 */
   level?: HeadingLevel
@@ -31,6 +32,7 @@ const SIZE: ResponsiveConfig = { block: 'greese-Heading', prop: 'size' }
  * look, so the two never have to fight. Long headings wrap balanced.
  */
 export const Heading = ({
+  greese,
   level = 2,
   size,
   tone,
@@ -49,5 +51,8 @@ export const Heading = ({
     style,
   })
   const Root = (asChild ? Slot : `h${level}`) as typeof Slot
-  return <Root {...props} className={resolved.className} style={resolved.style} />
+  return withGreese(
+    <Root {...props} className={resolved.className} style={resolved.style} />,
+    greese
+  )
 }

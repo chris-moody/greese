@@ -99,7 +99,11 @@
   .greese-Button--outline {
     --greese-button-fg: var(--greese-button-tone);
     --greese-button-bg: transparent;
-    --greese-button-border: color-mix(in oklab, var(--greese-button-tone) 55%, transparent);
+    --greese-button-border: color-mix(
+      in oklab,
+      var(--greese-button-tone) 55%,
+      transparent
+    );
     --greese-button-bg-hover: color-mix(
       in oklab,
       var(--greese-button-tone) 8%,

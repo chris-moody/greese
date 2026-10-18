@@ -3,8 +3,10 @@ import type { ComponentPropsWithRef, JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
 import type { ControlSize } from '../Button/Button.tsx'
 import { useFieldControl } from '../Field/Field.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface SelectProps extends Omit<ComponentPropsWithRef<'select'>, 'size'> {
+export interface SelectProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'select'>, 'size'> {
   /** @default 'md' */
   size?: ControlSize
   invalid?: boolean
@@ -18,6 +20,7 @@ export interface SelectProps extends Omit<ComponentPropsWithRef<'select'>, 'size
  * and `style` go to the frame; the rest to the select.
  */
 export const Select = ({
+  greese,
   size = 'md',
   invalid,
   placeholder,
@@ -39,7 +42,7 @@ export const Select = ({
     disabled,
     'aria-describedby': describedBy,
   })
-  return (
+  return withGreese(
     <div
       className={cx('greese-Select', `greese-Select--size-${size}`, className)}
       style={style}
@@ -66,6 +69,7 @@ export const Select = ({
         {children}
       </select>
       <span className="greese-Select-chevron" aria-hidden="true" />
-    </div>
+    </div>,
+    greese
   )
 }

@@ -3,6 +3,19 @@ export * from './hooks/index.ts'
 export { configureBreakpoints, getBreakpoints } from './utils/breakpoints.ts'
 export { cx } from './utils/cx.ts'
 export {
+  cssEase,
+  resolveGreese,
+  withGreese,
+  type GreeseExit,
+  type GreeseInteraction,
+  type GreeseOptions,
+  type GreesePreset,
+  type GreeseProp,
+  type GreeseProps,
+  type GreeseTextEffect,
+  type ResolvedGreese,
+} from './utils/greese.ts'
+export {
   computeFallbackPosition,
   positionArea,
   useAnchoredPopover,

@@ -3,11 +3,10 @@ import type { ComponentPropsWithRef, JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
 import type { ControlSize } from '../Button/Button.tsx'
 import { useFieldControl } from '../Field/Field.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface FileInputProps extends Omit<
-  ComponentPropsWithRef<'input'>,
-  'type' | 'size'
-> {
+export interface FileInputProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'input'>, 'type' | 'size'> {
   /** @default 'md' */
   size?: ControlSize
   invalid?: boolean
@@ -19,6 +18,7 @@ export interface FileInputProps extends Omit<
  * browser supports it, and the chosen file names shown natively.
  */
 export const FileInput = ({
+  greese,
   size = 'md',
   invalid,
   className,
@@ -35,12 +35,13 @@ export const FileInput = ({
     disabled,
     'aria-describedby': describedBy,
   })
-  return (
+  return withGreese(
     <input
       {...props}
       {...control}
       type="file"
       className={cx('greese-FileInput', `greese-FileInput--size-${size}`, className)}
-    />
+    />,
+    greese
   )
 }

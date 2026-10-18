@@ -1,8 +1,9 @@
 import type { ComponentPropsWithoutRef, JSX, Ref } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { Slot } from '../Slot/Slot.tsx'
+import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface LinkProps extends ComponentPropsWithoutRef<'a'> {
+export interface LinkProps extends GreeseProps, ComponentPropsWithoutRef<'a'> {
   ref?: Ref<HTMLAnchorElement>
   /** @default 'accent' */
   tone?: 'accent' | 'neutral'
@@ -14,6 +15,7 @@ export interface LinkProps extends ComponentPropsWithoutRef<'a'> {
 
 /** An inline text link. Underlined by default: colour alone is not enough to spot a link. */
 export const Link = ({
+  greese,
   tone = 'accent',
   underline = 'always',
   asChild,
@@ -21,7 +23,7 @@ export const Link = ({
   ...props
 }: LinkProps): JSX.Element => {
   const Root = (asChild ? Slot : 'a') as typeof Slot
-  return (
+  return withGreese(
     <Root
       {...props}
       className={cx(
@@ -30,6 +32,7 @@ export const Link = ({
         underline === 'hover' && 'greese-Link--underline-hover',
         className
       )}
-    />
+    />,
+    greese
   )
 }
