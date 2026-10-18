@@ -1,0 +1,58 @@
+@use 'sass:map';
+@use '../../styles/controls';
+
+@layer sauce.components {
+  .sauce-Input {
+    @include controls.frame($focus-within: true);
+
+    display: flex;
+    gap: var(--sauce-space-2);
+    align-items: center;
+    inline-size: 100%;
+    min-block-size: var(--sauce-input-height);
+    padding-inline: var(--sauce-input-padding);
+    cursor: text;
+  }
+
+  .sauce-Input-control {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    block-size: 100%;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    outline: none;
+
+    &::placeholder {
+      color: var(--sauce-color-fg-muted);
+      opacity: 1;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .sauce-Input-adornment {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    color: var(--sauce-color-fg-muted);
+
+    > svg {
+      inline-size: 1.25em;
+      block-size: 1.25em;
+    }
+  }
+
+  @each $size, $spec in controls.$sizes {
+    .sauce-Input--size-#{$size} {
+      --sauce-input-height: #{map.get($spec, height)};
+      --sauce-input-padding: #{map.get($spec, padding)};
+
+      @include controls.no-zoom-font(map.get($spec, font));
+    }
+  }
+}

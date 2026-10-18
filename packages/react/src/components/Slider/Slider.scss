@@ -1,0 +1,96 @@
+@use '../../styles/mixins';
+
+// Vendor pseudo-elements are the only way to style range parts.
+/* stylelint-disable selector-no-vendor-prefix */
+
+@mixin track {
+  block-size: 0.375rem;
+  background: linear-gradient(
+    to var(--sauce-slider-towards),
+    var(--sauce-color-accent) var(--sauce-slider-fill),
+    var(--sauce-color-border) var(--sauce-slider-fill)
+  );
+  border-radius: var(--sauce-radius-pill);
+}
+
+@mixin thumb {
+  box-sizing: border-box;
+  inline-size: var(--sauce-slider-thumb);
+  block-size: var(--sauce-slider-thumb);
+  background-color: var(--sauce-color-canvas);
+  border: 2px solid var(--sauce-color-accent);
+  border-radius: 50%;
+  box-shadow: var(--sauce-shadow-sm);
+}
+
+@layer sauce.components {
+  .sauce-Slider {
+    --sauce-slider-thumb: 1.25rem;
+    --sauce-slider-towards: right;
+
+    @include mixins.component-root;
+
+    display: block;
+    inline-size: 100%;
+    block-size: var(--sauce-slider-thumb);
+    margin: 0;
+    cursor: pointer;
+    background: none;
+    appearance: none;
+
+    &:dir(rtl) {
+      --sauce-slider-towards: left;
+    }
+
+    // A thumb big enough for fingers.
+    @media (pointer: coarse) {
+      --sauce-slider-thumb: 1.75rem;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+
+    &::-webkit-slider-runnable-track {
+      @include track;
+    }
+
+    &::-moz-range-track {
+      @include track;
+    }
+
+    &::-webkit-slider-thumb {
+      @include thumb;
+
+      margin-block-start: calc((0.375rem - var(--sauce-slider-thumb)) / 2);
+      appearance: none;
+    }
+
+    &::-moz-range-thumb {
+      @include thumb;
+    }
+
+    &:focus-visible::-webkit-slider-thumb {
+      outline: 2px solid var(--sauce-color-focus-ring);
+      outline-offset: 2px;
+    }
+
+    &:focus-visible::-moz-range-thumb {
+      outline: 2px solid var(--sauce-color-focus-ring);
+      outline-offset: 2px;
+    }
+
+    &[aria-invalid='true']::-webkit-slider-thumb {
+      border-color: var(--sauce-color-negative);
+    }
+
+    &[aria-invalid='true']::-moz-range-thumb {
+      border-color: var(--sauce-color-negative);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+  }
+}

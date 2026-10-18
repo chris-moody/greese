@@ -1,0 +1,55 @@
+@use 'sass:map';
+@use '../../styles/controls';
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-FileInput {
+    @include mixins.component-root;
+
+    max-inline-size: 100%;
+    font-family: inherit;
+    color: var(--sauce-color-fg-muted);
+    cursor: pointer;
+    border-radius: var(--sauce-radius-md);
+
+    @include mixins.focus-ring;
+
+    &::file-selector-button {
+      min-block-size: var(--sauce-file-height);
+      padding-inline: var(--sauce-file-padding);
+      margin-inline-end: var(--sauce-space-3);
+      font: inherit;
+      font-weight: var(--sauce-font-weight-semibold);
+      color: var(--sauce-color-fg);
+      cursor: pointer;
+      background-color: transparent;
+      border: 1px solid var(--sauce-color-border-strong);
+      border-radius: var(--sauce-radius-md);
+      transition: background-color var(--sauce-duration-fast) var(--sauce-easing-standard);
+    }
+
+    @include mixins.hover {
+      &::file-selector-button {
+        background-color: color-mix(in oklab, var(--sauce-color-fg) 8%, transparent);
+      }
+    }
+
+    &[aria-invalid='true']::file-selector-button {
+      border-color: var(--sauce-color-negative);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+  }
+
+  @each $size, $spec in controls.$sizes {
+    .sauce-FileInput--size-#{$size} {
+      --sauce-file-height: #{map.get($spec, height)};
+      --sauce-file-padding: #{map.get($spec, padding)};
+
+      @include controls.no-zoom-font(map.get($spec, font));
+    }
+  }
+}

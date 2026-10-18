@@ -1,0 +1,78 @@
+// Shared look and sizing for form controls (Input, Select, Textarea, …) and
+// buttons, so every control in a row lines up at the same size.
+@use 'mixins';
+
+/// Control size scale: block size, inline padding, font size.
+$sizes: (
+  sm: (
+    height: 2rem,
+    padding: var(--sauce-space-3),
+    font: var(--sauce-font-size-sm),
+  ),
+  md: (
+    height: 2.5rem,
+    padding: var(--sauce-space-3),
+    font: var(--sauce-font-size-md),
+  ),
+  lg: (
+    height: 3rem,
+    padding: var(--sauce-space-4),
+    font: var(--sauce-font-size-md),
+  ),
+);
+
+/// iOS Safari zooms the page when a focused control's text is under 16px.
+/// Touch devices therefore never go below 1rem.
+@mixin no-zoom-font($font) {
+  font-size: $font;
+
+  @media (pointer: coarse) {
+    font-size: max(1rem, #{$font});
+  }
+}
+
+/// Border, background, focus ring and state styling for a text-like control.
+/// Apply to the element that draws the frame; `$focus-within` when the real
+/// input sits inside it (Input with adornments, Select).
+@mixin frame($focus-within: false) {
+  @include mixins.component-root;
+
+  color: var(--sauce-color-fg);
+  background-color: var(--sauce-color-canvas);
+  border: 1px solid var(--sauce-color-border-strong);
+  border-radius: var(--sauce-radius-md);
+  transition:
+    border-color var(--sauce-duration-fast) var(--sauce-easing-standard),
+    box-shadow var(--sauce-duration-fast) var(--sauce-easing-standard);
+
+  @include mixins.hover {
+    border-color: var(--sauce-color-fg-muted);
+  }
+
+  @if $focus-within {
+    &:has(:focus-visible) {
+      @include focused;
+    }
+  } @else {
+    &:focus-visible {
+      @include focused;
+    }
+  }
+
+  &[aria-invalid='true'],
+  &[data-invalid] {
+    border-color: var(--sauce-color-negative);
+  }
+
+  &:disabled,
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+@mixin focused {
+  border-color: var(--sauce-color-focus-ring);
+  outline: 2px solid var(--sauce-color-focus-ring);
+  outline-offset: -1px;
+}

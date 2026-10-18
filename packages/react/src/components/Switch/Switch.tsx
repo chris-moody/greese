@@ -1,0 +1,74 @@
+'use client'
+import type { ChangeEvent, ComponentPropsWithRef, JSX, ReactNode } from 'react'
+import { useId } from 'react'
+import { cx } from '../../utils/cx.ts'
+import { ChoiceText } from '../ChoiceGroup/ChoiceGroup.tsx'
+import { useFieldControl } from '../Field/Field.tsx'
+
+export interface SwitchProps extends Omit<
+  ComponentPropsWithRef<'input'>,
+  'type' | 'size'
+> {
+  /** Text beside the switch. Without it, give the switch an `aria-label`. */
+  label?: ReactNode
+  description?: ReactNode
+  invalid?: boolean
+  onCheckedChange?: (checked: boolean) => void
+}
+
+/**
+ * An on/off switch for settings that apply immediately: a native checkbox
+ * with `role="switch"`, so it is announced as on/off and submits like a
+ * checkbox.
+ */
+export const Switch = ({
+  label,
+  description,
+  invalid,
+  onCheckedChange,
+  onChange,
+  className,
+  style,
+  id,
+  required,
+  disabled,
+  'aria-describedby': describedBy,
+  ...props
+}: SwitchProps): JSX.Element => {
+  const descriptionId = useId()
+  const control = useFieldControl({
+    id,
+    invalid,
+    required,
+    disabled,
+    'aria-describedby': cx(describedBy, description ? descriptionId : undefined),
+  })
+  return (
+    <div
+      className={cx('sauce-Switch', className)}
+      style={style}
+      data-disabled={control.disabled || undefined}
+    >
+      <span className="sauce-Switch-track">
+        <input
+          {...props}
+          {...control}
+          type="checkbox"
+          role="switch"
+          className="sauce-Switch-input"
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            onChange?.(event)
+            onCheckedChange?.(event.target.checked)
+          }}
+        />
+        <span className="sauce-Switch-thumb" aria-hidden="true" />
+      </span>
+      <ChoiceText
+        htmlFor={control.id}
+        label={label}
+        description={description}
+        descriptionId={descriptionId}
+      />
+    </div>
+  )
+}

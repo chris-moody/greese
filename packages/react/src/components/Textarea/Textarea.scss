@@ -1,0 +1,43 @@
+@use 'sass:map';
+@use '../../styles/controls';
+
+@layer sauce.components {
+  .sauce-Textarea {
+    @include controls.frame;
+
+    display: block;
+    inline-size: 100%;
+    padding: var(--sauce-space-2) var(--sauce-textarea-padding);
+    font-family: inherit;
+    line-height: var(--sauce-line-height-normal);
+    resize: vertical;
+
+    &::placeholder {
+      color: var(--sauce-color-fg-muted);
+      opacity: 1;
+    }
+  }
+
+  .sauce-Textarea--autosize {
+    // Lines from `rows` up to `maxRows`, in the text's own line height.
+    min-block-size: calc(
+      var(--sauce-textarea-rows) * 1lh + 2 * var(--sauce-space-2) + 2px
+    );
+    max-block-size: calc(
+      var(--sauce-textarea-max-rows, 1000) * 1lh + 2 * var(--sauce-space-2) + 2px
+    );
+
+    @supports (field-sizing: content) {
+      field-sizing: content;
+      resize: none;
+    }
+  }
+
+  @each $size, $spec in controls.$sizes {
+    .sauce-Textarea--size-#{$size} {
+      --sauce-textarea-padding: #{map.get($spec, padding)};
+
+      @include controls.no-zoom-font(map.get($spec, font));
+    }
+  }
+}

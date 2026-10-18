@@ -4,7 +4,7 @@
     "path": "dist/index.js",
     "import": "*",
     "ignore": ["react", "react-dom"],
-    "limit": "5 kB"
+    "limit": "8 kB"
   },
   {
     "name": "JS: tree-shaken { VisuallyHidden }",
@@ -17,6 +17,20 @@
     "name": "JS: tree-shaken { Stack }",
     "path": "dist/index.js",
     "import": "{ Stack }",
+    "ignore": ["react", "react-dom"],
+    "limit": "1.5 kB"
+  },
+  {
+    "name": "JS: tree-shaken { Button }",
+    "path": "dist/index.js",
+    "import": "{ Button }",
+    "ignore": ["react", "react-dom"],
+    "limit": "1.25 kB"
+  },
+  {
+    "name": "JS: tree-shaken { TextField }",
+    "path": "dist/index.js",
+    "import": "{ TextField }",
     "ignore": ["react", "react-dom"],
     "limit": "1.5 kB"
   },
@@ -38,7 +52,7 @@
     "name": "CSS: sauce-ui.css",
     "path": "dist/sauce-ui.css",
     "rolldown": false,
-    "limit": "6 kB"
+    "limit": "9 kB"
   },
   {
     "name": "CSS: base.css",

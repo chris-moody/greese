@@ -1,0 +1,112 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  // Shared by Checkbox, Radio and Switch: a label row with the control first.
+  .sauce-Checkbox,
+  .sauce-Radio,
+  .sauce-Switch {
+    @include mixins.component-root;
+
+    display: inline-flex;
+    gap: var(--sauce-space-2);
+    align-items: flex-start;
+    font-size: var(--sauce-font-size-md);
+    line-height: var(--sauce-line-height-snug);
+    color: var(--sauce-color-fg);
+
+    &[data-disabled] {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+  }
+
+  .sauce-Checkbox-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sauce-space-1);
+  }
+
+  .sauce-Checkbox-label {
+    cursor: pointer;
+
+    [data-disabled] > .sauce-Checkbox-text > & {
+      cursor: not-allowed;
+    }
+  }
+
+  .sauce-Checkbox-description {
+    font-size: var(--sauce-font-size-sm);
+    color: var(--sauce-color-fg-muted);
+  }
+
+  .sauce-Checkbox-box {
+    position: relative;
+    display: inline-grid;
+    flex-shrink: 0;
+    place-items: center;
+
+    // Align the box with the first line of the label.
+    margin-block: calc((1lh - 1.125rem) / 2);
+  }
+
+  .sauce-Checkbox-input {
+    @include mixins.touch-target;
+
+    position: relative;
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
+    margin: 0;
+    cursor: pointer;
+    background-color: var(--sauce-color-canvas);
+    border: 1.5px solid var(--sauce-color-border-strong);
+    border-radius: var(--sauce-radius-sm);
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+
+    appearance: none;
+    transition:
+      background-color var(--sauce-duration-fast) var(--sauce-easing-standard),
+      border-color var(--sauce-duration-fast) var(--sauce-easing-standard);
+
+    @include mixins.focus-ring;
+
+    &:checked,
+    &:indeterminate {
+      background-color: var(--sauce-color-accent);
+      border-color: var(--sauce-color-accent);
+    }
+
+    &[aria-invalid='true'] {
+      border-color: var(--sauce-color-negative);
+    }
+  }
+
+  .sauce-Checkbox-icon {
+    position: absolute;
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    pointer-events: none;
+    fill: none;
+    stroke: var(--sauce-color-on-accent);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2.25;
+    opacity: 0;
+  }
+
+  .sauce-Checkbox-input:checked + .sauce-Checkbox-icon,
+  .sauce-Checkbox-input:indeterminate + .sauce-Checkbox-icon {
+    opacity: 1;
+  }
+
+  .sauce-Checkbox-dash,
+  .sauce-Checkbox-input:indeterminate + .sauce-Checkbox-icon .sauce-Checkbox-check {
+    display: none;
+  }
+
+  .sauce-Checkbox-input:indeterminate + .sauce-Checkbox-icon .sauce-Checkbox-dash {
+    display: inline;
+  }
+}

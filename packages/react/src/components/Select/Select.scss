@@ -1,0 +1,58 @@
+@use 'sass:map';
+@use '../../styles/controls';
+
+@layer sauce.components {
+  .sauce-Select {
+    @include controls.frame($focus-within: true);
+
+    position: relative;
+    display: flex;
+    inline-size: 100%;
+    min-block-size: var(--sauce-select-height);
+  }
+
+  .sauce-Select-control {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    padding-inline: var(--sauce-select-padding) calc(var(--sauce-select-padding) + 1.5em);
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    background: none;
+    border: 0;
+    outline: none;
+    appearance: none;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+
+    // The placeholder option, while selected.
+    &:has(option[value='']:checked) {
+      color: var(--sauce-color-fg-muted);
+    }
+  }
+
+  .sauce-Select-chevron {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: var(--sauce-select-padding);
+    inline-size: 0.5em;
+    block-size: 0.5em;
+    margin-block: auto;
+    pointer-events: none;
+    border-block-end: 2px solid var(--sauce-color-fg-muted);
+    border-inline-end: 2px solid var(--sauce-color-fg-muted);
+    rotate: 45deg;
+    translate: 0 -0.15em;
+  }
+
+  @each $size, $spec in controls.$sizes {
+    .sauce-Select--size-#{$size} {
+      --sauce-select-height: #{map.get($spec, height)};
+      --sauce-select-padding: #{map.get($spec, padding)};
+
+      @include controls.no-zoom-font(map.get($spec, font));
+    }
+  }
+}

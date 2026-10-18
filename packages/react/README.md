@@ -85,6 +85,27 @@ Box style props (`m`, `p` and their `x`/`y`/`t`/`b`/`s`/`e` sides, `gap`,
 takes a scale token (`0`–`8`) or any CSS length. `<Grid container>` makes
 `GridItem` spans respond to the grid's own width instead of the viewport.
 
+## Forms
+
+Every control is the native element, restyled. Keyboard handling, autofill,
+`FormData` submission and phone pickers all work, and `ref` reaches the real
+input, so `react-hook-form`'s `register()` needs no adapters.
+
+```tsx
+<TextField label="Email" type="email" name="email" required error={errors.email} />
+<Field label="Country"><Select name="country" placeholder="Choose…">…</Select></Field>
+<CheckboxGroup label="Notify me" name="notify"><Checkbox value="email" label="Email" /></CheckboxGroup>
+<RadioGroup label="Plan" name="plan" direction={{ xs: 'column', md: 'row' }}>…</RadioGroup>
+<Switch label="Beta features" name="beta" />
+<Button type="submit" loading={saving}>Save</Button>
+<IconButton label="Close"><XIcon /></IconButton>
+```
+
+`Field` connects its label, description and error to its control. Call
+`useFieldControl()` to make your own controls Field-aware. On touch screens,
+control text is never smaller than 16px (so iOS doesn't zoom) and hit areas
+are at least 44px.
+
 ## Responsive values
 
 Every responsive prop takes one value, or a value per breakpoint,
