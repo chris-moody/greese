@@ -78,20 +78,42 @@ try {
     join(work, 'ssr.mjs'),
     `import { createElement } from 'react'
 import { renderToString } from 'react-dom/server'
-import { Button, Stack, createTheme, timeline } from '@greese-ui/react'
+import { Button, Card, Stack, createTheme, timeline } from '@greese-ui/react'
+// The greese prop's opt-in runtime imports cleanly on a server.
+import '@greese-ui/react/greese'
 import { breakpoints } from '@greese-ui/tokens'
 import { animate } from '@greese-ui/greese'
 // greese.js imports and runs without a DOM: plain objects animate on a server.
 const o = { v: 0 }
 timeline({ paused: true }).to(o, { v: 10, duration: 1, ease: 'linear' }).seek(0.5)
 if (o.v !== 5 || typeof animate !== 'function') throw new Error('greese.js')
+// greese prop CSS presets render on the server with no client code.
+const card = renderToString(createElement(Card, { greese: { enter: 'fade-up', delay: 0.1 } }, 'x'))
+if (!card.includes('greese-Motion--enter-fade-up') || !card.includes('--greese-motion-delay:0.1s')) throw new Error(card)
 const html = renderToString(createElement(Stack, { gap: 2, direction: { md: 'row' } }, createElement(Button, null, 'Hi')))
 if (!html.includes('greese-Stack--md-direction-row') || !html.includes('greese-Button')) throw new Error(html)
 if (breakpoints.md !== 900 || !createTheme({ name: 'x' }).css.includes('@layer greese.theme')) throw new Error('tokens')
 `
   )
   run('node', ['ssr.mjs'], work)
-  ok('Node ESM import + server render; greese.js runs without a DOM')
+  ok(
+    'Node ESM import + server render; greese.js runs without a DOM; greese prop presets render on the server'
+  )
+
+  // The <script> build: one file that defines window.greese.
+  writeFileSync(
+    join(work, 'global.cjs'),
+    `const vm = require('node:vm'), fs = require('node:fs')
+const ctx = {}
+vm.createContext(ctx)
+vm.runInContext(fs.readFileSync(require.resolve('@greese-ui/greese/global'), 'utf8'), ctx)
+const o = { v: 0 }
+ctx.greese.timeline({ paused: true }).to(o, { v: 10, duration: 1, ease: 'linear' }).seek(0.5)
+if (o.v !== 5 || typeof ctx.greese.fromPixels !== 'function') throw new Error('global build')
+`
+  )
+  run('node', ['global.cjs'], work)
+  ok('greese.js <script> build defines a working window.greese')
 
   // 3. Types, under both module resolutions consumers use.
   writeFileSync(
@@ -172,6 +194,29 @@ if (!css.includes('(width >= 768px)') || css.includes('(width >= 900px)')) throw
   if (count('.greese-Stack')) throw new Error('unrelated component styles were bundled')
   ok(
     `Vite bundles css/Dialog.css + css/Button.css: ${(css.length / 1024).toFixed(1)} kB, shared styles once, nothing unused`
+  )
+
+  // 7. The greese prop's runtime and greese.js are a lazy chunk: an app that
+  // renders a Button with no greese prop never loads them.
+  rmSync(join(work, 'dist'), { recursive: true, force: true })
+  writeFileSync(
+    join(work, 'main.js'),
+    `import { createElement } from 'react'\nimport { createRoot } from 'react-dom/client'\nimport { Button } from '@greese-ui/react'\ncreateRoot(document.body).render(createElement(Button, null, 'Hi'))\n`
+  )
+  run('npx', ['vite', 'build', '--logLevel', 'error'], work)
+  const html = readFileSync(join(work, 'dist/index.html'), 'utf8')
+  const entry = /src="\/assets\/([^"]+\.js)"/.exec(html)[1]
+  const js = readdirSync(assets).filter((f) => f.endsWith('.js'))
+  const entryCode = readFileSync(join(assets, entry), 'utf8')
+  const lazy = js.filter(
+    (f) => f !== entry && readFileSync(join(assets, f), 'utf8').includes('unknown ease')
+  )
+  if (entryCode.includes('unknown ease'))
+    throw new Error('greese.js is in the entry chunk')
+  if (lazy.length !== 1)
+    throw new Error(`expected one lazy greese chunk, found ${lazy.length}`)
+  ok(
+    'Vite splits the greese runtime + greese.js into a lazy chunk: a plain Button never loads it'
   )
 } finally {
   if (!process.env.KEEP) rmSync(work, { recursive: true, force: true })
