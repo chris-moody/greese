@@ -9,7 +9,7 @@
  *                         it builds on, so bundlers pull in (and de-duplicate)
  *                         exactly what is used
  */
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { compile, compileString, NodePackageImporter } from 'sass-embedded'
@@ -44,6 +44,16 @@ const compiled = new Map(
       (c) => [c.name, sass(join(SRC, 'components', c.name, `${c.name}.scss`))] as const
     )
 )
+// styles/index.scss lists components by hand (cascade order matters); one
+// left out would ship per-component CSS but be missing from sauce-ui.css.
+const bundle = readFileSync(join(SRC, 'styles/index.scss'), 'utf8')
+const unbundled = [...compiled.keys()].filter(
+  (name) => !bundle.includes(`'../components/${name}/${name}'`)
+)
+if (unbundled.length) {
+  throw new Error(`Stylesheets missing from styles/index.scss: ${unbundled.join(', ')}`)
+}
+
 const { deps, unresolved } = dependenciesOf(components, compiled)
 if (unresolved.length) {
   throw new Error(
