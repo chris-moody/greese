@@ -51,7 +51,7 @@ sync, and changing values covers almost every real need.
 |---|---|---|
 | Unit (Vitest + axe) | Behaviour, ARIA, coverage gate on `resolveResponsive` | CI |
 | E2E (Playwright) | Real layout, keyboard, top layer: Chromium, Pixel 7, Firefox, WebKit, iPhone 15 | CI |
-| **Visual regression** | Every story × light/dark × phone/desktop (164 screenshots) | CI (Linux image) + local |
+| **Visual regression** | Every story × light/dark × phone/desktop (572 screenshots) | CI (Linux image) + local |
 | **Lighthouse** | Performance ≥ 0.95, accessibility ≥ 0.95, best practices ≥ 0.95, LCP < 2 s, TBT < 100 ms, CLS < 0.05 on every playground page, mobile throttled | CI |
 | **Package verification** | The tarballs as a consumer installs them: Node ESM + SSR, types (bundler and nodenext), SCSS recompilation, per-component imports, Vite bundling | CI |
 | Size budgets | Whole library and tree-shaken components | CI |
@@ -74,7 +74,14 @@ Storybook with `@storybook/addon-docs`:
 - **Guides** (MDX, with GitHub-flavoured tables): introduction, getting
   started, theming, responsive props, accessibility, and an MUI migration
   table.
-- **Component pages:** autodocs pages with props tables generated from the
-  TSDoc already on every prop.
+- **Component pages:** one stories file per component, each with an autodocs
+  page and a props table generated from the TSDoc already on every prop.
+  Compound parts (TabList, MenuItem…) are listed as `subcomponents`.
+  `scripts/check-story-coverage.mjs`, part of the docs `lint` task, fails if
+  an exported component appears in no story meta.
+- **Colour scheme:** the toolbar's scheme is applied from the globals channel,
+  so it reaches docs pages too, and the docs container uses a Storybook theme
+  built from SauceUI's tokens for the resolved scheme. Storybook's default
+  docs theme is static light, which left dark-mode text on a white page.
 
 The site is hosted on Firebase Hosting from `apps/docs/storybook-static`.
