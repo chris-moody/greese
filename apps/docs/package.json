@@ -7,7 +7,7 @@
     "dev": "storybook dev -p 6006 --no-open",
     "build": "storybook build -o storybook-static --quiet",
     "check-types": "tsc --noEmit",
-    "lint": "eslint stories .storybook --max-warnings 0"
+    "lint": "eslint stories .storybook scripts --max-warnings 0 && node scripts/check-story-coverage.mjs"
   },
   "dependencies": {
     "@sauce-ui/react": "*",
