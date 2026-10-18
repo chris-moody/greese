@@ -1,0 +1,48 @@
+// Shared by everything in the top layer: popovers, menus, tooltips, dialogs.
+@use 'mixins';
+
+/// A surface: background, border, radius, shadow.
+@mixin surface {
+  color: var(--sauce-color-fg);
+  background-color: var(--sauce-color-surface-overlay);
+  border: 1px solid var(--sauce-color-border);
+  border-radius: var(--sauce-radius-md);
+  box-shadow: var(--sauce-shadow-lg);
+}
+
+/// A popover anchored to its trigger (see utils/anchor.ts). Resets the UA
+/// popover centring; `position-anchor`, `position-area` and the gap (as
+/// `margin`) come inline.
+@mixin anchored {
+  inset: auto;
+  max-inline-size: calc(100vw - 2 * var(--sauce-space-3));
+  max-block-size: calc(100dvh - 2 * var(--sauce-space-3));
+  padding: 0;
+  overflow: auto;
+  position-try-fallbacks: flip-block, flip-inline;
+}
+
+/// Fade (and optionally slide) in on open and out on close, including the
+/// top-layer exit, where supported. Instant elsewhere and under reduced motion.
+@mixin enter-exit($open-selector, $from-translate: 0 0) {
+  transition:
+    opacity var(--sauce-duration-fast) var(--sauce-easing-standard),
+    translate var(--sauce-duration-fast) var(--sauce-easing-standard),
+    display var(--sauce-duration-fast) allow-discrete,
+    overlay var(--sauce-duration-fast) allow-discrete;
+
+  &#{$open-selector} {
+    opacity: 1;
+    translate: 0 0;
+
+    @starting-style {
+      opacity: 0;
+      translate: $from-translate;
+    }
+  }
+
+  &:not(#{$open-selector}) {
+    opacity: 0;
+    translate: $from-translate;
+  }
+}

@@ -1,0 +1,78 @@
+@use '../../styles/floating';
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-SidebarLayout {
+    min-block-size: 100dvh;
+  }
+
+  // Off-canvas (below the breakpoint): a sheet from the inline start.
+  .sauce-Sidebar {
+    @include mixins.component-root;
+    @include floating.enter-exit(
+      ':popover-open',
+      calc(-100% * var(--sauce-sidebar-dir)) 0
+    );
+
+    --sauce-sidebar-dir: 1;
+
+    inset: 0 auto 0 0;
+    flex-direction: column;
+    gap: var(--sauce-space-1);
+    inline-size: min(var(--sauce-sidebar-width, 16rem), 100vw - 3rem);
+    block-size: 100dvh;
+    padding: max(var(--sauce-space-4), env(safe-area-inset-top)) var(--sauce-space-3)
+      max(var(--sauce-space-4), env(safe-area-inset-bottom));
+    margin: 0;
+    overflow-y: auto;
+    color: var(--sauce-color-fg);
+    background-color: var(--sauce-color-surface);
+    border: 0;
+    border-inline-end: 1px solid var(--sauce-color-border);
+    box-shadow: var(--sauce-shadow-lg);
+
+    &:dir(rtl) {
+      --sauce-sidebar-dir: -1;
+
+      inset: 0 0 0 auto;
+    }
+
+    &:popover-open {
+      display: flex;
+    }
+
+    &::backdrop {
+      background-color: var(--sauce-color-scrim);
+    }
+  }
+
+  @each $bp in (sm, md, lg, xl) {
+    @include mixins.up($bp) {
+      .sauce-SidebarLayout--#{$bp} {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: start;
+
+        // Persistent: an ordinary sticky column. Author `display` overrides
+        // the UA's `[popover]:not(:popover-open) { display: none }`.
+        > .sauce-Sidebar {
+          position: sticky;
+          inset-block-start: var(--sauce-sidebar-top, 0);
+          display: flex;
+          block-size: calc(100dvh - var(--sauce-sidebar-top, 0px));
+          box-shadow: none;
+          opacity: 1;
+          translate: none;
+
+          &[data-collapsed] {
+            --sauce-sidebar-width: 4.5rem;
+          }
+        }
+      }
+
+      .sauce-SidebarTrigger--#{$bp} {
+        display: none;
+      }
+    }
+  }
+}

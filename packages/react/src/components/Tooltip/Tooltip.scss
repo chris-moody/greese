@@ -1,0 +1,17 @@
+@use '../../styles/floating';
+
+@layer sauce.components {
+  .sauce-Tooltip {
+    @include floating.anchored;
+    @include floating.enter-exit(':popover-open');
+
+    max-inline-size: min(18rem, 100vw - 2 * var(--sauce-space-3));
+    padding: var(--sauce-space-1) var(--sauce-space-2);
+    font-size: var(--sauce-font-size-xs);
+    line-height: var(--sauce-line-height-snug);
+    color: var(--sauce-color-canvas);
+    background-color: var(--sauce-color-fg);
+    border: 0;
+    border-radius: var(--sauce-radius-sm);
+  }
+}

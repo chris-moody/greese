@@ -1,0 +1,55 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-Pagination-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sauce-space-1);
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    .sauce-Button {
+      min-inline-size: 2rem;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .sauce-Pagination-step {
+    padding-inline: var(--sauce-space-2);
+
+    > svg,
+    .sauce-Button-icon > svg {
+      inline-size: 1.1em;
+      block-size: 1.1em;
+    }
+  }
+
+  // The chevron points to the inline start; flip it for "next", and mirror
+  // both in right-to-left.
+  .sauce-Pagination-step--next svg {
+    scale: -1 1;
+  }
+
+  .sauce-Pagination:dir(rtl) .sauce-Pagination-step svg {
+    scale: -1 1;
+  }
+
+  .sauce-Pagination:dir(rtl) .sauce-Pagination-step--next svg {
+    scale: 1;
+  }
+
+  .sauce-Pagination-ellipsis {
+    padding-inline: var(--sauce-space-1);
+    color: var(--sauce-color-fg-muted);
+  }
+
+  // Phones: only previous, the current page and next.
+  @include mixins.down(sm) {
+    .sauce-Pagination-page:not(.sauce-Pagination-page--current),
+    .sauce-Pagination-ellipsis {
+      display: none;
+    }
+  }
+}

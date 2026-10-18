@@ -4,7 +4,7 @@
     "path": "dist/index.js",
     "import": "*",
     "ignore": ["react", "react-dom"],
-    "limit": "11 kB"
+    "limit": "15 kB"
   },
   {
     "name": "JS: tree-shaken { VisuallyHidden }",
@@ -42,6 +42,27 @@
     "limit": "1.5 kB"
   },
   {
+    "name": "JS: tree-shaken { Dialog }",
+    "path": "dist/index.js",
+    "import": "{ Dialog }",
+    "ignore": ["react", "react-dom"],
+    "limit": "2.5 kB"
+  },
+  {
+    "name": "JS: tree-shaken { Menu, MenuItem }",
+    "path": "dist/index.js",
+    "import": "{ Menu, MenuItem }",
+    "ignore": ["react", "react-dom"],
+    "limit": "2.5 kB"
+  },
+  {
+    "name": "JS: tree-shaken { toast, Toaster }",
+    "path": "dist/index.js",
+    "import": "{ toast, Toaster }",
+    "ignore": ["react", "react-dom"],
+    "limit": "2.5 kB"
+  },
+  {
     "name": "JS: tree-shaken { ThemeProvider }",
     "path": "dist/index.js",
     "import": "{ ThemeProvider }",
@@ -59,7 +80,7 @@
     "name": "CSS: sauce-ui.css",
     "path": "dist/sauce-ui.css",
     "rolldown": false,
-    "limit": "12 kB"
+    "limit": "14.5 kB"
   },
   {
     "name": "CSS: base.css",

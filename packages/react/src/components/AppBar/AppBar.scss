@@ -1,0 +1,43 @@
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-AppBar {
+    @include mixins.component-root;
+
+    display: flex;
+    gap: var(--sauce-space-3);
+    align-items: center;
+    min-block-size: 3.5rem;
+    padding-block-start: env(safe-area-inset-top);
+    padding-inline: max(var(--sauce-space-4), env(safe-area-inset-left))
+      max(var(--sauce-space-4), env(safe-area-inset-right));
+    color: var(--sauce-color-fg);
+    background-color: var(--sauce-color-surface-overlay);
+    border-block-end: 1px solid var(--sauce-color-border);
+  }
+
+  .sauce-AppBar--sticky {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--sauce-z-index-sticky);
+  }
+
+  // Shadow fades in over the first few rem of scroll, with no JS.
+  @supports (animation-timeline: scroll()) {
+    .sauce-AppBar--elevate {
+      animation: sauce-appbar-elevate linear both;
+      animation-range: 0 3rem;
+      animation-timeline: scroll(nearest block);
+    }
+  }
+
+  @keyframes sauce-appbar-elevate {
+    from {
+      box-shadow: none;
+    }
+
+    to {
+      box-shadow: var(--sauce-shadow-md);
+    }
+  }
+}

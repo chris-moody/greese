@@ -115,6 +115,21 @@ are at least 44px.
 | **Disclosure** | `Collapsible` and `Accordion` (native `<details>`; `exclusive` keeps one open with no JS), `Tabs` |
 | **Feedback** | `Alert` (announces only when you ask), `Badge`, `Chip` (removable or selectable), `Spinner`, `Progress`, `Skeleton` |
 
+## Overlays and navigation
+
+| Area | Components |
+|---|---|
+| **Modal** | `Dialog`, `Drawer` (responsive `placement`: a bottom sheet on phones, a side panel on desktop). Native `<dialog>`: focus trapped and returned, page inert, scroll locked with CSS |
+| **Anchored** | `Popover`, `Menu` + `MenuItem`, `Tooltip`. Popover API plus CSS anchor positioning; no positioning library |
+| **Feedback** | `toast()` + `<Toaster />`: announced, pausable, and usable above open dialogs |
+| **Navigation** | `SidebarLayout` + `Sidebar` + `SidebarTrigger` (off-canvas below a breakpoint, persistent above), `AppBar`, `Breadcrumbs`, `Pagination` |
+
+```tsx
+<Dialog trigger={<Button>Delete</Button>} title="Delete project?" footer={<Button tone="negative">Delete</Button>} />
+<Menu trigger={<Button>Actions</Button>}><MenuItem onSelect={rename}>Rename</MenuItem></Menu>
+toast({ title: 'Archived', action: { label: 'Undo', onClick: restore } })
+```
+
 ## Responsive values
 
 Every responsive prop takes one value, or a value per breakpoint,

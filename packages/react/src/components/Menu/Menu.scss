@@ -1,0 +1,69 @@
+@use '../../styles/floating';
+@use '../../styles/mixins';
+
+@layer sauce.components {
+  .sauce-Menu {
+    @include floating.anchored;
+    @include floating.surface;
+    @include floating.enter-exit(':popover-open', 0 -0.25rem);
+
+    min-inline-size: 11rem;
+    padding: var(--sauce-space-1);
+  }
+
+  .sauce-MenuItem {
+    @include mixins.component-root;
+
+    display: flex;
+    gap: var(--sauce-space-2);
+    align-items: center;
+    inline-size: 100%;
+    min-block-size: 2.25rem;
+    padding-inline: var(--sauce-space-3);
+    font: inherit;
+    font-size: var(--sauce-font-size-sm);
+    color: var(--sauce-color-fg);
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-radius: var(--sauce-radius-sm);
+    outline: none;
+
+    // Focus is the highlight: keyboard and pointer both move it.
+    &:focus,
+    &:hover {
+      background-color: color-mix(in oklab, var(--sauce-color-fg) 8%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--sauce-color-focus-ring);
+      outline-offset: -2px;
+    }
+
+    &[aria-disabled='true'] {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    @media (pointer: coarse) {
+      min-block-size: 2.75rem;
+    }
+
+    > svg {
+      inline-size: 1.1em;
+      block-size: 1.1em;
+    }
+  }
+
+  .sauce-MenuItem--negative {
+    color: var(--sauce-color-negative);
+  }
+
+  .sauce-MenuSeparator {
+    block-size: 1px;
+    margin: var(--sauce-space-1) calc(-1 * var(--sauce-space-1));
+    background-color: var(--sauce-color-border);
+  }
+}

@@ -1,6 +1,13 @@
 export * from './components/index.ts'
 export * from './hooks/index.ts'
 export { cx } from './utils/cx.ts'
+export {
+  computeFallbackPosition,
+  positionArea,
+  useAnchoredPopover,
+  type AnchoredPopover,
+  type Placement,
+} from './utils/anchor.ts'
 export type { BoxStyleProps, Display } from './utils/styleProps.ts'
 export {
   isSpaceToken,
