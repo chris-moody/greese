@@ -63,7 +63,10 @@ export const Dialogs: Story = {
   ),
 }
 
-/** A bottom sheet on phones and a side panel from md. Resize the viewport. */
+/**
+ * A bottom sheet on phones and a side panel from md. Resize the viewport.
+ * Drag the header (or the sheet's handle) toward the edge to dismiss.
+ */
 export const ResponsiveDrawer: Story = {
   render: () => (
     <Drawer

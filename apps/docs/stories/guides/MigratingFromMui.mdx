@@ -18,6 +18,11 @@ drops its runtime. Most code ports with renames.
 | `<IconButton aria-label="Close">` | `<IconButton label="Close">` | Label is required |
 | `<TextField label error helperText>` | `<TextField label error description>` | `error` is the message itself |
 | `<Select>` + `<MenuItem>` | `<Select>` + `<option>` | Native select: platform picker on phones |
+| `<Autocomplete options>` | `<Combobox options>` | Single value; `allowCustomValue` for free text; `onInputChange` for async |
+| `<TextField type="number">` | `<NumberField min max step>` | Spinbutton on a text input: no wheel or locale surprises |
+| `<DatePicker>` (MUI X) | `<DateField>` | Native date/time inputs and platform pickers; no calendar bundle |
+| `<ToggleButtonGroup exclusive>` | `<SegmentedControl>` + `<Segment>` | Native radios underneath |
+| `<Table>` + `TableHead`/`TableRow`/`TableCell` | Same names, plus `TableHeaderCell` | `stackBelow` turns rows into cards on phones |
 | `<FormControlLabel control={<Checkbox />}>` | `<Checkbox label="…">` | Same for Switch and Radio |
 | `<Dialog open onClose>` | `<Dialog open onOpenChange title>` | Native `<dialog>`; `title` required |
 | `<Drawer anchor="right">` | `<Drawer placement="end">` | Responsive placement: `{ xs: 'bottom', md: 'end' }` |
