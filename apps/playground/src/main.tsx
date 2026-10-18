@@ -10,6 +10,7 @@ const pages: Record<string, () => Promise<{ default: ComponentType }>> = {
   layout: () => import('./pages/Layout.tsx').then((m) => ({ default: m.Layout })),
   forms: () => import('./pages/Forms.tsx').then((m) => ({ default: m.Forms })),
   content: () => import('./pages/Content.tsx').then((m) => ({ default: m.Content })),
+  overlays: () => import('./pages/Overlays.tsx').then((m) => ({ default: m.Overlays })),
   'bench-sauce': () =>
     import('./pages/bench/SauceBench.tsx').then((m) => ({ default: m.SauceBench })),
   'bench-mui': () =>
