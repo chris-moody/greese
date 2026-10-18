@@ -78,6 +78,11 @@ long-running decorative loops.
 - **Mixing:**
   - numbers inside same-shaped strings interpolate (`blur(0px)` →
     `blur(8px)`), and a bare `0` borrows the other end's unit;
+  - numbers with different units (`16px` → `2rem`, `px` → `%`/`vw`) blend
+    with `calc(a * (1 − t) + b * t)`, per number, so CSS converts them in
+    the right context. There's no measuring or reflow, and it's exact at
+    both ends. (Added after the animating-tokens demo snapped from `16px`
+    to `2rem` halfway.)
   - colours mix in OKLab (Pixels uses OKLCH; OKLab is cheaper and has no hue
     wrap-around);
   - anything else switches at the midpoint, except `none`/`hidden`, which
@@ -158,6 +163,7 @@ readers read words, not letters.
 
   It's structurally typed, so GLOP documents pass straight in, with no
   dependency on GLOP. It adds about 0.5 kB, tree-shaken away when unused.
+
 - **`dist/greese.global.js`** is an esbuild IIFE that defines
   `window.greese`, for pages with no bundler. It's exported as
   `@greese-ui/greese/global` and is the `unpkg`/`jsdelivr` default.

@@ -295,6 +295,11 @@ through its own `repeat`, `yoyo` and `timeScale`.
 - **Numbers inside strings** interpolate when both ends have the same shape:
   `blur(0px)` → `blur(8px)`, `inset(0 0 0 0)` → `inset(0 50% 0 0)`.
 - **A bare `0`** takes the other end's unit.
+- **Different units blend exactly:** `16px` → `2rem`, `0px` → `50%`,
+  `100px` → `50vw`, `200ms` → `1s`. Each number with a different unit
+  becomes `calc(16px * 0.75 + 2rem * 0.25)` mid-way, which the browser
+  resolves where the value is used, so percentages and viewport units are
+  right for that element, with no measuring. The ends are written plainly.
 - **Colours** mix in OKLab, so midpoints stay vivid, not muddy.
 - **Anything else** switches halfway, except `none`/`hidden`, which give way
   to the shown value for the whole animation, as CSS does for `display`.
