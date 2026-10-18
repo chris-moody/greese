@@ -2,6 +2,7 @@ import { act, render, renderHook, screen } from '@testing-library/react'
 import { renderToString } from 'react-dom/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { setMedia } from '../test/matchMedia.ts'
+import { configureBreakpoints, getBreakpoints } from '../utils/breakpoints.ts'
 import { resolveAt, useBreakpoint, useBreakpointValue } from './useBreakpoint.ts'
 import { useColorScheme } from './useColorScheme.ts'
 import { useControllableState } from './useControllableState.ts'
@@ -153,5 +154,22 @@ describe('useColorScheme', () => {
     await act(async () => result.current.setScheme('dark'))
     expect(document.documentElement.getAttribute('data-sauce-scheme')).toBe('dark')
     setItem.mockRestore()
+  })
+})
+
+describe('configureBreakpoints', () => {
+  afterEach(() => configureBreakpoints({ sm: 600, md: 900, lg: 1200, xl: 1536 }))
+
+  it('moves the boundaries the hooks use', () => {
+    configureBreakpoints({ sm: 480, md: 768 })
+    expect(getBreakpoints()).toMatchObject({ xs: 0, sm: 480, md: 768, lg: 1200 })
+    setMedia({ width: 800 })
+    const { result } = renderHook(() => useBreakpoint())
+    expect(result.current).toBe('md')
+  })
+
+  it('rejects values that do not increase', () => {
+    expect(() => configureBreakpoints({ md: 500 })).toThrow(/must increase/)
+    expect(getBreakpoints().md).toBe(900)
   })
 })

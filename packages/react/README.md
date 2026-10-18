@@ -17,6 +17,15 @@ import '@sauce-ui/react/styles.css' // tokens + component styles
 Requires React 19. `styles.css` styles only `.sauce-*` classes. Import
 `base.css` too if SauceUI owns the whole page.
 
+To ship only the CSS you use, import per-component stylesheets instead of
+`styles.css`. Each one pulls in the shared core and the components it builds
+on, and bundlers de-duplicate the shared parts:
+
+```tsx
+import '@sauce-ui/react/css/Button.css'
+import '@sauce-ui/react/css/Dialog.css' // + IconButton, Button, VisuallyHidden
+```
+
 ## Colour scheme
 
 The scheme follows the OS by default. To let users choose:
@@ -141,6 +150,19 @@ mobile-first, the same way MUI does:
 
 Prefer CSS-driven responsive props. When the rendered tree itself must change,
 use `useBreakpoint()`, `useBreakpointValue()` or `useMediaQuery()`.
+
+To use your own breakpoint values, recompile the SCSS and tell the hooks. The
+keys stay `xs`–`xl`:
+
+```scss
+@use 'pkg:@sauce-ui/react/scss' with (
+  $breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px)
+);
+```
+
+```ts
+configureBreakpoints({ sm: 480, md: 768, lg: 1024, xl: 1440 })
+```
 
 ## Utilities
 

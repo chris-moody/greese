@@ -113,3 +113,25 @@ describe('up mixin', () => {
     )
   })
 })
+
+describe('configurable breakpoints', () => {
+  const load = (config: string) =>
+    compileString(`@use 'index' with (${config});`, {
+      loadPaths: [fileURLToPath(new URL('.', import.meta.url))],
+      importers: [new NodePackageImporter()],
+    }).css
+
+  it('recompiles every component with custom values', () => {
+    const css = load(
+      '$breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px)'
+    )
+    expect(css).toContain('@media (width >= 768px)')
+    expect(css).not.toContain('@media (width >= 900px)')
+  })
+
+  it('rejects renamed or missing keys', () => {
+    expect(() => load('$breakpoints: (xs: 0px, tablet: 700px)')).toThrow(
+      /must keep the keys/
+    )
+  })
+})

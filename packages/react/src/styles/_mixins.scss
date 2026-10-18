@@ -2,9 +2,9 @@
 // the CSS these mixins compile to.
 @use 'sass:map';
 @use 'sass:string';
-@use 'pkg:@sauce-ui/tokens/scss' as tokens;
+@use 'config';
 
-$breakpoints: tokens.$breakpoints;
+$breakpoints: config.$breakpoints;
 
 /// Mobile-first media query: styles apply from `$bp` upward. `xs` needs none.
 @mixin up($bp) {
@@ -177,7 +177,7 @@ $breakpoints: tokens.$breakpoints;
 @function space-tokens() {
   $map: ();
 
-  @each $key in tokens.$space-keys {
+  @each $key in config.$space-keys {
     $map: map.set($map, $key, var(--sauce-space-#{$key}));
   }
 

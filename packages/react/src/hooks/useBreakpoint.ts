@@ -1,15 +1,19 @@
 'use client'
 import { useSyncExternalStore } from 'react'
-import { breakpointKeys, breakpoints, type Breakpoint } from '@sauce-ui/tokens'
+import { breakpointKeys, type Breakpoint } from '@sauce-ui/tokens'
+import { getBreakpoints, onBreakpointsChange } from '../utils/breakpoints.ts'
 import type { Responsive } from '../utils/responsive.ts'
 
 /** Same queries as the SCSS `up()` mixin, so JS and CSS agree on boundaries. */
-const query = (bp: Breakpoint): string => `(min-width: ${breakpoints[bp]}px)`
+const query = (bp: Breakpoint): string => `(min-width: ${getBreakpoints()[bp]}px)`
 
 let lists: Array<[Breakpoint, MediaQueryList]> | undefined
+onBreakpointsChange(() => {
+  lists = undefined
+})
 const getLists = (): Array<[Breakpoint, MediaQueryList]> =>
   (lists ??= breakpointKeys
-    .filter((bp) => breakpoints[bp] > 0)
+    .filter((bp) => getBreakpoints()[bp] > 0)
     .map((bp) => [bp, window.matchMedia(query(bp))]))
 
 const subscribe = (onChange: () => void): (() => void) => {

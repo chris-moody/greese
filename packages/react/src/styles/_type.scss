@@ -1,0 +1,15 @@
+// Typography scale helpers shared by Text and Heading.
+@use 'sass:map';
+
+$font-sizes: (xs, sm, md, lg, xl, 2xl, 3xl, 4xl);
+
+/// The font-size scale as a `$tokens` map for `responsive-prop()`.
+@function size-tokens() {
+  $map: ();
+
+  @each $size in $font-sizes {
+    $map: map.set($map, $size, var(--sauce-font-size-#{$size}));
+  }
+
+  @return $map;
+}

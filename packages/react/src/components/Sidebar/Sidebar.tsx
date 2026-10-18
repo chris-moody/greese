@@ -10,7 +10,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from 'react'
-import { breakpoints } from '@sauce-ui/tokens'
+import { getBreakpoints } from '../../utils/breakpoints.ts'
 import { cx } from '../../utils/cx.ts'
 import { MenuGlyph } from '../../utils/glyphs.tsx'
 import { IconButton, type IconButtonProps } from '../IconButton/IconButton.tsx'
@@ -83,7 +83,7 @@ export const Sidebar = ({
 
   // Opened on a phone, then widened past the breakpoint: close the overlay.
   useEffect(() => {
-    const query = matchMedia(`(min-width: ${breakpoints[breakpoint]}px)`)
+    const query = matchMedia(`(min-width: ${getBreakpoints()[breakpoint]}px)`)
     const onChange = () => {
       if (query.matches && sidebar.current?.matches(':popover-open'))
         sidebar.current.hidePopover()

@@ -1,19 +1,7 @@
 @use 'sass:list';
-@use 'sass:map';
 @use '../../styles/mixins';
 @use '../../styles/tones';
-
-$font-sizes: (xs, sm, md, lg, xl, 2xl, 3xl, 4xl);
-
-@function size-tokens() {
-  $map: ();
-
-  @each $size in $font-sizes {
-    $map: map.set($map, $size, var(--sauce-font-size-#{$size}));
-  }
-
-  @return $map;
-}
+@use '../../styles/type';
 
 @layer sauce.components {
   .sauce-Text {
@@ -46,5 +34,5 @@ $font-sizes: (xs, sm, md, lg, xl, 2xl, 3xl, 4xl);
     line-clamp: var(--sauce-text-lines);
   }
 
-  @include mixins.responsive-prop('sauce-Text', 'size', font-size, size-tokens());
+  @include mixins.responsive-prop('sauce-Text', 'size', font-size, type.size-tokens());
 }

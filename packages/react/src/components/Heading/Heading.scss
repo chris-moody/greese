@@ -1,6 +1,6 @@
 @use 'sass:list';
 @use '../../styles/mixins';
-@use '../Text/Text';
+@use '../../styles/type';
 
 // Mobile-first default sizes per level: [phones, from md].
 $defaults: (
@@ -52,5 +52,5 @@ $defaults: (
   }
 
   // After the defaults, so an explicit size wins at every breakpoint.
-  @include mixins.responsive-prop('sauce-Heading', 'size', font-size, Text.size-tokens());
+  @include mixins.responsive-prop('sauce-Heading', 'size', font-size, type.size-tokens());
 }

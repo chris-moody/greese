@@ -1,0 +1,8 @@
+{
+  "extends": "@sauce-ui/typescript-config/library.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["scripts"]
+}

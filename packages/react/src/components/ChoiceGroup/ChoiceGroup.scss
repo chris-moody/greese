@@ -1,3 +1,5 @@
+@use '../../styles/mixins';
+
 @layer sauce.components {
   .sauce-ChoiceGroup {
     display: flex;
@@ -15,5 +17,53 @@
       padding: 0;
       margin-block-end: var(--sauce-space-2);
     }
+  }
+
+  // Shared by Checkbox, Radio and Switch: a label row with the control first.
+  .sauce-Checkbox,
+  .sauce-Radio,
+  .sauce-Switch {
+    @include mixins.component-root;
+
+    display: inline-flex;
+    gap: var(--sauce-space-2);
+    align-items: flex-start;
+    font-size: var(--sauce-font-size-md);
+    line-height: var(--sauce-line-height-snug);
+    color: var(--sauce-color-fg);
+
+    &[data-disabled] {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+  }
+
+  .sauce-Checkbox-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sauce-space-1);
+  }
+
+  .sauce-Checkbox-label {
+    cursor: pointer;
+
+    [data-disabled] > .sauce-Checkbox-text > & {
+      cursor: not-allowed;
+    }
+  }
+
+  .sauce-Checkbox-description {
+    font-size: var(--sauce-font-size-sm);
+    color: var(--sauce-color-fg-muted);
+  }
+
+  .sauce-Checkbox-box {
+    position: relative;
+    display: inline-grid;
+    flex-shrink: 0;
+    place-items: center;
+
+    // Align the box with the first line of the label.
+    margin-block: calc((1lh - 1.125rem) / 2);
   }
 }
