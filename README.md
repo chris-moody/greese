@@ -8,7 +8,7 @@ static CSS compiled at build time, themed with CSS custom properties.
 | [`@sauce-ui/react`](packages/react) | Components, hooks, and the compiled stylesheet |
 | [`@sauce-ui/tokens`](packages/tokens) | Design tokens as CSS variables, Sass maps, and TS constants |
 
-Plan and architecture: [docs/DEVELOPMENT_PLAN.md](docs/DEVELOPMENT_PLAN.md).
+Plan and architecture: [docs/plans/DEVELOPMENT_PLAN.md](docs/plans/DEVELOPMENT_PLAN.md).
 
 ## Workspace
 
