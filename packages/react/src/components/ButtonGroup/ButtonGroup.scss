@@ -9,15 +9,24 @@
     }
   }
 
+  // Attached groups join buttons and field frames (Select, Input) alike, so a
+  // button can sit flush against a select or an input.
   .sauce-ButtonGroup--attached {
     flex-wrap: nowrap;
     gap: 0;
 
-    > .sauce-Button:focus-visible {
-      z-index: 1;
+    > :is(.sauce-Button, .sauce-Select, .sauce-Input) {
+      &:is(:focus-visible, :focus-within) {
+        z-index: 1;
+      }
     }
 
-    &[data-orientation='horizontal'] > .sauce-Button {
+    > :is(.sauce-Select, .sauce-Input) {
+      flex: 1 1 auto;
+      inline-size: auto;
+    }
+
+    &[data-orientation='horizontal'] > :is(.sauce-Button, .sauce-Select, .sauce-Input) {
       &:not(:first-child) {
         margin-inline-start: -1px;
         border-start-start-radius: 0;
@@ -30,7 +39,7 @@
       }
     }
 
-    &[data-orientation='vertical'] > .sauce-Button {
+    &[data-orientation='vertical'] > :is(.sauce-Button, .sauce-Select, .sauce-Input) {
       &:not(:first-child) {
         margin-block-start: -1px;
         border-start-start-radius: 0;

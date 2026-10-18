@@ -1,0 +1,6 @@
+@layer sauce.components {
+  // Never wider than its container: the select gives up width first.
+  .sauce-ActionSelect {
+    max-inline-size: 100%;
+  }
+}

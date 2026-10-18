@@ -1,0 +1,90 @@
+@use '../../styles/mixins';
+
+// Registered so they never inherit: a nested item without a size must not
+// pick up its parent item's.
+@property --sauce-autolayoutitem-s {
+  syntax: '*';
+  inherits: false;
+}
+
+@property --sauce-autolayoutitem-m {
+  syntax: '*';
+  inherits: false;
+}
+
+@layer sauce.components {
+  .sauce-AutoLayout {
+    // Plain custom properties: items inherit the row's columns and gap.
+    --sauce-autolayout-columns: 12;
+    --sauce-autolayout-column-gap: 0px;
+
+    display: flex;
+    flex-wrap: wrap;
+    min-inline-size: 0;
+  }
+
+  // Each item claims its share of the row less its share of the gaps, so
+  // `n` items of `columns / n` fill a row exactly: basis = p·100% − (1 − p)·gap.
+  .sauce-AutoLayoutItem {
+    --sauce-autolayoutitem-columns: var(--sauce-autolayout-columns, 12);
+    --sauce-autolayoutitem-size: var(
+      --sauce-autolayoutitem-s,
+      var(--sauce-autolayoutitem-columns)
+    );
+    --sauce-autolayoutitem-max: var(
+      --sauce-autolayoutitem-m,
+      var(--sauce-autolayoutitem-size)
+    );
+    --sauce-autolayoutitem-p: calc(
+      var(--sauce-autolayoutitem-size) / var(--sauce-autolayoutitem-columns)
+    );
+    --sauce-autolayoutitem-q: calc(
+      var(--sauce-autolayoutitem-max) / var(--sauce-autolayoutitem-columns)
+    );
+    --sauce-autolayoutitem-gap: var(--sauce-autolayout-column-gap, 0px);
+
+    // Each item's share of the gaps beside it.
+    --sauce-autolayoutitem-p-gap: calc(
+      (1 - var(--sauce-autolayoutitem-p)) * var(--sauce-autolayoutitem-gap)
+    );
+    --sauce-autolayoutitem-q-gap: calc(
+      (1 - var(--sauce-autolayoutitem-q)) * var(--sauce-autolayoutitem-gap)
+    );
+
+    box-sizing: border-box;
+
+    // Grows by the columns it may add, never shrinks below its size.
+    flex: max(0, var(--sauce-autolayoutitem-max) - var(--sauce-autolayoutitem-size)) 0
+      calc(var(--sauce-autolayoutitem-p) * 100% - var(--sauce-autolayoutitem-p-gap));
+    min-inline-size: 0;
+    max-inline-size: calc(
+      var(--sauce-autolayoutitem-q) * 100% - var(--sauce-autolayoutitem-q-gap)
+    );
+  }
+
+  // `gap` sets both gaps and tells the items the column gap.
+  @include mixins.responsive-prop(
+    'sauce-AutoLayout',
+    'gap',
+    (column-gap, row-gap, --sauce-autolayout-column-gap),
+    mixins.space-tokens()
+  );
+
+  // After `gap`, so it wins where both apply.
+  @include mixins.responsive-prop(
+    'sauce-AutoLayout',
+    'row-gap',
+    row-gap,
+    mixins.space-tokens()
+  );
+  @include mixins.responsive-prop(
+    'sauce-AutoLayoutItem',
+    'size',
+    --sauce-autolayoutitem-s
+  );
+  @include mixins.responsive-prop(
+    'sauce-AutoLayoutItem',
+    'max',
+    --sauce-autolayoutitem-m
+  );
+}

@@ -4,7 +4,7 @@
     "path": "dist/index.js",
     "import": "*",
     "ignore": ["react", "react-dom"],
-    "limit": "18 kB"
+    "limit": "20 kB"
   },
   {
     "name": "JS: tree-shaken { VisuallyHidden }",
@@ -96,6 +96,18 @@
     "import": "{ ThemeProvider, createTheme }",
     "ignore": ["react", "react-dom"],
     "limit": "2.25 kB"
+  },
+  {
+    "name": "ColorPicker",
+    "path": "dist/index.js",
+    "import": "{ ColorPicker }",
+    "limit": "3 kB"
+  },
+  {
+    "name": "MaskedInput",
+    "path": "dist/index.js",
+    "import": "{ MaskedInput }",
+    "limit": "2 kB"
   },
   {
     "name": "CSS: sauce-ui.css",

@@ -75,7 +75,8 @@ wins over it. You never need `!important`.
 
 ## Layout
 
-`Box`, `Stack`, `Grid` + `GridItem`, `Container`, `Center`, `Spacer`,
+`Box`, `Stack`, `Grid` + `GridItem`, `AutoLayout` + `AutoLayoutItem` (items
+sized in columns that grow into spare room), `Container`, `Center`, `Spacer`,
 `Divider`, `Show`/`Hide` and `AspectRatio`. They're all server-component safe
 and accept `asChild`.
 
@@ -111,8 +112,11 @@ input, so `react-hook-form`'s `register()` needs no adapters.
 ```
 
 Also: `Combobox` (searchable select), `NumberField` (spinbutton with
-steppers), `DateField` (native date and time pickers), `SegmentedControl`, and
-`Table` primitives with sortable headers and a stacked card layout on phones.
+steppers), `DateField` (native date and time pickers), `MaskedInput` (formats
+as you type: phones, cards, codes), `ColorPicker` (touch-friendly, with
+opacity and swatches), `ActionSelect` (a button joined to a select),
+`SegmentedControl`, and `Table` primitives with sortable headers and a stacked
+card layout on phones.
 
 `Field` connects its label, description and error to its control. Call
 `useFieldControl()` to make your own controls Field-aware. On touch screens,
@@ -123,7 +127,7 @@ are at least 44px.
 
 | Area | Components |
 |---|---|
-| **Typography** | `Text` (responsive size, tone, truncate), `Heading` (outline level separate from size), `Link`, `Code` |
+| **Typography** | `Text` (responsive size, tone, truncate), `Heading` (outline level separate from size), `Link`, `Code`, `Break` (a line break per breakpoint, with a fallback where it doesn't break) |
 | **Media** | `Card` + `CardMedia`, `Image` (lazy by default, `priority` for LCP, CSS placeholder, fallback), `Video` (plays inline on iOS), `Embed`, `Icon`, `Avatar` + `AvatarGroup` |
 | **Disclosure** | `Collapsible` and `Accordion` (native `<details>`; `exclusive` keeps one open with no JS), `Tabs` |
 | **Feedback** | `Alert` (announces only when you ask), `Badge`, `Chip` (removable or selectable), `Spinner`, `Progress`, `Skeleton` |
