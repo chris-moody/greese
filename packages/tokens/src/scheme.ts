@@ -3,7 +3,7 @@ import { SCHEME_ATTR } from './css.ts'
 /** `system` follows the OS setting; `light` and `dark` force a mode. */
 export type ColorScheme = 'light' | 'dark' | 'system'
 
-export const DEFAULT_SCHEME_STORAGE_KEY = 'sauce-scheme'
+export const DEFAULT_SCHEME_STORAGE_KEY = 'greese-scheme'
 
 export interface SchemeScriptOptions {
   /** localStorage key holding the user's choice. Must match useColorScheme's. */

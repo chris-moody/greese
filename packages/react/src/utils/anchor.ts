@@ -111,7 +111,7 @@ export interface AnchoredPopover {
  */
 export const useAnchoredPopover = (placement: Placement, gap = 6): AnchoredPopover => {
   const id = useId().replace(/[^\w-]/g, '')
-  const name = `--sauce-anchor-${id}`
+  const name = `--greese-anchor-${id}`
   const trigger = useRef<HTMLElement | null>(null)
 
   const floatingRef = useCallback<RefCallback<HTMLElement>>(

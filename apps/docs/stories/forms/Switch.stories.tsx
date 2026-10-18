@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Stack, Switch } from '@sauce-ui/react'
+import { Stack, Switch } from '@greese-ui/react'
 
 const meta = {
   title: 'Forms/Switch',

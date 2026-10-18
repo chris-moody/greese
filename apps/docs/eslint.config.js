@@ -1,3 +1,3 @@
-import { config } from '@sauce-ui/eslint-config/react-internal'
+import { config } from '@greese-ui/eslint-config/react-internal'
 
 export default [...config, { ignores: ['storybook-static/**'] }]

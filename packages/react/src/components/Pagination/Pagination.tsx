@@ -110,12 +110,12 @@ export const Pagination = ({
   }
 
   return (
-    <nav {...props} aria-label={label} className={cx('sauce-Pagination', className)}>
-      <ul className="sauce-Pagination-list">
+    <nav {...props} aria-label={label} className={cx('greese-Pagination', className)}>
+      <ul className="greese-Pagination-list">
         <li>
           {control(page - 1, <ChevronGlyph />, {
             'aria-label': labels?.previous ?? 'Previous page',
-            className: 'sauce-Pagination-step',
+            className: 'greese-Pagination-step',
           })}
         </li>
         {paginationRange(page, count, siblings, boundaries).map((item) =>
@@ -123,8 +123,8 @@ export const Pagination = ({
             <li
               key={item}
               className={cx(
-                'sauce-Pagination-page',
-                item === page && 'sauce-Pagination-page--current'
+                'greese-Pagination-page',
+                item === page && 'greese-Pagination-page--current'
               )}
             >
               {control(item, item, {
@@ -135,7 +135,7 @@ export const Pagination = ({
               })}
             </li>
           ) : (
-            <li key={item} className="sauce-Pagination-ellipsis" aria-hidden="true">
+            <li key={item} className="greese-Pagination-ellipsis" aria-hidden="true">
               …
             </li>
           )
@@ -143,7 +143,7 @@ export const Pagination = ({
         <li>
           {control(page + 1, <ChevronGlyph />, {
             'aria-label': labels?.next ?? 'Next page',
-            className: 'sauce-Pagination-step sauce-Pagination-step--next',
+            className: 'greese-Pagination-step greese-Pagination-step--next',
           })}
         </li>
       </ul>

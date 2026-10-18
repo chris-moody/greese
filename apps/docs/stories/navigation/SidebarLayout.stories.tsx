@@ -8,7 +8,7 @@ import {
   Spacer,
   Stack,
   Text,
-} from '@sauce-ui/react'
+} from '@greese-ui/react'
 
 const meta = {
   title: 'Navigation/SidebarLayout',
@@ -39,7 +39,7 @@ const meta = {
       <div>
         <AppBar>
           <SidebarTrigger />
-          <Text weight="semibold">Sauce</Text>
+          <Text weight="semibold">Greese</Text>
           <Spacer />
         </AppBar>
         <Stack gap={5} p={5}>

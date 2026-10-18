@@ -48,11 +48,11 @@ export const Chip = ({
   const content = (
     <>
       {icon && (
-        <span className="sauce-Chip-icon" aria-hidden="true">
+        <span className="greese-Chip-icon" aria-hidden="true">
           {icon}
         </span>
       )}
-      <span className="sauce-Chip-label">{children}</span>
+      <span className="greese-Chip-label">{children}</span>
     </>
   )
 
@@ -60,15 +60,15 @@ export const Chip = ({
     <span
       {...props}
       className={cx(
-        'sauce-Chip',
-        selectable && selected && 'sauce-Chip--selected',
+        'greese-Chip',
+        selectable && selected && 'greese-Chip--selected',
         className
       )}
     >
       {selectable ? (
         <button
           type="button"
-          className="sauce-Chip-toggle"
+          className="greese-Chip-toggle"
           aria-pressed={selected}
           onClick={() => setSelected((s) => !s)}
         >
@@ -80,7 +80,7 @@ export const Chip = ({
       {onRemove && (
         <button
           type="button"
-          className="sauce-Chip-remove"
+          className="greese-Chip-remove"
           aria-label={
             removeLabel ?? `Remove ${typeof children === 'string' ? children : ''}`.trim()
           }

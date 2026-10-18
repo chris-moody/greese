@@ -23,8 +23,8 @@ export const ButtonGroup = ({
     {...props}
     data-orientation={orientation}
     className={cx(
-      'sauce-ButtonGroup',
-      attached && 'sauce-ButtonGroup--attached',
+      'greese-ButtonGroup',
+      attached && 'greese-ButtonGroup--attached',
       className
     )}
   />

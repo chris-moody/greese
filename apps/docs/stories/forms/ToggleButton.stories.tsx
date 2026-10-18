@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ButtonGroup, ToggleButton } from '@sauce-ui/react'
+import { ButtonGroup, ToggleButton } from '@greese-ui/react'
 
 const meta = {
   title: 'Forms/ToggleButton',

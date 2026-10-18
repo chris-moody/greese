@@ -1,5 +1,5 @@
 import type { JSX, ReactNode } from 'react'
-import type { Breakpoint } from '@sauce-ui/tokens'
+import type { Breakpoint } from '@greese-ui/tokens'
 import { cx } from '../../utils/cx.ts'
 import { Slot } from '../Slot/Slot.tsx'
 
@@ -29,10 +29,10 @@ const render = (
   return (
     <Root
       className={cx(
-        !asChild && 'sauce-Visibility',
-        hideBelow && `sauce-Visibility--hide-below-${hideBelow}`,
-        hideFrom && `sauce-Visibility--hide-from-${hideFrom}`,
-        hideBetween && `sauce-Visibility--hide-${hideBetween[0]}-to-${hideBetween[1]}`,
+        !asChild && 'greese-Visibility',
+        hideBelow && `greese-Visibility--hide-below-${hideBelow}`,
+        hideFrom && `greese-Visibility--hide-from-${hideFrom}`,
+        hideBetween && `greese-Visibility--hide-${hideBetween[0]}-to-${hideBetween[1]}`,
         className
       )}
     >

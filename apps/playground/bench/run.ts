@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * SauceUI vs MUI: 2,000 responsive Stacks, production build, Chromium with 4x
+ * GreeseUI vs MUI: 2,000 responsive Stacks, production build, Chromium with 4x
  * CPU throttling (roughly a mid-range phone). Runs alternate between libraries
  * so machine noise hits both equally; medians are reported.
  *
@@ -28,7 +28,7 @@ const TOGGLES = Number(args.toggles)
 const PORT = 4311
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 
-type Lib = 'sauce' | 'mui'
+type Lib = 'greese' | 'mui'
 interface Sample {
   navToPaint: number
   renderToPaint: number
@@ -129,10 +129,10 @@ const sample = async (lib: Lib): Promise<Sample> => {
 
 const server = await startServer()
 try {
-  const samples: Record<Lib, Sample[]> = { sauce: [], mui: [] }
+  const samples: Record<Lib, Sample[]> = { greese: [], mui: [] }
   for (let run = 0; run < RUNS; run++) {
     // Alternate the order each run so warm-up effects don't favour one side.
-    const order: Lib[] = run % 2 ? ['mui', 'sauce'] : ['sauce', 'mui']
+    const order: Lib[] = run % 2 ? ['mui', 'greese'] : ['greese', 'mui']
     for (const lib of order) samples[lib].push(await sample(lib))
     process.stdout.write(`run ${run + 1}/${RUNS} done\n`)
   }
@@ -153,10 +153,10 @@ try {
   const fmt = (n: number) => (n >= 100 ? n.toFixed(0) : n.toFixed(1))
   console.log(
     `\n2,000 responsive Stacks, ${RUNS} runs, ${CPU}x CPU throttle, medians\n\n` +
-      `| Metric | SauceUI | MUI | MUI / SauceUI |\n|---|---:|---:|---:|\n` +
+      `| Metric | GreeseUI | MUI | MUI / GreeseUI |\n|---|---:|---:|---:|\n` +
       rows
         .map(([label, key, unit]) => {
-          const s = median(samples.sauce.map((x) => x[key]))
+          const s = median(samples.greese.map((x) => x[key]))
           const m = median(samples.mui.map((x) => x[key]))
           const ratio = s > 0 ? `${(m / s).toFixed(1)}x` : '-'
           return `| ${label} | ${fmt(s)} ${unit} | ${fmt(m)} ${unit} | ${ratio} |`

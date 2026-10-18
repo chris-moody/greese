@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Pagination } from '@sauce-ui/react'
+import { Pagination } from '@greese-ui/react'
 
 const meta = {
   title: 'Navigation/Pagination',

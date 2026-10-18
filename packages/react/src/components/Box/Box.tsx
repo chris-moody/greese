@@ -24,7 +24,7 @@ export interface BoxProps extends ComponentPropsWithoutRef<'div'>, BoxStyleProps
 export const Box = (props: BoxProps): JSX.Element => {
   const [entries, { asChild, className, style, ...rest }] = splitStyleProps(props)
   const resolved = resolveResponsive(entries, {
-    className: cx('sauce-Box', className),
+    className: cx('greese-Box', className),
     style,
   })
   // Typed as Slot: its HTMLElement ref and props fit both a <div> and asChild.

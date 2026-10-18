@@ -45,18 +45,18 @@ export const ChoiceGroupShell = ({
     <fieldset
       {...props}
       aria-describedby={cx(descriptionId, errorId) || undefined}
-      className={cx('sauce-ChoiceGroup', className)}
+      className={cx('greese-ChoiceGroup', className)}
     >
-      <legend className={cx('sauce-Field-label', hideLabel && 'sauce-VisuallyHidden')}>
+      <legend className={cx('greese-Field-label', hideLabel && 'greese-VisuallyHidden')}>
         {label}
         {required && (
-          <span className="sauce-Field-required" aria-hidden="true">
+          <span className="greese-Field-required" aria-hidden="true">
             *
           </span>
         )}
       </legend>
       {description && (
-        <p id={descriptionId} className="sauce-Field-description">
+        <p id={descriptionId} className="greese-Field-description">
           {description}
         </p>
       )}
@@ -64,7 +64,7 @@ export const ChoiceGroupShell = ({
         {children({ describedBy: errorId })}
       </Stack>
       {error && (
-        <p id={errorId} className="sauce-Field-error">
+        <p id={errorId} className="greese-Field-error">
           {error}
         </p>
       )}
@@ -89,14 +89,14 @@ export const ChoiceText = ({
   descriptionId: string
 }): JSX.Element | null =>
   label || description ? (
-    <span className="sauce-Checkbox-text">
+    <span className="greese-Checkbox-text">
       {label && (
-        <label htmlFor={htmlFor} className="sauce-Checkbox-label">
+        <label htmlFor={htmlFor} className="greese-Checkbox-label">
           {label}
         </label>
       )}
       {description && (
-        <span id={descriptionId} className="sauce-Checkbox-description">
+        <span id={descriptionId} className="greese-Checkbox-description">
           {description}
         </span>
       )}

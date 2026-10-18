@@ -5,7 +5,7 @@
 
 ## Context
 
-SauceUI must support dynamic, per-breakpoint props, in the style of MUI's
+GreeseUI must support dynamic, per-breakpoint props, in the style of MUI's
 `<Stack direction={{ xs: 'column', md: 'row' }} />`. It must do this without
 the runtime cost of CSS-in-JS. Emotion-style libraries serialise style
 objects, hash them and insert rules on every render. Inserting a rule
@@ -29,9 +29,9 @@ naming scheme:
 
 | Piece | Name |
 |---|---|
-| "Uses" class, added whenever the prop is set | `.sauce-Stack--gap` |
-| Per-breakpoint variable | `--sauce-stack-gap-md` (lower-cased block, prop, breakpoint) |
-| Token class | `.sauce-Stack--md-gap-2` |
+| "Uses" class, added whenever the prop is set | `.greese-Stack--gap` |
+| Per-breakpoint variable | `--greese-stack-gap-md` (lower-cased block, prop, breakpoint) |
+| Token class | `.greese-Stack--md-gap-2` |
 
 For each prop, the mixin emits four things:
 
@@ -59,9 +59,9 @@ most five breakpoints per prop.
 **Classes or inline variables?** The props that define a component (Stack
 `direction`/`gap`, Grid `columns`, GridItem `span`) get token classes, so the
 common case adds no inline style. Box's fourteen spacing props would need
-about 600 classes, so they always go inline as `var(--sauce-space-N)` values.
+about 600 classes, so they always go inline as `var(--greese-space-N)` values.
 That stays themeable and keeps the CSS small. Style props live in
-`@layer sauce.utilities`, so they beat a component's own styles regardless of
+`@layer greese.utilities`, so they beat a component's own styles regardless of
 source order.
 
 The plan originally had a second mixin, `responsive-variant()`, which would
@@ -77,7 +77,7 @@ alignment, since MUI 9 dropped Stack's system props). It uses production
 builds, Chromium at 4× CPU throttle, and reports medians of 5 interleaved
 runs. The results on the development machine (2026-10-17):
 
-| Metric | SauceUI | MUI | MUI / SauceUI |
+| Metric | GreeseUI | MUI | MUI / GreeseUI |
 |---|---:|---:|---:|
 | Render to first paint | 375 ms | 450 ms | 1.2× |
 | Main-thread script (load) | 202 ms | 437 ms | 2.2× |
@@ -98,7 +98,7 @@ non-inheriting cut update recalc from 29 ms to 18 ms. The gap left is around
 ### Breakpoints
 
 Breakpoints are compile-time constants, because media queries cannot read
-custom properties. They are defined once, in `@sauce-ui/tokens`, and emitted
+custom properties. They are defined once, in `@greese-ui/tokens`, and emitted
 both as the SCSS `$breakpoints` map and as TS constants (`useBreakpoint` uses
 the TS ones). `src/styles/mixins.test.ts` compiles the mixin and checks that
 every class `resolveResponsive` can produce exists in the CSS, so the two
@@ -106,9 +106,9 @@ sides can't drift.
 
 ### Cascade layers
 
-Every stylesheet SauceUI emits starts with the same statement:
+Every stylesheet GreeseUI emits starts with the same statement:
 
-`@layer sauce.reset, sauce.tokens, sauce.theme, sauce.base, sauce.components, sauce.utilities`
+`@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.utilities`
 
 That covers the tokens CSS, components, base and runtime themes. Any unlayered
 consumer CSS overrides all of them without `!important`. Repeating the
@@ -117,9 +117,9 @@ first.
 
 ### Global styles are opt-in
 
-`styles.css` only styles `.sauce-*` classes and the token variables.
+`styles.css` only styles `.greese-*` classes and the token variables.
 `base.css` contains the reset, `body` colours and the focus ring, and is
-imported only when SauceUI owns the page.
+imported only when GreeseUI owns the page.
 
 ## Consequences
 

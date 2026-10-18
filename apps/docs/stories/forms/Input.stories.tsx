@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Input, Stack } from '@sauce-ui/react'
+import { Input, Stack } from '@greese-ui/react'
 import { SearchIcon } from '../_shared/fixtures.tsx'
 
 const meta = {

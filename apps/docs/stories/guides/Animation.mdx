@@ -2,31 +2,31 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 <Meta title="Guides/Animation" />
 
-# Animation with sauce.js
+# Animation with greese.js
 
-sauce.js (`@sauce-ui/sauce`) is SauceUI's animation library: keyframes,
+greese.js (`@greese-ui/greese`) is GreeseUI's animation library: keyframes,
 organised into timelines you can play, pause, seek, reverse, speed up and
-nest. It's about 5 kB (brotli) and has no dependencies. `@sauce-ui/react`
+nest. It's about 5 kB (brotli) and has no dependencies. `@greese-ui/react`
 depends on it and re-exports the main API, so it's already installed:
 
 ```ts
-import { animate, timeline, splitText, ease } from '@sauce-ui/react'
-// or, without SauceUI's components:
-import { animate, timeline } from '@sauce-ui/sauce'
+import { animate, timeline, splitText, ease } from '@greese-ui/react'
+// or, without GreeseUI's components:
+import { animate, timeline } from '@greese-ui/greese'
 ```
 
 Bundlers drop it entirely if you never import it. See the live demos under
-**Motion/sauce.js**.
+**Motion/greese.js**.
 
 ## Do you need JavaScript at all?
 
 Prefer CSS when it's enough: `transition` for state changes, and
-`@keyframes` for loops. SauceUI's own components animate that way.
+`@keyframes` for loops. GreeseUI's own components animate that way.
 They run off the main thread for `transform` and `opacity`, and respect
-`prefers-reduced-motion` through the tokens (`--sauce-duration-*` collapse to
+`prefers-reduced-motion` through the tokens (`--greese-duration-*` collapse to
 near zero).
 
-Reach for sauce.js when you need what CSS can't do:
+Reach for greese.js when you need what CSS can't do:
 
 - sequencing across elements;
 - scrubbing, seeking or reversing;
@@ -121,7 +121,7 @@ through its own `repeat`, `yoyo` and `timeScale`.
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `x`, `y`, `z`, `rotate`, `scale`, `scaleX`, `scaleY` | Written to the individual `translate`, `rotate` and `scale` properties: they compose without a matrix and don't fight a `transform` from your CSS. Numbers mean px or deg |
 | CSS properties, camelCase                            | `opacity`, `width`, `backgroundColor`, `filter`, `clipPath`, `boxShadow`… Bare numbers mean px, except unitless properties such as `opacity`                              |
-| `'--custom-properties'`                              | Including SauceUI tokens: animate `--sauce-color-accent` and every component that reads it follows                                                                        |
+| `'--custom-properties'`                              | Including GreeseUI tokens: animate `--greese-color-accent` and every component that reads it follows                                                                        |
 | `text`                                               | Counts between numbers (`'0'` → `'12480'`), types on or deletes, or retypes                                                                                               |
 | SVG attributes the element has                       | `r`, `cx`, `d` (when point counts match)…                                                                                                                                 |
 | Numeric element properties                           | `scrollTop`, `scrollLeft`                                                                                                                                                 |
@@ -175,7 +175,7 @@ timeline({ reducedMotion: 'ignore' })
 
 ## Performance
 
-sauce.js samples values on the main thread, once per frame, through a single
+greese.js samples values on the main thread, once per frame, through a single
 shared `requestAnimationFrame` loop that runs only while something plays. It
 batches each element's writes, so a frame does one style write per property.
 It reads computed styles only once per property, for the starting value, and
@@ -190,7 +190,7 @@ never during playback.
 
 ## Coming from GSAP or GLOP
 
-| GSAP                                                              | sauce.js                                                 |
+| GSAP                                                              | greese.js                                                 |
 | ----------------------------------------------------------------- | -------------------------------------------------------- |
 | `gsap.to(t, vars)`                                                | `animate(t, vars)`, or `timeline().to(t, vars)`          |
 | `gsap.timeline()` + `.to/.from/.fromTo/.set/.add/.call/.addLabel` | `timeline()` + the same, with `.label`                   |

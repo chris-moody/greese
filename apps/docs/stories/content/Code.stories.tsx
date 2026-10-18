@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Code, Text } from '@sauce-ui/react'
+import { Code, Text } from '@greese-ui/react'
 
 const meta = {
   title: 'Content/Code',
   component: Code,
-  args: { children: 'npm install @sauce-ui/react' },
+  args: { children: 'npm install @greese-ui/react' },
 } satisfies Meta<typeof Code>
 export default meta
 
@@ -22,6 +22,6 @@ export const Inline: Story = {
 export const Block: Story = {
   args: {
     block: true,
-    children: `import { Stack } from '@sauce-ui/react'\n\nexport const App = () => <Stack gap={4}>…</Stack>`,
+    children: `import { Stack } from '@greese-ui/react'\n\nexport const App = () => <Stack gap={4}>…</Stack>`,
   },
 }

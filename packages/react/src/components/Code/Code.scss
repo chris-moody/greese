@@ -1,25 +1,25 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Code {
+@layer greese.components {
+  .greese-Code {
     padding: 0.1em 0.35em;
-    font-family: var(--sauce-font-mono);
+    font-family: var(--greese-font-mono);
     font-size: 0.875em;
-    background-color: var(--sauce-color-surface);
-    border: 1px solid var(--sauce-color-border);
-    border-radius: var(--sauce-radius-sm);
+    background-color: var(--greese-color-surface);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-radius-sm);
   }
 
-  .sauce-Code--block {
+  .greese-Code--block {
     @include mixins.component-root;
     @include mixins.focus-ring;
 
-    padding: var(--sauce-space-4);
+    padding: var(--greese-space-4);
     margin: 0;
     overflow-x: auto;
-    font-size: var(--sauce-font-size-sm);
-    line-height: var(--sauce-line-height-normal);
-    border-radius: var(--sauce-radius-md);
+    font-size: var(--greese-font-size-sm);
+    line-height: var(--greese-line-height-normal);
+    border-radius: var(--greese-radius-md);
 
     > code {
       font: inherit;

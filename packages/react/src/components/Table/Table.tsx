@@ -77,24 +77,24 @@ export const Table = ({
       // Focusable, so keyboard users can scroll a wide table.
       tabIndex={0}
       className={cx(
-        'sauce-Table',
-        `sauce-Table--${density}`,
-        striped && 'sauce-Table--striped',
-        hoverable && 'sauce-Table--hoverable',
-        stickyHeader && 'sauce-Table--sticky',
-        stackBelow && `sauce-Table--stack-below-${stackBelow}`,
+        'greese-Table',
+        `greese-Table--${density}`,
+        striped && 'greese-Table--striped',
+        hoverable && 'greese-Table--hoverable',
+        stickyHeader && 'greese-Table--sticky',
+        stackBelow && `greese-Table--stack-below-${stackBelow}`,
         className
       )}
       style={
         maxHeight
-          ? ({ '--sauce-table-max-height': maxHeight, ...style } as CSSProperties)
+          ? ({ '--greese-table-max-height': maxHeight, ...style } as CSSProperties)
           : style
       }
     >
-      <table {...props} role={role(stacked, 'table')} className="sauce-Table-table">
+      <table {...props} role={role(stacked, 'table')} className="greese-Table-table">
         <caption
           id={captionId}
-          className={cx('sauce-Table-caption', hideCaption && 'sauce-VisuallyHidden')}
+          className={cx('greese-Table-caption', hideCaption && 'greese-VisuallyHidden')}
         >
           {caption}
         </caption>
@@ -123,7 +123,7 @@ export const TableRow = ({
   <tr
     role={role(use(StackedContext), 'row')}
     {...props}
-    className={cx('sauce-TableRow', className)}
+    className={cx('greese-TableRow', className)}
   />
 )
 
@@ -155,12 +155,12 @@ export const TableHeaderCell = ({
     aria-sort={sort === 'ascending' || sort === 'descending' ? sort : undefined}
     {...props}
     data-align={align && align !== 'start' ? align : undefined}
-    className={cx('sauce-TableHeaderCell', className)}
+    className={cx('greese-TableHeaderCell', className)}
   >
     {onSort ? (
       <button
         type="button"
-        className="sauce-TableHeaderCell-sort"
+        className="greese-TableHeaderCell-sort"
         data-sort={sort ?? 'none'}
         onClick={onSort}
       >
@@ -191,6 +191,6 @@ export const TableCell = ({
     data-label={label}
     {...props}
     data-align={align && align !== 'start' ? align : undefined}
-    className={cx('sauce-TableCell', className)}
+    className={cx('greese-TableCell', className)}
   />
 )

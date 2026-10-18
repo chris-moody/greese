@@ -1,44 +1,44 @@
 @use '../../styles/floating';
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Menu {
+@layer greese.components {
+  .greese-Menu {
     @include floating.anchored;
     @include floating.surface;
     @include floating.enter-exit(':popover-open', 0 -0.25rem);
 
     min-inline-size: 11rem;
-    padding: var(--sauce-space-1);
+    padding: var(--greese-space-1);
   }
 
-  .sauce-MenuItem {
+  .greese-MenuItem {
     @include mixins.component-root;
 
     display: flex;
-    gap: var(--sauce-space-2);
+    gap: var(--greese-space-2);
     align-items: center;
     inline-size: 100%;
     min-block-size: 2.25rem;
-    padding-inline: var(--sauce-space-3);
+    padding-inline: var(--greese-space-3);
     font: inherit;
-    font-size: var(--sauce-font-size-sm);
-    color: var(--sauce-color-fg);
+    font-size: var(--greese-font-size-sm);
+    color: var(--greese-color-fg);
     text-align: start;
     text-decoration: none;
     cursor: pointer;
     background: none;
     border: 0;
-    border-radius: var(--sauce-radius-sm);
+    border-radius: var(--greese-radius-sm);
     outline: none;
 
     // Focus is the highlight: keyboard and pointer both move it.
     &:focus,
     &:hover {
-      background-color: color-mix(in oklab, var(--sauce-color-fg) 8%, transparent);
+      background-color: color-mix(in oklab, var(--greese-color-fg) 8%, transparent);
     }
 
     &:focus-visible {
-      outline: 2px solid var(--sauce-color-focus-ring);
+      outline: 2px solid var(--greese-color-focus-ring);
       outline-offset: -2px;
     }
 
@@ -57,13 +57,13 @@
     }
   }
 
-  .sauce-MenuItem--negative {
-    color: var(--sauce-color-negative);
+  .greese-MenuItem--negative {
+    color: var(--greese-color-negative);
   }
 
-  .sauce-MenuSeparator {
+  .greese-MenuSeparator {
     block-size: 1px;
-    margin: var(--sauce-space-1) calc(-1 * var(--sauce-space-1));
-    background-color: var(--sauce-color-border);
+    margin: var(--greese-space-1) calc(-1 * var(--greese-space-1));
+    background-color: var(--greese-color-border);
   }
 }

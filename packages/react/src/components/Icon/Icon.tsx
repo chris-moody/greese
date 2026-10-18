@@ -30,7 +30,7 @@ export const Icon = ({
   <span
     {...props}
     {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}
-    className={cx('sauce-Icon', className)}
-    style={size ? ({ '--sauce-icon-size': size, ...style } as CSSProperties) : style}
+    className={cx('greese-Icon', className)}
+    style={size ? ({ '--greese-icon-size': size, ...style } as CSSProperties) : style}
   />
 )

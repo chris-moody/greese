@@ -17,7 +17,7 @@ export interface SlotProps extends HTMLAttributes<HTMLElement> {
 
 /**
  * Renders its single child element with the Slot's props merged in. Powers
- * `asChild` on SauceUI components, so a component's behaviour and styling can
+ * `asChild` on GreeseUI components, so a component's behaviour and styling can
  * land on your element (a router `<Link>`, say) instead of a wrapper.
  *
  * Merge rules: the child's props win; `className`s are joined; `style`s are

@@ -140,29 +140,29 @@ const ModalBase = ({
           if (!inside) setOpen(false)
         }}
       >
-        <div className="sauce-Dialog-header">
+        <div className="greese-Dialog-header">
           <h2
             id={`${id}-title`}
-            className={cx('sauce-Dialog-title', hideTitle && 'sauce-VisuallyHidden')}
+            className={cx('greese-Dialog-title', hideTitle && 'greese-VisuallyHidden')}
           >
             {title}
           </h2>
           <IconButton
             label={closeLabel}
             size="sm"
-            className="sauce-Dialog-close"
+            className="greese-Dialog-close"
             onClick={() => setOpen(false)}
           >
             <CloseGlyph />
           </IconButton>
         </div>
         {description && (
-          <p id={`${id}-description`} className="sauce-Dialog-description">
+          <p id={`${id}-description`} className="greese-Dialog-description">
             {description}
           </p>
         )}
-        <div className="sauce-Dialog-body">{children}</div>
-        {footer && <div className="sauce-Dialog-footer">{footer}</div>}
+        <div className="greese-Dialog-body">{children}</div>
+        {footer && <div className="greese-Dialog-footer">{footer}</div>}
       </dialog>
     </>
   )
@@ -194,7 +194,7 @@ export const Dialog = ({
 }: DialogProps): JSX.Element => (
   <ModalBase
     {...props}
-    className={cx('sauce-Dialog', `sauce-Dialog--size-${size}`, className)}
+    className={cx('greese-Dialog', `greese-Dialog--size-${size}`, className)}
   />
 )
 
@@ -214,7 +214,7 @@ export interface DrawerProps extends ModalBaseProps {
   swipeToClose?: boolean
 }
 
-const PLACEMENT: ResponsiveConfig = { block: 'sauce-Drawer', prop: 'placement' }
+const PLACEMENT: ResponsiveConfig = { block: 'greese-Drawer', prop: 'placement' }
 
 /**
  * A panel that slides in from an edge: the same native modal behaviour as
@@ -230,7 +230,7 @@ export const Drawer = ({
 }: DrawerProps): JSX.Element => {
   const swipe = useSwipeToClose(swipeToClose)
   const resolved = resolveResponsive([[placement, PLACEMENT]], {
-    className: cx('sauce-Dialog', 'sauce-Drawer', className),
+    className: cx('greese-Dialog', 'greese-Drawer', className),
     style,
   })
   return (
@@ -270,7 +270,7 @@ export const shouldDismiss = (distance: number, size: number, ms: number): boole
 
 /**
  * Drag the header (or the sheet's handle) toward the edge to dismiss. The
- * edge comes from CSS (`--sauce-drawer-edge`), so it follows a responsive
+ * edge comes from CSS (`--greese-drawer-edge`), so it follows a responsive
  * placement. Drags never start on the body, which keeps scrolling content.
  */
 const useSwipeToClose = (enabled: boolean): RefCallback<HTMLDialogElement> =>
@@ -296,13 +296,13 @@ const useSwipeToClose = (enabled: boolean): RefCallback<HTMLDialogElement> =>
       const down = (event: PointerEvent) => {
         const target = event.target as Element
         if (
-          !target.closest('.sauce-Dialog-header') ||
+          !target.closest('.greese-Dialog-header') ||
           target.closest('button, a, input, select, textarea')
         )
           return
         const styles = getComputedStyle(dialog)
         const direction = dismissDirection(
-          styles.getPropertyValue('--sauce-drawer-edge').trim(),
+          styles.getPropertyValue('--greese-drawer-edge').trim(),
           styles.direction === 'rtl'
         )
         if (!direction) return

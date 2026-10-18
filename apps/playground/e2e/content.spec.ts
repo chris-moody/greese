@@ -73,10 +73,10 @@ test('reduced motion: skeleton stops shimmering, spinner pulses instead', async 
   await page.emulateMedia({ reducedMotion: 'reduce' })
   expect(await style(page.getByTestId('skeleton'), 'animation-name')).toBe('none')
   expect(await style(page.getByTestId('spinner'), 'animation-name')).toBe(
-    'sauce-spinner-pulse'
+    'greese-spinner-pulse'
   )
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   expect(await style(page.getByTestId('spinner'), 'animation-name')).toBe(
-    'sauce-spinner-spin'
+    'greese-spinner-spin'
   )
 })

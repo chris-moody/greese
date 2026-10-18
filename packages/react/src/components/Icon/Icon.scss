@@ -1,12 +1,12 @@
-@layer sauce.components {
-  .sauce-Icon {
+@layer greese.components {
+  .greese-Icon {
     display: inline-flex;
     flex-shrink: 0;
     vertical-align: middle;
 
     > svg {
-      inline-size: var(--sauce-icon-size, 1.25em);
-      block-size: var(--sauce-icon-size, 1.25em);
+      inline-size: var(--greese-icon-size, 1.25em);
+      block-size: var(--greese-icon-size, 1.25em);
     }
   }
 }

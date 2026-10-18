@@ -1,89 +1,89 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Table {
+@layer greese.components {
+  .greese-Table {
     @include mixins.component-root;
     @include mixins.focus-ring;
 
     max-inline-size: 100%;
-    max-block-size: var(--sauce-table-max-height, none);
+    max-block-size: var(--greese-table-max-height, none);
     overflow: auto;
-    border: 1px solid var(--sauce-color-border);
-    border-radius: var(--sauce-radius-md);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-radius-md);
   }
 
-  .sauce-Table-table {
+  .greese-Table-table {
     inline-size: 100%;
-    font-size: var(--sauce-font-size-sm);
+    font-size: var(--greese-font-size-sm);
     font-variant-numeric: tabular-nums;
     border-collapse: separate;
     border-spacing: 0;
   }
 
-  .sauce-Table-caption {
-    padding: var(--sauce-space-3) var(--sauce-space-4);
-    font-weight: var(--sauce-font-weight-semibold);
+  .greese-Table-caption {
+    padding: var(--greese-space-3) var(--greese-space-4);
+    font-weight: var(--greese-font-weight-semibold);
     text-align: start;
     caption-side: top;
   }
 
-  .sauce-Table--comfortable {
-    --sauce-table-cell-padding: var(--sauce-space-3) var(--sauce-space-4);
+  .greese-Table--comfortable {
+    --greese-table-cell-padding: var(--greese-space-3) var(--greese-space-4);
   }
 
-  .sauce-Table--compact {
-    --sauce-table-cell-padding: var(--sauce-space-1) var(--sauce-space-3);
+  .greese-Table--compact {
+    --greese-table-cell-padding: var(--greese-space-1) var(--greese-space-3);
   }
 
-  .sauce-TableHeaderCell,
-  .sauce-TableCell {
-    padding: var(--sauce-table-cell-padding);
+  .greese-TableHeaderCell,
+  .greese-TableCell {
+    padding: var(--greese-table-cell-padding);
     text-align: start;
     vertical-align: middle;
-    border-block-end: 1px solid var(--sauce-color-border);
+    border-block-end: 1px solid var(--greese-color-border);
   }
 
-  .sauce-TableHeaderCell {
-    font-weight: var(--sauce-font-weight-semibold);
-    color: var(--sauce-color-fg-muted);
+  .greese-TableHeaderCell {
+    font-weight: var(--greese-font-weight-semibold);
+    color: var(--greese-color-fg-muted);
     white-space: nowrap;
-    background-color: var(--sauce-color-surface);
+    background-color: var(--greese-color-surface);
   }
 
-  .sauce-TableRow:last-child > .sauce-TableCell {
+  .greese-TableRow:last-child > .greese-TableCell {
     border-block-end: 0;
   }
 
-  .sauce-Table [data-align='center'] {
+  .greese-Table [data-align='center'] {
     text-align: center;
   }
 
-  .sauce-Table [data-align='end'] {
+  .greese-Table [data-align='end'] {
     text-align: end;
   }
 
-  .sauce-Table--striped tbody > .sauce-TableRow:nth-child(even) {
-    background-color: color-mix(in oklab, var(--sauce-color-surface) 60%, transparent);
+  .greese-Table--striped tbody > .greese-TableRow:nth-child(even) {
+    background-color: color-mix(in oklab, var(--greese-color-surface) 60%, transparent);
   }
 
-  .sauce-Table--hoverable tbody > .sauce-TableRow {
+  .greese-Table--hoverable tbody > .greese-TableRow {
     @include mixins.hover {
-      background-color: color-mix(in oklab, var(--sauce-color-accent) 6%, transparent);
+      background-color: color-mix(in oklab, var(--greese-color-accent) 6%, transparent);
     }
   }
 
-  .sauce-Table--sticky thead .sauce-TableHeaderCell {
+  .greese-Table--sticky thead .greese-TableHeaderCell {
     position: sticky;
     inset-block-start: 0;
     z-index: 1;
   }
 
   // Sortable header: the whole header is the button.
-  .sauce-TableHeaderCell-sort {
+  .greese-TableHeaderCell-sort {
     @include mixins.focus-ring;
 
     display: inline-flex;
-    gap: var(--sauce-space-1);
+    gap: var(--greese-space-1);
     align-items: center;
     padding: 0;
     font: inherit;
@@ -91,7 +91,7 @@
     cursor: pointer;
     background: none;
     border: 0;
-    border-radius: var(--sauce-radius-sm);
+    border-radius: var(--greese-radius-sm);
 
     > svg {
       inline-size: 1em;
@@ -99,16 +99,16 @@
     }
 
     @include mixins.hover {
-      color: var(--sauce-color-fg);
+      color: var(--greese-color-fg);
     }
 
-    .sauce-SortGlyph-up,
-    .sauce-SortGlyph-down {
+    .greese-SortGlyph-up,
+    .greese-SortGlyph-down {
       opacity: 0.35;
     }
 
-    &[data-sort='ascending'] .sauce-SortGlyph-up,
-    &[data-sort='descending'] .sauce-SortGlyph-down {
+    &[data-sort='ascending'] .greese-SortGlyph-up,
+    &[data-sort='descending'] .greese-SortGlyph-down {
       opacity: 1;
     }
   }
@@ -116,18 +116,18 @@
   // Stacked: below the breakpoint each row is a card of label/value pairs.
   @each $bp in (sm, md, lg) {
     @include mixins.down($bp) {
-      .sauce-Table--stack-below-#{$bp} {
+      .greese-Table--stack-below-#{$bp} {
         border: 0;
 
-        .sauce-Table-table,
+        .greese-Table-table,
         tbody,
         tfoot,
-        .sauce-TableRow,
-        .sauce-TableCell {
+        .greese-TableRow,
+        .greese-TableCell {
           display: block;
         }
 
-        .sauce-Table-caption {
+        .greese-Table-caption {
           display: block;
           padding-inline: 0;
         }
@@ -140,26 +140,26 @@
           clip-path: inset(50%);
         }
 
-        .sauce-TableRow {
-          padding: var(--sauce-space-2) var(--sauce-space-3);
-          margin-block-end: var(--sauce-space-3);
-          background-color: var(--sauce-color-surface-overlay);
-          border: 1px solid var(--sauce-color-border);
-          border-radius: var(--sauce-radius-md);
+        .greese-TableRow {
+          padding: var(--greese-space-2) var(--greese-space-3);
+          margin-block-end: var(--greese-space-3);
+          background-color: var(--greese-color-surface-overlay);
+          border: 1px solid var(--greese-color-border);
+          border-radius: var(--greese-radius-md);
         }
 
-        .sauce-TableCell {
+        .greese-TableCell {
           display: grid;
           grid-template-columns: minmax(6rem, 40%) 1fr;
-          gap: var(--sauce-space-3);
+          gap: var(--greese-space-3);
           justify-items: start; // values keep their size (badges don't stretch)
-          padding: var(--sauce-space-1) 0;
+          padding: var(--greese-space-1) 0;
           text-align: start;
           border: 0;
 
           &::before {
-            font-weight: var(--sauce-font-weight-medium);
-            color: var(--sauce-color-fg-muted);
+            font-weight: var(--greese-font-weight-medium);
+            color: var(--greese-color-fg-muted);
             content: attr(data-label);
           }
         }

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Embed } from '@sauce-ui/react'
+import { Embed } from '@greese-ui/react'
 
 const doc = `data:text/html,${encodeURIComponent(
   '<body style="margin:0;display:grid;place-items:center;font:16px system-ui;background:#eef">An embedded page</body>'

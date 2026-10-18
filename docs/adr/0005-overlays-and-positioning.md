@@ -34,7 +34,7 @@ positioning. The whole positioning layer costs well under 1 kB.
 The browser provides the top layer, the focus trap, the inert background,
 Escape to close and `::backdrop`. We add:
 
-- **Scroll lock in CSS:** `:root:has(.sauce-Dialog:modal) { overflow: hidden }`.
+- **Scroll lock in CSS:** `:root:has(.greese-Dialog:modal) { overflow: hidden }`.
   There's no JS, and no lock is left behind if a component unmounts mid-open.
 - **Always dismissible:** `closedby="any"`. Where that isn't supported, a
   click outside the dialog's box closes it. Escape, the backdrop and the close

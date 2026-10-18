@@ -92,7 +92,7 @@ export const Tooltip = ({
         ref={composeRefs<HTMLDivElement>(tip, anchor.floatingRef)}
         popover="manual"
         role="tooltip"
-        className={cx('sauce-Tooltip', className)}
+        className={cx('greese-Tooltip', className)}
         style={anchor.floatingStyle}
         onPointerEnter={() => clearTimeout(timer.current)}
         onPointerLeave={() => hide(100)}

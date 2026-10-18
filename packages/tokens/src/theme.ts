@@ -20,7 +20,7 @@ import {
 export type ColorValue = string | TokenPair
 
 export type ThemeOptions = {
-  /** Scopes the theme: `[data-sauce-theme="<name>"]`. Letters, digits, `-`. */
+  /** Scopes the theme: `[data-greese-theme="<name>"]`. Letters, digits, `-`. */
   name: string
   color?: Partial<Record<ColorRole, ColorValue>>
 } & {
@@ -30,9 +30,9 @@ export type ThemeOptions = {
 export interface Theme {
   readonly name: string
   /**
-   * Static CSS for this theme, in `@layer sauce.theme`. Generated once, here;
+   * Static CSS for this theme, in `@layer greese.theme`. Generated once, here;
    * nothing is computed per render. ThemeProvider injects it, or serve it
-   * yourself and set `data-sauce-theme` on any element (`<html>` included).
+   * yourself and set `data-greese-theme` on any element (`<html>` included).
    */
   readonly css: string
 }
@@ -104,7 +104,7 @@ export const createTheme = (options: ThemeOptions): Theme => {
  * `:root[scheme] T:not([scheme])` rules cover a scheme forced on <html> (by
  * useColorScheme) above a theme that sets none itself.
  *
- * Layer `sauce.theme` sits above `sauce.tokens`, so a theme beats the default
+ * Layer `greese.theme` sits above `greese.tokens`, so a theme beats the default
  * scheme rules on the same element regardless of specificity.
  */
 const themeCss = (
@@ -116,7 +116,7 @@ const themeCss = (
   const T = `[${THEME_ATTR}='${name}']`
   const S = (scheme: string): string => `[${SCHEME_ATTR}='${scheme}']`
   return `${LAYER_ORDER}
-@layer sauce.theme {
+@layer greese.theme {
   ${T} {
 ${decls([...base, ...light], '    ')}
   }

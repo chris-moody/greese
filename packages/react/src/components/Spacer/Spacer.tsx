@@ -18,7 +18,7 @@ export interface SpacerProps extends ComponentPropsWithRef<'div'> {
 }
 
 const SIZE: ResponsiveConfig = {
-  block: 'sauce-Spacer',
+  block: 'greese-Spacer',
   prop: 'size',
   isToken: neverToken,
   toCss: spaceToCss,
@@ -32,7 +32,7 @@ export const Spacer = ({
   ...props
 }: SpacerProps): JSX.Element => {
   const resolved = resolveResponsive([[size, SIZE]], {
-    className: cx('sauce-Spacer', className),
+    className: cx('greese-Spacer', className),
     style,
   })
   return (

@@ -3,36 +3,36 @@
 @use '../../styles/tones';
 @use '../../styles/type';
 
-@layer sauce.components {
-  .sauce-Text {
+@layer greese.components {
+  .greese-Text {
     margin: 0;
   }
 
   @each $weight in (regular, medium, semibold, bold) {
-    .sauce-Text--#{$weight} {
-      font-weight: var(--sauce-font-weight-#{$weight});
+    .greese-Text--#{$weight} {
+      font-weight: var(--greese-font-weight-#{$weight});
     }
   }
 
   @each $tone, $pair in tones.$tones {
-    .sauce-Text--#{$tone} {
+    .greese-Text--#{$tone} {
       color: list.nth($pair, 1);
     }
   }
 
-  .sauce-Text--truncate {
+  .greese-Text--truncate {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .sauce-Text--clamp {
+  .greese-Text--clamp {
     display: -webkit-box;
     overflow: hidden;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: var(--sauce-text-lines);
-    line-clamp: var(--sauce-text-lines);
+    -webkit-line-clamp: var(--greese-text-lines);
+    line-clamp: var(--greese-text-lines);
   }
 
-  @include mixins.responsive-prop('sauce-Text', 'size', font-size, type.size-tokens());
+  @include mixins.responsive-prop('greese-Text', 'size', font-size, type.size-tokens());
 }

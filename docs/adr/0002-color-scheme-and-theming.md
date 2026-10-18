@@ -22,13 +22,13 @@ in several places:
 
 - on `:root`;
 - under `@media (prefers-color-scheme: dark)`;
-- on `[data-sauce-scheme='light' | 'dark' | 'system']`.
+- on `[data-greese-scheme='light' | 'dark' | 'system']`.
 
 `color-scheme` is set alongside, so native controls and scrollbars match.
 
 ### 2. The page scheme is one attribute on `<html>`
 
-`useColorScheme().setScheme()` writes `data-sauce-scheme` on `<html>` and
+`useColorScheme().setScheme()` writes `data-greese-scheme` on `<html>` and
 persists the choice to localStorage. That's the "one attribute write" this
 phase was meant to deliver. `getSchemeScript()` applies the saved choice in
 `<head>` before first paint, and the hook observes the attribute, so the two
@@ -37,7 +37,7 @@ can't disagree.
 ### 3. Themes are static CSS scoped by attribute, injected once
 
 `createTheme()` builds the theme's CSS once, at module scope, in
-`@layer sauce.theme`, scoped to `[data-sauce-theme='name']`. `ThemeProvider`
+`@layer greese.theme`, scoped to `[data-greese-theme='name']`. `ThemeProvider`
 renders it through React 19's `<style href precedence>`, which hoists it into
 `<head>`, de-duplicates it by `href` and works with SSR. The provider's
 wrapper (`display: contents`) only carries attributes. Changing theme or
@@ -55,10 +55,10 @@ Separate rules cover a scheme forced on `<html>` above a theme that sets no
 scheme itself:
 
 ```css
-:root[data-sauce-scheme='dark'] [data-sauce-theme='brand']:not([data-sauce-scheme]) { … }
+:root[data-greese-scheme='dark'] [data-greese-theme='brand']:not([data-greese-scheme]) { … }
 ```
 
-`sauce.theme` comes after `sauce.tokens` in the layer order, so a theme beats
+`greese.theme` comes after `greese.tokens` in the layer order, so a theme beats
 the default scheme rules on the same element regardless of specificity.
 
 ### 5. Themes replace; they don't stack
@@ -72,7 +72,7 @@ one with more overrides. This costs about 1 kB gzipped of CSS per theme.
 
 ## Known limitation
 
-A raw `data-sauce-scheme` attribute set by hand on an element (not through
+A raw `data-greese-scheme` attribute set by hand on an element (not through
 `ThemeProvider`) is invisible to themes nested inside it, because context
 can't see it. Use `<ThemeProvider scheme>` for scheme scopes.
 

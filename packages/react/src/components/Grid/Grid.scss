@@ -25,22 +25,22 @@ $column-counts: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
   @return $map;
 }
 
-@layer sauce.components {
-  .sauce-Grid {
+@layer greese.components {
+  .greese-Grid {
     display: grid;
     min-inline-size: 0;
   }
 
-  .sauce-Grid--container {
+  .greese-Grid--container {
     container-type: inline-size;
   }
 
-  .sauce-GridItem {
+  .greese-GridItem {
     min-inline-size: 0;
   }
 
   @include mixins.responsive-prop(
-    'sauce-Grid',
+    'greese-Grid',
     'columns',
     grid-template-columns,
     column-tokens()
@@ -48,14 +48,14 @@ $column-counts: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
   // After `columns`, so it wins where both apply.
   @include mixins.responsive-prop(
-    'sauce-Grid',
+    'greese-Grid',
     'min-child',
     grid-template-columns,
     $template: 'repeat(auto-fill, minmax(min(VALUE, 100%), 1fr))'
   );
-  @include mixins.responsive-prop('sauce-Grid', 'gap', gap, mixins.space-tokens());
+  @include mixins.responsive-prop('greese-Grid', 'gap', gap, mixins.space-tokens());
   @include mixins.responsive-prop(
-    'sauce-Grid',
+    'greese-Grid',
     'align',
     align-items,
     (
@@ -66,7 +66,7 @@ $column-counts: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
     )
   );
   @include mixins.responsive-prop(
-    'sauce-Grid',
+    'greese-Grid',
     'justify',
     justify-items,
     (
@@ -77,10 +77,10 @@ $column-counts: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
     )
   );
   @include mixins.responsive-prop(
-    'sauce-GridItem',
+    'greese-GridItem',
     'span',
     grid-column,
     span-tokens(),
-    $container-scope: '.sauce-Grid--container >'
+    $container-scope: '.greese-Grid--container >'
   );
 }

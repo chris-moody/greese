@@ -1,5 +1,5 @@
 /**
- * Fails when a component exported from @sauce-ui/react has no story: every
+ * Fails when a component exported from @greese-ui/react has no story: every
  * PascalCase export must be a story meta's `component` or one of its
  * `subcomponents`, so it gets a docs page and a props table.
  */

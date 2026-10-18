@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import { Button, ColorPicker, Popover, Stack, Text } from '@sauce-ui/react'
+import { Button, ColorPicker, Popover, Stack, Text } from '@greese-ui/react'
 
 const brand = [
   '#e11d48',

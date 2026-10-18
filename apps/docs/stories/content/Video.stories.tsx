@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Video } from '@sauce-ui/react'
+import { Video } from '@greese-ui/react'
 import { art } from '../_shared/fixtures.tsx'
 
 const meta = {

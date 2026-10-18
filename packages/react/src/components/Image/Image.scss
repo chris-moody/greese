@@ -1,7 +1,7 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Image {
+@layer greese.components {
+  .greese-Image {
     @include mixins.component-root;
 
     display: block;
@@ -18,29 +18,29 @@
   }
 
   // With a ratio, the frame sets the size and the image fills it.
-  .sauce-Image--framed > img,
-  .sauce-Image--fallback {
+  .greese-Image--framed > img,
+  .greese-Image--fallback {
     inline-size: 100%;
     block-size: 100%;
     object-fit: cover;
   }
 
-  .sauce-Image--contain > img {
+  .greese-Image--contain > img {
     object-fit: contain;
   }
 
-  .sauce-Image--fallback {
+  .greese-Image--fallback {
     display: grid;
     place-items: center;
-    color: var(--sauce-color-fg-muted);
-    background-color: var(--sauce-color-surface);
+    color: var(--greese-color-fg-muted);
+    background-color: var(--greese-color-surface);
   }
 
   @each $radius in (none, sm, md, lg, pill) {
-    .sauce-Image--radius-#{$radius} {
-      border-radius: var(--sauce-radius-#{$radius});
+    .greese-Image--radius-#{$radius} {
+      border-radius: var(--greese-radius-#{$radius});
     }
   }
 
-  @include mixins.responsive-prop('sauce-Image', 'ratio', aspect-ratio);
+  @include mixins.responsive-prop('greese-Image', 'ratio', aspect-ratio);
 }

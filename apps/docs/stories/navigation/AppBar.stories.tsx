@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AppBar, Button, Spacer, Stack, Text } from '@sauce-ui/react'
+import { AppBar, Button, Spacer, Stack, Text } from '@greese-ui/react'
 
 const meta = {
   title: 'Navigation/AppBar',
@@ -8,7 +8,7 @@ const meta = {
   args: {
     children: (
       <>
-        <Text weight="semibold">Sauce</Text>
+        <Text weight="semibold">Greese</Text>
         <Spacer />
         <Button size="sm" variant="outline" tone="neutral">
           Sign out

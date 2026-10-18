@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import { ActionSelect, toast, Toaster } from '@sauce-ui/react'
+import { ActionSelect, toast, Toaster } from '@greese-ui/react'
 import { ArrowIcon, PlusIcon } from '../_shared/fixtures.tsx'
 
 const meta = {
@@ -11,9 +11,9 @@ const meta = {
     actionLabel: 'New project',
     onAction: () => {},
     selectLabel: 'Project',
-    defaultValue: 'sauce',
+    defaultValue: 'greese',
     options: [
-      { value: 'sauce', label: 'Sauce UI', group: 'Recent' },
+      { value: 'greese', label: 'Greese UI', group: 'Recent' },
       { value: 'docs', label: 'Docs site', group: 'Recent' },
       { value: 'api', label: 'Public API' },
       { value: 'archive', label: 'Archive', disabled: true },

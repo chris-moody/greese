@@ -194,7 +194,7 @@ export const Combobox = ({
       required={required}
       disabled={disabled}
       invalid={invalid}
-      className={cx('sauce-Combobox', className)}
+      className={cx('greese-Combobox', className)}
     >
       <Input
         {...inputProps}
@@ -279,7 +279,7 @@ export const Combobox = ({
             tabIndex={-1}
             aria-label={toggleLabel}
             disabled={disabled}
-            className="sauce-Combobox-toggle"
+            className="greese-Combobox-toggle"
             data-open={open || undefined}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => {
@@ -296,14 +296,14 @@ export const Combobox = ({
       <div
         ref={composeRefs<HTMLDivElement>(popup, anchor.floatingRef)}
         popover="manual"
-        className="sauce-Combobox-popup"
+        className="greese-Combobox-popup"
         style={anchor.floatingStyle}
       >
         <ul
           id={listId}
           role="listbox"
           aria-label={typeof label === 'string' ? label : undefined}
-          className="sauce-Combobox-list"
+          className="greese-Combobox-list"
         >
           {visible.map((option, index) => (
             <li
@@ -313,7 +313,7 @@ export const Combobox = ({
               aria-selected={option.value === value}
               aria-disabled={option.disabled || undefined}
               data-active={index === active || undefined}
-              className="sauce-Combobox-option"
+              className="greese-Combobox-option"
               onMouseDown={(event) => event.preventDefault()}
               onPointerMove={() => !option.disabled && setActive(index)}
               onClick={() => select(option)}
@@ -322,9 +322,9 @@ export const Combobox = ({
             </li>
           ))}
         </ul>
-        {visible.length === 0 && <p className="sauce-Combobox-empty">{emptyMessage}</p>}
+        {visible.length === 0 && <p className="greese-Combobox-empty">{emptyMessage}</p>}
       </div>
-      <span className="sauce-VisuallyHidden" aria-live="polite">
+      <span className="greese-VisuallyHidden" aria-live="polite">
         {open && filtering ? resultsLabel(visible.length) : ''}
       </span>
     </Field>

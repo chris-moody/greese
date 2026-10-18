@@ -120,10 +120,10 @@ describe('Dialog and Drawer', () => {
   it('Drawer resolves a responsive placement', () => {
     render(<Drawer defaultOpen title="Filters" placement={{ xs: 'bottom', md: 'end' }} />)
     expect(screen.getByRole('dialog')).toHaveClass(
-      'sauce-Dialog',
-      'sauce-Drawer',
-      'sauce-Drawer--xs-placement-bottom',
-      'sauce-Drawer--md-placement-end'
+      'greese-Dialog',
+      'greese-Drawer',
+      'greese-Drawer--xs-placement-bottom',
+      'greese-Drawer--md-placement-end'
     )
   })
 })
@@ -148,7 +148,7 @@ describe('Popover and Tooltip', () => {
     expect(popover).toHaveAttribute('popover', 'auto')
     expect(
       trigger.style.getPropertyValue('anchor-name') || trigger.getAttribute('style')
-    ).toContain('--sauce-anchor-')
+    ).toContain('--greese-anchor-')
     await userEvent.click(trigger)
     expect(trigger).toHaveAttribute('aria-expanded', 'true')
     expect(onOpenChange).toHaveBeenLastCalledWith(true)
@@ -253,7 +253,7 @@ describe('Menu', () => {
 
 describe('Toast', () => {
   // Toast text also appears in the live regions, so query inside the list.
-  const list = () => within(document.querySelector<HTMLElement>('.sauce-Toaster-list')!)
+  const list = () => within(document.querySelector<HTMLElement>('.greese-Toaster-list')!)
 
   afterEach(() => {
     act(() => toast.dismiss())
@@ -336,7 +336,7 @@ describe('navigation', () => {
     const sidebar = screen.getByRole('complementary', { hidden: true })
     expect(sidebar).toHaveAttribute('aria-label', 'Main')
     expect(trigger).toHaveAttribute('popovertarget', sidebar.id)
-    expect(trigger).toHaveClass('sauce-SidebarTrigger--lg')
+    expect(trigger).toHaveClass('greese-SidebarTrigger--lg')
     await userEvent.click(trigger)
     expect(sidebar.matches(':popover-open')).toBe(true)
     await userEvent.click(screen.getByRole('link', { name: 'Home' }))
@@ -347,8 +347,8 @@ describe('navigation', () => {
     render(<AppBar data-testid="bar" />)
     expect(screen.getByTestId('bar').tagName).toBe('HEADER')
     expect(screen.getByTestId('bar')).toHaveClass(
-      'sauce-AppBar--sticky',
-      'sauce-AppBar--elevate'
+      'greese-AppBar--sticky',
+      'greese-AppBar--elevate'
     )
   })
 
@@ -357,7 +357,7 @@ describe('navigation', () => {
       <Breadcrumbs maxItems={3}>
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
         <BreadcrumbItem href="/a">Projects</BreadcrumbItem>
-        <BreadcrumbItem href="/a/b">Sauce</BreadcrumbItem>
+        <BreadcrumbItem href="/a/b">Greese</BreadcrumbItem>
         <BreadcrumbItem href="/a/b/c">Settings</BreadcrumbItem>
         <BreadcrumbItem>Members</BreadcrumbItem>
       </Breadcrumbs>

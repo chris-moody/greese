@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Button, Checkbox, Field, Select, Stack, TextField } from '@sauce-ui/react'
+import { Button, Checkbox, Field, Select, Stack, TextField } from '@greese-ui/react'
 
 interface SignUp {
   email: string
@@ -10,7 +10,7 @@ interface SignUp {
 }
 
 /**
- * SauceUI controls are native elements and forward `ref` to them, so
+ * GreeseUI controls are native elements and forward `ref` to them, so
  * `register()` works with no adapters or Controller wrappers.
  */
 const SignUpForm = () => {

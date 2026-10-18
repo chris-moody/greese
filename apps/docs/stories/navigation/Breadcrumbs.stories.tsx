@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { BreadcrumbItem, Breadcrumbs } from '@sauce-ui/react'
+import { BreadcrumbItem, Breadcrumbs } from '@greese-ui/react'
 
 const meta = {
   title: 'Navigation/Breadcrumbs',
@@ -13,8 +13,8 @@ const meta = {
       <BreadcrumbItem key="projects" href="#">
         Projects
       </BreadcrumbItem>,
-      <BreadcrumbItem key="sauce" href="#">
-        Sauce UI
+      <BreadcrumbItem key="greese" href="#">
+        Greese UI
       </BreadcrumbItem>,
       <BreadcrumbItem key="settings">Settings</BreadcrumbItem>,
     ],

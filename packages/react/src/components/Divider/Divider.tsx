@@ -19,6 +19,6 @@ export const Divider = ({
     aria-orientation={orientation === 'vertical' ? 'vertical' : undefined}
     data-orientation={orientation}
     {...props}
-    className={cx('sauce-Divider', className)}
+    className={cx('greese-Divider', className)}
   />
 )

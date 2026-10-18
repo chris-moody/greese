@@ -1,4 +1,4 @@
-# @sauce-ui/typescript-config
+# @greese-ui/typescript-config
 
 Shared compiler settings. Every app and package extends one of these.
 
@@ -10,7 +10,7 @@ Shared compiler settings. Every app and package extends one of these.
 | `node.json` | Node scripts |
 
 ```json
-{ "extends": "@sauce-ui/typescript-config/react-library.json" }
+{ "extends": "@greese-ui/typescript-config/react-library.json" }
 ```
 
 `base.json` sets `noUncheckedIndexedAccess: true`. Handle `undefined` from

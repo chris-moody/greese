@@ -7,17 +7,17 @@ $sizes: (
   xl: 4rem,
 );
 
-@layer sauce.components {
-  .sauce-Avatar {
+@layer greese.components {
+  .greese-Avatar {
     @include mixins.component-root;
 
     display: inline-flex;
     flex-shrink: 0;
-    inline-size: var(--sauce-avatar-size);
-    block-size: var(--sauce-avatar-size);
+    inline-size: var(--greese-avatar-size);
+    block-size: var(--greese-avatar-size);
     overflow: hidden;
-    font-size: calc(var(--sauce-avatar-size) * 0.4);
-    font-weight: var(--sauce-font-weight-semibold);
+    font-size: calc(var(--greese-avatar-size) * 0.4);
+    font-weight: var(--greese-font-weight-semibold);
     line-height: 1;
     vertical-align: middle;
     user-select: none;
@@ -31,56 +31,56 @@ $sizes: (
   }
 
   @each $size, $value in $sizes {
-    .sauce-Avatar--#{$size} {
-      --sauce-avatar-size: #{$value};
+    .greese-Avatar--#{$size} {
+      --greese-avatar-size: #{$value};
     }
   }
 
-  .sauce-Avatar--square {
-    border-radius: var(--sauce-radius-md);
+  .greese-Avatar--square {
+    border-radius: var(--greese-radius-md);
   }
 
-  .sauce-Avatar-fallback {
+  .greese-Avatar-fallback {
     display: grid;
     place-items: center;
     inline-size: 100%;
     block-size: 100%;
-    color: var(--sauce-color-accent);
+    color: var(--greese-color-accent);
     background-color: color-mix(
       in oklab,
-      var(--sauce-color-accent) 16%,
-      var(--sauce-color-canvas)
+      var(--greese-color-accent) 16%,
+      var(--greese-color-canvas)
     );
   }
 
-  .sauce-Avatar--count .sauce-Avatar-fallback {
-    color: var(--sauce-color-fg-muted);
-    background-color: var(--sauce-color-surface);
+  .greese-Avatar--count .greese-Avatar-fallback {
+    color: var(--greese-color-fg-muted);
+    background-color: var(--greese-color-surface);
   }
 
-  .sauce-AvatarGroup {
+  .greese-AvatarGroup {
     display: inline-flex;
     align-items: center;
     isolation: isolate;
   }
 
   @each $size, $value in $sizes {
-    .sauce-AvatarGroup--#{$size} {
-      --sauce-avatar-size: #{$value};
+    .greese-AvatarGroup--#{$size} {
+      --greese-avatar-size: #{$value};
     }
   }
 
-  .sauce-AvatarGroup-item {
+  .greese-AvatarGroup-item {
     position: relative;
     display: inline-flex;
     border-radius: 50%;
 
-    > .sauce-Avatar {
-      box-shadow: 0 0 0 2px var(--sauce-color-canvas);
+    > .greese-Avatar {
+      box-shadow: 0 0 0 2px var(--greese-color-canvas);
     }
 
     & + & {
-      margin-inline-start: calc(var(--sauce-avatar-size) * -0.25);
+      margin-inline-start: calc(var(--greese-avatar-size) * -0.25);
     }
   }
 }

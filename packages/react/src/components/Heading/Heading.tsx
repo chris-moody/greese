@@ -24,7 +24,7 @@ export interface HeadingProps extends ComponentPropsWithoutRef<'h2'> {
   asChild?: boolean
 }
 
-const SIZE: ResponsiveConfig = { block: 'sauce-Heading', prop: 'size' }
+const SIZE: ResponsiveConfig = { block: 'greese-Heading', prop: 'size' }
 
 /**
  * A heading whose `level` sets the document outline and whose `size` sets the
@@ -41,9 +41,9 @@ export const Heading = ({
 }: HeadingProps): JSX.Element => {
   const resolved = resolveResponsive([[size, SIZE]], {
     className: cx(
-      'sauce-Heading',
-      `sauce-Heading--level-${level}`,
-      tone && `sauce-Text--${tone}`,
+      'greese-Heading',
+      `greese-Heading--level-${level}`,
+      tone && `greese-Text--${tone}`,
       className
     ),
     style,

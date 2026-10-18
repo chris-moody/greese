@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button, IconButton, Stack } from '@sauce-ui/react'
+import { Button, IconButton, Stack } from '@greese-ui/react'
 import { ArrowIcon, PlusIcon, TrashIcon } from '../_shared/fixtures.tsx'
 
 const meta = {

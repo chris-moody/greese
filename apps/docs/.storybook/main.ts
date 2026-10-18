@@ -18,7 +18,7 @@ const config: StorybookConfig = {
   ],
   stories: ['../stories/**/*.mdx', '../stories/**/*.stories.tsx'],
   /**
-   * Point @sauce-ui/react at its source (TS + SCSS) instead of dist/, so edits
+   * Point @greese-ui/react at its source (TS + SCSS) instead of dist/, so edits
    * hot-reload with no rebuild. apps/playground covers the built package.
    */
   viteFinal: (vite) => ({
@@ -27,14 +27,14 @@ const config: StorybookConfig = {
       ...vite.resolve,
       alias: [
         {
-          find: /^@sauce-ui\/react\/styles\.css$/,
+          find: /^@greese-ui\/react\/styles\.css$/,
           replacement: `${reactSrc}/styles/index.scss`,
         },
         {
-          find: /^@sauce-ui\/react\/base\.css$/,
+          find: /^@greese-ui\/react\/base\.css$/,
           replacement: `${reactSrc}/styles/base.scss`,
         },
-        { find: /^@sauce-ui\/react$/, replacement: `${reactSrc}/index.ts` },
+        { find: /^@greese-ui\/react$/, replacement: `${reactSrc}/index.ts` },
       ],
     },
     css: {

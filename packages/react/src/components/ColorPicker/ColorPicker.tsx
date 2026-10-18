@@ -126,21 +126,21 @@ export const ColorPicker = ({
       role="group"
       aria-label={label}
       {...props}
-      className={cx('sauce-ColorPicker', className)}
+      className={cx('greese-ColorPicker', className)}
       data-disabled={disabled || undefined}
       style={
         {
-          '--sauce-colorpicker-hue': hsv.h,
-          '--sauce-colorpicker-color': opaque,
-          '--sauce-colorpicker-x': pct(hsv.s),
-          '--sauce-colorpicker-y': pct(1 - hsv.v),
-          '--sauce-colorpicker-current': hex,
+          '--greese-colorpicker-hue': hsv.h,
+          '--greese-colorpicker-color': opaque,
+          '--greese-colorpicker-x': pct(hsv.s),
+          '--greese-colorpicker-y': pct(1 - hsv.v),
+          '--greese-colorpicker-current': hex,
           ...style,
         } as CSSProperties
       }
     >
       <div
-        className="sauce-ColorPicker-area"
+        className="greese-ColorPicker-area"
         role="slider"
         tabIndex={disabled ? -1 : 0}
         aria-label="Saturation and brightness"
@@ -160,15 +160,15 @@ export const ColorPicker = ({
           if (event.currentTarget.hasPointerCapture(event.pointerId)) areaFrom(event)
         }}
       >
-        <span className="sauce-ColorPicker-thumb" aria-hidden="true" />
+        <span className="greese-ColorPicker-thumb" aria-hidden="true" />
       </div>
 
-      <div className="sauce-ColorPicker-controls">
-        <span className="sauce-ColorPicker-preview" aria-hidden="true" />
-        <div className="sauce-ColorPicker-sliders">
+      <div className="greese-ColorPicker-controls">
+        <span className="greese-ColorPicker-preview" aria-hidden="true" />
+        <div className="greese-ColorPicker-sliders">
           <input
             type="range"
-            className="sauce-ColorPicker-hue"
+            className="greese-ColorPicker-hue"
             aria-label="Hue"
             min={0}
             max={359}
@@ -180,7 +180,7 @@ export const ColorPicker = ({
           {alpha && (
             <input
               type="range"
-              className="sauce-ColorPicker-alpha"
+              className="greese-ColorPicker-alpha"
               aria-label="Opacity"
               min={0}
               max={100}
@@ -194,7 +194,7 @@ export const ColorPicker = ({
       </div>
 
       <MaskedInput
-        className="sauce-ColorPicker-hex"
+        className="greese-ColorPicker-hex"
         size="sm"
         aria-label="Hex colour"
         mask="hhhhhh"
@@ -214,13 +214,13 @@ export const ColorPicker = ({
       />
 
       {swatches && swatches.length > 0 && (
-        <div className="sauce-ColorPicker-swatches" role="group" aria-label="Presets">
+        <div className="greese-ColorPicker-swatches" role="group" aria-label="Presets">
           {swatches.map((swatch) => (
             <button
               key={swatch}
               type="button"
-              className="sauce-ColorPicker-swatch"
-              style={{ '--sauce-colorpicker-swatch': swatch } as CSSProperties}
+              className="greese-ColorPicker-swatch"
+              style={{ '--greese-colorpicker-swatch': swatch } as CSSProperties}
               aria-label={swatch}
               aria-pressed={swatch.toLowerCase() === hex}
               disabled={disabled}

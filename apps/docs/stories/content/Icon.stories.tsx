@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Icon, Stack, Text } from '@sauce-ui/react'
+import { Icon, Stack, Text } from '@greese-ui/react'
 import { InfoIcon, StarIcon } from '../_shared/fixtures.tsx'
 
 const meta = {
@@ -18,7 +18,7 @@ export const Labelled: Story = {
   args: {
     label: 'Verified account',
     size: '1.5rem',
-    style: { color: 'var(--sauce-color-accent)' },
+    style: { color: 'var(--greese-color-accent)' },
   },
 }
 

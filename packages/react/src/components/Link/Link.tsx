@@ -25,9 +25,9 @@ export const Link = ({
     <Root
       {...props}
       className={cx(
-        'sauce-Link',
-        `sauce-Link--${tone}`,
-        underline === 'hover' && 'sauce-Link--underline-hover',
+        'greese-Link',
+        `greese-Link--${tone}`,
+        underline === 'hover' && 'greese-Link--underline-hover',
         className
       )}
     />

@@ -22,6 +22,6 @@ export const Spinner = ({
     role="status"
     aria-label={label}
     {...props}
-    className={cx('sauce-Spinner', `sauce-Spinner--${size}`, className)}
+    className={cx('greese-Spinner', `greese-Spinner--${size}`, className)}
   />
 )

@@ -1,4 +1,4 @@
-// SauceUI's build-time SCSS toolkit. Nothing here reaches the browser except
+// GreeseUI's build-time SCSS toolkit. Nothing here reaches the browser except
 // the CSS these mixins compile to.
 @use 'sass:map';
 @use 'sass:string';
@@ -95,7 +95,7 @@ $breakpoints: config.$breakpoints;
 /// Values not in `$tokens` arrive as inline custom properties from
 /// `resolveResponsive()`.
 ///
-/// @param $block           component root class, without the dot: 'sauce-Stack'
+/// @param $block           component root class, without the dot: 'greese-Stack'
 /// @param $prop            prop segment in class and variable names: 'gap'
 /// @param $properties      CSS property, or list of them, that read the chain
 /// @param $tokens          map of token key to CSS value, one class each
@@ -103,7 +103,7 @@ $breakpoints: config.$breakpoints;
 ///                         property unset (its initial or inherited value)
 /// @param $template        wraps the chain: 'repeat(auto-fill, minmax(VALUE, 1fr))'
 /// @param $container-scope selector prefix whose container-query variant
-///                         applies: '.sauce-Grid--container >'
+///                         applies: '.greese-Grid--container >'
 ///
 /// Use it at the top level of a layer block, not nested in a selector.
 @mixin responsive-prop(
@@ -178,7 +178,7 @@ $breakpoints: config.$breakpoints;
   $map: ();
 
   @each $key in config.$space-keys {
-    $map: map.set($map, $key, var(--sauce-space-#{$key}));
+    $map: map.set($map, $key, var(--greese-space-#{$key}));
   }
 
   @return $map;
@@ -196,7 +196,7 @@ $breakpoints: config.$breakpoints;
 /// The standard keyboard focus indicator.
 @mixin focus-ring($offset: 2px) {
   &:focus-visible {
-    outline: 2px solid var(--sauce-color-focus-ring);
+    outline: 2px solid var(--greese-color-focus-ring);
     outline-offset: $offset;
   }
 }

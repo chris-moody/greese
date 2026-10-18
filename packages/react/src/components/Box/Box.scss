@@ -1,14 +1,14 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Box {
+@layer greese.components {
+  .greese-Box {
     @include mixins.component-root;
   }
 }
 
 // Style props are utilities: they win over any component's own styles (a
 // Container's default gutter, say) regardless of source order.
-@layer sauce.utilities {
+@layer greese.utilities {
   $space: (
     m: margin,
     mx: margin-inline,
@@ -28,13 +28,13 @@
   );
 
   @each $prop, $property in $space {
-    @include mixins.responsive-prop('sauce-Box', $prop, $property);
+    @include mixins.responsive-prop('greese-Box', $prop, $property);
   }
 
-  @include mixins.responsive-prop('sauce-Box', 'w', inline-size);
-  @include mixins.responsive-prop('sauce-Box', 'max-w', max-inline-size);
+  @include mixins.responsive-prop('greese-Box', 'w', inline-size);
+  @include mixins.responsive-prop('greese-Box', 'max-w', max-inline-size);
   @include mixins.responsive-prop(
-    'sauce-Box',
+    'greese-Box',
     'display',
     display,
     (
@@ -50,7 +50,7 @@
     )
   );
   @include mixins.responsive-prop(
-    'sauce-Box',
+    'greese-Box',
     'text-align',
     text-align,
     (

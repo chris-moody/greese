@@ -22,9 +22,9 @@ export const AppBar = ({
   <header
     {...props}
     className={cx(
-      'sauce-AppBar',
-      sticky && 'sauce-AppBar--sticky',
-      elevateOnScroll && 'sauce-AppBar--elevate',
+      'greese-AppBar',
+      sticky && 'greese-AppBar--sticky',
+      elevateOnScroll && 'greese-AppBar--elevate',
       className
     )}
   />

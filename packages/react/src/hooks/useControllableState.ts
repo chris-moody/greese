@@ -14,7 +14,7 @@ type SetState<T> = (next: T | ((previous: T) => T)) => void
 
 /**
  * State that a parent may control (`value` + `onChange`) or leave to the
- * component (`defaultValue`), the pattern every SauceUI input follows.
+ * component (`defaultValue`), the pattern every GreeseUI input follows.
  *
  * `T` must not be a function type: a function passed to the setter is treated
  * as an updater. The setter's identity is stable.

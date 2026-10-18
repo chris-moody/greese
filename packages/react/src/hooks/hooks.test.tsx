@@ -112,7 +112,7 @@ describe('useControllableState', () => {
 
 describe('useColorScheme', () => {
   afterEach(() => {
-    document.documentElement.removeAttribute('data-sauce-scheme')
+    document.documentElement.removeAttribute('data-greese-scheme')
     localStorage.clear()
   })
 
@@ -127,13 +127,13 @@ describe('useColorScheme', () => {
   it('applies a choice with one attribute write, and persists it', async () => {
     const { result } = renderHook(() => useColorScheme())
     await act(async () => result.current.setScheme('dark'))
-    expect(document.documentElement.getAttribute('data-sauce-scheme')).toBe('dark')
-    expect(localStorage.getItem('sauce-scheme')).toBe('dark')
+    expect(document.documentElement.getAttribute('data-greese-scheme')).toBe('dark')
+    expect(localStorage.getItem('greese-scheme')).toBe('dark')
     expect(result.current).toMatchObject({ scheme: 'dark', resolvedScheme: 'dark' })
 
     await act(async () => result.current.setScheme('system'))
-    expect(document.documentElement.hasAttribute('data-sauce-scheme')).toBe(false)
-    expect(localStorage.getItem('sauce-scheme')).toBeNull()
+    expect(document.documentElement.hasAttribute('data-greese-scheme')).toBe(false)
+    expect(localStorage.getItem('greese-scheme')).toBeNull()
     expect(result.current.scheme).toBe('system')
   })
 
@@ -141,7 +141,7 @@ describe('useColorScheme', () => {
     const Probe = () => <p>{useColorScheme().scheme}</p>
     render(<Probe />)
     await act(async () =>
-      document.documentElement.setAttribute('data-sauce-scheme', 'light')
+      document.documentElement.setAttribute('data-greese-scheme', 'light')
     )
     expect(screen.getByText('light')).toBeInTheDocument()
   })
@@ -152,7 +152,7 @@ describe('useColorScheme', () => {
     })
     const { result } = renderHook(() => useColorScheme({ storageKey: 'k' }))
     await act(async () => result.current.setScheme('dark'))
-    expect(document.documentElement.getAttribute('data-sauce-scheme')).toBe('dark')
+    expect(document.documentElement.getAttribute('data-greese-scheme')).toBe('dark')
     setItem.mockRestore()
   })
 })

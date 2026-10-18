@@ -88,7 +88,7 @@ export const Tabs = ({
       <div
         {...props}
         data-orientation={orientation}
-        className={cx('sauce-Tabs', className)}
+        className={cx('greese-Tabs', className)}
       />
     </TabsContext>
   )
@@ -140,7 +140,7 @@ export const TabList = ({
       aria-orientation={orientation}
       {...props}
       onKeyDown={move}
-      className={cx('sauce-TabList', className)}
+      className={cx('greese-TabList', className)}
     />
   )
 }
@@ -163,7 +163,7 @@ export const Tab = ({ value, className, onClick, ...props }: TabProps): JSX.Elem
       aria-controls={idFor(baseId, 'panel', value)}
       tabIndex={isSelected ? 0 : -1}
       data-value={value}
-      className={cx('sauce-Tab', className)}
+      className={cx('greese-Tab', className)}
       onClick={(event) => {
         onClick?.(event)
         if (!event.defaultPrevented) select(value)
@@ -190,7 +190,7 @@ export const TabPanel = ({ value, className, ...props }: TabPanelProps): JSX.Ele
       id={idFor(baseId, 'panel', value)}
       aria-labelledby={idFor(baseId, 'tab', value)}
       hidden={selected !== value}
-      className={cx('sauce-TabPanel', className)}
+      className={cx('greese-TabPanel', className)}
     />
   )
 }

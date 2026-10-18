@@ -6,24 +6,24 @@
 import { duration, type ScalarGroup } from './tokens.ts'
 
 /**
- * Cascade layer order for everything SauceUI emits. Every stylesheet we produce
+ * Cascade layer order for everything GreeseUI emits. Every stylesheet we produce
  * (tokens, components, themes) starts with this statement, so the order holds
  * no matter which sheet the browser sees first. Unlayered consumer CSS beats
  * all of it.
  */
 export const LAYER_ORDER =
-  '@layer sauce.reset, sauce.tokens, sauce.theme, sauce.base, sauce.components, sauce.utilities;'
+  '@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.utilities;'
 
-export const SCHEME_ATTR = 'data-sauce-scheme'
-export const THEME_ATTR = 'data-sauce-theme'
+export const SCHEME_ATTR = 'data-greese-scheme'
+export const THEME_ATTR = 'data-greese-theme'
 
 /** `surfaceOverlay` -> `surface-overlay`, `2xl` -> `2xl`. */
 export const kebab = (value: string): string =>
   value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 
-/** The custom property for a token: `cssVar('fontSize', 'lg')` -> `--sauce-font-size-lg`. */
+/** The custom property for a token: `cssVar('fontSize', 'lg')` -> `--greese-font-size-lg`. */
 export const cssVar = (group: ScalarGroup | 'color', key: string | number): string =>
-  `--sauce-${kebab(group)}-${kebab(String(key))}`
+  `--greese-${kebab(group)}-${kebab(String(key))}`
 
 export type Declarations = Array<[property: string, value: string]>
 

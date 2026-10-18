@@ -1,10 +1,10 @@
-# @sauce-ui/react
+# @greese-ui/react
 
 ## 1.0.0
 
 ### Major Changes
 
-- 0d736a8: 1.0.0: the first stable release of SauceUI.
+- 0d736a8: 1.0.0: the first stable release of GreeseUI.
 
 ### Minor Changes
 
@@ -31,8 +31,8 @@
   `SidebarTrigger`, `AppBar`, `Breadcrumbs`, `BreadcrumbItem` and `Pagination`
   (+ `paginationRange`), plus `useAnchoredPopover` and `computeFallbackPosition`
   for anchoring custom overlays.
-- bd79341: Ship per-component stylesheets (`@sauce-ui/react/css/<Component>.css`) and the
-  public SCSS entry `pkg:@sauce-ui/react/scss`, whose breakpoint values can be
+- bd79341: Ship per-component stylesheets (`@greese-ui/react/css/<Component>.css`) and the
+  public SCSS entry `pkg:@greese-ui/react/scss`, whose breakpoint values can be
   reconfigured with `with ($breakpoints: …)`; `configureBreakpoints()` applies
   the same values to the hooks.
 - 5870c2f: Add `Slottable`, so `asChild` components keep content they inject (icons,
@@ -45,4 +45,4 @@
 - Updated dependencies [85f75c1]
 - Updated dependencies [7b2526f]
 - Updated dependencies [0d736a8]
-  - @sauce-ui/tokens@1.0.0
+  - @greese-ui/tokens@1.0.0

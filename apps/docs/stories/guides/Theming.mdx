@@ -4,8 +4,8 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 # Theming
 
-SauceUI's look is a set of design tokens. Each one is a CSS custom property
-(`--sauce-color-accent`, `--sauce-space-4`, `--sauce-radius-md`, …), and every
+GreeseUI's look is a set of design tokens. Each one is a CSS custom property
+(`--greese-color-accent`, `--greese-space-4`, `--greese-radius-md`, …), and every
 component reads them. To theme the library, you change token values. There's
 no theme object in React state, no re-render when the theme changes, and no
 CSS-in-JS runtime.
@@ -26,9 +26,9 @@ This guide covers, in order:
 
 | Layer | What it holds | Set by |
 |---|---|---|
-| `sauce.tokens` | Default token values, light and dark | `styles.css` |
-| `sauce.theme` | Your themes' token values | `createTheme` + `ThemeProvider` |
-| `sauce.components` | Component styles, which read tokens | `styles.css` or `css/<Name>.css` |
+| `greese.tokens` | Default token values, light and dark | `styles.css` |
+| `greese.theme` | Your themes' token values | `createTheme` + `ThemeProvider` |
+| `greese.components` | Component styles, which read tokens | `styles.css` or `css/<Name>.css` |
 | (unlayered) | Your own CSS | You |
 
 All library CSS lives in [cascade layers](https://developer.mozilla.org/docs/Web/CSS/@layer).
@@ -38,19 +38,19 @@ stylesheet wins without `!important`.
 Two attributes drive everything, and they work on any element, `<html>`
 included:
 
-- `data-sauce-scheme="light" | "dark" | "system"` forces a colour scheme for
+- `data-greese-scheme="light" | "dark" | "system"` forces a colour scheme for
   that subtree. With no attribute anywhere, the page follows the OS.
-- `data-sauce-theme="<name>"` applies a theme from `createTheme`.
+- `data-greese-theme="<name>"` applies a theme from `createTheme`.
 
 ## Setup
 
 ### 1. Install (required)
 
 ```sh
-npm install @sauce-ui/react
+npm install @greese-ui/react
 ```
 
-`@sauce-ui/tokens` comes with it. React 19 is a peer dependency.
+`@greese-ui/tokens` comes with it. React 19 is a peer dependency.
 
 ### 2. Load the styles (required)
 
@@ -58,26 +58,26 @@ Pick **one** of these:
 
 ```ts
 // Everything (about 13 kB brotli). Simplest.
-import '@sauce-ui/react/styles.css'
+import '@greese-ui/react/styles.css'
 ```
 
 ```ts
 // Only what you use: each file @imports the tokens and the components it
 // builds on, and bundlers de-duplicate shared imports.
-import '@sauce-ui/react/css/Button.css'
-import '@sauce-ui/react/css/Dialog.css'
+import '@greese-ui/react/css/Button.css'
+import '@greese-ui/react/css/Dialog.css'
 ```
 
 Optionally, also load the reset and page defaults (box-sizing, body font and
 colours, `canvas` background):
 
 ```ts
-import '@sauce-ui/react/base.css'
+import '@greese-ui/react/base.css'
 ```
 
 Without `base.css`, components are still fully styled. Your page background
 just won't switch with the colour scheme unless you set it yourself, for
-example with `body { background: var(--sauce-color-canvas); color: var(--sauce-color-fg) }`.
+example with `body { background: var(--greese-color-canvas); color: var(--greese-color-fg) }`.
 
 At this point everything follows the OS light/dark setting. **No provider is
 required.** The remaining steps are optional.
@@ -88,14 +88,14 @@ If you let users pick a scheme, their saved choice must apply before the
 first paint. Put this inline script in `<head>`, before your stylesheets:
 
 ```tsx
-import { getSchemeScript } from '@sauce-ui/react'
+import { getSchemeScript } from '@greese-ui/react'
 
 <head>
   <script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
 </head>
 ```
 
-It reads `localStorage` and sets `data-sauce-scheme` on `<html>`. It's a few
+It reads `localStorage` and sets `data-greese-scheme` on `<html>`. It's a few
 hundred bytes, and it never throws, even when storage is blocked. If your CSP
 blocks inline scripts, add a nonce or hash for it.
 
@@ -106,7 +106,7 @@ Because the script changes `<html>` before React hydrates, add
 
 ```tsx
 'use client'
-import { SegmentedControl, Segment, useColorScheme, type ColorScheme } from '@sauce-ui/react'
+import { SegmentedControl, Segment, useColorScheme, type ColorScheme } from '@greese-ui/react'
 
 export function SchemeToggle() {
   const { scheme, setScheme } = useColorScheme()
@@ -147,8 +147,8 @@ per element:
 
 | Situation | Result |
 |---|---|
-| No `data-sauce-scheme` anywhere | Follows the OS (`prefers-color-scheme`) |
-| `data-sauce-scheme="dark"` on `<html>` (set by `useColorScheme`) | Whole page dark |
+| No `data-greese-scheme` anywhere | Follows the OS (`prefers-color-scheme`) |
+| `data-greese-scheme="dark"` on `<html>` (set by `useColorScheme`) | Whole page dark |
 | `<ThemeProvider scheme="dark">` around a section | That section dark, whatever the page is |
 | `scheme="system"` on a provider inside a forced-dark page | That section follows the OS again |
 
@@ -170,7 +170,7 @@ and date pickers match.
 ## Brand themes: `createTheme`
 
 ```tsx
-import { createTheme, ThemeProvider } from '@sauce-ui/react'
+import { createTheme, ThemeProvider } from '@greese-ui/react'
 
 // At module scope: it builds a static CSS string once.
 export const brand = createTheme({
@@ -213,7 +213,7 @@ What to know:
   that React 19 hoists into `<head>` and de-duplicates, plus two attributes.
   The wrapper is `display: contents`; use `asChild` to put the attributes on
   your own element instead.
-- `name` scopes the CSS (`[data-sauce-theme="brand"]`). Use letters, digits
+- `name` scopes the CSS (`[data-greese-theme="brand"]`). Use letters, digits
   and `-`, and give each theme a unique name.
 
 Read the nearest provider's theme and scheme with `useThemeScope()`, for
@@ -238,33 +238,33 @@ Scheme-independent tokens are simple:
 
 ```css
 :root {
-  --sauce-radius-md: 12px;
-  --sauce-font-body: 'Inter', system-ui, sans-serif;
+  --greese-radius-md: 12px;
+  --greese-font-body: 'Inter', system-ui, sans-serif;
 }
 ```
 
 **Colours need care.** The default dark values are declared on
-`[data-sauce-scheme]` elements and under `prefers-color-scheme: dark`. A plain
-`:root { --sauce-color-accent: … }` would therefore apply in dark mode too,
+`[data-greese-scheme]` elements and under `prefers-color-scheme: dark`. A plain
+`:root { --greese-color-accent: … }` would therefore apply in dark mode too,
 and be ignored inside any `<ThemeProvider scheme>`. Mirror the library's
 selectors:
 
 ```css
 :root,
-[data-sauce-scheme='light'],
-[data-sauce-scheme='system'] {
-  --sauce-color-accent: #7c3aed;
+[data-greese-scheme='light'],
+[data-greese-scheme='system'] {
+  --greese-color-accent: #7c3aed;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-sauce-scheme='light']),
-  [data-sauce-scheme='system'] {
-    --sauce-color-accent: #c4b5fd;
+  :root:not([data-greese-scheme='light']),
+  [data-greese-scheme='system'] {
+    --greese-color-accent: #c4b5fd;
   }
 }
 
-[data-sauce-scheme='dark'] {
-  --sauce-color-accent: #c4b5fd;
+[data-greese-scheme='dark'] {
+  --greese-color-accent: #c4b5fd;
 }
 ```
 
@@ -281,34 +281,34 @@ on the component, a class, or any ancestor:
 
 ```css
 /* Every button in this area uses the negative tone. */
-.danger-zone .sauce-Button {
-  --sauce-button-tone: var(--sauce-color-negative);
-  --sauce-button-on-tone: var(--sauce-color-on-negative);
+.danger-zone .greese-Button {
+  --greese-button-tone: var(--greese-color-negative);
+  --greese-button-on-tone: var(--greese-color-on-negative);
 }
 
 /* A wider sidebar and roomier cards. */
 .app {
-  --sauce-sidebar-width: 18rem;
+  --greese-sidebar-width: 18rem;
 }
-.sauce-Card {
-  --sauce-card-padding: var(--sauce-space-6);
+.greese-Card {
+  --greese-card-padding: var(--greese-space-6);
 }
 ```
 
 | Component | Variables |
 |---|---|
-| Button, IconButton | `--sauce-button-tone`, `--sauce-button-on-tone` (variants derive from these), `--sauce-button-height`, `--sauce-button-padding` |
-| Input, Select, Textarea, FileInput | `--sauce-input-height`, `--sauce-input-padding`, `--sauce-select-height`, `--sauce-select-padding`, `--sauce-textarea-padding`, `--sauce-file-height`, `--sauce-file-padding` |
-| Card | `--sauce-card-padding` |
-| Dialog | `--sauce-dialog-width` |
-| Sidebar | `--sauce-sidebar-width` |
-| Avatar, Spinner, Progress | `--sauce-avatar-size`, `--sauce-spinner-size`, `--sauce-progress-height` |
-| Slider, ColorPicker | `--sauce-slider-thumb`, `--sauce-colorpicker-thumb` |
-| SegmentedControl, Table | `--sauce-segment-height`, `--sauce-table-cell-padding` |
+| Button, IconButton | `--greese-button-tone`, `--greese-button-on-tone` (variants derive from these), `--greese-button-height`, `--greese-button-padding` |
+| Input, Select, Textarea, FileInput | `--greese-input-height`, `--greese-input-padding`, `--greese-select-height`, `--greese-select-padding`, `--greese-textarea-padding`, `--greese-file-height`, `--greese-file-padding` |
+| Card | `--greese-card-padding` |
+| Dialog | `--greese-dialog-width` |
+| Sidebar | `--greese-sidebar-width` |
+| Avatar, Spinner, Progress | `--greese-avatar-size`, `--greese-spinner-size`, `--greese-progress-height` |
+| Slider, ColorPicker | `--greese-slider-thumb`, `--greese-colorpicker-thumb` |
+| SegmentedControl, Table | `--greese-segment-height`, `--greese-table-cell-padding` |
 
-Class names (`sauce-Button`, `sauce-Card`, …) are stable, prefixed and never
+Class names (`greese-Button`, `greese-Card`, …) are stable, prefixed and never
 hashed, so they're safe to target. Avoid targeting internal parts
-(`sauce-Dialog-title`); those may change in a minor release.
+(`greese-Dialog-title`); those may change in a minor release.
 
 ## Server rendering and frameworks
 
@@ -322,9 +322,9 @@ extra setup. Two things to get right:
 **Next.js (App Router)**, `app/layout.tsx`:
 
 ```tsx
-import { getSchemeScript, ThemeProvider } from '@sauce-ui/react'
-import '@sauce-ui/react/base.css'
-import '@sauce-ui/react/styles.css'
+import { getSchemeScript, ThemeProvider } from '@greese-ui/react'
+import '@greese-ui/react/base.css'
+import '@greese-ui/react/styles.css'
 import { brand } from './theme'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -360,7 +360,7 @@ and JS:
 
 ```scss
 // your-styles.scss, instead of importing styles.css
-@use 'pkg:@sauce-ui/react/scss' with (
+@use 'pkg:@greese-ui/react/scss' with (
   $breakpoints: (
     xs: 0px,
     sm: 480px,
@@ -373,7 +373,7 @@ and JS:
 
 ```ts
 // Before the first render: hooks and Sidebar read these in JS.
-import { configureBreakpoints } from '@sauce-ui/react'
+import { configureBreakpoints } from '@greese-ui/react'
 configureBreakpoints({ sm: 480, md: 768, lg: 1024, xl: 1440 })
 ```
 
@@ -401,16 +401,16 @@ writeFileSync('public/brand.css', brand.css)
 
 ```html
 <link rel="stylesheet" href="/brand.css" />
-<html data-sauce-theme="brand">…</html>
+<html data-greese-theme="brand">…</html>
 ```
 
-`@sauce-ui/tokens/tokens.css` has the default tokens on their own, for
+`@greese-ui/tokens/tokens.css` has the default tokens on their own, for
 non-React code that should match.
 
 ## Token reference
 
 The live values, with swatches, are under **Foundations/Tokens**. The
-property name is `--sauce-<group>-<key>`, with camelCase keys in kebab case.
+property name is `--greese-<group>-<key>`, with camelCase keys in kebab case.
 
 | Group | `createTheme` key | Keys |
 |---|---|---|
@@ -438,10 +438,10 @@ Coming from MUI? `palette.primary.main` is `accent`,
 | Symptom | Cause and fix |
 |---|---|
 | Dark-mode users see a white flash on load | Add `getSchemeScript()` to `<head>`, before stylesheets |
-| Hydration warning about `data-sauce-scheme` | Add `suppressHydrationWarning` to `<html>` |
+| Hydration warning about `data-greese-scheme` | Add `suppressHydrationWarning` to `<html>` |
 | My `:root` colour override is ignored in dark mode or in a scheme section | Use `createTheme`, or mirror the scheme selectors ([plain CSS](#overriding-in-plain-css)) |
 | My `:root` override is ignored inside a `ThemeProvider` | Themes declare every token; put the override in the theme |
 | A nested theme lost the outer theme's overrides | Themes replace, not stack; spread the outer theme's options into the inner one |
-| The page background doesn't change with the scheme | Import `base.css`, or set `background: var(--sauce-color-canvas)` yourself |
+| The page background doesn't change with the scheme | Import `base.css`, or set `background: var(--greese-color-canvas)` yourself |
 | The saved choice isn't restored | `useColorScheme` and `getSchemeScript` must use the same `storageKey` |
 | Breakpoint changes have no effect on components | Recompile the SCSS with `$breakpoints`; `configureBreakpoints` only affects JS |

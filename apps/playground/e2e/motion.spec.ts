@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 
-/** sauce.js in real engines: computed-style reads, transforms, colours, playback. */
+/** greese.js in real engines: computed-style reads, transforms, colours, playback. */
 test.beforeEach(async ({ page }) => {
   await page.goto('/?page=motion')
   await page.waitForFunction(() => window.motion !== undefined)
@@ -30,11 +30,11 @@ test('seeks: reads computed starting values and writes transforms, colours and v
     'box',
     'translate',
     'background-color',
-    '--sauce-color-accent'
+    '--greese-color-accent'
   )
   expect(end.translate).toBe('50px')
   expect(end['background-color']).toBe('rgb(0, 0, 255)')
-  expect(end['--sauce-color-accent']).toMatch(/^rgb\(0 255 0 \/ 1\)$/)
+  expect(end['--greese-color-accent']).toMatch(/^rgb\(0 255 0 \/ 1\)$/)
   // Components read the animated token: the button's tone follows it (after
   // the button's own colour transition).
   const button = page.getByRole('button', { name: 'Accent' })

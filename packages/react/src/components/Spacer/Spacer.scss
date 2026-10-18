@@ -1,15 +1,15 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Spacer {
+@layer greese.components {
+  .greese-Spacer {
     flex: 1 1 auto;
     align-self: stretch;
   }
 
-  .sauce-Spacer--size {
+  .greese-Spacer--size {
     flex-grow: 0;
     flex-shrink: 0;
   }
 
-  @include mixins.responsive-prop('sauce-Spacer', 'size', flex-basis);
+  @include mixins.responsive-prop('greese-Spacer', 'size', flex-basis);
 }

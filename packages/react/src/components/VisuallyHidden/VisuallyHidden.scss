@@ -1,7 +1,7 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-VisuallyHidden {
+@layer greese.components {
+  .greese-VisuallyHidden {
     @include mixins.component-root;
 
     position: absolute;

@@ -25,6 +25,6 @@ export const Progress = ({
     {...props}
     max={max}
     value={value}
-    className={cx('sauce-Progress', `sauce-Progress--${size}`, className)}
+    className={cx('greese-Progress', `greese-Progress--${size}`, className)}
   />
 )

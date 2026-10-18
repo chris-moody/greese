@@ -3,11 +3,11 @@
 
 /// A surface: background, border, radius, shadow.
 @mixin surface {
-  color: var(--sauce-color-fg);
-  background-color: var(--sauce-color-surface-overlay);
-  border: 1px solid var(--sauce-color-border);
-  border-radius: var(--sauce-radius-md);
-  box-shadow: var(--sauce-shadow-lg);
+  color: var(--greese-color-fg);
+  background-color: var(--greese-color-surface-overlay);
+  border: 1px solid var(--greese-color-border);
+  border-radius: var(--greese-radius-md);
+  box-shadow: var(--greese-shadow-lg);
 }
 
 /// A popover anchored to its trigger (see utils/anchor.ts). Resets the UA
@@ -15,8 +15,8 @@
 /// `margin`) come inline.
 @mixin anchored {
   inset: auto;
-  max-inline-size: calc(100vw - 2 * var(--sauce-space-3));
-  max-block-size: calc(100dvh - 2 * var(--sauce-space-3));
+  max-inline-size: calc(100vw - 2 * var(--greese-space-3));
+  max-block-size: calc(100dvh - 2 * var(--greese-space-3));
   padding: 0;
   overflow: auto;
   position-try-fallbacks: flip-block, flip-inline;
@@ -26,10 +26,10 @@
 /// top-layer exit, where supported. Instant elsewhere and under reduced motion.
 @mixin enter-exit($open-selector, $from-translate: 0 0) {
   transition:
-    opacity var(--sauce-duration-fast) var(--sauce-easing-standard),
-    translate var(--sauce-duration-fast) var(--sauce-easing-standard),
-    display var(--sauce-duration-fast) allow-discrete,
-    overlay var(--sauce-duration-fast) allow-discrete;
+    opacity var(--greese-duration-fast) var(--greese-easing-standard),
+    translate var(--greese-duration-fast) var(--greese-easing-standard),
+    display var(--greese-duration-fast) allow-discrete,
+    overlay var(--greese-duration-fast) allow-discrete;
 
   &#{$open-selector} {
     opacity: 1;

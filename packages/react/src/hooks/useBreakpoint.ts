@@ -1,6 +1,6 @@
 'use client'
 import { useSyncExternalStore } from 'react'
-import { breakpointKeys, type Breakpoint } from '@sauce-ui/tokens'
+import { breakpointKeys, type Breakpoint } from '@greese-ui/tokens'
 import { getBreakpoints, onBreakpointsChange } from '../utils/breakpoints.ts'
 import type { Responsive } from '../utils/responsive.ts'
 

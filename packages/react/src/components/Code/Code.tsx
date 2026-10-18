@@ -12,9 +12,9 @@ export interface CodeProps extends ComponentPropsWithRef<'code'> {
 /** Inline code, or a code block with `block`. Bring your own syntax highlighting. */
 export const Code = ({ block, className, ...props }: CodeProps): JSX.Element =>
   block ? (
-    <pre className={cx('sauce-Code', 'sauce-Code--block', className)} tabIndex={0}>
+    <pre className={cx('greese-Code', 'greese-Code--block', className)} tabIndex={0}>
       <code {...props} />
     </pre>
   ) : (
-    <code {...props} className={cx('sauce-Code', className)} />
+    <code {...props} className={cx('greese-Code', className)} />
   )

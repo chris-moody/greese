@@ -1,7 +1,7 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Radio-input {
+@layer greese.components {
+  .greese-Radio-input {
     @include mixins.touch-target;
 
     position: relative;
@@ -9,8 +9,8 @@
     block-size: 1.125rem;
     margin: 0;
     cursor: pointer;
-    background-color: var(--sauce-color-canvas);
-    border: 1.5px solid var(--sauce-color-border-strong);
+    background-color: var(--greese-color-canvas);
+    border: 1.5px solid var(--greese-color-border-strong);
     border-radius: 50%;
     appearance: none;
 
@@ -19,18 +19,18 @@
     }
 
     transition:
-      border-color var(--sauce-duration-fast) var(--sauce-easing-standard),
-      border-width var(--sauce-duration-fast) var(--sauce-easing-standard);
+      border-color var(--greese-duration-fast) var(--greese-easing-standard),
+      border-width var(--greese-duration-fast) var(--greese-easing-standard);
 
     @include mixins.focus-ring;
 
     // A thick accent ring around the canvas centre reads as the dot.
     &:checked {
-      border: 5px solid var(--sauce-color-accent);
+      border: 5px solid var(--greese-color-accent);
     }
 
     &[aria-invalid='true']:not(:checked) {
-      border-color: var(--sauce-color-negative);
+      border-color: var(--greese-color-negative);
     }
   }
 }

@@ -1,5 +1,5 @@
 ---
-'@sauce-ui/react': patch
+'@greese-ui/react': patch
 ---
 
 Fix `Hide` with both `above` and `below`: it now hides only between the two breakpoints instead of at every width.

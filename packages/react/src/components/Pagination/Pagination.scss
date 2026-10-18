@@ -1,26 +1,26 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Pagination-list {
+@layer greese.components {
+  .greese-Pagination-list {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--sauce-space-1);
+    gap: var(--greese-space-1);
     align-items: center;
     padding: 0;
     margin: 0;
     list-style: none;
 
-    .sauce-Button {
+    .greese-Button {
       min-inline-size: 2rem;
       font-variant-numeric: tabular-nums;
     }
   }
 
-  .sauce-Pagination-step {
-    padding-inline: var(--sauce-space-2);
+  .greese-Pagination-step {
+    padding-inline: var(--greese-space-2);
 
     > svg,
-    .sauce-Button-icon > svg {
+    .greese-Button-icon > svg {
       inline-size: 1.1em;
       block-size: 1.1em;
     }
@@ -28,27 +28,27 @@
 
   // The chevron points to the inline start; flip it for "next", and mirror
   // both in right-to-left.
-  .sauce-Pagination-step--next svg {
+  .greese-Pagination-step--next svg {
     scale: -1 1;
   }
 
-  .sauce-Pagination:dir(rtl) .sauce-Pagination-step svg {
+  .greese-Pagination:dir(rtl) .greese-Pagination-step svg {
     scale: -1 1;
   }
 
-  .sauce-Pagination:dir(rtl) .sauce-Pagination-step--next svg {
+  .greese-Pagination:dir(rtl) .greese-Pagination-step--next svg {
     scale: 1;
   }
 
-  .sauce-Pagination-ellipsis {
-    padding-inline: var(--sauce-space-1);
-    color: var(--sauce-color-fg-muted);
+  .greese-Pagination-ellipsis {
+    padding-inline: var(--greese-space-1);
+    color: var(--greese-color-fg-muted);
   }
 
   // Phones: only previous, the current page and next.
   @include mixins.down(sm) {
-    .sauce-Pagination-page:not(.sauce-Pagination-page--current),
-    .sauce-Pagination-ellipsis {
+    .greese-Pagination-page:not(.greese-Pagination-page--current),
+    .greese-Pagination-ellipsis {
       display: none;
     }
   }

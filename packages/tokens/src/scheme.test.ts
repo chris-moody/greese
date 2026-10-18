@@ -6,27 +6,27 @@ const run = (script: string) => new Function(script)()
 describe('getSchemeScript', () => {
   afterEach(() => {
     localStorage.clear()
-    document.documentElement.removeAttribute('data-sauce-scheme')
+    document.documentElement.removeAttribute('data-greese-scheme')
   })
 
   it.each(['light', 'dark'])('applies a saved %s scheme to <html>', (scheme) => {
-    localStorage.setItem('sauce-scheme', scheme)
+    localStorage.setItem('greese-scheme', scheme)
     run(getSchemeScript())
-    expect(document.documentElement.getAttribute('data-sauce-scheme')).toBe(scheme)
+    expect(document.documentElement.getAttribute('data-greese-scheme')).toBe(scheme)
   })
 
   it('ignores missing or unknown values', () => {
     run(getSchemeScript())
-    localStorage.setItem('sauce-scheme', 'purple')
+    localStorage.setItem('greese-scheme', 'purple')
     run(getSchemeScript())
-    expect(document.documentElement.hasAttribute('data-sauce-scheme')).toBe(false)
+    expect(document.documentElement.hasAttribute('data-greese-scheme')).toBe(false)
   })
 
   it('honours a custom storage key, safely quoted', () => {
     const key = `my"key`
     localStorage.setItem(key, 'dark')
     run(getSchemeScript({ storageKey: key }))
-    expect(document.documentElement.getAttribute('data-sauce-scheme')).toBe('dark')
+    expect(document.documentElement.getAttribute('data-greese-scheme')).toBe('dark')
   })
 
   it('survives storage access throwing', () => {

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Field, Select } from '@sauce-ui/react'
+import { Field, Select } from '@greese-ui/react'
 
 const meta = {
   title: 'Forms/Select',

@@ -4,12 +4,12 @@ import { DocsContainer, type DocsContainerProps } from '@storybook/addon-docs/bl
 import { addons } from 'storybook/preview-api'
 import { GLOBALS_UPDATED, SET_GLOBALS } from 'storybook/internal/core-events'
 import { create } from 'storybook/theming/create'
-import { useColorScheme, type ColorScheme } from '@sauce-ui/react'
-import { color, font } from '@sauce-ui/tokens'
-import '@sauce-ui/react/base.css'
-import '@sauce-ui/react/styles.css'
+import { useColorScheme, type ColorScheme } from '@greese-ui/react'
+import { color, font } from '@greese-ui/tokens'
+import '@greese-ui/react/base.css'
+import '@greese-ui/react/styles.css'
 
-const STORAGE_KEY = 'sauce-storybook-scheme'
+const STORAGE_KEY = 'greese-storybook-scheme'
 
 /**
  * Applies the toolbar's scheme to the preview document, exactly as an app
@@ -20,14 +20,14 @@ const STORAGE_KEY = 'sauce-storybook-scheme'
 const applyScheme = ({ globals }: { globals: { scheme?: ColorScheme } }) => {
   const scheme = globals.scheme ?? 'system'
   const root = document.documentElement
-  if (scheme === 'system') root.removeAttribute('data-sauce-scheme')
-  else root.setAttribute('data-sauce-scheme', scheme)
+  if (scheme === 'system') root.removeAttribute('data-greese-scheme')
+  else root.setAttribute('data-greese-scheme', scheme)
 }
 const channel = addons.getChannel()
 channel.on(SET_GLOBALS, applyScheme)
 channel.on(GLOBALS_UPDATED, applyScheme)
 
-/** Storybook's docs chrome, built from SauceUI's own tokens per scheme. */
+/** Storybook's docs chrome, built from GreeseUI's own tokens per scheme. */
 const docsTheme = (mode: 'light' | 'dark') =>
   create({
     base: mode,

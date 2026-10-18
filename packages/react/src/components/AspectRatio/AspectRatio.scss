@@ -1,7 +1,7 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-AspectRatio {
+@layer greese.components {
+  .greese-AspectRatio {
     position: relative;
     overflow: hidden;
 
@@ -14,9 +14,9 @@
     }
   }
 
-  .sauce-AspectRatio--contain > :is(img, video, picture, canvas, svg) {
+  .greese-AspectRatio--contain > :is(img, video, picture, canvas, svg) {
     object-fit: contain;
   }
 
-  @include mixins.responsive-prop('sauce-AspectRatio', 'ratio', aspect-ratio);
+  @include mixins.responsive-prop('greese-AspectRatio', 'ratio', aspect-ratio);
 }

@@ -25,7 +25,7 @@ export interface TextProps extends ComponentPropsWithoutRef<'p'> {
   asChild?: boolean
 }
 
-const SIZE: ResponsiveConfig = { block: 'sauce-Text', prop: 'size' }
+const SIZE: ResponsiveConfig = { block: 'greese-Text', prop: 'size' }
 
 /**
  * Body text: a `<p>` by default. Use `asChild` for any other element.
@@ -47,16 +47,16 @@ export const Text = ({
 }: TextProps): JSX.Element => {
   const resolved = resolveResponsive([[size, SIZE]], {
     className: cx(
-      'sauce-Text',
-      weight && `sauce-Text--${weight}`,
-      tone && `sauce-Text--${tone}`,
-      truncate === true && 'sauce-Text--truncate',
-      typeof truncate === 'number' && 'sauce-Text--clamp',
+      'greese-Text',
+      weight && `greese-Text--${weight}`,
+      tone && `greese-Text--${tone}`,
+      truncate === true && 'greese-Text--truncate',
+      typeof truncate === 'number' && 'greese-Text--clamp',
       className
     ),
     style:
       typeof truncate === 'number'
-        ? ({ '--sauce-text-lines': truncate, ...style } as CSSProperties)
+        ? ({ '--greese-text-lines': truncate, ...style } as CSSProperties)
         : style,
   })
   const Root = (asChild ? Slot : 'p') as typeof Slot

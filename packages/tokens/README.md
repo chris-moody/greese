@@ -1,17 +1,17 @@
-# @sauce-ui/tokens
+# @greese-ui/tokens
 
-SauceUI's design tokens, in three forms:
+GreeseUI's design tokens, in three forms:
 
 | Import | What |
 |---|---|
-| `@sauce-ui/tokens/tokens.css` | `--sauce-*` custom properties, in `@layer sauce.tokens` |
-| `@sauce-ui/tokens/scss` | The same CSS, plus `$breakpoints` and `$space-keys` Sass maps |
-| `@sauce-ui/tokens/scss/layers` | Only the cascade layer order statement |
-| `@sauce-ui/tokens/scss/maps` | Only the Sass maps; emits no CSS |
-| `@sauce-ui/tokens` | TypeScript constants (`color`, `space`, `radius`, `fontSize`, `shadow`, `breakpoints`, …), `createTheme()` and `getSchemeScript()` |
+| `@greese-ui/tokens/tokens.css` | `--greese-*` custom properties, in `@layer greese.tokens` |
+| `@greese-ui/tokens/scss` | The same CSS, plus `$breakpoints` and `$space-keys` Sass maps |
+| `@greese-ui/tokens/scss/layers` | Only the cascade layer order statement |
+| `@greese-ui/tokens/scss/maps` | Only the Sass maps; emits no CSS |
+| `@greese-ui/tokens` | TypeScript constants (`color`, `space`, `radius`, `fontSize`, `shadow`, `breakpoints`, …), `createTheme()` and `getSchemeScript()` |
 
 You only need this package directly if you use the tokens without
-`@sauce-ui/react`, whose stylesheet already includes them.
+`@greese-ui/react`, whose stylesheet already includes them.
 
-Colours follow the OS colour scheme. `data-sauce-scheme="light"` or `"dark"` on
-any element forces a mode for that subtree, and modes can be nested. `createTheme()` builds a scoped theme as a static CSS string, which you can serve however you like and apply with `data-sauce-theme="<name>"`.
+Colours follow the OS colour scheme. `data-greese-scheme="light"` or `"dark"` on
+any element forces a mode for that subtree, and modes can be nested. `createTheme()` builds a scoped theme as a static CSS string, which you can serve however you like and apply with `data-greese-theme="<name>"`.

@@ -1,8 +1,8 @@
 @use '../../styles/floating';
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Combobox-toggle {
+@layer greese.components {
+  .greese-Combobox-toggle {
     @include mixins.touch-target;
 
     position: relative;
@@ -11,18 +11,18 @@
     inline-size: 1.75rem;
     block-size: 1.75rem;
     padding: 0;
-    margin-inline-end: calc(-1 * var(--sauce-space-2));
-    color: var(--sauce-color-fg-muted);
+    margin-inline-end: calc(-1 * var(--greese-space-2));
+    color: var(--greese-color-fg-muted);
     cursor: pointer;
     background: none;
     border: 0;
-    border-radius: var(--sauce-radius-sm);
+    border-radius: var(--greese-radius-sm);
 
     > svg {
       inline-size: 1rem;
       block-size: 1rem;
       rotate: -90deg;
-      transition: rotate var(--sauce-duration-fast) var(--sauce-easing-standard);
+      transition: rotate var(--greese-duration-fast) var(--greese-easing-standard);
     }
 
     &[data-open] > svg {
@@ -30,38 +30,38 @@
     }
   }
 
-  .sauce-Combobox-popup {
+  .greese-Combobox-popup {
     @include floating.anchored;
     @include floating.surface;
 
-    max-inline-size: min(28rem, 100vw - 2 * var(--sauce-space-3));
+    max-inline-size: min(28rem, 100vw - 2 * var(--greese-space-3));
     max-block-size: min(18rem, 50dvh);
-    padding: var(--sauce-space-1);
+    padding: var(--greese-space-1);
     overscroll-behavior: contain;
   }
 
-  .sauce-Combobox-list {
+  .greese-Combobox-list {
     padding: 0;
     margin: 0;
     list-style: none;
   }
 
-  .sauce-Combobox-option {
+  .greese-Combobox-option {
     display: flex;
     align-items: center;
     min-block-size: 2.25rem;
-    padding-inline: var(--sauce-space-3);
-    font-size: var(--sauce-font-size-sm);
+    padding-inline: var(--greese-space-3);
+    font-size: var(--greese-font-size-sm);
     cursor: pointer;
-    border-radius: var(--sauce-radius-sm);
+    border-radius: var(--greese-radius-sm);
 
     &[data-active] {
-      background-color: color-mix(in oklab, var(--sauce-color-fg) 8%, transparent);
+      background-color: color-mix(in oklab, var(--greese-color-fg) 8%, transparent);
     }
 
     &[aria-selected='true'] {
-      font-weight: var(--sauce-font-weight-semibold);
-      color: var(--sauce-color-accent);
+      font-weight: var(--greese-font-weight-semibold);
+      color: var(--greese-color-accent);
     }
 
     &[aria-disabled='true'] {
@@ -74,10 +74,10 @@
     }
   }
 
-  .sauce-Combobox-empty {
-    padding: var(--sauce-space-2) var(--sauce-space-3);
+  .greese-Combobox-empty {
+    padding: var(--greese-space-2) var(--greese-space-3);
     margin: 0;
-    font-size: var(--sauce-font-size-sm);
-    color: var(--sauce-color-fg-muted);
+    font-size: var(--greese-font-size-sm);
+    color: var(--greese-color-fg-muted);
   }
 }

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AspectRatio, Box } from '@sauce-ui/react'
+import { AspectRatio, Box } from '@greese-ui/react'
 import { art } from '../_shared/fixtures.tsx'
 
 const meta = {
@@ -8,7 +8,7 @@ const meta = {
   args: { ratio: { xs: 1, md: 16 / 9 } },
   render: (args) => (
     <Box maxW="32rem">
-      <AspectRatio {...args} style={{ borderRadius: 'var(--sauce-radius-lg)' }}>
+      <AspectRatio {...args} style={{ borderRadius: 'var(--greese-radius-lg)' }}>
         <img alt="" src={art(210)} />
       </AspectRatio>
     </Box>

@@ -26,7 +26,7 @@ export interface StackProps extends Omit<BoxProps, 'gap'> {
   wrap?: Responsive<'wrap' | 'nowrap' | 'wrap-reverse'>
 }
 
-const S = 'sauce-Stack'
+const S = 'greese-Stack'
 const DIRECTION: ResponsiveConfig = { block: S, prop: 'direction' }
 const GAP: ResponsiveConfig = {
   block: S,

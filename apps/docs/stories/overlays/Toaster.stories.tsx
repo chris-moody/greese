@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button, Stack, toast, Toaster } from '@sauce-ui/react'
+import { Button, Stack, toast, Toaster } from '@greese-ui/react'
 
 const meta = {
   title: 'Overlays/Toaster',

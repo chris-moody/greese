@@ -1,7 +1,7 @@
 import { createRef } from 'react'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { createTheme } from '@sauce-ui/tokens'
+import { createTheme } from '@greese-ui/tokens'
 import { expectNoAxeViolations } from '../../test/axe.ts'
 import { ThemeProvider, useThemeScope } from './ThemeProvider.tsx'
 
@@ -21,9 +21,9 @@ describe('ThemeProvider', () => {
       </ThemeProvider>
     )
     const root = screen.getByTestId('root')
-    expect(root).toHaveClass('sauce-ThemeProvider', 'mine')
-    expect(root).toHaveAttribute('data-sauce-theme', 'brand')
-    expect(root).toHaveAttribute('data-sauce-scheme', 'dark')
+    expect(root).toHaveClass('greese-ThemeProvider', 'mine')
+    expect(root).toHaveAttribute('data-greese-theme', 'brand')
+    expect(root).toHaveAttribute('data-greese-scheme', 'dark')
     expect(screen.getByRole('status')).toHaveTextContent('brand/dark')
   })
 
@@ -34,7 +34,7 @@ describe('ThemeProvider', () => {
         <ThemeProvider theme={brand} />
       </>
     )
-    const styles = document.head.querySelectorAll('style[data-href="sauce-theme-brand"]')
+    const styles = document.head.querySelectorAll('style[data-href="greese-theme-brand"]')
     expect(styles).toHaveLength(1)
     expect(styles[0]!.textContent).toBe(brand.css)
   })
@@ -49,11 +49,11 @@ describe('ThemeProvider', () => {
         </ThemeProvider>
       </ThemeProvider>
     )
-    expect(screen.getByTestId('outer')).not.toHaveAttribute('data-sauce-scheme')
+    expect(screen.getByTestId('outer')).not.toHaveAttribute('data-greese-scheme')
     // A scheme-only provider keeps the theme, so theme rules still apply there.
-    expect(screen.getByTestId('dark')).toHaveAttribute('data-sauce-theme', 'brand')
+    expect(screen.getByTestId('dark')).toHaveAttribute('data-greese-theme', 'brand')
     // A nested theme keeps the forced scheme.
-    expect(screen.getByTestId('inner')).toHaveAttribute('data-sauce-scheme', 'dark')
+    expect(screen.getByTestId('inner')).toHaveAttribute('data-greese-scheme', 'dark')
     expect(screen.getByRole('status')).toHaveTextContent('other/dark')
   })
 
@@ -67,15 +67,15 @@ describe('ThemeProvider', () => {
     const main = screen.getByRole('main')
     expect(ref.current).toBe(main)
     expect(main).toHaveClass('page')
-    expect(main).not.toHaveClass('sauce-ThemeProvider')
-    expect(main).toHaveAttribute('data-sauce-theme', 'brand')
+    expect(main).not.toHaveClass('greese-ThemeProvider')
+    expect(main).toHaveAttribute('data-greese-theme', 'brand')
   })
 
   it('renders no attributes or style when given nothing', () => {
     render(<ThemeProvider data-testid="bare" />)
     const bare = screen.getByTestId('bare')
-    expect(bare).not.toHaveAttribute('data-sauce-theme')
-    expect(bare).not.toHaveAttribute('data-sauce-scheme')
+    expect(bare).not.toHaveAttribute('data-greese-theme')
+    expect(bare).not.toHaveAttribute('data-greese-scheme')
   })
 
   it('has no accessibility violations', async () => {

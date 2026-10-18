@@ -6,18 +6,18 @@
 $sizes: (
   sm: (
     height: 2rem,
-    padding: var(--sauce-space-3),
-    font: var(--sauce-font-size-sm),
+    padding: var(--greese-space-3),
+    font: var(--greese-font-size-sm),
   ),
   md: (
     height: 2.5rem,
-    padding: var(--sauce-space-3),
-    font: var(--sauce-font-size-md),
+    padding: var(--greese-space-3),
+    font: var(--greese-font-size-md),
   ),
   lg: (
     height: 3rem,
-    padding: var(--sauce-space-4),
-    font: var(--sauce-font-size-md),
+    padding: var(--greese-space-4),
+    font: var(--greese-font-size-md),
   ),
 );
 
@@ -37,16 +37,16 @@ $sizes: (
 @mixin frame($focus-within: false) {
   @include mixins.component-root;
 
-  color: var(--sauce-color-fg);
-  background-color: var(--sauce-color-canvas);
-  border: 1px solid var(--sauce-color-border-strong);
-  border-radius: var(--sauce-radius-md);
+  color: var(--greese-color-fg);
+  background-color: var(--greese-color-canvas);
+  border: 1px solid var(--greese-color-border-strong);
+  border-radius: var(--greese-radius-md);
   transition:
-    border-color var(--sauce-duration-fast) var(--sauce-easing-standard),
-    box-shadow var(--sauce-duration-fast) var(--sauce-easing-standard);
+    border-color var(--greese-duration-fast) var(--greese-easing-standard),
+    box-shadow var(--greese-duration-fast) var(--greese-easing-standard);
 
   @include mixins.hover {
-    border-color: var(--sauce-color-fg-muted);
+    border-color: var(--greese-color-fg-muted);
   }
 
   @if $focus-within {
@@ -61,7 +61,7 @@ $sizes: (
 
   &[aria-invalid='true'],
   &[data-invalid] {
-    border-color: var(--sauce-color-negative);
+    border-color: var(--greese-color-negative);
   }
 
   &:disabled,
@@ -72,7 +72,7 @@ $sizes: (
 }
 
 @mixin focused {
-  border-color: var(--sauce-color-focus-ring);
-  outline: 2px solid var(--sauce-color-focus-ring);
+  border-color: var(--greese-color-focus-ring);
+  outline: 2px solid var(--greese-color-focus-ring);
   outline-offset: -1px;
 }

@@ -1,14 +1,14 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Divider {
+@layer greese.components {
+  .greese-Divider {
     @include mixins.component-root;
 
     flex-shrink: 0;
     align-self: stretch;
     margin: 0;
     border: 0;
-    border-block-start: 1px solid var(--sauce-color-border);
+    border-block-start: 1px solid var(--greese-color-border);
 
     &[data-orientation='vertical'] {
       align-self: stretch;
@@ -16,7 +16,7 @@
       block-size: auto;
       min-block-size: 1em;
       border-block-start: 0;
-      border-inline-start: 1px solid var(--sauce-color-border);
+      border-inline-start: 1px solid var(--greese-color-border);
     }
   }
 }

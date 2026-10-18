@@ -48,9 +48,9 @@ export interface BoxStyleProps {
   textAlign?: Responsive<'start' | 'center' | 'end' | 'justify'>
 }
 
-const B = 'sauce-Box'
+const B = 'greese-Box'
 
-// Spacing props go inline as `var(--sauce-space-N)` instead of one class per
+// Spacing props go inline as `var(--greese-space-N)` instead of one class per
 // token per breakpoint per prop (~600 classes); values stay themeable.
 const space = (prop: string): ResponsiveConfig => ({
   block: B,

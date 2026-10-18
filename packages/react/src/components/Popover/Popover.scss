@@ -1,13 +1,13 @@
 @use '../../styles/floating';
 
-@layer sauce.components {
-  .sauce-Popover {
+@layer greese.components {
+  .greese-Popover {
     @include floating.anchored;
     @include floating.surface;
     @include floating.enter-exit(':popover-open', 0 -0.25rem);
 
     inline-size: max-content;
-    max-inline-size: min(22rem, 100vw - 2 * var(--sauce-space-3));
-    padding: var(--sauce-space-4);
+    max-inline-size: min(22rem, 100vw - 2 * var(--greese-space-3));
+    padding: var(--greese-space-4);
   }
 }

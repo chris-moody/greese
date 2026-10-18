@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { createTheme, ThemeProvider } from '@sauce-ui/react'
+import { createTheme, ThemeProvider } from '@greese-ui/react'
 
 const brand = createTheme({
   name: 'docs-brand',
@@ -10,15 +10,15 @@ const brand = createTheme({
 const Card = ({ title }: { title: string }) => (
   <div
     style={{
-      padding: 'var(--sauce-space-5)',
-      background: 'var(--sauce-color-surface)',
-      color: 'var(--sauce-color-fg)',
-      border: '1px solid var(--sauce-color-border)',
-      borderRadius: 'var(--sauce-radius-md)',
+      padding: 'var(--greese-space-5)',
+      background: 'var(--greese-color-surface)',
+      color: 'var(--greese-color-fg)',
+      border: '1px solid var(--greese-color-border)',
+      borderRadius: 'var(--greese-radius-md)',
     }}
   >
-    <strong style={{ color: 'var(--sauce-color-accent)' }}>{title}</strong>
-    <p style={{ color: 'var(--sauce-color-fg-muted)' }}>Reads --sauce-* tokens only.</p>
+    <strong style={{ color: 'var(--greese-color-accent)' }}>{title}</strong>
+    <p style={{ color: 'var(--greese-color-fg-muted)' }}>Reads --greese-* tokens only.</p>
   </div>
 )
 
@@ -37,7 +37,7 @@ export const NestedThemesAndSchemes: StoryObj<typeof meta> = {
     <div
       style={{
         display: 'grid',
-        gap: 'var(--sauce-space-4)',
+        gap: 'var(--greese-space-4)',
         gridTemplateColumns: 'repeat(auto-fit, minmax(14rem, 1fr))',
       }}
     >

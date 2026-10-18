@@ -1,5 +1,5 @@
 import type { CSSProperties, JSX } from 'react'
-import type { Breakpoint } from '@sauce-ui/tokens'
+import type { Breakpoint } from '@greese-ui/tokens'
 import { cx } from '../../utils/cx.ts'
 import {
   isSpaceToken,
@@ -21,7 +21,7 @@ export interface AutoLayoutProps extends Omit<BoxProps, 'gap' | 'rowGap' | 'colu
   rowGap?: Responsive<SpaceValue>
 }
 
-const A = 'sauce-AutoLayout'
+const A = 'greese-AutoLayout'
 const GAP: ResponsiveConfig = {
   block: A,
   prop: 'gap',
@@ -68,7 +68,7 @@ export const AutoLayout = ({
       style:
         columns === undefined
           ? style
-          : ({ '--sauce-autolayout-columns': columns, ...style } as CSSProperties),
+          : ({ '--greese-autolayout-columns': columns, ...style } as CSSProperties),
     }
   )
   return <Box {...props} className={resolved.className} style={resolved.style} />
@@ -86,7 +86,7 @@ export interface AutoLayoutItemProps extends BoxProps {
   maxSize?: Size
 }
 
-const I = 'sauce-AutoLayoutItem'
+const I = 'greese-AutoLayoutItem'
 const SIZE: ResponsiveConfig = { block: I, prop: 'size', isToken: neverToken }
 const MAX: ResponsiveConfig = { block: I, prop: 'max', isToken: neverToken }
 

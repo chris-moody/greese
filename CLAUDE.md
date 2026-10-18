@@ -1,31 +1,31 @@
-# SauceUI
+# GreeseUI
 
 A mobile-first, TypeScript-first React 19 component library with
 zero-runtime CSS (SCSS + CSS custom properties) and few dependencies. It
-also contains sauce.js, a small animation library.
+also contains greese.js, a small animation library.
 
 | Package                      | Path              |
 | ---------------------------- | ----------------- |
-| `@sauce-ui/react`            | `packages/react`  |
-| `@sauce-ui/tokens`           | `packages/tokens` |
-| `@sauce-ui/sauce` (sauce.js) | `packages/sauce`  |
+| `@greese-ui/react`            | `packages/react`  |
+| `@greese-ui/tokens`           | `packages/tokens` |
+| `@greese-ui/greese` (greese.js) | `packages/greese`  |
 | Storybook docs               | `apps/docs`       |
 | e2e, visual, Lighthouse      | `apps/playground` |
 
 ## Before changing anything
 
-Load the **`sauce-conventions`** skill. It's the rule set, and it links the
+Load the **`greese-conventions`** skill. It's the rule set, and it links the
 ADRs in `docs/adr/` that govern each area. Then use the skill for the task:
 
 | Task                                  | Skill                    | Agent                        |
 | ------------------------------------- | ------------------------ | ---------------------------- |
-| New or ported component               | `sauce-new-component`    | `sauce-component-builder`    |
-| Change or fix a component             | `sauce-update-component` | `sauce-component-builder`    |
-| Styles, tokens, theming               | `sauce-styles`           | `sauce-stylist`              |
-| Animation, sauce.js, the `sauce` prop | `sauce-animation`        | —                            |
-| Size, dependencies, performance       | `sauce-lightweight`      | `sauce-size-guardian`        |
-| Checking work before calling it done  | `sauce-verify`           | `sauce-reviewer` (read-only) |
-| Docs, guides, ADRs, plan              | (conventions → Docs)     | `sauce-docs-keeper`          |
+| New or ported component               | `greese-new-component`    | `greese-component-builder`    |
+| Change or fix a component             | `greese-update-component` | `greese-component-builder`    |
+| Styles, tokens, theming               | `greese-styles`           | `greese-stylist`              |
+| Animation, greese.js, the `greese` prop | `greese-animation`        | —                            |
+| Size, dependencies, performance       | `greese-lightweight`      | `greese-size-guardian`        |
+| Checking work before calling it done  | `greese-verify`           | `greese-reviewer` (read-only) |
+| Docs, guides, ADRs, plan              | (conventions → Docs)     | `greese-docs-keeper`          |
 | Committing                            | `commit`                 | —                            |
 
 ## House rules

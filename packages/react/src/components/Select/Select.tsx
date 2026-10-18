@@ -41,7 +41,7 @@ export const Select = ({
   })
   return (
     <div
-      className={cx('sauce-Select', `sauce-Select--size-${size}`, className)}
+      className={cx('greese-Select', `greese-Select--size-${size}`, className)}
       style={style}
       data-invalid={control['aria-invalid']}
       data-disabled={control.disabled || undefined}
@@ -56,7 +56,7 @@ export const Select = ({
             ? ''
             : defaultValue
         }
-        className="sauce-Select-control"
+        className="greese-Select-control"
       >
         {placeholder && (
           <option value="" disabled hidden>
@@ -65,7 +65,7 @@ export const Select = ({
         )}
         {children}
       </select>
-      <span className="sauce-Select-chevron" aria-hidden="true" />
+      <span className="greese-Select-chevron" aria-hidden="true" />
     </div>
   )
 }

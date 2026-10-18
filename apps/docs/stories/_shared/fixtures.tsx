@@ -2,11 +2,11 @@
 import type { CSSProperties, ReactNode } from 'react'
 
 const tile: CSSProperties = {
-  padding: 'var(--sauce-space-3) var(--sauce-space-4)',
-  background: 'var(--sauce-color-surface)',
-  border: '1px solid var(--sauce-color-border)',
-  borderRadius: 'var(--sauce-radius-md)',
-  color: 'var(--sauce-color-fg)',
+  padding: 'var(--greese-space-3) var(--greese-space-4)',
+  background: 'var(--greese-color-surface)',
+  border: '1px solid var(--greese-color-border)',
+  borderRadius: 'var(--greese-radius-md)',
+  color: 'var(--greese-color-fg)',
 }
 
 /** A visible placeholder child for layout stories. */
@@ -18,7 +18,7 @@ export const Tile = ({
   style?: CSSProperties
 }) => <div style={{ ...tile, ...style }}>{children}</div>
 
-/** Tiny inline icons. SauceUI is icon-agnostic: bring any set. */
+/** Tiny inline icons. GreeseUI is icon-agnostic: bring any set. */
 const Svg = ({ d }: { d: string }) => (
   <svg
     viewBox="0 0 16 16"

@@ -6,32 +6,32 @@
 
 $tones: (
   neutral: (
-    var(--sauce-color-fg),
-    var(--sauce-color-canvas),
+    var(--greese-color-fg),
+    var(--greese-color-canvas),
   ),
   muted: (
-    var(--sauce-color-fg-muted),
-    var(--sauce-color-canvas),
+    var(--greese-color-fg-muted),
+    var(--greese-color-canvas),
   ),
   accent: (
-    var(--sauce-color-accent),
-    var(--sauce-color-on-accent),
+    var(--greese-color-accent),
+    var(--greese-color-on-accent),
   ),
   positive: (
-    var(--sauce-color-positive),
-    var(--sauce-color-canvas),
+    var(--greese-color-positive),
+    var(--greese-color-canvas),
   ),
   negative: (
-    var(--sauce-color-negative),
-    var(--sauce-color-on-negative),
+    var(--greese-color-negative),
+    var(--greese-color-on-negative),
   ),
   warning: (
-    var(--sauce-color-warning),
-    var(--sauce-color-canvas),
+    var(--greese-color-warning),
+    var(--greese-color-canvas),
   ),
   info: (
-    var(--sauce-color-info),
-    var(--sauce-color-canvas),
+    var(--greese-color-info),
+    var(--greese-color-canvas),
   ),
 );
 

@@ -134,7 +134,7 @@ export const NumberField = ({
       tabIndex={-1}
       aria-label={label}
       disabled={locked || blocked}
-      className="sauce-NumberField-step"
+      className="greese-NumberField-step"
       // Keep focus in the input while clicking.
       onMouseDown={(event) => event.preventDefault()}
       onClick={() => {
@@ -160,7 +160,7 @@ export const NumberField = ({
       disabled={disabled}
       readOnly={readOnly}
       value={text}
-      className={cx('sauce-NumberField', className)}
+      className={cx('greese-NumberField', className)}
       onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)}
       onBlur={(event: FocusEvent<HTMLInputElement>) => {
         commit()
@@ -184,7 +184,7 @@ export const NumberField = ({
         action()
       }}
       endAdornment={
-        <span className="sauce-NumberField-steppers">
+        <span className="greese-NumberField-steppers">
           {stepper(-step, decrementLabel, atMin, <MinusGlyph />)}
           {stepper(step, incrementLabel, atMax, <PlusGlyph />)}
         </span>

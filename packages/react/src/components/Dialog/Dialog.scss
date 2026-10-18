@@ -9,38 +9,38 @@ $widths: (
   lg: 48rem,
 );
 
-@layer sauce.components {
+@layer greese.components {
   // Scroll lock with no JS: the page stops scrolling while a modal is open.
-  :root:has(.sauce-Dialog:modal) {
+  :root:has(.greese-Dialog:modal) {
     overflow: hidden;
     scrollbar-gutter: stable;
   }
 
-  .sauce-Dialog {
+  .greese-Dialog {
     @include mixins.component-root;
     @include floating.surface;
     @include floating.enter-exit('[open]', 0 0.5rem);
 
     flex-direction: column;
-    gap: var(--sauce-space-3);
-    inline-size: min(var(--sauce-dialog-width, 32rem), 100vw - 2 * var(--sauce-space-4));
+    gap: var(--greese-space-3);
+    inline-size: min(var(--greese-dialog-width, 32rem), 100vw - 2 * var(--greese-space-4));
     max-inline-size: none;
-    max-block-size: calc(100dvh - 2 * var(--sauce-space-4));
-    padding: var(--sauce-space-5);
+    max-block-size: calc(100dvh - 2 * var(--greese-space-4));
+    padding: var(--greese-space-5);
     overflow: hidden;
-    border-radius: var(--sauce-radius-lg);
+    border-radius: var(--greese-radius-lg);
 
     &[open] {
       display: flex;
     }
 
     &::backdrop {
-      background-color: var(--sauce-color-scrim);
+      background-color: var(--greese-color-scrim);
       opacity: 0;
       transition:
-        opacity var(--sauce-duration-normal) var(--sauce-easing-standard),
-        display var(--sauce-duration-normal) allow-discrete,
-        overlay var(--sauce-duration-normal) allow-discrete;
+        opacity var(--greese-duration-normal) var(--greese-easing-standard),
+        display var(--greese-duration-normal) allow-discrete,
+        overlay var(--greese-duration-normal) allow-discrete;
     }
 
     &[open]::backdrop {
@@ -53,49 +53,49 @@ $widths: (
   }
 
   @each $size, $width in $widths {
-    .sauce-Dialog--size-#{$size} {
-      --sauce-dialog-width: #{$width};
+    .greese-Dialog--size-#{$size} {
+      --greese-dialog-width: #{$width};
     }
   }
 
-  .sauce-Dialog--size-full {
+  .greese-Dialog--size-full {
     inline-size: 100vw;
     max-block-size: 100dvh;
     block-size: 100dvh;
-    padding-block: max(var(--sauce-space-5), env(safe-area-inset-top))
-      max(var(--sauce-space-5), env(safe-area-inset-bottom));
+    padding-block: max(var(--greese-space-5), env(safe-area-inset-top))
+      max(var(--greese-space-5), env(safe-area-inset-bottom));
     border: 0;
     border-radius: 0;
   }
 
-  .sauce-Dialog-header {
+  .greese-Dialog-header {
     display: flex;
     flex-shrink: 0;
-    gap: var(--sauce-space-3);
+    gap: var(--greese-space-3);
     align-items: flex-start;
     justify-content: space-between;
   }
 
-  .sauce-Dialog-title {
+  .greese-Dialog-title {
     margin: 0;
-    font-size: var(--sauce-font-size-lg);
-    font-weight: var(--sauce-font-weight-semibold);
-    line-height: var(--sauce-line-height-snug);
+    font-size: var(--greese-font-size-lg);
+    font-weight: var(--greese-font-weight-semibold);
+    line-height: var(--greese-line-height-snug);
   }
 
-  .sauce-Dialog-close {
-    margin-block-start: calc(-1 * var(--sauce-space-1));
-    margin-inline-end: calc(-1 * var(--sauce-space-2));
+  .greese-Dialog-close {
+    margin-block-start: calc(-1 * var(--greese-space-1));
+    margin-inline-end: calc(-1 * var(--greese-space-2));
   }
 
-  .sauce-Dialog-description {
+  .greese-Dialog-description {
     flex-shrink: 0;
     margin: 0;
-    font-size: var(--sauce-font-size-sm);
-    color: var(--sauce-color-fg-muted);
+    font-size: var(--greese-font-size-sm);
+    color: var(--greese-color-fg-muted);
   }
 
-  .sauce-Dialog-body {
+  .greese-Dialog-body {
     flex: 1 1 auto;
     min-block-size: 0;
     overflow: auto;
@@ -103,11 +103,11 @@ $widths: (
   }
 
   // Phones: actions stack full-width, primary (last) on top, for thumbs.
-  .sauce-Dialog-footer {
+  .greese-Dialog-footer {
     display: flex;
     flex-direction: column-reverse;
     flex-shrink: 0;
-    gap: var(--sauce-space-2);
+    gap: var(--greese-space-2);
 
     @include mixins.up(sm) {
       flex-flow: row wrap;
@@ -118,21 +118,21 @@ $widths: (
   // Drawer: edge-anchored, in logical terms so start/end follow the writing
   // direction. Each placement sets every geometry property, so a larger
   // breakpoint's placement fully replaces a smaller one's.
-  .sauce-Drawer {
-    --sauce-drawer-dir: 1;
+  .greese-Drawer {
+    --greese-drawer-dir: 1;
 
     max-block-size: none;
     margin: 0;
     border-radius: 0;
 
     &:dir(rtl) {
-      --sauce-drawer-dir: -1;
+      --greese-drawer-dir: -1;
     }
   }
 
-  $edge: var(--sauce-radius-lg);
-  $safe-top: max(var(--sauce-space-5), env(safe-area-inset-top));
-  $safe-bottom: max(var(--sauce-space-5), env(safe-area-inset-bottom));
+  $edge: var(--greese-radius-lg);
+  $safe-top: max(var(--greese-space-5), env(safe-area-inset-top));
+  $safe-bottom: max(var(--greese-space-5), env(safe-area-inset-bottom));
   $side-size: min(24rem, 100vw - 3rem);
   $placements: (
     end: (
@@ -143,7 +143,7 @@ $widths: (
       max-block-size: none,
       padding-block: $safe-top $safe-bottom,
       radius: $edge 0 0 $edge,
-      from: calc(100% * var(--sauce-drawer-dir)) 0,
+      from: calc(100% * var(--greese-drawer-dir)) 0,
     ),
     start: (
       inset-block: 0,
@@ -153,7 +153,7 @@ $widths: (
       max-block-size: none,
       padding-block: $safe-top $safe-bottom,
       radius: 0 $edge $edge 0,
-      from: calc(-100% * var(--sauce-drawer-dir)) 0,
+      from: calc(-100% * var(--greese-drawer-dir)) 0,
     ),
     bottom: (
       inset-block: auto 0,
@@ -161,7 +161,7 @@ $widths: (
       inline-size: 100vw,
       block-size: auto,
       max-block-size: 85dvh,
-      padding-block: var(--sauce-space-5) $safe-bottom,
+      padding-block: var(--greese-space-5) $safe-bottom,
       radius: $edge $edge 0 0,
       from: 0 100%,
     ),
@@ -171,7 +171,7 @@ $widths: (
       inline-size: 100vw,
       block-size: auto,
       max-block-size: 85dvh,
-      padding-block: $safe-top var(--sauce-space-5),
+      padding-block: $safe-top var(--greese-space-5),
       radius: 0 0 $edge $edge,
       from: 0 -100%,
     ),
@@ -182,9 +182,9 @@ $widths: (
       @each $placement, $g in $placements {
         $radius: map.get($g, radius);
 
-        .sauce-Drawer--#{$bp}-placement-#{$placement} {
+        .greese-Drawer--#{$bp}-placement-#{$placement} {
           // Read by the swipe-to-close handler: which way a drag dismisses.
-          --sauce-drawer-edge: #{$placement};
+          --greese-drawer-edge: #{$placement};
 
           inset-block: map.get($g, inset-block);
           inset-inline: map.get($g, inset-inline);
@@ -212,7 +212,7 @@ $widths: (
   }
 
   // Swipe-to-close starts on the header; it must not pan the page.
-  .sauce-Drawer .sauce-Dialog-header {
+  .greese-Drawer .greese-Dialog-header {
     position: relative;
     touch-action: none;
   }
@@ -220,21 +220,21 @@ $widths: (
   // A grab handle on bottom sheets, at every breakpoint where they are bottom.
   @each $bp, $_ in mixins.$breakpoints {
     @include mixins.up($bp) {
-      .sauce-Drawer--#{$bp}-placement-bottom .sauce-Dialog-header::before {
+      .greese-Drawer--#{$bp}-placement-bottom .greese-Dialog-header::before {
         position: absolute;
-        inset-block-start: calc(-1 * var(--sauce-space-3));
+        inset-block-start: calc(-1 * var(--greese-space-3));
         inset-inline: 0;
         display: block;
         inline-size: 2.5rem;
         block-size: 4px;
         margin-inline: auto;
         content: '';
-        background-color: var(--sauce-color-border-strong);
-        border-radius: var(--sauce-radius-pill);
+        background-color: var(--greese-color-border-strong);
+        border-radius: var(--greese-radius-pill);
       }
 
       @each $placement in (start, end, top) {
-        .sauce-Drawer--#{$bp}-placement-#{$placement} .sauce-Dialog-header::before {
+        .greese-Drawer--#{$bp}-placement-#{$placement} .greese-Dialog-header::before {
           display: none;
         }
       }

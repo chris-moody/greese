@@ -75,17 +75,17 @@ export const Radio = ({
 
   return (
     <div
-      className={cx('sauce-Radio', className)}
+      className={cx('greese-Radio', className)}
       style={style}
       data-disabled={control.disabled || undefined}
     >
-      <span className="sauce-Checkbox-box">
+      <span className="greese-Checkbox-box">
         <input
           {...props}
           {...groupProps}
           {...control}
           type="radio"
-          className="sauce-Radio-input"
+          className="greese-Radio-input"
           onChange={(event: ChangeEvent<HTMLInputElement>) => {
             onChange?.(event)
             if (event.target.checked) group?.select(props.value)

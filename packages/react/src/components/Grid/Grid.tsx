@@ -40,7 +40,7 @@ export interface GridProps extends Omit<BoxProps, 'gap'> {
   container?: boolean
 }
 
-const G = 'sauce-Grid'
+const G = 'greese-Grid'
 const isColumnToken = (v: ResponsiveValue): boolean =>
   typeof v === 'number' && Number.isInteger(v) && v >= 1 && v <= 12
 const COLUMNS: ResponsiveConfig = { block: G, prop: 'columns', isToken: isColumnToken }
@@ -95,7 +95,7 @@ export interface GridItemProps extends BoxProps {
   span?: Responsive<GridSpan>
 }
 
-const SPAN: ResponsiveConfig = { block: 'sauce-GridItem', prop: 'span' }
+const SPAN: ResponsiveConfig = { block: 'greese-GridItem', prop: 'span' }
 
 /** A Grid cell that spans columns, per breakpoint or per container width. */
 export const GridItem = ({
@@ -105,7 +105,7 @@ export const GridItem = ({
   ...props
 }: GridItemProps): JSX.Element => {
   const resolved = resolveResponsive([[span, SPAN]], {
-    className: cx('sauce-GridItem', className),
+    className: cx('greese-GridItem', className),
     style,
   })
   return <Box {...props} className={resolved.className} style={resolved.style} />

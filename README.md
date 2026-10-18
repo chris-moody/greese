@@ -1,12 +1,12 @@
-# SauceUI
+# GreeseUI
 
 Mobile-first, TypeScript-first React components with zero-runtime styling:
 static CSS compiled at build time, themed with CSS custom properties.
 
 | Package | |
 |---|---|
-| [`@sauce-ui/react`](packages/react) | Components, hooks, and the compiled stylesheet |
-| [`@sauce-ui/tokens`](packages/tokens) | Design tokens as CSS variables, Sass maps, and TS constants |
+| [`@greese-ui/react`](packages/react) | Components, hooks, and the compiled stylesheet |
+| [`@greese-ui/tokens`](packages/tokens) | Design tokens as CSS variables, Sass maps, and TS constants |
 
 Plan and architecture: [docs/plans/DEVELOPMENT_PLAN.md](docs/plans/DEVELOPMENT_PLAN.md).
 
@@ -41,7 +41,7 @@ npx playwright install chromium   # once, for e2e
 | `npm run test:visual` | Visual regression for every story (builds Storybook first) |
 | `npm run lighthouse -w playground` | Lighthouse budgets on the playground pages (after `npm run build`) |
 | `npm run verify:packages` | Packs both packages and checks them in a clean consumer project |
-| `npm run bench -w playground` | SauceUI vs MUI performance benchmark |
+| `npm run bench -w playground` | GreeseUI vs MUI performance benchmark |
 | `npm run changeset` | Records a release note for a change to a published package |
 
 ## Commits
@@ -62,8 +62,8 @@ Code also uses as its `/commit` skill.
 ## Releasing
 
 Changesets on `main` produce a "Version Packages" PR, and merging it publishes
-to npm (`.github/workflows/release.yml`). `@sauce-ui/react` and
-`@sauce-ui/tokens` share one version number.
+to npm (`.github/workflows/release.yml`). `@greese-ui/react` and
+`@greese-ui/tokens` share one version number.
 
 ## Documentation
 

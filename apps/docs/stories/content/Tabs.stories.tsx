@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Tab, TabList, TabPanel, Tabs, Text } from '@sauce-ui/react'
+import { Tab, TabList, TabPanel, Tabs, Text } from '@greese-ui/react'
 
 const sections = [
   'Overview',

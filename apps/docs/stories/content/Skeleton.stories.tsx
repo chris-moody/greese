@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Skeleton, Stack } from '@sauce-ui/react'
+import { Skeleton, Stack } from '@greese-ui/react'
 
 const meta = {
   title: 'Content/Skeleton',

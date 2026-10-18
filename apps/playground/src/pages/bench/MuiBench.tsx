@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import { CARDS, Harness } from './Harness.tsx'
 
 /**
- * MUI spacing unit is 8px: normal 8/16, dense 4/8 (identical to SauceBench).
+ * MUI spacing unit is 8px: normal 8/16, dense 4/8 (identical to GreeseBench).
  * MUI 9 removed Stack's system props, so alignment goes through `sx`, as an
  * MUI app would write it.
  */

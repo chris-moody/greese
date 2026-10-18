@@ -7,7 +7,7 @@ import {
   type JSX,
   type Ref,
 } from 'react'
-import type { ColorScheme, Theme } from '@sauce-ui/tokens'
+import type { ColorScheme, Theme } from '@greese-ui/tokens'
 import { cx } from '../../utils/cx.ts'
 import { Slot } from '../Slot/Slot.tsx'
 
@@ -66,15 +66,15 @@ export const ThemeProvider = ({
   return (
     <ThemeScopeContext value={scope}>
       {theme && (
-        <style href={`sauce-theme-${theme.name}`} precedence="sauce">
+        <style href={`greese-theme-${theme.name}`} precedence="greese">
           {theme.css}
         </style>
       )}
       <Root
         {...props}
-        className={cx(!asChild && 'sauce-ThemeProvider', className)}
-        data-sauce-theme={themeName}
-        data-sauce-scheme={resolvedScheme}
+        className={cx(!asChild && 'greese-ThemeProvider', className)}
+        data-greese-theme={themeName}
+        data-greese-scheme={resolvedScheme}
       >
         {children}
       </Root>

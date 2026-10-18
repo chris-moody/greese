@@ -1,29 +1,29 @@
-# @sauce-ui/react
+# @greese-ui/react
 
 Mobile-first, TypeScript-first React components. All styling is static CSS
 compiled at build time and themed with CSS custom properties, so there is no
 CSS-in-JS runtime.
 
 ```bash
-npm install @sauce-ui/react
+npm install @greese-ui/react
 ```
 
 ```tsx
 // Once, at your app root:
-import '@sauce-ui/react/base.css' // optional: reset + body defaults
-import '@sauce-ui/react/styles.css' // tokens + component styles
+import '@greese-ui/react/base.css' // optional: reset + body defaults
+import '@greese-ui/react/styles.css' // tokens + component styles
 ```
 
-Requires React 19. `styles.css` styles only `.sauce-*` classes. Import
-`base.css` too if SauceUI owns the whole page.
+Requires React 19. `styles.css` styles only `.greese-*` classes. Import
+`base.css` too if GreeseUI owns the whole page.
 
 To ship only the CSS you use, import per-component stylesheets instead of
 `styles.css`. Each one pulls in the shared core and the components it builds
 on, and bundlers de-duplicate the shared parts:
 
 ```tsx
-import '@sauce-ui/react/css/Button.css'
-import '@sauce-ui/react/css/Dialog.css' // + IconButton, Button, VisuallyHidden
+import '@greese-ui/react/css/Button.css'
+import '@greese-ui/react/css/Dialog.css' // + IconButton, Button, VisuallyHidden
 ```
 
 ## Colour scheme
@@ -31,7 +31,7 @@ import '@sauce-ui/react/css/Dialog.css' // + IconButton, Button, VisuallyHidden
 The scheme follows the OS by default. To let users choose:
 
 ```tsx
-import { getSchemeScript, useColorScheme } from '@sauce-ui/react'
+import { getSchemeScript, useColorScheme } from '@greese-ui/react'
 
 // In <head>, so a saved choice applies before first paint:
 <script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
@@ -44,7 +44,7 @@ setScheme('dark') // 'light' | 'dark' | 'system'
 ## Themes
 
 ```tsx
-import { createTheme, ThemeProvider } from '@sauce-ui/react'
+import { createTheme, ThemeProvider } from '@greese-ui/react'
 
 // At module scope: builds static CSS once.
 const brand = createTheme({
@@ -66,11 +66,11 @@ You can also theme in plain CSS, with no JavaScript:
 
 ```css
 :root {
-  --sauce-color-accent: #7c3aed;
+  --greese-color-accent: #7c3aed;
 }
 ```
 
-Every library rule sits in `@layer sauce.*`, so unlayered CSS in your app always
+Every library rule sits in `@layer greese.*`, so unlayered CSS in your app always
 wins over it. You never need `!important`.
 
 ## Layout
@@ -163,7 +163,7 @@ To use your own breakpoint values, recompile the SCSS and tell the hooks. The
 keys stay `xs`–`xl`:
 
 ```scss
-@use 'pkg:@sauce-ui/react/scss' with (
+@use 'pkg:@greese-ui/react/scss' with (
   $breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px)
 );
 ```

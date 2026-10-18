@@ -1,14 +1,14 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Stack {
+@layer greese.components {
+  .greese-Stack {
     display: flex;
     flex-direction: column;
     min-inline-size: 0;
   }
 
   @include mixins.responsive-prop(
-    'sauce-Stack',
+    'greese-Stack',
     'direction',
     flex-direction,
     (
@@ -19,9 +19,9 @@
     ),
     $fallback: column
   );
-  @include mixins.responsive-prop('sauce-Stack', 'gap', gap, mixins.space-tokens());
+  @include mixins.responsive-prop('greese-Stack', 'gap', gap, mixins.space-tokens());
   @include mixins.responsive-prop(
-    'sauce-Stack',
+    'greese-Stack',
     'align',
     align-items,
     (
@@ -33,7 +33,7 @@
     )
   );
   @include mixins.responsive-prop(
-    'sauce-Stack',
+    'greese-Stack',
     'justify',
     justify-content,
     (
@@ -46,7 +46,7 @@
     )
   );
   @include mixins.responsive-prop(
-    'sauce-Stack',
+    'greese-Stack',
     'wrap',
     flex-wrap,
     (

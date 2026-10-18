@@ -18,7 +18,7 @@ export const Video = ({
   className,
   ...props
 }: VideoProps): JSX.Element => (
-  <AspectRatio ratio={ratio} fit="contain" className={cx('sauce-Video', className)}>
+  <AspectRatio ratio={ratio} fit="contain" className={cx('greese-Video', className)}>
     <video controls playsInline preload="metadata" {...props} />
   </AspectRatio>
 )
@@ -39,7 +39,7 @@ export const Embed = ({
   className,
   ...props
 }: EmbedProps): JSX.Element => (
-  <AspectRatio ratio={ratio} className={cx('sauce-Embed', className)}>
+  <AspectRatio ratio={ratio} className={cx('greese-Embed', className)}>
     <iframe
       loading="lazy"
       allowFullScreen

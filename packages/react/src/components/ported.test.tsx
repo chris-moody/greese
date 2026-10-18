@@ -43,10 +43,10 @@ describe('Break', () => {
       </p>
     )
     const br = container.querySelector('br')
-    expect(classes(br)).toEqual(['sauce-Visibility--hide-below-md'])
+    expect(classes(br)).toEqual(['greese-Visibility--hide-below-md'])
     const fallback = container.querySelector('span')
     expect(fallback?.textContent).toBe('\u00A0')
-    expect(classes(fallback)).toEqual(['sauce-Visibility--hide-from-md'])
+    expect(classes(fallback)).toEqual(['greese-Visibility--hide-from-md'])
   })
 
   it('inverts a range for the fallback', () => {
@@ -56,12 +56,12 @@ describe('Break', () => {
       </p>
     )
     expect(classes(container.querySelector('br'))).toEqual([
-      'sauce-Visibility--hide-below-sm',
-      'sauce-Visibility--hide-from-lg',
+      'greese-Visibility--hide-below-sm',
+      'greese-Visibility--hide-from-lg',
     ])
     const fallback = container.querySelector('span')
     expect(fallback?.textContent).toBe(' · ')
-    expect(classes(fallback)).toEqual(['sauce-Visibility--hide-sm-to-lg'])
+    expect(classes(fallback)).toEqual(['greese-Visibility--hide-sm-to-lg'])
   })
 
   it('renders no fallback when given null, or any node', () => {
@@ -242,17 +242,17 @@ describe('AutoLayout', () => {
     )
     const row = screen.getByTestId('row')
     expect(classes(row)).toEqual([
-      'sauce-Box',
-      'sauce-AutoLayout',
-      'sauce-AutoLayout--gap',
-      'sauce-AutoLayout--xs-gap-2',
+      'greese-Box',
+      'greese-AutoLayout',
+      'greese-AutoLayout--gap',
+      'greese-AutoLayout--xs-gap-2',
     ])
-    expect(row.style.getPropertyValue('--sauce-autolayout-columns')).toBe('6')
-    expect(row.style.getPropertyValue('--sauce-autolayout-gap-md')).toBe('20px')
+    expect(row.style.getPropertyValue('--greese-autolayout-columns')).toBe('6')
+    expect(row.style.getPropertyValue('--greese-autolayout-gap-md')).toBe('20px')
     const item = screen.getByTestId('item')
-    expect(item.style.getPropertyValue('--sauce-autolayoutitem-size-md')).toBe('2')
-    expect(item.style.getPropertyValue('--sauce-autolayoutitem-max-xs')).toBe('6')
-    expect(item.style.getPropertyValue('--sauce-autolayoutitem-max-md')).toBe('3')
+    expect(item.style.getPropertyValue('--greese-autolayoutitem-size-md')).toBe('2')
+    expect(item.style.getPropertyValue('--greese-autolayoutitem-max-xs')).toBe('6')
+    expect(item.style.getPropertyValue('--greese-autolayoutitem-max-md')).toBe('3')
   })
 })
 

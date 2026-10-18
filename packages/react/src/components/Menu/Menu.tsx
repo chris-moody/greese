@@ -124,7 +124,7 @@ export const Menu = ({
         popover="auto"
         role="menu"
         aria-labelledby={triggerId}
-        className={cx('sauce-Menu', className)}
+        className={cx('greese-Menu', className)}
         style={{ ...anchor.floatingStyle, ...style }}
         onKeyDown={onMenuKey}
         onToggle={(event: ToggleEvent<HTMLDivElement>) => {
@@ -171,8 +171,8 @@ export const MenuItem = ({
       tabIndex={-1}
       aria-disabled={disabled || undefined}
       className={cx(
-        'sauce-MenuItem',
-        tone === 'negative' && 'sauce-MenuItem--negative',
+        'greese-MenuItem',
+        tone === 'negative' && 'greese-MenuItem--negative',
         className
       )}
       onClick={(event: MouseEvent<HTMLButtonElement>) => {
@@ -194,5 +194,5 @@ export const MenuSeparator = ({
   className,
   ...props
 }: ComponentPropsWithRef<'div'>): JSX.Element => (
-  <div role="separator" {...props} className={cx('sauce-MenuSeparator', className)} />
+  <div role="separator" {...props} className={cx('greese-MenuSeparator', className)} />
 )

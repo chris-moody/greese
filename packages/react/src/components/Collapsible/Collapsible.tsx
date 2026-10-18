@@ -37,18 +37,18 @@ export const Collapsible = ({
   <details
     {...props}
     open={open ?? defaultOpen}
-    className={cx('sauce-Collapsible', className)}
+    className={cx('greese-Collapsible', className)}
     onToggle={(event: SyntheticEvent<HTMLDetailsElement>) => {
       const isOpen = event.currentTarget.open
       if (isOpen !== open) onOpenChange?.(isOpen)
     }}
   >
-    <summary className="sauce-Collapsible-trigger">
-      <span className="sauce-Collapsible-title">{title}</span>
-      <svg className="sauce-Collapsible-chevron" viewBox="0 0 16 16" aria-hidden="true">
+    <summary className="greese-Collapsible-trigger">
+      <span className="greese-Collapsible-title">{title}</span>
+      <svg className="greese-Collapsible-chevron" viewBox="0 0 16 16" aria-hidden="true">
         <path d="M4 6l4 4 4-4" />
       </svg>
     </summary>
-    <div className="sauce-Collapsible-content">{children}</div>
+    <div className="greese-Collapsible-content">{children}</div>
   </details>
 )

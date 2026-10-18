@@ -27,9 +27,9 @@ describe('Button', () => {
     const button = screen.getByRole('button', { name: 'Save' })
     expect(button).toHaveAttribute('type', 'button')
     expect(button).toHaveClass(
-      'sauce-Button--solid',
-      'sauce-Button--accent',
-      'sauce-Button--size-md'
+      'greese-Button--solid',
+      'greese-Button--accent',
+      'greese-Button--size-md'
     )
     await userEvent.tab()
     expect(button).toHaveFocus()
@@ -61,9 +61,9 @@ describe('Button', () => {
       </Button>
     )
     const link = screen.getByRole('link', { name: 'Docs' })
-    expect(link).toHaveClass('sauce-Button', 'sauce-Button--ghost')
+    expect(link).toHaveClass('greese-Button', 'greese-Button--ghost')
     expect(link).not.toHaveAttribute('type')
-    expect(link.querySelector('.sauce-Button-icon')).toHaveAttribute(
+    expect(link.querySelector('.greese-Button-icon')).toHaveAttribute(
       'aria-hidden',
       'true'
     )
@@ -86,9 +86,9 @@ describe('Button', () => {
   it('resolves responsive fullWidth to classes', () => {
     render(<Button fullWidth={{ xs: true, md: false }}>Wide</Button>)
     expect(screen.getByRole('button')).toHaveClass(
-      'sauce-Button--width',
-      'sauce-Button--xs-width-full',
-      'sauce-Button--md-width-auto'
+      'greese-Button--width',
+      'greese-Button--xs-width-full',
+      'greese-Button--md-width-auto'
     )
   })
 })
@@ -101,9 +101,9 @@ describe('IconButton, ToggleButton, ButtonGroup', () => {
       </IconButton>
     )
     expect(screen.getByRole('button', { name: 'Close dialog' })).toHaveClass(
-      'sauce-IconButton',
-      'sauce-Button--ghost',
-      'sauce-Button--neutral'
+      'greese-IconButton',
+      'greese-Button--ghost',
+      'greese-Button--neutral'
     )
   })
 
@@ -129,7 +129,7 @@ describe('IconButton, ToggleButton, ButtonGroup', () => {
       </ButtonGroup>
     )
     expect(screen.getByRole('group', { name: 'Formatting' })).toHaveClass(
-      'sauce-ButtonGroup--attached'
+      'greese-ButtonGroup--attached'
     )
   })
 })
@@ -145,7 +145,7 @@ describe('Field and text controls', () => {
     expect(input).toHaveAccessibleDescription('Work address Required')
     expect(input).toHaveAttribute('aria-invalid', 'true')
     expect(input).toBeRequired()
-    expect(input.closest('.sauce-Input')).toHaveAttribute('data-invalid', 'true')
+    expect(input.closest('.greese-Input')).toHaveAttribute('data-invalid', 'true')
   })
 
   it('omits the error from the description until invalid, and disables the control', () => {
@@ -176,9 +176,9 @@ describe('Field and text controls', () => {
   it('Textarea exposes rows to the autosize CSS', () => {
     render(<Textarea aria-label="Bio" rows={4} maxRows={10} />)
     const textarea = screen.getByLabelText('Bio')
-    expect(textarea).toHaveClass('sauce-Textarea--autosize')
-    expect(textarea.style.getPropertyValue('--sauce-textarea-rows')).toBe('4')
-    expect(textarea.style.getPropertyValue('--sauce-textarea-max-rows')).toBe('10')
+    expect(textarea).toHaveClass('greese-Textarea--autosize')
+    expect(textarea.style.getPropertyValue('--greese-textarea-rows')).toBe('4')
+    expect(textarea.style.getPropertyValue('--greese-textarea-max-rows')).toBe('10')
   })
 
   it('Select starts on its placeholder, which cannot be chosen', () => {
@@ -281,9 +281,9 @@ describe('Slider and FileInput', () => {
     const onValueChange = vi.fn()
     render(<Slider aria-label="Volume" defaultValue={20} onValueChange={onValueChange} />)
     const slider = screen.getByRole<HTMLInputElement>('slider', { name: 'Volume' })
-    expect(slider.style.getPropertyValue('--sauce-slider-fill')).toBe('20%')
+    expect(slider.style.getPropertyValue('--greese-slider-fill')).toBe('20%')
     fireEvent.change(slider, { target: { value: '75' } })
-    expect(slider.style.getPropertyValue('--sauce-slider-fill')).toBe('75%')
+    expect(slider.style.getPropertyValue('--greese-slider-fill')).toBe('75%')
     expect(onValueChange).toHaveBeenCalledWith(75)
   })
 
@@ -294,10 +294,10 @@ describe('Slider and FileInput', () => {
     }
     render(<Controlled />)
     const slider = screen.getByRole<HTMLInputElement>('slider')
-    expect(slider.style.getPropertyValue('--sauce-slider-fill')).toBe('20%')
+    expect(slider.style.getPropertyValue('--greese-slider-fill')).toBe('20%')
     fireEvent.change(slider, { target: { value: '25' } })
     expect(slider.value).toBe('25')
-    expect(slider.style.getPropertyValue('--sauce-slider-fill')).toBe('50%')
+    expect(slider.style.getPropertyValue('--greese-slider-fill')).toBe('50%')
   })
 
   it('FileInput is a native file input wired to its Field', () => {

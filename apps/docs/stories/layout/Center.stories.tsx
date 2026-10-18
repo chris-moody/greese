@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Center } from '@sauce-ui/react'
+import { Center } from '@greese-ui/react'
 import { StarIcon, Tile } from '../_shared/fixtures.tsx'
 
 const meta = {
   title: 'Layout/Center',
   component: Center,
   args: {
-    style: { minBlockSize: '12rem', background: 'var(--sauce-color-surface)' },
+    style: { minBlockSize: '12rem', background: 'var(--greese-color-surface)' },
     children: <Tile>Centred on both axes</Tile>,
   },
 } satisfies Meta<typeof Center>
@@ -24,8 +24,8 @@ export const Inline: Story = {
       inlineSize: '2.5rem',
       blockSize: '2.5rem',
       borderRadius: '50%',
-      background: 'var(--sauce-color-accent)',
-      color: 'var(--sauce-color-on-accent)',
+      background: 'var(--greese-color-accent)',
+      color: 'var(--greese-color-on-accent)',
     },
     children: <StarIcon />,
   },

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * Builds every stylesheet @sauce-ui/react ships:
+ * Builds every stylesheet @greese-ui/react ships:
  *
- *   dist/sauce-ui.css     everything (tokens + all components)
+ *   dist/greese-ui.css     everything (tokens + all components)
  *   dist/base.css         opt-in reset and page defaults
  *   dist/css/core.css     layer order + tokens: what every component needs
  *   dist/css/<Name>.css   one component, @importing core and the components
@@ -22,7 +22,7 @@ const importers = [new NodePackageImporter()]
 const sass = (file: string) => compile(file, { importers }).css
 
 mkdirSync(DIST, { recursive: true })
-writeFileSync(join(DIST, 'sauce-ui.css'), sass(join(SRC, 'styles/index.scss')))
+writeFileSync(join(DIST, 'greese-ui.css'), sass(join(SRC, 'styles/index.scss')))
 writeFileSync(join(DIST, 'base.css'), sass(join(SRC, 'styles/base.scss')))
 
 const CSS = join(DIST, 'css')
@@ -30,7 +30,7 @@ rmSync(CSS, { recursive: true, force: true })
 mkdirSync(CSS)
 writeFileSync(
   join(CSS, 'core.css'),
-  compileString(`@use 'pkg:@sauce-ui/tokens/scss';`, {
+  compileString(`@use 'pkg:@greese-ui/tokens/scss';`, {
     importers,
     url: new URL(`file://${SRC}/`),
   }).css
@@ -45,7 +45,7 @@ const compiled = new Map(
     )
 )
 // styles/index.scss lists components by hand (cascade order matters); one
-// left out would ship per-component CSS but be missing from sauce-ui.css.
+// left out would ship per-component CSS but be missing from greese-ui.css.
 const bundle = readFileSync(join(SRC, 'styles/index.scss'), 'utf8')
 const unbundled = [...compiled.keys()].filter(
   (name) => !bundle.includes(`'../components/${name}/${name}'`)
@@ -72,5 +72,5 @@ for (const { name } of components) {
   written++
 }
 console.log(
-  `wrote dist/sauce-ui.css, dist/base.css, dist/css/core.css and ${written} component stylesheets`
+  `wrote dist/greese-ui.css, dist/base.css, dist/css/core.css and ${written} component stylesheets`
 )

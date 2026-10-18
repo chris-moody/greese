@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Field, Textarea } from '@sauce-ui/react'
+import { Field, Textarea } from '@greese-ui/react'
 
 const meta = {
   title: 'Forms/Textarea',

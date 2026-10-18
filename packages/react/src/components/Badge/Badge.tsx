@@ -24,9 +24,9 @@ export const Badge = ({
   <span
     {...props}
     className={cx(
-      'sauce-Badge',
-      `sauce-Badge--${tone}`,
-      `sauce-Badge--${variant}`,
+      'greese-Badge',
+      `greese-Badge--${tone}`,
+      `greese-Badge--${variant}`,
       className
     )}
   />

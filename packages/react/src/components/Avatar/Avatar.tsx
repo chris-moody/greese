@@ -53,9 +53,9 @@ export const Avatar = ({
     <span
       {...props}
       className={cx(
-        'sauce-Avatar',
-        `sauce-Avatar--${size}`,
-        shape === 'square' && 'sauce-Avatar--square',
+        'greese-Avatar',
+        `greese-Avatar--${size}`,
+        shape === 'square' && 'greese-Avatar--square',
         className
       )}
     >
@@ -69,7 +69,7 @@ export const Avatar = ({
           onError={() => setFailedSrc(src)}
         />
       ) : (
-        <span role="img" aria-label={name} className="sauce-Avatar-fallback">
+        <span role="img" aria-label={name} className="greese-Avatar-fallback">
           {fallback ?? <span aria-hidden="true">{initials(name)}</span>}
         </span>
       )}
@@ -107,22 +107,22 @@ export const AvatarGroup = ({
     <div
       role="group"
       {...props}
-      className={cx('sauce-AvatarGroup', `sauce-AvatarGroup--${size}`, className)}
+      className={cx('greese-AvatarGroup', `greese-AvatarGroup--${size}`, className)}
     >
       {shown.map((item, i) => (
-        <span key={i} className="sauce-AvatarGroup-item" style={layer(i)}>
+        <span key={i} className="greese-AvatarGroup-item" style={layer(i)}>
           {item}
         </span>
       ))}
       {hidden > 0 && (
-        <span className="sauce-AvatarGroup-item" style={layer(shown.length)}>
+        <span className="greese-AvatarGroup-item" style={layer(shown.length)}>
           <span
-            className={cx('sauce-Avatar', `sauce-Avatar--${size}`, 'sauce-Avatar--count')}
+            className={cx('greese-Avatar', `greese-Avatar--${size}`, 'greese-Avatar--count')}
           >
             <span
               role="img"
               aria-label={`${hidden} more`}
-              className="sauce-Avatar-fallback"
+              className="greese-Avatar-fallback"
             >
               <span aria-hidden="true">+{hidden}</span>
             </span>

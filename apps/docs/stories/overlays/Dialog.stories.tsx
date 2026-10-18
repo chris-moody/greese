@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button, Dialog, Stack, TextField } from '@sauce-ui/react'
+import { Button, Dialog, Stack, TextField } from '@greese-ui/react'
 
 const meta = {
   title: 'Overlays/Dialog',

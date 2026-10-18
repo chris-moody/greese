@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Collapsible, Text } from '@sauce-ui/react'
+import { Collapsible, Text } from '@greese-ui/react'
 
 const meta = {
   title: 'Content/Collapsible',

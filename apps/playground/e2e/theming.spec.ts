@@ -75,7 +75,7 @@ for (const os of ['light', 'dark'] as const) {
       await page.getByRole('button', { name: forced, exact: true }).click()
       await expect(page.getByTestId('scheme')).toHaveText(forced)
       expect(
-        await page.evaluate(() => document.documentElement.dataset.sauceScheme)
+        await page.evaluate(() => document.documentElement.dataset.greeseScheme)
       ).toBe(forced)
       await assertAll(page, forced, os)
     }
@@ -94,7 +94,7 @@ test('a saved scheme is applied before first paint on reload', async ({ page }) 
   await page.addInitScript(() => {
     document.addEventListener('readystatechange', () => {
       ;(window as unknown as { early?: string }).early ??=
-        document.documentElement.dataset.sauceScheme
+        document.documentElement.dataset.greeseScheme
     })
   })
   await page.reload()
@@ -107,7 +107,7 @@ test('a saved scheme is applied before first paint on reload', async ({ page }) 
 test('theme CSS is injected once per theme, in <head>', async ({ page }) => {
   await page.getByTestId('brand').waitFor()
   const hrefs = await page
-    .locator('head style[data-href^="sauce-theme-"]')
+    .locator('head style[data-href^="greese-theme-"]')
     .evaluateAll((els) => els.map((el) => el.getAttribute('data-href')))
-  expect(hrefs.sort()).toEqual(['sauce-theme-brand', 'sauce-theme-rounded'])
+  expect(hrefs.sort()).toEqual(['greese-theme-brand', 'greese-theme-rounded'])
 })

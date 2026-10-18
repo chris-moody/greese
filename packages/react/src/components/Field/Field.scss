@@ -1,8 +1,8 @@
-@layer sauce.components {
-  .sauce-Field {
+@layer greese.components {
+  .greese-Field {
     display: flex;
     flex-direction: column;
-    gap: var(--sauce-space-2);
+    gap: var(--greese-space-2);
     min-inline-size: 0;
 
     &[data-disabled] {
@@ -10,29 +10,29 @@
     }
   }
 
-  .sauce-Field-label {
-    font-size: var(--sauce-font-size-sm);
-    font-weight: var(--sauce-font-weight-medium);
-    color: var(--sauce-color-fg);
+  .greese-Field-label {
+    font-size: var(--greese-font-size-sm);
+    font-weight: var(--greese-font-weight-medium);
+    color: var(--greese-color-fg);
   }
 
-  .sauce-Field-required {
+  .greese-Field-required {
     margin-inline-start: 0.2em;
-    color: var(--sauce-color-negative);
+    color: var(--greese-color-negative);
   }
 
-  .sauce-Field-description,
-  .sauce-Field-error {
+  .greese-Field-description,
+  .greese-Field-error {
     margin: 0;
-    font-size: var(--sauce-font-size-sm);
-    line-height: var(--sauce-line-height-snug);
+    font-size: var(--greese-font-size-sm);
+    line-height: var(--greese-line-height-snug);
   }
 
-  .sauce-Field-description {
-    color: var(--sauce-color-fg-muted);
+  .greese-Field-description {
+    color: var(--greese-color-fg-muted);
   }
 
-  .sauce-Field-error {
-    color: var(--sauce-color-negative);
+  .greese-Field-error {
+    color: var(--greese-color-negative);
   }
 }

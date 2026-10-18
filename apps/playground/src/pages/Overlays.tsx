@@ -20,9 +20,9 @@ import {
   toast,
   Toaster,
   Tooltip,
-} from '@sauce-ui/react'
-import '@sauce-ui/react/base.css'
-import '@sauce-ui/react/styles.css'
+} from '@greese-ui/react'
+import '@greese-ui/react/base.css'
+import '@greese-ui/react/styles.css'
 
 /** Overlay and navigation fixtures for e2e/overlays.spec.ts. */
 export const Overlays = (): JSX.Element => {

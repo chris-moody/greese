@@ -22,6 +22,6 @@ export const Container = ({
 }: ContainerProps): JSX.Element => (
   <Box
     {...props}
-    className={cx('sauce-Container', `sauce-Container--size-${size}`, className)}
+    className={cx('greese-Container', `greese-Container--size-${size}`, className)}
   />
 )

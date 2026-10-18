@@ -32,7 +32,7 @@ export const Accordion = ({
   const name = useId()
   return (
     <AccordionContext value={exclusive ? name : undefined}>
-      <div {...props} className={cx('sauce-Accordion', className)} />
+      <div {...props} className={cx('greese-Accordion', className)} />
     </AccordionContext>
   )
 }
@@ -50,7 +50,7 @@ export const AccordionItem = ({
     <Collapsible
       {...props}
       name={name ?? groupName}
-      className={cx('sauce-AccordionItem', className)}
+      className={cx('greese-AccordionItem', className)}
     />
   )
 }

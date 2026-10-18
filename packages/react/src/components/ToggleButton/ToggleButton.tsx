@@ -37,7 +37,7 @@ export const ToggleButton = ({
       variant={variant}
       tone={tone}
       aria-pressed={pressed}
-      className={cx('sauce-ToggleButton', className)}
+      className={cx('greese-ToggleButton', className)}
       onClick={(event: MouseEvent<HTMLButtonElement>) => {
         onClick?.(event)
         if (!event.defaultPrevented) setPressed((p) => !p)

@@ -35,7 +35,7 @@ export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   asChild?: boolean
 }
 
-const FULL_WIDTH: ResponsiveConfig = { block: 'sauce-Button', prop: 'width' }
+const FULL_WIDTH: ResponsiveConfig = { block: 'greese-Button', prop: 'width' }
 
 /**
  * A button. `type` defaults to `"button"`, so it never submits a form by
@@ -68,10 +68,10 @@ export const Button = ({
     [[mapResponsive(fullWidth, (full) => (full ? 'full' : 'auto')), FULL_WIDTH]],
     {
       className: cx(
-        'sauce-Button',
-        `sauce-Button--${variant}`,
-        `sauce-Button--${tone}`,
-        `sauce-Button--size-${size}`,
+        'greese-Button',
+        `greese-Button--${variant}`,
+        `greese-Button--${tone}`,
+        `greese-Button--size-${size}`,
         className
       ),
       style,
@@ -100,13 +100,13 @@ export const Button = ({
       }}
     >
       {startIcon && (
-        <span className="sauce-Button-icon" aria-hidden="true">
+        <span className="greese-Button-icon" aria-hidden="true">
           {startIcon}
         </span>
       )}
       <Slottable>{children}</Slottable>
       {endIcon && (
-        <span className="sauce-Button-icon" aria-hidden="true">
+        <span className="greese-Button-icon" aria-hidden="true">
           {endIcon}
         </span>
       )}

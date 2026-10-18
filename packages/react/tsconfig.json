@@ -1,5 +1,5 @@
 {
-  "extends": "@sauce-ui/typescript-config/react-library.json",
+  "extends": "@greese-ui/typescript-config/react-library.json",
   "compilerOptions": {
     "noEmit": true,
     "types": []

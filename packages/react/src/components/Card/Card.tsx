@@ -23,7 +23,7 @@ export interface CardProps extends BoxProps {
 }
 
 const PADDING: ResponsiveConfig = {
-  block: 'sauce-Card',
+  block: 'greese-Card',
   prop: 'padding',
   isToken: neverToken,
   toCss: spaceToCss,
@@ -49,9 +49,9 @@ export const Card = ({
 }: CardProps): JSX.Element => {
   const resolved = resolveResponsive([[padding, PADDING]], {
     className: cx(
-      'sauce-Card',
-      `sauce-Card--${variant}`,
-      interactive && 'sauce-Card--interactive',
+      'greese-Card',
+      `greese-Card--${variant}`,
+      interactive && 'greese-Card--interactive',
       className
     ),
     style,
@@ -64,5 +64,5 @@ export const Card = ({
  * child it also takes the card's top corners.
  */
 export const CardMedia = ({ className, ...props }: BoxProps): JSX.Element => (
-  <Box {...props} className={cx('sauce-CardMedia', className)} />
+  <Box {...props} className={cx('greese-CardMedia', className)} />
 )

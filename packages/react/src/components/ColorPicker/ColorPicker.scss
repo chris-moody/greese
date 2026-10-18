@@ -11,29 +11,29 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
 
 @mixin channel-thumb {
   box-sizing: border-box;
-  inline-size: var(--sauce-colorpicker-thumb);
-  block-size: var(--sauce-colorpicker-thumb);
+  inline-size: var(--greese-colorpicker-thumb);
+  block-size: var(--greese-colorpicker-thumb);
   background: transparent;
   border: 3px solid #fff;
   border-radius: 50%;
   box-shadow:
     0 0 0 1px rgb(0 0 0 / 35%),
-    var(--sauce-shadow-sm);
+    var(--greese-shadow-sm);
 }
 
-@layer sauce.components {
-  .sauce-ColorPicker {
-    --sauce-colorpicker-thumb: 1.125rem;
+@layer greese.components {
+  .greese-ColorPicker {
+    --greese-colorpicker-thumb: 1.125rem;
 
     @include mixins.component-root;
 
     display: grid;
-    gap: var(--sauce-space-3);
+    gap: var(--greese-space-3);
     inline-size: min(100%, 18rem);
-    color: var(--sauce-color-fg);
+    color: var(--greese-color-fg);
 
     @media (pointer: coarse) {
-      --sauce-colorpicker-thumb: 1.5rem;
+      --greese-colorpicker-thumb: 1.5rem;
     }
 
     &[data-disabled] {
@@ -42,22 +42,22 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
     }
   }
 
-  .sauce-ColorPicker-area {
+  .greese-ColorPicker-area {
     position: relative;
     aspect-ratio: 4 / 3;
     cursor: crosshair;
     background:
       linear-gradient(to top, #000, transparent),
       linear-gradient(to right, #fff, transparent),
-      hsl(var(--sauce-colorpicker-hue) 100% 50%);
-    border-radius: var(--sauce-radius-md);
+      hsl(var(--greese-colorpicker-hue) 100% 50%);
+    border-radius: var(--greese-radius-md);
     box-shadow: inset 0 0 0 1px rgb(0 0 0 / 10%);
 
     // The page must not scroll while a finger drags the thumb.
     touch-action: none;
 
     &:focus-visible {
-      outline: 2px solid var(--sauce-color-focus-ring);
+      outline: 2px solid var(--greese-color-focus-ring);
       outline-offset: 2px;
     }
 
@@ -66,14 +66,14 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
     }
   }
 
-  .sauce-ColorPicker-thumb {
+  .greese-ColorPicker-thumb {
     @include channel-thumb;
 
     position: absolute;
-    inset-block-start: var(--sauce-colorpicker-y);
-    inset-inline-start: var(--sauce-colorpicker-x);
+    inset-block-start: var(--greese-colorpicker-y);
+    inset-inline-start: var(--greese-colorpicker-x);
     pointer-events: none;
-    background: var(--sauce-colorpicker-color);
+    background: var(--greese-colorpicker-color);
     translate: -50% -50%;
 
     &:dir(rtl) {
@@ -81,35 +81,35 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
     }
   }
 
-  .sauce-ColorPicker-controls {
+  .greese-ColorPicker-controls {
     display: flex;
-    gap: var(--sauce-space-3);
+    gap: var(--greese-space-3);
     align-items: center;
   }
 
-  .sauce-ColorPicker-preview {
+  .greese-ColorPicker-preview {
     flex: none;
     inline-size: 2.25rem;
     block-size: 2.25rem;
     background:
-      linear-gradient(var(--sauce-colorpicker-current), var(--sauce-colorpicker-current)),
+      linear-gradient(var(--greese-colorpicker-current), var(--greese-colorpicker-current)),
       $checker;
     border-radius: 50%;
 
     // The theme's border, so dark swatches stay visible on dark surfaces.
-    box-shadow: inset 0 0 0 1px var(--sauce-color-border-strong);
+    box-shadow: inset 0 0 0 1px var(--greese-color-border-strong);
   }
 
-  .sauce-ColorPicker-sliders {
+  .greese-ColorPicker-sliders {
     display: grid;
     flex: 1;
-    gap: var(--sauce-space-3);
+    gap: var(--greese-space-3);
     min-inline-size: 0;
   }
 
-  .sauce-ColorPicker-hue,
-  .sauce-ColorPicker-alpha {
-    --sauce-colorpicker-track: linear-gradient(
+  .greese-ColorPicker-hue,
+  .greese-ColorPicker-alpha {
+    --greese-colorpicker-track: linear-gradient(
       to right,
       #f00,
       #ff0 17%,
@@ -122,7 +122,7 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
 
     display: block;
     inline-size: 100%;
-    block-size: var(--sauce-colorpicker-thumb);
+    block-size: var(--greese-colorpicker-thumb);
     margin: 0;
     cursor: pointer;
     background: none;
@@ -130,21 +130,21 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
 
     &::-webkit-slider-runnable-track {
       block-size: 0.75rem;
-      background: var(--sauce-colorpicker-track);
-      border-radius: var(--sauce-radius-pill);
+      background: var(--greese-colorpicker-track);
+      border-radius: var(--greese-radius-pill);
       box-shadow: inset 0 0 0 1px rgb(0 0 0 / 10%);
     }
 
     &::-moz-range-track {
       block-size: 0.75rem;
-      background: var(--sauce-colorpicker-track);
-      border-radius: var(--sauce-radius-pill);
+      background: var(--greese-colorpicker-track);
+      border-radius: var(--greese-radius-pill);
     }
 
     &::-webkit-slider-thumb {
       @include channel-thumb;
 
-      margin-block-start: calc((0.75rem - var(--sauce-colorpicker-thumb)) / 2);
+      margin-block-start: calc((0.75rem - var(--greese-colorpicker-thumb)) / 2);
       appearance: none;
     }
 
@@ -157,12 +157,12 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
     }
 
     &:focus-visible::-webkit-slider-thumb {
-      outline: 2px solid var(--sauce-color-focus-ring);
+      outline: 2px solid var(--greese-color-focus-ring);
       outline-offset: 2px;
     }
 
     &:focus-visible::-moz-range-thumb {
-      outline: 2px solid var(--sauce-color-focus-ring);
+      outline: 2px solid var(--greese-color-focus-ring);
       outline-offset: 2px;
     }
 
@@ -171,42 +171,42 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
     }
   }
 
-  .sauce-ColorPicker-alpha {
-    --sauce-colorpicker-track:
-      linear-gradient(to right, transparent, var(--sauce-colorpicker-color)), #{$checker};
+  .greese-ColorPicker-alpha {
+    --greese-colorpicker-track:
+      linear-gradient(to right, transparent, var(--greese-colorpicker-color)), #{$checker};
 
     // Hue and opacity run left to right in every direction: they're scales,
     // not reading order.
     direction: ltr;
   }
 
-  .sauce-ColorPicker-hue {
+  .greese-ColorPicker-hue {
     direction: ltr;
   }
 
-  .sauce-ColorPicker-hex {
-    font-family: var(--sauce-font-mono);
+  .greese-ColorPicker-hex {
+    font-family: var(--greese-font-mono);
   }
 
-  .sauce-ColorPicker-swatches {
+  .greese-ColorPicker-swatches {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--sauce-space-2);
+    gap: var(--greese-space-2);
   }
 
-  .sauce-ColorPicker-swatch {
+  .greese-ColorPicker-swatch {
     inline-size: 1.75rem;
     block-size: 1.75rem;
     padding: 0;
     cursor: pointer;
     background:
-      linear-gradient(var(--sauce-colorpicker-swatch), var(--sauce-colorpicker-swatch)),
+      linear-gradient(var(--greese-colorpicker-swatch), var(--greese-colorpicker-swatch)),
       $checker;
     border: 0;
-    border-radius: var(--sauce-radius-sm);
+    border-radius: var(--greese-radius-sm);
 
     // The theme's border, so dark swatches stay visible on dark surfaces.
-    box-shadow: inset 0 0 0 1px var(--sauce-color-border-strong);
+    box-shadow: inset 0 0 0 1px var(--greese-color-border-strong);
 
     @media (pointer: coarse) {
       inline-size: 2.25rem;
@@ -214,12 +214,12 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
     }
 
     &[aria-pressed='true'] {
-      outline: 2px solid var(--sauce-color-fg);
+      outline: 2px solid var(--greese-color-fg);
       outline-offset: 2px;
     }
 
     &:focus-visible {
-      outline: 2px solid var(--sauce-color-focus-ring);
+      outline: 2px solid var(--greese-color-focus-ring);
       outline-offset: 2px;
     }
 

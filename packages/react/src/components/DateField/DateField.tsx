@@ -25,5 +25,5 @@ export const DateField = ({
   className,
   ...props
 }: DateFieldProps): JSX.Element => (
-  <TextField {...props} type={type} className={cx('sauce-DateField', className)} />
+  <TextField {...props} type={type} className={cx('greese-DateField', className)} />
 )

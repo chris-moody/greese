@@ -12,25 +12,25 @@ describe('ownersOf', () => {
   it('prefers the component named after the block, else the only definer', () => {
     const owners = ownersOf(
       new Map([
-        ['Button', '.sauce-Button { } .sauce-Button--solid { }'],
-        ['ButtonGroup', '.sauce-ButtonGroup > .sauce-Button { }'],
-        ['ChoiceGroup', '.sauce-Checkbox, .sauce-Radio { } .sauce-Checkbox-box { }'],
-        ['Checkbox', '.sauce-Checkbox-input { }'],
+        ['Button', '.greese-Button { } .greese-Button--solid { }'],
+        ['ButtonGroup', '.greese-ButtonGroup > .greese-Button { }'],
+        ['ChoiceGroup', '.greese-Checkbox, .greese-Radio { } .greese-Checkbox-box { }'],
+        ['Checkbox', '.greese-Checkbox-input { }'],
       ])
     )
-    expect(owners.get('sauce-Button')).toBe('Button')
-    expect(owners.get('sauce-Checkbox')).toBe('ChoiceGroup')
-    expect(owners.get('sauce-Checkbox-box')).toBe('ChoiceGroup')
-    expect(owners.get('sauce-Checkbox-input')).toBe('Checkbox')
+    expect(owners.get('greese-Button')).toBe('Button')
+    expect(owners.get('greese-Checkbox')).toBe('ChoiceGroup')
+    expect(owners.get('greese-Checkbox-box')).toBe('ChoiceGroup')
+    expect(owners.get('greese-Checkbox-input')).toBe('Checkbox')
   })
 })
 
 describe('dependenciesOf', () => {
   const compiled = new Map([
-    ['Button', '.sauce-Button { }'],
-    ['IconButton', '.sauce-IconButton { }'],
-    ['Dialog', '.sauce-Dialog { } .sauce-Dialog-title { }'],
-    ['VisuallyHidden', '.sauce-VisuallyHidden { }'],
+    ['Button', '.greese-Button { }'],
+    ['IconButton', '.greese-IconButton { }'],
+    ['Dialog', '.greese-Dialog { } .greese-Dialog-title { }'],
+    ['VisuallyHidden', '.greese-VisuallyHidden { }'],
   ])
 
   it('follows imports and class references, skipping components with no styles', () => {
@@ -39,15 +39,15 @@ describe('dependenciesOf', () => {
         component('Slot', 'export const Slot = 1', false),
         component(
           'Button',
-          "import { Slot } from '../Slot/Slot.tsx'; cx('sauce-Button', `sauce-Button--${v}`)"
+          "import { Slot } from '../Slot/Slot.tsx'; cx('greese-Button', `greese-Button--${v}`)"
         ),
         component(
           'IconButton',
-          "import { Button } from '../Button/Button.tsx'; 'sauce-IconButton'"
+          "import { Button } from '../Button/Button.tsx'; 'greese-IconButton'"
         ),
         component(
           'Dialog',
-          "import { IconButton } from '../IconButton/IconButton.tsx'\nimport { Slot } from '../Slot/Slot.tsx'\n'sauce-Dialog-title', hide && 'sauce-VisuallyHidden'"
+          "import { IconButton } from '../IconButton/IconButton.tsx'\nimport { Slot } from '../Slot/Slot.tsx'\n'greese-Dialog-title', hide && 'greese-VisuallyHidden'"
         ),
         component('TextField', "import { Button } from '../Button/Button.tsx'", false),
       ],
@@ -62,7 +62,7 @@ describe('dependenciesOf', () => {
   })
 
   it('reports classes whose block no stylesheet defines', () => {
-    const { unresolved } = dependenciesOf([component('Typo', "'sauce-Buton'")], compiled)
-    expect(unresolved).toEqual([{ component: 'Typo', cls: 'sauce-Buton' }])
+    const { unresolved } = dependenciesOf([component('Typo', "'greese-Buton'")], compiled)
+    expect(unresolved).toEqual([{ component: 'Typo', cls: 'greese-Buton' }])
   })
 })

@@ -47,8 +47,8 @@ export const SidebarLayout = ({
       <div
         {...props}
         className={cx(
-          'sauce-SidebarLayout',
-          `sauce-SidebarLayout--${breakpoint}`,
+          'greese-SidebarLayout',
+          `greese-SidebarLayout--${breakpoint}`,
           className
         )}
       />
@@ -100,7 +100,7 @@ export const Sidebar = ({
       popover="auto"
       aria-label={label}
       data-collapsed={collapsed || undefined}
-      className={cx('sauce-Sidebar', className)}
+      className={cx('greese-Sidebar', className)}
       onClick={(event: MouseEvent<HTMLElement>) => {
         onClick?.(event)
         const el = event.currentTarget
@@ -133,8 +133,8 @@ export const SidebarTrigger = ({
       label={label}
       popoverTarget={context?.id}
       className={cx(
-        'sauce-SidebarTrigger',
-        `sauce-SidebarTrigger--${context?.breakpoint ?? 'md'}`,
+        'greese-SidebarTrigger',
+        `greese-SidebarTrigger--${context?.breakpoint ?? 'md'}`,
         className
       )}
     >

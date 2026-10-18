@@ -3,7 +3,7 @@ name: commit
 description: Create Conventional Commits for this repo. Use whenever committing changes, splitting work into commits, or writing a commit message. Groups changes into atomic commits, picks the type and scope, writes a one-line message that passes commitlint, and never adds co-author or other trailers.
 ---
 
-# Committing in SauceUI
+# Committing in GreeseUI
 
 Every commit is a single [Conventional Commits](https://www.conventionalcommits.org)
 line. `commitlint.config.mjs` defines the rules. The `.husky/commit-msg` hook
@@ -49,7 +49,7 @@ how you get there without tripping either.
 | ------------------------------------ | ------------------------------------------------------------------------ |
 | `react`                              | `packages/react`                                                         |
 | `tokens`                             | `packages/tokens`                                                        |
-| `sauce`                              | `packages/sauce` (sauce.js)                                              |
+| `greese`                              | `packages/greese` (greese.js)                                              |
 | `docs`                               | `apps/docs` (Storybook) and `docs/`                                      |
 | `playground`                         | `apps/playground`                                                        |
 | `eslint-config`, `typescript-config` | the matching `packages/*`                                                |
@@ -64,11 +64,11 @@ two packages, prefer two commits.
 
 ```
 feat(react): add Stack with responsive direction and gap props
-fix(tokens): keep nested data-sauce-scheme from inheriting root colours
+fix(tokens): keep nested data-greese-scheme from inheriting root colours
 perf(react): skip style object copy when no inline variables are needed
 test(playground): cover nested theme and scheme resolution in Chromium
 docs(docs): record colour-scheme theming decisions in ADR 0002
-build(react): emit base.css alongside sauce-ui.css
+build(react): emit base.css alongside greese-ui.css
 ci: run commitlint on pull request commit ranges
 chore(repo): adopt conventional commits with commitlint and husky
 ```
@@ -90,7 +90,7 @@ Avoid vague subjects: "update files", "fix stuff", "wip", "changes".
    not). Before every commit, review `git diff --cached --name-status`, and if
    a `git add` fails, stop rather than commit whatever happens to be staged.
 4. **Add a changeset when it's needed.** Any `feat`, `fix` or `perf` to a
-   published package (`@sauce-ui/react`, `@sauce-ui/tokens`, `@sauce-ui/sauce`) needs one in
+   published package (`@greese-ui/react`, `@greese-ui/tokens`, `@greese-ui/greese`) needs one in
    `.changeset/`. Create it with `npm run changeset`, or by hand, and commit
    it with the change.
 5. **Commit:** `git commit -m "<type>(<scope>): <subject>"`. Use exactly one

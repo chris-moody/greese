@@ -1,7 +1,7 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Checkbox-input {
+@layer greese.components {
+  .greese-Checkbox-input {
     @include mixins.touch-target;
 
     position: relative;
@@ -9,9 +9,9 @@
     block-size: 1.125rem;
     margin: 0;
     cursor: pointer;
-    background-color: var(--sauce-color-canvas);
-    border: 1.5px solid var(--sauce-color-border-strong);
-    border-radius: var(--sauce-radius-sm);
+    background-color: var(--greese-color-canvas);
+    border: 1.5px solid var(--greese-color-border-strong);
+    border-radius: var(--greese-radius-sm);
 
     &:disabled {
       cursor: not-allowed;
@@ -19,46 +19,46 @@
 
     appearance: none;
     transition:
-      background-color var(--sauce-duration-fast) var(--sauce-easing-standard),
-      border-color var(--sauce-duration-fast) var(--sauce-easing-standard);
+      background-color var(--greese-duration-fast) var(--greese-easing-standard),
+      border-color var(--greese-duration-fast) var(--greese-easing-standard);
 
     @include mixins.focus-ring;
 
     &:checked,
     &:indeterminate {
-      background-color: var(--sauce-color-accent);
-      border-color: var(--sauce-color-accent);
+      background-color: var(--greese-color-accent);
+      border-color: var(--greese-color-accent);
     }
 
     &[aria-invalid='true'] {
-      border-color: var(--sauce-color-negative);
+      border-color: var(--greese-color-negative);
     }
   }
 
-  .sauce-Checkbox-icon {
+  .greese-Checkbox-icon {
     position: absolute;
     inline-size: 0.875rem;
     block-size: 0.875rem;
     pointer-events: none;
     fill: none;
-    stroke: var(--sauce-color-on-accent);
+    stroke: var(--greese-color-on-accent);
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 2.25;
     opacity: 0;
   }
 
-  .sauce-Checkbox-input:checked + .sauce-Checkbox-icon,
-  .sauce-Checkbox-input:indeterminate + .sauce-Checkbox-icon {
+  .greese-Checkbox-input:checked + .greese-Checkbox-icon,
+  .greese-Checkbox-input:indeterminate + .greese-Checkbox-icon {
     opacity: 1;
   }
 
-  .sauce-Checkbox-dash,
-  .sauce-Checkbox-input:indeterminate + .sauce-Checkbox-icon .sauce-Checkbox-check {
+  .greese-Checkbox-dash,
+  .greese-Checkbox-input:indeterminate + .greese-Checkbox-icon .greese-Checkbox-check {
     display: none;
   }
 
-  .sauce-Checkbox-input:indeterminate + .sauce-Checkbox-icon .sauce-Checkbox-dash {
+  .greese-Checkbox-input:indeterminate + .greese-Checkbox-icon .greese-Checkbox-dash {
     display: inline;
   }
 }

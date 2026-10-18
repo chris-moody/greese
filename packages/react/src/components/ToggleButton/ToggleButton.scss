@@ -1,17 +1,17 @@
-@layer sauce.components {
+@layer greese.components {
   // Pressed reads as the soft accent variant, whatever the resting variant.
-  .sauce-ToggleButton[aria-pressed='true'] {
-    --sauce-button-tone: var(--sauce-color-accent);
-    --sauce-button-fg: var(--sauce-color-accent);
-    --sauce-button-bg: color-mix(in oklab, var(--sauce-color-accent) 14%, transparent);
-    --sauce-button-bg-hover: color-mix(
+  .greese-ToggleButton[aria-pressed='true'] {
+    --greese-button-tone: var(--greese-color-accent);
+    --greese-button-fg: var(--greese-color-accent);
+    --greese-button-bg: color-mix(in oklab, var(--greese-color-accent) 14%, transparent);
+    --greese-button-bg-hover: color-mix(
       in oklab,
-      var(--sauce-color-accent) 22%,
+      var(--greese-color-accent) 22%,
       transparent
     );
-    --sauce-button-border: color-mix(
+    --greese-button-border: color-mix(
       in oklab,
-      var(--sauce-color-accent) 55%,
+      var(--greese-color-accent) 55%,
       transparent
     );
   }

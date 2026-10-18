@@ -1,54 +1,54 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Skeleton {
+@layer greese.components {
+  .greese-Skeleton {
     display: block;
-    inline-size: var(--sauce-skeleton-width, 100%);
-    block-size: var(--sauce-skeleton-height, 1rem);
-    background-color: var(--sauce-color-surface);
+    inline-size: var(--greese-skeleton-width, 100%);
+    block-size: var(--greese-skeleton-height, 1rem);
+    background-color: var(--greese-color-surface);
     background-image: linear-gradient(
       90deg,
       transparent,
-      color-mix(in oklab, var(--sauce-color-fg) 6%, transparent),
+      color-mix(in oklab, var(--greese-color-fg) 6%, transparent),
       transparent
     );
     background-repeat: no-repeat;
     background-size: 50% 100%;
-    border-radius: var(--sauce-radius-sm);
+    border-radius: var(--greese-radius-sm);
 
     @include mixins.motion-safe {
-      animation: sauce-skeleton-shimmer 1.4s ease-in-out infinite;
+      animation: greese-skeleton-shimmer 1.4s ease-in-out infinite;
     }
   }
 
-  .sauce-Skeleton--text {
-    block-size: var(--sauce-skeleton-height, 1lh);
+  .greese-Skeleton--text {
+    block-size: var(--greese-skeleton-height, 1lh);
     background-clip: content-box;
     padding-block: 0.2lh;
   }
 
-  .sauce-Skeleton--rect {
-    block-size: var(--sauce-skeleton-height, 8rem);
-    border-radius: var(--sauce-radius-md);
+  .greese-Skeleton--rect {
+    block-size: var(--greese-skeleton-height, 8rem);
+    border-radius: var(--greese-radius-md);
   }
 
-  .sauce-Skeleton--circle {
-    inline-size: var(--sauce-skeleton-width, 2.5rem);
-    block-size: var(--sauce-skeleton-height, var(--sauce-skeleton-width, 2.5rem));
+  .greese-Skeleton--circle {
+    inline-size: var(--greese-skeleton-width, 2.5rem);
+    block-size: var(--greese-skeleton-height, var(--greese-skeleton-width, 2.5rem));
     border-radius: 50%;
   }
 
-  .sauce-Skeleton-lines {
+  .greese-Skeleton-lines {
     display: flex;
     flex-direction: column;
-    inline-size: var(--sauce-skeleton-width, 100%);
+    inline-size: var(--greese-skeleton-width, 100%);
 
     > :last-child:not(:only-child) {
       inline-size: 60%;
     }
   }
 
-  @keyframes sauce-skeleton-shimmer {
+  @keyframes greese-skeleton-shimmer {
     from {
       background-position: -100% 0;
     }

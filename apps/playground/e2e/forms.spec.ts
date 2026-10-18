@@ -41,7 +41,7 @@ test('keyboard: arrows move the slider and its filled track', async ({ page }) =
   for (let i = 0; i < 5; i++) await page.keyboard.press('ArrowRight')
   await expect(slider).toHaveValue('55')
   expect(
-    await slider.evaluate((el) => el.style.getPropertyValue('--sauce-slider-fill'))
+    await slider.evaluate((el) => el.style.getPropertyValue('--greese-slider-fill'))
   ).toBe('55%')
 })
 

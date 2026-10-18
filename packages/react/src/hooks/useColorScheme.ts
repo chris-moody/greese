@@ -4,7 +4,7 @@ import {
   DEFAULT_SCHEME_STORAGE_KEY,
   SCHEME_ATTR,
   type ColorScheme,
-} from '@sauce-ui/tokens'
+} from '@greese-ui/tokens'
 import { useMediaQuery } from './useMediaQuery.ts'
 
 // The source of truth is the attribute on <html>: the pre-paint script, this

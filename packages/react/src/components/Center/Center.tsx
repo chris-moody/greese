@@ -11,6 +11,6 @@ export interface CenterProps extends BoxProps {
 export const Center = ({ inline, className, ...props }: CenterProps): JSX.Element => (
   <Box
     {...props}
-    className={cx('sauce-Center', inline && 'sauce-Center--inline', className)}
+    className={cx('greese-Center', inline && 'greese-Center--inline', className)}
   />
 )

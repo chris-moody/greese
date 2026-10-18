@@ -51,28 +51,28 @@ export const Alert = ({
     }
     {...props}
     className={cx(
-      'sauce-Alert',
-      `sauce-Alert--${tone}`,
-      `sauce-Alert--${variant}`,
+      'greese-Alert',
+      `greese-Alert--${tone}`,
+      `greese-Alert--${variant}`,
       className
     )}
   >
     {icon && (
-      <span className="sauce-Alert-icon" aria-hidden="true">
+      <span className="greese-Alert-icon" aria-hidden="true">
         {icon}
       </span>
     )}
-    <div className="sauce-Alert-body">
-      {title && <p className="sauce-Alert-title">{title}</p>}
-      {children && <div className="sauce-Alert-message">{children}</div>}
-      {actions && <div className="sauce-Alert-actions">{actions}</div>}
+    <div className="greese-Alert-body">
+      {title && <p className="greese-Alert-title">{title}</p>}
+      {children && <div className="greese-Alert-message">{children}</div>}
+      {actions && <div className="greese-Alert-actions">{actions}</div>}
     </div>
     {onDismiss && (
       <IconButton
         label={dismissLabel}
         size="sm"
         onClick={onDismiss}
-        className="sauce-Alert-dismiss"
+        className="greese-Alert-dismiss"
       >
         <CloseGlyph />
       </IconButton>

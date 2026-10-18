@@ -1,7 +1,7 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Collapsible {
+@layer greese.components {
+  .greese-Collapsible {
     @include mixins.component-root;
 
     // Animate open/close where supported (Chromium); elsewhere it snaps.
@@ -11,8 +11,8 @@
       block-size: 0;
       overflow: clip;
       transition:
-        block-size var(--sauce-duration-normal) var(--sauce-easing-standard),
-        content-visibility var(--sauce-duration-normal) allow-discrete;
+        block-size var(--greese-duration-normal) var(--greese-easing-standard),
+        content-visibility var(--greese-duration-normal) allow-discrete;
     }
 
     &[open]::details-content {
@@ -20,17 +20,17 @@
     }
   }
 
-  .sauce-Collapsible-trigger {
+  .greese-Collapsible-trigger {
     display: flex;
-    gap: var(--sauce-space-3);
+    gap: var(--greese-space-3);
     align-items: center;
     justify-content: space-between;
     min-block-size: 2.75rem;
-    padding-block: var(--sauce-space-3);
-    font-weight: var(--sauce-font-weight-semibold);
+    padding-block: var(--greese-space-3);
+    font-weight: var(--greese-font-weight-semibold);
     cursor: pointer;
     list-style: none;
-    border-radius: var(--sauce-radius-sm);
+    border-radius: var(--greese-radius-sm);
 
     @include mixins.focus-ring;
 
@@ -39,7 +39,7 @@
     }
   }
 
-  .sauce-Collapsible-chevron {
+  .greese-Collapsible-chevron {
     flex-shrink: 0;
     inline-size: 1.25em;
     block-size: 1.25em;
@@ -48,15 +48,15 @@
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 1.75;
-    transition: rotate var(--sauce-duration-normal) var(--sauce-easing-standard);
+    transition: rotate var(--greese-duration-normal) var(--greese-easing-standard);
 
-    [open] > .sauce-Collapsible-trigger > & {
+    [open] > .greese-Collapsible-trigger > & {
       rotate: 180deg;
     }
   }
 
-  .sauce-Collapsible-content {
-    padding-block-end: var(--sauce-space-4);
-    color: var(--sauce-color-fg-muted);
+  .greese-Collapsible-content {
+    padding-block-end: var(--greese-space-4);
+    color: var(--greese-color-fg-muted);
   }
 }

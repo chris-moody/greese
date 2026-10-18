@@ -1,6 +1,6 @@
 # Changesets
 
-Every PR that changes a published package (`@sauce-ui/react`, `@sauce-ui/tokens`)
+Every PR that changes a published package (`@greese-ui/react`, `@greese-ui/tokens`)
 adds a changeset:
 
 ```bash

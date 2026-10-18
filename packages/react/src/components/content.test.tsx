@@ -32,13 +32,13 @@ describe('typography', () => {
     const text = screen.getByText('Body')
     expect(text.tagName).toBe('P')
     expect(text).toHaveClass(
-      'sauce-Text--muted',
-      'sauce-Text--semibold',
-      'sauce-Text--clamp',
-      'sauce-Text--xs-size-sm',
-      'sauce-Text--md-size-lg'
+      'greese-Text--muted',
+      'greese-Text--semibold',
+      'greese-Text--clamp',
+      'greese-Text--xs-size-sm',
+      'greese-Text--md-size-lg'
     )
-    expect(text.style.getPropertyValue('--sauce-text-lines')).toBe('2')
+    expect(text.style.getPropertyValue('--greese-text-lines')).toBe('2')
   })
 
   it('Text renders other elements with asChild', () => {
@@ -48,7 +48,7 @@ describe('typography', () => {
       </Text>
     )
     expect(screen.getByText('Inline').tagName).toBe('SPAN')
-    expect(screen.getByText('Inline')).toHaveClass('sauce-Text--truncate')
+    expect(screen.getByText('Inline')).toHaveClass('greese-Text--truncate')
   })
 
   it('Heading separates outline level from visual size', () => {
@@ -58,7 +58,7 @@ describe('typography', () => {
       </Heading>
     )
     const heading = screen.getByRole('heading', { level: 1, name: 'Page' })
-    expect(heading).toHaveClass('sauce-Heading--level-1', 'sauce-Heading--xs-size-xl')
+    expect(heading).toHaveClass('greese-Heading--level-1', 'greese-Heading--xs-size-xl')
   })
 
   it('Link styles anchors and router links alike', () => {
@@ -70,10 +70,10 @@ describe('typography', () => {
         </Link>
       </>
     )
-    expect(screen.getByRole('link', { name: 'Plain' })).toHaveClass('sauce-Link--accent')
+    expect(screen.getByRole('link', { name: 'Plain' })).toHaveClass('greese-Link--accent')
     expect(screen.getByRole('link', { name: 'Routed' })).toHaveClass(
-      'sauce-Link--neutral',
-      'sauce-Link--underline-hover'
+      'greese-Link--neutral',
+      'greese-Link--underline-hover'
     )
   })
 
@@ -100,14 +100,14 @@ describe('Card and media', () => {
     )
     const card = screen.getByTestId('card')
     expect(card).toHaveClass(
-      'sauce-Box',
-      'sauce-Card--elevated',
-      'sauce-Card--interactive'
+      'greese-Box',
+      'greese-Card--elevated',
+      'greese-Card--interactive'
     )
-    expect(card.style.getPropertyValue('--sauce-card-padding-md')).toBe(
-      'var(--sauce-space-6)'
+    expect(card.style.getPropertyValue('--greese-card-padding-md')).toBe(
+      'var(--greese-space-6)'
     )
-    expect(screen.getByTestId('media')).toHaveClass('sauce-CardMedia')
+    expect(screen.getByTestId('media')).toHaveClass('greese-CardMedia')
   })
 
   it('Image is lazy by default and eager at high priority for LCP', () => {
@@ -137,7 +137,7 @@ describe('Card and media', () => {
     )
     const blur = screen.getByAltText('blur').parentElement!
     expect(blur.style.backgroundImage).toContain('data:image/png;base64,AAA')
-    expect(blur).toHaveClass('sauce-Image--framed')
+    expect(blur).toHaveClass('greese-Image--framed')
     expect(screen.getByAltText('tint').parentElement!.style.backgroundColor).toBe(
       'rgb(238, 238, 238)'
     )
@@ -148,7 +148,7 @@ describe('Card and media', () => {
   it('Image swaps in its fallback when loading fails', () => {
     render(<Image alt="broken" src="x.jpg" fallback="No image" />)
     fireEvent.error(screen.getByAltText('broken'))
-    expect(screen.getByText('No image')).toHaveClass('sauce-Image--fallback')
+    expect(screen.getByText('No image')).toHaveClass('greese-Image--fallback')
   })
 
   it('Video plays inline on iOS; Embed lazy-loads and requires a title', () => {
@@ -177,7 +177,7 @@ describe('Card and media', () => {
     )
     expect(screen.getByTestId('decorative')).toHaveAttribute('aria-hidden', 'true')
     const named = screen.getByRole('img', { name: 'Verified' })
-    expect(named.style.getPropertyValue('--sauce-icon-size')).toBe('2rem')
+    expect(named.style.getPropertyValue('--greese-icon-size')).toBe('2rem')
   })
 })
 
@@ -206,7 +206,7 @@ describe('Avatar', () => {
       </AvatarGroup>
     )
     const group = screen.getByRole('group', { name: 'Shared with' })
-    expect(group.querySelectorAll('.sauce-Avatar')).toHaveLength(3)
+    expect(group.querySelectorAll('.greese-Avatar')).toHaveLength(3)
     expect(screen.getByRole('img', { name: '2 more' })).toHaveTextContent('+2')
   })
 })
@@ -359,8 +359,8 @@ describe('feedback', () => {
       </Badge>
     )
     expect(screen.getByText('Live')).toHaveClass(
-      'sauce-Badge--positive',
-      'sauce-Badge--solid'
+      'greese-Badge--positive',
+      'greese-Badge--solid'
     )
   })
 
@@ -380,7 +380,7 @@ describe('feedback', () => {
     const toggle = screen.getByRole('button', { name: 'In stock' })
     await userEvent.click(toggle)
     expect(toggle).toHaveAttribute('aria-pressed', 'true')
-    expect(toggle.parentElement).toHaveClass('sauce-Chip--selected')
+    expect(toggle.parentElement).toHaveClass('greese-Chip--selected')
     expect(onSelectedChange).toHaveBeenCalledWith(true)
   })
 
@@ -409,8 +409,8 @@ describe('feedback', () => {
   it('Skeleton passes sizes as variables', () => {
     render(<Skeleton data-testid="s" shape="circle" width="3rem" />)
     const s = screen.getByTestId('s')
-    expect(s).toHaveClass('sauce-Skeleton--circle')
-    expect(s.style.getPropertyValue('--sauce-skeleton-width')).toBe('3rem')
+    expect(s).toHaveClass('greese-Skeleton--circle')
+    expect(s.style.getPropertyValue('--greese-skeleton-width')).toBe('3rem')
   })
 })
 

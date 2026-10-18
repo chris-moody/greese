@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button, Popover, Stack, Text } from '@sauce-ui/react'
+import { Button, Popover, Stack, Text } from '@greese-ui/react'
 
 const meta = {
   title: 'Overlays/Popover',
@@ -10,7 +10,7 @@ const meta = {
     placement: 'bottom-start',
     children: (
       <Stack gap={2}>
-        <Text weight="semibold">Sauce UI</Text>
+        <Text weight="semibold">Greese UI</Text>
         <Text size="sm" tone="muted">
           Created 17 October 2026. Popovers close on Escape or a click outside.
         </Text>

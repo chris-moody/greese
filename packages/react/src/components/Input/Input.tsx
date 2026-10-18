@@ -65,20 +65,20 @@ export const Input = ({
 
   return (
     <div
-      className={cx('sauce-Input', `sauce-Input--size-${size}`, className)}
+      className={cx('greese-Input', `greese-Input--size-${size}`, className)}
       style={style}
       data-invalid={control['aria-invalid']}
       data-disabled={control.disabled || undefined}
       onMouseDown={focusInput}
     >
-      {startAdornment && <span className="sauce-Input-adornment">{startAdornment}</span>}
+      {startAdornment && <span className="greese-Input-adornment">{startAdornment}</span>}
       <input
         {...props}
         {...control}
         ref={composeRefs(inputRef, ref)}
-        className="sauce-Input-control"
+        className="greese-Input-control"
       />
-      {endAdornment && <span className="sauce-Input-adornment">{endAdornment}</span>}
+      {endAdornment && <span className="greese-Input-adornment">{endAdornment}</span>}
     </div>
   )
 }

@@ -1,7 +1,7 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-SegmentedControl {
+@layer greese.components {
+  .greese-SegmentedControl {
     @include mixins.component-root;
 
     display: inline-block;
@@ -12,64 +12,64 @@
 
     > legend {
       padding: 0;
-      margin-block-end: var(--sauce-space-2);
+      margin-block-end: var(--greese-space-2);
     }
   }
 
-  .sauce-SegmentedControl--full {
+  .greese-SegmentedControl--full {
     display: block;
   }
 
-  .sauce-SegmentedControl-track {
+  .greese-SegmentedControl-track {
     display: flex;
     gap: 2px;
     padding: 3px;
-    background-color: var(--sauce-color-surface);
-    border: 1px solid var(--sauce-color-border);
-    border-radius: var(--sauce-radius-md);
+    background-color: var(--greese-color-surface);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-radius-md);
   }
 
-  .sauce-SegmentedControl--size-sm {
-    --sauce-segment-height: 1.75rem;
+  .greese-SegmentedControl--size-sm {
+    --greese-segment-height: 1.75rem;
 
-    font-size: var(--sauce-font-size-sm);
+    font-size: var(--greese-font-size-sm);
   }
 
-  .sauce-SegmentedControl--size-md {
-    --sauce-segment-height: 2.25rem;
+  .greese-SegmentedControl--size-md {
+    --greese-segment-height: 2.25rem;
 
-    font-size: var(--sauce-font-size-sm);
+    font-size: var(--greese-font-size-sm);
   }
 
-  .sauce-Segment {
+  .greese-Segment {
     position: relative;
     display: flex;
     flex: 1 1 0;
     align-items: center;
     justify-content: center;
-    min-block-size: var(--sauce-segment-height);
-    padding-inline: var(--sauce-space-3);
-    font-weight: var(--sauce-font-weight-medium);
-    color: var(--sauce-color-fg-muted);
+    min-block-size: var(--greese-segment-height);
+    padding-inline: var(--greese-space-3);
+    font-weight: var(--greese-font-weight-medium);
+    color: var(--greese-color-fg-muted);
     white-space: nowrap;
     cursor: pointer;
-    border-radius: calc(var(--sauce-radius-md) - 3px);
+    border-radius: calc(var(--greese-radius-md) - 3px);
     transition:
-      background-color var(--sauce-duration-fast) var(--sauce-easing-standard),
-      color var(--sauce-duration-fast) var(--sauce-easing-standard);
+      background-color var(--greese-duration-fast) var(--greese-easing-standard),
+      color var(--greese-duration-fast) var(--greese-easing-standard);
 
     @include mixins.hover {
-      color: var(--sauce-color-fg);
+      color: var(--greese-color-fg);
     }
 
     &:has(:checked) {
-      color: var(--sauce-color-fg);
-      background-color: var(--sauce-color-surface-overlay);
-      box-shadow: var(--sauce-shadow-sm);
+      color: var(--greese-color-fg);
+      background-color: var(--greese-color-surface-overlay);
+      box-shadow: var(--greese-shadow-sm);
     }
 
     &:has(:focus-visible) {
-      outline: 2px solid var(--sauce-color-focus-ring);
+      outline: 2px solid var(--greese-color-focus-ring);
       outline-offset: 1px;
     }
 
@@ -84,7 +84,7 @@
   }
 
   // The real radio covers the segment: it takes clicks, taps and focus.
-  .sauce-Segment-input {
+  .greese-Segment-input {
     position: absolute;
     inset: 0;
     margin: 0;

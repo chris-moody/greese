@@ -94,27 +94,27 @@ export const Checkbox = ({
 
   return (
     <div
-      className={cx('sauce-Checkbox', className)}
+      className={cx('greese-Checkbox', className)}
       style={style}
       data-disabled={control.disabled || undefined}
     >
-      <span className="sauce-Checkbox-box">
+      <span className="greese-Checkbox-box">
         <input
           {...props}
           {...groupProps}
           {...control}
           ref={composeRefs(inputRef, ref)}
           type="checkbox"
-          className="sauce-Checkbox-input"
+          className="greese-Checkbox-input"
           onChange={(event: ChangeEvent<HTMLInputElement>) => {
             onChange?.(event)
             onCheckedChange?.(event.target.checked)
             if (inGroup) group.toggle(String(props.value), event.target.checked)
           }}
         />
-        <svg className="sauce-Checkbox-icon" viewBox="0 0 16 16" aria-hidden="true">
-          <path className="sauce-Checkbox-check" d="M3.5 8.5l3 3 6-7" />
-          <path className="sauce-Checkbox-dash" d="M4 8h8" />
+        <svg className="greese-Checkbox-icon" viewBox="0 0 16 16" aria-hidden="true">
+          <path className="greese-Checkbox-check" d="M3.5 8.5l3 3 6-7" />
+          <path className="greese-Checkbox-dash" d="M4 8h8" />
         </svg>
       </span>
       <ChoiceText

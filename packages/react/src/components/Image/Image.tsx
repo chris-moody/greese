@@ -40,7 +40,7 @@ export interface ImageProps extends Omit<ComponentPropsWithRef<'img'>, 'placehol
 }
 
 const RATIO: ResponsiveConfig = {
-  block: 'sauce-Image',
+  block: 'greese-Image',
   prop: 'ratio',
   isToken: neverToken,
 }
@@ -70,10 +70,10 @@ export const Image = ({
   const [failed, setFailed] = useState(false)
   const resolved = resolveResponsive([[ratio, RATIO]], {
     className: cx(
-      'sauce-Image',
-      ratio !== undefined && 'sauce-Image--framed',
-      fit === 'contain' && 'sauce-Image--contain',
-      radius && `sauce-Image--radius-${radius}`,
+      'greese-Image',
+      ratio !== undefined && 'greese-Image--framed',
+      fit === 'contain' && 'greese-Image--contain',
+      radius && `greese-Image--radius-${radius}`,
       className
     ),
     style: placeholder
@@ -96,7 +96,7 @@ export const Image = ({
   if (failed && fallback !== undefined) {
     return (
       <span
-        className={cx(resolved.className, 'sauce-Image--fallback')}
+        className={cx(resolved.className, 'greese-Image--fallback')}
         style={resolved.style}
       >
         {fallback}

@@ -2,33 +2,33 @@
 
 /* stylelint-disable selector-no-vendor-prefix */
 
-@layer sauce.components {
-  .sauce-Progress {
+@layer greese.components {
+  .greese-Progress {
     @include mixins.component-root;
 
     display: block;
     inline-size: 100%;
-    block-size: var(--sauce-progress-height);
+    block-size: var(--greese-progress-height);
     overflow: hidden;
-    color: var(--sauce-color-accent);
-    background-color: var(--sauce-color-border);
+    color: var(--greese-color-accent);
+    background-color: var(--greese-color-border);
     border: 0;
-    border-radius: var(--sauce-radius-pill);
+    border-radius: var(--greese-radius-pill);
     appearance: none;
 
     &::-webkit-progress-bar {
-      background-color: var(--sauce-color-border);
+      background-color: var(--greese-color-border);
     }
 
     &::-webkit-progress-value {
-      background-color: var(--sauce-color-accent);
-      border-radius: var(--sauce-radius-pill);
-      transition: inline-size var(--sauce-duration-normal) var(--sauce-easing-standard);
+      background-color: var(--greese-color-accent);
+      border-radius: var(--greese-radius-pill);
+      transition: inline-size var(--greese-duration-normal) var(--greese-easing-standard);
     }
 
     &::-moz-progress-bar {
-      background-color: var(--sauce-color-accent);
-      border-radius: var(--sauce-radius-pill);
+      background-color: var(--greese-color-accent);
+      border-radius: var(--greese-radius-pill);
     }
 
     // Indeterminate: a band sweeping across.
@@ -36,14 +36,14 @@
       background-image: linear-gradient(
         to right,
         transparent 0%,
-        var(--sauce-color-accent) 50%,
+        var(--greese-color-accent) 50%,
         transparent 100%
       );
       background-repeat: no-repeat;
       background-size: 40% 100%;
 
       @include mixins.motion-safe {
-        animation: sauce-progress-sweep 1.2s var(--sauce-easing-standard) infinite;
+        animation: greese-progress-sweep 1.2s var(--greese-easing-standard) infinite;
       }
     }
 
@@ -56,15 +56,15 @@
     }
   }
 
-  .sauce-Progress--sm {
-    --sauce-progress-height: 0.25rem;
+  .greese-Progress--sm {
+    --greese-progress-height: 0.25rem;
   }
 
-  .sauce-Progress--md {
-    --sauce-progress-height: 0.5rem;
+  .greese-Progress--md {
+    --greese-progress-height: 0.5rem;
   }
 
-  @keyframes sauce-progress-sweep {
+  @keyframes greese-progress-sweep {
     from {
       background-position: -60% 0;
     }

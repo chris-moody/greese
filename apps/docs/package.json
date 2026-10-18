@@ -10,14 +10,14 @@
     "lint": "eslint stories .storybook scripts --max-warnings 0 && node scripts/check-story-coverage.mjs"
   },
   "dependencies": {
-    "@sauce-ui/react": "*",
-    "@sauce-ui/tokens": "*",
+    "@greese-ui/react": "*",
+    "@greese-ui/tokens": "*",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@sauce-ui/eslint-config": "*",
-    "@sauce-ui/typescript-config": "*",
+    "@greese-ui/eslint-config": "*",
+    "@greese-ui/typescript-config": "*",
     "@storybook/addon-docs": "^10.6.2",
     "@storybook/react-vite": "^10.6.2",
     "@types/node": "^24.0.0",

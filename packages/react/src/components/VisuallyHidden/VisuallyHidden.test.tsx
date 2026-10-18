@@ -17,7 +17,7 @@ describe('VisuallyHidden', () => {
   it('merges className and forwards ref', () => {
     const ref = createRef<HTMLSpanElement>()
     render(<VisuallyHidden ref={ref} className="extra" />)
-    expect(ref.current).toHaveClass('sauce-VisuallyHidden', 'extra')
+    expect(ref.current).toHaveClass('greese-VisuallyHidden', 'extra')
   })
 })
 

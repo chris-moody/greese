@@ -19,7 +19,7 @@ export interface SliderProps extends Omit<
   invalid?: boolean
 }
 
-const FILL = '--sauce-slider-fill'
+const FILL = '--greese-slider-fill'
 const fill = (value: number, min: number, max: number): string => {
   const ratio = max > min ? (Math.min(Math.max(value, min), max) - min) / (max - min) : 0
   // Rounded to 0.01%: finer is invisible and float noise ("55.00000000000001%")
@@ -69,7 +69,7 @@ export const Slider = ({
       step={step}
       value={value}
       defaultValue={value === undefined ? initial : undefined}
-      className={cx('sauce-Slider', className)}
+      className={cx('greese-Slider', className)}
       style={{ [FILL]: fill(initial, min, max), ...style } as CSSProperties}
       onChange={(event: ChangeEvent<HTMLInputElement>) => {
         const next = event.target.valueAsNumber

@@ -1,7 +1,7 @@
-@layer sauce.components {
+@layer greese.components {
   // A scope, not a box: children lay out as if the wrapper were absent, while
   // still inheriting its custom properties and color-scheme.
-  .sauce-ThemeProvider {
+  .greese-ThemeProvider {
     display: contents;
   }
 }

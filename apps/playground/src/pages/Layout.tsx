@@ -9,13 +9,13 @@ import {
   Show,
   Spacer,
   Stack,
-} from '@sauce-ui/react'
-import '@sauce-ui/react/base.css'
-import '@sauce-ui/react/styles.css'
+} from '@greese-ui/react'
+import '@greese-ui/react/base.css'
+import '@greese-ui/react/styles.css'
 
 const cell: CSSProperties = {
   minBlockSize: '1rem',
-  background: 'var(--sauce-color-surface)',
+  background: 'var(--greese-color-surface)',
 }
 const C = ({ id }: { id?: string }) => <div data-testid={id} style={cell} />
 

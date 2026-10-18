@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Accordion, AccordionItem } from '@sauce-ui/react'
+import { Accordion, AccordionItem } from '@greese-ui/react'
 
 const meta = {
   title: 'Content/Accordion',

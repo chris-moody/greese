@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { breakpointKeys, space, type Breakpoint, type SpaceToken } from '@sauce-ui/tokens'
+import { breakpointKeys, space, type Breakpoint, type SpaceToken } from '@greese-ui/tokens'
 
 /**
  * A prop that takes one value, or a value per breakpoint (mobile-first: each
@@ -17,7 +17,7 @@ export type SpaceValue = SpaceToken | (string & {})
 export type ResponsiveValue = string | number
 
 export interface ResponsiveConfig<T extends ResponsiveValue = ResponsiveValue> {
-  /** Component root class, e.g. `'sauce-Stack'`. */
+  /** Component root class, e.g. `'greese-Stack'`. */
   readonly block: string
   /** Prop segment in class and variable names, e.g. `'gap'`. */
   readonly prop: string
@@ -52,9 +52,9 @@ export const responsiveVar = (block: string, prop: string, bp: Breakpoint): stri
 export const isSpaceToken = (value: ResponsiveValue): boolean =>
   typeof value === 'number' && Object.hasOwn(space, value)
 
-/** A spacing value as CSS: tokens become `var(--sauce-space-N)`. */
+/** A spacing value as CSS: tokens become `var(--greese-space-N)`. */
 export const spaceToCss = (value: ResponsiveValue): string =>
-  typeof value === 'number' ? `var(--sauce-space-${value})` : value
+  typeof value === 'number' ? `var(--greese-space-${value})` : value
 
 /** For props whose values always go inline (no pre-generated classes). */
 export const neverToken = (): boolean => false
@@ -97,14 +97,14 @@ const isPerBreakpoint = (
  * an inline variable.
  *
  * ```ts
- * const gap: ResponsiveConfig = { block: 'sauce-Stack', prop: 'gap', isToken: isSpaceToken }
+ * const gap: ResponsiveConfig = { block: 'greese-Stack', prop: 'gap', isToken: isSpaceToken }
  * const { className, style } = resolveResponsive([[props.gap, gap]], {
- *   className: cx('sauce-Stack', props.className),
+ *   className: cx('greese-Stack', props.className),
  *   style: props.style,
  * })
  * // gap={{ xs: 2, md: '13px' }} →
- * //   className: 'sauce-Stack sauce-Stack--gap sauce-Stack--xs-gap-2'
- * //   style:     { '--sauce-stack-gap-md': '13px' }
+ * //   className: 'greese-Stack greese-Stack--gap greese-Stack--xs-gap-2'
+ * //   style:     { '--greese-stack-gap-md': '13px' }
  * ```
  *
  * `base.style` wins over generated variables, so callers can always override.

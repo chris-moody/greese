@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Proves the packages work as published: packs @sauce-ui/tokens,
- * @sauce-ui/sauce (sauce.js) and @sauce-ui/react, installs the tarballs into an empty project, and checks
+ * Proves the packages work as published: packs @greese-ui/tokens,
+ * @greese-ui/greese (greese.js) and @greese-ui/react, installs the tarballs into an empty project, and checks
  * what a consumer would do with them.
  *
  *   npm run build && npm run verify:packages
@@ -21,7 +21,7 @@ import { dirname, join } from 'node:path'
 const run = (cmd, args, cwd) =>
   execFileSync(cmd, args, { cwd, encoding: 'utf8', stdio: 'pipe' })
 const root = join(import.meta.dirname, '..')
-const work = mkdtempSync(join(process.env.VERIFY_TMP ?? tmpdir(), 'sauce-verify-'))
+const work = mkdtempSync(join(process.env.VERIFY_TMP ?? tmpdir(), 'greese-verify-'))
 const ok = (label) => console.log(`  ✔ ${label}`)
 
 try {
@@ -31,11 +31,11 @@ try {
     [
       'pack',
       '-w',
-      '@sauce-ui/tokens',
+      '@greese-ui/tokens',
       '-w',
-      '@sauce-ui/sauce',
+      '@greese-ui/greese',
       '-w',
-      '@sauce-ui/react',
+      '@greese-ui/react',
       '--pack-destination',
       work,
     ],
@@ -50,7 +50,7 @@ try {
       type: 'module',
       dependencies: Object.fromEntries(
         tarballs.map((t) => [
-          `@sauce-ui/${/^sauce-ui-(tokens|sauce|react)-/.exec(t)[1]}`,
+          `@greese-ui/${/^greese-ui-(tokens|greese|react)-/.exec(t)[1]}`,
           `file:./${t}`,
         ])
       ),
@@ -78,26 +78,26 @@ try {
     join(work, 'ssr.mjs'),
     `import { createElement } from 'react'
 import { renderToString } from 'react-dom/server'
-import { Button, Stack, createTheme, timeline } from '@sauce-ui/react'
-import { breakpoints } from '@sauce-ui/tokens'
-import { animate } from '@sauce-ui/sauce'
-// sauce.js imports and runs without a DOM: plain objects animate on a server.
+import { Button, Stack, createTheme, timeline } from '@greese-ui/react'
+import { breakpoints } from '@greese-ui/tokens'
+import { animate } from '@greese-ui/greese'
+// greese.js imports and runs without a DOM: plain objects animate on a server.
 const o = { v: 0 }
 timeline({ paused: true }).to(o, { v: 10, duration: 1, ease: 'linear' }).seek(0.5)
-if (o.v !== 5 || typeof animate !== 'function') throw new Error('sauce.js')
+if (o.v !== 5 || typeof animate !== 'function') throw new Error('greese.js')
 const html = renderToString(createElement(Stack, { gap: 2, direction: { md: 'row' } }, createElement(Button, null, 'Hi')))
-if (!html.includes('sauce-Stack--md-direction-row') || !html.includes('sauce-Button')) throw new Error(html)
-if (breakpoints.md !== 900 || !createTheme({ name: 'x' }).css.includes('@layer sauce.theme')) throw new Error('tokens')
+if (!html.includes('greese-Stack--md-direction-row') || !html.includes('greese-Button')) throw new Error(html)
+if (breakpoints.md !== 900 || !createTheme({ name: 'x' }).css.includes('@layer greese.theme')) throw new Error('tokens')
 `
   )
   run('node', ['ssr.mjs'], work)
-  ok('Node ESM import + server render; sauce.js runs without a DOM')
+  ok('Node ESM import + server render; greese.js runs without a DOM')
 
   // 3. Types, under both module resolutions consumers use.
   writeFileSync(
     join(work, 'app.tsx'),
-    `import { Button, Dialog, type Responsive } from '@sauce-ui/react'
-import type { Breakpoint } from '@sauce-ui/tokens'
+    `import { Button, Dialog, type Responsive } from '@greese-ui/react'
+import type { Breakpoint } from '@greese-ui/tokens'
 const bp: Breakpoint = 'md'
 const dir: Responsive<'row' | 'column'> = { xs: 'column', [bp]: 'row' }
 export const App = () => <Dialog title="T" trigger={<Button>{String(dir)}</Button>} />
@@ -130,15 +130,15 @@ export const App = () => <Dialog title="T" trigger={<Button>{String(dir)}</Butto
   writeFileSync(
     join(work, 'custom.mjs'),
     `import { compileString, NodePackageImporter } from 'sass-embedded'
-const { css } = compileString("@use 'pkg:@sauce-ui/react/scss' with ($breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px));", { importers: [new NodePackageImporter()], url: new URL(import.meta.url) })
+const { css } = compileString("@use 'pkg:@greese-ui/react/scss' with ($breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px));", { importers: [new NodePackageImporter()], url: new URL(import.meta.url) })
 if (!css.includes('(width >= 768px)') || css.includes('(width >= 900px)')) throw new Error('breakpoints not applied')
 `
   )
   run('node', ['custom.mjs'], work)
-  ok('pkg:@sauce-ui/react/scss recompiles with custom breakpoints')
+  ok('pkg:@greese-ui/react/scss recompiles with custom breakpoints')
 
   // 5. Every per-component @import points at a shipped file.
-  const cssDir = join(work, 'node_modules/@sauce-ui/react/dist/css')
+  const cssDir = join(work, 'node_modules/@greese-ui/react/dist/css')
   for (const file of readdirSync(cssDir)) {
     for (const [, target] of readFileSync(join(cssDir, file), 'utf8').matchAll(
       /@import '\.\/([\w-]+\.css)'/g
@@ -156,7 +156,7 @@ if (!css.includes('(width >= 768px)') || css.includes('(width >= 900px)')) throw
   )
   writeFileSync(
     join(work, 'main.js'),
-    `import '@sauce-ui/react/css/Dialog.css'\nimport '@sauce-ui/react/css/Button.css'\n`
+    `import '@greese-ui/react/css/Dialog.css'\nimport '@greese-ui/react/css/Button.css'\n`
   )
   run('npx', ['vite', 'build', '--logLevel', 'error'], work)
   const assets = join(work, 'dist/assets')
@@ -165,11 +165,11 @@ if (!css.includes('(width >= 768px)') || css.includes('(width >= 900px)')) throw
     .map((f) => readFileSync(join(assets, f), 'utf8'))
     .join('')
   const count = (selector) => css.split(selector).length - 1
-  if (!count('.sauce-Dialog{') || !count('--sauce-color-canvas'))
+  if (!count('.greese-Dialog{') || !count('--greese-color-canvas'))
     throw new Error('Dialog chain not bundled')
-  if (count('.sauce-Button{') !== 1)
-    throw new Error(`Button styles bundled ${count('.sauce-Button{')} times`)
-  if (count('.sauce-Stack')) throw new Error('unrelated component styles were bundled')
+  if (count('.greese-Button{') !== 1)
+    throw new Error(`Button styles bundled ${count('.greese-Button{')} times`)
+  if (count('.greese-Stack')) throw new Error('unrelated component styles were bundled')
   ok(
     `Vite bundles css/Dialog.css + css/Button.css: ${(css.length / 1024).toFixed(1)} kB, shared styles once, nothing unused`
   )

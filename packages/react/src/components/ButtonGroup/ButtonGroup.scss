@@ -1,8 +1,8 @@
-@layer sauce.components {
-  .sauce-ButtonGroup {
+@layer greese.components {
+  .greese-ButtonGroup {
     display: inline-flex;
     flex-wrap: wrap;
-    gap: var(--sauce-space-2);
+    gap: var(--greese-space-2);
 
     &[data-orientation='vertical'] {
       flex-direction: column;
@@ -11,22 +11,22 @@
 
   // Attached groups join buttons and field frames (Select, Input) alike, so a
   // button can sit flush against a select or an input.
-  .sauce-ButtonGroup--attached {
+  .greese-ButtonGroup--attached {
     flex-wrap: nowrap;
     gap: 0;
 
-    > :is(.sauce-Button, .sauce-Select, .sauce-Input) {
+    > :is(.greese-Button, .greese-Select, .greese-Input) {
       &:is(:focus-visible, :focus-within) {
         z-index: 1;
       }
     }
 
-    > :is(.sauce-Select, .sauce-Input) {
+    > :is(.greese-Select, .greese-Input) {
       flex: 1 1 auto;
       inline-size: auto;
     }
 
-    &[data-orientation='horizontal'] > :is(.sauce-Button, .sauce-Select, .sauce-Input) {
+    &[data-orientation='horizontal'] > :is(.greese-Button, .greese-Select, .greese-Input) {
       &:not(:first-child) {
         margin-inline-start: -1px;
         border-start-start-radius: 0;
@@ -39,7 +39,7 @@
       }
     }
 
-    &[data-orientation='vertical'] > :is(.sauce-Button, .sauce-Select, .sauce-Input) {
+    &[data-orientation='vertical'] > :is(.greese-Button, .greese-Select, .greese-Input) {
       &:not(:first-child) {
         margin-block-start: -1px;
         border-start-start-radius: 0;

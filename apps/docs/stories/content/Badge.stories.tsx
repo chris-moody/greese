@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Badge, Stack } from '@sauce-ui/react'
+import { Badge, Stack } from '@greese-ui/react'
 
 const meta = {
   title: 'Content/Badge',

@@ -5,9 +5,9 @@ import {
   useColorScheme,
   VisuallyHidden,
   type ColorScheme,
-} from '@sauce-ui/react'
-import '@sauce-ui/react/base.css'
-import '@sauce-ui/react/styles.css'
+} from '@greese-ui/react'
+import '@greese-ui/react/base.css'
+import '@greese-ui/react/styles.css'
 
 const brand = createTheme({
   name: 'brand',
@@ -27,9 +27,9 @@ const Probe = ({ id, children }: { id: string; children?: ReactNode }) => (
       aria-hidden="true"
       style={{
         blockSize: '1.5rem',
-        color: 'var(--sauce-color-accent)',
-        backgroundColor: 'var(--sauce-color-surface)',
-        borderRadius: 'var(--sauce-radius-md)',
+        color: 'var(--greese-color-accent)',
+        backgroundColor: 'var(--greese-color-surface)',
+        borderRadius: 'var(--greese-radius-md)',
       }}
     />
     {children}
@@ -56,7 +56,7 @@ const SchemeControls = () => {
 /** Smoke and theming fixtures for e2e/smoke.spec.ts and e2e/theming.spec.ts. */
 export const Theming = (): JSX.Element => (
   <main>
-    <h1>SauceUI playground</h1>
+    <h1>GreeseUI playground</h1>
     <button type="button" data-testid="icon-button">
       <span aria-hidden="true">×</span>
       <VisuallyHidden>Close</VisuallyHidden>

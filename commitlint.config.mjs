@@ -35,7 +35,7 @@ export default {
       [
         'react',
         'tokens',
-        'sauce',
+        'greese',
         'docs',
         'playground',
         'eslint-config',

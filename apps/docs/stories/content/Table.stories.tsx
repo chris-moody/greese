@@ -10,7 +10,7 @@ import {
   TableHeaderCell,
   TableRow,
   type SortDirection,
-} from '@sauce-ui/react'
+} from '@greese-ui/react'
 
 const meta = {
   title: 'Content/Table',

@@ -1,16 +1,16 @@
-// The configurable part of SauceUI's SCSS. Recompile with your own breakpoint
+// The configurable part of GreeseUI's SCSS. Recompile with your own breakpoint
 // values (the keys stay xs/sm/md/lg/xl, which class names and the TS hooks use):
-//   @use 'pkg:@sauce-ui/react/scss' with (
+//   @use 'pkg:@greese-ui/react/scss' with (
 //     $breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px)
 //   );
 // Then call configureBreakpoints({ sm: 480, md: 768, lg: 1024, xl: 1440 }) so
 // useBreakpoint() and friends agree.
 @use 'sass:map';
-@use 'pkg:@sauce-ui/tokens/scss/maps' as defaults;
+@use 'pkg:@greese-ui/tokens/scss/maps' as defaults;
 
 $breakpoints: defaults.$breakpoints !default;
 $space-keys: defaults.$space-keys;
 
 @if map.keys($breakpoints) != map.keys(defaults.$breakpoints) {
-  @error 'SauceUI $breakpoints must keep the keys #{map.keys(defaults.$breakpoints)}; only the values can change. Got #{map.keys($breakpoints)}.';
+  @error 'GreeseUI $breakpoints must keep the keys #{map.keys(defaults.$breakpoints)}; only the values can change. Got #{map.keys($breakpoints)}.';
 }

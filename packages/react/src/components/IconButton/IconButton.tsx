@@ -16,7 +16,7 @@ export interface IconButtonProps extends Omit<
 }
 
 /**
- * A square, icon-only button. SauceUI ships no icons, so bring any set.
+ * A square, icon-only button. GreeseUI ships no icons, so bring any set.
  *
  * ```tsx
  * <IconButton label="Close dialog"><XIcon /></IconButton>
@@ -35,9 +35,9 @@ export const IconButton = ({
     variant={variant}
     tone={tone}
     aria-label={label}
-    className={cx('sauce-IconButton', className)}
+    className={cx('greese-IconButton', className)}
   >
-    <span className="sauce-Button-icon" aria-hidden="true">
+    <span className="greese-Button-icon" aria-hidden="true">
       {children}
     </span>
   </Button>

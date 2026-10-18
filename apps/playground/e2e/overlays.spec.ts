@@ -147,11 +147,11 @@ test('toasts appear above an open modal and stay usable (not inert)', async ({
     .getByRole('dialog', { name: 'Edit profile' })
     .getByRole('button', { name: 'Toast' })
     .click()
-  const item = page.locator('.sauce-Toast', { hasText: 'Saved from dialog' })
+  const item = page.locator('.greese-Toast', { hasText: 'Saved from dialog' })
   await expect(item).toBeVisible()
   const box = (await item.boundingBox())!
   const onTop = await page.evaluate(
-    ([x, y]) => !!document.elementFromPoint(x!, y!)?.closest('.sauce-Toast'),
+    ([x, y]) => !!document.elementFromPoint(x!, y!)?.closest('.greese-Toast'),
     [box.x + box.width / 2, box.y + box.height / 2]
   )
   expect(onTop).toBe(true)

@@ -1,7 +1,7 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Switch-track {
+@layer greese.components {
+  .greese-Switch-track {
     position: relative;
     display: inline-flex;
     flex-shrink: 0;
@@ -12,48 +12,48 @@
   }
 
   // The input is the track: it takes clicks, focus and the ring.
-  .sauce-Switch-input {
+  .greese-Switch-input {
     @include mixins.touch-target;
 
     position: absolute;
     inset: 0;
     margin: 0;
     cursor: pointer;
-    background-color: var(--sauce-color-border-strong);
-    border-radius: var(--sauce-radius-pill);
+    background-color: var(--greese-color-border-strong);
+    border-radius: var(--greese-radius-pill);
     appearance: none;
 
     &:disabled {
       cursor: not-allowed;
     }
 
-    transition: background-color var(--sauce-duration-fast) var(--sauce-easing-standard);
+    transition: background-color var(--greese-duration-fast) var(--greese-easing-standard);
 
     @include mixins.focus-ring;
 
     &:checked {
-      background-color: var(--sauce-color-accent);
+      background-color: var(--greese-color-accent);
     }
 
     &[aria-invalid='true'] {
-      outline: 2px solid var(--sauce-color-negative);
+      outline: 2px solid var(--greese-color-negative);
       outline-offset: 1px;
     }
   }
 
-  .sauce-Switch-thumb {
+  .greese-Switch-thumb {
     position: relative;
     inline-size: 1rem;
     block-size: 1rem;
     margin-inline-start: 0.125rem;
     pointer-events: none;
-    background-color: var(--sauce-color-canvas);
+    background-color: var(--greese-color-canvas);
     border-radius: 50%;
-    box-shadow: var(--sauce-shadow-sm);
-    transition: translate var(--sauce-duration-fast) var(--sauce-easing-standard);
+    box-shadow: var(--greese-shadow-sm);
+    transition: translate var(--greese-duration-fast) var(--greese-easing-standard);
   }
 
-  .sauce-Switch-input:checked + .sauce-Switch-thumb {
+  .greese-Switch-input:checked + .greese-Switch-thumb {
     translate: 1rem 0;
 
     &:dir(rtl) {

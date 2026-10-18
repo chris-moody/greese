@@ -1,11 +1,11 @@
 // Opt-in global styles, compiled to dist/base.css: a light reset plus page
-// defaults wired to the tokens. Import it only if SauceUI owns the page.
+// defaults wired to the tokens. Import it only if GreeseUI owns the page.
 // Usage:
-//   import '@sauce-ui/react/base.css'
-//   import '@sauce-ui/react/styles.css'
-@use 'pkg:@sauce-ui/tokens/scss/layers';
+//   import '@greese-ui/react/base.css'
+//   import '@greese-ui/react/styles.css'
+@use 'pkg:@greese-ui/tokens/scss/layers';
 
-@layer sauce.reset {
+@layer greese.reset {
   *,
   *::before,
   *::after {
@@ -63,18 +63,18 @@
   }
 }
 
-@layer sauce.base {
+@layer greese.base {
   body {
-    font-family: var(--sauce-font-body);
-    font-size: var(--sauce-font-size-md);
-    line-height: var(--sauce-line-height-normal);
-    color: var(--sauce-color-fg);
-    background-color: var(--sauce-color-canvas);
+    font-family: var(--greese-font-body);
+    font-size: var(--greese-font-size-md);
+    line-height: var(--greese-line-height-normal);
+    color: var(--greese-color-fg);
+    background-color: var(--greese-color-canvas);
     -webkit-font-smoothing: antialiased;
   }
 
   :focus-visible {
-    outline: 2px solid var(--sauce-color-focus-ring);
+    outline: 2px solid var(--greese-color-focus-ring);
     outline-offset: 2px;
   }
 }

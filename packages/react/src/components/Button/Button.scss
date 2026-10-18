@@ -2,48 +2,48 @@
 @use '../../styles/mixins';
 @use '../../styles/controls';
 
-@layer sauce.components {
-  .sauce-Button {
+@layer greese.components {
+  .greese-Button {
     @include mixins.component-root;
 
     // Per-instance theming hooks: override these on any button.
-    --sauce-button-tone: var(--sauce-color-accent);
-    --sauce-button-on-tone: var(--sauce-color-on-accent);
+    --greese-button-tone: var(--greese-color-accent);
+    --greese-button-on-tone: var(--greese-color-on-accent);
 
     position: relative;
     display: inline-flex;
     flex-shrink: 0;
-    gap: var(--sauce-space-2);
+    gap: var(--greese-space-2);
     align-items: center;
     justify-content: center;
-    min-block-size: var(--sauce-button-height);
-    padding-inline: var(--sauce-button-padding);
+    min-block-size: var(--greese-button-height);
+    padding-inline: var(--greese-button-padding);
     font-family: inherit;
-    font-weight: var(--sauce-font-weight-semibold);
-    line-height: var(--sauce-line-height-tight);
-    color: var(--sauce-button-fg);
+    font-weight: var(--greese-font-weight-semibold);
+    line-height: var(--greese-line-height-tight);
+    color: var(--greese-button-fg);
     text-align: center;
     text-decoration: none;
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    background-color: var(--sauce-button-bg);
-    border: 1px solid var(--sauce-button-border, transparent);
-    border-radius: var(--sauce-radius-md);
+    background-color: var(--greese-button-bg);
+    border: 1px solid var(--greese-button-border, transparent);
+    border-radius: var(--greese-radius-md);
     transition:
-      background-color var(--sauce-duration-fast) var(--sauce-easing-standard),
-      border-color var(--sauce-duration-fast) var(--sauce-easing-standard),
-      color var(--sauce-duration-fast) var(--sauce-easing-standard);
+      background-color var(--greese-duration-fast) var(--greese-easing-standard),
+      border-color var(--greese-duration-fast) var(--greese-easing-standard),
+      color var(--greese-duration-fast) var(--greese-easing-standard);
 
     @include mixins.focus-ring;
     @include mixins.touch-target;
 
     @include mixins.hover {
-      background-color: var(--sauce-button-bg-hover);
+      background-color: var(--greese-button-bg-hover);
     }
 
     &:active:not([aria-disabled='true'], :disabled) {
-      background-color: var(--sauce-button-bg-active);
+      background-color: var(--greese-button-bg-active);
     }
 
     &:disabled,
@@ -54,90 +54,90 @@
   }
 
   // Tones
-  .sauce-Button--neutral {
-    --sauce-button-tone: var(--sauce-color-fg);
-    --sauce-button-on-tone: var(--sauce-color-canvas);
+  .greese-Button--neutral {
+    --greese-button-tone: var(--greese-color-fg);
+    --greese-button-on-tone: var(--greese-color-canvas);
   }
 
-  .sauce-Button--negative {
-    --sauce-button-tone: var(--sauce-color-negative);
-    --sauce-button-on-tone: var(--sauce-color-on-negative);
+  .greese-Button--negative {
+    --greese-button-tone: var(--greese-color-negative);
+    --greese-button-on-tone: var(--greese-color-on-negative);
   }
 
   // Variants. color-mix() derives hover/soft states from the tone, toward the
   // on-tone colour, so they work in light and dark without extra tokens.
-  .sauce-Button--solid {
-    --sauce-button-fg: var(--sauce-button-on-tone);
-    --sauce-button-bg: var(--sauce-button-tone);
-    --sauce-button-bg-hover: color-mix(
+  .greese-Button--solid {
+    --greese-button-fg: var(--greese-button-on-tone);
+    --greese-button-bg: var(--greese-button-tone);
+    --greese-button-bg-hover: color-mix(
       in oklab,
-      var(--sauce-button-tone),
-      var(--sauce-button-on-tone) 14%
+      var(--greese-button-tone),
+      var(--greese-button-on-tone) 14%
     );
-    --sauce-button-bg-active: color-mix(
+    --greese-button-bg-active: color-mix(
       in oklab,
-      var(--sauce-button-tone),
-      var(--sauce-button-on-tone) 24%
-    );
-  }
-
-  .sauce-Button--soft {
-    --sauce-button-fg: var(--sauce-button-tone);
-    --sauce-button-bg: color-mix(in oklab, var(--sauce-button-tone) 12%, transparent);
-    --sauce-button-bg-hover: color-mix(
-      in oklab,
-      var(--sauce-button-tone) 20%,
-      transparent
-    );
-    --sauce-button-bg-active: color-mix(
-      in oklab,
-      var(--sauce-button-tone) 28%,
-      transparent
+      var(--greese-button-tone),
+      var(--greese-button-on-tone) 24%
     );
   }
 
-  .sauce-Button--outline {
-    --sauce-button-fg: var(--sauce-button-tone);
-    --sauce-button-bg: transparent;
-    --sauce-button-border: color-mix(in oklab, var(--sauce-button-tone) 55%, transparent);
-    --sauce-button-bg-hover: color-mix(
+  .greese-Button--soft {
+    --greese-button-fg: var(--greese-button-tone);
+    --greese-button-bg: color-mix(in oklab, var(--greese-button-tone) 12%, transparent);
+    --greese-button-bg-hover: color-mix(
       in oklab,
-      var(--sauce-button-tone) 8%,
+      var(--greese-button-tone) 20%,
       transparent
     );
-    --sauce-button-bg-active: color-mix(
+    --greese-button-bg-active: color-mix(
       in oklab,
-      var(--sauce-button-tone) 16%,
+      var(--greese-button-tone) 28%,
       transparent
     );
   }
 
-  .sauce-Button--ghost {
-    --sauce-button-fg: var(--sauce-button-tone);
-    --sauce-button-bg: transparent;
-    --sauce-button-bg-hover: color-mix(
+  .greese-Button--outline {
+    --greese-button-fg: var(--greese-button-tone);
+    --greese-button-bg: transparent;
+    --greese-button-border: color-mix(in oklab, var(--greese-button-tone) 55%, transparent);
+    --greese-button-bg-hover: color-mix(
       in oklab,
-      var(--sauce-button-tone) 10%,
+      var(--greese-button-tone) 8%,
       transparent
     );
-    --sauce-button-bg-active: color-mix(
+    --greese-button-bg-active: color-mix(
       in oklab,
-      var(--sauce-button-tone) 18%,
+      var(--greese-button-tone) 16%,
+      transparent
+    );
+  }
+
+  .greese-Button--ghost {
+    --greese-button-fg: var(--greese-button-tone);
+    --greese-button-bg: transparent;
+    --greese-button-bg-hover: color-mix(
+      in oklab,
+      var(--greese-button-tone) 10%,
+      transparent
+    );
+    --greese-button-bg-active: color-mix(
+      in oklab,
+      var(--greese-button-tone) 18%,
       transparent
     );
   }
 
   // Sizes
   @each $size, $spec in controls.$sizes {
-    .sauce-Button--size-#{$size} {
-      --sauce-button-height: #{map.get($spec, height)};
-      --sauce-button-padding: #{map.get($spec, padding)};
+    .greese-Button--size-#{$size} {
+      --greese-button-height: #{map.get($spec, height)};
+      --greese-button-padding: #{map.get($spec, padding)};
 
       font-size: map.get($spec, font);
     }
   }
 
-  .sauce-Button-icon {
+  .greese-Button-icon {
     display: inline-flex;
     flex-shrink: 0;
 
@@ -148,7 +148,7 @@
   }
 
   // Loading: hide the content (keeping its width) and spin a ring in its place.
-  .sauce-Button[data-loading] {
+  .greese-Button[data-loading] {
     color: transparent;
     cursor: progress;
 
@@ -159,12 +159,12 @@
       block-size: 1.1em;
       margin: auto;
       content: '';
-      border: 2px solid var(--sauce-button-fg);
+      border: 2px solid var(--greese-button-fg);
       border-inline-end-color: transparent;
       border-radius: 50%;
 
       @include mixins.motion-safe {
-        animation: sauce-button-spin 0.7s linear infinite;
+        animation: greese-button-spin 0.7s linear infinite;
       }
     }
 
@@ -174,7 +174,7 @@
   }
 
   @include mixins.responsive-prop(
-    'sauce-Button',
+    'greese-Button',
     'width',
     inline-size,
     (
@@ -183,7 +183,7 @@
     )
   );
 
-  @keyframes sauce-button-spin {
+  @keyframes greese-button-spin {
     to {
       rotate: 1turn;
     }

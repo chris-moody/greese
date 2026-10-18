@@ -33,7 +33,7 @@ export interface FieldControlProps {
 /**
  * Wires a control to its Field: shared id (for the label), description and
  * error via `aria-describedby`, `aria-invalid`, `required` and `disabled`.
- * Every SauceUI control calls it; use it to make your own controls Field-aware.
+ * Every GreeseUI control calls it; use it to make your own controls Field-aware.
  */
 export const useFieldControl = ({
   id,
@@ -110,29 +110,29 @@ export const Field = ({
   return (
     <div
       {...props}
-      className={cx('sauce-Field', className)}
+      className={cx('greese-Field', className)}
       data-invalid={isInvalid || undefined}
       data-disabled={disabled || undefined}
     >
       <label
         htmlFor={id}
-        className={cx('sauce-Field-label', hideLabel && 'sauce-VisuallyHidden')}
+        className={cx('greese-Field-label', hideLabel && 'greese-VisuallyHidden')}
       >
         {label}
         {required && (
-          <span className="sauce-Field-required" aria-hidden="true">
+          <span className="greese-Field-required" aria-hidden="true">
             *
           </span>
         )}
       </label>
       {description && (
-        <p id={descriptionId} className="sauce-Field-description">
+        <p id={descriptionId} className="greese-Field-description">
           {description}
         </p>
       )}
       <FieldContext value={context}>{children}</FieldContext>
       {error && (
-        <p id={errorId} className="sauce-Field-error">
+        <p id={errorId} className="greese-Field-error">
           {error}
         </p>
       )}

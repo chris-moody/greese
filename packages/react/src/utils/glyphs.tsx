@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
 
 /**
- * The few glyphs SauceUI draws itself (dismiss and remove buttons). The
+ * The few glyphs GreeseUI draws itself (dismiss and remove buttons). The
  * library stays icon-agnostic: anything user-facing takes your icons.
  */
 export const CloseGlyph = (): JSX.Element => (
@@ -84,7 +84,7 @@ export const SortGlyph = (): JSX.Element => (
     strokeLinejoin="round"
     aria-hidden="true"
   >
-    <path className="sauce-SortGlyph-up" d="M5 6.5L8 3.5l3 3" />
-    <path className="sauce-SortGlyph-down" d="M5 9.5l3 3 3-3" />
+    <path className="greese-SortGlyph-up" d="M5 6.5L8 3.5l3 3" />
+    <path className="greese-SortGlyph-down" d="M5 9.5l3 3 3-3" />
   </svg>
 )

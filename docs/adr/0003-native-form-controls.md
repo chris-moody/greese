@@ -8,7 +8,7 @@
 Component libraries often rebuild controls from `div`s, or hide a native input
 behind a custom one. Either way, the library has to re-implement keyboard
 handling, form submission, autofill, validation and screen-reader semantics,
-and on phones it gives up the platform pickers. SauceUI is mobile-first and
+and on phones it gives up the platform pickers. GreeseUI is mobile-first and
 aims to ship little JavaScript.
 
 ## Decisions
@@ -81,7 +81,7 @@ submits a form by accident.
 
 ### 5. Styling through component variables and `color-mix()`
 
-A button's tone sets `--sauce-button-tone` and `--sauce-button-on-tone` on the
+A button's tone sets `--greese-button-tone` and `--greese-button-on-tone` on the
 component. These are overridable per instance, and declared on the component
 as ADR 0002 requires. Variants derive their hover, active and soft
 backgrounds with `color-mix()`, mixing toward the on-tone colour or into

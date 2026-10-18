@@ -80,7 +80,7 @@ export const Popover = ({
         popover="auto"
         role="dialog"
         aria-label={label}
-        className={cx('sauce-Popover', className)}
+        className={cx('greese-Popover', className)}
         style={{ ...anchor.floatingStyle, ...style }}
         onToggle={(event: ToggleEvent<HTMLDivElement>) =>
           setOpen(event.newState === 'open')

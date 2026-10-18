@@ -1,8 +1,8 @@
 // Vendor pseudo-elements are the only way to reach native date input parts.
 /* stylelint-disable selector-no-vendor-prefix */
 
-@layer sauce.components {
-  .sauce-DateField .sauce-Input-control {
+@layer greese.components {
+  .greese-DateField .greese-Input-control {
     // iOS collapses an empty date input and centres its text.
     min-block-size: 1.5em;
     text-align: start;

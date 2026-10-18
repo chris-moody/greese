@@ -1,5 +1,5 @@
 {
-  "name": "@sauce-ui/react",
+  "name": "@greese-ui/react",
   "version": "1.0.0",
   "description": "Mobile-first, TypeScript-first React components with zero-runtime, CSS-variable theming.",
   "keywords": [
@@ -31,7 +31,7 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./styles.css": "./dist/sauce-ui.css",
+    "./styles.css": "./dist/greese-ui.css",
     "./base.css": "./dist/base.css",
     "./css/*": "./dist/css/*",
     "./scss": {
@@ -54,16 +54,16 @@
     "size": "size-limit"
   },
   "dependencies": {
-    "@sauce-ui/sauce": "0.0.0",
-    "@sauce-ui/tokens": "1.0.0"
+    "@greese-ui/greese": "0.0.0",
+    "@greese-ui/tokens": "1.0.0"
   },
   "peerDependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@sauce-ui/eslint-config": "*",
-    "@sauce-ui/typescript-config": "*",
+    "@greese-ui/eslint-config": "*",
+    "@greese-ui/typescript-config": "*",
     "@size-limit/preset-small-lib": "^14.2.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

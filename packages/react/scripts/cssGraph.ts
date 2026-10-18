@@ -1,14 +1,14 @@
 /**
  * Works out which per-component stylesheets each component needs, from its
- * source: the `sauce-*` classes its TSX renders and the components it imports.
+ * source: the `greese-*` classes its TSX renders and the components it imports.
  * Used by build-css.ts; pure apart from reading files, and unit-tested.
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-/** `sauce-Button--solid` → `sauce-Button`; `sauce-Dialog-title` stays. */
-const CLASS = /sauce-[A-Z][A-Za-z]*(?:-[a-z][A-Za-z]*)?/g
-const blockOf = (cls: string) => cls.replace(/^(sauce-[A-Z][A-Za-z]*).*$/, '$1')
+/** `greese-Button--solid` → `greese-Button`; `greese-Dialog-title` stays. */
+const CLASS = /greese-[A-Z][A-Za-z]*(?:-[a-z][A-Za-z]*)?/g
+const blockOf = (cls: string) => cls.replace(/^(greese-[A-Z][A-Za-z]*).*$/, '$1')
 
 export interface ComponentSource {
   name: string
@@ -44,7 +44,7 @@ export const ownersOf = (compiled: Map<string, string>): Map<string, string> => 
   }
   const owners = new Map<string, string>()
   for (const [cls, names] of definedIn) {
-    const block = blockOf(cls).slice('sauce-'.length)
+    const block = blockOf(cls).slice('greese-'.length)
     owners.set(cls, names.has(block) ? block : [...names].sort()[0]!)
   }
   return owners
@@ -71,7 +71,7 @@ export const dependenciesOf = (
     for (const cls of new Set(tsx.match(CLASS) ?? [])) {
       const owner = owners.get(cls) ?? owners.get(blockOf(cls))
       if (owner) needed.add(owner)
-      else if (!withCss.has(blockOf(cls).slice('sauce-'.length)))
+      else if (!withCss.has(blockOf(cls).slice('greese-'.length)))
         unresolved.push({ component: name, cls })
     }
     for (const [, imported] of tsx.matchAll(/from '\.\.\/([A-Za-z]+)\/\1\.tsx'/g)) {

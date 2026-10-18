@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import { Chip, Stack } from '@sauce-ui/react'
+import { Chip, Stack } from '@greese-ui/react'
 
 const meta = {
   title: 'Content/Chip',

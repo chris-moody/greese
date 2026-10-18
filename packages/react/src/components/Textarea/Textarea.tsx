@@ -45,15 +45,15 @@ export const Textarea = ({
       {...control}
       rows={rows}
       className={cx(
-        'sauce-Textarea',
-        `sauce-Textarea--size-${size}`,
-        autosize && 'sauce-Textarea--autosize',
+        'greese-Textarea',
+        `greese-Textarea--size-${size}`,
+        autosize && 'greese-Textarea--autosize',
         className
       )}
       style={
         {
-          '--sauce-textarea-rows': rows,
-          ...(maxRows && { '--sauce-textarea-max-rows': maxRows }),
+          '--greese-textarea-rows': rows,
+          ...(maxRows && { '--greese-textarea-max-rows': maxRows }),
           ...style,
         } as CSSProperties
       }

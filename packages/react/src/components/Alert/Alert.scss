@@ -1,42 +1,42 @@
 @use '../../styles/tones';
 
-@layer sauce.components {
+@layer greese.components {
   @include tones.classes(
-    'sauce-Alert',
-    'sauce-alert-tone',
+    'greese-Alert',
+    'greese-alert-tone',
     (info, positive, warning, negative, neutral)
   );
 
-  .sauce-Alert {
+  .greese-Alert {
     display: flex;
-    gap: var(--sauce-space-3);
+    gap: var(--greese-space-3);
     align-items: flex-start;
-    padding: var(--sauce-space-3) var(--sauce-space-4);
-    font-size: var(--sauce-font-size-sm);
-    line-height: var(--sauce-line-height-snug);
-    color: var(--sauce-color-fg);
+    padding: var(--greese-space-3) var(--greese-space-4);
+    font-size: var(--greese-font-size-sm);
+    line-height: var(--greese-line-height-snug);
+    color: var(--greese-color-fg);
     border: 1px solid transparent;
-    border-radius: var(--sauce-radius-md);
+    border-radius: var(--greese-radius-md);
   }
 
-  .sauce-Alert--soft {
+  .greese-Alert--soft {
     background-color: color-mix(
       in oklab,
-      var(--sauce-alert-tone) 10%,
-      var(--sauce-color-canvas)
+      var(--greese-alert-tone) 10%,
+      var(--greese-color-canvas)
     );
-    border-color: color-mix(in oklab, var(--sauce-alert-tone) 25%, transparent);
+    border-color: color-mix(in oklab, var(--greese-alert-tone) 25%, transparent);
   }
 
-  .sauce-Alert--outline {
-    border-color: var(--sauce-alert-tone);
+  .greese-Alert--outline {
+    border-color: var(--greese-alert-tone);
   }
 
-  .sauce-Alert-icon {
+  .greese-Alert-icon {
     display: inline-flex;
     flex-shrink: 0;
     margin-block: 0.1em;
-    color: var(--sauce-alert-tone);
+    color: var(--greese-alert-tone);
 
     > svg {
       inline-size: 1.25em;
@@ -44,28 +44,28 @@
     }
   }
 
-  .sauce-Alert-body {
+  .greese-Alert-body {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
-    gap: var(--sauce-space-1);
+    gap: var(--greese-space-1);
     min-inline-size: 0;
   }
 
-  .sauce-Alert-title {
+  .greese-Alert-title {
     margin: 0;
-    font-weight: var(--sauce-font-weight-semibold);
+    font-weight: var(--greese-font-weight-semibold);
   }
 
-  .sauce-Alert-actions {
+  .greese-Alert-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--sauce-space-2);
-    margin-block-start: var(--sauce-space-2);
+    gap: var(--greese-space-2);
+    margin-block-start: var(--greese-space-2);
   }
 
-  .sauce-Alert-dismiss {
-    margin-block: calc(-1 * var(--sauce-space-1));
-    margin-inline-end: calc(-1 * var(--sauce-space-2));
+  .greese-Alert-dismiss {
+    margin-block: calc(-1 * var(--greese-space-1));
+    margin-inline-end: calc(-1 * var(--greese-space-2));
   }
 }

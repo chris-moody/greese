@@ -1,5 +1,5 @@
 {
-  "extends": "@sauce-ui/typescript-config/library.json",
+  "extends": "@greese-ui/typescript-config/library.json",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist"

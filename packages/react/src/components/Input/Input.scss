@@ -1,20 +1,20 @@
 @use 'sass:map';
 @use '../../styles/controls';
 
-@layer sauce.components {
-  .sauce-Input {
+@layer greese.components {
+  .greese-Input {
     @include controls.frame($focus-within: true);
 
     display: flex;
-    gap: var(--sauce-space-2);
+    gap: var(--greese-space-2);
     align-items: center;
     inline-size: 100%;
-    min-block-size: var(--sauce-input-height);
-    padding-inline: var(--sauce-input-padding);
+    min-block-size: var(--greese-input-height);
+    padding-inline: var(--greese-input-padding);
     cursor: text;
   }
 
-  .sauce-Input-control {
+  .greese-Input-control {
     flex: 1 1 auto;
     min-inline-size: 0;
     block-size: 100%;
@@ -26,7 +26,7 @@
     outline: none;
 
     &::placeholder {
-      color: var(--sauce-color-fg-muted);
+      color: var(--greese-color-fg-muted);
       opacity: 1;
     }
 
@@ -35,11 +35,11 @@
     }
   }
 
-  .sauce-Input-adornment {
+  .greese-Input-adornment {
     display: inline-flex;
     flex-shrink: 0;
     align-items: center;
-    color: var(--sauce-color-fg-muted);
+    color: var(--greese-color-fg-muted);
 
     > svg {
       inline-size: 1.25em;
@@ -48,9 +48,9 @@
   }
 
   @each $size, $spec in controls.$sizes {
-    .sauce-Input--size-#{$size} {
-      --sauce-input-height: #{map.get($spec, height)};
-      --sauce-input-padding: #{map.get($spec, padding)};
+    .greese-Input--size-#{$size} {
+      --greese-input-height: #{map.get($spec, height)};
+      --greese-input-padding: #{map.get($spec, padding)};
 
       @include controls.no-zoom-font(map.get($spec, font));
     }

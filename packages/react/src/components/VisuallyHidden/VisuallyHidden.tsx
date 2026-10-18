@@ -11,5 +11,5 @@ export const VisuallyHidden = ({
   className,
   ...props
 }: VisuallyHiddenProps): JSX.Element => (
-  <span className={cx('sauce-VisuallyHidden', className)} {...props} />
+  <span className={cx('greese-VisuallyHidden', className)} {...props} />
 )

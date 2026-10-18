@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { NumberField } from '@sauce-ui/react'
+import { NumberField } from '@greese-ui/react'
 
 const meta = {
   title: 'Forms/NumberField',

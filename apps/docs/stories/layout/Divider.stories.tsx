@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Divider, Stack } from '@sauce-ui/react'
+import { Divider, Stack } from '@greese-ui/react'
 import { Tile } from '../_shared/fixtures.tsx'
 
 const meta = { title: 'Layout/Divider', component: Divider } satisfies Meta<

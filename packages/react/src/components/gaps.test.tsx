@@ -213,7 +213,7 @@ describe('Table', () => {
 
   it('keeps explicit table roles and cell labels for the stacked layout', () => {
     render(<Example stacked />)
-    expect(screen.getByRole('region')).toHaveClass('sauce-Table--stack-below-sm')
+    expect(screen.getByRole('region')).toHaveClass('greese-Table--stack-below-sm')
     expect(screen.getByRole('table')).toHaveAttribute('role', 'table')
     expect(screen.getAllByRole('row')[1]).toHaveAttribute('role', 'row')
     expect(screen.getByRole('cell', { name: 'INV-1' })).toHaveAttribute(

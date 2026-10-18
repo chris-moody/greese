@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Progress } from '@sauce-ui/react'
+import { Progress } from '@greese-ui/react'
 
 const meta = {
   title: 'Content/Progress',

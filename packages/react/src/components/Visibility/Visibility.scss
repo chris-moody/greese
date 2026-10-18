@@ -1,25 +1,25 @@
 @use 'sass:map';
 @use '../../styles/mixins';
 
-@layer sauce.components {
+@layer greese.components {
   // Layout-neutral wrapper when not using asChild.
-  .sauce-Visibility {
+  .greese-Visibility {
     display: contents;
   }
 }
 
 // Utilities, so hiding beats a component's own display (asChild on a Stack).
-@layer sauce.utilities {
+@layer greese.utilities {
   @each $bp, $min in mixins.$breakpoints {
     @if $min > 0 {
       @include mixins.down($bp) {
-        .sauce-Visibility--hide-below-#{$bp} {
+        .greese-Visibility--hide-below-#{$bp} {
           display: none;
         }
       }
 
       @include mixins.up($bp) {
-        .sauce-Visibility--hide-from-#{$bp} {
+        .greese-Visibility--hide-from-#{$bp} {
           display: none;
         }
       }
@@ -28,7 +28,7 @@
       @each $to, $max in mixins.$breakpoints {
         @if $max > $min {
           @media (width >= $min) and (width < $max) {
-            .sauce-Visibility--hide-#{$bp}-to-#{$to} {
+            .greese-Visibility--hide-#{$bp}-to-#{$to} {
               display: none;
             }
           }

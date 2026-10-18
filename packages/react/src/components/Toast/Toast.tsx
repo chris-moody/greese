@@ -167,10 +167,10 @@ export const Toaster = ({
 
   const content = (
     <>
-      <span className="sauce-VisuallyHidden" aria-live="polite">
+      <span className="greese-VisuallyHidden" aria-live="polite">
         {announced.polite}
       </span>
-      <span className="sauce-VisuallyHidden" aria-live="assertive">
+      <span className="greese-VisuallyHidden" aria-live="assertive">
         {announced.assertive}
       </span>
       <section
@@ -178,9 +178,9 @@ export const Toaster = ({
         ref={region}
         popover="manual"
         aria-label={label}
-        className={cx('sauce-Toaster', className)}
+        className={cx('greese-Toaster', className)}
       >
-        <ol className="sauce-Toaster-list">
+        <ol className="greese-Toaster-list">
           {visible.map((record) => (
             <ToastItem key={record.id} record={record} dismissLabel={dismissLabel} />
           ))}
@@ -213,16 +213,16 @@ const ToastItem = ({
 
   return (
     <li
-      className={cx('sauce-Toast', `sauce-Toast--${record.tone}`)}
+      className={cx('greese-Toast', `greese-Toast--${record.tone}`)}
       onPointerEnter={() => setPaused(true)}
       onPointerLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      <div className="sauce-Toast-body">
-        <p className="sauce-Toast-title">{record.title}</p>
+      <div className="greese-Toast-body">
+        <p className="greese-Toast-title">{record.title}</p>
         {record.description && (
-          <p className="sauce-Toast-description">{record.description}</p>
+          <p className="greese-Toast-description">{record.description}</p>
         )}
       </div>
       {record.action && (

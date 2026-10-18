@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Box } from '@sauce-ui/react'
+import { Box } from '@greese-ui/react'
 
 const meta = {
   title: 'Layout/Box',
@@ -10,8 +10,8 @@ const meta = {
     mx: 'auto',
     textAlign: { xs: 'start', md: 'center' },
     style: {
-      background: 'var(--sauce-color-surface)',
-      borderRadius: 'var(--sauce-radius-lg)',
+      background: 'var(--greese-color-surface)',
+      borderRadius: 'var(--greese-radius-lg)',
     },
     children: 'Padding grows at md; text centres at md.',
   },
@@ -35,7 +35,7 @@ export const ResponsiveDisplay: Story = {
 /** `asChild` puts Box's styling on your own element. */
 export const AsChild: Story = {
   render: () => (
-    <Box asChild p={4} style={{ border: '1px dashed var(--sauce-color-border-strong)' }}>
+    <Box asChild p={4} style={{ border: '1px dashed var(--greese-color-border-strong)' }}>
       <section aria-label="Example">A real &lt;section&gt; with Box padding.</section>
     </Box>
   ),

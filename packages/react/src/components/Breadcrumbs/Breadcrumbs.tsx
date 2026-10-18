@@ -37,10 +37,10 @@ export const Breadcrumbs = ({
   const shown = collapse
     ? [
         items[0],
-        <li key="sauce-ellipsis" className="sauce-BreadcrumbItem">
+        <li key="greese-ellipsis" className="greese-BreadcrumbItem">
           <button
             type="button"
-            className="sauce-Breadcrumbs-expand"
+            className="greese-Breadcrumbs-expand"
             aria-label={expandLabel}
             onClick={() => setExpanded(true)}
           >
@@ -52,8 +52,8 @@ export const Breadcrumbs = ({
     : items
 
   return (
-    <nav {...props} aria-label={label} className={cx('sauce-Breadcrumbs', className)}>
-      <ol className="sauce-Breadcrumbs-list">{shown}</ol>
+    <nav {...props} aria-label={label} className={cx('greese-Breadcrumbs', className)}>
+      <ol className="greese-Breadcrumbs-list">{shown}</ol>
     </nav>
   )
 }
@@ -76,13 +76,13 @@ export const BreadcrumbItem = ({
   const isCurrent = current ?? (!props.href && !asChild)
   const Link = (asChild ? Slot : 'a') as typeof Slot
   return (
-    <li className={cx('sauce-BreadcrumbItem', className)}>
+    <li className={cx('greese-BreadcrumbItem', className)}>
       {isCurrent ? (
-        <span aria-current="page" className="sauce-BreadcrumbItem-current">
+        <span aria-current="page" className="greese-BreadcrumbItem-current">
           {children}
         </span>
       ) : (
-        <Link {...props} className="sauce-BreadcrumbItem-link">
+        <Link {...props} className="greese-BreadcrumbItem-link">
           {children}
         </Link>
       )}

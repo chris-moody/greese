@@ -27,8 +27,8 @@ export const Skeleton = ({
   ...props
 }: SkeletonProps): JSX.Element => {
   const sized = {
-    ...(width && { '--sauce-skeleton-width': width }),
-    ...(height && { '--sauce-skeleton-height': height }),
+    ...(width && { '--greese-skeleton-width': width }),
+    ...(height && { '--greese-skeleton-height': height }),
     ...style,
   } as CSSProperties
 
@@ -37,11 +37,11 @@ export const Skeleton = ({
       <span
         aria-hidden="true"
         {...props}
-        className={cx('sauce-Skeleton-lines', className)}
+        className={cx('greese-Skeleton-lines', className)}
         style={sized}
       >
         {Array.from({ length: lines }, (_, i) => (
-          <span key={i} className="sauce-Skeleton sauce-Skeleton--text" />
+          <span key={i} className="greese-Skeleton greese-Skeleton--text" />
         ))}
       </span>
     )
@@ -50,7 +50,7 @@ export const Skeleton = ({
     <span
       aria-hidden="true"
       {...props}
-      className={cx('sauce-Skeleton', `sauce-Skeleton--${shape}`, className)}
+      className={cx('greese-Skeleton', `greese-Skeleton--${shape}`, className)}
       style={sized}
     />
   )

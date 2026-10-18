@@ -1,7 +1,7 @@
 {
-  "name": "@sauce-ui/tokens",
+  "name": "@greese-ui/tokens",
   "version": "1.0.0",
-  "description": "Design tokens for SauceUI as CSS custom properties, Sass maps, and TypeScript constants.",
+  "description": "Design tokens for GreeseUI as CSS custom properties, Sass maps, and TypeScript constants.",
   "keywords": [
     "design-tokens",
     "css-variables",
@@ -41,8 +41,8 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@sauce-ui/eslint-config": "*",
-    "@sauce-ui/typescript-config": "*",
+    "@greese-ui/eslint-config": "*",
+    "@greese-ui/typescript-config": "*",
     "@types/node": "^24.0.0",
     "eslint": "^9.39.0",
     "jsdom": "^30.1.3",

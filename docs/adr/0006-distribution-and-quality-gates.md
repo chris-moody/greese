@@ -19,14 +19,14 @@ checks that Vite bundles Dialog + Button with Button's rules exactly once and
 nothing unrelated.
 
 The dependencies aren't maintained by hand. `scripts/cssGraph.ts` reads each
-component's TSX for the `sauce-*` classes it renders and the components it
+component's TSX for the `greese-*` classes it renders and the components it
 imports, maps each class to the stylesheet that defines it, and drops
 components with no styles of their own (Slot). **The build fails** if a
 component references a class block that no stylesheet defines. To make the
 graph acyclic, the styles Checkbox, Radio and Switch share moved into
 ChoiceGroup, and Text's size scale moved to a `_type` partial.
 
-Mixins now read Sass values from `@sauce-ui/tokens/scss/maps`, which emits no
+Mixins now read Sass values from `@greese-ui/tokens/scss/maps`, which emits no
 CSS, so compiling one component never drags the token stylesheet in with it.
 
 ### 2. Custom breakpoints: values yes, keys no
@@ -35,7 +35,7 @@ Breakpoint values are compile-time constants (media queries can't read
 variables). The published SCSS entry forwards a `$breakpoints !default`:
 
 ```scss
-@use 'pkg:@sauce-ui/react/scss' with ($breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px));
+@use 'pkg:@greese-ui/react/scss' with ($breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px));
 ```
 
 `configureBreakpoints()` gives the hooks and Sidebar the same values in JS.
@@ -81,7 +81,7 @@ Storybook with `@storybook/addon-docs`:
   an exported component appears in no story meta.
 - **Colour scheme:** the toolbar's scheme is applied from the globals channel,
   so it reaches docs pages too, and the docs container uses a Storybook theme
-  built from SauceUI's tokens for the resolved scheme. Storybook's default
+  built from GreeseUI's tokens for the resolved scheme. Storybook's default
   docs theme is static light, which left dark-mode text on a white page.
 
 The site is hosted on Firebase Hosting from `apps/docs/storybook-static`.

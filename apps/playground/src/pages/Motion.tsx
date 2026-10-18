@@ -1,7 +1,7 @@
 import { useEffect, useRef, type JSX } from 'react'
-import { Button, splitText, timeline, type Timeline } from '@sauce-ui/react'
-import '@sauce-ui/react/base.css'
-import '@sauce-ui/react/styles.css'
+import { Button, splitText, timeline, type Timeline } from '@greese-ui/react'
+import '@greese-ui/react/base.css'
+import '@greese-ui/react/styles.css'
 
 declare global {
   interface Window {
@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-/** Fixtures for e2e/motion.spec.ts: sauce.js against real computed styles. */
+/** Fixtures for e2e/motion.spec.ts: greese.js against real computed styles. */
 export const Motion = (): JSX.Element => {
   const box = useRef<HTMLDivElement>(null)
   const label = useRef<HTMLParagraphElement>(null)
@@ -23,7 +23,7 @@ export const Motion = (): JSX.Element => {
         x: 50,
         rotate: 90,
         backgroundColor: '#0000ff',
-        '--sauce-color-accent': '#00ff00',
+        '--greese-color-accent': '#00ff00',
         duration: 1,
         ease: 'linear',
       })

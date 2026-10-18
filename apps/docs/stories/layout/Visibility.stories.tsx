@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Hide, Show } from '@sauce-ui/react'
+import { Hide, Show } from '@greese-ui/react'
 import { Tile } from '../_shared/fixtures.tsx'
 
 const meta = {

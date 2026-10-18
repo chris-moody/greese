@@ -3,7 +3,7 @@ import { LAYER_ORDER } from './css.ts'
 import { createTheme } from './theme.ts'
 import { color, scalarTokens } from './tokens.ts'
 
-const T = "[data-sauce-theme='brand']"
+const T = "[data-greese-theme='brand']"
 
 /** The declarations inside the first rule whose selector starts with `selector`. */
 const rule = (css: string, selector: string): string => {
@@ -16,7 +16,7 @@ describe('createTheme', () => {
     const { name, css } = createTheme({ name: 'brand' })
     expect(name).toBe('brand')
     expect(css.startsWith(LAYER_ORDER)).toBe(true)
-    expect(css).toContain('@layer sauce.theme {')
+    expect(css).toContain('@layer greese.theme {')
   })
 
   it('is complete: declares every token, so themes never depend on ancestors', () => {
@@ -25,7 +25,7 @@ describe('createTheme', () => {
     const tokenCount =
       Object.keys(color).length +
       Object.values(scalarTokens).reduce((n, group) => n + Object.keys(group).length, 0)
-    expect(base.match(/--sauce-/g)).toHaveLength(tokenCount)
+    expect(base.match(/--greese-/g)).toHaveLength(tokenCount)
   })
 
   it('applies light/dark overrides to the matching scheme rules', () => {
@@ -33,27 +33,27 @@ describe('createTheme', () => {
       name: 'brand',
       color: { accent: { light: '#7c3aed', dark: '#c4b5fd' } },
     })
-    expect(rule(css, `  ${T} {`)).toContain('--sauce-color-accent: #7c3aed;')
-    expect(rule(css, `${T}:not([data-sauce-scheme='light'])`)).toContain(
-      '--sauce-color-accent: #c4b5fd;'
+    expect(rule(css, `  ${T} {`)).toContain('--greese-color-accent: #7c3aed;')
+    expect(rule(css, `${T}:not([data-greese-scheme='light'])`)).toContain(
+      '--greese-color-accent: #c4b5fd;'
     )
-    expect(rule(css, `${T}[data-sauce-scheme='dark']`)).toContain(
-      '--sauce-color-accent: #c4b5fd;'
+    expect(rule(css, `${T}[data-greese-scheme='dark']`)).toContain(
+      '--greese-color-accent: #c4b5fd;'
     )
-    expect(rule(css, `:root[data-sauce-scheme='light'] ${T}`)).toContain(
-      '--sauce-color-accent: #7c3aed;'
+    expect(rule(css, `:root[data-greese-scheme='light'] ${T}`)).toContain(
+      '--greese-color-accent: #7c3aed;'
     )
     // Untouched roles keep their defaults per scheme.
-    expect(rule(css, `${T}[data-sauce-scheme='dark']`)).toContain(
-      `--sauce-color-canvas: ${color.canvas.dark};`
+    expect(rule(css, `${T}[data-greese-scheme='dark']`)).toContain(
+      `--greese-color-canvas: ${color.canvas.dark};`
     )
   })
 
   it('uses a single colour value for both schemes', () => {
     const { css } = createTheme({ name: 'brand', color: { surface: '#fef3c7' } })
-    expect(rule(css, `  ${T} {`)).toContain('--sauce-color-surface: #fef3c7;')
-    expect(rule(css, `${T}[data-sauce-scheme='dark']`)).toContain(
-      '--sauce-color-surface: #fef3c7;'
+    expect(rule(css, `  ${T} {`)).toContain('--greese-color-surface: #fef3c7;')
+    expect(rule(css, `${T}[data-greese-scheme='dark']`)).toContain(
+      '--greese-color-surface: #fef3c7;'
     )
   })
 
@@ -64,16 +64,16 @@ describe('createTheme', () => {
       space: { 4: '1.25rem' },
     })
     const base = rule(css, `  ${T} {`)
-    expect(base).toContain('--sauce-font-size-2xl: 1.75rem;')
-    expect(base).toContain('--sauce-space-4: 1.25rem;')
-    expect(base).toContain('--sauce-space-3: 0.75rem;')
+    expect(base).toContain('--greese-font-size-2xl: 1.75rem;')
+    expect(base).toContain('--greese-space-4: 1.25rem;')
+    expect(base).toContain('--greese-space-3: 0.75rem;')
   })
 
   it('collapses durations under reduced motion, overrides included', () => {
     const { css } = createTheme({ name: 'brand', duration: { normal: '400ms' } })
-    expect(rule(css, `  ${T} {`)).toContain('--sauce-duration-normal: 400ms;')
+    expect(rule(css, `  ${T} {`)).toContain('--greese-duration-normal: 400ms;')
     expect(css).toMatch(
-      /prefers-reduced-motion: reduce\) \{\n\s+\[data-sauce-theme='brand'\] \{\n\s+--sauce-duration-fast: 0\.01ms;/
+      /prefers-reduced-motion: reduce\) \{\n\s+\[data-greese-theme='brand'\] \{\n\s+--greese-duration-fast: 0\.01ms;/
     )
   })
 

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Spinner, Stack } from '@sauce-ui/react'
+import { Spinner, Stack } from '@greese-ui/react'
 
 const meta = {
   title: 'Content/Spinner',

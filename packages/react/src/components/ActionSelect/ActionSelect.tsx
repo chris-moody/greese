@@ -99,7 +99,7 @@ export const ActionSelect = ({
   className,
   ...props
 }: ActionSelectProps): JSX.Element => (
-  <ButtonGroup {...props} attached className={cx('sauce-ActionSelect', className)}>
+  <ButtonGroup {...props} attached className={cx('greese-ActionSelect', className)}>
     <IconButton
       label={actionLabel}
       variant="outline"

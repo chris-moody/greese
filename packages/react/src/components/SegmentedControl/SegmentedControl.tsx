@@ -77,17 +77,17 @@ export const SegmentedControl = ({
       role="radiogroup"
       {...props}
       className={cx(
-        'sauce-SegmentedControl',
-        `sauce-SegmentedControl--size-${size}`,
-        fullWidth && 'sauce-SegmentedControl--full',
+        'greese-SegmentedControl',
+        `greese-SegmentedControl--size-${size}`,
+        fullWidth && 'greese-SegmentedControl--full',
         className
       )}
     >
-      <legend className={hideLabel ? 'sauce-VisuallyHidden' : 'sauce-Field-label'}>
+      <legend className={hideLabel ? 'greese-VisuallyHidden' : 'greese-Field-label'}>
         {label}
       </legend>
       <SegmentedContext value={context}>
-        <div className="sauce-SegmentedControl-track">{children}</div>
+        <div className="greese-SegmentedControl-track">{children}</div>
       </SegmentedContext>
     </fieldset>
   )
@@ -112,11 +112,11 @@ export const Segment = ({
   const group = use(SegmentedContext)
   if (!group) throw new Error('<Segment> must be used inside <SegmentedControl>.')
   return (
-    <label className={cx('sauce-Segment', className)}>
+    <label className={cx('greese-Segment', className)}>
       <input
         {...props}
         type="radio"
-        className="sauce-Segment-input"
+        className="greese-Segment-input"
         name={group.name}
         value={value}
         checked={group.value === value}
@@ -125,7 +125,7 @@ export const Segment = ({
           if (event.target.checked) group.select(value)
         }}
       />
-      <span className="sauce-Segment-label">{children}</span>
+      <span className="greese-Segment-label">{children}</span>
     </label>
   )
 }

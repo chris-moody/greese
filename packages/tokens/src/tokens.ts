@@ -1,5 +1,5 @@
 /**
- * Design tokens. The single source of truth for every visual value in SauceUI.
+ * Design tokens. The single source of truth for every visual value in GreeseUI.
  *
  * `scripts/build-css.ts` turns this module into dist/tokens.css and
  * dist/_tokens.scss; `createTheme()` overrides any of it at runtime-free cost.
@@ -40,7 +40,7 @@ export const color = {
 
 export type ColorRole = keyof typeof color
 
-/** Spacing scale, indexed: `space[2]` is `--sauce-space-2`. */
+/** Spacing scale, indexed: `space[2]` is `--greese-space-2`. */
 export const space = {
   0: '0',
   1: '0.25rem',
@@ -115,7 +115,7 @@ export const easing = {
 
 /**
  * Scheme-independent token groups, keyed by the custom-property group name:
- * `fontSize.lg` is `--sauce-font-size-lg`.
+ * `fontSize.lg` is `--greese-font-size-lg`.
  */
 export const scalarTokens = {
   space,

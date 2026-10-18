@@ -5,7 +5,7 @@
 
 ## Context
 
-After 1.0, the components people reach for most that SauceUI lacked were a
+After 1.0, the components people reach for most that GreeseUI lacked were a
 searchable select, a number input, date input, a data table, a segmented
 control, and swipe-to-dismiss for bottom sheets.
 
@@ -82,7 +82,7 @@ Selected and focused styles use `:has(:checked)` and `:has(:focus-visible)`.
 - **Where a swipe starts:** on the header (which gets `touch-action: none`) or
   on the grab handle shown on bottom sheets, never on the scrollable body, so
   scrolling content isn't mistaken for a dismiss.
-- **Direction:** each placement class exposes `--sauce-drawer-edge`, so the
+- **Direction:** each placement class exposes `--greese-drawer-edge`, so the
   dismiss direction follows a responsive placement and is mirrored in RTL.
 - **Release:** past 30% of the sheet's size, or a flick faster than
   0.5 px/ms, calls the native `dialog.close()`, and the exit transition

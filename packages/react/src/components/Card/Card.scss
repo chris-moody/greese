@@ -1,51 +1,51 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Card {
+@layer greese.components {
+  .greese-Card {
     // Resolved padding, readable by CardMedia to bleed through it.
-    --sauce-card-padding: var(--sauce-space-4);
+    --greese-card-padding: var(--greese-space-4);
 
     display: flex;
     flex-direction: column;
-    gap: var(--sauce-space-4);
+    gap: var(--greese-space-4);
     min-inline-size: 0;
-    padding: var(--sauce-card-padding);
+    padding: var(--greese-card-padding);
     overflow: hidden;
-    color: var(--sauce-color-fg);
-    border-radius: var(--sauce-radius-lg);
+    color: var(--greese-color-fg);
+    border-radius: var(--greese-radius-lg);
 
     @include mixins.up(md) {
-      --sauce-card-padding: var(--sauce-space-5);
+      --greese-card-padding: var(--greese-space-5);
     }
   }
 
-  .sauce-Card--outline {
-    background-color: var(--sauce-color-surface-overlay);
-    border: 1px solid var(--sauce-color-border);
+  .greese-Card--outline {
+    background-color: var(--greese-color-surface-overlay);
+    border: 1px solid var(--greese-color-border);
   }
 
-  .sauce-Card--elevated {
-    background-color: var(--sauce-color-surface-overlay);
-    box-shadow: var(--sauce-shadow-md);
+  .greese-Card--elevated {
+    background-color: var(--greese-color-surface-overlay);
+    box-shadow: var(--greese-shadow-md);
   }
 
-  .sauce-Card--filled {
-    background-color: var(--sauce-color-surface);
+  .greese-Card--filled {
+    background-color: var(--greese-color-surface);
   }
 
-  .sauce-Card--interactive {
+  .greese-Card--interactive {
     text-decoration: none;
     cursor: pointer;
     transition:
-      box-shadow var(--sauce-duration-normal) var(--sauce-easing-standard),
-      border-color var(--sauce-duration-normal) var(--sauce-easing-standard),
-      translate var(--sauce-duration-normal) var(--sauce-easing-standard);
+      box-shadow var(--greese-duration-normal) var(--greese-easing-standard),
+      border-color var(--greese-duration-normal) var(--greese-easing-standard),
+      translate var(--greese-duration-normal) var(--greese-easing-standard);
 
     @include mixins.focus-ring;
 
     @include mixins.hover {
-      border-color: var(--sauce-color-border-strong);
-      box-shadow: var(--sauce-shadow-lg);
+      border-color: var(--greese-color-border-strong);
+      box-shadow: var(--greese-shadow-lg);
 
       @include mixins.motion-safe {
         translate: 0 -2px;
@@ -53,15 +53,15 @@
     }
   }
 
-  .sauce-CardMedia {
-    margin-inline: calc(-1 * var(--sauce-card-padding));
+  .greese-CardMedia {
+    margin-inline: calc(-1 * var(--greese-card-padding));
 
     &:first-child {
-      margin-block-start: calc(-1 * var(--sauce-card-padding));
+      margin-block-start: calc(-1 * var(--greese-card-padding));
     }
 
     &:last-child {
-      margin-block-end: calc(-1 * var(--sauce-card-padding));
+      margin-block-end: calc(-1 * var(--greese-card-padding));
     }
 
     > :is(img, video, picture) {
@@ -71,5 +71,5 @@
   }
 
   // After the default, so a padding prop wins at every breakpoint.
-  @include mixins.responsive-prop('sauce-Card', 'padding', --sauce-card-padding);
+  @include mixins.responsive-prop('greese-Card', 'padding', --greese-card-padding);
 }

@@ -40,7 +40,7 @@ export const FileInput = ({
       {...props}
       {...control}
       type="file"
-      className={cx('sauce-FileInput', `sauce-FileInput--size-${size}`, className)}
+      className={cx('greese-FileInput', `greese-FileInput--size-${size}`, className)}
     />
   )
 }

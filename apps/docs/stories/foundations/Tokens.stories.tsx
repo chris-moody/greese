@@ -1,22 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { CSSProperties, ReactNode } from 'react'
-import { color, fontSize, radius, shadow, space } from '@sauce-ui/tokens'
+import { color, fontSize, radius, shadow, space } from '@greese-ui/tokens'
 
 const kebab = (s: string) => s.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 
 const grid: CSSProperties = {
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fill, minmax(10rem, 1fr))',
-  gap: 'var(--sauce-space-4)',
+  gap: 'var(--greese-space-4)',
 }
 const label: CSSProperties = {
-  fontFamily: 'var(--sauce-font-mono)',
-  fontSize: 'var(--sauce-font-size-xs)',
+  fontFamily: 'var(--greese-font-mono)',
+  fontSize: 'var(--greese-font-size-xs)',
 }
 
 const Section = ({ title, children }: { title: string; children: ReactNode }) => (
-  <section style={{ marginBlockEnd: 'var(--sauce-space-7)' }}>
-    <h2 style={{ marginBlockEnd: 'var(--sauce-space-4)' }}>{title}</h2>
+  <section style={{ marginBlockEnd: 'var(--greese-space-7)' }}>
+    <h2 style={{ marginBlockEnd: 'var(--greese-space-4)' }}>{title}</h2>
     {children}
   </section>
 )
@@ -30,15 +30,15 @@ export const Colors: StoryObj = {
     <Section title="Colour">
       <div style={grid}>
         {Object.keys(color).map((role) => {
-          const v = `--sauce-color-${kebab(role)}`
+          const v = `--greese-color-${kebab(role)}`
           return (
             <div key={role}>
               <div
                 style={{
                   blockSize: '3rem',
                   background: `var(${v})`,
-                  border: '1px solid var(--sauce-color-border)',
-                  borderRadius: 'var(--sauce-radius-md)',
+                  border: '1px solid var(--greese-color-border)',
+                  borderRadius: 'var(--greese-radius-md)',
                 }}
               />
               <div style={label}>{v}</div>
@@ -56,14 +56,14 @@ export const Space: StoryObj = {
       {Object.entries(space).map(([key, value]) => (
         <div
           key={key}
-          style={{ display: 'flex', alignItems: 'center', gap: 'var(--sauce-space-4)' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 'var(--greese-space-4)' }}
         >
-          <code style={{ ...label, inlineSize: '9rem' }}>--sauce-space-{key}</code>
+          <code style={{ ...label, inlineSize: '9rem' }}>--greese-space-{key}</code>
           <div
             style={{
-              inlineSize: `var(--sauce-space-${key})`,
+              inlineSize: `var(--greese-space-${key})`,
               blockSize: '1rem',
-              background: 'var(--sauce-color-accent)',
+              background: 'var(--greese-color-accent)',
             }}
           />
           <span style={label}>{value}</span>
@@ -82,12 +82,12 @@ export const RadiusAndShadow: StoryObj = {
             <div
               style={{
                 blockSize: '4rem',
-                background: 'var(--sauce-color-surface)',
-                border: '1px solid var(--sauce-color-border)',
-                borderRadius: `var(--sauce-radius-${key})`,
+                background: 'var(--greese-color-surface)',
+                border: '1px solid var(--greese-color-border)',
+                borderRadius: `var(--greese-radius-${key})`,
               }}
             />
-            <div style={label}>--sauce-radius-{key}</div>
+            <div style={label}>--greese-radius-{key}</div>
           </div>
         ))}
         {Object.keys(shadow).map((key) => (
@@ -95,12 +95,12 @@ export const RadiusAndShadow: StoryObj = {
             <div
               style={{
                 blockSize: '4rem',
-                background: 'var(--sauce-color-surface-overlay)',
-                borderRadius: 'var(--sauce-radius-md)',
-                boxShadow: `var(--sauce-shadow-${key})`,
+                background: 'var(--greese-color-surface-overlay)',
+                borderRadius: 'var(--greese-radius-md)',
+                boxShadow: `var(--greese-shadow-${key})`,
               }}
             />
-            <div style={label}>--sauce-shadow-{key}</div>
+            <div style={label}>--greese-shadow-{key}</div>
           </div>
         ))}
       </div>
@@ -115,11 +115,11 @@ export const Typography: StoryObj = {
         <p
           key={key}
           style={{
-            fontSize: `var(--sauce-font-size-${key})`,
-            marginBlockEnd: 'var(--sauce-space-2)',
+            fontSize: `var(--greese-font-size-${key})`,
+            marginBlockEnd: 'var(--greese-space-2)',
           }}
         >
-          <code style={label}>--sauce-font-size-{key}</code> The quick brown fox
+          <code style={label}>--greese-font-size-{key}</code> The quick brown fox
         </p>
       ))}
     </Section>

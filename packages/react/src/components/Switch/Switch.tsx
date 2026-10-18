@@ -45,23 +45,23 @@ export const Switch = ({
   })
   return (
     <div
-      className={cx('sauce-Switch', className)}
+      className={cx('greese-Switch', className)}
       style={style}
       data-disabled={control.disabled || undefined}
     >
-      <span className="sauce-Switch-track">
+      <span className="greese-Switch-track">
         <input
           {...props}
           {...control}
           type="checkbox"
           role="switch"
-          className="sauce-Switch-input"
+          className="greese-Switch-input"
           onChange={(event: ChangeEvent<HTMLInputElement>) => {
             onChange?.(event)
             onCheckedChange?.(event.target.checked)
           }}
         />
-        <span className="sauce-Switch-thumb" aria-hidden="true" />
+        <span className="greese-Switch-thumb" aria-hidden="true" />
       </span>
       <ChoiceText
         htmlFor={control.id}

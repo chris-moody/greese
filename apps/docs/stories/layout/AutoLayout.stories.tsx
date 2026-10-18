@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AutoLayout, AutoLayoutItem, Field, Input, Select } from '@sauce-ui/react'
+import { AutoLayout, AutoLayoutItem, Field, Input, Select } from '@greese-ui/react'
 import { Tile } from '../_shared/fixtures.tsx'
 
 const meta = {

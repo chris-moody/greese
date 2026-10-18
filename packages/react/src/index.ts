@@ -37,9 +37,9 @@ export {
   type SpaceToken,
   type Theme,
   type ThemeOptions,
-} from '@sauce-ui/tokens'
+} from '@greese-ui/tokens'
 
-// sauce.js, bundled: the animation library (@sauce-ui/sauce), re-exported so
+// greese.js, bundled: the animation library (@greese-ui/greese), re-exported so
 // one install covers both. Tree-shaken away when unused.
 export {
   animate,
@@ -56,4 +56,4 @@ export {
   type SplitText,
   type StaggerOptions,
   type TimelineOptions,
-} from '@sauce-ui/sauce'
+} from '@greese-ui/greese'

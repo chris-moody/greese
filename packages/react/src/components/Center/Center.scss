@@ -1,11 +1,11 @@
-@layer sauce.components {
-  .sauce-Center {
+@layer greese.components {
+  .greese-Center {
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .sauce-Center--inline {
+  .greese-Center--inline {
     display: inline-flex;
   }
 }

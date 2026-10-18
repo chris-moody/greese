@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Icon, Slot, Slottable } from '@sauce-ui/react'
+import { Icon, Slot, Slottable } from '@greese-ui/react'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { ArrowIcon } from '../_shared/fixtures.tsx'
 
-/** A component with an `asChild` prop, built on Slot, the way SauceUI's own are. */
+/** A component with an `asChild` prop, built on Slot, the way GreeseUI's own are. */
 const Action = ({
   asChild,
   icon,

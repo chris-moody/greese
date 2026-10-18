@@ -1,58 +1,58 @@
 @use '../../styles/mixins';
 
-@layer sauce.components {
-  .sauce-Breadcrumbs-list {
+@layer greese.components {
+  .greese-Breadcrumbs-list {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--sauce-space-1) var(--sauce-space-2);
+    gap: var(--greese-space-1) var(--greese-space-2);
     align-items: center;
     padding: 0;
     margin: 0;
-    font-size: var(--sauce-font-size-sm);
+    font-size: var(--greese-font-size-sm);
     list-style: none;
   }
 
-  .sauce-BreadcrumbItem {
+  .greese-BreadcrumbItem {
     display: inline-flex;
-    gap: var(--sauce-space-2);
+    gap: var(--greese-space-2);
     align-items: center;
     min-inline-size: 0;
-    color: var(--sauce-color-fg-muted);
+    color: var(--greese-color-fg-muted);
 
     // Silent separator: the alt text after the slash is empty.
     & + &::before {
-      color: var(--sauce-color-border-strong);
+      color: var(--greese-color-border-strong);
       content: '/' / '';
     }
   }
 
-  .sauce-BreadcrumbItem-link,
-  .sauce-Breadcrumbs-expand {
+  .greese-BreadcrumbItem-link,
+  .greese-Breadcrumbs-expand {
     color: inherit;
     text-decoration: none;
-    border-radius: var(--sauce-radius-sm);
+    border-radius: var(--greese-radius-sm);
 
     @include mixins.focus-ring(1px);
 
     @include mixins.hover {
-      color: var(--sauce-color-fg);
+      color: var(--greese-color-fg);
       text-decoration: underline;
       text-underline-offset: 0.2em;
     }
   }
 
-  .sauce-Breadcrumbs-expand {
-    padding: 0 var(--sauce-space-1);
+  .greese-Breadcrumbs-expand {
+    padding: 0 var(--greese-space-1);
     font: inherit;
     cursor: pointer;
     background: none;
     border: 0;
   }
 
-  .sauce-BreadcrumbItem-current {
+  .greese-BreadcrumbItem-current {
     overflow: hidden;
-    font-weight: var(--sauce-font-weight-medium);
-    color: var(--sauce-color-fg);
+    font-weight: var(--greese-font-weight-medium);
+    color: var(--greese-color-fg);
     text-overflow: ellipsis;
     white-space: nowrap;
   }

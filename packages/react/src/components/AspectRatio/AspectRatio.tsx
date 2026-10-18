@@ -16,7 +16,7 @@ export interface AspectRatioProps extends BoxProps {
 }
 
 const RATIO: ResponsiveConfig = {
-  block: 'sauce-AspectRatio',
+  block: 'greese-AspectRatio',
   prop: 'ratio',
   isToken: neverToken,
 }
@@ -38,8 +38,8 @@ export const AspectRatio = ({
 }: AspectRatioProps): JSX.Element => {
   const resolved = resolveResponsive([[ratio, RATIO]], {
     className: cx(
-      'sauce-AspectRatio',
-      fit === 'contain' && 'sauce-AspectRatio--contain',
+      'greese-AspectRatio',
+      fit === 'contain' && 'greese-AspectRatio--contain',
       className
     ),
     style,
