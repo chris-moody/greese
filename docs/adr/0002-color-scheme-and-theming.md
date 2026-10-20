@@ -14,7 +14,7 @@ uses.
 
 ### 1. Redeclare variables per scheme; don't use `light-dark()`
 
-Phase 0's e2e tests found that Vite's default Lightning CSS target polyfills
+[Phase 0](0013-project-scope-and-phases.md#phases)'s e2e tests found that Vite's default Lightning CSS target polyfills
 `light-dark()`. The polyfill substitutes the value at the declaring element
 (`:root`), which freezes the tokens and breaks nested schemes. We don't
 control consumer pipelines, so the tokens CSS redeclares the colour variables

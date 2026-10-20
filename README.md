@@ -8,7 +8,7 @@ static CSS compiled at build time, themed with CSS custom properties.
 | [`@greese-ui/react`](packages/react) | Components, hooks, and the compiled stylesheet |
 | [`@greese-ui/tokens`](packages/tokens) | Design tokens as CSS variables, Sass maps, and TS constants |
 
-Plan and architecture: [docs/plans/DEVELOPMENT_PLAN.md](docs/plans/DEVELOPMENT_PLAN.md).
+Scope, phases and standing decisions: [ADR 0013](docs/adr/0013-project-scope-and-phases.md); every decision is in [docs/adr](docs/adr).
 
 ## Workspace
 

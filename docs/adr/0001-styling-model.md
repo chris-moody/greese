@@ -42,7 +42,7 @@ For each prop, the mixin emits four things:
   `var(--…-md, var(--…-sm, var(--…-xs)))`, so an unset breakpoint inherits the
   nearest smaller one, as in MUI. Because the chain sits on the uses class and
   not the component's base class, **a prop that isn't set costs the element
-  nothing** and never overrides its defaults. Phase 2's e2e tests check that a
+  nothing** and never overrides its defaults. [Phase 2](0013-project-scope-and-phases.md#phases)'s e2e tests check that a
   Container with only `mt` keeps its gutter.
 - **Token classes.** Each one sets the _variable_, never the property. If a
   class set the property directly, the chain at a larger breakpoint would

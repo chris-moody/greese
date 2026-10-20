@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-18
-- **Implements:** [GREESE_PROP_PLAN.md](../plans/GREESE_PROP_PLAN.md), phases 1–6
+- **Implements:** the `greese` prop plan, phases 1–6 (summarised below)
 
 ## Context
 
@@ -15,6 +15,30 @@ Components needed simple, configurable motion through one prop, without:
 
 About half the components are server-component safe (Box, Stack, Text,
 Button, Card…), so the prop can't simply add a client hook everywhere.
+
+### The plan
+
+| Phase | Scope                                                                                                  |
+| ----- | ------------------------------------------------------------------------------------------------------ |
+| 0     | Review of the plan and its open questions; this ADR                                                    |
+| 1     | CSS presets (`enter`, `inView`, `stagger`) on the layout and text components                           |
+| 2     | The prop on every component, with a check that none lacks it                                           |
+| 3     | The runtime: registry, the `@greese-ui/react/greese` opt-in, `hover`/`press`/`focus`, custom keyframes |
+| 4     | Text effects (`type`, `count`, `split`) on Text and Heading                                            |
+| 5     | Exits: `exit` on overlays; a decision on generic exit-on-unmount                                       |
+| 6     | `fromPixels` and JSON presets                                                                          |
+
+Its open questions, answered in the decisions below:
+
+1. One `greese` prop, or separate `greeseIn` / `greeseHover` props? One
+   (decision 1).
+2. Stagger before hydration: together until hydrated, or an index rendered
+   on the server? Moot, since CSS sets the index (decision 5).
+3. Runtime loading: require the opt-in, or allow a lazy chunk? Lazy, with
+   the opt-in (decision 3).
+4. Is the preset set right, and should themes tune motion? Yes, through
+   inherited CSS variables (decision 5).
+5. Is `fromPixels` worth prioritising? Yes (decision 9).
 
 ## Decisions
 
@@ -50,7 +74,7 @@ For JavaScript entrances on the first screen, `import '@greese-ui/react/greese'`
 puts the runtime in the main bundle: its promise is already resolved, so it
 attaches in a microtask, before the first paint.
 
-**Open question 3** in the plan is answered this way: lazy by default, with
+**Open question 3** (above) is answered this way: lazy by default, with
 an opt-in. JavaScript entrances without the opt-in may start a moment late;
 CSS presets never do.
 

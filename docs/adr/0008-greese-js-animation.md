@@ -7,7 +7,7 @@
 
 GreeseUI needs animation that's simple, configurable and light, and that can
 later power a `greese` prop on components (see
-[the plan](../plans/GREESE_PROP_PLAN.md)). GLOP, the codebase this work comes
+[ADR 0009](0009-greese-prop.md)). GLOP, the codebase this work comes
 from, uses two systems:
 
 - **A third-party tween library** in the game engine, used lightly: `to`,
