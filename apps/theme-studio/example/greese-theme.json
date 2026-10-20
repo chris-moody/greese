@@ -1,15 +1,5 @@
 {
-  "tokens": {
-    "color": {
-      "primary": {
-        "light": "lavender-600",
-        "dark": "lavender-300"
-      }
-    },
-    "radius": {
-      "md": "12px"
-    }
-  },
+  "tokens": {},
   "motionDefaults": {},
   "components": {
     "Card": {

@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Heading, Stack, Text } from '@greese/react'
+import { Stack, Text } from '@greese/react'
 import { radius } from '@greese/ui'
 import { getIn, setIn } from '../edit.ts'
 import { ValueRow } from '../fields.tsx'
@@ -23,9 +23,6 @@ export const RadiusSection = ({
   onChange: (spec: ThemeSpec) => void
 }): JSX.Element => (
   <Stack gap={3}>
-    <Heading level={3} size="md">
-      Radius
-    </Heading>
     {(['sm', 'md', 'lg'] as const).map((key) => {
       const path = ['tokens', 'radius', key]
       const value = (getIn(spec, path) as string | undefined) ?? ''
@@ -56,7 +53,7 @@ export const RadiusSection = ({
             ))}
           </div>
           <ValueRow
-            label={`--greese-radius-${key}`}
+            label={`radius-${key}`}
             value={value}
             placeholder={radius[key]}
             onChange={(v) => onChange(setIn(spec, path, v))}

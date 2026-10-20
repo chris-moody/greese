@@ -18,7 +18,7 @@ interface PanelProps {
   rendered?: RenderedColors
 }
 
-/** Token groups past color and radius, collapsed: they change less often. */
+/** The other token groups, after color and radius, which have editors of their own. */
 const MORE = Object.entries(scalarTokens).filter(([group]) => group !== 'radius')
 
 export const TokensPanel = ({ spec, onChange, rendered }: PanelProps): JSX.Element => (
@@ -31,9 +31,13 @@ export const TokensPanel = ({ spec, onChange, rendered }: PanelProps): JSX.Eleme
       value={spec.name ?? ''}
       onChange={(e) => onChange(setIn(spec, ['name'], e.currentTarget.value))}
     />
-    <ColorsSection spec={spec} onChange={onChange} rendered={rendered} />
-    <RadiusSection spec={spec} onChange={onChange} />
-    <Accordion aria-label="More tokens">
+    <Accordion aria-label="Tokens">
+      <AccordionItem title="color" defaultOpen>
+        <ColorsSection spec={spec} onChange={onChange} rendered={rendered} />
+      </AccordionItem>
+      <AccordionItem title="radius">
+        <RadiusSection spec={spec} onChange={onChange} />
+      </AccordionItem>
       {MORE.map(([group, values]) => (
         <AccordionItem key={group} title={kebab(group)}>
           <Stack gap={2}>
@@ -42,7 +46,7 @@ export const TokensPanel = ({ spec, onChange, rendered }: PanelProps): JSX.Eleme
               return (
                 <ValueRow
                   key={key}
-                  label={`--greese-${kebab(group)}-${kebab(key)}`}
+                  label={`${kebab(group)}-${kebab(key)}`}
                   value={(getIn(spec, path) as string | undefined) ?? ''}
                   placeholder={fallback}
                   onChange={(v) => onChange(setIn(spec, path, v))}

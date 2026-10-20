@@ -66,6 +66,66 @@ const Group = ({
   </Card>
 )
 
+const SIZES = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl'] as const
+const WEIGHTS = ['regular', 'medium', 'semibold', 'bold'] as const
+const LEADINGS = ['tight', 'snug', 'normal'] as const
+
+/** The typography tokens at work, each sample set by its own variable. */
+const Typography = (): JSX.Element => (
+  <Group title="Typography">
+    <Stack gap={1}>
+      <Text size="sm" tone="muted">
+        font-body
+      </Text>
+      <span style={{ fontFamily: 'var(--greese-font-body)', fontSize: '1.25rem' }}>
+        The quick brown fox jumps over the lazy dog
+      </span>
+      <Text size="sm" tone="muted">
+        font-mono
+      </Text>
+      <span style={{ fontFamily: 'var(--greese-font-mono)' }}>
+        const theme = createTheme({'{ … }'})
+      </span>
+    </Stack>
+    <Stack gap={1}>
+      {SIZES.map((size) => (
+        <Stack key={size} direction="row" gap={3} align="baseline">
+          <Text size="xs" tone="muted" style={{ inlineSize: '2.5rem', flexShrink: 0 }}>
+            {size}
+          </Text>
+          <span style={{ fontSize: `var(--greese-font-size-${size})` }}>
+            Sphinx of quartz
+          </span>
+        </Stack>
+      ))}
+    </Stack>
+    <Stack direction="row" gap={3} wrap="wrap">
+      {WEIGHTS.map((weight) => (
+        <span key={weight} style={{ fontWeight: `var(--greese-font-weight-${weight})` }}>
+          {weight}
+        </span>
+      ))}
+    </Stack>
+    <Stack direction="row" gap={4}>
+      {LEADINGS.map((leading) => (
+        <Stack key={leading} gap={1} style={{ flex: 1, minInlineSize: 0 }}>
+          <Text size="xs" tone="muted">
+            {leading}
+          </Text>
+          <span
+            style={{
+              lineHeight: `var(--greese-line-height-${leading})`,
+              fontSize: '0.875rem',
+            }}
+          >
+            Pack my box with five dozen liquor jugs.
+          </span>
+        </Stack>
+      ))}
+    </Stack>
+  </Group>
+)
+
 const people = [
   { name: 'Ada Lovelace', role: 'Analyst', commits: 128 },
   { name: 'Grace Hopper', role: 'Compiler', commits: 342 },
@@ -83,12 +143,14 @@ export const Gallery = (): JSX.Element => (
       </Text>
     </Stack>
     <Grid container minChildWidth="17rem" gap={4}>
+      <Typography />
       <Group title="Buttons">
         <Stack direction="row" gap={2} wrap="wrap">
           <Button>Solid</Button>
           <Button variant="soft">Soft</Button>
           <Button variant="outline">Outline</Button>
           <Button variant="ghost">Ghost</Button>
+          <Button variant="text">Text</Button>
         </Stack>
         <Stack direction="row" gap={2} wrap="wrap">
           <Button tone="neutral" size="sm">

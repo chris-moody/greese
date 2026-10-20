@@ -1,5 +1,5 @@
 import { useId, useState, type JSX } from 'react'
-import { Badge, Heading, Stack, Text } from '@greese/react'
+import { Badge, Stack, Text } from '@greese/react'
 import { AA, color, contentColor, contrastRatio, type ColorRole } from '@greese/ui'
 import { derivedContent, derivedStrong } from '../derived.ts'
 import { getIn, setIn } from '../edit.ts'
@@ -221,18 +221,13 @@ export const ColorsSection = ({ spec, onChange, rendered }: PanelProps): JSX.Ele
   }
   return (
     <Stack gap={4}>
-      <Stack gap={1}>
-        <Heading level={3} size="md">
-          Colors
-        </Heading>
-        <Text size="sm" tone="muted">
-          Each chip shows the color as the preview renders it, light and dark, with its
-          full code (eight digits when it has transparency, shown over a checkerboard) and
-          text in its content color. The badge is the weaker contrast of the two. Set a
-          brand color and its content and strong colors follow, readable (WCAG AA) in both
-          schemes.
-        </Text>
-      </Stack>
+      <Text size="sm" tone="muted">
+        Each chip shows the color as the preview renders it, light and dark, with its full
+        code (eight digits when it has transparency, shown over a checkerboard) and text
+        in its content color. The badge is the weaker contrast of the two. Set a brand
+        color and its content and strong colors follow, readable (WCAG AA) in both
+        schemes.
+      </Text>
       {GROUPS.map(([title, roles]) => (
         <Stack gap={2} key={title}>
           <Text size="sm" weight="semibold" tone="muted">

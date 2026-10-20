@@ -13,6 +13,7 @@ import {
   TabPanel,
   Tabs,
   Text,
+  VisuallyHidden,
   type ColorScheme,
 } from '@greese/react'
 import { api, hosted } from './api.ts'
@@ -39,7 +40,9 @@ export const App = (): JSX.Element => {
   const [loadError, setLoadError] = useState<string>()
   const [compiled, setCompiled] = useState({ scss: '', css: '' })
   const [errors, setErrors] = useState<string[]>([])
-  const [status, setStatus] = useState<string>()
+  const [saving, setSaving] = useState(false)
+  /** What the last save wrote; cleared by the next edit, since the button then says Save. */
+  const [written, setWritten] = useState<string[]>()
   const [changedOnDisk, setChangedOnDisk] = useState(false)
   const [tab, setTab] = useState('tokens')
   const [component, setComponent] = useState('Button')
@@ -50,6 +53,8 @@ export const App = (): JSX.Element => {
   const frame = useRef<HTMLIFrameElement>(null)
 
   const dirty = !!file && JSON.stringify(spec) !== file.saved
+  /** What the button says once the last save is all there is: the files it wrote. */
+  const savedNote = !dirty && written ? `Saved ${written.join(', ')}` : undefined
 
   const post = useCallback((message: ToPreview) => {
     frame.current?.contentWindow?.postMessage(message, location.origin)
@@ -65,6 +70,7 @@ export const App = (): JSX.Element => {
         saved: JSON.stringify(loaded.spec),
       })
       setChangedOnDisk(false)
+      setWritten(undefined)
       setLoadError(undefined)
     } catch (error) {
       setLoadError((error as Error).message)
@@ -137,16 +143,16 @@ export const App = (): JSX.Element => {
   }, [compiled.css, spec.name, scheme, inspect, component, post])
 
   const save = async () => {
-    setStatus('Saving…')
+    setSaving(true)
     const result = await api.save(spec)
+    setSaving(false)
     if (result.errors?.length) {
       setErrors(result.errors)
-      setStatus(undefined)
       return
     }
     setFile((f) => f && { ...f, saved: JSON.stringify(spec) })
     setChangedOnDisk(false)
-    setStatus(`Saved ${result.written!.join(', ')}`)
+    setWritten(result.written)
   }
 
   const showComponent = (name: string) => {
@@ -179,7 +185,7 @@ export const App = (): JSX.Element => {
             <Segment value="light">Light</Segment>
             <Segment value="dark">Dark</Segment>
           </SegmentedControl>
-          {file && <ThemeMenu spec={spec} onChange={setSpec} />}
+          {file && <ThemeMenu spec={spec} onChange={setSpec} rendered={rendered} />}
           <Switch label="Inspect" checked={inspect} onCheckedChange={setInspect} />
           {file && <ImportDialog spec={spec} onImport={setSpec} />}
           <Button
@@ -193,10 +199,13 @@ export const App = (): JSX.Element => {
           <Button
             size="sm"
             onClick={() => void save()}
+            loading={saving}
             disabled={!dirty || errors.length > 0}
+            title={savedNote}
           >
-            Save
+            {savedNote ? 'Saved' : 'Save'}
           </Button>
+          <VisuallyHidden role="status">{savedNote ?? ''}</VisuallyHidden>
         </Stack>
       </header>
 
@@ -224,11 +233,6 @@ export const App = (): JSX.Element => {
             <Alert tone="negative" title="The theme doesn’t compile">
               <pre className="studio-errors">{errors.join('\n')}</pre>
             </Alert>
-          )}
-          {status && !dirty && (
-            <Text size="sm" tone="muted" role="status">
-              {status}
-            </Text>
           )}
           <Tabs value={tab} onValueChange={setTab}>
             <TabList aria-label="Editor">

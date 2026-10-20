@@ -173,7 +173,10 @@ export const PlainInput = ({
   />
 )
 
-/** One labelled value on a row: tokens, variables, motion options. */
+/**
+ * One labelled value on a row: tokens, variables, motion options. The
+ * `--greese-` prefix every one shares is left off the label.
+ */
 export const ValueRow = ({
   label,
   value,
@@ -184,19 +187,22 @@ export const ValueRow = ({
   value: string
   placeholder?: string
   onChange: (value: string) => void
-}): JSX.Element => (
-  <div className="studio-row">
-    <Text size="sm" className="studio-row-label">
-      {label}
-    </Text>
-    <PlainInput
-      label={label}
-      value={value}
-      placeholder={placeholder}
-      onChange={onChange}
-    />
-  </div>
-)
+}): JSX.Element => {
+  const shown = label.replace(/^--greese-/, '')
+  return (
+    <div className="studio-row">
+      <Text size="sm" className="studio-row-label">
+        {shown}
+      </Text>
+      <PlainInput
+        label={shown}
+        value={value}
+        placeholder={placeholder}
+        onChange={onChange}
+      />
+    </div>
+  )
+}
 
 /** Free-form CSS declarations: a row per property, plus one to add. */
 export const DeclarationsEditor = ({
