@@ -4,6 +4,7 @@ export {
   configureBreakpoints,
   getBreakpointKeys,
   getBreakpoints,
+  resetBreakpoints,
 } from './utils/breakpoints.ts'
 export { cx } from './utils/cx.ts'
 export {

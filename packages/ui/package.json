@@ -52,6 +52,9 @@
     "./scss/kit": {
       "sass": "./src/styles/_kit.scss"
     },
+    "./scss/config": {
+      "sass": "./src/styles/_config.scss"
+    },
     "./scss/tokens": "./dist/_tokens.scss",
     "./scss/layers": "./dist/_layers.scss",
     "./scss/maps": "./dist/_maps.scss",

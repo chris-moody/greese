@@ -50,7 +50,7 @@ export const configureBreakpoints = (
   listeners.forEach((listener) => listener())
 }
 
-/** Internal, for tests: back to the defaults, added keys dropped. */
+/** Back to the defaults, added keys dropped (an editor that changes breakpoints live uses it). */
 export const resetBreakpoints = (): void => {
   current = { ...defaults }
   keys = Object.keys(current) as Breakpoint[]
