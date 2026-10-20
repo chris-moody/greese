@@ -29,9 +29,9 @@ export const RadiusSection = ({
       const chosen = value || radius[key]
       return (
         <Stack gap={2} key={key}>
-          <Text size="sm">
+          <Text variant="p3">
             <code className="studio-mono">{key}</code>{' '}
-            <Text asChild tone="muted" size="sm">
+            <Text asChild tone="muted" variant="p3">
               <span>{USES[key]}</span>
             </Text>
           </Text>

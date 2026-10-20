@@ -32,11 +32,11 @@ export const Levels: Story = {
   ),
 }
 
-/** `level` sets the outline; `size` sets the look. */
-export const SizeIndependentOfLevel: Story = {
+/** `level` sets the outline; `variant` sets the look. */
+export const LookIndependentOfLevel: Story = {
   args: {
     level: 2,
-    size: 'md',
+    variant: 'h6',
     tone: 'muted',
     children: 'A level-2 heading styled small',
   },

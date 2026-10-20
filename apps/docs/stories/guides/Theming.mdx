@@ -202,7 +202,7 @@ What to know:
 
 - **Any token can be overridden.** Colors take a string or a
   `{ light, dark }` pair. Every other group (`space`, `radius`, `font`,
-  `fontSize`, `fontWeight`, `lineHeight`, `shadow`, `zIndex`, `duration`,
+  `fontWeight`, `lineHeight`, `shadow`, `zIndex`, `duration`,
   `easing`) takes strings. Values can be any CSS: `oklch(…)`, `var(--x)`,
   `clamp(…)`. Characters that could break out of a declaration (`;`, `{`,
   `}`, `<`, `>`) throw.
@@ -430,7 +430,7 @@ export const brand = createTheme({
   name: 'brand',
   extend: {
     color: { 'brand-ink': { light: '#1b1340', dark: '#e5defc' } },
-    fontSize: { '5xl': '3rem' },
+    lineHeight: { loose: '2' },
     space: { 9: '4rem' },
   },
 })
@@ -527,7 +527,7 @@ color roles and palette under **Foundations/Color**. The property name is
 | Spacing     | `space`              | `0`–`8` (`0`, `0.25rem`, `0.5rem`, `0.75rem`, `1rem`, `1.5rem`, `2rem`, `3rem`, `4rem`)                                                                                                                                                                 |
 | Radius      | `radius`             | `none`, `sm`, `md`, `lg`, `pill`                                                                                                                                                                                                                        |
 | Font family | `font`               | `body`, `mono`                                                                                                                                                                                                                                          |
-| Font size   | `fontSize`           | `xs`, `sm`, `md`, `lg`, `xl`, `2xl`, `3xl`, `4xl`                                                                                                                                                                                                       |
+| Type system | `typography`         | variants `p1`–`p3`, `h1`–`h6`, `s1`, `s2`, `caption`, `button`: size, weight, tracking, leading (see Typography) |
 | Font weight | `fontWeight`         | `regular`, `medium`, `semibold`, `bold`                                                                                                                                                                                                                 |
 | Line height | `lineHeight`         | `tight`, `snug`, `normal`                                                                                                                                                                                                                               |
 | Shadow      | `shadow`             | `sm`, `md`, `lg`                                                                                                                                                                                                                                        |

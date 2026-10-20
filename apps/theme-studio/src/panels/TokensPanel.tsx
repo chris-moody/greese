@@ -75,7 +75,7 @@ export const TokensPanel = ({ spec, onChange, rendered }: PanelProps): JSX.Eleme
       </AccordionItem>
       <AccordionItem title="breakpoint">
         <Stack gap={2}>
-          <Text size="sm" tone="muted">
+          <Text variant="p3" tone="muted">
             Fixed when the stylesheet is built, so a theme can&apos;t change them: media
             queries can&apos;t read variables. Set them (and add keys) by compiling with
             your own <code className="studio-mono">$breakpoints</code>; each key also
@@ -83,7 +83,7 @@ export const TokensPanel = ({ spec, onChange, rendered }: PanelProps): JSX.Eleme
           </Text>
           {Object.entries(breakpoints).map(([key, value]) => (
             <div className="studio-row" key={key}>
-              <Text size="sm" className="studio-row-label">
+              <Text variant="p3" className="studio-row-label">
                 breakpoint-{key}
               </Text>
               <code className="studio-mono">{value}px</code>

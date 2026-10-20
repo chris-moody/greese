@@ -14,10 +14,10 @@ const meta = {
       <Card style={{ maxInlineSize: '20rem' }}>
         <Story />
         <Stack gap={2}>
-          <Heading level={3} size="lg">
+          <Heading level={3} variant="h5">
             Card title
           </Heading>
-          <Text tone="muted" size="sm">
+          <Text tone="muted" variant="p3">
             The media above reaches the card&apos;s edges.
           </Text>
         </Stack>

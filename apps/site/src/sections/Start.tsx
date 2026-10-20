@@ -40,7 +40,7 @@ export const Start = (): JSX.Element => (
                 {i + 1}
               </Badge>
             </div>
-            <Heading level={3} size="lg">
+            <Heading level={3} variant="h5">
               {step.title}
             </Heading>
             <Code block greese={{ inView: 'blurIn', delay: 0.3 }}>

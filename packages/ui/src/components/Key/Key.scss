@@ -7,7 +7,7 @@
     min-inline-size: 1.75em;
     padding: 0.1em 0.45em;
     font-family: var(--greese-font-mono);
-    font-size: var(--greese-font-size-sm);
+    font-size: var(--greese-type-p3-size);
     line-height: var(--greese-line-height-snug);
     color: var(--greese-color-fg);
     white-space: nowrap;
@@ -27,10 +27,10 @@
   }
 
   .greese-Key--sm {
-    font-size: var(--greese-font-size-xs);
+    font-size: var(--greese-type-caption-size);
   }
 
   .greese-Key--lg {
-    font-size: var(--greese-font-size-md);
+    font-size: var(--greese-type-p2-size);
   }
 }

@@ -62,9 +62,9 @@ describe('SCSS kit: names', () => {
 
   it('reads tokens and component variables as var()', () => {
     const css = compile(
-      'a { b: greese.token(fontSize, lg); c: greese.variable(button-tone); }'
+      'a { b: greese.token(lineHeight, tight); c: greese.variable(button-tone); }'
     )
-    expect(css).toContain('b: var(--greese-font-size-lg);')
+    expect(css).toContain('b: var(--greese-line-height-tight);')
     expect(css).toContain('c: var(--greese-button-tone);')
   })
 })

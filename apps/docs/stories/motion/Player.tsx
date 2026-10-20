@@ -55,7 +55,7 @@ export const Player = ({
             Reverse
           </Button>
         </ButtonGroup>
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           Progress
         </Text>
         <Slider
@@ -66,7 +66,7 @@ export const Player = ({
           value={progress}
           onValueChange={(p) => tl?.pause().progress(p)}
         />
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           Speed: {speed}×
         </Text>
         <Slider

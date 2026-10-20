@@ -33,14 +33,14 @@ export const Section = ({
           className="site-section-head"
           greese={{ inView: 'fadeUp', stagger: 0.08 }}
         >
-          <Text size="sm" weight="semibold" tone="primary" className="site-eyebrow">
+          <Text variant="p3" weight="semibold" tone="primary" className="site-eyebrow">
             {eyebrow}
           </Text>
-          <Heading id={`${id}-title`} level={2} size={{ xs: '2xl', md: '3xl' }}>
+          <Heading id={`${id}-title`} level={2} variant="h2">
             {title}
           </Heading>
           {intro && (
-            <Text size="lg" tone="muted" className="site-measure">
+            <Text variant="s2" tone="muted" className="site-measure">
               {intro}
             </Text>
           )}

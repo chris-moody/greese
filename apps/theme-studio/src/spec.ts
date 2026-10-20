@@ -140,7 +140,7 @@ export const validateSpec = (spec: ThemeSpec): string[] => {
 const kebabOf = (value: string): string =>
   value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 
-/** The token names the system has, by kebab-case group: `color`, `radius`, `font-size`… */
+/** The token names the system has, by kebab-case group: `color`, `radius`, `line-height`… */
 const KNOWN: Record<string, Set<string>> = {
   color: new Set(Object.keys(color).map(kebabOf)),
   ...Object.fromEntries(

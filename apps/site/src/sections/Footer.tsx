@@ -14,7 +14,7 @@ export const Footer = (): JSX.Element => (
           gap={4}
           greese={{ inView: 'fadeUp', stagger: 0.06 }}
         >
-          <Text tone="muted" size="sm">
+          <Text tone="muted" variant="p3">
             GreeseUI and greese.js. Built with GreeseUI; every number on this page was
             measured from the repository on {facts.date}.
           </Text>

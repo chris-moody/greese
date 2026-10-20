@@ -10,7 +10,7 @@ class StoryBoundary extends Component<{ children: ReactNode }, { error?: Error }
   }
   override render() {
     return this.state.error ? (
-      <Text size="sm" tone="negative">
+      <Text variant="p3" tone="negative">
         This story didn&apos;t render here: {this.state.error.message}
       </Text>
     ) : (
@@ -41,10 +41,10 @@ export const ComponentPreview = ({ block }: { block: string }): JSX.Element => {
     <section aria-labelledby="component-preview" className="studio-component-preview">
       <Stack gap={4}>
         <Stack gap={1}>
-          <Heading level={2} size="xl" id="component-preview">
+          <Heading level={2} variant="h4" id="component-preview">
             Component preview: {block}
           </Heading>
-          <Text size="sm" tone="muted">
+          <Text variant="p3" tone="muted">
             {hasStories(block)
               ? `The stories from its docs page${loaded ? ` (${loaded.title})` : ''}, with your theme applied.`
               : `${block} has no docs page of its own; it's styled through the components that use it, in the theme preview below.`}
@@ -56,7 +56,7 @@ export const ComponentPreview = ({ block }: { block: string }): JSX.Element => {
             {loaded.stories.map(([name, Story]) => (
               <Card key={name} padding={4}>
                 <Stack gap={3}>
-                  <Text size="xs" weight="semibold" tone="muted">
+                  <Text variant="caption" weight="semibold" tone="muted">
                     {name}
                   </Text>
                   {/* A block root, as Storybook's #storybook-root is: a story

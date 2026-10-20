@@ -1,61 +1,7 @@
-@use 'sass:list';
-@use '../../styles/mixins';
-@use '../../styles/type';
-
-// Mobile-first default sizes per level: [phones, from md].
-$defaults: (
-  1: (
-    3xl,
-    4xl,
-  ),
-  2: (
-    2xl,
-    3xl,
-  ),
-  3: (
-    xl,
-    2xl,
-  ),
-  4: (
-    lg,
-    xl,
-  ),
-  5: (
-    md,
-    lg,
-  ),
-  6: (
-    md,
-    md,
-  ),
-);
-
+// A heading's look is a type variant (`greese-Type--h2`, Type.scss), the one
+// for its level unless it names another; this only resets the element's margin.
 @layer greese.components {
   .greese-Heading {
     margin: 0;
-    font-weight: var(--greese-font-weight-bold);
-    line-height: var(--greese-line-height-tight);
-    text-wrap: balance; // a `variant` takes this from its own `wrap`
   }
-
-  @each $level, $sizes in $defaults {
-    $phone: list.nth($sizes, 1);
-    $wide: list.nth($sizes, 2);
-
-    .greese-Heading--level-#{$level} {
-      font-size: var(--greese-font-size-#{$phone});
-
-      @include mixins.up(md) {
-        font-size: var(--greese-font-size-#{$wide});
-      }
-    }
-  }
-
-  // After the defaults, so an explicit size wins at every breakpoint.
-  @include mixins.responsive-prop(
-    'greese-Heading',
-    'size',
-    font-size,
-    type.size-tokens()
-  );
 }

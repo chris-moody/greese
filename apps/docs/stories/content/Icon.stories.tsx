@@ -25,12 +25,12 @@ export const Labelled: Story = {
 export const ScalesWithText: Story = {
   render: () => (
     <Stack gap={2}>
-      {(['sm', 'md', 'xl', '3xl'] as const).map((size) => (
-        <Text key={size} size={size}>
+      {(['p3', 'p2', 's1', 'h2'] as const).map((variant) => (
+        <Text key={variant} variant={variant}>
           <Icon>
             <InfoIcon />
           </Icon>{' '}
-          Text at {size}
+          Text at {variant}
         </Text>
       ))}
     </Stack>

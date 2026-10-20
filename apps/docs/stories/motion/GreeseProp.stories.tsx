@@ -194,10 +194,10 @@ export const Scope: Story = {
           {['One', 'Two', 'Three'].map((n) => (
             <Card key={n} greese={{ enter: 'scaleIn' }}>
               <Stack gap={1}>
-                <Heading level={3} size="md" greese={{ enter: 'fadeIn' }}>
+                <Heading level={3} variant="h6" greese={{ enter: 'fadeIn' }}>
                   Card {n}
                 </Heading>
-                <Text size="sm" tone="muted" greese={{ enter: 'fadeIn' }}>
+                <Text variant="p3" tone="muted" greese={{ enter: 'fadeIn' }}>
                   Starts after the card above it.
                 </Text>
               </Stack>
@@ -218,7 +218,7 @@ export const ScrollReveal: Story = {
       <div style={{ blockSize: '70vh' }} />
       {[1, 2, 3, 4].map((n) => (
         <Card key={n} greese={{ inView: n % 2 ? 'fadeUp' : 'scaleIn' }}>
-          <Heading level={3} size="md">
+          <Heading level={3} variant="h6">
             Card {n}
           </Heading>
         </Card>
@@ -246,7 +246,7 @@ export const Sequences: Story = {
         <Replay key={sequence}>
           <Card greese={sequence}>
             <Text weight="semibold">{label}</Text>
-            <Text tone="muted" size="sm">
+            <Text tone="muted" variant="p3">
               <code>{sequence}</code>
             </Text>
           </Card>
@@ -264,7 +264,7 @@ export const InWaitOut: Story = {
       {(greese) => (
         <Card greese={greese}>
           <Text weight="semibold">Saved</Text>
-          <Text tone="muted" size="sm">
+          <Text tone="muted" variant="p3">
             <code>fadeIn+scaleIn,+2,fadeOut</code>
           </Text>
         </Card>
@@ -356,11 +356,11 @@ export const TextEffects: Story = {
         <Heading level={2} greese={{ text: 'split' }}>
           Served fast, everywhere
         </Heading>
-        <Text size="lg" greese={{ text: 'type' }}>
+        <Text variant="s2" greese={{ text: 'type' }}>
           Typed on, one letter at a time.
         </Text>
         <Stack direction="row" gap={2} align="center">
-          <Text size="2xl" weight="bold" greese={{ text: 'count', duration: 1.5 }}>
+          <Text variant="h3" weight="bold" greese={{ text: 'count', duration: 1.5 }}>
             12480
           </Text>
           <Badge tone="positive">orders</Badge>

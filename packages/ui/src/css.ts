@@ -25,7 +25,7 @@ export const THEME_ATTR = 'data-greese-theme'
 export const kebab = (value: string): string =>
   value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 
-/** The custom property for a token: `cssVar('fontSize', 'lg')` -> `--greese-font-size-lg`. */
+/** The custom property for a token: `cssVar('lineHeight', 'tight')` -> `--greese-line-height-tight`. */
 export const cssVar = (group: ScalarGroup | 'color', key: string | number): string =>
   `--greese-${kebab(group)}-${kebab(String(key))}`
 

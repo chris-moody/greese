@@ -86,9 +86,16 @@ const isOptions = (v: unknown): v is Record<string, unknown> =>
   !!v &&
   typeof v === 'object' &&
   !isTheme(v) &&
-  ['color', 'radius', 'space', 'font', 'fontSize', 'shadow'].some(
-    (k) => k in (v as object)
-  )
+  [
+    'color',
+    'radius',
+    'space',
+    'font',
+    'lineHeight',
+    'shadow',
+    'typography',
+    'extend',
+  ].some((k) => k in (v as object))
 
 /**
  * Imports an existing theme as a studio spec. Text and files are read as

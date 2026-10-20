@@ -11,7 +11,7 @@ const meta = {
     children: (
       <Stack gap={2}>
         <Text weight="semibold">Greese UI</Text>
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           Created 17 October 2026. Popovers close on Escape or a click outside.
         </Text>
       </Stack>

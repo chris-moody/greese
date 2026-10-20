@@ -77,3 +77,24 @@ because height and touch target depend on it.
   new one adds `variant` the same way.
 - Typography tokens are not in the Studio's "Add token" areas: a variant is a
   structured value, not a single token (ADR 0015).
+
+## Addendum (2026-10-20): the font-size tokens are gone
+
+Two ways to say a text size (a `font-size` scale and the variants) left
+components and apps choosing between them, so the scale was removed: there is no
+`--greese-font-size-*`, no `fontSize` token group (in `createTheme`, the kit,
+or Theme Studio), and no `size` prop on `Text` or `Heading`.
+
+- **Components** read the variants' sizes: `caption` (0.75rem), `p3`
+  (0.875), `p2` (1) and `s2` (1.125) where they used `xs`–`lg`, and `h2`/`h3`
+  for the larger ones. These four don't change with the screen, so those
+  components look as before.
+- **`Text`** takes a `variant`, and inherits its size without one.
+  **`Heading`** takes the variant of its level (`h1` for level 1) unless it
+  names another, so headings now follow the type system by default (larger
+  on wide screens than before, and customisable in a theme).
+- **Migrating:** `size="sm"` becomes `variant="p3"` (xs `caption`, md `p2`,
+  lg `s2`, xl `s1`, 2xl `h3`, 3xl `h2`, 4xl `h1`); on a `Heading`, the
+  heading variants.
+- The responsive font-size classes (`greese-Text--md-size-lg`…) went with
+  the prop, so the stylesheet is smaller.

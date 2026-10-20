@@ -5,8 +5,8 @@ const meta = {
   title: 'Content/Text',
   component: Text,
   args: {
-    size: { xs: 'md', md: 'lg' },
-    children: 'Responsive body text: md on phones, lg from md.',
+    variant: 'p1',
+    children: 'Body text in the p1 style: larger from md up.',
   },
   argTypes: {
     variant: {
@@ -96,7 +96,7 @@ export const Tones: Story = {
 /** `truncate` cuts to one line; a number clamps to that many lines. */
 export const Truncation: Story = {
   args: {
-    size: 'md',
+    variant: 'p2',
     truncate: 2,
     style: { maxInlineSize: '24rem' },
     children:

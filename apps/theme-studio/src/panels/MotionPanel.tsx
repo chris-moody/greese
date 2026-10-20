@@ -19,10 +19,10 @@ export const MotionPanel = ({
   return (
     <Stack gap={5}>
       <Stack gap={2}>
-        <Heading level={3} size="md">
+        <Heading level={3} variant="h6">
           Every entrance
         </Heading>
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           Tunes every <code>greese</code> prop entrance and every component default below.
           An instance’s own options still win.
         </Text>
@@ -43,13 +43,13 @@ export const MotionPanel = ({
             onChange={(v) => onChange(setIn(spec, ['motionDefaults', key], v))}
           />
         ))}
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           Transition speeds and curves for every component are the duration and easing
           tokens, under Tokens.
         </Text>
       </Stack>
       <Stack gap={2}>
-        <Heading level={3} size="md">
+        <Heading level={3} variant="h6">
           Component defaults
         </Heading>
         {animated.length ? (
@@ -58,7 +58,7 @@ export const MotionPanel = ({
               <Button size="sm" variant="ghost" onClick={() => onComponent(name)}>
                 {name}
               </Button>
-              <Text size="sm" tone="muted">
+              <Text variant="p3" tone="muted">
                 {Object.entries(c.motion!)
                   .map(
                     ([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`
@@ -68,7 +68,7 @@ export const MotionPanel = ({
             </div>
           ))
         ) : (
-          <Text size="sm" tone="muted">
+          <Text variant="p3" tone="muted">
             None yet. Set one on a component’s Motion section.
           </Text>
         )}

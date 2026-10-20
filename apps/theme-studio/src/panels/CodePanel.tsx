@@ -26,7 +26,7 @@ export const CodePanel = ({
   <Stack gap={5}>
     {spec ? (
       <Stack gap={3}>
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           This studio keeps the theme in your browser. Download{' '}
           <code>greese-theme.json</code> to keep editing it locally with{' '}
           <code>npm run studio</code>, and use the SCSS in an app that compiles Sass, or
@@ -46,7 +46,7 @@ export const CodePanel = ({
         </div>
       </Stack>
     ) : (
-      <Text size="sm" tone="muted">
+      <Text variant="p3" tone="muted">
         Saving writes {outputs.length ? outputs.join(' and ') : 'these'} next to the theme
         file. Use the SCSS in an app that compiles Sass, or import the CSS after
         GreeseUI’s styles.
@@ -60,7 +60,7 @@ export const CodePanel = ({
     ).map(([title, text, name]) => (
       <Stack gap={2} key={title}>
         <Stack direction="row" justify="between" align="center" gap={2}>
-          <Heading level={3} size="md">
+          <Heading level={3} variant="h6">
             {title}
           </Heading>
           <Stack direction="row" gap={2}>

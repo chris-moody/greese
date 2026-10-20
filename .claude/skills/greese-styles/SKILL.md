@@ -48,7 +48,7 @@ greese.base, greese.components, greese.overrides, greese.utilities`.
 | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | `var(--greese-color-fg)`, `-surface`, `-primary`, `-border`, `-focus-ring`…      | Hex, `rgb()`, named colors (stylelint `color-no-hex`, `function-disallowed-list`) |
 | `color-mix(in oklab, var(--greese-color-primary) 14%, transparent)` for tints    | New color tokens for every tint                                                   |
-| `var(--greese-space-N)`, `var(--greese-radius-md)`, `var(--greese-font-size-sm)` | Magic numbers, except for genuinely component-specific sizes                      |
+| `var(--greese-space-N)`, `var(--greese-radius-md)`, `var(--greese-type-p3-size)` | Magic numbers, except for genuinely component-specific sizes                      |
 | `var(--greese-duration-fast)` + `var(--greese-easing-standard)`                  | Literal durations: the tokens collapse under reduced motion                       |
 | `inline-size`, `margin-inline-start`, `inset-inline-end`, `:dir(rtl)`            | `width` (for writing-mode-sensitive sizes), `left`, `margin-left`                 |
 

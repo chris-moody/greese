@@ -1,7 +1,5 @@
 @use 'sass:list';
-@use '../../styles/mixins';
 @use '../../styles/tones';
-@use '../../styles/type';
 
 @layer greese.components {
   .greese-Text {
@@ -33,6 +31,4 @@
     -webkit-line-clamp: var(--greese-text-lines);
     line-clamp: var(--greese-text-lines);
   }
-
-  @include mixins.responsive-prop('greese-Text', 'size', font-size, type.size-tokens());
 }

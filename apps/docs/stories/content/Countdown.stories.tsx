@@ -28,10 +28,10 @@ export const DaysWithLabels: Story = {
 export const Large: Story = {
   render: (args) => (
     <Stack gap={1}>
-      <Text size="sm" tone="muted">
+      <Text variant="p3" tone="muted">
         Sale ends in
       </Text>
-      <Text size="4xl" weight="bold">
+      <Text variant="h1" weight="bold">
         <Countdown {...args} />
       </Text>
     </Stack>

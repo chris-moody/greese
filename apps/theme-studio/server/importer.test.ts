@@ -72,7 +72,7 @@ describe('importCss: other sources', () => {
       name: 'brand',
       color: { accent: { light: '#0f766e', dark: '#5eead4' }, accentContent: '#ffffff' },
       radius: { md: '2px' },
-      fontSize: { lg: '1.2rem' },
+      lineHeight: { tight: '1.1' },
     })
     const { spec, skipped } = importCss(theme.css)
     expect(skipped).toEqual([])
@@ -85,7 +85,7 @@ describe('importCss: other sources', () => {
           'accent-content': '#ffffff',
         },
         radius: { md: '2px' },
-        'font-size': { lg: '1.2rem' },
+        'line-height': { tight: '1.1' },
       },
       components: {},
     })
@@ -181,12 +181,12 @@ describe('importJson', () => {
     const { spec, skipped } = importJson({
       name: 'brand',
       color: { accentContent: '#fff', nope: 'red' },
-      fontSize: { lg: '1.2rem' },
+      lineHeight: { tight: '1.1' },
       wat: {},
     })
     expect(spec).toEqual({
       name: 'brand',
-      tokens: { color: { 'accent-content': '#fff' }, 'font-size': { lg: '1.2rem' } },
+      tokens: { color: { 'accent-content': '#fff' }, 'line-height': { tight: '1.1' } },
       components: {},
     })
     expect(skipped.map((s) => s.where)).toEqual(['color.nope', 'wat'])

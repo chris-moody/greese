@@ -140,7 +140,7 @@ const GROUPS = [...SCALARS.keys()].sort((a, b) => b.length - a.length)
 type Token = { group: string; key: string }
 
 /**
- * `--greese-font-size-lg` → `{ group: 'font-size', key: 'lg' }`. A name in a
+ * `--greese-line-height-tight` → `{ group: 'line-height', key: 'tight' }`. A name in a
  * group the system has counts whether or not the system has that token: an
  * unknown one is a token the theme adds (the kit's `$extend`).
  */
@@ -509,12 +509,26 @@ const dropDerived = (colors: Record<string, SchemeValue>): void => {
   }
 }
 
-/** `createTheme()` options (`{ name, color: { accentContent: … }, fontSize: … }`) as a spec. */
+/** `createTheme()` options (`{ name, color: { accentContent: … }, lineHeight: …, extend, typography }`) as a spec. */
 export const importThemeOptions = (options: Record<string, unknown>): ImportResult => {
   const skipped: Skipped[] = []
   const tokens: Record<string, Record<string, SchemeValue>> = {}
+  let typography: Record<string, Record<string, Record<string, string>>> | undefined
   for (const [group, values] of Object.entries(options)) {
     if (group === 'name') continue
+    if (group === 'typography') {
+      typography = values as Record<string, Record<string, Record<string, string>>>
+      continue
+    }
+    if (group === 'extend') {
+      // Tokens the theme adds are tokens like any other here.
+      for (const [eg, added] of Object.entries(
+        (values ?? {}) as Record<string, Record<string, SchemeValue>>
+      ))
+        for (const [key, value] of Object.entries(added ?? {}))
+          (tokens[kebab(eg)] ??= {})[kebab(key)] = value
+      continue
+    }
     const g = kebab(group)
     if (g !== 'color' && !SCALARS.has(g)) {
       skipped.push({
@@ -542,7 +556,12 @@ export const importThemeOptions = (options: Record<string, unknown>): ImportResu
   }
   const name = typeof options.name === 'string' ? options.name : undefined
   return {
-    spec: { ...(name && { name }), tokens, components: {} },
+    spec: {
+      ...(name && { name }),
+      tokens,
+      ...(typography && { typography }),
+      components: {},
+    },
     themes: name ? [name] : [],
     counts: {
       tokens: Object.values(tokens).reduce((n, g) => n + Object.keys(g).length, 0),

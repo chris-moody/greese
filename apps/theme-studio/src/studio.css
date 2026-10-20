@@ -74,7 +74,7 @@
 
 .studio-row-label {
   overflow-wrap: anywhere;
-  font-size: var(--greese-font-size-sm);
+  font-size: var(--greese-type-p3-size);
 }
 
 code.studio-row-label {
@@ -159,13 +159,13 @@ code.studio-row-label {
 
 .studio-errors {
   margin: 0;
-  font: var(--greese-font-size-sm) / 1.4 var(--greese-font-mono);
+  font: var(--greese-type-p3-size) / 1.4 var(--greese-font-mono);
   white-space: pre-wrap;
 }
 
 .studio-mono {
   font-family: var(--greese-font-mono);
-  font-size: var(--greese-font-size-sm);
+  font-size: var(--greese-type-p3-size);
 }
 
 /* A preset's brand colors, in the theme menu. */
@@ -231,7 +231,7 @@ code.studio-row-label {
 
 .studio-chip-code {
   padding: 2px var(--greese-space-1);
-  font: var(--greese-font-size-xs) / 1.4 var(--greese-font-mono);
+  font: var(--greese-type-caption-size) / 1.4 var(--greese-font-mono);
   color: var(--greese-color-fg);
   overflow-wrap: anywhere;
   background: var(--greese-color-surface);
@@ -244,7 +244,7 @@ code.studio-row-label {
   align-items: center;
   justify-content: space-between;
   padding-inline: var(--greese-space-1);
-  font-size: var(--greese-font-size-xs);
+  font-size: var(--greese-type-caption-size);
 }
 
 .studio-chip[data-set] .studio-chip-label > :first-child {

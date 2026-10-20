@@ -119,7 +119,7 @@ describe('new tokens', () => {
         primary: { light: 'lavender-600', dark: 'lavender-300' },
       },
       space: { '9': '4rem' },
-      'font-size': { '5xl': '3rem' },
+      'line-height': { loose: '2' },
     },
     components: {},
   }
@@ -138,7 +138,7 @@ describe('new tokens', () => {
     const css = (result as { css: string }).css
     expect(css).toContain('--greese-space-9: 4rem;')
     expect(css).toContain('--greese-color-brand-ink: #1b1340;')
-    expect(css).toContain('--greese-font-size-5xl: 3rem;')
+    expect(css).toContain('--greese-line-height-loose: 2;')
     // An unknown group still reaches the kit, which reports it.
     expect(compileSpec({ tokens: { colr: { x: 'red' } }, components: {} })).toEqual({
       errors: [expect.stringMatching(/no token group `colr`/)],
@@ -149,7 +149,7 @@ describe('new tokens', () => {
     const css = (compileSpec(spec) as { css: string }).css
     const back = importCss(css).spec
     expect(back.tokens?.space?.['9']).toBe('4rem')
-    expect(back.tokens?.['font-size']?.['5xl']).toBe('3rem')
+    expect(back.tokens?.['line-height']?.loose).toBe('2')
     expect(back.tokens?.color?.['brand-ink']).toEqual({
       light: '#1b1340',
       dark: '#e5defc',

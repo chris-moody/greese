@@ -60,7 +60,7 @@ export const Why = (): JSX.Element => (
             >
               {r.icon}
             </Icon>
-            <Heading level={3} size="lg">
+            <Heading level={3} variant="h5">
               {r.title}
             </Heading>
             <Text tone="muted">{r.body}</Text>

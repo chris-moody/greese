@@ -7,7 +7,7 @@ const meta = {
   args: { items: ['faster', 'smaller', 'lighter'] },
   argTypes: { duration: { control: { type: 'number', min: 0.5, step: 0.5 } } },
   render: (args) => (
-    <Heading level={2} size="3xl">
+    <Heading level={2} variant="h2">
       Build <TextRotate {...args} style={{ color: 'var(--greese-color-primary)' }} />
     </Heading>
   ),

@@ -73,7 +73,7 @@ export const TypographySection = ({
 
   return (
     <Stack gap={3}>
-      <Text size="sm" tone="muted">
+      <Text variant="p3" tone="muted">
         Named text styles that change across breakpoints. A value set at a breakpoint
         applies from there up until a larger one sets another. Breakpoints are fixed when
         the stylesheet is built.

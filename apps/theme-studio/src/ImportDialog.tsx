@@ -211,7 +211,7 @@ export const ImportDialog = ({ spec, onImport }: ImportDialogProps): JSX.Element
               </Field>
             )}
             {result.themes.length === 1 && (
-              <Text size="sm" tone="muted">
+              <Text variant="p3" tone="muted">
                 A named theme: <Code>{result.themes[0]}</Code>.
               </Text>
             )}
@@ -232,7 +232,7 @@ export const ImportDialog = ({ spec, onImport }: ImportDialogProps): JSX.Element
                   </div>
                   {result.skipped.map((s, i) => (
                     <Stack key={i} gap={1}>
-                      <Text size="sm">{s.reason}</Text>
+                      <Text variant="p3">{s.reason}</Text>
                       <Code block className="studio-code">
                         {s.css}
                       </Code>
@@ -241,7 +241,7 @@ export const ImportDialog = ({ spec, onImport }: ImportDialogProps): JSX.Element
                 </Stack>
               </Collapsible>
             )}
-            <Text size="sm" tone="muted">
+            <Text variant="p3" tone="muted">
               Nothing changes until you replace or merge, and nothing is written until you
               save.
             </Text>

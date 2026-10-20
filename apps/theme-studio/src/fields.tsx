@@ -141,7 +141,7 @@ export const SchemeInput = ({
     // Colors stack: the label above, light and dark each wide enough for a
     // full value (`color-mix(…)`, `#rrggbbaa`).
     <div className={color ? 'studio-row studio-row--stack' : 'studio-row'}>
-      <Text size="sm" className="studio-row-label">
+      <Text variant="p3" className="studio-row-label">
         {label}
       </Text>
       <div className="studio-pair">
@@ -191,7 +191,7 @@ export const ValueRow = ({
   const shown = label.replace(/^--greese-/, '')
   return (
     <div className="studio-row">
-      <Text size="sm" className="studio-row-label">
+      <Text variant="p3" className="studio-row-label">
         {shown}
       </Text>
       <PlainInput

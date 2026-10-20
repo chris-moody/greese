@@ -221,7 +221,7 @@ export const ColorsSection = ({ spec, onChange, rendered }: PanelProps): JSX.Ele
   }
   return (
     <Stack gap={4}>
-      <Text size="sm" tone="muted">
+      <Text variant="p3" tone="muted">
         Each chip shows the color as the preview renders it, light and dark, with its full
         code (eight digits when it has transparency, shown over a checkerboard) and text
         in its content color. The badge is the weaker contrast of the two. Set a brand
@@ -230,7 +230,7 @@ export const ColorsSection = ({ spec, onChange, rendered }: PanelProps): JSX.Ele
       </Text>
       {GROUPS.map(([title, roles]) => (
         <Stack gap={2} key={title}>
-          <Text size="sm" weight="semibold" tone="muted">
+          <Text variant="p3" weight="semibold" tone="muted">
             {title}
           </Text>
           <div className="studio-chips-grid">
@@ -254,7 +254,7 @@ export const ColorsSection = ({ spec, onChange, rendered }: PanelProps): JSX.Ele
               {hasContent(open) &&
                 field(`${open}Content` as ColorRole, derived(open, derivedContent))}
               {isSet(spec, open) && (
-                <Text size="xs" tone="muted">
+                <Text variant="caption" tone="muted">
                   Strong and content are derived from {kebab(open)} until you set them.
                 </Text>
               )}

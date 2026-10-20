@@ -58,7 +58,7 @@ const Group = ({
 }): JSX.Element => (
   <Card padding={5}>
     <Stack gap={4}>
-      <Text size="sm" weight="semibold" tone="muted">
+      <Text variant="p3" weight="semibold" tone="muted">
         {title}
       </Text>
       <Stack gap={3}>{children}</Stack>
@@ -66,38 +66,25 @@ const Group = ({
   </Card>
 )
 
-const SIZES = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl'] as const
 const WEIGHTS = ['regular', 'medium', 'semibold', 'bold'] as const
 const LEADINGS = ['tight', 'snug', 'normal'] as const
 
-/** The typography tokens at work, each sample set by its own variable. */
+/** The font, weight and line-height tokens at work, each sample set by its own variable. (Sizes belong to the type variants, in the next tile.) */
 const Typography = (): JSX.Element => (
   <Group title="Typography">
     <Stack gap={1}>
-      <Text size="sm" tone="muted">
+      <Text variant="p3" tone="muted">
         font-body
       </Text>
       <span style={{ fontFamily: 'var(--greese-font-body)', fontSize: '1.25rem' }}>
         The quick brown fox jumps over the lazy dog
       </span>
-      <Text size="sm" tone="muted">
+      <Text variant="p3" tone="muted">
         font-mono
       </Text>
       <span style={{ fontFamily: 'var(--greese-font-mono)' }}>
         const theme = createTheme({'{ … }'})
       </span>
-    </Stack>
-    <Stack gap={1}>
-      {SIZES.map((size) => (
-        <Stack key={size} direction="row" gap={3} align="baseline">
-          <Text size="xs" tone="muted" style={{ inlineSize: '2.5rem', flexShrink: 0 }}>
-            {size}
-          </Text>
-          <span style={{ fontSize: `var(--greese-font-size-${size})` }}>
-            Sphinx of quartz
-          </span>
-        </Stack>
-      ))}
     </Stack>
     <Stack direction="row" gap={3} wrap="wrap">
       {WEIGHTS.map((weight) => (
@@ -109,7 +96,7 @@ const Typography = (): JSX.Element => (
     <Stack direction="row" gap={4}>
       {LEADINGS.map((leading) => (
         <Stack key={leading} gap={1} style={{ flex: 1, minInlineSize: 0 }}>
-          <Text size="xs" tone="muted">
+          <Text variant="caption" tone="muted">
             {leading}
           </Text>
           <span
@@ -175,7 +162,7 @@ const people = [
 export const Gallery = (): JSX.Element => (
   <Stack gap={5}>
     <Stack gap={2}>
-      <Heading level={1} size="2xl">
+      <Heading level={1} variant="h3">
         Theme preview
       </Heading>
       <Text tone="muted">
@@ -286,7 +273,7 @@ export const Gallery = (): JSX.Element => (
             <MenuItem tone="negative">Delete</MenuItem>
           </Menu>
           <Popover trigger={<Button variant="outline">Popover</Button>} label="About">
-            <Text size="sm">Anchored with CSS.</Text>
+            <Text variant="p3">Anchored with CSS.</Text>
           </Popover>
           <Tooltip content="A native popover">
             <Button variant="ghost">Tooltip</Button>
@@ -306,10 +293,10 @@ export const Gallery = (): JSX.Element => (
             <Tab value="two">Two</Tab>
           </TabList>
           <TabPanel value="one">
-            <Text size="sm">The first panel.</Text>
+            <Text variant="p3">The first panel.</Text>
           </TabPanel>
           <TabPanel value="two">
-            <Text size="sm">The second panel.</Text>
+            <Text variant="p3">The second panel.</Text>
           </TabPanel>
         </Tabs>
       </Group>
@@ -332,10 +319,10 @@ export const Gallery = (): JSX.Element => (
         </Table>
         <Accordion exclusive>
           <AccordionItem title="Native <details>" defaultOpen>
-            <Text size="sm">Opens with no JavaScript.</Text>
+            <Text variant="p3">Opens with no JavaScript.</Text>
           </AccordionItem>
           <AccordionItem title="Exclusive">
-            <Text size="sm">One open at a time.</Text>
+            <Text variant="p3">One open at a time.</Text>
           </AccordionItem>
         </Accordion>
       </Group>

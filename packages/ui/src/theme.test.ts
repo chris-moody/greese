@@ -128,11 +128,11 @@ describe('createTheme', () => {
   it('maps camelCase groups and keys to kebab-case properties', () => {
     const { css } = createTheme({
       name: 'brand',
-      fontSize: { '2xl': '1.75rem' },
+      lineHeight: { tight: '1.1' },
       space: { 4: '1.25rem' },
     })
     const base = rule(css, `  ${T} {`)
-    expect(base).toContain('--greese-font-size-2xl: 1.75rem;')
+    expect(base).toContain('--greese-line-height-tight: 1.1;')
     expect(base).toContain('--greese-space-4: 1.25rem;')
     expect(base).toContain('--greese-space-3: 0.75rem;')
   })
@@ -163,11 +163,11 @@ describe('createTheme: extend', () => {
       extend: {
         color: { 'brand-ink': { light: '#1b1340', dark: '#e5defc' }, flat: '#123456' },
         space: { 9: '4rem' },
-        fontSize: { '5xl': '3rem' },
+        lineHeight: { loose: '2' },
       },
     })
     expect(css).toContain('--greese-space-9: 4rem;')
-    expect(css).toContain('--greese-font-size-5xl: 3rem;')
+    expect(css).toContain('--greese-line-height-loose: 2;')
     expect(css).toContain('--greese-color-brand-ink: #1b1340;')
     expect(css).toContain('--greese-color-brand-ink: #e5defc;')
     expect(css).toContain('--greese-color-flat: #123456;')

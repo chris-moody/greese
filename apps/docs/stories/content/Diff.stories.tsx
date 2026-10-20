@@ -28,14 +28,14 @@ export const Text_: Story = {
     defaultValue: 35,
     before: (
       <Box p={6} style={{ background: 'var(--greese-color-surface)' }}>
-        <Text size="2xl" weight="bold">
+        <Text variant="h3" weight="bold">
           The quick brown fox
         </Text>
       </Box>
     ),
     after: (
       <Box p={6} style={{ background: 'var(--greese-color-canvas)' }}>
-        <Text size="2xl" weight="bold" tone="primary">
+        <Text variant="h3" weight="bold" tone="primary">
           The quick brown fox
         </Text>
       </Box>

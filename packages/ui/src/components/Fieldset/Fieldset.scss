@@ -33,7 +33,7 @@
     float: inline-start;
     inline-size: 100%;
     padding: 0;
-    font-size: var(--greese-font-size-md);
+    font-size: var(--greese-type-p2-size);
     font-weight: var(--greese-font-weight-semibold);
     color: var(--greese-color-fg);
 
@@ -44,7 +44,7 @@
 
   .greese-Fieldset-description {
     margin: 0;
-    font-size: var(--greese-font-size-sm);
+    font-size: var(--greese-type-p3-size);
     color: var(--greese-color-fg-muted);
   }
 
@@ -57,7 +57,7 @@
 
   .greese-Fieldset-error {
     margin: 0;
-    font-size: var(--greese-font-size-sm);
+    font-size: var(--greese-type-p3-size);
     color: var(--greese-color-negative);
   }
 }

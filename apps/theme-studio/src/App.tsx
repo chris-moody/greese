@@ -164,11 +164,11 @@ export const App = (): JSX.Element => {
     <div className="studio">
       <header className="studio-bar">
         <Stack direction="row" gap={3} align="center" wrap="wrap">
-          <Heading level={1} size="lg">
+          <Heading level={1} variant="h5">
             Theme Studio
           </Heading>
           {file && (
-            <Text size="sm" tone="muted" className="studio-file">
+            <Text variant="p3" tone="muted" className="studio-file">
               {file.file}
             </Text>
           )}

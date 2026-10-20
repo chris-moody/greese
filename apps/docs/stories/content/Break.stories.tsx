@@ -35,19 +35,19 @@ export const BelowBreakpoint: Story = { args: { above: undefined, below: 'md' } 
 export const Fallbacks: Story = {
   render: () => (
     <Stack gap={4}>
-      <Text size="lg">
+      <Text variant="s2">
         Design
         <Break below="md" fallback=" · " />
         Build
         <Break below="md" fallback=" · " />
         Ship
       </Text>
-      <Text size="lg">
+      <Text variant="s2">
         A plain space lets this line wrap where it likes,
         <Break above="lg" fallback=" " />
         and breaks it from lg.
       </Text>
-      <Text size="lg">
+      <Text variant="s2">
         Joined
         <Break above="md" fallback={null} />
         Together (no space below md)

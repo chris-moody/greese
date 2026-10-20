@@ -37,7 +37,7 @@ the framework packages provide.
 | `@greese/ui/scss/layers`         | Only the cascade layer order statement                                                                                                                          |
 | `@greese/ui/scss/maps`           | Only the Sass maps (`$breakpoints`, `$space-keys`, every token default as `$color` and `$scalars`, the palette as `$palette`, and `$layer-order`); emits no CSS |
 | `@greese/ui/style-manifest.json` | Every component's styling API, read from the compiled CSS                                                                                                       |
-| `@greese/ui`                     | TypeScript constants (`color`, `palette` and each hue, `space`, `radius`, `fontSize`, `shadow`, `breakpoints`, …), `createTheme()` and `getSchemeScript()`      |
+| `@greese/ui`                     | TypeScript constants (`color`, `palette` and each hue, `space`, `radius`, `lineHeight`, `shadow`, `breakpoints`, …), `createTheme()` and `getSchemeScript()`      |
 
 It has no dependencies.
 

@@ -62,7 +62,7 @@ export const Controlled: Story = {
     return (
       <Stack gap={3}>
         <ColorPicker value={color} onValueChange={setColor} />
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           Value: <code>{color}</code>
         </Text>
       </Stack>

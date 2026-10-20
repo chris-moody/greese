@@ -26,9 +26,9 @@ import { Text } from './Text/Text.tsx'
 import { ToggleButton } from './ToggleButton/ToggleButton.tsx'
 
 describe('typography', () => {
-  it('Text is a paragraph with responsive size, tone and truncation', () => {
+  it('Text is a paragraph with tone, weight and truncation', () => {
     render(
-      <Text size={{ xs: 'sm', md: 'lg' }} tone="muted" weight="semibold" truncate={2}>
+      <Text tone="muted" weight="semibold" truncate={2}>
         Body
       </Text>
     )
@@ -37,9 +37,7 @@ describe('typography', () => {
     expect(text).toHaveClass(
       'greese-Text--muted',
       'greese-Text--semibold',
-      'greese-Text--clamp',
-      'greese-Text--xs-size-sm',
-      'greese-Text--md-size-lg'
+      'greese-Text--clamp'
     )
     expect(text.style.getPropertyValue('--greese-text-lines')).toBe('2')
   })
@@ -54,14 +52,15 @@ describe('typography', () => {
     expect(screen.getByText('Inline')).toHaveClass('greese-Text--truncate')
   })
 
-  it('Heading separates outline level from visual size', () => {
+  it('Heading separates outline level from visual style', () => {
     render(
-      <Heading level={1} size="xl">
+      <Heading level={1} variant="h4">
         Page
       </Heading>
     )
     const heading = screen.getByRole('heading', { level: 1, name: 'Page' })
-    expect(heading).toHaveClass('greese-Heading--level-1', 'greese-Heading--xs-size-xl')
+    expect(heading).toHaveClass('greese-Heading', 'greese-Type--h4')
+    expect(heading.tagName).toBe('H1')
   })
 
   it('Link styles anchors and router links alike', () => {
@@ -73,7 +72,9 @@ describe('typography', () => {
         </Link>
       </>
     )
-    expect(screen.getByRole('link', { name: 'Plain' })).toHaveClass('greese-Link--primary')
+    expect(screen.getByRole('link', { name: 'Plain' })).toHaveClass(
+      'greese-Link--primary'
+    )
     expect(screen.getByRole('link', { name: 'Routed' })).toHaveClass(
       'greese-Link--neutral',
       'greese-Link--underline-hover'

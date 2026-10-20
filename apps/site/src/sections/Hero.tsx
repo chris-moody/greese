@@ -86,7 +86,7 @@ export const Hero = (): JSX.Element => (
               React 19 · TypeScript · {facts.components} components
             </Badge>
           </div>
-          <Heading level={1} size={{ xs: '3xl', md: '4xl' }} className="site-hero-title">
+          <Heading level={1} variant="h1" className="site-hero-title">
             <Text asChild greese={{ enter: 'fadeUp', delay: 0.1 }}>
               <span>Components that move,</span>
             </Text>{' '}
@@ -95,7 +95,7 @@ export const Hero = (): JSX.Element => (
             </Text>
           </Heading>
           <Text
-            size="lg"
+            variant="s2"
             tone="muted"
             className="site-measure"
             // The page's largest paint: no delay, so it isn't held invisible.

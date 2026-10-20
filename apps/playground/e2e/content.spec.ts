@@ -39,10 +39,11 @@ for (const dir of ['ltr', 'rtl'] as const) {
   })
 }
 
-test('headings step up at md; text clamps to two lines', async ({ page }) => {
+test('headings step up at md and lg; text clamps to two lines', async ({ page }) => {
   const width = page.viewportSize()!.width
   const size = parseFloat(await style(page.getByTestId('h1'), 'font-size'))
-  expect(size).toBe(width >= 900 ? 36 : 30)
+  // The h1 variant: 2.25rem, 2.75rem from md (900), 3.5rem from lg (1200).
+  expect(size).toBe(width >= 1200 ? 56 : width >= 900 ? 44 : 36)
 
   const clamped = page.getByTestId('clamped')
   const lineHeight = parseFloat(await style(clamped, 'line-height'))

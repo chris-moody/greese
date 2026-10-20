@@ -71,7 +71,7 @@ const Lab = (): JSX.Element => {
     <Grid container columns={{ xs: 1, md: 2 }} gap={5} align="stretch">
       <Card padding={5} greese={{ inView: 'fadeStart' }}>
         <Stack gap={4}>
-          <Heading level={3} size="lg">
+          <Heading level={3} variant="h5">
             Compose a sequence
           </Heading>
           <Text tone="muted">
@@ -166,7 +166,7 @@ const Lab = (): JSX.Element => {
 const Interactions = (): JSX.Element => (
   <Card padding={5} greese={{ inView: 'fadeUp' }}>
     <Stack gap={4}>
-      <Heading level={3} size="lg">
+      <Heading level={3} variant="h5">
         Hover, press and focus
       </Heading>
       <Text tone="muted">
@@ -191,14 +191,14 @@ const Interactions = (): JSX.Element => (
 const TextEffects = (): JSX.Element => (
   <Card padding={5} greese={{ inView: 'fadeUp', delay: 0.1 }}>
     <Stack gap={3}>
-      <Heading level={3} size="lg" greese={{ text: 'split', inView: 'fadeIn' }}>
+      <Heading level={3} variant="h5" greese={{ text: 'split', inView: 'fadeIn' }}>
         Split, typed and counted
       </Heading>
       <Text greese={{ text: 'type', inView: 'fadeIn' }}>
         Screen readers hear this once, while it types on.
       </Text>
       <Text
-        size="3xl"
+        variant="h2"
         weight="bold"
         greese={{ text: 'count', inView: 'fadeIn', duration: 1.6 }}
       >
@@ -230,7 +230,7 @@ const Follow = (): JSX.Element => {
   return (
     <Card padding={5} greese={{ inView: 'fadeUp', delay: 0.2 }}>
       <Stack gap={4}>
-        <Heading level={3} size="lg">
+        <Heading level={3} variant="h5">
           useGreese
         </Heading>
         <Text tone="muted">

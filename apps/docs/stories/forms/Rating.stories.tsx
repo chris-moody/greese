@@ -32,7 +32,7 @@ export const ReadOnly: Story = {
   render: () => (
     <Stack direction="row" gap={2} align="center">
       <Rating label="Average rating" readOnly value={4.3} size="sm" />
-      <Text size="sm" tone="muted">
+      <Text variant="p3" tone="muted">
         4.3 (1,204 reviews)
       </Text>
     </Stack>

@@ -36,14 +36,14 @@ export const Stats = (): JSX.Element => (
         <Card key={s.label} variant="filled" padding={4} greese={{ hover: 'lift' }}>
           <Stack gap={1}>
             <Text
-              size="2xl"
+              variant="h3"
               weight="bold"
               className="site-stat-value"
               greese={{ enter: 'blurIn', delay: 0.7 }}
             >
               {s.value}
             </Text>
-            <Text size="sm" tone="muted">
+            <Text variant="p3" tone="muted">
               {s.label}
             </Text>
           </Stack>

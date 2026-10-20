@@ -107,7 +107,7 @@ export const Size = (): JSX.Element => (
       {panels.map((p) => (
         <TabPanel key={p.value} value={p.value}>
           <Stack gap={3} className="site-panel">
-            <Text tone="muted" size="sm" greese={{ inView: 'fadeIn' }}>
+            <Text tone="muted" variant="p3" greese={{ inView: 'fadeIn' }}>
               {p.caption}. Measured {facts.date}.
             </Text>
             <SizeTable rows={sizeTables[p.value]} caption={p.caption} />

@@ -17,10 +17,10 @@ const slides = places.map((place, i) => (
     <Card padding={0} style={{ overflow: 'hidden' }}>
       <Image alt="" src={art(40 + i * 50)} ratio={16 / 9} placeholder="#ccd" />
       <Stack gap={1} p={4}>
-        <Heading level={3} size="md">
+        <Heading level={3} variant="h6">
           {place}
         </Heading>
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           Slide {i + 1} of {places.length}
         </Text>
       </Stack>

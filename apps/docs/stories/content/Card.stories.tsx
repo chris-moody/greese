@@ -25,10 +25,10 @@ const meta = {
         <Image alt="" src={art(200)} ratio={16 / 9} placeholder="#ccd" />
       </CardMedia>
       <Stack gap={2}>
-        <Heading level={3} size="lg">
+        <Heading level={3} variant="h5">
           Card title
         </Heading>
-        <Text tone="muted" size="sm">
+        <Text tone="muted" variant="p3">
           CardMedia bleeds through the padding, which steps up at md.
         </Text>
       </Stack>
@@ -47,12 +47,12 @@ export const Variants: Story = {
       {(['outline', 'elevated', 'filled'] as const).map((variant, i) => (
         <Card key={variant} variant={variant} interactive={i === 1}>
           <Stack direction="row" gap={2} align="center">
-            <Heading level={3} size="md">
+            <Heading level={3} variant="h6">
               {variant}
             </Heading>
             {i === 1 && <Badge tone="primary">Interactive</Badge>}
           </Stack>
-          <Text tone="muted" size="sm">
+          <Text tone="muted" variant="p3">
             A surface for related content.
           </Text>
         </Card>
@@ -66,10 +66,10 @@ export const AsLink: Story = {
   render: () => (
     <Card asChild interactive style={{ maxInlineSize: '20rem' }}>
       <a href="#project">
-        <Heading level={3} size="md">
+        <Heading level={3} variant="h6">
           Open project
         </Heading>
-        <Text tone="muted" size="sm">
+        <Text tone="muted" variant="p3">
           The whole card is the link.
         </Text>
       </a>

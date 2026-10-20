@@ -49,7 +49,7 @@ export const Controlled: Story = {
         <Field label="Phone">
           <MaskedInput mask="+1 (999) 999-9999" value={raw} onValueChange={setRaw} />
         </Field>
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           Raw value: {raw || '(empty)'}
         </Text>
       </Grid>

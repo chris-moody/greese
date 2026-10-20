@@ -32,7 +32,7 @@ export const CustomTokens = ({
 }: {
   spec: ThemeSpec
   onChange: (spec: ThemeSpec) => void
-  /** Kebab-case group: `color`, `radius`, `font-size`… */
+  /** Kebab-case group: `color`, `radius`, `line-height`… */
   group: string
   rendered?: RenderedColors
 }): JSX.Element => {
@@ -56,7 +56,7 @@ export const CustomTokens = ({
   return (
     <Stack gap={2}>
       {own.length > 0 && (
-        <Text size="sm" weight="semibold" tone="muted">
+        <Text variant="p3" weight="semibold" tone="muted">
           Added to {group}
         </Text>
       )}

@@ -22,7 +22,7 @@ export const Variants: Story = {
       <Tile>Filled</Tile>
       <Tile variant="outline">Outline</Tile>
       <Tile variant="dashed" p={5} textAlign="center">
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           Drop files here
         </Text>
       </Tile>

@@ -147,7 +147,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--greese-space-2);
-  font-size: var(--greese-font-size-sm);
+  font-size: var(--greese-type-p3-size);
   font-weight: 600;
 }
 
@@ -254,7 +254,7 @@
 .site-demo-title {
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: var(--greese-font-size-xs);
+  font-size: var(--greese-type-caption-size);
 }
 
 .site-gallery-note {

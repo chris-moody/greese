@@ -137,7 +137,7 @@ export const Text_: Story = {
     >
       <Stack gap={2}>
         <Heading level={2}>Greese, served fast</Heading>
-        <Text size="xl" weight="bold">
+        <Text variant="s1" weight="bold">
           <span className="count">0</span> orders
         </Text>
       </Stack>

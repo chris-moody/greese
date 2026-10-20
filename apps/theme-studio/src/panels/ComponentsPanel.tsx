@@ -28,7 +28,7 @@ const Chips = ({
 }): JSX.Element | null =>
   items.length ? (
     <div className="studio-row">
-      <Text size="sm" className="studio-row-label">
+      <Text variant="p3" className="studio-row-label">
         {label}
       </Text>
       <div className="studio-chips">
@@ -91,10 +91,10 @@ export const ComponentsPanel = ({
       </Field>
 
       <Stack gap={2}>
-        <Heading level={3} size="md">
+        <Heading level={3} variant="h6">
           Classes
         </Heading>
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           From <code>css/{info.stylesheet}.css</code>. In the kit, write the names without
           the prefix: <code>component({component})</code>.
         </Text>
@@ -108,10 +108,10 @@ export const ComponentsPanel = ({
 
       {info.variables.length > 0 && (
         <Stack gap={2}>
-          <Heading level={3} size="md">
+          <Heading level={3} variant="h6">
             Variables
           </Heading>
-          <Text size="sm" tone="muted">
+          <Text variant="p3" tone="muted">
             {live
               ? 'Placeholders show the picked element’s computed values.'
               : 'Pick an element with Inspect to see current values.'}
@@ -142,7 +142,7 @@ export const ComponentsPanel = ({
       )}
 
       <Stack gap={2}>
-        <Heading level={3} size="md">
+        <Heading level={3} variant="h6">
           Styles
         </Heading>
         <Field label="Target">
@@ -170,15 +170,15 @@ export const ComponentsPanel = ({
       </Stack>
 
       <Stack gap={2}>
-        <Heading level={3} size="md">
+        <Heading level={3} variant="h6">
           Motion
         </Heading>
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           A default for every {component}. An instance’s own <code>greese</code> entrance
           replaces it. Pure CSS; off under reduced motion.
         </Text>
         <div className="studio-row">
-          <Text size="sm" className="studio-row-label">
+          <Text variant="p3" className="studio-row-label">
             enter
           </Text>
           <Select
@@ -194,7 +194,7 @@ export const ComponentsPanel = ({
           </Select>
         </div>
         <div className="studio-row">
-          <Text size="sm" className="studio-row-label">
+          <Text variant="p3" className="studio-row-label">
             exit (overlays)
           </Text>
           <Select

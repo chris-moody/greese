@@ -43,7 +43,7 @@ export const Nav = (): JSX.Element => {
             className="site-wordmark"
             greese={{ hover: 'wobble' }}
           >
-            <Text asChild size="lg" weight="bold">
+            <Text asChild variant="s2" weight="bold">
               <span>greese</span>
             </Text>
           </Link>

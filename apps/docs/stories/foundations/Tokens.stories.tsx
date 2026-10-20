@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { CSSProperties, ReactNode } from 'react'
-import { color, fontSize, radius, shadow, space } from '@greese/ui'
+import { color, radius, shadow, space, typeVariants } from '@greese/ui'
 
 const kebab = (s: string) => s.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 
@@ -11,7 +11,7 @@ const grid: CSSProperties = {
 }
 const label: CSSProperties = {
   fontFamily: 'var(--greese-font-mono)',
-  fontSize: 'var(--greese-font-size-xs)',
+  fontSize: 'var(--greese-type-caption-size)',
 }
 
 const Section = ({ title, children }: { title: string; children: ReactNode }) => (
@@ -110,16 +110,10 @@ export const RadiusAndShadow: StoryObj = {
 
 export const Typography: StoryObj = {
   render: () => (
-    <Section title="Font size">
-      {Object.keys(fontSize).map((key) => (
-        <p
-          key={key}
-          style={{
-            fontSize: `var(--greese-font-size-${key})`,
-            marginBlockEnd: 'var(--greese-space-2)',
-          }}
-        >
-          <code style={label}>--greese-font-size-{key}</code> The quick brown fox
+    <Section title="Type variants (font size, weight, spacing and line height)">
+      {typeVariants.map((variant) => (
+        <p key={variant} className={`greese-Type--${variant}`} style={{ margin: 0 }}>
+          <code style={label}>--greese-type-{variant}-size</code> The quick brown fox
         </p>
       ))}
     </Section>

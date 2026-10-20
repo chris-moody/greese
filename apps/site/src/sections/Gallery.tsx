@@ -71,7 +71,7 @@ const Demo = ({
 }): JSX.Element => (
   <Card padding={5} greese={{ inView: 'fadeUp', hover: 'lift' }}>
     <Stack gap={4}>
-      <Text size="sm" weight="semibold" tone="muted" className="site-demo-title">
+      <Text variant="p3" weight="semibold" tone="muted" className="site-demo-title">
         {title}
       </Text>
       <Stack gap={3} greese={{ inView: 'rise', stagger: 0.05, delay: 0.1 }}>
@@ -327,7 +327,7 @@ const Overlays = (): JSX.Element => (
         label="About anchoring"
         greese={{ enter: 'fadeUp', exit: 'fadeOutDown' }}
       >
-        <Text size="sm">
+        <Text variant="p3">
           The Popover API plus CSS anchor positioning. No positioning library.
         </Text>
       </Popover>
@@ -415,10 +415,10 @@ const Data = (): JSX.Element => {
       <Demo title="Disclosure">
         <Accordion exclusive greese={{ inView: 'fadeUp', stagger: 0.05 }}>
           <AccordionItem title="Native <details>" defaultOpen>
-            <Text size="sm">Opens and closes with no JavaScript.</Text>
+            <Text variant="p3">Opens and closes with no JavaScript.</Text>
           </AccordionItem>
           <AccordionItem title="Exclusive">
-            <Text size="sm">One open at a time, by the platform.</Text>
+            <Text variant="p3">One open at a time, by the platform.</Text>
           </AccordionItem>
         </Accordion>
       </Demo>
@@ -461,7 +461,7 @@ export const Gallery = (): JSX.Element => {
       </Tabs>
       <Heading
         level={3}
-        size="md"
+        variant="h6"
         tone="muted"
         className="site-gallery-note"
         greese={{ inView: 'fadeIn' }}

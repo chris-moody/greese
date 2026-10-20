@@ -43,7 +43,7 @@ export const WithText: Story = {
       ).map(([tone, text]) => (
         <Stack key={tone} direction="row" gap={2} align="center">
           <Status tone={tone} pulse={tone === 'negative'} />
-          <Text size="sm">{text}</Text>
+          <Text variant="p3">{text}</Text>
         </Stack>
       ))}
     </Stack>

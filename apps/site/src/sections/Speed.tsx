@@ -65,7 +65,7 @@ const Bar = ({
         style={{ '--site-bar': `${(value / max) * 100}%` } as CSSProperties}
       />
     </Motion>
-    <Text size="sm" className="site-bar-value">
+    <Text variant="p3" className="site-bar-value">
       {fmt(value, unit)}
     </Text>
   </div>
@@ -76,7 +76,7 @@ const Chart = ({ setup }: { setup: Setup }): JSX.Element => (
     <Stack direction="row" gap={4} wrap="wrap" aria-hidden="true" className="site-legend">
       <span className="site-key site-key--greese">{SETUPS[setup].legend}</span>
       <span className="site-key site-key--mui">MUI</span>
-      <Text size="sm" tone="muted">
+      <Text variant="p3" tone="muted">
         Lower is better. Each row has its own scale.
       </Text>
     </Stack>
@@ -92,7 +92,7 @@ const Chart = ({ setup }: { setup: Setup }): JSX.Element => (
           >
             <div className="site-metric" tabIndex={0}>
               <Stack direction="row" justify="between" align="baseline" gap={2}>
-                <Text size="sm" weight="semibold">
+                <Text variant="p3" weight="semibold">
                   {m.label}
                 </Text>
                 <Badge tone={v.tone} greese={{ inView: 'pop', delay: 0.4 }}>
@@ -156,20 +156,20 @@ const Summary = ({ setup }: { setup: Setup }): JSX.Element => {
       greese={{ inView: 'fadeUp', stagger: 0.08 }}
     >
       <Card variant="filled" padding={4}>
-        <Text size="2xl" weight="bold" className="site-stat-value">
+        <Text variant="h3" weight="bold" className="site-stat-value">
           {tally.win} of {benchmark.metrics.length}
         </Text>
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           metrics where GreeseUI is ahead
           {tally.even ? `, ${tally.even} even` : ''}
           {tally.loss ? `, ${tally.loss} where MUI is` : ''}
         </Text>
       </Card>
       <Card variant="filled" padding={4}>
-        <Text size="2xl" weight="bold" className="site-stat-value">
+        <Text variant="h3" weight="bold" className="site-stat-value">
           {(theirs / ours).toFixed(1)}× less
         </Text>
-        <Text size="sm" tone="muted">
+        <Text variant="p3" tone="muted">
           main-thread work on load: {fmt(ours, 'ms')} against MUI’s {fmt(theirs, 'ms')}{' '}
           (script, style and layout)
         </Text>

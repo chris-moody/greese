@@ -35,10 +35,10 @@ export const IconGallery = (): JSX.Element => {
       {selected.length > 0 && (
         <Tile variant="outline" className="icon-gallery-bar">
           <Stack direction="row" gap={2} align="center" wrap="wrap">
-            <Text size="sm" weight="semibold">
+            <Text variant="p3" weight="semibold">
               {selected.length} selected
             </Text>
-            <Text size="sm" tone="muted" truncate style={{ flex: '1 1 12rem' }}>
+            <Text variant="p3" tone="muted" truncate style={{ flex: '1 1 12rem' }}>
               {selected.join(', ')}
             </Text>
             <Button
@@ -89,7 +89,7 @@ export const IconGallery = (): JSX.Element => {
               </IconButton>
               <Stack gap={2} align="center" py={3}>
                 <Glyph size={28} />
-                <Text size="xs">{name}</Text>
+                <Text variant="caption">{name}</Text>
               </Stack>
               <div className="icon-gallery-actions">
                 <Button
@@ -120,9 +120,9 @@ export const IconGallery = (): JSX.Element => {
         .icon-gallery-tile[data-selected] { border-color: var(--greese-color-primary); box-shadow: inset 0 0 0 1px var(--greese-color-primary); }
         .icon-gallery-add { position: absolute; inset-block-start: var(--greese-space-1); inset-inline-end: var(--greese-space-1); }
         .icon-gallery-actions { display: flex; justify-content: space-between; }
-        .icon-gallery-actions .greese-Button { font-size: var(--greese-font-size-xs); min-block-size: 1.75rem; padding-inline: var(--greese-space-2); }
+        .icon-gallery-actions .greese-Button { font-size: var(--greese-type-caption-size); min-block-size: 1.75rem; padding-inline: var(--greese-space-2); }
         .icon-gallery-bar { position: sticky; inset-block-start: 0; z-index: 1; background: var(--greese-color-surface-overlay); box-shadow: var(--greese-shadow-md); }
-        .icon-gallery-status { min-block-size: 1lh; margin: 0; font-size: var(--greese-font-size-sm); color: var(--greese-color-fg-muted); }
+        .icon-gallery-status { min-block-size: 1lh; margin: 0; font-size: var(--greese-type-p3-size); color: var(--greese-color-fg-muted); }
       `}</style>
     </Stack>
   )

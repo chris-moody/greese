@@ -56,7 +56,7 @@ export const Size: Story = {
       <SearchIcon />
       <SearchIcon size={24} />
       <SearchIcon size="2.5rem" />
-      <Text size="3xl">
+      <Text variant="h2">
         <SearchIcon /> 1em of 3xl text
       </Text>
     </Stack>

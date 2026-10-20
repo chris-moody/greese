@@ -70,7 +70,7 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 
 // --- helpers ---------------------------------------------------------------
 
-/// `primaryContent` → `primary-content`, `fontSize` → `font-size`; kebab-case stays.
+/// `primaryContent` → `primary-content`, `lineHeight` → `line-height`; kebab-case stays.
 @function _kebab($name) {
   $name: '#{$name}';
   $out: '';
