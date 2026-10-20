@@ -7,11 +7,27 @@ import type { FromPreview, ToPreview } from '../protocol.ts'
 import { ComponentPreview } from './ComponentPreview.tsx'
 import { Gallery } from './Gallery.tsx'
 import { inspector } from './inspect.ts'
+import { color } from '@greese/ui'
 import { measureColors } from './measure.ts'
 import './preview.css'
 
 const post = (message: FromPreview) => window.parent.postMessage(message, location.origin)
 const themeStyle = document.getElementById('theme')!
+
+/** The colors a theme's CSS adds: `--greese-color-<name>` the system has no role for. */
+const addedColors = (css: string): string[] => [
+  ...new Set(
+    [...css.matchAll(/--greese-color-([a-z0-9-]+)\s*:/g)]
+      .map((m) => m[1]!)
+      .filter((name) => !(name in kebabRoles))
+  ),
+]
+const kebabRoles = Object.fromEntries(
+  Object.keys(color).map((role) => [
+    role.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`),
+    1,
+  ])
+)
 const highlight = document.head.appendChild(document.createElement('style'))
 const setInspecting = inspector((picked) => post({ type: 'pick', ...picked }))
 
@@ -56,7 +72,14 @@ const Preview = (): JSX.Element => {
   const [css, setCss] = useState(0)
   useEffect(() => {
     const frame = requestAnimationFrame(() =>
-      post({ type: 'colors', ...measureColors(document, scope.theme) })
+      post({
+        type: 'colors',
+        ...measureColors(
+          document,
+          scope.theme,
+          addedColors(themeStyle.textContent ?? '')
+        ),
+      })
     )
     return () => cancelAnimationFrame(frame)
   }, [css, scope.theme])

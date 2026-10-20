@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { specToScss, validateSpec, type ThemeSpec } from '../src/spec.ts'
+import { importCss } from '../src/importer.ts'
 import { compileSpec, themeFiles } from './studio.ts'
 
 const spec: ThemeSpec = {
@@ -106,6 +107,52 @@ describe('themeFiles', () => {
       json: '/app/styles/brand.json',
       scss: '/app/styles/brand.scss',
       css: '/app/styles/brand.css',
+    })
+  })
+})
+
+describe('new tokens', () => {
+  const spec: ThemeSpec = {
+    tokens: {
+      color: {
+        'brand-ink': { light: '#1b1340', dark: '#e5defc' },
+        primary: { light: 'lavender-600', dark: 'lavender-300' },
+      },
+      space: { '9': '4rem' },
+      'font-size': { '5xl': '3rem' },
+    },
+    components: {},
+  }
+
+  it('writes them as $extend and keeps overrides as overrides', () => {
+    const scss = specToScss(spec)
+    expect(scss).toContain('$extend: (')
+    expect(scss).toMatch(/color: \(\s+primary: \(light: "lavender-600"/)
+    expect(scss).toMatch(/\$extend: \(\s+color: \(\s+brand-ink:/)
+    expect(scss).toContain('\'9\': "4rem"')
+  })
+
+  it('compiles through the real kit, and an existing name is never extended', () => {
+    const result = compileSpec(spec)
+    expect(result).not.toHaveProperty('errors')
+    const css = (result as { css: string }).css
+    expect(css).toContain('--greese-space-9: 4rem;')
+    expect(css).toContain('--greese-color-brand-ink: #1b1340;')
+    expect(css).toContain('--greese-font-size-5xl: 3rem;')
+    // An unknown group still reaches the kit, which reports it.
+    expect(compileSpec({ tokens: { colr: { x: 'red' } }, components: {} })).toEqual({
+      errors: [expect.stringMatching(/no token group `colr`/)],
+    })
+  })
+
+  it('imports them back from the compiled CSS', () => {
+    const css = (compileSpec(spec) as { css: string }).css
+    const back = importCss(css).spec
+    expect(back.tokens?.space?.['9']).toBe('4rem')
+    expect(back.tokens?.['font-size']?.['5xl']).toBe('3rem')
+    expect(back.tokens?.color?.['brand-ink']).toEqual({
+      light: '#1b1340',
+      dark: '#e5defc',
     })
   })
 })

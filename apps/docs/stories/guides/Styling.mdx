@@ -163,6 +163,39 @@ camelCase); a color takes one value or a light/dark pair:
 );
 ```
 
+To add tokens the system doesn't have, name them in `$extend`, in the same
+shape. Each becomes `--greese-<group>-<name>`, and `token()` and component
+variables accept it from then on. A name that already exists, or a group
+that doesn't, still stops the build:
+
+```scss
+@include greese.tokens(
+  (),
+  $extend: (
+    color: (
+      brand-ink: (
+        light: #1b1340,
+        dark: #e5defc,
+      ),
+    ),
+    space: (
+      9: 4rem,
+    ),
+    shadow: (
+      glow: 0 0 12px rgb(124 58 237 / 0.4),
+    ),
+  )
+);
+
+.my-banner {
+  color: var(--greese-color-brand-ink); // from any CSS, after the built stylesheet
+  margin-block: var(--greese-space-9);
+}
+```
+
+A new `space` token is a variable only: the responsive prop classes
+(`gap={9}`) come with the stylesheet's build, which knows `0`–`8`.
+
 At the top level it overrides only what you pass, on the page, mirroring the
 default selectors, so light, dark and nested schemes all work. Duration
 overrides still collapse under reduced motion.

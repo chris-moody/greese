@@ -32,7 +32,9 @@ export const toHex = (css: string, ctx: CanvasRenderingContext2D): string => {
  */
 export const measureColors = (
   doc: Document,
-  theme: string | undefined
+  theme: string | undefined,
+  /** Colors the theme adds, kebab-case (`brand-ink`), measured under that name. */
+  extra: readonly string[] = []
 ): { light: Measured; dark: Measured } => {
   const canvas = doc.createElement('canvas')
   canvas.width = canvas.height = 1
@@ -46,7 +48,7 @@ export const measureColors = (
     scope.dataset.greeseScheme = scheme
     if (theme) scope.dataset.greeseTheme = theme
     host.append(scope)
-    const probes = Object.keys(color).map((role) => {
+    const probes = [...Object.keys(color), ...extra].map((role) => {
       const probe = doc.createElement('span')
       probe.style.color = `var(--greese-color-${kebab(role)})`
       scope.append(probe)

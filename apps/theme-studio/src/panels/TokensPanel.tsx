@@ -6,6 +6,7 @@ import { ValueRow } from '../fields.tsx'
 import type { RenderedColors } from '../protocol.ts'
 import type { ThemeSpec } from '../spec.ts'
 import { ColorsSection } from './ColorsSection.tsx'
+import { CustomTokens } from './CustomTokens.tsx'
 import { RadiusSection } from './RadiusSection.tsx'
 
 export const kebab = (value: string): string =>
@@ -33,10 +34,21 @@ export const TokensPanel = ({ spec, onChange, rendered }: PanelProps): JSX.Eleme
     />
     <Accordion aria-label="Tokens">
       <AccordionItem title="color" defaultOpen>
-        <ColorsSection spec={spec} onChange={onChange} rendered={rendered} />
+        <Stack gap={4}>
+          <ColorsSection spec={spec} onChange={onChange} rendered={rendered} />
+          <CustomTokens
+            spec={spec}
+            onChange={onChange}
+            group="color"
+            rendered={rendered}
+          />
+        </Stack>
       </AccordionItem>
       <AccordionItem title="radius">
-        <RadiusSection spec={spec} onChange={onChange} />
+        <Stack gap={4}>
+          <RadiusSection spec={spec} onChange={onChange} />
+          <CustomTokens spec={spec} onChange={onChange} group="radius" />
+        </Stack>
       </AccordionItem>
       {MORE.map(([group, values]) => (
         <AccordionItem key={group} title={kebab(group)}>
@@ -53,6 +65,7 @@ export const TokensPanel = ({ spec, onChange, rendered }: PanelProps): JSX.Eleme
                 />
               )
             })}
+            <CustomTokens spec={spec} onChange={onChange} group={kebab(group)} />
           </Stack>
         </AccordionItem>
       ))}

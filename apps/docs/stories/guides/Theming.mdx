@@ -19,7 +19,7 @@ This guide covers, in order:
 4. [Overriding in plain CSS](#overriding-in-plain-css), for one-off changes.
 5. [Per-component variables](#per-component-variables).
 6. [Server rendering and frameworks](#server-rendering-and-frameworks).
-7. [Custom breakpoints](#custom-breakpoints) and [without React](#without-react).
+7. [Adding tokens](#adding-your-own-tokens), [custom breakpoints](#custom-breakpoints) and [without React](#without-react).
 8. [Token reference](#token-reference) and [troubleshooting](#troubleshooting).
 
 ## How it fits together
@@ -406,6 +406,28 @@ it as shown. A component that calls `useColorScheme` needs `'use client'`.
   /* paste the output of getSchemeScript() here, or inject it at build time */
 </script>
 ```
+
+## Adding your own tokens
+
+`createTheme` takes `extend` for tokens the system doesn't have. Each is
+declared as `--greese-<group>-<name>` in that theme (a color in both schemes),
+for your CSS and component overrides to read:
+
+```ts
+export const brand = createTheme({
+  name: 'brand',
+  extend: {
+    color: { 'brand-ink': { light: '#1b1340', dark: '#e5defc' } },
+    fontSize: { '5xl': '3rem' },
+    space: { 9: '4rem' },
+  },
+})
+```
+
+An existing name, or a group that doesn't exist, throws; set built-in tokens
+through their own group. The SCSS kit has the same option (`$extend`: see
+Guides/Styling components), and Theme Studio adds them with the "Add a
+… token" row in each token section.
 
 ## Custom breakpoints
 

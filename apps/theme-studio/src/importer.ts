@@ -139,18 +139,22 @@ const GROUPS = [...SCALARS.keys()].sort((a, b) => b.length - a.length)
 
 type Token = { group: string; key: string }
 
-/** `--greese-font-size-lg` → `{ group: 'font-size', key: 'lg' }`. */
+/**
+ * `--greese-font-size-lg` → `{ group: 'font-size', key: 'lg' }`. A name in a
+ * group the system has counts whether or not the system has that token: an
+ * unknown one is a token the theme adds (the kit's `$extend`).
+ */
 const tokenOf = (property: string): Token | undefined => {
   const name = property.replace(/^--greese-/, '')
   if (name === property) return undefined
   if (name.startsWith('color-')) {
     const key = name.slice(6)
-    return COLORS.has(key) ? { group: 'color', key } : undefined
+    return key ? { group: 'color', key } : undefined
   }
   const group = GROUPS.find((g) => name.startsWith(`${g}-`))
   if (!group) return undefined
   const key = name.slice(group.length + 1)
-  return SCALARS.get(group)!.has(key) ? { group, key } : undefined
+  return key ? { group, key } : undefined
 }
 
 const THEME = /\[data-greese-theme=['"]?([\w-]+)['"]?\]/
@@ -400,15 +404,21 @@ export const importCss = (css: string, prefer?: string): ImportResult => {
     if (group === 'color') {
       const light = tokens.light.get(id) ?? tokens.base.get(id)
       const dark = tokens.dark.get(id) ?? tokens.base.get(id)
-      const fallbackPair = COLORS.get(key)!
-      const l = light ?? fallbackPair.light
-      const d = dark ?? fallbackPair.dark
-      if (norm(l) === norm(fallbackPair.light) && norm(d) === norm(fallbackPair.dark))
+      // A color the system doesn't have has no default to match: it's new.
+      const fallbackPair = COLORS.get(key)
+      const l = light ?? fallbackPair?.light ?? dark!
+      const d = dark ?? fallbackPair?.dark ?? l
+      if (
+        fallbackPair &&
+        norm(l) === norm(fallbackPair.light) &&
+        norm(d) === norm(fallbackPair.dark)
+      )
         continue
       ;(specTokens.color ??= {})[key] = norm(l) === norm(d) ? l : { light: l, dark: d }
     } else {
       const value = tokens.base.get(id) ?? tokens.light.get(id) ?? tokens.dark.get(id)!
-      if (norm(value) === norm(SCALARS.get(group)!.get(key)!)) continue
+      const fallback = SCALARS.get(group)?.get(key)
+      if (fallback !== undefined && norm(value) === norm(fallback)) continue
       ;(specTokens[group] ??= {})[key] = value
     }
   }

@@ -19,11 +19,11 @@ JSON here to carry on. Importing from project files needs `npm run studio`.
 
 ## Files
 
-| File                | Written by          | Use                                                                     |
-| ------------------- | ------------------- | ----------------------------------------------------------------------- |
-| `greese-theme.json` | You and the studio  | The theme. Commit it                                                    |
+| File                | Written by          | Use                                                               |
+| ------------------- | ------------------- | ----------------------------------------------------------------- |
+| `greese-theme.json` | You and the studio  | The theme. Commit it                                              |
 | `greese-theme.scss` | The studio, on save | Kit calls (`pkg:@greese/ui/scss/kit`), for apps that compile Sass |
-| `greese-theme.css`  | The studio, on save | The same, compiled, for apps that don't                                 |
+| `greese-theme.css`  | The studio, on save | The same, compiled, for apps that don't                           |
 
 The SCSS and CSS are generated: edit the JSON or use the studio, and keep
 hand-written overrides in a stylesheet of your own. If the JSON changes on
@@ -53,6 +53,16 @@ checkerboard. Open a chip to edit it, along with its strong and content
 colors. Radius tokens
 are picked as corner shapes, or typed. The other token groups are under
 **More tokens**.
+
+## Adding tokens
+
+Every token section ends with an "Add a … token" row: name it (lower-case
+letters, digits and `-`) and it becomes `--greese-<group>-<name>` in the
+generated theme, written as `$extend` in the SCSS. It starts with a value from
+its group; edit it like any other, and **Remove** takes it away. A name that
+already exists is refused. A new `space` token is a variable only (the
+responsive classes are built with the stylesheet). Breakpoints are listed but
+not editable: they're fixed when the stylesheet is built.
 
 ## Colors
 

@@ -5,6 +5,8 @@
  * like one written by hand. Pure: the server and the browser both use it.
  */
 
+import { color, scalarTokens } from '@greese/ui'
+
 /** One value for both schemes, or a light/dark pair. */
 export type SchemeValue = string | { light: string; dark: string }
 
@@ -120,6 +122,28 @@ export const validateSpec = (spec: ThemeSpec): string[] => {
   return errors
 }
 
+const kebabOf = (value: string): string =>
+  value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
+
+/** The token names the system has, by kebab-case group: `color`, `radius`, `font-size`… */
+const KNOWN: Record<string, Set<string>> = {
+  color: new Set(Object.keys(color).map(kebabOf)),
+  ...Object.fromEntries(
+    Object.entries(scalarTokens).map(([group, values]) => [
+      kebabOf(group),
+      new Set(Object.keys(values).map(kebabOf)),
+    ])
+  ),
+}
+
+/**
+ * A token the theme adds: its group exists but the system has no token of
+ * that name. (A group that doesn't exist stays an override, so the kit
+ * reports it.)
+ */
+export const isCustomToken = (group: string, key: string): boolean =>
+  group in KNOWN && !KNOWN[group]!.has(key)
+
 const isEmpty = (o: object | undefined): boolean =>
   !o || Object.values(o).every((v) => v === '' || v === undefined)
 
@@ -189,21 +213,36 @@ export const specToScss = (spec: ThemeSpec, source = 'greese-theme.json'): strin
   const indent = spec.name ? '  ' : ''
   const blocks: string[] = []
 
-  const groups = filled(spec.tokens)
-    .map(([group, values]) => [group, filled(values)] as const)
-    .filter(([, values]) => values.length)
-  if (groups.length)
+  // Tokens the system has are overrides; the rest are new, declared with
+  // `$extend` (the kit never guesses at names).
+  const tokenMap = (
+    list: ReadonlyArray<readonly [string, ReadonlyArray<[string, SchemeValue]>]>
+  ) =>
+    map(
+      list.map(([group, values]) => [
+        group,
+        map(
+          values.map(([k, v]) => [/^\d/.test(k) ? `'${k}'` : k, schemeValue(v)]),
+          `${indent}  `
+        ),
+      ]),
+      indent
+    )
+  const own = filled(spec.tokens).map(
+    ([group, values]) =>
+      [group, filled(values).filter(([k]) => !isCustomToken(group, k))] as const
+  )
+  const extra = filled(spec.tokens).map(
+    ([group, values]) =>
+      [group, filled(values).filter(([k]) => isCustomToken(group, k))] as const
+  )
+  const overrides = own.filter(([, values]) => values.length)
+  const extended = extra.filter(([, values]) => values.length)
+  if (overrides.length || extended.length)
     blocks.push(
-      `${indent}@include greese.tokens(${map(
-        groups.map(([group, values]) => [
-          group,
-          map(
-            values.map(([k, v]) => [/^\d/.test(k) ? `'${k}'` : k, schemeValue(v)]),
-            `${indent}  `
-          ),
-        ]),
-        indent
-      )});`
+      `${indent}@include greese.tokens(${overrides.length ? tokenMap(overrides) : '()'}${
+        extended.length ? `, $extend: ${tokenMap(extended)}` : ''
+      });`
     )
 
   const defaults = filled(spec.motionDefaults)
