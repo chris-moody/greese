@@ -1,0 +1,16 @@
+[
+  {
+    "name": "icons: every icon",
+    "path": "dist/index.js",
+    "import": "*",
+    "ignore": ["react"],
+    "limit": "1.5 kB"
+  },
+  {
+    "name": "icons: one icon, tree-shaken",
+    "path": "dist/index.js",
+    "import": "{ SearchIcon }",
+    "ignore": ["react"],
+    "limit": "400 B"
+  }
+]
