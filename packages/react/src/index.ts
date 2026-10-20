@@ -16,6 +16,7 @@ export {
   type GreeseInteraction,
   type GreeseMotion,
   type GreeseOptions,
+  type GreeseScope,
   type GreesePreset,
   type GreeseProp,
   type GreeseProps,

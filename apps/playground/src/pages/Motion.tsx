@@ -141,6 +141,35 @@ export const Motion = (): JSX.Element => {
         <span>two</span>
         <span>three</span>
       </Stack>
+      {/* Scopes: entrances ordered by the parent (e2e/greese-prop.spec.ts). */}
+      <Stack data-testid="scope" greese={{ scope: { stagger: 0.5, delay: 1 } }}>
+        <Text data-testid="scope-a" greese={{ enter: 'fadeIn', duration: 20 }}>
+          First
+        </Text>
+        <div data-testid="scope-inner" className="scope-inner">
+          <Stack greese={{ scope: { stagger: 0.1 } }} data-testid="scope-nested">
+            <Text data-testid="scope-x" greese={{ enter: 'fadeIn', duration: 20 }}>
+              Inside, first
+            </Text>
+            <Text data-testid="scope-y" greese={{ enter: 'fadeIn', duration: 20 }}>
+              Inside, second
+            </Text>
+          </Stack>
+        </div>
+        <Text data-testid="scope-b" greese={{ enter: 'fadeIn', duration: 20 }}>
+          Last
+        </Text>
+      </Stack>
+      <div style={{ marginBlockStart: '120vh' }}>
+        <Stack
+          data-testid="scope-held"
+          greese={{ scope: { inView: true, stagger: 0.2 } }}
+        >
+          <Text data-testid="held-a" greese={{ enter: 'fadeIn', duration: 20 }}>
+            Held until in view
+          </Text>
+        </Stack>
+      </div>
       <Card
         data-testid="sequence"
         greese={{ enter: 'fadeIn+scaleIn,+1.5,fadeOut', duration: 0.3 }}

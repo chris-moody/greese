@@ -93,9 +93,22 @@ $presets: (
         var(--greese-motion-index, 0) * var(--greese-motion-stagger, 0s)
       );
 
+      // `--greese-motion-scope`: where a parent's scope starts this entrance
+      // (components/Motion/scope.ts), on top of its own delay and stagger.
+      --greese-motion-wait: calc(
+        var(--greese-motion-delay, 0s) + var(--greese-motion-offset)
+      );
+
       animation: var(--greese-motion-name) var(--greese-motion-duration, 0.5s)
         var(--greese-motion-ease, var(--greese-ease-out))
-        calc(var(--greese-motion-delay, 0s) + var(--greese-motion-offset)) backwards;
+        calc(var(--greese-motion-wait) + var(--greese-motion-scope, 0s)) backwards;
+    }
+
+    // A scope held until it scrolls into view: its entrances wait at their
+    // first frame, then play. Set by scope.ts, never without JS.
+    .greese-Motion--scope[data-greese-scope='pending'] .greese-Motion--enter,
+    .greese-Motion--scope[data-greese-scope='pending'] .greese-Motion--stagger > * {
+      animation-play-state: paused;
     }
 
     // Waiting to scroll into view (set by the runtime, never without JS).

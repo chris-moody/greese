@@ -50,6 +50,16 @@ export type GreeseSequence = `${string},${string}` | `${string}+${string}`
 /** What a motion option plays: an effect, a sequence of effects, or greese.js keyframes. */
 export type GreeseMotion = GreeseEffectName | GreeseSequence | Keyframes
 
+/** How a parent sets when the entrances inside it start. */
+export interface GreeseScope {
+  /** Seconds between neighbouring members, in document order. @default 0.08 */
+  stagger?: number
+  /** Seconds before the first member starts. @default 0 */
+  delay?: number
+  /** Hold the members until the scope scrolls into view (they play at once when it already is). */
+  inView?: boolean
+}
+
 export interface GreeseOptions {
   /**
    * Plays when the element appears. A preset alone is pure CSS; custom
@@ -83,6 +93,15 @@ export interface GreeseOptions {
   distance?: string
   /** Animates the children instead, each `stagger` seconds after the previous. */
   stagger?: number
+  /**
+   * Makes this element a scope: every entrance (`enter`) inside it, at any
+   * depth, starts in document order, `stagger` seconds apart, after `delay`.
+   * `true` takes the defaults. A scope inside a scope takes one position in the
+   * outer one, and its own members follow it. Client components only: the
+   * start times are set after the page renders, and without JavaScript the
+   * entrances simply play together. See `GreeseScope`.
+   */
+  scope?: boolean | GreeseScope
   /**
    * Full control: fill a paused greese.js timeline for this element. It plays
    * on enter, or on reveal with `inView`. Client components only: a function
@@ -170,7 +189,8 @@ export const resolveGreese = (prop: GreeseProp | undefined): ResolvedGreese => {
   const enter = cssPreset(o.enter, css)
   const view = cssPreset(o.inView, css)
   const className = cx(
-    (enter || view || o.exit || o.stagger !== undefined) && 'greese-Motion',
+    (enter || view || o.exit || o.stagger !== undefined || o.scope) && 'greese-Motion',
+    o.scope && 'greese-Motion--scope',
     enter && `greese-Motion--enter greese-Motion--enter-${enter}`,
     view && `greese-Motion--view greese-Motion--view-${view}`,
     o.exit && `greese-Motion--exit-${kebab(o.exit)}`,
@@ -203,5 +223,7 @@ export const withGreese = (
           style: style ? { ...style, ...props.style } : props.style,
         } as Partial<typeof props>)
       : element
-  return runtime ? createElement(GreeseIsland, { options }, styled) : styled
+  return runtime || options.scope
+    ? createElement(GreeseIsland, { options, runtime }, styled)
+    : styled
 }

@@ -2,7 +2,7 @@
 import { useLayoutEffect, useRef, type JSX, type ReactNode } from 'react'
 import type { GreeseOptions } from '../../utils/greese.ts'
 import { Slot } from '../Slot/Slot.tsx'
-import { loadGreeseRuntime } from './registry.ts'
+import { loadGreeseRuntime, loadGreeseScopes } from './registry.ts'
 
 /** Above the fold right now? Then a scroll reveal would only flash it. */
 const inViewport = (el: Element): boolean => {
@@ -13,6 +13,8 @@ const inViewport = (el: Element): boolean => {
 interface Attachment {
   el: HTMLElement
   options: GreeseOptions
+  /** Whether the lazy runtime has anything to do (a scope alone needs none). */
+  runtime: boolean
   live: boolean
   detach?: () => void
 }
@@ -32,9 +34,18 @@ const flush = () => {
   items.forEach((a, i) => {
     if (hidden[i]) a.el.dataset.greeseView = 'pending'
   })
-  void loadGreeseRuntime().then((runtime) =>
-    runtime.attachAll(items.filter((a) => a.live))
-  )
+  // Scopes: their entrances wait at the first frame while the start times
+  // are set (scope.ts, lazy, or at once when registered), then play.
+  const scoped = items.filter((a) => a.options.scope)
+  if (scoped.length) {
+    for (const a of scoped) a.el.dataset.greeseScope = 'pending'
+    void loadGreeseScopes().then((m) => m.attachScopes(scoped.filter((a) => a.live)))
+  }
+  const needing = items.filter((a) => a.runtime)
+  if (needing.length)
+    void loadGreeseRuntime().then((runtime) =>
+      runtime.attachAll(needing.filter((a) => a.live))
+    )
 }
 
 const schedule = (attachment: Attachment) => {
@@ -49,10 +60,13 @@ const schedule = (attachment: Attachment) => {
  */
 export const GreeseIsland = ({
   options,
+  runtime = true,
   children,
 }: {
   /** The `greese` prop, normalized by withGreese. */
   options: GreeseOptions
+  /** Whether anything in it needs the lazy runtime. @default true */
+  runtime?: boolean
   children?: ReactNode
 }): JSX.Element => {
   const ref = useRef<HTMLElement>(null)
@@ -66,14 +80,14 @@ export const GreeseIsland = ({
   useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
-    const attachment: Attachment = { el, options: latest.current, live: true }
+    const attachment: Attachment = { el, options: latest.current, runtime, live: true }
     schedule(attachment)
     return () => {
       attachment.live = false
       attachment.detach?.()
       delete el.dataset.greeseView
     }
-  }, [key])
+  }, [key, runtime])
 
   return <Slot ref={ref}>{children}</Slot>
 }

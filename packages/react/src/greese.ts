@@ -5,6 +5,11 @@
  * once, at your app's entry.
  */
 import * as runtime from './components/Motion/greeseRuntime.ts'
-import { registerGreeseRuntime } from './components/Motion/registry.ts'
+import {
+  registerGreeseRuntime,
+  registerGreeseScopes,
+} from './components/Motion/registry.ts'
+import * as scopes from './components/Motion/scope.ts'
 
 registerGreeseRuntime(runtime)
+registerGreeseScopes(scopes)

@@ -12,7 +12,7 @@
  */
 const external = (config) => ({
   ...config,
-  external: [config.external, /greeseRuntime\.js$/].filter(Boolean),
+  external: [config.external, /(greeseRuntime|Motion\/scope)\.js$/].filter(Boolean),
 })
 
 module.exports = [
@@ -42,7 +42,8 @@ module.exports = [
     // 26 → 30.5 kB (2026-10-19): the ADR 0011 components, as above;
     // 30.5 → 31 kB the same day for createTheme's derived content colors.
     // 31 → 31.75 kB (2026-10-20): the type system's defaults, as above.
-    limit: '31.75 kB',
+    // 31.75 → 32 kB the same day for the `scope` option's static part (ADR 0017).
+    limit: '32 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -58,7 +59,8 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ Stack }',
     ignore: ['react', 'react-dom'],
-    limit: '2.25 kB',
+    // 2.25 → 2.3 kB (2026-10-20): the `scope` option's static part (ADR 0017)
+    limit: '2.3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -74,7 +76,8 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ TextField }',
     ignore: ['react', 'react-dom'],
-    limit: '2.25 kB',
+    // 2.25 → 2.3 kB (2026-10-20): the `scope` option's static part (ADR 0017)
+    limit: '2.3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -130,7 +133,8 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell }',
     ignore: ['react', 'react-dom'],
-    limit: '2.25 kB',
+    // 2.25 → 2.3 kB (2026-10-20): the `scope` option's static part (ADR 0017)
+    limit: '2.3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -237,6 +241,13 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     limit: '6 kB',
     modifyRolldownConfig: external,
+  },
+  {
+    name: 'JS: scope option (lazy chunk)',
+    path: 'dist/components/Motion/scope.js',
+    import: '*',
+    // Loaded only when a `scope` is used (ADR 0017); no greese.js.
+    limit: '1 kB',
   },
   {
     name: 'JS: greese prop runtime (lazy chunk, with greese.js)',
