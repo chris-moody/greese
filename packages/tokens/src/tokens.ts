@@ -4,19 +4,31 @@
  * `scripts/build-css.ts` turns this module into dist/tokens.css and
  * dist/_tokens.scss; `createTheme()` overrides any of it at runtime-free cost.
  *
- * Semantic names (canvas, surface, fg, accent) rather than palette names
+ * Semantic names (canvas, surface, fg, primary) rather than palette names
  * (blue-500) so light/dark and future rebrands change one layer, not markup.
  *
  * Keep this file free of runtime imports: the build script runs it directly
  * under Node's type stripping.
  */
-
 /** Light and dark values for one semantic role. */
 export interface TokenPair {
   light: string
   dark: string
 }
 
+/**
+ * Semantic colour roles, light and dark. Hues are palette colours, named in
+ * the comments (palette.test.ts checks they match); written out rather than
+ * read from palette.ts, so `createTheme` and anything else that imports
+ * `color` doesn't carry the palette. The greys are GreeseUI's own.
+ *
+ * The brand colours, in order: `primary` (what components use for
+ * interactive emphasis: solid buttons, links, focus, selection),
+ * `secondary`, `tertiary` and `accent`. Each has a `Strong` shade (hover,
+ * text on the canvas) and a `Content` colour for text and icons drawn on it,
+ * which meets WCAG AA (4.5:1) against it in both schemes (tokens.test.ts).
+ * `createTheme` derives both when a theme sets only the main colour.
+ */
 export const color = {
   canvas: { light: '#ffffff', dark: '#0b0d10' },
   surface: { light: '#f5f6f8', dark: '#14181d' },
@@ -25,15 +37,27 @@ export const color = {
   fgMuted: { light: '#5b6572', dark: '#9aa5b1' },
   border: { light: '#dfe3e8', dark: '#2a3038' },
   borderStrong: { light: '#b8c0ca', dark: '#4a5360' },
-  accent: { light: '#2771e0', dark: '#81b2ff' },
-  accentStrong: { light: '#1356b8', dark: '#aaccff' },
-  onAccent: { light: '#ffffff', dark: '#0b0d10' },
-  focusRing: { light: '#2771e0', dark: '#aaccff' },
-  positive: { light: '#007231', dark: '#61cf7e' },
-  negative: { light: '#ae0914', dark: '#ff8b7f' },
-  onNegative: { light: '#ffffff', dark: '#0b0d10' },
-  warning: { light: '#8a5f00', dark: '#feb93d' },
-  info: { light: '#00668f', dark: '#5ac0f7' },
+  primary: { light: '#2771e0', dark: '#81b2ff' }, // blue-600, blue-400
+  primaryStrong: { light: '#1356b8', dark: '#aaccff' }, // blue-700, blue-300
+  primaryContent: { light: '#ffffff', dark: '#0b0d10' },
+  secondary: { light: '#7e5bd0', dark: '#b69fff' }, // lavender-600, lavender-400
+  secondaryStrong: { light: '#6443ab', dark: '#cdbfff' }, // lavender-700, lavender-300
+  secondaryContent: { light: '#ffffff', dark: '#0b0d10' },
+  tertiary: { light: '#007069', dark: '#5dcec5' }, // turquoise-700, turquoise-400
+  tertiaryStrong: { light: '#00544f', dark: '#94e1da' }, // turquoise-800, turquoise-300
+  tertiaryContent: { light: '#ffffff', dark: '#0b0d10' },
+  accent: { light: '#c13b7b', dark: '#ff81b6' }, // pink-600, pink-400
+  accentStrong: { light: '#9c2661', dark: '#ffaecd' }, // pink-700, pink-300
+  accentContent: { light: '#ffffff', dark: '#0b0d10' },
+  focusRing: {
+    light: 'var(--greese-color-primary)',
+    dark: 'var(--greese-color-primary-strong)',
+  },
+  positive: { light: '#007231', dark: '#61cf7e' }, // green-700, green-400
+  negative: { light: '#ae0914', dark: '#ff8b7f' }, // red-700, red-400
+  negativeContent: { light: '#ffffff', dark: '#0b0d10' },
+  warning: { light: '#8a5f00', dark: '#feb93d' }, // gold-700, gold-400
+  info: { light: '#00668f', dark: '#5ac0f7' }, // azure-700, azure-400
   /** Dims the page behind modal dialogs and drawers. */
   scrim: { light: 'rgb(11 13 16 / 0.45)', dark: 'rgb(0 0 0 / 0.6)' },
 } as const satisfies Record<string, TokenPair>

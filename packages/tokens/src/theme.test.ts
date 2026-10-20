@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { LAYER_ORDER } from './css.ts'
-import { createTheme } from './theme.ts'
+import {
+  AA,
+  CONTENT_DARK,
+  CONTENT_LIGHT,
+  contentColor,
+  contrastRatio,
+} from './contrast.ts'
+import { createTheme, deriveColors } from './theme.ts'
 import { color, scalarTokens } from './tokens.ts'
 
 const T = "[data-greese-theme='brand']"
@@ -25,7 +32,65 @@ describe('createTheme', () => {
     const tokenCount =
       Object.keys(color).length +
       Object.values(scalarTokens).reduce((n, group) => n + Object.keys(group).length, 0)
-    expect(base.match(/--greese-/g)).toHaveLength(tokenCount)
+    expect(base.match(/^\s*--greese-[\w-]+:/gm)).toHaveLength(tokenCount)
+  })
+
+  it('derives a readable content colour and a strong shade from a brand colour', () => {
+    const { css } = createTheme({
+      name: 'brand',
+      color: { primary: { light: '#fde047', dark: '#1e3a8a' } },
+    })
+    const light = rule(css, `  ${T} {`)
+    const dark = rule(css, `${T}[data-greese-scheme='dark']`)
+    // Yellow wants dark ink; deep blue wants white.
+    expect(light).toContain(`--greese-color-primary-content: ${CONTENT_DARK};`)
+    expect(dark).toContain(`--greese-color-primary-content: ${CONTENT_LIGHT};`)
+    expect(light).toContain(
+      '--greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 80%, #000);'
+    )
+    expect(dark).toContain(
+      '--greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 70%, #fff);'
+    )
+    // The accent is a colour of its own now: setting primary leaves it be.
+    expect(light).toContain(`--greese-color-accent: ${color.accent.light};`)
+  })
+
+  it('keeps what the theme sets, and defaults for colours it cannot measure', () => {
+    const own = deriveColors({ accent: '#0f766e', accentContent: '#ffff00' })
+    expect(own.accentContent).toBe('#ffff00')
+    const unmeasured = deriveColors({ secondary: 'oklch(60% 0.2 300)' })
+    expect(unmeasured.secondaryContent).toEqual(color.secondaryContent)
+    expect(deriveColors({ negative: '#facc15' }).negativeContent).toEqual({
+      light: CONTENT_DARK,
+      dark: CONTENT_DARK,
+    })
+  })
+
+  it('meets WCAG AA for every default content colour, and any derived one', () => {
+    for (const role of [
+      'primary',
+      'secondary',
+      'tertiary',
+      'accent',
+      'negative',
+    ] as const) {
+      for (const scheme of ['light', 'dark'] as const) {
+        const ratio = contrastRatio(color[role][scheme], color[`${role}Content`][scheme])
+        expect(ratio, `${role} ${scheme}`).toBeGreaterThanOrEqual(AA)
+      }
+    }
+    // A sweep of greys and hues, the mid-tones near the crossover included.
+    for (let v = 0; v <= 255; v += 5) {
+      for (const hex of [v, (v * 7) % 256, (v * 13) % 256].map((c) =>
+        c.toString(16).padStart(2, '0')
+      )) {
+        const sample = `#${hex}${hex}${hex.split('').reverse().join('')}`
+        expect(
+          contrastRatio(sample, contentColor(sample)!),
+          sample
+        ).toBeGreaterThanOrEqual(AA)
+      }
+    }
   })
 
   it('applies light/dark overrides to the matching scheme rules', () => {

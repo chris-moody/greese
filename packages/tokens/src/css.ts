@@ -10,9 +10,13 @@ import { duration, type ScalarGroup } from './tokens.ts'
  * (tokens, components, themes) starts with this statement, so the order holds
  * no matter which sheet the browser sees first. Unlayered consumer CSS beats
  * all of it.
+ *
+ * `greese.overrides` holds build-time component overrides (the SCSS kit's
+ * `component()` and `motion()`): above the components they restyle, below
+ * the utilities, so style props and the `greese` prop still win.
  */
 export const LAYER_ORDER =
-  '@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.utilities;'
+  '@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities;'
 
 export const SCHEME_ATTR = 'data-greese-scheme'
 export const THEME_ATTR = 'data-greese-theme'
