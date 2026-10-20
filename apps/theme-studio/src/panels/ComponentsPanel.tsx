@@ -1,5 +1,5 @@
 import { useState, type JSX } from 'react'
-import { Badge, Field, Heading, Select, Stack, Text } from '@greese-ui/react'
+import { Badge, Field, Heading, Select, Stack, Text } from '@greese/react'
 import { getIn, setIn } from '../edit.ts'
 import { DeclarationsEditor, SchemeInput, ValueRow } from '../fields.tsx'
 import { blockNames, blocks } from '../manifest.ts'

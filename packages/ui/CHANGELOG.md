@@ -1,4 +1,4 @@
-# @greese-ui/tokens
+# @greese/ui
 
 ## 1.0.0
 
@@ -16,4 +16,4 @@
   `VisuallyHidden`; opt-in `base.css`.
 - fcad516: Add the `onNegative` colour token, for content on negative (destructive) surfaces.
 - 85f75c1: Add the `scrim` colour token, which dims the page behind modal dialogs and drawers.
-- 7b2526f: Add the CSS-free Sass module `@greese-ui/tokens/scss/maps`.
+- 7b2526f: Add the CSS-free Sass module `@greese/ui/scss/maps`.

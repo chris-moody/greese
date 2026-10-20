@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Accordion, AccordionItem, Code, Stack, Text } from '@greese-ui/react'
+import { Accordion, AccordionItem, Code, Stack, Text } from '@greese/react'
 import { facts, kB } from '../data/index.ts'
 import { Section } from '../Section.tsx'
 

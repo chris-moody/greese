@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AutoLayout, AutoLayoutItem, Tile } from '@greese-ui/react'
+import { AutoLayout, AutoLayoutItem, Tile } from '@greese/react'
 
 /** An AutoLayout item: a size in twelfths, and how far it may grow. */
 const meta = {

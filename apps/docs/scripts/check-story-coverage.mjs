@@ -1,5 +1,5 @@
 /**
- * Fails when a component exported from @greese-ui/react has no page of its
+ * Fails when a component exported from @greese/react has no page of its
  * own: every PascalCase export must be some story meta's `component`, so it
  * gets a docs page with its props table and Styling section. Being listed in
  * a parent's `subcomponents` (AccordionItem under Accordion) isn't enough;

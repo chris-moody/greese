@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { CSSProperties, ReactNode } from 'react'
-import { color, fontSize, radius, shadow, space } from '@greese-ui/tokens'
+import { color, fontSize, radius, shadow, space } from '@greese/ui'
 
 const kebab = (s: string) => s.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 

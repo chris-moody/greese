@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Tab, TabList, TabPanel, Tabs, Text } from '@greese-ui/react'
+import { Tab, TabList, TabPanel, Tabs, Text } from '@greese/react'
 
 /** One tab. Its `value` pairs it with the TabPanel of the same value. */
 const meta = {

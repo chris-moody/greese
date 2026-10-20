@@ -14,9 +14,9 @@ import {
   TabPanel,
   Tabs,
   Text,
-} from '@greese-ui/react'
-import '@greese-ui/react/base.css'
-import '@greese-ui/react/styles.css'
+} from '@greese/react'
+import '@greese/react/base.css'
+import '@greese/react/styles.css'
 
 const pixel =
   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 1"/%3E'

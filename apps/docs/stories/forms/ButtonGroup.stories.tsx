@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button, ButtonGroup } from '@greese-ui/react'
+import { Button, ButtonGroup } from '@greese/react'
 
 const meta = {
   title: 'Forms/ButtonGroup',

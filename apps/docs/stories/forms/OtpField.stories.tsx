@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Field, OtpField } from '@greese-ui/react'
+import { Field, OtpField } from '@greese/react'
 
 const meta = {
   title: 'Forms/OtpField',

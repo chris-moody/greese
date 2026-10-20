@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Card, Container, Grid, Stack, Text } from '@greese-ui/react'
+import { Card, Container, Grid, Stack, Text } from '@greese/react'
 import { facts, kB, metric, ratio } from '../data/index.ts'
 
 interface Stat {

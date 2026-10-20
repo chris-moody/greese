@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Stack } from '@greese-ui/react'
+import { Stack } from '@greese/react'
 import { CARDS, Harness } from './Harness.tsx'
 
 /** Gaps in px: normal 8/16, dense 4/8 (identical to MuiBench). */

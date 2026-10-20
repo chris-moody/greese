@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import '@greese-ui/react/css/Stack.css'
+import '@greese/react/css/Stack.css'
 import { GreeseStacks } from './GreeseStacks.tsx'
 
 /**

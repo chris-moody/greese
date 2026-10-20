@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Avatar, Badge, Button, List, ListItem } from '@greese-ui/react'
+import { Avatar, Badge, Button, List, ListItem } from '@greese/react'
 
 const people = [
   { name: 'Ada Lovelace', role: 'Analyst', status: 'Owner' },

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Segment, SegmentedControl } from '@greese-ui/react'
+import { Segment, SegmentedControl } from '@greese/react'
 
 const meta = {
   title: 'Forms/SegmentedControl',

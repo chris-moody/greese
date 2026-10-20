@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@greese-ui/react'
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@greese/react'
 import { bodyRows, headerRow } from '../_shared/table.tsx'
 
 /** A data cell. `label` names it when rows stack into cards on phones. */

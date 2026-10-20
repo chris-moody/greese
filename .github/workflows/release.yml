@@ -1,9 +1,9 @@
-# Publishes @greese-ui/* to public npm with Changesets.
+# Publishes @greese/* to public npm with Changesets.
 #
 # On every push to main: if unreleased changesets exist, opens or updates a
 # "Version Packages" PR. Merging that PR runs this again and publishes.
 #
-# Secret: NPM_TOKEN, an npm automation token with publish rights to @greese-ui.
+# Secret: NPM_TOKEN, an npm automation token with publish rights to @greese.
 # Packages publish publicly with provenance (id-token: write below), which
 # links each version to this repository and the run that built it.
 name: Release

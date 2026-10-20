@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Accordion, AccordionItem } from '@greese-ui/react'
+import { Accordion, AccordionItem } from '@greese/react'
 
 /** One item of an Accordion: a Collapsible that shares the group's name. */
 const meta = {

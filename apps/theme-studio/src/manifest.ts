@@ -1,4 +1,4 @@
-import manifest from '@greese-ui/react/style-manifest.json' with { type: 'json' }
+import manifest from '@greese/react/style-manifest.json' with { type: 'json' }
 
 /** One component's styling API, from the library's build (scripts/styleManifest.ts). */
 export interface BlockStyles {

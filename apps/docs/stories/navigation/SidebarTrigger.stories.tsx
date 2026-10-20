@@ -6,7 +6,7 @@ import {
   SidebarTrigger,
   Stack,
   Text,
-} from '@greese-ui/react'
+} from '@greese/react'
 
 /** The button that opens a SidebarLayout's sidebar below its breakpoint. */
 const meta = {

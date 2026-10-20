@@ -58,7 +58,7 @@ import {
   TextField,
   toast,
   Tooltip,
-} from '@greese-ui/react'
+} from '@greese/react'
 import { Section } from '../Section.tsx'
 
 /** One labelled demo tile; its contents reveal one after another. */

@@ -1,5 +1,5 @@
 import { Component, useEffect, useState, type JSX, type ReactNode } from 'react'
-import { Card, Heading, Spinner, Stack, Text } from '@greese-ui/react'
+import { Card, Heading, Spinner, Stack, Text } from '@greese/react'
 import { hasStories, loadStories, type LoadedStories } from './stories.ts'
 
 /** One broken story shows a message instead of taking the preview down. */

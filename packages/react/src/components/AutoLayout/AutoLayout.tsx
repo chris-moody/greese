@@ -1,5 +1,5 @@
 import type { CSSProperties, JSX } from 'react'
-import type { Breakpoint } from '@greese-ui/tokens'
+import type { Breakpoint } from '@greese/ui'
 import { cx } from '../../utils/cx.ts'
 import {
   isSpaceToken,

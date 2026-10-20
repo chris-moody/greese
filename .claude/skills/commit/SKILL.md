@@ -93,7 +93,7 @@ Avoid vague subjects: "update files", "fix stuff", "wip", "changes".
    not). Before every commit, review `git diff --cached --name-status`, and if
    a `git add` fails, stop rather than commit whatever happens to be staged.
 4. **Add a changeset when it's needed.** Any `feat`, `fix` or `perf` to a
-   published package (`@greese-ui/react`, `@greese-ui/tokens`, `@greese-ui/greese`) needs one in
+   published package (`@greese/react`, `@greese/ui`, `@greese/js`) needs one in
    `.changeset/`. Create it with `npm run changeset`, or by hand, and commit
    it with the change.
 5. **Commit:** `git commit -m "<type>(<scope>): <subject>"`. Use exactly one

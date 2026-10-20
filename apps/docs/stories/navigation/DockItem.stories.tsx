@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Dock, DockItem } from '@greese-ui/react'
-import { HomeIcon, SearchIcon, UserIcon } from '@greese-ui/icons'
+import { Dock, DockItem } from '@greese/react'
+import { HomeIcon, SearchIcon, UserIcon } from '@greese/icons'
 
 /** One destination in a Dock. `asChild` renders your router's link. */
 const meta = {

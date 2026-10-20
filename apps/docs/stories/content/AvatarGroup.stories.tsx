@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Avatar, AvatarGroup } from '@greese-ui/react'
+import { Avatar, AvatarGroup } from '@greese/react'
 
 const meta = {
   title: 'Content/AvatarGroup',

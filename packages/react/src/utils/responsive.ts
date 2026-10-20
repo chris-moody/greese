@@ -4,7 +4,7 @@ import {
   space,
   type Breakpoint,
   type SpaceToken,
-} from '@greese-ui/tokens'
+} from '@greese/ui'
 
 /**
  * A prop that takes one value, or a value per breakpoint (mobile-first: each

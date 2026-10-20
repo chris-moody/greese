@@ -1,6 +1,6 @@
 /**
  * Shared story data: sample images and lists. Components come from the
- * library (Tile) and icons from @greese-ui/icons, never from here, so every
+ * library (Tile) and icons from @greese/icons, never from here, so every
  * story shows code a reader can copy.
  */
 

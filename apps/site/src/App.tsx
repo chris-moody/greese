@@ -1,5 +1,5 @@
 import { lazy, startTransition, Suspense, useEffect, useState, type JSX } from 'react'
-import { ThemeProvider, Toaster } from '@greese-ui/react'
+import { ThemeProvider, Toaster } from '@greese/react'
 import { Hero } from './sections/Hero.tsx'
 import { Nav } from './sections/Nav.tsx'
 import { Stats } from './sections/Stats.tsx'

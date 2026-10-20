@@ -13,7 +13,7 @@ import {
   type Targets,
   type Timeline,
   type TimelineOptions,
-} from '@greese-ui/greese'
+} from '@greese/js'
 
 /**
  * Animation helpers bound to a component: everything made through them is

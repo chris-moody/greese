@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { HeartIcon, SearchIcon, StarIcon, SunIcon } from '@greese-ui/icons'
-import { Stack, Text } from '@greese-ui/react'
+import { HeartIcon, SearchIcon, StarIcon, SunIcon } from '@greese/icons'
+import { Stack, Text } from '@greese/react'
 
 /** Shown on Foundations/Icons (Icons.mdx), which embeds these stories. */
 const meta = {

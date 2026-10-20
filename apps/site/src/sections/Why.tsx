@@ -1,5 +1,5 @@
 import type { JSX, ReactNode } from 'react'
-import { Card, Grid, Heading, Icon, Stack, Text } from '@greese-ui/react'
+import { Card, Grid, Heading, Icon, Stack, Text } from '@greese/react'
 import { facts, kB } from '../data/index.ts'
 import { icons } from '../icons.tsx'
 import { Section } from '../Section.tsx'

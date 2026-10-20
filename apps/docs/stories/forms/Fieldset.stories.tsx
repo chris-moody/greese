@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Fieldset, Grid, TextField } from '@greese-ui/react'
+import { Fieldset, Grid, TextField } from '@greese/react'
 
 const meta = {
   title: 'Forms/Fieldset',

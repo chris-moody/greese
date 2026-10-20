@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
-import { Accordion, AccordionItem, Stack, TextField } from '@greese-ui/react'
-import { scalarTokens } from '@greese-ui/tokens'
+import { Accordion, AccordionItem, Stack, TextField } from '@greese/react'
+import { scalarTokens } from '@greese/ui'
 import { getIn, setIn } from '../edit.ts'
 import { ValueRow } from '../fields.tsx'
 import type { RenderedColors } from '../protocol.ts'

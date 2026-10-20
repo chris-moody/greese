@@ -8,7 +8,7 @@ import {
   Spacer,
   Stack,
   Text,
-} from '@greese-ui/react'
+} from '@greese/react'
 
 const meta = {
   title: 'Navigation/SidebarLayout',

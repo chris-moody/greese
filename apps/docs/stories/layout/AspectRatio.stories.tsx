@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AspectRatio, Box } from '@greese-ui/react'
+import { AspectRatio, Box } from '@greese/react'
 import { art } from '../_shared/fixtures.tsx'
 
 const meta = {

@@ -26,7 +26,7 @@ component references a class block that no stylesheet defines. To make the
 graph acyclic, the styles Checkbox, Radio and Switch share moved into
 ChoiceGroup, and Text's size scale moved to a `_type` partial.
 
-Mixins now read Sass values from `@greese-ui/tokens/scss/maps`, which emits no
+Mixins now read Sass values from `@greese/ui/scss/maps`, which emits no
 CSS, so compiling one component never drags the token stylesheet in with it.
 
 ### 2. Custom breakpoints: values yes, keys no
@@ -35,7 +35,7 @@ Breakpoint values are compile-time constants (media queries can't read
 variables). The published SCSS entry forwards a `$breakpoints !default`:
 
 ```scss
-@use 'pkg:@greese-ui/react/scss' with (
+@use 'pkg:@greese/react/scss' with (
   $breakpoints: (
     xs: 0px,
     sm: 480px,

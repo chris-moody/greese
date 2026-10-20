@@ -20,7 +20,7 @@ ships no icons"), and that shouldn't change.
 
 ## Decisions
 
-### 1. `@greese-ui/icons`, separate and optional
+### 1. `@greese/icons`, separate and optional
 
 `packages/icons`:
 
@@ -34,7 +34,7 @@ ships no icons"), and that shouldn't change.
   the icons you import. One icon is 305 B; without the marks, one icon
   pulled in all of them (780 B).
 
-**`@greese-ui/react` never depends on it.** `verify:packages` checks this,
+**`@greese/react` never depends on it.** `verify:packages` checks this,
 and that the icons render on the server. The docs, and anyone who wants a
 consistent set, use it; everyone else brings their own.
 
@@ -42,7 +42,7 @@ consistent set, use it; everyone else brings their own.
 
 `apps/docs/stories/_shared/fixtures.tsx` keeps sample data (`art()`,
 `countries`). Components come from the library: `Tile` became one (ADR 0011
-addendum). Icons come from `@greese-ui/icons`. Every story now shows code a
+addendum). Icons come from `@greese/icons`. Every story now shows code a
 reader can copy.
 
 ### 3. Every prop has a description, and lint enforces it
@@ -69,7 +69,7 @@ reader can copy.
 
 ## Consequences
 
-- **A new package to version:** `@greese-ui/icons` starts at 0.0.0 with a
+- **A new package to version:** `@greese/icons` starts at 0.0.0 with a
   changeset. Its size budgets are 1.5 kB for every icon and 400 B for one
   tree-shaken.
 - **Builds:** react-docgen-typescript runs the TypeScript checker, so

@@ -1,6 +1,6 @@
 import { useState, type JSX } from 'react'
-import { palette, paletteShades } from '@greese-ui/tokens'
-import { Grid, Segment, SegmentedControl, Stack, Text } from '@greese-ui/react'
+import { palette, paletteShades } from '@greese/ui'
+import { Grid, Segment, SegmentedControl, Stack, Text } from '@greese/react'
 
 type Format = 'css' | 'scss' | 'ts'
 

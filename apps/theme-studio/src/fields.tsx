@@ -1,6 +1,6 @@
 import { useState, type JSX } from 'react'
-import { Button, Input, Stack, Text, TextField } from '@greese-ui/react'
-import { color, palette, type PaletteHue, type PaletteShade } from '@greese-ui/tokens'
+import { Button, Input, Stack, Text, TextField } from '@greese/react'
+import { color, palette, type PaletteHue, type PaletteShade } from '@greese/ui'
 import type { Declarations, SchemeValue } from './spec.ts'
 
 /** `#abc`/`#aabbcc` only: what `<input type="color">` can show. */

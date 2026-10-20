@@ -4,7 +4,7 @@
  * computes from `color-mix(in oklab, <colour> 80%, #000)` in light and
  * `… 70%, #fff` in dark.
  */
-import { contentColor } from '@greese-ui/tokens'
+import { contentColor } from '@greese/ui'
 
 type Lab = [number, number, number]
 

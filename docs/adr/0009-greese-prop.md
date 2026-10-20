@@ -23,7 +23,7 @@ Button, Card…), so the prop can't simply add a client hook everywhere.
 | 0     | Review of the plan and its open questions; this ADR                                                    |
 | 1     | CSS presets (`enter`, `inView`, `stagger`) on the layout and text components                           |
 | 2     | The prop on every component, with a check that none lacks it                                           |
-| 3     | The runtime: registry, the `@greese-ui/react/greese` opt-in, `hover`/`press`/`focus`, custom keyframes |
+| 3     | The runtime: registry, the `@greese/react/greese` opt-in, `hover`/`press`/`focus`, custom keyframes |
 | 4     | Text effects (`type`, `count`, `split`) on Text and Heading                                            |
 | 5     | Exits: `exit` on overlays; a decision on generic exit-on-unmount                                       |
 | 6     | `fromPixels` and JSON presets                                                                          |
@@ -70,7 +70,7 @@ app bundlers split into its own chunk (about 6.4 kB with greese.js),
 fetched the first time a prop needs it. `verify:packages` proves that a Vite
 app rendering a plain Button never includes greese.js.
 
-For JavaScript entrances on the first screen, `import '@greese-ui/react/greese'`
+For JavaScript entrances on the first screen, `import '@greese/react/greese'`
 puts the runtime in the main bundle: its promise is already resolved, so it
 attaches in a microtask, before the first paint.
 

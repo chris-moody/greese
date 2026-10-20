@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Grid, Text, Tile } from '@greese-ui/react'
+import { Grid, Text, Tile } from '@greese/react'
 
 const meta = {
   title: 'Layout/Tile',

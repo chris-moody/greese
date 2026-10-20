@@ -53,7 +53,7 @@ export const facts = {
   date: stats.date,
   components: stats.components,
   /** Runtime dependencies outside the project's own packages. */
-  thirdPartyDependencies: stats.dependencies.filter((d) => !d.startsWith('@greese-ui/'))
+  thirdPartyDependencies: stats.dependencies.filter((d) => !d.startsWith('@greese/'))
     .length,
   library: find(stats.react, 'JS: whole library (components)'),
   libraryWithGreese: find(stats.react, 'JS: whole library, with greese.js'),

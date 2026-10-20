@@ -41,7 +41,7 @@ drops its runtime. Most code ports with renames.
 | `<BottomNavigation>`                                          | `<Dock>` + `<DockItem>`                                                |                                                                                                                 |
 | `useMediaQuery(theme.breakpoints.up('md'))`                   | `useBreakpointValue({ xs: false, md: true })`                          | Prefer responsive props                                                                                         |
 | `createTheme({ palette })` + `ThemeProvider`                  | `createTheme({ name, color })` + `ThemeProvider`                       | Themes are static CSS; schemes via `useColorScheme`                                                             |
-| `import { blue } from '@mui/material/colors'`                 | `import { blue } from '@greese-ui/tokens'`                             | `50`–`900` plus `999`, no `A100`–`A700`                                                                         |
+| `import { blue } from '@mui/material/colors'`                 | `import { blue } from '@greese/ui'`                             | `50`–`900` plus `999`, no `A100`–`A700`                                                                         |
 | `styled(Button)(...)`                                         | A class name and CSS                                                   | Your unlayered CSS beats library layers                                                                         |
 
 ## Things that work differently

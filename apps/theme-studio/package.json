@@ -11,15 +11,15 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@greese-ui/icons": "*",
-    "@greese-ui/react": "*",
-    "@greese-ui/tokens": "*",
+    "@greese/icons": "*",
+    "@greese/react": "*",
+    "@greese/ui": "*",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@greese-ui/eslint-config": "*",
-    "@greese-ui/typescript-config": "*",
+    "@greese/eslint-config": "*",
+    "@greese/typescript-config": "*",
     "@storybook/react": "^10.6.2",
     "@types/node": "^24.0.0",
     "@types/react": "^19.3.0",

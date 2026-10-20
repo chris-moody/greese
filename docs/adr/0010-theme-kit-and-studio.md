@@ -28,7 +28,7 @@ records every block's parts, modifiers (and modifiers of parts), responsive
 props, state attributes and custom properties (tokens and per-breakpoint
 variables excluded). `build:css` writes it two ways:
 
-- `dist/style-manifest.json`, exported as `@greese-ui/react/style-manifest.json`,
+- `dist/style-manifest.json`, exported as `@greese/react/style-manifest.json`,
   for the docs and Theme Studio;
 - `src/styles/_manifest.scss`, committed, a Sass map for the kit's name
   checks. A unit test fails if it's stale.
@@ -57,12 +57,12 @@ greese.components, greese.overrides, greese.utilities
 Component overrides must beat component styles whatever their specificity,
 yet lose to style props and the `greese` prop (`greese.utilities`), so that one
 instance can still differ from the theme. No existing layer sits there.
-`LAYER_ORDER` in `@greese-ui/tokens` stays the single source; every sheet
+`LAYER_ORDER` in `@greese/ui` stays the single source; every sheet
 repeats it, so adding a name is safe. A sheet built before this change that
 loads first leaves `greese.overrides` last, above utilities. Only kit output
 uses the layer, so that needs an old sheet and a new kit in the same page.
 
-### 3. The SCSS kit: `pkg:@greese-ui/react/scss/kit`
+### 3. The SCSS kit: `pkg:@greese/react/scss/kit`
 
 A Sass module that emits nothing until called:
 
@@ -85,7 +85,7 @@ Other rules:
   targeting parts": parts still aren't a stable API, but through the kit a
   removed part breaks the build loudly.
 - **Layer order.** The first mixin that writes CSS emits `LAYER_ORDER`, via a
-  new `$layer-order` in `@greese-ui/tokens/scss/maps`. Theme Studio found the
+  new `$layer-order` in `@greese/ui/scss/maps`. Theme Studio found the
   bug this prevents: a theme sheet loaded before the library made
   `greese.theme` the first, weakest layer.
 - **Durations.** Duration tokens set through `vars()` or `motion()` sit behind

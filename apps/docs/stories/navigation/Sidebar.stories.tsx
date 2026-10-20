@@ -7,7 +7,7 @@ import {
   SidebarTrigger,
   Stack,
   Text,
-} from '@greese-ui/react'
+} from '@greese/react'
 
 /** The navigation column of a SidebarLayout: persistent from its breakpoint, off-canvas below. */
 const meta = {

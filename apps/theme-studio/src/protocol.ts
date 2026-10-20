@@ -1,4 +1,4 @@
-import type { ColorScheme } from '@greese-ui/react'
+import type { ColorScheme } from '@greese/react'
 
 /** Messages from the studio to the preview iframe. */
 export type ToPreview =

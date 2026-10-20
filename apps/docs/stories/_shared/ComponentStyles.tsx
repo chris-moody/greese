@@ -7,7 +7,7 @@
  */
 import type { JSX } from 'react'
 import { Source, Subheading } from '@storybook/addon-docs/blocks'
-import manifest from '@greese-ui/react/style-manifest.json' with { type: 'json' }
+import manifest from '@greese/react/style-manifest.json' with { type: 'json' }
 
 interface BlockStyles {
   name: string
@@ -149,7 +149,7 @@ const examples = (name: string, own: BlockStyles[], builtOn: BlockStyles[]) => {
   if (!target) return undefined
   const c = target.className
   const css: string[] = [`.${c} {\n  /* every ${name} */\n}`]
-  const kit: string[] = [`@use 'pkg:@greese-ui/react/scss/kit' as greese;`, '']
+  const kit: string[] = [`@use 'pkg:@greese/react/scss/kit' as greese;`, '']
   const variable = knob(target)
   const base = own.length ? builtOn.find((b) => b.parts.length) : undefined
 

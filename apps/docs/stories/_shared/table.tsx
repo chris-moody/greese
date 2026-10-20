@@ -1,5 +1,5 @@
 /** Shared rows for the Table part stories, so each shows its part in a real table. */
-import { TableCell, TableHeaderCell, TableRow } from '@greese-ui/react'
+import { TableCell, TableHeaderCell, TableRow } from '@greese/react'
 
 export const invoices = [
   { id: 'INV-001', client: 'Acme Ltd', total: '$1,200.00' },

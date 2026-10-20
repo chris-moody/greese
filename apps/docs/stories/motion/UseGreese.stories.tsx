@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useRef, useState } from 'react'
-import { Button, Card, Grid, Stack, Text, useGreese } from '@greese-ui/react'
+import { Button, Card, Grid, Stack, Text, useGreese } from '@greese/react'
 
 const meta = {
   title: 'Motion/useGreese',

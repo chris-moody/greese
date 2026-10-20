@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Stack, Status, Text } from '@greese-ui/react'
+import { Stack, Status, Text } from '@greese/react'
 
 const meta = {
   title: 'Content/Status',

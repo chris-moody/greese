@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
-import { Button, Menu, MenuItem, MenuSeparator } from '@greese-ui/react'
-import { color } from '@greese-ui/tokens'
+import { Button, Menu, MenuItem, MenuSeparator } from '@greese/react'
+import { color } from '@greese/ui'
 import { getIn } from './edit.ts'
 import { resolveColor } from './fields.tsx'
 import { applyPreset, PRESETS, randomPreset, type Preset } from './presets.ts'

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Input, Stack } from '@greese-ui/react'
-import { SearchIcon } from '@greese-ui/icons'
+import { Input, Stack } from '@greese/react'
+import { SearchIcon } from '@greese/icons'
 
 const meta = {
   title: 'Forms/Input',

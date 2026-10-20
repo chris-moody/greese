@@ -10,9 +10,9 @@ import {
   MaskedInput,
   Stack,
   Text,
-} from '@greese-ui/react'
-import '@greese-ui/react/base.css'
-import '@greese-ui/react/styles.css'
+} from '@greese/react'
+import '@greese/react/base.css'
+import '@greese/react/styles.css'
 
 const Cell = ({ id, label }: { id: string; label: string }) => (
   <div

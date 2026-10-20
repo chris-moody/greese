@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
-import { Heading, Stack, Text } from '@greese-ui/react'
-import { radius } from '@greese-ui/tokens'
+import { Heading, Stack, Text } from '@greese/react'
+import { radius } from '@greese/ui'
 import { getIn, setIn } from '../edit.ts'
 import { ValueRow } from '../fields.tsx'
 import type { ThemeSpec } from '../spec.ts'

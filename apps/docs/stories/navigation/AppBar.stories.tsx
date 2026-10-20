@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AppBar, Button, Spacer, Stack, Text } from '@greese-ui/react'
+import { AppBar, Button, Spacer, Stack, Text } from '@greese/react'
 
 const meta = {
   title: 'Navigation/AppBar',

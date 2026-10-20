@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Button, Checkbox, Field, Select, Stack, TextField } from '@greese-ui/react'
+import { Button, Checkbox, Field, Select, Stack, TextField } from '@greese/react'
 
 interface SignUp {
   email: string

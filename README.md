@@ -5,10 +5,10 @@ static CSS compiled at build time, themed with CSS custom properties.
 
 | Package | |
 |---|---|
-| [`@greese-ui/react`](packages/react) | Components, hooks, and the compiled stylesheet |
-| [`@greese-ui/tokens`](packages/tokens) | Design tokens as CSS variables, Sass maps, and TS constants |
-| [`@greese-ui/greese`](packages/greese) | greese.js, the animation library behind the `greese` prop |
-| [`@greese-ui/icons`](packages/icons) | Optional line icons; GreeseUI takes any icons |
+| [`@greese/react`](packages/react) | Components, hooks, and the compiled stylesheet |
+| [`@greese/ui`](packages/tokens) | Design tokens as CSS variables, Sass maps, and TS constants |
+| [`@greese/js`](packages/greese) | greese.js, the animation library behind the `greese` prop |
+| [`@greese/icons`](packages/icons) | Optional line icons; GreeseUI takes any icons |
 
 Homepage, docs and Theme Studio: <https://chris-moody.github.io/greese/>.
 Source: <https://github.com/chris-moody/greese>.
@@ -69,10 +69,10 @@ Code also uses as its `/commit` skill.
 ## Releasing
 
 Changesets on `main` produce a "Version Packages" PR, and merging it publishes
-to public npm under `@greese-ui`, with provenance
-(`.github/workflows/release.yml`). `@greese-ui/react` and
-`@greese-ui/tokens` share one version number. Before the first release:
-create the `@greese-ui` npm organisation and add an npm automation token as
+to public npm under `@greese`, with provenance
+(`.github/workflows/release.yml`). `@greese/react` and
+`@greese/ui` share one version number. Before the first release:
+create the `@greese` npm organisation and add an npm automation token as
 the repository secret `NPM_TOKEN`.
 
 ## Documentation

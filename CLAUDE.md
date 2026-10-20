@@ -6,10 +6,10 @@ also contains greese.js, a small animation library.
 
 | Package                         | Path                |
 | ------------------------------- | ------------------- |
-| `@greese-ui/react`              | `packages/react`    |
-| `@greese-ui/tokens`             | `packages/tokens`   |
-| `@greese-ui/greese` (greese.js) | `packages/greese`   |
-| `@greese-ui/icons` (optional)   | `packages/icons`    |
+| `@greese/react`              | `packages/react`    |
+| `@greese/ui`             | `packages/tokens`   |
+| `@greese/js` (greese.js) | `packages/greese`   |
+| `@greese/icons` (optional)   | `packages/icons`    |
 | Storybook docs                  | `apps/docs`         |
 | e2e, visual, Lighthouse         | `apps/playground`   |
 | Theme Studio (`npm run studio`) | `apps/theme-studio` |

@@ -1,9 +1,9 @@
 // Opt-in global styles, compiled to dist/base.css: a light reset plus page
 // defaults wired to the tokens. Import it only if GreeseUI owns the page.
 // Usage:
-//   import '@greese-ui/react/base.css'
-//   import '@greese-ui/react/styles.css'
-@use 'pkg:@greese-ui/tokens/scss/layers';
+//   import '@greese/react/base.css'
+//   import '@greese/react/styles.css'
+@use 'pkg:@greese/ui/scss/layers';
 
 @layer greese.reset {
   *,

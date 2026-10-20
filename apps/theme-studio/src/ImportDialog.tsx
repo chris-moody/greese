@@ -17,7 +17,7 @@ import {
   Text,
   Textarea,
   TextField,
-} from '@greese-ui/react'
+} from '@greese/react'
 import { api, hosted, type ImportSource } from './api.ts'
 import { mergeSpecs, type ImportResult } from './importer.ts'
 import type { ThemeSpec } from './spec.ts'

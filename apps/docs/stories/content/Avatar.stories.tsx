@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Avatar, Stack } from '@greese-ui/react'
+import { Avatar, Stack } from '@greese/react'
 import { art } from '../_shared/fixtures.tsx'
 
 const meta = {

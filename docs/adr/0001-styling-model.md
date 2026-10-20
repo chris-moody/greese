@@ -100,7 +100,7 @@ non-inheriting cut update recalc from 29 ms to 18 ms. The gap left is around
 ### Breakpoints
 
 Breakpoints are compile-time constants, because media queries cannot read
-custom properties. They are defined once, in `@greese-ui/tokens`, and emitted
+custom properties. They are defined once, in `@greese/ui`, and emitted
 both as the SCSS `$breakpoints` map and as TS constants (`useBreakpoint` uses
 the TS ones). `src/styles/mixins.test.ts` compiles the mixin and checks that
 every class `resolveResponsive` can produce exists in the CSS, so the two

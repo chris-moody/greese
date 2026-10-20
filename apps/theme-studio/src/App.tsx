@@ -14,7 +14,7 @@ import {
   Tabs,
   Text,
   type ColorScheme,
-} from '@greese-ui/react'
+} from '@greese/react'
 import { api, hosted } from './api.ts'
 import { PaletteOptions } from './fields.tsx'
 import { ImportDialog } from './ImportDialog.tsx'

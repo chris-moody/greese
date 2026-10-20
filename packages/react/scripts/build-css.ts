@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Builds every stylesheet @greese-ui/react ships:
+ * Builds every stylesheet @greese/react ships:
  *
  *   dist/greese-ui.css     everything (tokens + all components)
  *   dist/base.css         opt-in reset and page defaults
@@ -31,7 +31,7 @@ rmSync(CSS, { recursive: true, force: true })
 mkdirSync(CSS)
 writeFileSync(
   join(CSS, 'core.css'),
-  compileString(`@use 'pkg:@greese-ui/tokens/scss';`, {
+  compileString(`@use 'pkg:@greese/ui/scss';`, {
     importers,
     url: new URL(`file://${SRC}/`),
   }).css
@@ -64,7 +64,7 @@ if (unresolved.length) {
 }
 
 const tokensCss = readFileSync(
-  fileURLToPath(import.meta.resolve('@greese-ui/tokens/tokens.css')),
+  fileURLToPath(import.meta.resolve('@greese/ui/tokens.css')),
   'utf8'
 )
 const tokenVars = new Set(tokensCss.match(/--greese-[a-z0-9-]+(?=:)/g))

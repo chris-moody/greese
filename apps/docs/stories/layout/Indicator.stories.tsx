@@ -7,8 +7,8 @@ import {
   Indicator,
   Status,
   Tile,
-} from '@greese-ui/react'
-import { BellIcon } from '@greese-ui/icons'
+} from '@greese/react'
+import { BellIcon } from '@greese/icons'
 
 const meta = {
   title: 'Layout/Indicator',

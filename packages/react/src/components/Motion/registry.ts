@@ -11,7 +11,7 @@ export interface GreeseRuntime {
 let registered: Promise<GreeseRuntime> | undefined
 
 /**
- * Called by `import '@greese-ui/react/greese'`: the runtime is then in the
+ * Called by `import '@greese/react/greese'`: the runtime is then in the
  * main bundle and attaches before the first paint, so JavaScript entrances
  * never flash. Without it, the runtime loads on first use, as its own chunk.
  */

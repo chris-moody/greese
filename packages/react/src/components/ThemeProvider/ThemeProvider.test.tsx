@@ -1,7 +1,7 @@
 import { createRef } from 'react'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { createTheme } from '@greese-ui/tokens'
+import { createTheme } from '@greese/ui'
 import { expectNoAxeViolations } from '../../test/axe.ts'
 import { ThemeProvider, useThemeScope } from './ThemeProvider.tsx'
 

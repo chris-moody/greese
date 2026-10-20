@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Table, TableBody, TableHead, TableHeaderCell, TableRow } from '@greese-ui/react'
+import { Table, TableBody, TableHead, TableHeaderCell, TableRow } from '@greese/react'
 import { bodyRows } from '../_shared/table.tsx'
 
 /** A column or row header. With `onSort`, a button that reports `aria-sort`. */

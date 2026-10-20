@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Button, ButtonGroup, Slider, Stack, Text, type Timeline } from '@greese-ui/react'
+import { Button, ButtonGroup, Slider, Stack, Text, type Timeline } from '@greese/react'
 
 /**
  * Builds a timeline once its elements mount and renders play/pause/reverse,

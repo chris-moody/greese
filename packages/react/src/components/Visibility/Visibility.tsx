@@ -1,5 +1,5 @@
 import type { JSX, ReactNode } from 'react'
-import type { Breakpoint } from '@greese-ui/tokens'
+import type { Breakpoint } from '@greese/ui'
 import { cx } from '../../utils/cx.ts'
 import { Slot } from '../Slot/Slot.tsx'
 

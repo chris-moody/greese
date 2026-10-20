@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Hide, Tile } from '@greese-ui/react'
+import { Hide, Tile } from '@greese/react'
 
 /** Show's opposite: hides its children in a breakpoint range, in CSS only. */
 const meta = {

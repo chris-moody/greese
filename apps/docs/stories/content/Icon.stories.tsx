@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Icon, Stack, Text } from '@greese-ui/react'
-import { InfoIcon, StarIcon } from '@greese-ui/icons'
+import { Icon, Stack, Text } from '@greese/react'
+import { InfoIcon, StarIcon } from '@greese/icons'
 
 const meta = {
   title: 'Content/Icon',

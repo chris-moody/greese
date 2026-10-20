@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Proves the packages work as published: packs @greese-ui/tokens,
- * @greese-ui/greese (greese.js), @greese-ui/react and @greese-ui/icons, installs the tarballs into an empty project, and checks
+ * Proves the packages work as published: packs @greese/ui,
+ * @greese/js (greese.js), @greese/react and @greese/icons, installs the tarballs into an empty project, and checks
  * what a consumer would do with them.
  *
  *   npm run build && npm run verify:packages
@@ -31,13 +31,13 @@ try {
     [
       'pack',
       '-w',
-      '@greese-ui/tokens',
+      '@greese/ui',
       '-w',
-      '@greese-ui/greese',
+      '@greese/js',
       '-w',
-      '@greese-ui/react',
+      '@greese/react',
       '-w',
-      '@greese-ui/icons',
+      '@greese/icons',
       '--pack-destination',
       work,
     ],
@@ -52,7 +52,7 @@ try {
       type: 'module',
       dependencies: Object.fromEntries(
         tarballs.map((t) => [
-          `@greese-ui/${/^greese-ui-(tokens|greese|react|icons)-/.exec(t)[1]}`,
+          `@greese/${/^greese-(ui|js|react|icons)-\d/.exec(t)[1]}`,
           `file:./${t}`,
         ])
       ),
@@ -80,11 +80,11 @@ try {
     join(work, 'ssr.mjs'),
     `import { createElement } from 'react'
 import { renderToString } from 'react-dom/server'
-import { Button, Card, Stack, createTheme, timeline } from '@greese-ui/react'
+import { Button, Card, Stack, createTheme, timeline } from '@greese/react'
 // The greese prop's opt-in runtime imports cleanly on a server.
-import '@greese-ui/react/greese'
-import { breakpoints } from '@greese-ui/tokens'
-import { animate } from '@greese-ui/greese'
+import '@greese/react/greese'
+import { breakpoints } from '@greese/ui'
+import { animate } from '@greese/js'
 // greese.js imports and runs without a DOM: plain objects animate on a server.
 const o = { v: 0 }
 timeline({ paused: true }).to(o, { v: 10, duration: 1, ease: 'linear' }).seek(0.5)
@@ -108,7 +108,7 @@ if (breakpoints.md !== 900 || !createTheme({ name: 'x' }).css.includes('@layer g
     `const vm = require('node:vm'), fs = require('node:fs')
 const ctx = {}
 vm.createContext(ctx)
-vm.runInContext(fs.readFileSync(require.resolve('@greese-ui/greese/global'), 'utf8'), ctx)
+vm.runInContext(fs.readFileSync(require.resolve('@greese/js/global'), 'utf8'), ctx)
 const o = { v: 0 }
 ctx.greese.timeline({ paused: true }).to(o, { v: 10, duration: 1, ease: 'linear' }).seek(0.5)
 if (o.v !== 5 || typeof ctx.greese.fromPixels !== 'function') throw new Error('global build')
@@ -120,8 +120,8 @@ if (o.v !== 5 || typeof ctx.greese.fromPixels !== 'function') throw new Error('g
   // 3. Types, under both module resolutions consumers use.
   writeFileSync(
     join(work, 'app.tsx'),
-    `import { Button, Dialog, type Responsive } from '@greese-ui/react'
-import type { Breakpoint } from '@greese-ui/tokens'
+    `import { Button, Dialog, type Responsive } from '@greese/react'
+import type { Breakpoint } from '@greese/ui'
 const bp: Breakpoint = 'md'
 const dir: Responsive<'row' | 'column'> = { xs: 'column', [bp]: 'row' }
 export const App = () => <Dialog title="T" trigger={<Button>{String(dir)}</Button>} />
@@ -154,12 +154,12 @@ export const App = () => <Dialog title="T" trigger={<Button>{String(dir)}</Butto
   writeFileSync(
     join(work, 'custom.mjs'),
     `import { compileString, NodePackageImporter } from 'sass-embedded'
-const { css } = compileString("@use 'pkg:@greese-ui/react/scss' with ($breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px));", { importers: [new NodePackageImporter()], url: new URL(import.meta.url) })
+const { css } = compileString("@use 'pkg:@greese/react/scss' with ($breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px));", { importers: [new NodePackageImporter()], url: new URL(import.meta.url) })
 if (!css.includes('(width >= 768px)') || css.includes('(width >= 900px)')) throw new Error('breakpoints not applied')
 `
   )
   run('node', ['custom.mjs'], work)
-  ok('pkg:@greese-ui/react/scss recompiles with custom breakpoints')
+  ok('pkg:@greese/react/scss recompiles with custom breakpoints')
 
   // 4b. The SCSS kit and the style manifest, as published.
   writeFileSync(
@@ -167,19 +167,19 @@ if (!css.includes('(width >= 768px)') || css.includes('(width >= 900px)')) throw
     `import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { compileString, NodePackageImporter } from 'sass-embedded'
-const compile = (scss) => compileString("@use 'pkg:@greese-ui/react/scss/kit' as greese;\\n" + scss, { importers: [new NodePackageImporter()], url: new URL(import.meta.url) }).css
+const compile = (scss) => compileString("@use 'pkg:@greese/react/scss/kit' as greese;\\n" + scss, { importers: [new NodePackageImporter()], url: new URL(import.meta.url) }).css
 const css = compile('@include greese.component(Button) { @include greese.part(icon) { opacity: 0.5; } }')
 if (!css.includes('.greese-Button .greese-Button-icon') || !css.includes('greese.overrides, greese.utilities;')) throw new Error('kit output wrong: ' + css)
 let failed = false
 try { compile('@include greese.component(Buton) {}') } catch { failed = true }
 if (!failed) throw new Error('kit accepted an unknown component')
-const manifest = JSON.parse(readFileSync(createRequire(import.meta.url).resolve('@greese-ui/react/style-manifest.json'), 'utf8'))
+const manifest = JSON.parse(readFileSync(createRequire(import.meta.url).resolve('@greese/react/style-manifest.json'), 'utf8'))
 if (!manifest.blocks.Button?.variables.includes('--greese-button-tone')) throw new Error('style manifest incomplete')
 `
   )
   run('node', ['kit.mjs'], work)
   ok(
-    'pkg:@greese-ui/react/scss/kit compiles and checks names; style-manifest.json resolves'
+    'pkg:@greese/react/scss/kit compiles and checks names; style-manifest.json resolves'
   )
 
   // 4c. The icons, separate from the library: they render on the server and
@@ -189,19 +189,19 @@ if (!manifest.blocks.Button?.variables.includes('--greese-button-tone')) throw n
     `import { readFileSync } from 'node:fs'
 import { createElement } from 'react'
 import { renderToString } from 'react-dom/server'
-import { SearchIcon, createIcon } from '@greese-ui/icons'
+import { SearchIcon, createIcon } from '@greese/icons'
 const html = renderToString(createElement(SearchIcon, { title: 'Search' }))
 if (!html.includes('role="img"') || !html.includes('<title>Search</title>')) throw new Error('icon html: ' + html)
 if (createIcon('Kite', 'M0 0').displayName !== 'KiteIcon') throw new Error('createIcon')
-const react = JSON.parse(readFileSync('node_modules/@greese-ui/react/package.json', 'utf8'))
-if (react.dependencies?.['@greese-ui/icons']) throw new Error('@greese-ui/react must not depend on the icons')
+const react = JSON.parse(readFileSync('node_modules/@greese/react/package.json', 'utf8'))
+if (react.dependencies?.['@greese/icons']) throw new Error('@greese/react must not depend on the icons')
 `
   )
   run('node', ['icons.mjs'], work)
-  ok('@greese-ui/icons renders on the server, and @greese-ui/react does not depend on it')
+  ok('@greese/icons renders on the server, and @greese/react does not depend on it')
 
   // 5. Every per-component @import points at a shipped file.
-  const cssDir = join(work, 'node_modules/@greese-ui/react/dist/css')
+  const cssDir = join(work, 'node_modules/@greese/react/dist/css')
   for (const file of readdirSync(cssDir)) {
     for (const [, target] of readFileSync(join(cssDir, file), 'utf8').matchAll(
       /@import '\.\/([\w-]+\.css)'/g
@@ -219,7 +219,7 @@ if (react.dependencies?.['@greese-ui/icons']) throw new Error('@greese-ui/react 
   )
   writeFileSync(
     join(work, 'main.js'),
-    `import '@greese-ui/react/css/Dialog.css'\nimport '@greese-ui/react/css/Button.css'\n`
+    `import '@greese/react/css/Dialog.css'\nimport '@greese/react/css/Button.css'\n`
   )
   run('npx', ['vite', 'build', '--logLevel', 'error'], work)
   const assets = join(work, 'dist/assets')
@@ -242,7 +242,7 @@ if (react.dependencies?.['@greese-ui/icons']) throw new Error('@greese-ui/react 
   rmSync(join(work, 'dist'), { recursive: true, force: true })
   writeFileSync(
     join(work, 'main.js'),
-    `import { createElement } from 'react'\nimport { createRoot } from 'react-dom/client'\nimport { Button } from '@greese-ui/react'\ncreateRoot(document.body).render(createElement(Button, null, 'Hi'))\n`
+    `import { createElement } from 'react'\nimport { createRoot } from 'react-dom/client'\nimport { Button } from '@greese/react'\ncreateRoot(document.body).render(createElement(Button, null, 'Hi'))\n`
   )
   run('npx', ['vite', 'build', '--logLevel', 'error'], work)
   const html = readFileSync(join(work, 'dist/index.html'), 'utf8')

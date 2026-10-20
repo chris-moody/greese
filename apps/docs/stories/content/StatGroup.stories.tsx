@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Stat, StatGroup } from '@greese-ui/react'
+import { Stat, StatGroup } from '@greese/react'
 
 /** Stats side by side with dividers, stacked on narrow screens. */
 const meta = {

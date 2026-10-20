@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import { ActionSelect, toast, Toaster } from '@greese-ui/react'
-import { ArrowRightIcon, PlusIcon } from '@greese-ui/icons'
+import { ActionSelect, toast, Toaster } from '@greese/react'
+import { ArrowRightIcon, PlusIcon } from '@greese/icons'
 
 const meta = {
   title: 'Forms/ActionSelect',

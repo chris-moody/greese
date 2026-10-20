@@ -31,17 +31,17 @@ the ADR wins: fix this file in the same change.
 | 0009 the `greese` prop              | motion on every component: CSS presets, lazy runtime, coverage check   |
 | 0010 SCSS kit and Theme Studio      | style manifest, `greese.overrides` layer, kit API, `apps/theme-studio` |
 | 0011 component gap review           | ScrollCarousel, Rating, Diff, OtpField…: native bases, what was skipped      |
-| 0012 icons package and docs rules   | `@greese-ui/icons`, prop descriptions, docs page layout                |
+| 0012 icons package and docs rules   | `@greese/icons`, prop descriptions, docs page layout                |
 | 0013 project scope and phases       | goals, non-goals, the phase table, React/browser/licence decisions     |
 
 ## Workspace
 
 | Path                | What                                                                                          |
 | ------------------- | --------------------------------------------------------------------------------------------- |
-| `packages/tokens`   | `@greese-ui/tokens`: tokens in `src/tokens.ts`, `createTheme`, scheme script                  |
-| `packages/react`    | `@greese-ui/react`: components in `src/components/<Name>/<Name>.tsx` + `<Name>.scss`          |
-| `packages/greese`   | `@greese-ui/greese` (greese.js): animation; no dependencies, no React                         |
-| `packages/icons`    | `@greese-ui/icons`: optional line icons (`createIcon`); the library never imports it          |
+| `packages/tokens`   | `@greese/ui`: tokens in `src/tokens.ts`, `createTheme`, scheme script                  |
+| `packages/react`    | `@greese/react`: components in `src/components/<Name>/<Name>.tsx` + `<Name>.scss`          |
+| `packages/greese`   | `@greese/js` (greese.js): animation; no dependencies, no React                         |
+| `packages/icons`    | `@greese/icons`: optional line icons (`createIcon`); the library never imports it          |
 | `apps/docs`         | Storybook: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`          |
 | `apps/playground`   | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                         |
 | `apps/theme-studio` | Theme Studio (`npm run studio`): edits a theme JSON, generates kit SCSS + CSS                 |
@@ -107,7 +107,7 @@ Use npm, never yarn. Node ≥ 24.
   - touch targets are at least 44px on coarse pointers;
   - control text is never below 16px on touch, so iOS doesn't zoom.
 - **GreeseUI ships no icons.** Accept a `ReactNode`. The optional
-  `@greese-ui/icons` package (`packages/icons`) is separate: the library
+  `@greese/icons` package (`packages/icons`) is separate: the library
   never imports it, and `verify:packages` checks that. Internal glyphs live in
   `utils/glyphs.tsx`.
 - **Comments:**
@@ -128,7 +128,7 @@ See the `greese-styles` skill for detail. In short:
 - use logical properties;
 - per-instance variables are named `--greese-<name>-<thing>`;
 - stylelint enforces most of this;
-- after changing a stylesheet, `npm run build:css -w @greese-ui/react`
+- after changing a stylesheet, `npm run build:css -w @greese/react`
   refreshes `src/styles/_manifest.scss` (the SCSS kit's name list); commit it.
   A unit test fails while it's stale.
 
@@ -174,7 +174,7 @@ reason in the commit and, if large, in an ADR.
 ## Shipping
 
 - **Changesets:** any `feat`, `fix` or `perf` to a published package
-  (`@greese-ui/react`, `@greese-ui/tokens`, `@greese-ui/greese`) needs a
+  (`@greese/react`, `@greese/ui`, `@greese/js`) needs a
   changeset in `.changeset/`.
 - **Commits:** one-line Conventional Commits via the `commit` skill, with no
   attribution trailers.

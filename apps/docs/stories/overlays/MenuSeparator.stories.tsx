@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button, Menu, MenuItem, MenuSeparator } from '@greese-ui/react'
+import { Button, Menu, MenuItem, MenuSeparator } from '@greese/react'
 
 /** A divider between groups of menu items. Open the menu to see it. */
 const meta = {

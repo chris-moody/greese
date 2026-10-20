@@ -16,7 +16,7 @@ import {
   Switch,
   Text,
   toast,
-} from '@greese-ui/react'
+} from '@greese/react'
 import { DOCS_URL, INSTALL } from '../config.ts'
 import { facts, kB } from '../data/index.ts'
 import { icons } from '../icons.tsx'

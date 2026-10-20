@@ -5,4 +5,4 @@
 export const REPO_URL = 'https://github.com/chris-moody/greese'
 export const DOCS_URL = './storybook/'
 export const STUDIO_URL = './studio/'
-export const INSTALL = 'npm install @greese-ui/react'
+export const INSTALL = 'npm install @greese/react'

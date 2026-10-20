@@ -44,7 +44,7 @@ import {
   Text,
   TextField,
   Tooltip,
-} from '@greese-ui/react'
+} from '@greese/react'
 
 // No `greese` props here on purpose: what moves is what the theme's
 // motion() settings make move.

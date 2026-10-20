@@ -10,7 +10,7 @@ import {
   type Keyframe,
   type Keyframes,
   type Timeline,
-} from '@greese-ui/greese'
+} from '@greese/js'
 import type { GreeseMotion, GreeseOptions } from '../../utils/greese.ts'
 import type { GreeseRuntime } from './registry.ts'
 import {

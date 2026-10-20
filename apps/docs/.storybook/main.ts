@@ -40,7 +40,7 @@ const config: StorybookConfig = {
     },
   },
   /**
-   * Point @greese-ui/react at its source (TS + SCSS) instead of dist/, so edits
+   * Point @greese/react at its source (TS + SCSS) instead of dist/, so edits
    * hot-reload with no rebuild. apps/playground covers the built package.
    */
   viteFinal: (vite) => ({
@@ -49,16 +49,16 @@ const config: StorybookConfig = {
       ...vite.resolve,
       alias: [
         {
-          find: /^@greese-ui\/react\/styles\.css$/,
+          find: /^@greese\/react\/styles\.css$/,
           replacement: `${reactSrc}/styles/index.scss`,
         },
         {
-          find: /^@greese-ui\/react\/base\.css$/,
+          find: /^@greese\/react\/base\.css$/,
           replacement: `${reactSrc}/styles/base.scss`,
         },
-        { find: /^@greese-ui\/react$/, replacement: `${reactSrc}/index.ts` },
+        { find: /^@greese\/react$/, replacement: `${reactSrc}/index.ts` },
         // The icons from source too, so their props tables read their TSDoc.
-        { find: /^@greese-ui\/icons$/, replacement: `${iconsSrc}/index.ts` },
+        { find: /^@greese\/icons$/, replacement: `${iconsSrc}/index.ts` },
       ],
     },
     css: {

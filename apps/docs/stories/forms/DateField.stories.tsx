@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { DateField, Stack } from '@greese-ui/react'
+import { DateField, Stack } from '@greese/react'
 
 const meta = {
   title: 'Forms/DateField',

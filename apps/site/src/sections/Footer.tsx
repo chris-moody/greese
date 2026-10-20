@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Container, Divider, Link, Stack, Text } from '@greese-ui/react'
+import { Container, Divider, Link, Stack, Text } from '@greese/react'
 import { DOCS_URL, REPO_URL, STUDIO_URL } from '../config.ts'
 import { facts } from '../data/index.ts'
 

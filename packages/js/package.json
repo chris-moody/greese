@@ -1,5 +1,5 @@
 {
-  "name": "@greese-ui/greese",
+  "name": "@greese/js",
   "version": "0.0.0",
   "description": "greese.js: a tiny keyframe and timeline animation library for CSS, transforms, text and objects. Seekable, reversible, time-scaled and nestable.",
   "keywords": [
@@ -50,8 +50,8 @@
     "size": "size-limit"
   },
   "devDependencies": {
-    "@greese-ui/eslint-config": "*",
-    "@greese-ui/typescript-config": "*",
+    "@greese/eslint-config": "*",
+    "@greese/typescript-config": "*",
     "@size-limit/preset-small-lib": "^14.2.0",
     "esbuild": "^0.28.2",
     "eslint": "^9.39.0",

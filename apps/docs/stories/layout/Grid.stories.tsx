@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Grid, Tile } from '@greese-ui/react'
+import { Grid, Tile } from '@greese/react'
 
 const tiles = (n: number) =>
   Array.from({ length: n }, (_, i) => <Tile key={i}>{i + 1}</Tile>)

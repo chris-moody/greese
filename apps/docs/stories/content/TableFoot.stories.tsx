@@ -6,7 +6,7 @@ import {
   TableFoot,
   TableHead,
   TableRow,
-} from '@greese-ui/react'
+} from '@greese/react'
 import { bodyRows, headerRow } from '../_shared/table.tsx'
 
 /** A table's summary rows: a native `<tfoot>`. */

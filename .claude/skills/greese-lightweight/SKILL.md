@@ -11,9 +11,9 @@ budgets and ADR 0008 covers greese.js.
 ## Dependency policy
 
 - **Runtime dependencies:**
-  - `@greese-ui/react` depends only on `@greese-ui/tokens` and
-    `@greese-ui/greese`, with React as a peer;
-  - `@greese-ui/greese` and `@greese-ui/tokens` depend on nothing.
+  - `@greese/react` depends only on `@greese/ui` and
+    `@greese/js`, with React as a peer;
+  - `@greese/js` and `@greese/ui` depend on nothing.
 - **Adding a runtime dependency** needs an ADR, and is almost always no.
   Prefer, in order:
   1. a platform feature (`<dialog>`, the Popover API, anchor positioning,
@@ -50,8 +50,8 @@ for anything over ~1 kB, in an ADR.
 ## Measuring
 
 ```bash
-npm run build -w @greese-ui/react && npm run size -w @greese-ui/react
-npm run build -w @greese-ui/greese && npm run size -w @greese-ui/greese
+npm run build -w @greese/react && npm run size -w @greese/react
+npm run build -w @greese/js && npm run size -w @greese/js
 
 # Per module, to find what is heavy (minified, then brotli):
 for f in packages/greese/dist/*.js; do

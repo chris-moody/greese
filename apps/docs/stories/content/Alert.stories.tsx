@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Alert, Button, Stack } from '@greese-ui/react'
-import { InfoIcon } from '@greese-ui/icons'
+import { Alert, Button, Stack } from '@greese/react'
+import { InfoIcon } from '@greese/icons'
 
 const meta = {
   title: 'Content/Alert',

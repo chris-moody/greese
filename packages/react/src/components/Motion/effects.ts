@@ -1,4 +1,4 @@
-import type { Ease, Keyframes } from '@greese-ui/greese'
+import type { Ease, Keyframes } from '@greese/js'
 import type { GreeseEffectRegistry } from '../../utils/greese.ts'
 
 /** What an effect defined as a function is told about the element it animates. */

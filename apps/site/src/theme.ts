@@ -1,4 +1,4 @@
-import { createTheme } from '@greese-ui/react'
+import { createTheme } from '@greese/react'
 
 /**
  * The site's brand, made the way an app would make one: a theme built once

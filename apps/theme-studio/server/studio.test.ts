@@ -25,7 +25,7 @@ const spec: ThemeSpec = {
 describe('specToScss', () => {
   it('writes readable kit calls, components sorted', () => {
     const scss = specToScss(spec)
-    expect(scss).toContain("@use 'pkg:@greese-ui/react/scss/kit' as greese;")
+    expect(scss).toContain("@use 'pkg:@greese/react/scss/kit' as greese;")
     expect(scss).toContain('accent: (light: "#7c3aed", dark: "#c4b5fd"),')
     expect(scss).toContain(`'4': "1.25rem",`)
     expect(scss).toContain(

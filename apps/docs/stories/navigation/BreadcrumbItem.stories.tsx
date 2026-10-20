@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { BreadcrumbItem, Breadcrumbs } from '@greese-ui/react'
+import { BreadcrumbItem, Breadcrumbs } from '@greese/react'
 
 /** One link in a Breadcrumbs trail; without `href`, the current page. */
 const meta = {

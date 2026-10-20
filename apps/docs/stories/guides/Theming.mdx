@@ -49,10 +49,10 @@ included:
 ### 1. Install (required)
 
 ```sh
-npm install @greese-ui/react
+npm install @greese/react
 ```
 
-`@greese-ui/tokens` comes with it. React 19 is a peer dependency.
+`@greese/ui` comes with it. React 19 is a peer dependency.
 
 ### 2. Load the styles (required)
 
@@ -60,21 +60,21 @@ Pick **one** of these:
 
 ```ts
 // Everything (about 13 kB brotli). Simplest.
-import '@greese-ui/react/styles.css'
+import '@greese/react/styles.css'
 ```
 
 ```ts
 // Only what you use: each file @imports the tokens and the components it
 // builds on, and bundlers de-duplicate shared imports.
-import '@greese-ui/react/css/Button.css'
-import '@greese-ui/react/css/Dialog.css'
+import '@greese/react/css/Button.css'
+import '@greese/react/css/Dialog.css'
 ```
 
 Optionally, also load the reset and page defaults (box-sizing, body font and
 colours, `canvas` background):
 
 ```ts
-import '@greese-ui/react/base.css'
+import '@greese/react/base.css'
 ```
 
 Without `base.css`, components are still fully styled. Your page background
@@ -90,7 +90,7 @@ If you let users pick a scheme, their saved choice must apply before the
 first paint. Put this inline script in `<head>`, before your stylesheets:
 
 ```tsx
-import { getSchemeScript } from '@greese-ui/react'
+import { getSchemeScript } from '@greese/react'
 
 ;<head>
   <script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
@@ -113,7 +113,7 @@ import {
   Segment,
   useColorScheme,
   type ColorScheme,
-} from '@greese-ui/react'
+} from '@greese/react'
 
 export function SchemeToggle() {
   const { scheme, setScheme } = useColorScheme()
@@ -177,8 +177,8 @@ and date pickers match.
 ## Brand themes: `createTheme`
 
 ```tsx
-import { createTheme, ThemeProvider } from '@greese-ui/react'
-import { palette } from '@greese-ui/tokens'
+import { createTheme, ThemeProvider } from '@greese/react'
+import { palette } from '@greese/ui'
 
 // At module scope: it builds a static CSS string once.
 export const brand = createTheme({
@@ -243,7 +243,7 @@ visually. Pass the name to the provider; it stamps the attributes and
 injects nothing:
 
 ```scss
-@use 'pkg:@greese-ui/react/scss/kit' as greese;
+@use 'pkg:@greese/react/scss/kit' as greese;
 
 @include greese.theme(brand) {
   @include greese.tokens(
@@ -377,9 +377,9 @@ extra setup. Two things to get right:
 **Next.js (App Router)**, `app/layout.tsx`:
 
 ```tsx
-import { getSchemeScript, ThemeProvider } from '@greese-ui/react'
-import '@greese-ui/react/base.css'
-import '@greese-ui/react/styles.css'
+import { getSchemeScript, ThemeProvider } from '@greese/react'
+import '@greese/react/base.css'
+import '@greese/react/styles.css'
 import { brand } from './theme'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -415,7 +415,7 @@ and JS:
 
 ```scss
 // your-styles.scss, instead of importing styles.css
-@use 'pkg:@greese-ui/react/scss' with (
+@use 'pkg:@greese/react/scss' with (
   $breakpoints: (
     xs: 0px,
     sm: 480px,
@@ -428,7 +428,7 @@ and JS:
 
 ```ts
 // Before the first render: hooks and Sidebar read these in JS.
-import { configureBreakpoints } from '@greese-ui/react'
+import { configureBreakpoints } from '@greese/react'
 configureBreakpoints({ sm: 480, md: 768, lg: 1024, xl: 1440 })
 ```
 
@@ -461,7 +461,7 @@ writeFileSync('public/brand.css', brand.css)
 </html>
 ```
 
-`@greese-ui/tokens/tokens.css` has the default tokens on their own, for
+`@greese/ui/tokens.css` has the default tokens on their own, for
 non-React code that should match.
 
 ## Token reference

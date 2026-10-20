@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Rating, Stack, Text } from '@greese-ui/react'
-import { HeartIcon } from '@greese-ui/icons'
+import { Rating, Stack, Text } from '@greese/react'
+import { HeartIcon } from '@greese/icons'
 
 const meta = {
   title: 'Forms/Rating',

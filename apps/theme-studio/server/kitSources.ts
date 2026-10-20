@@ -1,7 +1,7 @@
 /**
  * The SCSS kit's sources as a module, `virtual:greese-kit`, for the hosted
  * studio (src/hosted.ts), which compiles in the browser: every partial of
- * `@greese-ui/react/scss/kit` and the token maps it reads, keyed by a virtual
+ * `@greese/react/scss/kit` and the token maps it reads, keyed by a virtual
  * path (`/react/_kit.scss`, `/tokens/_maps.scss`).
  */
 import { readdirSync, readFileSync } from 'node:fs'
@@ -12,7 +12,7 @@ import type { Plugin } from 'vite'
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../../..')
 const DIRS = {
   react: join(ROOT, 'packages/react/src/styles'),
-  tokens: join(ROOT, 'packages/tokens/dist'),
+  tokens: join(ROOT, 'packages/ui/dist'),
 }
 const ID = 'virtual:greese-kit'
 

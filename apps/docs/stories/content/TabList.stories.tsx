@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Tab, TabList, TabPanel, Tabs, Text } from '@greese-ui/react'
+import { Tab, TabList, TabPanel, Tabs, Text } from '@greese/react'
 
 /** The row of tabs inside Tabs: arrow keys move between them. */
 const meta = {

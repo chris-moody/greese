@@ -55,7 +55,7 @@ The same colour in each place you'd write one:
 | CSS                            | `var(--greese-lavender-600)`, with `palette.css` |
 
 ```tsx
-import { createTheme, palette } from '@greese-ui/tokens'
+import { createTheme, palette } from '@greese/ui'
 
 export const brand = createTheme({
   name: 'brand',
@@ -67,7 +67,7 @@ export const brand = createTheme({
 ```
 
 ```scss
-@use 'pkg:@greese-ui/react/scss/kit' as greese;
+@use 'pkg:@greese/react/scss/kit' as greese;
 
 @include greese.tokens(
   (
@@ -92,7 +92,7 @@ variables are a separate, opt-in stylesheet of 242 colours (about 2 kB
 compressed), so `tokens.css` doesn't carry them:
 
 ```ts
-import '@greese-ui/tokens/palette.css'
+import '@greese/ui/palette.css'
 ```
 
 The palette doesn't change with the colour scheme: `lavender-600` is the same

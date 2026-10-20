@@ -9,9 +9,9 @@ import {
   timeline,
   useGreese,
   type Timeline,
-} from '@greese-ui/react'
-import '@greese-ui/react/base.css'
-import '@greese-ui/react/styles.css'
+} from '@greese/react'
+import '@greese/react/base.css'
+import '@greese/react/styles.css'
 
 declare global {
   interface Window {

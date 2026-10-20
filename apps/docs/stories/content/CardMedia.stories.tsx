@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Card, CardMedia, Heading, Image, Stack, Text } from '@greese-ui/react'
+import { Card, CardMedia, Heading, Image, Stack, Text } from '@greese/react'
 import { art } from '../_shared/fixtures.tsx'
 
 /** Media that bleeds through a Card's padding to its edges. */

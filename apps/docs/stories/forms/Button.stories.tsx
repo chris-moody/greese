@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button, IconButton, Stack } from '@greese-ui/react'
-import { ArrowRightIcon, PlusIcon, TrashIcon } from '@greese-ui/icons'
+import { Button, IconButton, Stack } from '@greese/react'
+import { ArrowRightIcon, PlusIcon, TrashIcon } from '@greese/icons'
 
 const meta = {
   title: 'Forms/Button',

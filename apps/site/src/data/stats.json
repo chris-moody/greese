@@ -2,8 +2,8 @@
   "date": "2026-10-20",
   "components": 115,
   "dependencies": [
-    "@greese-ui/greese",
-    "@greese-ui/tokens"
+    "@greese/js",
+    "@greese/ui"
   ],
   "react": [
     {

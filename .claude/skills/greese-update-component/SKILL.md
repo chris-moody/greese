@@ -43,7 +43,7 @@ Internal parts (`greese-<Name>-<part>`) may change in a minor release.
 - Styling changes follow `greese-styles`.
 - Keep both the controlled and uncontrolled paths, and Field wiring, working.
 - Don't grow the component's size budget without a reason. Measure before
-  and after (`npm run size -w @greese-ui/react`).
+  and after (`npm run size -w @greese/react`).
 
 ## 4. Keep everything in sync
 

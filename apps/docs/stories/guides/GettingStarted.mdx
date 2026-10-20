@@ -5,21 +5,21 @@ import { Meta } from '@storybook/addon-docs/blocks'
 # Getting started
 
 ```bash
-npm install @greese-ui/react
+npm install @greese/react
 ```
 
 Requires React 19. Import the stylesheet once, at your app root:
 
 ```tsx
-import '@greese-ui/react/base.css' // optional: reset + body defaults, if GreeseUI owns the page
-import '@greese-ui/react/styles.css' // tokens + every component
+import '@greese/react/base.css' // optional: reset + body defaults, if GreeseUI owns the page
+import '@greese/react/styles.css' // tokens + every component
 ```
 
 Then use components anywhere. Layout and display components are server-component
 safe; interactive ones are marked `'use client'`.
 
 ```tsx
-import { Button, Stack, TextField } from '@greese-ui/react'
+import { Button, Stack, TextField } from '@greese/react'
 
 export const SignIn = () => (
   <Stack gap={4} maxW="24rem">
@@ -38,9 +38,9 @@ stylesheets instead. Each one pulls in the shared core and the components it bui
 on, and bundlers de-duplicate the shared imports:
 
 ```tsx
-import '@greese-ui/react/css/Button.css'
-import '@greese-ui/react/css/TextField.css'
-import '@greese-ui/react/css/Dialog.css' // also brings IconButton, Button, VisuallyHidden
+import '@greese/react/css/Button.css'
+import '@greese/react/css/TextField.css'
+import '@greese/react/css/Dialog.css' // also brings IconButton, Button, VisuallyHidden
 ```
 
 ## Dark mode without a flash
@@ -49,7 +49,7 @@ The scheme follows the OS by default. To let users choose, add the pre-paint scr
 to `<head>` and call `useColorScheme()`:
 
 ```tsx
-import { getSchemeScript, useColorScheme } from '@greese-ui/react'
+import { getSchemeScript, useColorScheme } from '@greese/react'
 
 <script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
 

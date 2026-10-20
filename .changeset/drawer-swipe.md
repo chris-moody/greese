@@ -1,5 +1,5 @@
 ---
-'@greese-ui/react': minor
+'@greese/react': minor
 ---
 
 `Drawer` gains swipe-to-dismiss: drag the header (or a bottom sheet's new grab

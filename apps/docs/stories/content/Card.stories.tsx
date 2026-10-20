@@ -8,7 +8,7 @@ import {
   Image,
   Stack,
   Text,
-} from '@greese-ui/react'
+} from '@greese/react'
 import { art } from '../_shared/fixtures.tsx'
 
 const meta = {

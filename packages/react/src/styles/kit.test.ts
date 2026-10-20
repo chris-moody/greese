@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { compileString, NodePackageImporter } from 'sass-embedded'
 import { describe, expect, it } from 'vitest'
-import { createTheme, LAYER_ORDER } from '@greese-ui/tokens'
+import { createTheme, LAYER_ORDER } from '@greese/ui'
 
 const STYLES = fileURLToPath(new URL('.', import.meta.url))
 
@@ -324,7 +324,7 @@ describe('style manifest', () => {
         ])
     )
     const tokensCss = readFileSync(
-      fileURLToPath(import.meta.resolve('@greese-ui/tokens/tokens.css')),
+      fileURLToPath(import.meta.resolve('@greese/ui/tokens.css')),
       'utf8'
     )
     const tokenVars = new Set(tokensCss.match(/--greese-[a-z0-9-]+(?=:)/g))

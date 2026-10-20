@@ -1,8 +1,8 @@
-import { defineGreeseEffect } from '@greese-ui/react'
+import { defineGreeseEffect } from '@greese/react'
 
 // The site's own effects, defined once at start-up and then used by name in
 // `greese` props, alone or in sequences, like the built-in ones.
-declare module '@greese-ui/react' {
+declare module '@greese/react' {
   interface GreeseEffectRegistry {
     wobble: true
     growX: true

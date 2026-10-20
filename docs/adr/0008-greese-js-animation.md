@@ -27,9 +27,9 @@ choices of which time to sample.
 
 ### 1. A separate package, bundled with GreeseUI
 
-The package is `@greese-ui/greese`, branded greese.js. The unscoped `greese.js`
+The package is `@greese/js`, branded greese.js. The unscoped `greese.js`
 name is taken on npm. It has no dependencies and no React; it works on any
-element or object. `@greese-ui/react` depends on it and re-exports `animate`,
+element or object. `@greese/react` depends on it and re-exports `animate`,
 `timeline`, `ease`, `cubicBezier`, `splitText` and their types, so one
 install covers both. `sideEffects: false` means apps that never import it pay
 nothing.
@@ -166,7 +166,7 @@ readers read words, not letters.
 
 - **`dist/greese.global.js`** is an esbuild IIFE that defines
   `window.greese`, for pages with no bundler. It's exported as
-  `@greese-ui/greese/global` and is the `unpkg`/`jsdelivr` default.
+  `@greese/js/global` and is the `unpkg`/`jsdelivr` default.
   - Size: 6.3 kB, with a 6.75 kB budget.
   - `verify:packages` runs it in a bare VM context.
 - **Budgets:**
@@ -201,7 +201,7 @@ so every later computed-style read forced a style recalculation.
   inherent, so most of the blocking-time win came from the finding below.
 
 A finding for apps rather than the library: on the homepage, loading the
-`greese` prop's runtime up front (`@greese-ui/react/greese`) moved the page's
+`greese` prop's runtime up front (`@greese/react/greese`) moved the page's
 first full style calculation into a JavaScript task, which counted as
 blocking time. Animating the first screen with CSS presets and letting the
 runtime load lazily took Lighthouse's Total Blocking Time to 20 ms.

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Heading, Stack } from '@greese-ui/react'
+import { Heading, Stack } from '@greese/react'
 
 const meta = {
   title: 'Content/Heading',

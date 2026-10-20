@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Break, Heading, Stack, Text } from '@greese-ui/react'
+import { Break, Heading, Stack, Text } from '@greese/react'
 
 const meta = {
   title: 'Content/Break',

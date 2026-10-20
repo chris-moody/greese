@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Button, Code, Heading, Stack, Text } from '@greese-ui/react'
+import { Button, Code, Heading, Stack, Text } from '@greese/react'
 import type { ThemeSpec } from '../spec.ts'
 
 /** Saves text as a file, for the hosted studio, which can't write to disk. */

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { SpeedDial, SpeedDialAction } from '@greese-ui/react'
-import { DocumentIcon, FolderIcon, UserIcon } from '@greese-ui/icons'
+import { SpeedDial, SpeedDialAction } from '@greese/react'
+import { DocumentIcon, FolderIcon, UserIcon } from '@greese/icons'
 
 const meta = {
   title: 'Overlays/SpeedDial',

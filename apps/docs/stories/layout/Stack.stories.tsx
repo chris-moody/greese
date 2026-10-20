@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Divider, Spacer, Stack, Tile } from '@greese-ui/react'
+import { Divider, Spacer, Stack, Tile } from '@greese/react'
 
 const meta = {
   title: 'Layout/Stack',

@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { getSchemeScript } from '@greese-ui/tokens'
+import { getSchemeScript } from '@greese/ui'
 
 /**
- * Consumes @greese-ui/react exactly as a published dependency: through its
+ * Consumes @greese/react exactly as a published dependency: through its
  * package `exports`, i.e. the built dist/. Run `npm run build` at the root
  * first (turbo does this for you).
  */

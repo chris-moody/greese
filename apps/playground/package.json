@@ -16,8 +16,8 @@
     "lighthouse": "lhci autorun"
   },
   "dependencies": {
-    "@greese-ui/react": "*",
-    "@greese-ui/tokens": "*",
+    "@greese/react": "*",
+    "@greese/ui": "*",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
@@ -27,8 +27,8 @@
     "@lhci/cli": "^0.15.1",
     "@mui/material": "9.4.0",
     "@playwright/test": "^1.64.1",
-    "@greese-ui/eslint-config": "*",
-    "@greese-ui/typescript-config": "*",
+    "@greese/eslint-config": "*",
+    "@greese/typescript-config": "*",
     "@types/node": "^24.0.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

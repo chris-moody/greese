@@ -7,7 +7,7 @@ import {
   type JSX,
   type Ref,
 } from 'react'
-import type { ColorScheme, Theme } from '@greese-ui/tokens'
+import type { ColorScheme, Theme } from '@greese/ui'
 import { cx } from '../../utils/cx.ts'
 import { Slot } from '../Slot/Slot.tsx'
 

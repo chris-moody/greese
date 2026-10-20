@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Table, TableBody, TableHead } from '@greese-ui/react'
+import { Table, TableBody, TableHead } from '@greese/react'
 import { bodyRows, headerRow } from '../_shared/table.tsx'
 
 /** A table's header rows: a native `<thead>`. */

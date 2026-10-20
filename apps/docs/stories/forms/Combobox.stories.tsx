@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Combobox } from '@greese-ui/react'
+import { Combobox } from '@greese/react'
 import { countries } from '../_shared/fixtures.tsx'
 
 const meta = {

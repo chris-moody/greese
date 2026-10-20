@@ -5,7 +5,7 @@
  * can hold is imported; the rest is reported, with its CSS, never dropped
  * silently. Pure: the server and the tests use it.
  */
-import { color, deriveColors, scalarTokens } from '@greese-ui/tokens'
+import { color, deriveColors, scalarTokens } from '@greese/ui'
 import { blocks } from './manifest.ts'
 import type { ComponentSpec, Declarations, SchemeValue, ThemeSpec } from './spec.ts'
 

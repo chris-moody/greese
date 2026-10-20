@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RadialProgress, Stack } from '@greese-ui/react'
+import { RadialProgress, Stack } from '@greese/react'
 
 const meta = {
   title: 'Content/RadialProgress',

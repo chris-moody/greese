@@ -62,9 +62,9 @@ export {
   type SpaceToken,
   type Theme,
   type ThemeOptions,
-} from '@greese-ui/tokens'
+} from '@greese/ui'
 
-// greese.js, bundled: the animation library (@greese-ui/greese), re-exported so
+// greese.js, bundled: the animation library (@greese/js), re-exported so
 // one install covers both. Tree-shaken away when unused.
 export {
   animate,
@@ -81,4 +81,4 @@ export {
   type SplitText,
   type StaggerOptions,
   type TimelineOptions,
-} from '@greese-ui/greese'
+} from '@greese/js'

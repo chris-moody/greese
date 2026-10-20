@@ -1,6 +1,6 @@
 import { useId, useState, type JSX } from 'react'
-import { Badge, Heading, Stack, Text } from '@greese-ui/react'
-import { AA, color, contentColor, contrastRatio, type ColorRole } from '@greese-ui/tokens'
+import { Badge, Heading, Stack, Text } from '@greese/react'
+import { AA, color, contentColor, contrastRatio, type ColorRole } from '@greese/ui'
 import { derivedContent, derivedStrong } from '../derived.ts'
 import { getIn, setIn } from '../edit.ts'
 import { resolveColor, SchemeInput } from '../fields.tsx'

@@ -1,6 +1,6 @@
 'use client'
 import { useState, type DependencyList } from 'react'
-import type { Timeline, TimelineOptions } from '@greese-ui/greese'
+import type { Timeline, TimelineOptions } from '@greese/js'
 import { useGreese } from './useGreese.ts'
 
 /**

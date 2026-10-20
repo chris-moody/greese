@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Tab, TabList, TabPanel, Tabs, Text } from '@greese-ui/react'
+import { Tab, TabList, TabPanel, Tabs, Text } from '@greese/react'
 
 /** The content for one tab, shown while that tab is selected. */
 const meta = {

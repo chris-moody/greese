@@ -13,7 +13,7 @@ import {
   defineGreeseEffect,
   type GreeseProp,
   type GreesePreset,
-} from '@greese-ui/react'
+} from '@greese/react'
 import { art } from '../_shared/fixtures.tsx'
 
 /** Remounts its children so entrances can be watched again. */
@@ -67,7 +67,7 @@ const PlayOnClick = ({
 
 // Custom effects: define them once, in client code, then use them by name.
 // The augmentation makes the names type-check and autocomplete.
-declare module '@greese-ui/react' {
+declare module '@greese/react' {
   interface GreeseEffectRegistry {
     wobble: true
     rise: true

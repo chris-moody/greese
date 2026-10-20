@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Badge, Card, Heading, Stack, splitText, Text, timeline } from '@greese-ui/react'
+import { Badge, Card, Heading, Stack, splitText, Text, timeline } from '@greese/react'
 import { Player } from './Player.tsx'
 
 const meta = {

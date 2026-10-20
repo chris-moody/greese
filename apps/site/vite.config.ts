@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { getSchemeScript } from '@greese-ui/tokens'
+import { getSchemeScript } from '@greese/ui'
 
 /**
  * The greese homepage, a static site for GitHub Pages. `base: './'` keeps

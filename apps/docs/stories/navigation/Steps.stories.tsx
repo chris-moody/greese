@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Step, Steps } from '@greese-ui/react'
-import { StarIcon } from '@greese-ui/icons'
+import { Step, Steps } from '@greese/react'
+import { StarIcon } from '@greese/icons'
 
 const meta = {
   title: 'Navigation/Steps',

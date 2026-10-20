@@ -1,15 +1,15 @@
-# @greese-ui/icons
+# @greese/icons
 
 A small set of line icons as React components. Optional: GreeseUI takes any
 icons, from any set, and doesn't depend on this package.
 
 ```sh
-npm install @greese-ui/icons
+npm install @greese/icons
 ```
 
 ```tsx
-import { IconButton } from '@greese-ui/react'
-import { SearchIcon } from '@greese-ui/icons'
+import { IconButton } from '@greese/react'
+import { SearchIcon } from '@greese/icons'
 
 <IconButton label="Search"><SearchIcon /></IconButton>
 ```

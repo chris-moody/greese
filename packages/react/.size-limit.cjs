@@ -20,7 +20,7 @@ module.exports = [
     name: 'JS: whole library (components)',
     path: 'dist/index.js',
     import: '*',
-    ignore: ['react', 'react-dom', '@greese-ui/greese'],
+    ignore: ['react', 'react-dom', '@greese/js'],
     // 22 → 25.5 kB (2026-10-19): 19 components from ADR 0011 (ScrollCarousel,
     // Rating, OtpField…), about 210 B each. Tree-shaking keeps them out of
     // apps that don't import them; per-component budgets are below.

@@ -71,7 +71,7 @@ plan it implemented.
     `apps/playground/e2e/motion.spec.ts`;
   - in Playwright, never return a timeline from `page.evaluate`, because
     it's a thenable and would be awaited.
-- **Size:** `npm run build -w @greese-ui/greese && npm run size -w @greese-ui/greese`.
+- **Size:** `npm run build -w @greese/js && npm run size -w @greese/js`.
   The budget is 6.5 kB for everything (`animate` alone 5.25 kB). Measure per module (see
   `greese-lightweight`) before adding features. Heavyweight features (plugins,
   ScrollTrigger, morphing, physics) are out of scope.
@@ -81,7 +81,7 @@ plan it implemented.
     paused on the last frame so snapshots are deterministic);
   - `packages/greese/README.md`;
   - ADR 0008 for decisions.
-- **Changeset:** `'@greese-ui/greese': minor | patch`. Commit scope `greese`.
+- **Changeset:** `'@greese/js': minor | patch`. Commit scope `greese`.
 
 ## Motion in components: the `greese` prop (ADR 0009)
 
@@ -94,7 +94,7 @@ plan it implemented.
 | `components/Motion/greeseRuntime.ts` | Reveals, interactions, text effects, keyframe entrances, timelines; the `BUILT_IN` effect table and the sequence parser (`parseSequence`, `addMotion`)                                                                       |
 | `components/Motion/effects.ts`       | `defineGreeseEffect()`: the custom-effect `Map`, outside the lazy chunk so defining never loads greese.js                                                                                                                    |
 | `hooks/useGreese.ts`                 | greese.js tied to a component's lifetime: layout-effect build, a recorder of every timeline made through `g`, scope via greese.js `TimelineOptions.scope`; `useTimeline` wraps it                                            |
-| `src/greese.ts`                      | The `@greese-ui/react/greese` opt-in: registers the runtime eagerly                                                                                                                                                          |
+| `src/greese.ts`                      | The `@greese/react/greese` opt-in: registers the runtime eagerly                                                                                                                                                          |
 
 **Rules:**
 

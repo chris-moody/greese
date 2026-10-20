@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { JSX } from 'react'
-import { color, contrastRatio, type ColorRole } from '@greese-ui/tokens'
+import { color, contrastRatio, type ColorRole } from '@greese/ui'
 import {
   Stack,
   Table,
@@ -10,7 +10,7 @@ import {
   TableHeaderCell,
   TableRow,
   Text,
-} from '@greese-ui/react'
+} from '@greese/react'
 import { PaletteTables } from './PaletteTables.tsx'
 
 const kebab = (s: string) => s.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)

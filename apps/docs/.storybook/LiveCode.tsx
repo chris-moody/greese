@@ -9,8 +9,8 @@ import { useEffect, useRef, useState, useSyncExternalStore, type JSX } from 'rea
 import { LiveEditor, LiveError, LivePreview, LiveProvider } from 'react-live'
 import { themes } from 'prism-react-renderer'
 import { Subheading, useOf } from '@storybook/addon-docs/blocks'
-import * as Greese from '@greese-ui/react'
-import * as Icons from '@greese-ui/icons'
+import * as Greese from '@greese/react'
+import * as Icons from '@greese/icons'
 import { art, countries } from '../stories/_shared/fixtures.tsx'
 import { onSnippet, snippetFor } from './snippets.ts'
 

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { VisuallyHidden } from '@greese-ui/react'
+import { VisuallyHidden } from '@greese/react'
 
 const meta = {
   title: 'Utilities/VisuallyHidden',

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Step, Steps } from '@greese-ui/react'
+import { Step, Steps } from '@greese/react'
 
 /** One step. Steps sets its status from `current`; set it here to override. */
 const meta = {

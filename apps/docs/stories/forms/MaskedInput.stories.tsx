@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import { Field, Grid, MaskedInput, Text } from '@greese-ui/react'
+import { Field, Grid, MaskedInput, Text } from '@greese/react'
 
 const meta = {
   title: 'Forms/MaskedInput',

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Box } from '@greese-ui/react'
+import { Box } from '@greese/react'
 
 const meta = {
   title: 'Layout/Box',

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Center, Tile } from '@greese-ui/react'
-import { StarIcon } from '@greese-ui/icons'
+import { Center, Tile } from '@greese/react'
+import { StarIcon } from '@greese/icons'
 
 const meta = {
   title: 'Layout/Center',

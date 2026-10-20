@@ -1,6 +1,6 @@
 ---
 name: greese-new-component
-description: Step-by-step procedure for adding a new component to @greese-ui/react, from API design to story, tests, budgets and changeset. Use when the user asks to create, add, build or port a component (including from MUI or another codebase).
+description: Step-by-step procedure for adding a new component to @greese/react, from API design to story, tests, budgets and changeset. Use when the user asks to create, add, build or port a component (including from MUI or another codebase).
 ---
 
 # Adding a GreeseUI component
@@ -56,7 +56,7 @@ has a check.
    surface (Popover, Tooltip), wrap the surface. Box-based components inherit
    it. `check-types` fails if you forget.
 
-**Check:** `npm run build -w @greese-ui/react` writes
+**Check:** `npm run build -w @greese/react` writes
 `dist/css/<Name>.css` with the right `@import`s (the dependency graph is
 automatic), and `npx tsc --noEmit -p packages/react` is clean.
 
@@ -131,7 +131,7 @@ wrapping, overflow.
     `stories/guides/Theming.mdx`;
   - if it involved a real decision, write an ADR (`greese-adr` guidance is in
     `greese-update-component`).
-- **Changeset:** `.changeset/<slug>.md` with `'@greese-ui/react': minor`.
+- **Changeset:** `.changeset/<slug>.md` with `'@greese/react': minor`.
 
 ## 9. Verify and commit
 

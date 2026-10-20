@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ScrollCarousel, ScrollCarouselSlide, Tile } from '@greese-ui/react'
+import { ScrollCarousel, ScrollCarouselSlide, Tile } from '@greese/react'
 
 /** One slide: a group announced as "n of count", or by its own `label`. */
 const meta = {

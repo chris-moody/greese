@@ -1,17 +1,17 @@
-# @greese-ui/react
+# @greese/react
 
 Mobile-first, TypeScript-first React components. All styling is static CSS
 compiled at build time and themed with CSS custom properties, so there is no
 CSS-in-JS runtime.
 
 ```bash
-npm install @greese-ui/react
+npm install @greese/react
 ```
 
 ```tsx
 // Once, at your app root:
-import '@greese-ui/react/base.css' // optional: reset + body defaults
-import '@greese-ui/react/styles.css' // tokens + component styles
+import '@greese/react/base.css' // optional: reset + body defaults
+import '@greese/react/styles.css' // tokens + component styles
 ```
 
 Requires React 19. `styles.css` styles only `.greese-*` classes. Import
@@ -22,8 +22,8 @@ To ship only the CSS you use, import per-component stylesheets instead of
 on, and bundlers de-duplicate the shared parts:
 
 ```tsx
-import '@greese-ui/react/css/Button.css'
-import '@greese-ui/react/css/Dialog.css' // + IconButton, Button, VisuallyHidden
+import '@greese/react/css/Button.css'
+import '@greese/react/css/Dialog.css' // + IconButton, Button, VisuallyHidden
 ```
 
 ## Colour scheme
@@ -31,7 +31,7 @@ import '@greese-ui/react/css/Dialog.css' // + IconButton, Button, VisuallyHidden
 The scheme follows the OS by default. To let users choose:
 
 ```tsx
-import { getSchemeScript, useColorScheme } from '@greese-ui/react'
+import { getSchemeScript, useColorScheme } from '@greese/react'
 
 // In <head>, so a saved choice applies before first paint:
 ;<script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
@@ -44,7 +44,7 @@ setScheme('dark') // 'light' | 'dark' | 'system'
 ## Themes
 
 ```tsx
-import { createTheme, ThemeProvider } from '@greese-ui/react'
+import { createTheme, ThemeProvider } from '@greese/react'
 
 // At module scope: builds static CSS once.
 const brand = createTheme({
@@ -80,7 +80,7 @@ motion in your build. You write component, part and modifier names; it adds
 the `greese-` prefix, and stops the build on names the library doesn't have:
 
 ```scss
-@use 'pkg:@greese-ui/react/scss/kit' as greese;
+@use 'pkg:@greese/react/scss/kit' as greese;
 
 @include greese.tokens(
   (
@@ -119,7 +119,7 @@ style props and the `greese` prop still beat them per instance. Compile with
 Sass's `NodePackageImporter`. A named `greese.theme(brand) { … }` works with
 `<ThemeProvider theme="brand">`.
 
-`@greese-ui/react/style-manifest.json` lists every component's classes,
+`@greese/react/style-manifest.json` lists every component's classes,
 parts, modifiers, states and variables. Theme Studio (`npm run studio` in
 this repository) edits a theme visually and writes the SCSS and CSS. See
 **Guides/Styling components** in the docs.
@@ -127,11 +127,11 @@ this repository) edits a theme visually and writes the SCSS and CSS. See
 ## Icons
 
 GreeseUI ships no icon set: every icon slot takes any `ReactNode`. The
-optional `@greese-ui/icons` package has the line icons these docs use, sized
+optional `@greese/icons` package has the line icons these docs use, sized
 to text and drawn in `currentColor`:
 
 ```tsx
-import { SearchIcon } from '@greese-ui/icons'
+import { SearchIcon } from '@greese/icons'
 
 ;<IconButton label="Search">
   <SearchIcon />
@@ -244,14 +244,14 @@ and use them by name, alone or in sequences.
   cost no JavaScript.
 - **Everything else loads a small runtime plus greese.js** (about 6.9 kB,
   brotli) as a lazy chunk, the first time a prop needs it. Add
-  `import '@greese-ui/react/greese'` at your entry to load it up front.
+  `import '@greese/react/greese'` at your entry to load it up front.
 - **Reduced motion is respected throughout.**
 - **`<Motion>` gives any element the prop.**
 - **`useGreese()`** ties greese.js to a component:
   scoped selectors, dependencies, and everything reverted on unmount,
   including animations started in handlers. `useTimeline()` is its
   one-timeline shortcut.
-- **greese.js** (`@greese-ui/greese`) is re-exported (`animate`, `timeline`,
+- **greese.js** (`@greese/js`) is re-exported (`animate`, `timeline`,
   `ease`, `splitText`) for full keyframe timelines.
 
 ## Responsive values
@@ -270,7 +270,7 @@ To use your own breakpoint values, recompile the SCSS and tell the hooks. The
 keys stay `xs`–`xl`:
 
 ```scss
-@use 'pkg:@greese-ui/react/scss' with (
+@use 'pkg:@greese/react/scss' with (
   $breakpoints: (
     xs: 0px,
     sm: 480px,

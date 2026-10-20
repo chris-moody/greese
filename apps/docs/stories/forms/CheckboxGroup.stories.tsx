@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Checkbox, CheckboxGroup } from '@greese-ui/react'
+import { Checkbox, CheckboxGroup } from '@greese/react'
 
 const meta = {
   title: 'Forms/CheckboxGroup',

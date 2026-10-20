@@ -1,5 +1,5 @@
 {
-  "name": "@greese-ui/icons",
+  "name": "@greese/icons",
   "version": "0.0.0",
   "description": "A small set of line icons as React components, sized to text and coloured by currentColor. Optional: GreeseUI takes any icons.",
   "keywords": [
@@ -46,8 +46,8 @@
     "react": "^19.0.0"
   },
   "devDependencies": {
-    "@greese-ui/eslint-config": "*",
-    "@greese-ui/typescript-config": "*",
+    "@greese/eslint-config": "*",
+    "@greese/typescript-config": "*",
     "@size-limit/preset-small-lib": "^14.2.0",
     "@testing-library/react": "^16.3.3",
     "@types/react": "^19.3.0",

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Heading, TextRotate } from '@greese-ui/react'
+import { Heading, TextRotate } from '@greese/react'
 
 const meta = {
   title: 'Motion/TextRotate',

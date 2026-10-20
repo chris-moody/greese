@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Field, Slider } from '@greese-ui/react'
+import { Field, Slider } from '@greese/react'
 
 const meta = {
   title: 'Forms/Slider',

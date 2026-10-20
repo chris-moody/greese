@@ -1,5 +1,5 @@
 import type { JSX, ReactNode } from 'react'
-import { Container, Heading, Stack, Text } from '@greese-ui/react'
+import { Container, Heading, Stack, Text } from '@greese/react'
 
 interface SectionProps {
   id: string

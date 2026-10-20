@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button, Menu, MenuItem } from '@greese-ui/react'
+import { Button, Menu, MenuItem } from '@greese/react'
 
 /** One action in a Menu. Open the menu to see it; `asChild` makes it a link. */
 const meta = {

@@ -128,7 +128,7 @@ Then, in a stylesheet imported **after** GreeseUI's styles:
 
 ```scss
 // theme.scss
-@use 'pkg:@greese-ui/react/scss/kit' as greese;
+@use 'pkg:@greese/react/scss/kit' as greese;
 ```
 
 Using the module emits nothing. Its mixins emit the CSS, plus the layer order
@@ -261,7 +261,7 @@ Error: GreeseUI kit: `Button` has no part `icn`. Parts: icon.
 ```
 
 To target a class this version doesn't know (a part from a newer release, say),
-turn the check off: `@use 'pkg:@greese-ui/react/scss/kit' as greese with ($strict: false);`.
+turn the check off: `@use 'pkg:@greese/react/scss/kit' as greese with ($strict: false);`.
 
 ## Theme-wide motion
 
@@ -327,7 +327,7 @@ Per instance:
 - `style={{ animation: 'none' }}` turns it off for that instance.
 
 Entrance presets need the Motion styles: they're in `styles.css`; with
-per-component CSS, also import `@greese-ui/react/css/Motion.css`.
+per-component CSS, also import `@greese/react/css/Motion.css`.
 
 Scroll reveals and hover, press and focus effects need the JavaScript
 runtime, so they stay per instance, on the `greese` prop.
@@ -349,7 +349,7 @@ writes two files next to it on save:
 | File                | Use it if                                                  |
 | ------------------- | ---------------------------------------------------------- |
 | `greese-theme.scss` | Your app compiles Sass: `@use` it after the library styles |
-| `greese-theme.css`  | It doesn't: import it after `@greese-ui/react/styles.css`  |
+| `greese-theme.css`  | It doesn't: import it after `@greese/react/styles.css`  |
 
 Both are generated; edit the JSON, or use the studio. Put hand-written
 overrides in a stylesheet of your own beside them.
@@ -413,6 +413,6 @@ comes with the rest of the release work.
 
 Generated from the library's stylesheets, as is the Styling section on each
 component's page. The same data ships as
-`@greese-ui/react/style-manifest.json`.
+`@greese/react/style-manifest.json`.
 
 <AllComponentStyles />

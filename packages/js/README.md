@@ -1,4 +1,4 @@
-# greese.js (`@greese-ui/greese`)
+# greese.js (`@greese/js`)
 
 A small keyframe and timeline animation library for the web: about 5 kB
 (brotli), no dependencies, no framework.
@@ -19,14 +19,14 @@ A small keyframe and timeline animation library for the web: about 5 kB
 **npm, with any bundler (ESM, tree-shaken, typed):**
 
 ```bash
-npm install @greese-ui/greese
+npm install @greese/js
 ```
 
 ```ts
-import { animate, timeline } from '@greese-ui/greese'
+import { animate, timeline } from '@greese/js'
 ```
 
-**With GreeseUI:** `@greese-ui/react` depends on it and re-exports `animate`,
+**With GreeseUI:** `@greese/react` depends on it and re-exports `animate`,
 `timeline`, `ease`, `cubicBezier` and `splitText`. It also adds a `greese`
 prop on every component. There's nothing extra to install.
 
@@ -34,7 +34,7 @@ prop on every component. There's nothing extra to install.
 
 ```html
 <script type="module">
-  import { animate } from 'https://cdn.jsdelivr.net/npm/@greese-ui/greese@0.1/+esm'
+  import { animate } from 'https://cdn.jsdelivr.net/npm/@greese/js@0.1/+esm'
   animate('h1', { opacity: [0, 1], y: [20, 0] })
 </script>
 ```
@@ -42,7 +42,7 @@ prop on every component. There's nothing extra to install.
 **As a classic `<script>` (defines `window.greese`):**
 
 ```html
-<script src="https://unpkg.com/@greese-ui/greese@0.1/dist/greese.global.js"></script>
+<script src="https://unpkg.com/@greese/js@0.1/dist/greese.global.js"></script>
 <script>
   greese.animate('h1', { opacity: [0, 1], y: [20, 0] })
 </script>
@@ -55,7 +55,7 @@ frame, timelines don't play on their own; drive plain objects with
 ## Use
 
 ```ts
-import { animate, timeline, splitText } from '@greese-ui/greese'
+import { animate, timeline, splitText } from '@greese/js'
 
 // One call: plays on the next frame.
 animate('.card', { opacity: [0, 1], y: [16, 0] }, { duration: 0.4, stagger: 0.05 })

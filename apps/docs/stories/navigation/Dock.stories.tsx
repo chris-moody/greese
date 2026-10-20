@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Dock, DockItem } from '@greese-ui/react'
-import { BellIcon, HomeIcon, SearchIcon, UserIcon } from '@greese-ui/icons'
+import { Dock, DockItem } from '@greese/react'
+import { BellIcon, HomeIcon, SearchIcon, UserIcon } from '@greese/icons'
 
 const meta = {
   title: 'Navigation/Dock',

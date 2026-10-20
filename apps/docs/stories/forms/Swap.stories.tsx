@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Stack, Swap } from '@greese-ui/react'
-import { MoonIcon, SunIcon } from '@greese-ui/icons'
+import { Stack, Swap } from '@greese/react'
+import { MoonIcon, SunIcon } from '@greese/icons'
 
 const meta = {
   title: 'Forms/Swap',

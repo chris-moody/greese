@@ -12,7 +12,7 @@ import {
   Text,
   useColorScheme,
   type ColorScheme,
-} from '@greese-ui/react'
+} from '@greese/react'
 import { REPO_URL } from '../config.ts'
 import { icons } from '../icons.tsx'
 

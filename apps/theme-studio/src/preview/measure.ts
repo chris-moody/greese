@@ -4,7 +4,7 @@
  * `rgb()`, `oklch()`, alpha and `var()` references all resolve here, as the
  * browser resolves them for the components.
  */
-import { color } from '@greese-ui/tokens'
+import { color } from '@greese/ui'
 
 /** `#rrggbb`, or `#rrggbbaa` when the colour isn't opaque. */
 export type Measured = Record<string, string>

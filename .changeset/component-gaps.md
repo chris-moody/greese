@@ -1,5 +1,5 @@
 ---
-'@greese-ui/react': minor
+'@greese/react': minor
 ---
 
 Component gaps: `Combobox` (searchable select, WAI-ARIA 1.2), `NumberField`

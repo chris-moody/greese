@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Radio, RadioGroup } from '@greese-ui/react'
+import { Radio, RadioGroup } from '@greese/react'
 
 /** One choice of a RadioGroup: a native radio with its label and description. */
 const meta = {

@@ -4,7 +4,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 # greese.js
 
-greese.js (`@greese-ui/greese`) is a small keyframe and timeline animation
+greese.js (`@greese/js`) is a small keyframe and timeline animation
 library for the web. It's about 5 kB brotli (6 kB with every extra), has no
 dependencies and needs no framework. Timelines play, pause, seek, reverse,
 scale time, repeat, yoyo and nest. It animates:
@@ -24,7 +24,7 @@ are under **Motion/greese.js**.
 | Form                                                  | Use it when                                               |
 | ----------------------------------------------------- | --------------------------------------------------------- |
 | [npm + a bundler (ESM)](#npm-and-a-bundler)           | Most apps: Vite, webpack, Next.js, Remix, Astro…          |
-| [Inside GreeseUI](#inside-greeseui)                   | You already use `@greese-ui/react`                        |
+| [Inside GreeseUI](#inside-greeseui)                   | You already use `@greese/react`                        |
 | [CDN, as an ES module](#cdn-as-an-es-module)          | A page or prototype with no build step                    |
 | [CDN, as a classic `<script>`](#a-classic-script-tag) | CMS templates and legacy pages; gives you `window.greese` |
 | [Node and server rendering](#node-and-servers)        | Tests, server-side frame generation, SSR-safe imports     |
@@ -32,11 +32,11 @@ are under **Motion/greese.js**.
 ### npm and a bundler
 
 ```sh
-npm install @greese-ui/greese
+npm install @greese/js
 ```
 
 ```ts
-import { animate, timeline, splitText, ease } from '@greese-ui/greese'
+import { animate, timeline, splitText, ease } from '@greese/js'
 
 animate('.card', { opacity: [0, 1], y: [16, 0] }, { duration: 0.4, stagger: 0.05 })
 ```
@@ -47,11 +47,11 @@ animate('.card', { opacity: [0, 1], y: [16, 0] }, { duration: 0.4, stagger: 0.05
 
 ### Inside GreeseUI
 
-`@greese-ui/react` depends on greese.js and re-exports `animate`,
+`@greese/react` depends on greese.js and re-exports `animate`,
 `timeline`, `Timeline`, `ease`, `cubicBezier`, `splitText` and their types:
 
 ```ts
-import { animate, timeline } from '@greese-ui/react'
+import { animate, timeline } from '@greese/react'
 ```
 
 GreeseUI also adds the `greese` prop and the `useGreese()` hook; see
@@ -64,8 +64,8 @@ the version.
 
 ```html
 <script type="module">
-  import { animate } from 'https://cdn.jsdelivr.net/npm/@greese-ui/greese@0.1/+esm'
-  // or: 'https://unpkg.com/@greese-ui/greese@0.1/dist/index.js'
+  import { animate } from 'https://cdn.jsdelivr.net/npm/@greese/js@0.1/+esm'
+  // or: 'https://unpkg.com/@greese/js@0.1/dist/index.js'
 
   animate('h1', { opacity: [0, 1], y: [20, 0] }, { duration: 0.6 })
 </script>
@@ -78,14 +78,14 @@ defines `window.greese`. It's the package's default file on unpkg and
 jsDelivr.
 
 ```html
-<script src="https://unpkg.com/@greese-ui/greese@0.1/dist/greese.global.js"></script>
+<script src="https://unpkg.com/@greese/js@0.1/dist/greese.global.js"></script>
 <script>
   const { timeline } = window.greese
   timeline({ repeat: -1, yoyo: true }).to('.logo', { rotate: 10, duration: 0.8 })
 </script>
 ```
 
-With a bundler, the same file is available as `@greese-ui/greese/global`.
+With a bundler, the same file is available as `@greese/js/global`.
 
 ### Node and servers
 
@@ -95,7 +95,7 @@ timelines don't play by themselves; drive them with `seek()` or `progress()`.
 That's useful for tests, or for rendering frames (canvas, video) offline:
 
 ```ts
-import { timeline } from '@greese-ui/greese'
+import { timeline } from '@greese/js'
 
 const state = { x: 0, opacity: 0 }
 const tl = timeline({ paused: true })
@@ -119,7 +119,7 @@ The rules are the same everywhere:
 
 ```tsx
 import { useEffect, useRef } from 'react'
-import { timeline } from '@greese-ui/greese'
+import { timeline } from '@greese/js'
 
 export function Hero() {
   const root = useRef<HTMLDivElement>(null)
@@ -147,7 +147,7 @@ promise: a timeline is awaitable.
 ```vue
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { timeline, type Timeline } from '@greese-ui/greese'
+import { timeline, type Timeline } from '@greese/js'
 
 const card = ref<HTMLElement>()
 let tl: Timeline | undefined
@@ -164,7 +164,7 @@ onBeforeUnmount(() => tl?.kill())
 
 ```svelte
 <script lang="ts">
-  import { animate } from '@greese-ui/greese'
+  import { animate } from '@greese/js'
   // An action: runs when the element mounts, cleans up when it unmounts.
   const reveal = (node: HTMLElement) => {
     const tl = animate(node, { opacity: [0, 1], y: [16, 0] }, { duration: 0.5 })
@@ -178,7 +178,7 @@ onBeforeUnmount(() => tl?.kill())
 ### Plain JavaScript
 
 ```ts
-import { animate, splitText } from '@greese-ui/greese'
+import { animate, splitText } from '@greese/js'
 
 const { elements } = splitText(document.querySelector('h1')!)
 const intro = animate(elements, { opacity: [0, 1], y: [10, 0] }, { stagger: 0.03 })
@@ -339,7 +339,7 @@ targets. `fromPixels` reads a symbol animation's layers:
 - frame numbers become seconds at the document's fps.
 
 ```ts
-import { fromPixels } from '@greese-ui/greese'
+import { fromPixels } from '@greese/js'
 
 const tl = fromPixels(
   doc.symbols.hero.animations.idle,
@@ -397,7 +397,7 @@ never during playback.
   in `batch()` for the same effect:
 
 ```ts
-import { animate, batch } from '@greese-ui/greese'
+import { animate, batch } from '@greese/js'
 
 batch(() => {
   for (const card of cards) animate(card, { opacity: [0, 1], y: [16, 0] })

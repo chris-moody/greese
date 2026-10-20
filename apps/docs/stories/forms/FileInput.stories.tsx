@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Field, FileInput } from '@greese-ui/react'
+import { Field, FileInput } from '@greese/react'
 
 const meta = {
   title: 'Forms/FileInput',

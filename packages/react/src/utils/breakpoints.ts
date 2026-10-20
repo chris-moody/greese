@@ -2,7 +2,7 @@ import {
   breakpoints as defaults,
   breakpointKeys,
   type Breakpoint,
-} from '@greese-ui/tokens'
+} from '@greese/ui'
 
 let current: Record<Breakpoint, number> = { ...defaults }
 const listeners = new Set<() => void>()
@@ -13,7 +13,7 @@ export const getBreakpoints = (): Readonly<Record<Breakpoint, number>> => curren
 /**
  * Use your own breakpoint values in JS (useBreakpoint, useBreakpointValue,
  * Sidebar). Call once at startup, before rendering, with the same values you
- * compiled the SCSS with (`@use 'pkg:@greese-ui/react/scss' with ($breakpoints: …)`).
+ * compiled the SCSS with (`@use 'pkg:@greese/react/scss' with ($breakpoints: …)`).
  * The keys stay xs/sm/md/lg/xl; `xs` is always 0.
  */
 export const configureBreakpoints = (

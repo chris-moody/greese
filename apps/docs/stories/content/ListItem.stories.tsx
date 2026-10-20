@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Avatar, Button, List, ListItem } from '@greese-ui/react'
+import { Avatar, Button, List, ListItem } from '@greese/react'
 
 /** One row of a List: media, a title and description, and actions. */
 const meta = {

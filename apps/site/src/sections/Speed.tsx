@@ -16,7 +16,7 @@ import {
   TableRow,
   Text,
   Tooltip,
-} from '@greese-ui/react'
+} from '@greese/react'
 import {
   benchmark,
   fmt,

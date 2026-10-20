@@ -14,7 +14,7 @@ import {
   TabPanel,
   Tabs,
   Text,
-} from '@greese-ui/react'
+} from '@greese/react'
 import { facts, kB, sizeTables, type Row } from '../data/index.ts'
 import { Section } from '../Section.tsx'
 

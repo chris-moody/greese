@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button, Popover, Stack, Text } from '@greese-ui/react'
+import { Button, Popover, Stack, Text } from '@greese/react'
 
 const meta = {
   title: 'Overlays/Popover',

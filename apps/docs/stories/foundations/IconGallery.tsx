@@ -1,16 +1,16 @@
 import { useState, type JSX } from 'react'
-import * as icons from '@greese-ui/icons'
-import { CheckIcon, PlusIcon } from '@greese-ui/icons'
-import { Button, Grid, IconButton, Stack, Text, Tile } from '@greese-ui/react'
+import * as icons from '@greese/icons'
+import { CheckIcon, PlusIcon } from '@greese/icons'
+import { Button, Grid, IconButton, Stack, Text, Tile } from '@greese/react'
 
 type Icon = (props: icons.IconProps) => JSX.Element
 
-const PACKAGE = '@greese-ui/icons'
+const PACKAGE = '@greese/icons'
 const names = Object.keys(icons).filter((name) => /^[A-Z]\w*Icon$/.test(name))
 const importOf = (list: string[]) => `import { ${list.join(', ')} } from '${PACKAGE}'`
 
 /**
- * Every icon in @greese-ui/icons. Each tile copies its import or its name;
+ * Every icon in @greese/icons. Each tile copies its import or its name;
  * "+" collects icons into a list, copied as names or as one import.
  */
 export const IconGallery = (): JSX.Element => {

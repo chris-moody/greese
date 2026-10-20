@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Segment, SegmentedControl } from '@greese-ui/react'
+import { Segment, SegmentedControl } from '@greese/react'
 
 /** One option of a SegmentedControl: a native radio underneath. */
 const meta = {

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { SpeedDial, SpeedDialAction } from '@greese-ui/react'
-import { DocumentIcon, FolderIcon } from '@greese-ui/icons'
+import { SpeedDial, SpeedDialAction } from '@greese/react'
+import { DocumentIcon, FolderIcon } from '@greese/icons'
 
 /** One action in a SpeedDial: a labelled round button. Open the dial to see it. */
 const meta = {

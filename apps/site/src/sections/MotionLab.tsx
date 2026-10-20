@@ -11,7 +11,7 @@ import {
   TextField,
   useGreese,
   type GreeseProp,
-} from '@greese-ui/react'
+} from '@greese/react'
 import { Section } from '../Section.tsx'
 
 /** Every effect a sequence can name here: the built-ins plus src/effects.ts. */

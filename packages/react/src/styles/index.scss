@@ -1,10 +1,10 @@
 // Entry point compiled to dist/greese-ui.css: tokens and component styles.
 // It styles only `.greese-*` classes, never bare elements. The opt-in global
 // reset and body styles live in base.scss (dist/base.css).
-// Also the public SCSS entry (`pkg:@greese-ui/react/scss`): forwarding config
+// Also the public SCSS entry (`pkg:@greese/react/scss`): forwarding config
 // lets `@use … with ($breakpoints: …)` reconfigure every component.
 @forward 'config';
-@use 'pkg:@greese-ui/tokens/scss';
+@use 'pkg:@greese/ui/scss';
 @use '../components/ThemeProvider/ThemeProvider';
 @use '../components/VisuallyHidden/VisuallyHidden';
 @use '../components/Box/Box';

@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Button, Heading, Stack, Text } from '@greese-ui/react'
+import { Button, Heading, Stack, Text } from '@greese/react'
 import { setIn } from '../edit.ts'
 import { ValueRow } from '../fields.tsx'
 import type { ThemeSpec } from '../spec.ts'

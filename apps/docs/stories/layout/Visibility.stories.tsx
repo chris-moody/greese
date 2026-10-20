@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Hide, Show, Tile } from '@greese-ui/react'
+import { Hide, Show, Tile } from '@greese/react'
 
 const meta = {
   title: 'Layout/Show and Hide',

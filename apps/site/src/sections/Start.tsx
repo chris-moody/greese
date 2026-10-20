@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Badge, Button, Card, Code, Grid, Heading, Stack, Text } from '@greese-ui/react'
+import { Badge, Button, Card, Code, Grid, Heading, Stack, Text } from '@greese/react'
 import { DOCS_URL, INSTALL, STUDIO_URL } from '../config.ts'
 import { Section } from '../Section.tsx'
 
@@ -7,11 +7,11 @@ const steps = [
   { title: 'Install', code: INSTALL },
   {
     title: 'Add the styles once',
-    code: `import '@greese-ui/react/base.css'\nimport '@greese-ui/react/styles.css'`,
+    code: `import '@greese/react/base.css'\nimport '@greese/react/styles.css'`,
   },
   {
     title: 'Build, and add motion',
-    code: `import { Button, Card } from '@greese-ui/react'\n\n<Card greese={{ inView: 'fadeUp' }}>\n  <Button greese={{ hover: 'lift' }}>Ship it</Button>\n</Card>`,
+    code: `import { Button, Card } from '@greese/react'\n\n<Card greese={{ inView: 'fadeUp' }}>\n  <Button greese={{ hover: 'lift' }}>Ship it</Button>\n</Card>`,
   },
 ]
 
@@ -71,7 +71,7 @@ export const Start = (): JSX.Element => (
       </Button>
       <Text tone="muted" className="site-start-note">
         Using only a few components? Import their stylesheets instead, such as{' '}
-        <Code>@greese-ui/react/css/Button.css</Code>.
+        <Code>@greese/react/css/Button.css</Code>.
       </Text>
     </Stack>
   </Section>

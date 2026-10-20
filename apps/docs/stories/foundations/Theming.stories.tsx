@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { createTheme, ThemeProvider } from '@greese-ui/react'
+import { createTheme, ThemeProvider } from '@greese/react'
 
 const brand = createTheme({
   name: 'docs-brand',

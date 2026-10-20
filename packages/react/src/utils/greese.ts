@@ -1,5 +1,5 @@
 import { cloneElement, createElement, type CSSProperties, type ReactElement } from 'react'
-import type { Ease, Keyframes, Timeline } from '@greese-ui/greese'
+import type { Ease, Keyframes, Timeline } from '@greese/js'
 import { GreeseIsland } from '../components/Motion/GreeseIsland.tsx'
 import type { BuiltInEffect } from '../components/Motion/greeseRuntime.ts'
 import { cx } from './cx.ts'
@@ -30,7 +30,7 @@ export type GreeseTextEffect = 'type' | 'count' | 'split'
  * type-check and autocomplete:
  *
  * ```ts
- * declare module '@greese-ui/react' {
+ * declare module '@greese/react' {
  *   interface GreeseEffectRegistry { wobble: true }
  * }
  * ```
