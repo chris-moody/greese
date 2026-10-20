@@ -139,6 +139,23 @@
     );
   }
 
+  // Plain text: the surrounding text's color and no box, so it reads as
+  // text and only a faint tint on hover says it's a button.
+  .greese-Button--text {
+    --greese-button-fg: currentcolor;
+    --greese-button-bg: transparent;
+    --greese-button-bg-hover: color-mix(
+      in oklab,
+      var(--greese-button-tone) 8%,
+      transparent
+    );
+    --greese-button-bg-active: color-mix(
+      in oklab,
+      var(--greese-button-tone) 14%,
+      transparent
+    );
+  }
+
   // Sizes
   @each $size, $spec in controls.$sizes {
     .greese-Button--size-#{$size} {

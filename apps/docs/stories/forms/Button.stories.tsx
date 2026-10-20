@@ -7,7 +7,7 @@ const meta = {
   component: Button,
   args: { children: 'Save changes' },
   argTypes: {
-    variant: { control: 'inline-radio', options: ['solid', 'soft', 'outline', 'ghost'] },
+    variant: { control: 'inline-radio', options: ['solid', 'soft', 'outline', 'ghost', 'text'] },
     tone: {
       control: 'inline-radio',
       options: ['primary', 'secondary', 'tertiary', 'accent', 'neutral', 'negative'],
@@ -28,7 +28,7 @@ export const VariantsAndTones: Story = {
         ['primary', 'secondary', 'tertiary', 'accent', 'neutral', 'negative'] as const
       ).map((tone) => (
         <Stack key={tone} direction="row" gap={2} wrap="wrap">
-          {(['solid', 'soft', 'outline', 'ghost'] as const).map((variant) => (
+          {(['solid', 'soft', 'outline', 'ghost', 'text'] as const).map((variant) => (
             <Button key={variant} tone={tone} variant={variant}>
               {variant} {tone}
             </Button>

@@ -87,7 +87,7 @@ $blocks: (
   ),
   'Button': (
     parts: ('icon',),
-    modifiers: ('accent', 'ghost', 'negative', 'neutral', 'outline', 'primary', 'secondary', 'size-lg', 'size-md', 'size-sm', 'soft', 'solid', 'tertiary',),
+    modifiers: ('accent', 'ghost', 'negative', 'neutral', 'outline', 'primary', 'secondary', 'size-lg', 'size-md', 'size-sm', 'soft', 'solid', 'tertiary', 'text',),
     part-modifiers: (),
     variables: ('--greese-button-bg', '--greese-button-bg-active', '--greese-button-bg-hover', '--greese-button-border', '--greese-button-fg', '--greese-button-height', '--greese-button-on-tone', '--greese-button-padding', '--greese-button-tone',),
   ),

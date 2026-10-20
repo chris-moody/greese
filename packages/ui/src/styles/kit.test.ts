@@ -297,8 +297,8 @@ describe('SCSS kit: tokens() and theme()', () => {
   })
 
   it('rejects unknown token groups and keys', () => {
-    expect(() => compile('@include greese.tokens((color: (accent: red)));')).toThrow(
-      /no token group `color`/
+    expect(() => compile('@include greese.tokens((colr: (accent: red)));')).toThrow(
+      /no token group `colr`/
     )
     expect(() => compile('@include greese.tokens((radius: (huge: 1px)));')).toThrow(
       /no `radius` token `huge`. Keys: none, sm, md, lg, pill/

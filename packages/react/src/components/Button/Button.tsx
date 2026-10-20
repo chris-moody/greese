@@ -10,7 +10,7 @@ import { Slot, Slottable } from '../Slot/Slot.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 import type { BrandTone } from '../../utils/tone.ts'
 
-export type ButtonVariant = 'solid' | 'soft' | 'outline' | 'ghost'
+export type ButtonVariant = 'solid' | 'soft' | 'outline' | 'ghost' | 'text'
 export type ButtonTone = BrandTone | 'neutral' | 'negative'
 export type ControlSize = 'sm' | 'md' | 'lg'
 
@@ -19,7 +19,8 @@ export interface ButtonProps extends GreeseProps, ComponentPropsWithoutRef<'butt
   ref?: Ref<HTMLButtonElement>
   /**
    * Visual weight: `solid` for the main action, `soft`, `outline`, then `ghost`
-   * for the least.
+   * for the least. `text` drops the box and takes the surrounding text's color,
+   * so the button reads as plain text.
    * @default 'solid'
    */
   variant?: ButtonVariant

@@ -54,6 +54,15 @@ describe('Button', () => {
     expect(button).toHaveFocus()
   })
 
+  it('renders the text variant, with the same markup as the others', () => {
+    render(<Button variant="text">Learn more</Button>)
+    expect(screen.getByRole('button', { name: 'Learn more' })).toHaveClass(
+      'greese-Button',
+      'greese-Button--text',
+      'greese-Button--primary'
+    )
+  })
+
   it('wraps icons as decorative and keeps them with asChild', () => {
     render(
       <Button asChild startIcon={<Icon />} variant="ghost">
