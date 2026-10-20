@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Spacer, Stack } from '@greese-ui/react'
-import { Tile } from '../_shared/fixtures.tsx'
+import { Spacer, Stack, Tile } from '@greese-ui/react'
 
 const meta = { title: 'Layout/Spacer', component: Spacer } satisfies Meta<typeof Spacer>
 export default meta

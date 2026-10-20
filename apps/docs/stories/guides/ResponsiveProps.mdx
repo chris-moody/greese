@@ -9,7 +9,7 @@ value applies from its breakpoint upward until a larger one overrides it.
 
 ```tsx
 <Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 2, lg: '2.5rem' }} />
-<Grid columns={{ xs: 1, sm: 2, lg: 4 }} gap={4} />
+<Grid container columns={{ xs: 1, sm: 2, lg: 4 }} gap={4} />
 <Box p={{ xs: 4, md: 6 }} display={{ xs: 'none', md: 'block' }} />
 <Button fullWidth={{ xs: true, md: false }}>Save</Button>
 ```
@@ -20,24 +20,34 @@ value applies from its breakpoint upward until a larger one overrides it.
 
 ## How it stays fast
 
-No CSS is generated at runtime. Each value becomes either a **class** (scale tokens and
-enums, pre-generated) or an **inline custom property** (any other length), which static
-CSS reads through a mobile-first fallback chain:
+No CSS is generated at runtime. Each breakpoint's value becomes one **class**:
+a pre-generated one for scale tokens and enums, or a value class that reads an
+**inline custom property** for any other length. Each class sets the property
+directly, inside its breakpoint's media query:
 
 ```css
-.greese-Stack--gap {
-  gap: var(--greese-stack-gap-md, var(--greese-stack-gap-sm, var(--greese-stack-gap-xs)));
+.greese-Stack--xs-gap-2 {
+  gap: var(--greese-space-2);
+}
+@media (width >= 900px) {
+  .greese-Stack--md-gap-4 {
+    gap: var(--greese-space-4);
+  }
+  .greese-Stack--md-gap {
+    gap: var(--greese-stack-gap-md);
+  } /* gap={{ md: '13px' }} */
 }
 ```
 
-The variables are registered non-inheriting, so nested components never leak values
-into each other.
+Larger breakpoints come later in the stylesheet, so they win where they apply,
+and a smaller breakpoint's value carries on above it until one does. A prop
+you don't set adds nothing to the element at all.
 
 ## Beyond the viewport
 
-- **Container queries**: `<Grid container>` makes `GridItem` spans respond to the grid's
+- **Container queries**: `<Grid container containerQueries>` makes its cells' `size`s respond to the grid's
   own width, so the same grid adapts in a sidebar and on a full page.
-- **Intrinsic layout**: `<Grid minChildWidth="14rem">` fits as many columns as there is
+- **Intrinsic layout**: `<Grid container minChildWidth="14rem">` fits as many columns as there is
   room for, with no breakpoints at all.
 - **Show / Hide**: `<Show above="md">` toggles with CSS, so no hydration mismatch.
 - **When the tree must change** (not just its styles), use `useBreakpoint()`,

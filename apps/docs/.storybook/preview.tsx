@@ -1,13 +1,32 @@
 import type { PropsWithChildren } from 'react'
 import type { Preview } from '@storybook/react-vite'
-import { DocsContainer, type DocsContainerProps } from '@storybook/addon-docs/blocks'
+import {
+  Controls,
+  DocsContainer,
+  Description,
+  Heading,
+  Primary,
+  Stories,
+  Subtitle,
+  Title,
+  useOf,
+  type DocsContainerProps,
+} from '@storybook/addon-docs/blocks'
 import { addons } from 'storybook/preview-api'
 import { GLOBALS_UPDATED, SET_GLOBALS } from 'storybook/internal/core-events'
+import { SyntaxHighlighter } from 'storybook/internal/components'
 import { create } from 'storybook/theming/create'
 import { useColorScheme, type ColorScheme } from '@greese-ui/react'
 import { color, font } from '@greese-ui/tokens'
 import '@greese-ui/react/base.css'
 import '@greese-ui/react/styles.css'
+import { ComponentStyles, hasStyles } from '../stories/_shared/ComponentStyles.tsx'
+import { scss } from './scss-grammar.ts'
+import { LiveCode } from './LiveCode.tsx'
+import { unwrapFragments } from './source.ts'
+
+// Storybook highlights CSS but not SCSS, which the Styling sections show.
+SyntaxHighlighter.registerLanguage('scss', scss)
 
 const STORAGE_KEY = 'greese-storybook-scheme'
 
@@ -40,8 +59,8 @@ const docsTheme = (mode: 'light' | 'dark') =>
     inputBorder: color.borderStrong[mode],
     textColor: color.fg[mode],
     textMutedColor: color.fgMuted[mode],
-    colorPrimary: color.accent[mode],
-    colorSecondary: color.accent[mode],
+    colorPrimary: color.primary[mode],
+    colorSecondary: color.primary[mode],
     fontBase: font.body,
     fontCode: font.mono,
   })
@@ -57,12 +76,54 @@ const ThemedDocsContainer = (props: PropsWithChildren<DocsContainerProps>) => {
   return <DocsContainer {...props} theme={themes[resolvedScheme]} />
 }
 
+/**
+ * Storybook's default docs page plus a Styling section for the component:
+ * its classes, items, what it's built on, and override examples, all from
+ * the style manifest.
+ */
+/** A component's own name: react-docgen's survives minification; the title is a fallback. */
+const nameOf = (component: unknown, title: string): string =>
+  (component as { __docgenInfo?: { displayName?: string } } | undefined)?.__docgenInfo
+    ?.displayName ?? title.split('/').at(-1)!
+
+const Styling = () => {
+  const { csfFile } = useOf('meta')
+  const { title = '', component, subcomponents = {} } = csfFile.meta
+  const name = nameOf(component, title)
+  if (!hasStyles(name)) return null
+  return (
+    <>
+      <Heading>Styling</Heading>
+      <ComponentStyles name={name} subcomponents={Object.keys(subcomponents)} />
+    </>
+  )
+}
+
+const DocsPage = () => (
+  <>
+    <Title />
+    <Subtitle />
+    <Description />
+    <Primary />
+    <Controls />
+    <LiveCode />
+    {/* The first story is already shown above, as the primary example. */}
+    <Stories includePrimary={false} />
+    <Styling />
+  </>
+)
+
 const preview: Preview = {
   // A generated docs page (props table, every story) for each component.
   tags: ['autodocs'],
   parameters: {
     layout: 'padded',
-    docs: { container: ThemedDocsContainer },
+    docs: {
+      container: ThemedDocsContainer,
+      page: DocsPage,
+      // Show code: no <React.Fragment> wrappers from children passed in args.
+      source: { transform: (code: string) => unwrapFragments(code) },
+    },
     options: {
       storySort: {
         order: [
@@ -71,6 +132,7 @@ const preview: Preview = {
             'Introduction',
             'Getting started',
             'Theming',
+            'Styling components',
             'Responsive props',
             'Accessibility',
             'Animation',

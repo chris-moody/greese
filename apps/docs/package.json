@@ -7,9 +7,10 @@
     "dev": "storybook dev -p 6006 --no-open",
     "build": "storybook build -o storybook-static --quiet",
     "check-types": "tsc --noEmit",
-    "lint": "eslint stories .storybook scripts --max-warnings 0 && node scripts/check-story-coverage.mjs"
+    "lint": "eslint stories .storybook scripts --max-warnings 0 && node scripts/check-story-coverage.mjs && node scripts/check-prop-docs.mjs"
   },
   "dependencies": {
+    "@greese-ui/icons": "*",
     "@greese-ui/react": "*",
     "@greese-ui/tokens": "*",
     "react": "^19.3.1",
@@ -24,7 +25,10 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "eslint": "^9.39.0",
+    "prism-react-renderer": "^2.4.1",
+    "react-docgen-typescript": "^2.4.0",
     "react-hook-form": "7.89.0",
+    "react-live": "4.1.8",
     "remark-gfm": "^4.0.1",
     "sass-embedded": "^1.105.2",
     "storybook": "^10.6.2",

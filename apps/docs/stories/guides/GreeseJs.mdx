@@ -54,7 +54,7 @@ animate('.card', { opacity: [0, 1], y: [16, 0] }, { duration: 0.4, stagger: 0.05
 import { animate, timeline } from '@greese-ui/react'
 ```
 
-GreeseUI also adds the `greese` prop and `useTimeline()`; see
+GreeseUI also adds the `greese` prop and the `useGreese()` hook; see
 **Guides/Animation**.
 
 ### CDN, as an ES module
@@ -210,7 +210,7 @@ next frame and returns it.
 
 - **Targets**: a selector, an element, a list of elements (NodeList, array),
   or any object.
-- **Times are seconds**, as in GSAP (WAAPI uses milliseconds).
+- **Times are seconds** (WAAPI uses milliseconds).
 - **Keyframes** come in two forms, as with `element.animate()`:
   - **Property lists**: `{ opacity: [0, 1], x: [0, 40, 20] }`. Values are
     spaced evenly; a single value animates from the current one.
@@ -260,7 +260,7 @@ const intro = timeline()
 which stops and restores every animated property.
 
 Options: `paused`, `repeat` (`-1` is forever), `yoyo`, `repeatDelay`,
-`timeScale`, `reducedMotion`, `onUpdate`, `onComplete`.
+`timeScale`, `reducedMotion`, `scope` (selector strings match inside that element), `onUpdate`, `onComplete`.
 
 A timeline is awaitable: `await animate(el, …)` resolves when it completes. It
 resolves with no value, so returning a timeline from an `async` function or a
@@ -284,7 +284,7 @@ through its own `repeat`, `yoyo` and `timeScale`.
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `x`, `y`, `z`, `rotate`, `scale`, `scaleX`, `scaleY` | Written to the individual `translate`, `rotate` and `scale` properties: they compose without a matrix and don't fight a `transform` from your CSS. Numbers mean px or deg |
 | CSS properties, camelCase                            | `opacity`, `width`, `backgroundColor`, `filter`, `clipPath`, `boxShadow`… Bare numbers mean px, except unitless properties such as `opacity`                              |
-| `'--custom-properties'`                              | Including GreeseUI tokens: animate `--greese-color-accent` and every component that reads it follows                                                                      |
+| `'--custom-properties'`                              | Including GreeseUI tokens: animate `--greese-color-primary` and every component that reads it follows                                                                     |
 | `text`                                               | Counts between numbers (`'0'` → `'12480'`), types on or deletes, or retypes                                                                                               |
 | SVG attributes the element has                       | `r`, `cx`, `d` (when point counts match)…                                                                                                                                 |
 | Numeric element properties                           | `scrollTop`, `scrollLeft`                                                                                                                                                 |
@@ -328,7 +328,7 @@ plain text; markup inside is flattened. `revert()` restores the original.
 | `'linear'`, `'ease'`, `'ease-in-out'`, `'steps(4)'`                         | The CSS names                                    |
 | `[0.2, 0, 0, 1]` or a function                                              | Any cubic-bézier, or your own curve              |
 
-Named eases match GSAP's, so GLOP code ports directly.
+Named eases match the ones GLOP's engine code already uses, so it ports directly.
 
 ## Playing GLOP Pixels animations: `fromPixels`
 
@@ -391,18 +391,26 @@ never during playback.
   the main thread.
 - Starting values are read once, the first time a property is sampled. After
   the page changes underneath (a resize), call `invalidate()`.
+- Every write waits until its timeline has finished reading, and each frame
+  renders all playing timelines in one batch, so reads never interleave with
+  writes. When you start many animations at once outside a frame, wrap them
+  in `batch()` for the same effect:
 
-## Coming from GSAP or GLOP
+```ts
+import { animate, batch } from '@greese-ui/greese'
 
-| GSAP                                                              | greese.js                                                |
-| ----------------------------------------------------------------- | -------------------------------------------------------- |
-| `gsap.to(t, vars)`                                                | `animate(t, vars)`, or `timeline().to(t, vars)`          |
-| `gsap.timeline()` + `.to/.from/.fromTo/.set/.add/.call/.addLabel` | `timeline()` + the same, with `.label`                   |
-| Position parameter                                                | The same syntax                                          |
-| `stagger: 0.1`, `{ each, from }`                                  | The same (`from: 'start' \| 'end' \| 'center' \| index`) |
-| `gsap.killTweensOf(t)`                                            | Keep the timeline and call `kill()`                      |
-| `SplitText`                                                       | `splitText`                                              |
-| Plugins, ScrollTrigger, MotionPath, morphing                      | Not included                                             |
+batch(() => {
+  for (const card of cards) animate(card, { opacity: [0, 1], y: [16, 0] })
+})
+```
+
+## Coming from GLOP
+
+GLOP's engine code ports directly: `to`, `from`, `fromTo`, `set`, `add`,
+`call` and labels, the position syntax, `stagger` (a number or
+`{ each, from }`) and the named eases are all the same. Keep a timeline and
+call `kill()` to stop and restore what it animated. Plugins, scroll-driven
+triggers, path motion and morphing aren't included.
 
 The model follows GLOP's Pixels timeline: per-property keyframe tracks
 sampled purely by time, nested timelines mapped through repeat and time scale

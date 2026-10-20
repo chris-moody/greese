@@ -23,7 +23,7 @@ export const Playground: Story = {}
 /** `9` digit, `a`/`A` letter, `h`/`H` hex digit, `*` letter or digit. */
 export const Patterns: Story = {
   render: () => (
-    <Grid gap={4}>
+    <Grid container gap={4}>
       <Field label="Card number">
         <MaskedInput mask="9999 9999 9999 9999" placeholder="4242 4242 4242 4242" />
       </Field>
@@ -45,7 +45,7 @@ export const Controlled: Story = {
   render: function Render() {
     const [raw, setRaw] = useState('5551')
     return (
-      <Grid gap={2}>
+      <Grid container gap={2}>
         <Field label="Phone">
           <MaskedInput mask="+1 (999) 999-9999" value={raw} onValueChange={setRaw} />
         </Field>

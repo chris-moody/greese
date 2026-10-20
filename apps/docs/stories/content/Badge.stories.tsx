@@ -4,11 +4,21 @@ import { Badge, Stack } from '@greese-ui/react'
 const meta = {
   title: 'Content/Badge',
   component: Badge,
-  args: { children: 'New', tone: 'accent' },
+  args: { children: 'New', tone: 'primary' },
   argTypes: {
     tone: {
       control: 'select',
-      options: ['neutral', 'accent', 'positive', 'negative', 'warning', 'info'],
+      options: [
+        'neutral',
+        'primary',
+        'secondary',
+        'tertiary',
+        'accent',
+        'positive',
+        'negative',
+        'warning',
+        'info',
+      ],
     },
     variant: { control: 'inline-radio', options: ['soft', 'solid', 'outline'] },
   },
@@ -25,7 +35,17 @@ export const All: Story = {
       {(['soft', 'solid', 'outline'] as const).map((variant) => (
         <Stack key={variant} direction="row" gap={2} wrap="wrap">
           {(
-            ['neutral', 'accent', 'positive', 'negative', 'warning', 'info'] as const
+            [
+              'neutral',
+              'primary',
+              'secondary',
+              'tertiary',
+              'accent',
+              'positive',
+              'negative',
+              'warning',
+              'info',
+            ] as const
           ).map((tone) => (
             <Badge key={tone} tone={tone} variant={variant}>
               {tone}

@@ -1,7 +1,9 @@
 /**
- * Fails when a component exported from @greese-ui/react has no story: every
- * PascalCase export must be a story meta's `component` or one of its
- * `subcomponents`, so it gets a docs page and a props table.
+ * Fails when a component exported from @greese-ui/react has no page of its
+ * own: every PascalCase export must be some story meta's `component`, so it
+ * gets a docs page with its props table and Styling section. Being listed in
+ * a parent's `subcomponents` (AccordionItem under Accordion) isn't enough;
+ * parents keep listing them for the props tabs.
  */
 import { readdirSync, readFileSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
@@ -17,7 +19,8 @@ const exported = new Map()
 for (const [, file] of barrel.matchAll(/export \* from '\.\/(.+)'/g)) {
   const source = readFileSync(join(componentsDir, file), 'utf8')
   for (const [, name] of source.matchAll(/^export (?:const|function) ([A-Z]\w*)/gm)) {
-    exported.set(name, file)
+    // SCREAMING_CASE exports are constants (TEXT_ROTATE_MAX), not components.
+    if (!/^[A-Z0-9_]+$/.test(name)) exported.set(name, file)
   }
 }
 
@@ -28,20 +31,15 @@ const documented = new Set()
 for (const file of storyFiles) {
   const source = readFileSync(join(storiesDir, file), 'utf8')
   for (const [, name] of source.matchAll(/\bcomponent: (\w+)\b/g)) documented.add(name)
-  for (const [, list] of source.matchAll(/\bsubcomponents: \{([^}]*)\}/g)) {
-    for (const name of list.split(',').map((s) => s.trim().split(':')[0].trim())) {
-      if (name) documented.add(name)
-    }
-  }
 }
 
 const missing = [...exported].filter(([name]) => !documented.has(name))
 if (missing.length) {
   console.error(
-    'Components without a story (add a meta `component` or `subcomponents` entry):'
+    'Components without a page of their own (add a story file whose meta `component` is it):'
   )
   for (const [name, file] of missing)
     console.error(`  ${name}  (${relative(process.cwd(), join(componentsDir, file))})`)
   process.exit(1)
 }
-console.log(`Story coverage: all ${exported.size} exported components have a story.`)
+console.log(`Story coverage: all ${exported.size} exported components have a page.`)

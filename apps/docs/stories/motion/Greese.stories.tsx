@@ -47,7 +47,7 @@ export const Sequence: Story = {
           <div
             key={i}
             className="tile"
-            style={{ ...box, background: 'var(--greese-color-accent)' }}
+            style={{ ...box, background: 'var(--greese-color-primary)' }}
           />
         ))}
       </Stack>
@@ -147,14 +147,14 @@ export const Text_: Story = {
 
 /**
  * Tokens drive components, so animating a token restyles everything that
- * reads it: here the accent, which the badge and card border follow.
+ * reads it: here the primary colour, which the badge and card border follow.
  */
 export const AnimatingTokens: Story = {
   render: () => (
     <Player
       build={(root) =>
         timeline({ repeat: 1, yoyo: true }).to(root.querySelector('.themed'), {
-          '--greese-color-accent': '#e11d48',
+          '--greese-color-primary': '#e11d48',
           '--greese-radius-lg': '2rem',
           duration: 1,
           ease: 'inOut',
@@ -164,13 +164,13 @@ export const AnimatingTokens: Story = {
       <div className="themed">
         <Card
           variant="outline"
-          style={{ borderColor: 'var(--greese-color-accent)', maxInlineSize: '18rem' }}
+          style={{ borderColor: 'var(--greese-color-primary)', maxInlineSize: '18rem' }}
         >
           <Stack gap={2} align="start">
-            <Badge tone="accent" variant="solid">
+            <Badge tone="primary" variant="solid">
               New
             </Badge>
-            <Text>The accent and radius are animating.</Text>
+            <Text>The primary colour and radius are animating.</Text>
           </Stack>
         </Card>
       </div>

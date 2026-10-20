@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { ActionSelect, toast, Toaster } from '@greese-ui/react'
-import { ArrowIcon, PlusIcon } from '../_shared/fixtures.tsx'
+import { ArrowRightIcon, PlusIcon } from '@greese-ui/icons'
 
 const meta = {
   title: 'Forms/ActionSelect',
@@ -43,7 +43,7 @@ export const RepeatLastAction: Story = {
     return (
       <>
         <ActionSelect
-          icon={<ArrowIcon />}
+          icon={<ArrowRightIcon />}
           actionLabel={`Export as ${format.toUpperCase()}`}
           onAction={() => run(format)}
           selectLabel="Export format"

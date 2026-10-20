@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Alert, Button, Stack } from '@greese-ui/react'
-import { InfoIcon } from '../_shared/fixtures.tsx'
+import { InfoIcon } from '@greese-ui/icons'
 
 const meta = {
   title: 'Content/Alert',
@@ -14,7 +14,16 @@ const meta = {
   argTypes: {
     tone: {
       control: 'inline-radio',
-      options: ['info', 'positive', 'warning', 'negative', 'neutral'],
+      options: [
+        'info',
+        'positive',
+        'warning',
+        'negative',
+        'neutral',
+        'primary',
+        'secondary',
+        'tertiary',
+      ],
     },
     variant: { control: 'inline-radio', options: ['soft', 'outline'] },
   },
@@ -40,6 +49,9 @@ export const Tones: Story = {
       />
       <Alert tone="negative" variant="outline" title="Couldn't save">
         Check your connection and try again.
+      </Alert>
+      <Alert tone="secondary" title="New: dark mode">
+        A brand tone, for announcements rather than status.
       </Alert>
     </Stack>
   ),

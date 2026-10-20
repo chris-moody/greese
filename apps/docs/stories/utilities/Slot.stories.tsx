@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Icon, Slot, Slottable } from '@greese-ui/react'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { ArrowIcon } from '../_shared/fixtures.tsx'
+import { ArrowRightIcon } from '@greese-ui/icons'
 
 /** A component with an `asChild` prop, built on Slot, the way GreeseUI's own are. */
 const Action = ({
@@ -44,8 +44,8 @@ type Story = StoryObj<typeof meta>
 export const AsChild: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '1rem' }}>
-      <Action icon={<ArrowIcon />}>A button</Action>
-      <Action asChild icon={<ArrowIcon />}>
+      <Action icon={<ArrowRightIcon />}>A button</Action>
+      <Action asChild icon={<ArrowRightIcon />}>
         <a href="#somewhere">A link</a>
       </Action>
     </div>

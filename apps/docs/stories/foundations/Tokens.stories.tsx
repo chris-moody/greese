@@ -63,7 +63,7 @@ export const Space: StoryObj = {
             style={{
               inlineSize: `var(--greese-space-${key})`,
               blockSize: '1rem',
-              background: 'var(--greese-color-accent)',
+              background: 'var(--greese-color-primary)',
             }}
           />
           <span style={label}>{value}</span>

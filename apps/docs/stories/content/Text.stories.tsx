@@ -15,7 +15,18 @@ const meta = {
     },
     tone: {
       control: 'select',
-      options: ['neutral', 'muted', 'accent', 'positive', 'negative', 'warning', 'info'],
+      options: [
+        'neutral',
+        'muted',
+        'primary',
+        'secondary',
+        'tertiary',
+        'accent',
+        'positive',
+        'negative',
+        'warning',
+        'info',
+      ],
     },
   },
 } satisfies Meta<typeof Text>
@@ -29,7 +40,18 @@ export const Tones: Story = {
   render: () => (
     <Stack direction="row" gap={3} wrap="wrap">
       {(
-        ['neutral', 'muted', 'accent', 'positive', 'negative', 'warning', 'info'] as const
+        [
+          'neutral',
+          'muted',
+          'primary',
+          'secondary',
+          'tertiary',
+          'accent',
+          'positive',
+          'negative',
+          'warning',
+          'info',
+        ] as const
       ).map((tone) => (
         <Text key={tone} tone={tone} weight="semibold">
           {tone}

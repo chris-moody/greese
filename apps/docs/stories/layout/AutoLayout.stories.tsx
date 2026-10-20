@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AutoLayout, AutoLayoutItem, Field, Input, Select } from '@greese-ui/react'
-import { Tile } from '../_shared/fixtures.tsx'
+import { AutoLayout, AutoLayoutItem, Field, Input, Select, Tile } from '@greese-ui/react'
 
 const meta = {
   title: 'Layout/AutoLayout',

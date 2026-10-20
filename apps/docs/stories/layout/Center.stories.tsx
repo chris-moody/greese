@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Center } from '@greese-ui/react'
-import { StarIcon, Tile } from '../_shared/fixtures.tsx'
+import { Center, Tile } from '@greese-ui/react'
+import { StarIcon } from '@greese-ui/icons'
 
 const meta = {
   title: 'Layout/Center',
@@ -24,9 +24,9 @@ export const Inline: Story = {
       inlineSize: '2.5rem',
       blockSize: '2.5rem',
       borderRadius: '50%',
-      background: 'var(--greese-color-accent)',
-      color: 'var(--greese-color-on-accent)',
+      background: 'var(--greese-color-primary)',
+      color: 'var(--greese-color-primary-content)',
     },
-    children: <StarIcon />,
+    children: <StarIcon size="1.25rem" />,
   },
 }

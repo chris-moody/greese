@@ -3,7 +3,7 @@ import { createTheme, ThemeProvider } from '@greese-ui/react'
 
 const brand = createTheme({
   name: 'docs-brand',
-  color: { accent: { light: '#7c3aed', dark: '#c4b5fd' } },
+  color: { primary: { light: '#7c3aed', dark: '#c4b5fd' } },
   radius: { md: '16px' },
 })
 
@@ -17,7 +17,7 @@ const Card = ({ title }: { title: string }) => (
       borderRadius: 'var(--greese-radius-md)',
     }}
   >
-    <strong style={{ color: 'var(--greese-color-accent)' }}>{title}</strong>
+    <strong style={{ color: 'var(--greese-color-primary)' }}>{title}</strong>
     <p style={{ color: 'var(--greese-color-fg-muted)' }}>Reads --greese-* tokens only.</p>
   </div>
 )

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Icon, Stack, Text } from '@greese-ui/react'
-import { InfoIcon, StarIcon } from '../_shared/fixtures.tsx'
+import { InfoIcon, StarIcon } from '@greese-ui/icons'
 
 const meta = {
   title: 'Content/Icon',
@@ -18,7 +18,7 @@ export const Labelled: Story = {
   args: {
     label: 'Verified account',
     size: '1.5rem',
-    style: { color: 'var(--greese-color-accent)' },
+    style: { color: 'var(--greese-color-primary)' },
   },
 }
 

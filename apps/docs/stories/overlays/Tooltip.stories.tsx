@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button, IconButton, Stack, Tooltip } from '@greese-ui/react'
-import { TrashIcon } from '../_shared/fixtures.tsx'
+import { TrashIcon } from '@greese-ui/icons'
 
 const meta = {
   title: 'Overlays/Tooltip',

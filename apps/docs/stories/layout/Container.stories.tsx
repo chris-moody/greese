@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Container } from '@greese-ui/react'
-import { Tile } from '../_shared/fixtures.tsx'
+import { Container, Tile } from '@greese-ui/react'
 
 const meta = {
   title: 'Layout/Container',

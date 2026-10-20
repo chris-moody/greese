@@ -5,7 +5,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
 # Theming
 
 GreeseUI's look is a set of design tokens. Each one is a CSS custom property
-(`--greese-color-accent`, `--greese-space-4`, `--greese-radius-md`, …), and every
+(`--greese-color-primary`, `--greese-space-4`, `--greese-radius-md`, …), and every
 component reads them. To theme the library, you change token values. There's
 no theme object in React state, no re-render when the theme changes, and no
 CSS-in-JS runtime.
@@ -24,12 +24,14 @@ This guide covers, in order:
 
 ## How it fits together
 
-| Layer               | What it holds                        | Set by                           |
-| ------------------- | ------------------------------------ | -------------------------------- |
-| `greese.tokens`     | Default token values, light and dark | `styles.css`                     |
-| `greese.theme`      | Your themes' token values            | `createTheme` + `ThemeProvider`  |
-| `greese.components` | Component styles, which read tokens  | `styles.css` or `css/<Name>.css` |
-| (unlayered)         | Your own CSS                         | You                              |
+| Layer               | What it holds                        | Set by                                   |
+| ------------------- | ------------------------------------ | ---------------------------------------- |
+| `greese.tokens`     | Default token values, light and dark | `styles.css`                             |
+| `greese.theme`      | Your themes' token values            | `createTheme` + `ThemeProvider`          |
+| `greese.components` | Component styles, which read tokens  | `styles.css` or `css/<Name>.css`         |
+| `greese.overrides`  | Your component overrides             | The SCSS kit (Guides/Styling components) |
+| `greese.utilities`  | Style props and the `greese` prop    | Props, per instance                      |
+| (unlayered)         | Your own CSS                         | You                                      |
 
 All library CSS lives in [cascade layers](https://developer.mozilla.org/docs/Web/CSS/@layer).
 Unlayered CSS always beats layered CSS whatever the specificity, so your
@@ -176,17 +178,18 @@ and date pickers match.
 
 ```tsx
 import { createTheme, ThemeProvider } from '@greese-ui/react'
+import { palette } from '@greese-ui/tokens'
 
 // At module scope: it builds a static CSS string once.
 export const brand = createTheme({
   name: 'brand',
   color: {
-    // A light/dark pair…
-    accent: { light: '#7c3aed', dark: '#c4b5fd' },
-    accentStrong: { light: '#6d28d9', dark: '#ddd6fe' },
-    focusRing: { light: '#7c3aed', dark: '#c4b5fd' },
-    // …or one value for both schemes.
-    onAccent: '#ffffff',
+    // A light/dark pair, from the palette (Foundations/Color)…
+    primary: { light: palette.lavender[600], dark: palette.lavender[300] },
+    // primaryContent and primaryStrong follow: readable ink (WCAG AA) and a
+    // hover shade, derived for you. Set them to choose your own, in any CSS
+    // colour, one value or a pair.
+    secondary: '#0f766e',
   },
   radius: { sm: '6px', md: '12px', lg: '20px' },
   font: { body: "'Inter', system-ui, sans-serif" },
@@ -209,11 +212,21 @@ What to know:
   options: `createTheme({ ...brandOptions, name: 'brand-compact', space: { … } })`.
 - **Theme and scheme are independent.** A scheme-only provider inside a theme
   keeps the theme, and vice versa.
+- **Four brand colours, in order: `primary`, `secondary`, `tertiary`,
+  `accent`.** Components use `primary` for interactive emphasis (solid
+  buttons, links, focus, selection), and every `tone` prop takes all four.
+  Set `primary` to rebrand; the focus ring follows it.
 - **Derived states follow.** Hover, active, soft and outline variants are
-  computed from the tone with `color-mix()`. Change `accent`, and every
+  computed from the tone with `color-mix()`. Change `primary`, and every
   button, link, focus ring and selected state updates, in both schemes.
-- **Contrast is your responsibility.** Pair `accent` with an `onAccent` that
-  reads on it, and `negative` with `onNegative`. Check both schemes.
+- **Content colours are derived and WCAG-safe.** Each brand colour (and
+  `negative`) has a `…Content` colour for text and icons on it
+  (`--greese-color-primary-content`). When you set the main colour,
+  `createTheme` picks the more readable of white and near-black, at least
+  4.5:1, separately for light and dark, and mixes a `…Strong` shade from it.
+  Anything you set yourself wins. Colours it can't measure (`var()`,
+  `oklch()`) keep the default content colour, so check those. The SCSS kit's
+  `tokens()` does the same at build time.
 - **No cost per render.** `ThemeProvider` renders a `<style href precedence>`
   that React 19 hoists into `<head>` and de-duplicates, plus two attributes.
   The wrapper is `display: contents`; use `asChild` to put the attributes on
@@ -224,11 +237,39 @@ What to know:
 Read the nearest provider's theme and scheme with `useThemeScope()`, for
 example to pick a matching chart palette.
 
+**At build time instead.** The SCSS kit compiles the same theme into your
+CSS, with no theme object in JavaScript, and **Theme Studio** builds one
+visually. Pass the name to the provider; it stamps the attributes and
+injects nothing:
+
+```scss
+@use 'pkg:@greese-ui/react/scss/kit' as greese;
+
+@include greese.theme(brand) {
+  @include greese.tokens(
+    (
+      color: (
+        primary: (
+          light: #7c3aed,
+          dark: #c4b5fd,
+        ),
+      ),
+    )
+  );
+}
+```
+
+```tsx
+<ThemeProvider theme="brand">…</ThemeProvider>
+```
+
+See **Guides/Styling components**.
+
 ### Several themes on one page
 
 ```tsx
-const ocean = createTheme({ name: 'ocean', color: { accent: '#0891b2' } })
-const sunset = createTheme({ name: 'sunset', color: { accent: '#ea580c' } })
+const ocean = createTheme({ name: 'ocean', color: { primary: '#0891b2' } })
+const sunset = createTheme({ name: 'sunset', color: { primary: '#ea580c' } })
 
 <ThemeProvider theme={ocean}><Pricing plan="pro" /></ThemeProvider>
 <ThemeProvider theme={sunset}><Pricing plan="team" /></ThemeProvider>
@@ -250,7 +291,7 @@ Scheme-independent tokens are simple:
 
 **Colours need care.** The default dark values are declared on
 `[data-greese-scheme]` elements and under `prefers-color-scheme: dark`. A plain
-`:root { --greese-color-accent: … }` would therefore apply in dark mode too,
+`:root { --greese-color-primary: … }` would therefore apply in dark mode too,
 and be ignored inside any `<ThemeProvider scheme>`. Mirror the library's
 selectors:
 
@@ -258,18 +299,18 @@ selectors:
 :root,
 [data-greese-scheme='light'],
 [data-greese-scheme='system'] {
-  --greese-color-accent: #7c3aed;
+  --greese-color-primary: #7c3aed;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-greese-scheme='light']),
   [data-greese-scheme='system'] {
-    --greese-color-accent: #c4b5fd;
+    --greese-color-primary: #c4b5fd;
   }
 }
 
 [data-greese-scheme='dark'] {
-  --greese-color-accent: #c4b5fd;
+  --greese-color-primary: #c4b5fd;
 }
 ```
 
@@ -300,21 +341,29 @@ on the component, a class, or any ancestor:
 }
 ```
 
-| Component                          | Variables                                                                                                                                                                                                                      |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Button, IconButton                 | `--greese-button-tone`, `--greese-button-on-tone` (variants derive from these), `--greese-button-height`, `--greese-button-padding`                                                                                            |
-| Input, Select, Textarea, FileInput | `--greese-input-height`, `--greese-input-padding`, `--greese-select-height`, `--greese-select-padding`, `--greese-textarea-padding`, `--greese-file-height`, `--greese-file-padding`                                           |
-| Card                               | `--greese-card-padding`                                                                                                                                                                                                        |
-| Dialog                             | `--greese-dialog-width`                                                                                                                                                                                                        |
-| Sidebar                            | `--greese-sidebar-width`                                                                                                                                                                                                       |
-| Avatar, Spinner, Progress          | `--greese-avatar-size`, `--greese-spinner-size`, `--greese-progress-height`                                                                                                                                                    |
-| Slider, ColorPicker                | `--greese-slider-thumb`, `--greese-colorpicker-thumb`                                                                                                                                                                          |
-| SegmentedControl, Table            | `--greese-segment-height`, `--greese-table-cell-padding`                                                                                                                                                                       |
-| Motion (the `greese` prop)         | `--greese-motion-duration`, `--greese-motion-delay`, `--greese-motion-distance`, `--greese-motion-ease`, and the named curves `--greese-ease-in`, `-out`, `-in-out`. Set on `:root` or any ancestor (see **Guides/Animation**) |
+| Component                             | Variables                                                                                                                                                                                                                                |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Button, IconButton                    | `--greese-button-tone`, `--greese-button-on-tone` (variants derive from these), `--greese-button-height`, `--greese-button-padding`                                                                                                      |
+| Input, Select, Textarea, FileInput    | `--greese-input-height`, `--greese-input-padding`, `--greese-select-height`, `--greese-select-padding`, `--greese-textarea-padding`, `--greese-file-height`, `--greese-file-padding`                                                     |
+| Card                                  | `--greese-card-padding`                                                                                                                                                                                                                  |
+| Dialog                                | `--greese-dialog-width`                                                                                                                                                                                                                  |
+| Sidebar                               | `--greese-sidebar-width`                                                                                                                                                                                                                 |
+| Avatar, Spinner, Progress             | `--greese-avatar-size`, `--greese-spinner-size`, `--greese-progress-height`                                                                                                                                                              |
+| Slider, ColorPicker                   | `--greese-slider-thumb`, `--greese-colorpicker-thumb`                                                                                                                                                                                    |
+| SegmentedControl, Table               | `--greese-segment-height`, `--greese-table-cell-padding`                                                                                                                                                                                 |
+| Rating, Status, Stat, List            | `--greese-rating-size`, `--greese-rating-on`, `--greese-rating-off`, `--greese-status-size`, `--greese-stat-padding`, `--greese-list-padding`                                                                                            |
+| ScrollCarousel, Diff, Steps, RadialProgress | `--greese-scrollcarousel-gap`, `--greese-diff-thumb`, `--greese-steps-marker`, `--greese-steps-prefix` (the before-column), `--greese-chat-tail`, `--greese-tile-padding`, `--greese-radialprogress-size`, `--greese-radialprogress-thickness` |
+| Motion (the `greese` prop)            | `--greese-motion-duration`, `--greese-motion-delay`, `--greese-motion-distance`, `--greese-motion-ease`, and the named curves `--greese-ease-in`, `-out`, `-in-out`. Set on `:root` or any ancestor (see **Guides/Animation**)           |
+
+This table is the short list. Every component's docs page ends with a
+**Styling** section listing all its classes and variables, and
+**Guides/Styling components** covers overriding them, the SCSS kit,
+theme-wide motion and Theme Studio.
 
 Class names (`greese-Button`, `greese-Card`, …) are stable, prefixed and never
-hashed, so they're safe to target. Avoid targeting internal parts
-(`greese-Dialog-title`); those may change in a minor release.
+hashed, so they're safe to target. Internal parts (`greese-Dialog-title`) may
+change in a minor release; through the SCSS kit, a renamed part fails your
+build instead of silently not matching.
 
 ## Server rendering and frameworks
 
@@ -417,29 +466,32 @@ non-React code that should match.
 
 ## Token reference
 
-The live values, with swatches, are under **Foundations/Tokens**. The
-property name is `--greese-<group>-<key>`, with camelCase keys in kebab case.
+The live values, with swatches, are under **Foundations/Tokens**, and the
+colour roles and palette under **Foundations/Color**. The property name is
+`--greese-<group>-<key>`, with camelCase keys in kebab case.
 
-| Group       | `createTheme` key    | Keys                                                                                                                                                                                                  |
-| ----------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Colour      | `color`              | `canvas`, `surface`, `surfaceOverlay`, `fg`, `fgMuted`, `border`, `borderStrong`, `accent`, `accentStrong`, `onAccent`, `focusRing`, `positive`, `negative`, `onNegative`, `warning`, `info`, `scrim` |
-| Spacing     | `space`              | `0`–`8` (`0`, `0.25rem`, `0.5rem`, `0.75rem`, `1rem`, `1.5rem`, `2rem`, `3rem`, `4rem`)                                                                                                               |
-| Radius      | `radius`             | `none`, `sm`, `md`, `lg`, `pill`                                                                                                                                                                      |
-| Font family | `font`               | `body`, `mono`                                                                                                                                                                                        |
-| Font size   | `fontSize`           | `xs`, `sm`, `md`, `lg`, `xl`, `2xl`, `3xl`, `4xl`                                                                                                                                                     |
-| Font weight | `fontWeight`         | `regular`, `medium`, `semibold`, `bold`                                                                                                                                                               |
-| Line height | `lineHeight`         | `tight`, `snug`, `normal`                                                                                                                                                                             |
-| Shadow      | `shadow`             | `sm`, `md`, `lg`                                                                                                                                                                                      |
-| Stacking    | `zIndex`             | `dropdown`, `sticky`, `overlay`, `modal`, `popover`, `toast`, `tooltip`                                                                                                                               |
-| Motion      | `duration`, `easing` | `fast`, `normal`, `slow`; `standard`, `enter`, `exit`                                                                                                                                                 |
+| Group       | `createTheme` key    | Keys                                                                                                                                                                                                                                                    |
+| ----------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Colour      | `color`              | `canvas`, `surface`, `surfaceOverlay`, `fg`, `fgMuted`, `border`, `borderStrong`, `primary`, `secondary`, `tertiary`, `accent` (each with `…Strong` and `…Content`), `focusRing`, `positive`, `negative`, `negativeContent`, `warning`, `info`, `scrim` |
+| Spacing     | `space`              | `0`–`8` (`0`, `0.25rem`, `0.5rem`, `0.75rem`, `1rem`, `1.5rem`, `2rem`, `3rem`, `4rem`)                                                                                                                                                                 |
+| Radius      | `radius`             | `none`, `sm`, `md`, `lg`, `pill`                                                                                                                                                                                                                        |
+| Font family | `font`               | `body`, `mono`                                                                                                                                                                                                                                          |
+| Font size   | `fontSize`           | `xs`, `sm`, `md`, `lg`, `xl`, `2xl`, `3xl`, `4xl`                                                                                                                                                                                                       |
+| Font weight | `fontWeight`         | `regular`, `medium`, `semibold`, `bold`                                                                                                                                                                                                                 |
+| Line height | `lineHeight`         | `tight`, `snug`, `normal`                                                                                                                                                                                                                               |
+| Shadow      | `shadow`             | `sm`, `md`, `lg`                                                                                                                                                                                                                                        |
+| Stacking    | `zIndex`             | `dropdown`, `sticky`, `overlay`, `modal`, `popover`, `toast`, `tooltip`                                                                                                                                                                                 |
+| Motion      | `duration`, `easing` | `fast`, `normal`, `slow`; `standard`, `enter`, `exit`                                                                                                                                                                                                   |
 
 Durations collapse to near zero under `prefers-reduced-motion: reduce`, in
 themes too.
 
-Coming from MUI? `palette.primary.main` is `accent`,
-`palette.background.default` is `canvas`, `palette.background.paper` is
-`surface`, `palette.text.secondary` is `fgMuted`, and `palette.error.main` is
-`negative`.
+Coming from MUI? `palette.primary.main` is `primary`, `palette.secondary.main`
+is `secondary`, `palette.background.default` is `canvas`,
+`palette.background.paper` is `surface`, `palette.text.secondary` is
+`fgMuted`, and `palette.error.main` is `negative`. MUI's `colors`
+(`deepPurple[500]`) become the palette (`palette.lavender[500]`): the same idea,
+with its own hues and values rather than Material's.
 
 ## Troubleshooting
 

@@ -10,6 +10,8 @@ import {
   Motion,
   Stack,
   Text,
+  defineGreeseEffect,
+  type GreeseProp,
   type GreesePreset,
 } from '@greese-ui/react'
 import { art } from '../_shared/fixtures.tsx'
@@ -34,23 +36,79 @@ const Replay = ({ children }: { children: ReactNode }) => {
   )
 }
 
+/**
+ * Mounts its child without motion, then with it on each click: for effects
+ * that end hidden, so the story's resting state stays the same.
+ */
+const PlayOnClick = ({
+  greese,
+  children,
+}: {
+  greese: GreeseProp
+  children: (greese: GreeseProp | undefined) => ReactNode
+}) => {
+  const [key, setKey] = useState(0)
+  return (
+    <Stack gap={4}>
+      <div>
+        <Button
+          size="sm"
+          variant="outline"
+          tone="neutral"
+          onClick={() => setKey((k) => k + 1)}
+        >
+          Play
+        </Button>
+      </div>
+      <div key={key}>{children(key ? greese : undefined)}</div>
+    </Stack>
+  )
+}
+
+// Custom effects: define them once, in client code, then use them by name.
+// The augmentation makes the names type-check and autocomplete.
+declare module '@greese-ui/react' {
+  interface GreeseEffectRegistry {
+    wobble: true
+    rise: true
+    spin: true
+  }
+}
+
+defineGreeseEffect('wobble', {
+  keyframes: { rotate: [0, -6, 6, -3, 0] },
+  duration: 0.6,
+})
+defineGreeseEffect('rise', ({ distance }) => ({
+  y: [`calc(${distance} * 3)`, '0rem'],
+  opacity: [0, 1],
+}))
+defineGreeseEffect('spin', {
+  keyframes: { rotate: [0, 360] },
+  duration: 0.8,
+  ease: 'inOut',
+})
+
 const meta = {
   title: 'Motion/greese prop',
   component: Motion,
-  args: { greese: 'fade-up', children: 'Any element, animated with the greese prop' },
+  args: { greese: 'fadeUp', children: 'Any element, animated with the greese prop' },
   argTypes: {
     greese: {
       control: 'select',
       options: [
-        'fade',
-        'fade-up',
-        'fade-down',
-        'fade-start',
-        'fade-end',
-        'scale-in',
-        'blur-in',
-        'slide-up',
+        'fadeIn',
+        'fadeUp',
+        'fadeDown',
+        'fadeStart',
+        'fadeEnd',
+        'scaleIn',
+        'blurIn',
+        'slideUp',
         'pop',
+        'fadeIn+scaleIn',
+        'fadeUp,wobble',
+        'rise,+0.3,spin',
       ],
     },
   },
@@ -71,22 +129,22 @@ type Story = StoryObj<typeof meta>
 export const Playground: Story = {}
 
 const presets: GreesePreset[] = [
-  'fade',
-  'fade-up',
-  'fade-down',
-  'fade-start',
-  'fade-end',
-  'scale-in',
-  'blur-in',
-  'slide-up',
+  'fadeIn',
+  'fadeUp',
+  'fadeDown',
+  'fadeStart',
+  'fadeEnd',
+  'scaleIn',
+  'blurIn',
+  'slideUp',
   'pop',
 ]
 
-/** Entrance presets are pure CSS: they render on the server and need no JavaScript. */
+/** Entrance presets played alone are pure CSS: they render on the server and need no JavaScript. */
 export const Presets: Story = {
   render: () => (
     <Replay>
-      <Grid minChildWidth="10rem" gap={3}>
+      <Grid container minChildWidth="10rem" gap={3}>
         {presets.map((preset, i) => (
           <Card key={preset} greese={{ enter: preset, delay: i * 0.05, duration: 0.6 }}>
             <Text weight="semibold">{preset}</Text>
@@ -101,7 +159,7 @@ export const Presets: Story = {
 export const Stagger: Story = {
   render: () => (
     <Replay>
-      <Stack gap={2} greese={{ enter: 'fade-start', stagger: 0.06, distance: '2rem' }}>
+      <Stack gap={2} greese={{ enter: 'fadeStart', stagger: 0.06, distance: '2rem' }}>
         {['Design', 'Build', 'Test', 'Ship', 'Celebrate'].map((step) => (
           <Card key={step} variant="filled">
             {step}
@@ -119,12 +177,107 @@ export const ScrollReveal: Story = {
       <Text tone="muted">Scroll down: cards out of view reveal as they arrive.</Text>
       <div style={{ blockSize: '70vh' }} />
       {[1, 2, 3, 4].map((n) => (
-        <Card key={n} greese={{ inView: n % 2 ? 'fade-up' : 'scale-in' }}>
+        <Card key={n} greese={{ inView: n % 2 ? 'fadeUp' : 'scaleIn' }}>
           <Heading level={3} size="md">
             Card {n}
           </Heading>
         </Card>
       ))}
+    </Stack>
+  ),
+}
+
+/**
+ * Compose effects in one string: `+` plays effects together, `,` starts the
+ * next group when the previous one ends, and a number is a pause in seconds.
+ * Sequences run in greese.js. Under reduced motion each effect is a cut, but
+ * pauses still wait.
+ */
+export const Sequences: Story = {
+  render: () => (
+    <Grid container minChildWidth="14rem" gap={3}>
+      {(
+        [
+          ['fadeIn+scaleIn', 'Together'],
+          ['fadeStart,pop', 'One after the other'],
+          ['blurIn,+0.4,pop', 'With a pause'],
+        ] as const
+      ).map(([sequence, label]) => (
+        <Replay key={sequence}>
+          <Card greese={sequence}>
+            <Text weight="semibold">{label}</Text>
+            <Text tone="muted" size="sm">
+              <code>{sequence}</code>
+            </Text>
+          </Card>
+        </Replay>
+      ))}
+    </Grid>
+  ),
+}
+
+/** `'fadeIn+scaleIn,+2,fadeOut'`: in together, wait two seconds, fade out (and stay out). */
+export const InWaitOut: Story = {
+  name: 'In, wait, out',
+  render: () => (
+    <PlayOnClick greese="fadeIn+scaleIn,+2,fadeOut">
+      {(greese) => (
+        <Card greese={greese}>
+          <Text weight="semibold">Saved</Text>
+          <Text tone="muted" size="sm">
+            <code>fadeIn+scaleIn,+2,fadeOut</code>
+          </Text>
+        </Card>
+      )}
+    </PlayOnClick>
+  ),
+}
+
+/** The leaving effects, for sequences: `fadeOut`, `fadeOutUp`, `fadeOutDown`, `scaleOut`, `blurOut`. */
+export const LeavingEffects: Story = {
+  render: () => (
+    <PlayOnClick greese="fadeIn">
+      {(played) => (
+        <Grid container minChildWidth="10rem" gap={3}>
+          {(['fadeOut', 'fadeOutUp', 'fadeOutDown', 'scaleOut', 'blurOut'] as const).map(
+            (effect) => (
+              <Card key={effect} greese={played && `+0.3,${effect}`}>
+                <Text weight="semibold">{effect}</Text>
+              </Card>
+            )
+          )}
+        </Grid>
+      )}
+    </PlayOnClick>
+  ),
+}
+
+/**
+ * `defineGreeseEffect(name, effect)` adds your own effects: keyframes, a
+ * function of `{ el, distance, rtl }` returning keyframes, or
+ * `{ keyframes, duration, ease }` with defaults the prop's options override.
+ * Names are strings, so Server Components can use them too; define them in
+ * client code. This file defines `wobble`, `rise` and `spin`.
+ */
+export const CustomEffects: Story = {
+  render: () => (
+    <Stack direction="row" gap={3} wrap="wrap" align="center">
+      <Replay>
+        <Card greese="fadeUp,wobble">
+          <code>fadeUp,wobble</code>
+        </Card>
+      </Replay>
+      <Replay>
+        <Card greese={{ enter: 'rise', distance: '1.5rem' }}>
+          <code>rise</code>
+        </Card>
+      </Replay>
+      <Replay>
+        <Card greese="rise,+0.3,spin">
+          <code>rise,+0.3,spin</code>
+        </Card>
+      </Replay>
+      <Button greese={{ hover: 'wobble', duration: 0.4 }}>Hover: wobble</Button>
     </Stack>
   ),
 }
@@ -183,7 +336,7 @@ export const Overlays: Story = {
     <Dialog
       trigger={<Button>Open</Button>}
       title="Pop in, scale out"
-      greese={{ enter: 'pop', exit: 'scale-out' }}
+      greese={{ enter: 'pop', exit: 'scaleOut' }}
     >
       <Text>Close it to see the exit.</Text>
     </Dialog>

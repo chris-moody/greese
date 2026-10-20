@@ -23,6 +23,44 @@ export const Selectable: Story = {
   },
 }
 
+/**
+ * `tone` tints a plain chip, and colours a selectable one when it's selected.
+ * Without a tone, chips are plain and select to primary.
+ */
+export const Tones: Story = {
+  render: () => (
+    <Stack gap={3}>
+      <Stack direction="row" gap={2} wrap="wrap">
+        {(
+          [
+            'neutral',
+            'primary',
+            'secondary',
+            'tertiary',
+            'accent',
+            'positive',
+            'negative',
+            'warning',
+            'info',
+          ] as const
+        ).map((tone) => (
+          <Chip key={tone} tone={tone}>
+            {tone}
+          </Chip>
+        ))}
+      </Stack>
+      <Stack direction="row" gap={2} wrap="wrap">
+        <Chip selectable defaultSelected tone="secondary">
+          Selected secondary
+        </Chip>
+        <Chip selectable tone="secondary">
+          Not selected
+        </Chip>
+      </Stack>
+    </Stack>
+  ),
+}
+
 export const Filters: Story = {
   render: function Render() {
     const [tags, setTags] = useState(['Design', 'Frontend', 'Accessibility'])

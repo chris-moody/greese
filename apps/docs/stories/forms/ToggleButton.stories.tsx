@@ -22,3 +22,15 @@ export const Toolbar: Story = {
     </ButtonGroup>
   ),
 }
+
+/** Pressed shows the button's tone; the default `neutral` presses to primary. */
+export const Toned: Story = {
+  render: () => (
+    <ButtonGroup aria-label="Favourites" attached>
+      <ToggleButton tone="secondary" defaultPressed>
+        Starred
+      </ToggleButton>
+      <ToggleButton tone="secondary">Pinned</ToggleButton>
+    </ButtonGroup>
+  ),
+}

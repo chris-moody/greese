@@ -6,7 +6,10 @@ const meta = {
   component: Link,
   args: { href: '#docs', children: 'Read the docs' },
   argTypes: {
-    tone: { control: 'inline-radio', options: ['accent', 'neutral'] },
+    tone: {
+      control: 'inline-radio',
+      options: ['primary', 'secondary', 'tertiary', 'accent', 'neutral'],
+    },
     underline: { control: 'inline-radio', options: ['always', 'hover'] },
   },
 } satisfies Meta<typeof Link>
@@ -19,9 +22,13 @@ export const Playground: Story = {}
 export const InText: Story = {
   render: () => (
     <Text>
-      Inline links are underlined by default: <Link href="#a">accent</Link>,{' '}
+      Inline links are underlined by default: <Link href="#a">primary</Link>,{' '}
       <Link href="#b" tone="neutral">
         neutral
+      </Link>
+      ,{' '}
+      <Link href="#d" tone="secondary">
+        secondary
       </Link>{' '}
       and{' '}
       <Link href="#c" underline="hover">

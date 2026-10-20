@@ -43,14 +43,14 @@ export const Playground: Story = {}
 
 export const Variants: Story = {
   render: () => (
-    <Grid minChildWidth="14rem" gap={4}>
+    <Grid container minChildWidth="14rem" gap={4}>
       {(['outline', 'elevated', 'filled'] as const).map((variant, i) => (
         <Card key={variant} variant={variant} interactive={i === 1}>
           <Stack direction="row" gap={2} align="center">
             <Heading level={3} size="md">
               {variant}
             </Heading>
-            {i === 1 && <Badge tone="accent">Interactive</Badge>}
+            {i === 1 && <Badge tone="primary">Interactive</Badge>}
           </Stack>
           <Text tone="muted" size="sm">
             A surface for related content.

@@ -6,11 +6,11 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 GreeseUI animates on three levels, from least to most code:
 
-| Level                              | What                                                                                                            | Costs                                                                          |
-| ---------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| **The `greese` prop**              | Presets and options on any component: entrances, scroll reveals, hover/press/focus, text effects, overlay exits | Presets: CSS only. Interactions and text: a small runtime, loaded on first use |
-| **`<Motion>` and `useTimeline()`** | The prop for any element; a greese.js timeline tied to a component's lifetime                                   | The same, plus what you build                                                  |
-| **greese.js directly**             | Full timelines, re-exported from `@greese-ui/react`                                                             | About 5 kB, only if imported                                                   |
+| Level                            | What                                                                                                            | Costs                                                                          |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **The `greese` prop**            | Presets and options on any component: entrances, scroll reveals, hover/press/focus, text effects, overlay exits | Presets: CSS only. Interactions and text: a small runtime, loaded on first use |
+| **`<Motion>` and `useGreese()`** | The prop for any element; greese.js tied to a component's lifetime                                              | The same, plus what you build                                                  |
+| **greese.js directly**           | Full timelines, re-exported from `@greese-ui/react`                                                             | About 5 kB, only if imported                                                   |
 
 The live demos are under **Motion/greese prop** and **Motion/greese.js**.
 greese.js on its own, in every install form, is covered in
@@ -30,42 +30,130 @@ them except Slot, VisuallyHidden, Break, Spacer, Show/Hide, ThemeProvider and
 Toaster; a type check in the build enforces it.
 
 ```tsx
-<Card greese="fade-up" />                                    // enter preset
-<Card greese={{ inView: 'fade-up' }} />                      // when scrolled into view
-<Stack greese={{ enter: 'fade-up', stagger: 0.05 }}>…</Stack> // children in turn
+<Card greese="fadeUp" />                                     // enter preset
+<Card greese={{ inView: 'fadeUp' }} />                       // when scrolled into view
+<Stack greese={{ enter: 'fadeUp', stagger: 0.05 }}>…</Stack> // children in turn
 <Button greese={{ hover: 'lift', press: 'squish' }} />       // interaction feedback
 <Heading greese={{ text: 'split' }}>Served fast</Heading>    // text effects
-<Dialog greese={{ enter: 'pop', exit: 'scale-out' }} … />    // overlay enter and exit
+<Dialog greese={{ enter: 'pop', exit: 'scaleOut' }} … />     // overlay enter and exit
+<Card greese="fadeIn+scaleIn,+2,fadeOut" />                  // a sequence of effects
+<Card greese="fadeUp,wobble" />                              // with your own effect
 ```
 
 ### Options
 
 | Option                    | Values                                                                                                                                                          | Needs JavaScript?             |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| `enter`                   | A preset (below), or greese.js keyframes                                                                                                                        | Presets: no. Keyframes: yes   |
-| `inView`                  | A preset or keyframes; plays when scrolled into view. Elements already in view stay as they are                                                                 | Yes (an IntersectionObserver) |
+| `enter`                   | An effect, a [sequence](#composing-effects), or greese.js keyframes                                                                                             | A preset alone: no. Else: yes |
+| `inView`                  | The same; plays once wholly in view, clear of the bottom 10% of the viewport (taller elements: half the viewport). Elements already in view stay as they are                                                                              | Yes (an IntersectionObserver) |
 | `once`                    | `inView` plays only the first time (default `true`)                                                                                                             |                               |
-| `exit`                    | `'fade'`, `'fade-down'`, `'fade-up'`, `'scale-out'`: how an overlay (Dialog, Popover, Menu, Tooltip) leaves                                                     | No                            |
-| `hover`, `press`, `focus` | `'lift'`, `'squish'`, `'tilt'`, `'glow'`, or keyframes. Plays and reverses; interruptible. Hover ignores touch                                                  | Yes                           |
+| `exit`                    | `'fadeOut'`, `'fadeOutDown'`, `'fadeOutUp'`, `'scaleOut'`: how an overlay (Dialog, Popover, Menu, Tooltip) leaves                                               | No                            |
+| `hover`, `press`, `focus` | Usually `'lift'`, `'squish'`, `'tilt'`, `'glow'`; any effect, sequence or keyframes. Plays and reverses; interruptible. Hover ignores touch                     | Yes                           |
 | `text`                    | `'type'`, `'count'`, `'split'`, for plain-text content                                                                                                          | Yes                           |
-| `duration`, `delay`       | Seconds. Defaults: 0.5 for entrances, 0.2 for interactions                                                                                                      |                               |
+| `duration`, `delay`       | Seconds. `duration` applies to each effect and overrides an effect's own. Defaults: 0.5 for entrances, 0.2 for interactions                                     |                               |
 | `ease`                    | Any greese.js ease. `linear`, `in`, `out`, `inOut`, the CSS keywords and bézier arrays stay CSS-only; others (`elastic.out`…) switch the entrance to JavaScript |                               |
-| `distance`                | How far `fade-up`/`-down`/`-start`/`-end` travel (default `'1rem'`)                                                                                             |                               |
+| `distance`                | How far `fadeUp`/`Down`/`Start`/`End` and `fadeOutUp`/`Down` travel (default `'1rem'`)                                                                          |                               |
 | `stagger`                 | Seconds between children: animates the children instead of the element                                                                                          |                               |
 | `timeline`                | `(tl, el) => void`: fill a greese.js timeline yourself. It plays on enter, or on reveal with `inView`                                                           | Yes                           |
 
-**Entrance presets:** `fade`, `fade-up`, `fade-down`, `fade-start`,
-`fade-end` (these follow the writing direction), `scale-in`, `blur-in`,
-`slide-up` and `pop`.
+### Effects
+
+Effect names are camelCase.
+
+| Kind        | Effects                                                                                                                                                               |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Entrances   | `fadeIn`, `fadeUp`, `fadeDown`, `fadeStart`, `fadeEnd` (these two follow the writing direction), `scaleIn`, `blurIn`, `slideUp`, `pop`. CSS presets when played alone |
+| Leaving     | `fadeOut`, `fadeOutUp`, `fadeOutDown`, `scaleOut`, `blurOut`. For sequences; overlays play the first four as `exit`                                                   |
+| Interaction | `lift`, `squish`, `tilt`, `glow`                                                                                                                                      |
+| Yours       | Anything defined with [`defineGreeseEffect()`](#custom-effects)                                                                                                       |
+
+Any effect works in any slot (`enter`, `inView`, `hover`, `press`, `focus`):
+`hover: 'pop'` is allowed, if unusual. An effect that ends hidden (`fadeOut`)
+stays hidden.
+
+### Composing effects
+
+A sequence is one string:
+
+- **`+`** plays effects at the same time;
+- **`,`** separates groups, and each group starts when the previous one ends;
+- **a number** (`2`, `+2`, `0.5`) is a pause, in seconds.
+
+```tsx
+<Card greese="fadeIn+scaleIn,+2,fadeOut" />           // in together, wait 2 s, fade out
+<Card greese={{ enter: 'fadeUp,pop', duration: 0.3 }} /> // each effect 0.3 s
+<Stack greese={{ inView: 'fadeStart+blurIn', stagger: 0.05 }}>…</Stack>
+<Button greese={{ hover: 'lift+glow' }} />            // interactions compose too
+```
+
+- Sequences run in greese.js, so they load the runtime. A preset on its own
+  stays pure CSS.
+- `delay` comes before the first group; `stagger` offsets each child within
+  every group, and a group ends when its last child finishes.
+- The first group's first frames show during `delay`, so nothing flashes.
+- Sequences are typed: a single name must be a known effect (typos fail to
+  compile), and any string with `+` or `,` is accepted as a sequence. Unknown
+  names in a sequence are skipped with a console warning.
+
+### Custom effects
+
+Define an effect once, then use it by name anywhere, alone or in sequences:
+
+```ts
+// effects.ts: import it from your client entry (or a 'use client' module)
+import { defineGreeseEffect } from '@greese-ui/react'
+
+// Keyframes
+defineGreeseEffect('wobble', { rotate: [0, -6, 6, -3, 0] })
+
+// A function of { el, distance, rtl }, for effects that adapt
+defineGreeseEffect('rise', ({ distance }) => ({
+  y: [`calc(${distance} * 3)`, '0rem'],
+  opacity: [0, 1],
+}))
+
+// Keyframes with their own defaults (a prop's duration/ease still wins)
+defineGreeseEffect('spin', {
+  keyframes: { rotate: [0, 360] },
+  duration: 0.8,
+  ease: 'inOut',
+})
+
+// Make the names type-check and autocomplete
+declare module '@greese-ui/react' {
+  interface GreeseEffectRegistry {
+    wobble: true
+    rise: true
+    spin: true
+  }
+}
+```
+
+```tsx
+<Card greese="fadeUp,wobble" />
+<Card greese={{ inView: 'rise', distance: '2rem' }} />
+<Button greese={{ hover: 'wobble', duration: 0.4 }} />
+```
+
+- **Keyframes** are greese.js keyframes: every property greese.js animates
+  (individual transforms, CSS, custom properties, colours), arrays per
+  property or a list of keyframe objects with `offset` and `ease`.
+- **Built-in names are reserved:** a defined `fadeUp` is ignored.
+- **Server Components** can use defined effects, because a name is just a
+  string. The definition must run on the client before the element mounts:
+  call `defineGreeseEffect()` from a module your client bundle imports at
+  start-up, not from a Server Component.
+- **Not for `exit`:** overlay exits are CSS transitions, so they take the
+  built-in names only.
 
 ### How it stays light
 
-- **CSS presets have no JavaScript.** `greese="fade-up"` resolves to a class
+- **CSS presets have no JavaScript.** `greese="fadeUp"` resolves to a class
   and a few custom properties during render. That works in Server
   Components, the first paint is already animating, and nothing flashes.
 - **The runtime loads only when needed.** Interactions, scroll reveals, text
   effects, keyframes and timelines need a small runtime plus greese.js
-  (about 6.4 kB together). Components load it with a dynamic `import()`, so
+  (about 6.9 kB together). Components load it with a dynamic `import()`, so
   your bundler puts it in its own chunk, fetched the first time a prop needs
   it. A page with no such prop never downloads it.
 - **The cost to every component** is about 0.75 kB (brotli), paid once per
@@ -83,6 +171,14 @@ import '@greese-ui/react/greese'
 ```
 
 Without it, everything still works; the runtime simply loads on first use.
+
+**Prefer CSS presets on the first screen instead.** Attaching the runtime
+before the first paint means the first full style calculation happens inside
+a JavaScript task. On the GreeseUI homepage, with a few dozen animated
+elements above the fold, that was most of 650 ms of blocking time on a
+throttled phone. With CSS presets (`fadeUp`, `scaleIn`, `pop` and so on, with
+`delay` and `stagger`) up top and the runtime left lazy, Total Blocking Time
+fell to 20 ms. Hover and press effects attaching a moment later are invisible.
 
 ### Server Components and SSR
 
@@ -109,7 +205,9 @@ Under `prefers-reduced-motion: reduce`:
 - interactions don't move;
 - text stays as written;
 - scroll reveals show at once;
-- `timeline` jumps to its end.
+- sequences cut from effect to effect with no delay, but pauses still wait,
+  so `'fadeIn,+2,fadeOut'` is still readable for two seconds;
+- `timeline` jumps to its end (a sequence with a `timeline` too jumps with it).
 
 You don't need to check the media query yourself.
 
@@ -143,34 +241,85 @@ A per-instance option (`greese={{ duration: 0.3 }}`) wins over these.
 ```tsx
 import { Motion } from '@greese-ui/react'
 
-<Motion greese="fade-up"><img src={hero} alt="" /></Motion>      // wraps in a <div>
+<Motion greese="fadeUp"><img src={hero} alt="" /></Motion>       // wraps in a <div>
 <Motion asChild greese={{ hover: 'lift' }}><a href="/pricing">Pricing</a></Motion>
 ```
 
-## `useTimeline()`: a greese.js timeline per component
+## `useGreese()`: greese.js in a component
 
-It builds after mount (so refs are set), rebuilds when its dependencies
-change, and kills on unmount, which restores everything it animated.
+greese.js tied to a component's lifetime. It runs your build after mount (refs
+are set) and before paint, re-runs it when dependencies change, and reverts
+everything on unmount, including animations you start later in event
+handlers. Selector strings only match inside `scope`, so two instances of a
+component never animate each other.
 
 ```tsx
 'use client'
 import { useRef } from 'react'
-import { Button, useTimeline } from '@greese-ui/react'
+import { Button, useGreese } from '@greese-ui/react'
 
-export function Shake() {
-  const box = useRef<HTMLDivElement>(null)
-  const tl = useTimeline(
-    (tl) => tl.animate(box.current, { x: [0, -8, 8, -4, 0] }, { duration: 0.4 }),
-    [],
-    { paused: true }
+export function Tiles({ items }: { items: string[] }) {
+  const root = useRef<HTMLDivElement>(null)
+  const { animate } = useGreese(
+    (g) => {
+      g.timeline().from('.tile', { opacity: 0, y: 16, stagger: 0.05 })
+    },
+    { scope: root, dependencies: [items.length] }
   )
   return (
-    <>
-      <div ref={box}>Wrong password</div>
-      <Button onClick={() => tl?.restart()}>Try again</Button>
-    </>
+    <div ref={root}>
+      {items.map((item) => (
+        <div key={item} className="tile">
+          {item}
+        </div>
+      ))}
+      <Button onClick={() => animate('.tile', { y: [0, -8, 0] }, { duration: 0.4 })}>
+        Bounce
+      </Button>
+    </div>
   )
 }
+```
+
+`useGreese(build?, dependencies | config)`:
+
+| Config           | What                                                                                                                                           |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scope`          | A ref. Selector strings passed to the context's methods, and to the timelines it makes, only match inside it                                   |
+| `dependencies`   | Re-run the build when these change (default `[]`). Pass the array instead of a config as a shorthand: `useGreese(build, [x])`                  |
+| `revertOnUpdate` | On a dependency change, revert the last build before re-running. Default `false`: it's paused where it is, so the new build continues smoothly |
+
+`build` gets a context, `g`, and may return a cleanup function. The hook
+returns the same helpers, stable across renders, for use in handlers:
+
+| Helper                           | What                                                                                   |
+| -------------------------------- | -------------------------------------------------------------------------------------- |
+| `timeline(options?)`             | A greese.js timeline: tracked, and its `to`/`from`/`fromTo`/`set`/`animate` are scoped |
+| `animate(targets, kf, opts?)`    | Like greese.js `animate()`: plays at once, tracked and scoped                          |
+| `select(selector)`               | The matching elements inside `scope`                                                   |
+| `contextSafe((g, ...args) => …)` | Wraps a handler so it receives `g` first; the same as using the helpers directly       |
+
+- **Make animations through `g`** (or the returned helpers). A `timeline()`
+  or `animate()` imported from greese.js directly isn't tracked, so it isn't
+  reverted.
+- **Strict Mode** is fine: the first build is reverted before the second.
+- **Reverting** restores each property's original computed value as an
+  inline style; it doesn't remove the inline style.
+- **Server rendering:** the build never runs on the server.
+
+### `useTimeline()`
+
+The one-timeline shortcut, built on `useGreese` (with `revertOnUpdate`). It
+returns the timeline, `undefined` until the first build:
+
+```tsx
+const box = useRef<HTMLDivElement>(null)
+const tl = useTimeline(
+  (tl) => tl.animate(box.current, { x: [0, -8, 8, -4, 0] }, { duration: 0.4 }),
+  [],
+  { paused: true }
+)
+<Button onClick={() => tl?.restart()}>Try again</Button>
 ```
 
 ## greese.js directly
@@ -182,7 +331,7 @@ tokens. Animate a token and every component that reads it follows:
 import { timeline } from '@greese-ui/react'
 
 timeline({ repeat: 1, yoyo: true }).to('.promo', {
-  '--greese-color-accent': '#e11d48',
+  '--greese-color-primary': '#e11d48',
   duration: 1,
 })
 ```

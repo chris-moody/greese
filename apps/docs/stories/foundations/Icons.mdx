@@ -1,0 +1,76 @@
+import { Canvas, Controls, Meta } from '@storybook/addon-docs/blocks'
+import { IconGallery } from './IconGallery.tsx'
+import * as IconStories from './Icons.stories.tsx'
+
+<Meta of={IconStories} />
+
+# Icons
+
+GreeseUI takes any icons, from any set. Every slot (`icon`, `startAdornment`,
+an IconButton's child) accepts a `ReactNode`. The library doesn't depend on
+an icon set.
+
+`@greese-ui/icons` is an optional, separate package of line icons, the ones
+these docs use:
+
+```sh
+npm install @greese-ui/icons
+```
+
+```tsx
+import { IconButton } from '@greese-ui/react'
+import { SearchIcon } from '@greese-ui/icons'
+
+;<IconButton label="Search">
+  <SearchIcon />
+</IconButton>
+```
+
+- **Sized to the text** (`1em`) and drawn in `currentColor`, so they fit
+  buttons, links and text with no CSS. `size` and `strokeWidth` change that.
+- **Decorative by default** (`aria-hidden`): name the control around the
+  icon. Give one a `title` when it stands alone and means something.
+- **Tree-shakable:** one export per icon, about 0.3 kB for the first and much
+  less for each one after.
+- **Your own:** `createIcon('Kite', 'M8 1l5 6-5 8-5-8z')` makes a matching
+  icon from 16 × 16 line art; separate paths with `|`.
+
+## Styling an icon
+
+Icons are plain SVG, so SVG props style them. Every example below shows its
+code.
+
+<Canvas of={IconStories.Playground} />
+<Controls of={IconStories.Playground} />
+
+**Size.** `size` sets width and height: pixels or any CSS length. The default,
+`1em`, follows the text.
+
+<Canvas of={IconStories.Size} />
+
+**Colour.** Icons draw in `currentColor`, so they take the colour of the
+text around them. Set `color` on the icon or any parent.
+
+<Canvas of={IconStories.Color} />
+
+**Stroke.** `stroke` recolours the lines, and `strokeWidth` thickens or thins
+them (in units of the 16 × 16 drawing).
+
+<Canvas of={IconStories.Stroke} />
+
+**Fill.** `fill` fills the shapes. With `strokeWidth={0}` the icon becomes
+solid.
+
+<Canvas of={IconStories.Fill} />
+
+**Gradient.** Define a `<linearGradient>` once, anywhere on the page, and
+point `fill` or `stroke` at it with `url(#id)`.
+
+<Canvas of={IconStories.Gradient} />
+
+## Every icon
+
+Copy an icon's import or its name from the bottom of its tile. Use **+** to
+collect several, then copy them together.
+
+<IconGallery />

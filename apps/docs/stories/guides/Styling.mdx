@@ -1,0 +1,418 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { AllComponentStyles } from '../_shared/ComponentStyles.tsx'
+
+<Meta title="Guides/Styling components" />
+
+# Styling components
+
+**Guides/Theming** changes the design tokens every component reads. This guide
+covers everything past tokens: a component's classes, parts and variables;
+overriding them in CSS; the **SCSS kit**, which writes those overrides for you
+at build time; theme-wide motion; and **Theme Studio**, which edits all of it
+visually and saves it to your project.
+
+1. [Choosing a level](#choosing-a-level)
+2. [Class names](#class-names)
+3. [Where overrides land: cascade layers](#where-overrides-land-cascade-layers)
+4. [Overriding in plain CSS](#overriding-in-plain-css)
+5. [The SCSS kit](#the-scss-kit)
+6. [Theme-wide motion](#theme-wide-motion)
+7. [Theme Studio](#theme-studio)
+8. [Reference: every component](#reference-every-component)
+
+Every component's docs page, parts like AccordionItem and TableRow included,
+also ends with a **Styling** section: the classes it renders (root, parts,
+modifiers, states, responsive props, variables), its items, the components
+it's built on (an AccordionItem is a Collapsible), and override examples
+written for it.
+
+## Choosing a level
+
+Use the first level that does the job:
+
+| Level                      | For                                               | Example                                                |
+| -------------------------- | ------------------------------------------------- | ------------------------------------------------------ |
+| Props                      | What the API offers                               | `<Button variant="outline" tone="negative">`           |
+| `className`, `style`       | One instance                                      | `<Card className="pricing-card">`                      |
+| Component variables        | A component's knobs, anywhere in the tree         | `.sidebar { --greese-button-height: 2rem }`            |
+| Tokens                     | The whole design (see Guides/Theming)             | `createTheme({ radius: { md: '12px' } })`              |
+| CSS overrides              | Anything else, in your own stylesheet             | `.greese-Card { box-shadow: var(--greese-shadow-lg) }` |
+| The SCSS kit, Theme Studio | A whole theme of overrides, checked at build time | `@include greese.component(Card) { … }`                |
+
+## Class names
+
+Every class is prefixed and never hashed, so it's safe to target:
+
+| Kind     | Pattern                     | Example                                               |
+| -------- | --------------------------- | ----------------------------------------------------- |
+| Root     | `greese-<Name>`             | `.greese-Button`                                      |
+| Part     | `greese-<Name>-<part>`      | `.greese-Button-icon`, `.greese-Dialog-title`         |
+| Modifier | `greese-<Name>--<modifier>` | `.greese-Button--outline`, `.greese-Button--size-sm`  |
+| State    | an attribute                | `.greese-Button[data-loading]`, `[aria-invalid=true]` |
+
+Responsive props also add classes (`.greese-Stack--md-gap-2`). They're
+generated per breakpoint and token, so don't target them; set the prop.
+
+**Stability.** Root classes and documented variables are stable. Parts and
+modifiers can change in a minor release, as markup does. If you target them
+through the SCSS kit, a renamed part stops your build with an error instead
+of silently not matching.
+
+## Where overrides land: cascade layers
+
+All GreeseUI CSS lives in cascade layers, in this order (later wins):
+
+```css
+@layer greese.reset, greese.tokens, greese.theme, greese.base,
+       greese.components, greese.overrides, greese.utilities;
+```
+
+| Layer               | Holds                                                |
+| ------------------- | ---------------------------------------------------- |
+| `greese.theme`      | Token overrides: `createTheme`, the kit's `tokens()` |
+| `greese.components` | The library's component styles                       |
+| `greese.overrides`  | The kit's `component()` and `motion()` overrides     |
+| `greese.utilities`  | Style props (`p={4}`) and the `greese` prop          |
+| (unlayered)         | Your own CSS                                         |
+
+So a kit override beats the component's own styles whatever their
+specificity, but a style prop or a `greese` prop on one instance still beats
+the override. Your unlayered CSS beats everything, without `!important`.
+
+## Overriding in plain CSS
+
+Write normal CSS against the classes. It's unlayered, so it wins:
+
+```css
+.greese-Card {
+  box-shadow: var(--greese-shadow-lg);
+}
+
+.greese-Button--outline {
+  border-width: 2px;
+}
+
+/* Variables restyle every variant at once: the soft, outline and ghost
+   backgrounds are all mixed from the tone. */
+.danger-zone .greese-Button {
+  --greese-button-tone: var(--greese-color-negative);
+  --greese-button-on-tone: var(--greese-color-negative-content);
+}
+```
+
+Prefer variables to properties where a component has them: they survive
+markup changes, and they cover states (hover, active) the component derives
+from them.
+
+## The SCSS kit
+
+The kit is a Sass module for writing a theme as overrides that compile in
+your build. You write names; it adds the `greese-` prefix and separators,
+puts each override in the right layer, and **stops the build on a name the
+library doesn't have**, listing the ones it does.
+
+### Setup
+
+Compile with Sass's `NodePackageImporter`, which resolves `pkg:` URLs. In
+Vite:
+
+```ts
+import { NodePackageImporter } from 'sass-embedded'
+
+export default defineConfig({
+  css: { preprocessorOptions: { scss: { importers: [new NodePackageImporter()] } } },
+})
+```
+
+Then, in a stylesheet imported **after** GreeseUI's styles:
+
+```scss
+// theme.scss
+@use 'pkg:@greese-ui/react/scss/kit' as greese;
+```
+
+Using the module emits nothing. Its mixins emit the CSS, plus the layer order
+once, so the order holds whichever stylesheet loads first.
+
+### Tokens
+
+`tokens()` is the build-time `createTheme`. Groups and keys are kebab-case (or
+camelCase); a colour takes one value or a light/dark pair:
+
+```scss
+@include greese.tokens(
+  (
+    color: (
+      primary: (
+        light: #7c3aed,
+        dark: #c4b5fd,
+      ),
+      primary-content: #fff,
+    ),
+    radius: (
+      md: 12px,
+    ),
+    font: (
+      body: (
+        'Inter',
+        system-ui,
+        sans-serif,
+      ),
+    ),
+  )
+);
+```
+
+At the top level it overrides only what you pass, on the page, mirroring the
+default selectors, so light, dark and nested schemes all work. Duration
+overrides still collapse under reduced motion.
+
+### Components
+
+```scss
+@include greese.component(Button) {
+  font-weight: 700; // .greese-Button
+
+  @include greese.vars(
+    (
+      tone: greese.token(color, positive),
+    )
+  ); // --greese-button-tone
+
+  @include greese.modifier(outline) {
+    // .greese-Button--outline
+    border-width: 2px;
+  }
+
+  @include greese.part(icon) {
+    // .greese-Button .greese-Button-icon
+    opacity: 0.8;
+  }
+
+  @include greese.hover {
+    // only where hover exists
+    translate: 0 -1px;
+  }
+}
+```
+
+| Kit API                                                            | Gives                                                                                                                                                                        |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `component(Name) { … }`                                            | `.greese-Name { … }` in `greese.overrides`                                                                                                                                   |
+| `part(name) { … }`                                                 | `& .greese-Name-name`                                                                                                                                                        |
+| `modifier(name) { … }`                                             | `&.greese-Name--name`, or the enclosing part's modifier                                                                                                                      |
+| `vars((name: value, …))`                                           | Custom properties. Short names (`tone`), full names (`button-tone`) or tokens (`radius-md`, rescoped to the component). A `(light: …, dark: …)` value becomes `light-dark()` |
+| `motion((…))`                                                      | Theme-wide motion for the component: see [below](#theme-wide-motion)                                                                                                         |
+| `class(Name, $part, $modifier)`                                    | The selector string, for your own rules: `#{greese.class(Card)} > p`                                                                                                         |
+| `token(group, key)`                                                | `var(--greese-<group>-<key>)`, checked                                                                                                                                       |
+| `variable(name)`                                                   | `var(--greese-<name>)` for a component variable, checked                                                                                                                     |
+| `tokens((…))`, `motion-defaults((…))`, `theme(name) { … }`         | Token overrides, entrance tuning, a named theme                                                                                                                              |
+| `up`, `down`, `hover`, `focus-ring`, `touch-target`, `motion-safe` | The library's own mixins                                                                                                                                                     |
+
+Call the mixins at the top level of a stylesheet (or inside `theme()`), not
+inside your own selectors.
+
+`light-dark()` follows the nearest colour scheme natively. If your build
+targets browsers without it, Lightning CSS and others polyfill it in a way
+that breaks nested schemes (ADR 0002); use a token there instead.
+
+### Named themes
+
+Inside `theme(name)`, `tokens()` declares a **complete** theme for
+`data-greese-theme="name"`, exactly as `createTheme` does, and component and
+motion overrides apply only inside it:
+
+```scss
+@include greese.theme(brand) {
+  @include greese.tokens(
+    (
+      color: (
+        primary: (
+          light: #0f766e,
+          dark: #5eead4,
+        ),
+      ),
+    )
+  );
+
+  @include greese.component(Card) {
+    border-radius: 0;
+  }
+}
+```
+
+Scope it with `ThemeProvider` by name. Its CSS is already in your bundle, so
+the provider only stamps the attributes (and keeps nested schemes working):
+
+```tsx
+<ThemeProvider theme="brand">…</ThemeProvider>
+```
+
+Component overrides are descendant selectors, so a theme nested inside
+`brand` still gets `brand`'s component overrides (tokens replace; overrides
+add up).
+
+### Strict names
+
+Unknown names are build errors:
+
+```
+Error: GreeseUI kit: `Button` has no part `icn`. Parts: icon.
+```
+
+To target a class this version doesn't know (a part from a newer release, say),
+turn the check off: `@use 'pkg:@greese-ui/react/scss/kit' as greese with ($strict: false);`.
+
+## Theme-wide motion
+
+`motion()` gives every instance of a component a default, in pure CSS: what
+the `greese` prop does per instance, for all of them. It plays behind
+`prefers-reduced-motion: no-preference`.
+
+```scss
+@include greese.component(Card) {
+  @include greese.motion(
+    (
+      enter: fade-up,
+      duration: 0.4s,
+      distance: 1.5rem,
+    )
+  );
+}
+
+@include greese.component(Dialog) {
+  @include greese.motion(
+    (
+      exit: scale-out,
+    )
+  );
+}
+
+@include greese.component(Switch) {
+  // The component's own transitions: its duration and easing tokens.
+  @include greese.motion(
+    (
+      durations: (
+        fast: 80ms,
+      ),
+      easings: (
+        standard: linear,
+      ),
+    )
+  );
+}
+
+// Tunes every greese prop entrance, and the defaults above.
+@include greese.motion-defaults(
+  (
+    duration: 0.3s,
+    ease: out,
+  )
+);
+```
+
+| Option                                  | Does                                                                                                                                   |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `enter`                                 | A preset played when it appears: `fade-in`, `fade-up`, `fade-down`, `fade-start`, `fade-end`, `scale-in`, `blur-in`, `slide-up`, `pop` |
+| `keyframes`                             | Your own `@keyframes` name instead                                                                                                     |
+| `exit`                                  | How an overlay leaves: `fade-out`, `fade-out-up`, `fade-out-down`, `scale-out`                                                         |
+| `duration`, `delay`, `ease`, `distance` | Tune the entrance. `ease` is a name (`out`, `in-out`, …) or a `cubic-bezier()`                                                         |
+| `durations`, `easings`                  | The component's transition speeds and curves, rescoping the tokens to it                                                               |
+
+Per instance:
+
+- an instance's own `greese` entrance **replaces** the default (it's in a later
+  layer);
+- its `duration`, `delay` and `ease` options **tune** the default;
+- `style={{ animation: 'none' }}` turns it off for that instance.
+
+Entrance presets need the Motion styles: they're in `styles.css`; with
+per-component CSS, also import `@greese-ui/react/css/Motion.css`.
+
+Scroll reveals and hover, press and focus effects need the JavaScript
+runtime, so they stay per instance, on the `greese` prop.
+
+## Theme Studio
+
+Theme Studio is a local web app for building a theme visually. It reads and
+writes a theme file in your project, previews every change live on real
+components, and generates the kit SCSS and the compiled CSS.
+
+```sh
+npm run studio                                         # the example theme
+GREESE_THEME=src/styles/greese-theme.json npm run studio   # yours
+```
+
+It edits `greese-theme.json` (the source of truth, which you commit) and
+writes two files next to it on save:
+
+| File                | Use it if                                                  |
+| ------------------- | ---------------------------------------------------------- |
+| `greese-theme.scss` | Your app compiles Sass: `@use` it after the library styles |
+| `greese-theme.css`  | It doesn't: import it after `@greese-ui/react/styles.css`  |
+
+Both are generated; edit the JSON, or use the studio. Put hand-written
+overrides in a stylesheet of your own beside them.
+
+In the studio:
+
+- **Tokens:** every token, with light and dark colours. Name the theme to
+  scope it to `data-greese-theme`.
+- **Component preview:** above the gallery, the component you've picked,
+  shown through every story from its docs page, live as you edit it.
+- **Components:** pick one, or switch on **Inspect** and click any element in
+  the preview. You get its classes, parts, modifiers and states, its variables
+  with their current values, a declarations editor for the root, any part or
+  any modifier, and its motion defaults.
+- **Motion:** entrance tuning for the whole theme.
+- **Code:** the generated SCSS and CSS.
+- **Import:** bring in a theme you already have, then edit it. See below.
+
+The preview runs in a frame, so the theme never restyles the editor. It
+compiles through the same kit you'd use by hand, so a theme that previews
+compiles. If the JSON changes on disk (a pull, another editor), the studio
+reloads it, or asks first when you have unsaved changes.
+
+### Importing an existing theme
+
+**Import** reads a theme you already have into the editor. Paste it, upload
+it, or give a path in your project:
+
+| Source                                                          | Read as                                              |
+| --------------------------------------------------------------- | ---------------------------------------------------- |
+| A studio `.json` file                                           | As it is                                             |
+| `createTheme()` options (JSON, or a module exporting them)      | Token overrides                                      |
+| A `.ts`/`.js` module exporting `createTheme()` results          | Their CSS (the module runs in the studio's server)   |
+| SCSS, the kit's or your own                                     | Compiled first; a project file keeps its own `@use`s |
+| CSS: `createTheme()` output, kit output, hand-written overrides | Tokens, component rules and motion                   |
+
+Everything becomes CSS and is read back:
+
+- **Tokens:** light and dark values come from the scheme selectors and
+  media queries. Values equal to the defaults are left out, so a complete
+  `createTheme()` theme imports as just its overrides.
+- **Components:** `.greese-<Name>` rules, their parts and modifiers, become
+  component styles and variables.
+- **Motion:** the kit's motion output becomes motion settings.
+
+What the studio can't hold is listed with its CSS, never dropped silently:
+responsive or hover rules, other selectors, page CSS, custom keyframes. Copy
+it into a stylesheet of your own.
+
+You can replace the current theme or merge into it, the import winning.
+Nothing changes until you choose, and nothing is written until you save, to
+the studio's theme file (`GREESE_THEME`). So importing never overwrites your
+original. If the CSS holds several named themes, pick which one to edit.
+
+For safety, paths must be inside the folder you ran npm from.
+
+Theme Studio runs from this repository for now; publishing it as a package
+comes with the rest of the release work.
+
+## Reference: every component
+
+Generated from the library's stylesheets, as is the Styling section on each
+component's page. The same data ships as
+`@greese-ui/react/style-manifest.json`.
+
+<AllComponentStyles />
