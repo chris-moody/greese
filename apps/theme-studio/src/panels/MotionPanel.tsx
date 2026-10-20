@@ -50,6 +50,19 @@ export const MotionPanel = ({
       </Stack>
       <Stack gap={2}>
         <Heading level={3} variant="h6">
+          Scopes
+        </Heading>
+        <Text variant="p3" tone="muted">
+          A <code>scope</code> on a parent orders every entrance inside it, at any depth:{' '}
+          <code>greese={'{{ scope: { stagger: 0.1, delay: 0.2 } }}'}</code>. Members start
+          in document order; a scope inside a scope takes one place in the outer one. Each
+          entrance still uses the duration, ease and distance above, so a theme tunes a
+          whole sequence at once. See “Motion scope” in the preview, and use Replay motion
+          to watch it.
+        </Text>
+      </Stack>
+      <Stack gap={2}>
+        <Heading level={3} variant="h6">
           Component defaults
         </Heading>
         {animated.length ? (

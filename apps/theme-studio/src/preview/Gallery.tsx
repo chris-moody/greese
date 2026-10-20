@@ -153,6 +153,36 @@ const TypeVariants = (): JSX.Element => (
   </Group>
 )
 
+/**
+ * A scope: the parent orders the entrances inside it, at any depth. Each
+ * piece names only its own entrance, so the theme's motion settings (duration,
+ * ease, distance, set under Motion) tune every one of them. Use "Replay motion".
+ */
+const ScopeTile = (): JSX.Element => (
+  <Group title="Motion scope">
+    <Stack gap={2} greese={{ scope: { stagger: 0.12, delay: 0.1 } }}>
+      <Text variant="h6" greese={{ enter: 'fadeUp' }}>
+        One parent, one sequence
+      </Text>
+      <Text variant="p3" tone="muted" greese={{ enter: 'fadeUp' }}>
+        Each piece declares its own entrance; the scope sets when it starts.
+      </Text>
+      <Stack direction="row" gap={2} greese={{ scope: { stagger: 0.06 } }}>
+        {['One', 'Two', 'Three'].map((n) => (
+          <Card key={n} padding={3} greese={{ enter: 'scaleIn' }}>
+            <Text variant="caption" greese={{ enter: 'fadeIn' }}>
+              {n}
+            </Text>
+          </Card>
+        ))}
+      </Stack>
+      <Button size="sm" greese={{ enter: 'pop' }} style={{ alignSelf: 'start' }}>
+        Continue
+      </Button>
+    </Stack>
+  </Group>
+)
+
 const people = [
   { name: 'Ada Lovelace', role: 'Analyst', commits: 128 },
   { name: 'Grace Hopper', role: 'Compiler', commits: 342 },
@@ -172,6 +202,7 @@ export const Gallery = (): JSX.Element => (
     <Grid container minChildWidth="17rem" gap={4}>
       <Typography />
       <TypeVariants />
+      <ScopeTile />
       <Group title="Buttons">
         <Stack direction="row" gap={2} wrap="wrap">
           <Button>Solid</Button>

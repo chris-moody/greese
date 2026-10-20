@@ -210,6 +210,39 @@ export const Scope: Story = {
   ),
 }
 
+/**
+ * `inView: true` holds a whole scope until it scrolls into view, then plays its
+ * entrances in order. Scroll down.
+ */
+export const ScopeInView: Story = {
+  render: () => (
+    <Stack gap={4}>
+      <Text tone="muted">
+        Scroll down: the section below plays as one sequence when it arrives.
+      </Text>
+      <div style={{ blockSize: '70vh' }} />
+      <Card greese={{ scope: { stagger: 0.15, inView: true } }}>
+        <Stack gap={2}>
+          <Heading level={3} variant="h5" greese={{ enter: 'fadeUp' }}>
+            Held until in view
+          </Heading>
+          <Text greese={{ enter: 'fadeUp' }}>
+            The scope waits; its members start in order.
+          </Text>
+          <Stack direction="row" gap={2} greese={{ scope: { stagger: 0.08 } }}>
+            {['A', 'B', 'C', 'D'].map((n) => (
+              <Badge key={n} greese={{ enter: 'pop' }}>
+                {n}
+              </Badge>
+            ))}
+          </Stack>
+        </Stack>
+      </Card>
+      <div style={{ blockSize: '40vh' }} />
+    </Stack>
+  ),
+}
+
 /** `inView` waits until each card scrolls into view. Scroll down. */
 export const ScrollReveal: Story = {
   render: () => (

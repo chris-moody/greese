@@ -250,6 +250,83 @@ const Follow = (): JSX.Element => {
   )
 }
 
+/** Scopes: the parent orders the entrances inside it, however deep. */
+const Scopes = (): JSX.Element => {
+  const [gap, setGap] = useState(30)
+  const [run, setRun] = useState(0)
+  const stagger = Math.round((gap / 100) * 40) / 100
+  return (
+    <Card padding={5} greese={{ inView: 'fadeUp' }}>
+      <Grid container columns={{ xs: 1, md: 2 }} gap={5} align="center">
+        <Stack gap={4}>
+          <Heading level={3} variant="h5">
+            Scopes: one parent, one sequence
+          </Heading>
+          <Text tone="muted">
+            A <Code>scope</Code> orders every entrance inside it, at any depth, in
+            document order. Each piece says only how it enters; the parent says when. A
+            scope inside a scope takes one place in the outer one.
+          </Text>
+          <Slider
+            aria-label={`Stagger: ${stagger} seconds`}
+            value={gap}
+            onValueChange={setGap}
+            greese={{ focus: 'glow' }}
+          />
+          <Text variant="caption" tone="muted">
+            stagger {stagger}s
+          </Text>
+          <Code block>{`<Stack greese={{ scope: { stagger: ${stagger} } }}>
+  <Heading greese={{ enter: 'fadeUp' }}>…</Heading>
+  <Grid greese={{ scope: { stagger: ${Math.round(stagger * 50) / 100} } }}>
+    <Card greese={{ enter: 'scaleIn' }}>…</Card>
+  </Grid>
+</Stack>`}</Code>
+          <div>
+            <Button
+              variant="soft"
+              onClick={() => setRun((n) => n + 1)}
+              greese={{ hover: 'lift', press: 'squish' }}
+            >
+              Replay
+            </Button>
+          </div>
+        </Stack>
+        <Stack
+          key={`${run}-${stagger}`}
+          gap={3}
+          className="site-scope-demo"
+          greese={{ scope: { stagger, delay: 0.05, inView: true } }}
+        >
+          <Heading level={4} variant="h5" greese={{ enter: 'fadeUp' }}>
+            Launch week
+          </Heading>
+          <Text variant="p3" tone="muted" greese={{ enter: 'fadeUp' }}>
+            Three things to try, in order.
+          </Text>
+          <Grid
+            container
+            columns={3}
+            gap={3}
+            greese={{ scope: { stagger: Math.round(stagger * 50) / 100 } }}
+          >
+            {['Design', 'Build', 'Ship'].map((step) => (
+              <Card key={step} padding={4} greese={{ enter: 'scaleIn' }}>
+                <Text variant="s2" greese={{ enter: 'fadeIn' }}>
+                  {step}
+                </Text>
+              </Card>
+            ))}
+          </Grid>
+          <Button greese={{ enter: 'pop' }} style={{ alignSelf: 'start' }}>
+            Continue
+          </Button>
+        </Stack>
+      </Grid>
+    </Card>
+  )
+}
+
 export const MotionLab = (): JSX.Element => (
   <Section
     id="motion"
@@ -264,6 +341,7 @@ export const MotionLab = (): JSX.Element => (
     }
   >
     <Lab />
+    <Scopes />
     <Grid container columns={{ xs: 1, md: 3 }} gap={4}>
       <Interactions />
       <TextEffects />
