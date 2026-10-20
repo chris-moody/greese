@@ -99,7 +99,9 @@ Create `apps/docs/stories/<Category>/<Name>.stories.tsx`:
 
 - `title: '<Category>/<Name>'` (the categories are Layout, Forms, Content,
   Overlays, Navigation, Motion and Utilities);
-- `component: <Name>`, `subcomponents` for its parts;
+- `component: <Name>`, `subcomponents` for its parts, and a story file of
+  its own for each part (`<Category>/<Part>`, rendered inside the parent
+  with a decorator);
 - `args` for a working Playground story first, then stories for the main
   variants and one realistic recipe;
 - use the fixtures in `stories/_shared/fixtures.tsx` (icons, `Tile`, `art()`);

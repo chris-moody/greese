@@ -18,27 +18,32 @@ ADR wins: fix this file in the same change.
 
 **Read the ADR for the area you touch before changing it:**
 
-| ADR                                 | Governs                                                              |
-| ----------------------------------- | -------------------------------------------------------------------- |
-| 0001 styling model                  | SCSS + CSS variables, cascade layers, responsive props, class naming |
-| 0002 colour scheme and theming      | tokens, `data-greese-scheme`, `createTheme`, ThemeProvider           |
-| 0003 native form controls           | native inputs, Field wiring, `onValueChange`                         |
-| 0004 content and disclosure         | `<details>`, media, text components                                  |
-| 0005 overlays and positioning       | `<dialog>`, Popover API, anchor positioning, focus return            |
-| 0006 distribution and quality gates | per-component CSS, budgets, visual/e2e/Lighthouse gates              |
-| 0007 component gaps                 | Combobox, NumberField, DateField, Table, SegmentedControl            |
-| 0008 greese.js                      | the animation package (`packages/greese`)                            |
-| 0009 the `greese` prop              | motion on every component: CSS presets, lazy runtime, coverage check |
+| ADR                                 | Governs                                                                |
+| ----------------------------------- | ---------------------------------------------------------------------- |
+| 0001 styling model                  | SCSS + CSS variables, cascade layers, responsive props, class naming   |
+| 0002 colour scheme and theming      | tokens, `data-greese-scheme`, `createTheme`, ThemeProvider             |
+| 0003 native form controls           | native inputs, Field wiring, `onValueChange`                           |
+| 0004 content and disclosure         | `<details>`, media, text components                                    |
+| 0005 overlays and positioning       | `<dialog>`, Popover API, anchor positioning, focus return              |
+| 0006 distribution and quality gates | per-component CSS, budgets, visual/e2e/Lighthouse gates                |
+| 0007 component gaps                 | Combobox, NumberField, DateField, Table, SegmentedControl              |
+| 0008 greese.js                      | the animation package (`packages/greese`)                              |
+| 0009 the `greese` prop              | motion on every component: CSS presets, lazy runtime, coverage check   |
+| 0010 SCSS kit and Theme Studio      | style manifest, `greese.overrides` layer, kit API, `apps/theme-studio` |
+| 0011 component gap review           | ScrollCarousel, Rating, Diff, OtpField…: native bases, what was skipped      |
+| 0012 icons package and docs rules   | `@greese-ui/icons`, prop descriptions, docs page layout                |
 
 ## Workspace
 
-| Path              | What                                                                                          |
-| ----------------- | --------------------------------------------------------------------------------------------- |
-| `packages/tokens` | `@greese-ui/tokens`: tokens in `src/tokens.ts`, `createTheme`, scheme script                  |
-| `packages/react`  | `@greese-ui/react`: components in `src/components/<Name>/<Name>.tsx` + `<Name>.scss`          |
-| `packages/greese` | `@greese-ui/greese` (greese.js): animation; no dependencies, no React                         |
-| `apps/docs`       | Storybook: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`          |
-| `apps/playground` | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                         |
+| Path                | What                                                                                          |
+| ------------------- | --------------------------------------------------------------------------------------------- |
+| `packages/tokens`   | `@greese-ui/tokens`: tokens in `src/tokens.ts`, `createTheme`, scheme script                  |
+| `packages/react`    | `@greese-ui/react`: components in `src/components/<Name>/<Name>.tsx` + `<Name>.scss`          |
+| `packages/greese`   | `@greese-ui/greese` (greese.js): animation; no dependencies, no React                         |
+| `packages/icons`    | `@greese-ui/icons`: optional line icons (`createIcon`); the library never imports it          |
+| `apps/docs`         | Storybook: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`          |
+| `apps/playground`   | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                         |
+| `apps/theme-studio` | Theme Studio (`npm run studio`): edits a theme JSON, generates kit SCSS + CSS                 |
 
 Use npm, never yarn. Node ≥ 24.
 
@@ -60,8 +65,10 @@ Use npm, never yarn. Node ≥ 24.
 - **Props:**
   - `interface <Name>Props extends ComponentPropsWithRef<'el'>`, using `Omit`
     for anything you redefine;
-  - every own prop has TSDoc, with `@default` where there is one. Storybook
-    builds the props table from it;
+  - every own prop has TSDoc that says what it does (a bare `@default` is
+    not a description), with `@default` where there is one. Storybook builds
+    the props table from it, and `npm run lint -w docs` fails on any prop
+    without one (`scripts/check-prop-docs.mjs`);
   - the return type is `JSX.Element`;
   - the component's TSDoc includes a short ` ```tsx ` example.
 - **Pass-through:**
@@ -98,7 +105,9 @@ Use npm, never yarn. Node ≥ 24.
   - `prefers-reduced-motion` is respected;
   - touch targets are at least 44px on coarse pointers;
   - control text is never below 16px on touch, so iOS doesn't zoom.
-- **GreeseUI ships no icons.** Accept a `ReactNode`; internal glyphs live in
+- **GreeseUI ships no icons.** Accept a `ReactNode`. The optional
+  `@greese-ui/icons` package (`packages/icons`) is separate: the library
+  never imports it, and `verify:packages` checks that. Internal glyphs live in
   `utils/glyphs.tsx`.
 - **Comments:**
   - explain _why_, not what;
@@ -117,7 +126,10 @@ See the `greese-styles` skill for detail. In short:
 - values come from tokens (`var(--greese-…)`), with no raw colours;
 - use logical properties;
 - per-instance variables are named `--greese-<name>-<thing>`;
-- stylelint enforces most of this.
+- stylelint enforces most of this;
+- after changing a stylesheet, `npm run build:css -w @greese-ui/react`
+  refreshes `src/styles/_manifest.scss` (the SCSS kit's name list); commit it.
+  A unit test fails while it's stale.
 
 ## Tests
 
@@ -130,11 +142,21 @@ See the `greese-styles` skill for detail. In short:
 
 ## Docs
 
-- **Every exported component needs a story.** `npm run lint -w docs` fails
-  otherwise. A story file is `stories/<Category>/<Name>.stories.tsx` with:
-  - `title: '<Category>/<Name>'`;
-  - `component`, plus `subcomponents` for compound parts;
+- **Every exported component needs a page of its own**, compound parts
+  (AccordionItem, Tab, TableRow…) included: a story file whose meta
+  `component` is it. `npm run lint -w docs` fails otherwise; being in a
+  parent's `subcomponents` doesn't count. A story file is
+  `stories/<Category>/<Name>.stories.tsx` with:
+  - `title: '<Category>/<Name>'` (a part sits beside its parent:
+    `Content/AccordionItem`);
+  - `component`, plus `subcomponents` on a parent for its props tabs;
+  - for a part, a `decorators` entry that renders it inside its parent;
   - `args`, and a `Playground` story first.
+- **Styling sections are generated.** Every docs page ends with one, built
+  from the style manifest: the classes a component renders, its items, the
+  components it's built on, and override examples. A part with no classes of
+  its own needs an entry in `UNSTYLED` in `stories/_shared/ComponentStyles.tsx`
+  saying what to target instead.
 - Stories must render deterministically: no autoplaying animation, no
   randomness, no dates. Visual tests snapshot them.
 - Update `packages/react/README.md` (the component lists), and the guides,

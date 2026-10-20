@@ -28,7 +28,9 @@ Load `greese-conventions` first. ADR 0001 (the styling model) and ADR 0002
 ```
 
 - **Layers:** the order is `greese.reset, greese.tokens, greese.theme,
-greese.base, greese.components, greese.utilities`. Never write unlayered
+greese.base, greese.components, greese.overrides, greese.utilities`.
+  `greese.overrides` belongs to the SCSS kit (`src/styles/_kit.scss`, ADR
+  0010); library stylesheets never use it. Never write unlayered
   library CSS, and never use `!important`. Users' unlayered CSS must always
   win. Use `greese.utilities` only for things that must beat a component's own
   `display` (Show/Hide).
@@ -43,8 +45,8 @@ greese.base, greese.components, greese.utilities`. Never write unlayered
 
 | Use                                                                              | Not                                                                                |
 | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `var(--greese-color-fg)`, `-surface`, `-accent`, `-border`, `-focus-ring`…       | Hex, `rgb()`, named colours (stylelint `color-no-hex`, `function-disallowed-list`) |
-| `color-mix(in oklab, var(--greese-color-accent) 14%, transparent)` for tints     | New colour tokens for every tint                                                   |
+| `var(--greese-color-fg)`, `-surface`, `-primary`, `-border`, `-focus-ring`…      | Hex, `rgb()`, named colours (stylelint `color-no-hex`, `function-disallowed-list`) |
+| `color-mix(in oklab, var(--greese-color-primary) 14%, transparent)` for tints    | New colour tokens for every tint                                                   |
 | `var(--greese-space-N)`, `var(--greese-radius-md)`, `var(--greese-font-size-sm)` | Magic numbers, except for genuinely component-specific sizes                       |
 | `var(--greese-duration-fast)` + `var(--greese-easing-standard)`                  | Literal durations: the tokens collapse under reduced motion                        |
 | `inline-size`, `margin-inline-start`, `inset-inline-end`, `:dir(rtl)`            | `width` (for writing-mode-sensitive sizes), `left`, `margin-left`                  |
@@ -57,13 +59,20 @@ is still `--greese-<name>-<thing>`; `--_x` is rejected.
 
 ## Responsive props
 
-Never write per-prop media queries by hand. Use the mixin, which emits:
+Never write per-prop media queries by hand. Use the mixin, which emits, for
+each breakpoint in order inside its media query:
 
-- the "uses" class;
-- a mobile-first `var()` fallback chain per breakpoint;
-- `@property` registrations with `inherits: false`, so nested instances
-  never see a parent's values;
-- one class per token value.
+- a value class, `.greese-X--md-gap`, reading `--greese-x-gap-md` (set
+  inline for open-ended values);
+- one class per token value, `.greese-X--md-gap-2`, setting the property
+  directly.
+
+Source order is the mobile-first fallback, so keep a prop's rules in one
+mixin call and never add rules for its classes elsewhere. There's no "uses"
+class: if a component must style "this prop is set", add its own class in
+the TSX (Spacer's `--fixed`). No `var()` chains and no `@property`
+registration: both measurably slowed style recalculation (ADR 0001
+addendum).
 
 ```scss
 @include mixins.responsive-prop('greese-Grid', 'gap', gap, mixins.space-tokens());
@@ -77,7 +86,15 @@ Never write per-prop media queries by hand. Use the mixin, which emits:
 Pair it with a `ResponsiveConfig` in the TSX (same `block` and `prop`).
 Variables a parent passes down to children (AutoLayout's columns and gap) are
 plain inheriting custom properties. Variables that must _not_ leak into
-nested instances get `@property { syntax: '*'; inherits: false; }`.
+nested instances get `@property { syntax: '*'; inherits: false; }`, but the
+responsive mixin's own variables don't need it: only the element that sets
+one reads it.
+
+**Selectors that cost every element:** a rule whose rightmost part has no
+class, id or tag (`.x > *`, `.x > :nth-child(3)`) is tried against every
+element on the page. Keep them few: share one rule and vary a custom
+property (see Motion.scss), and put fallbacks for newer CSS in `@supports`,
+whose rules browsers that pass the test never match.
 
 ## States, input and motion
 
@@ -102,6 +119,13 @@ nested instances get `@property { syntax: '*'; inherits: false; }`.
   `position-try-fallbacks`.
 
 ## Theming hooks
+
+- **Brand colours:** components use `--greese-color-primary` for emphasis,
+  never `accent` (a brand colour like secondary and tertiary). Text or icons
+  drawn on a brand colour use its `-content` colour
+  (`--greese-color-primary-content`), which is WCAG AA-safe; for a `tone`
+  prop, use `styles/_tones.scss`, whose list runs primary, secondary,
+  tertiary, accent.
 
 - **Component knobs:** expose them as `--greese-<name>-<thing>` set on the
   root, so users can override them per instance. Add new ones to the table in

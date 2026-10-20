@@ -28,8 +28,9 @@ are bugs.
    - Run code snippets mentally against the real types. Fix any that wouldn't
      compile; for example, `onValueChange` gives a `string`, not a narrower
      union.
-3. Keep the coverage invariant: every exported component has a story
-   (`npm run lint -w docs`). Stories render deterministically.
+3. Keep the coverage invariant: every exported component, parts included, has
+   a page of its own (`npm run lint -w docs`). Stories render
+   deterministically.
 4. When an ADR is superseded, mark it (`Status: Superseded by NNNN`) rather
    than rewriting history.
 5. Build the docs (`npm run build -w docs`). For guides, render the page in a

@@ -20,14 +20,14 @@ motion, `docs/plans/GREESE_PROP_PLAN.md`.
 
 ## The model (keep these invariants)
 
-| Module            | Role                                                                                                                                                                                                                                           |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/timeline.ts` | `Track` per `(target, property)`: segments in start order, sampled purely by time. `Timeline.render(time)` maps repeat/delay/yoyo, samples tracks, then renders nested timelines at `(local − start) × timeScale`. Positions, labels, controls |
-| `src/value.ts`    | `mix(a, b)`: numbers inside same-shaped strings, unit borrowing, OKLab colours, discrete (`none`/`hidden` yield), `mixText`                                                                                                                    |
-| `src/target.ts`   | Adapters: elements (individual `translate`/`rotate`/`scale`, CSS, `--vars`, `text`, SVG attributes, numeric properties) and plain objects. Writes are batched; `flush()` once per render                                                       |
-| `src/ease.ts`     | `cubicBezier`, named GSAP-style eases, CSS names, `steps(n)`                                                                                                                                                                                   |
-| `src/ticker.ts`   | One shared rAF loop, only while something plays; gaps clamp to 1/30 s                                                                                                                                                                          |
-| `src/split.ts`    | `splitText`, accessible                                                                                                                                                                                                                        |
+| Module            | Role                                                                                                                                                                                                                                                                    |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/timeline.ts` | `Track` per `(target, property)`: segments in start order, sampled purely by time. `Timeline.render(time)` maps repeat/delay/yoyo, samples tracks, then renders nested timelines at `(local − start) × timeScale`. Positions, labels, controls                          |
+| `src/value.ts`    | `mix(a, b)`: numbers inside same-shaped strings, unit borrowing, OKLab colours, discrete (`none`/`hidden` yield), `mixText`                                                                                                                                             |
+| `src/target.ts`   | Adapters: elements (individual `translate`/`rotate`/`scale`, CSS, `--vars`, `text`, SVG attributes, numeric properties) and plain objects. All writes wait for `flush()` (one per render), and `batch()` holds flushes across timelines (the ticker batches each frame) |
+| `src/ease.ts`     | `cubicBezier`, named eases (`power2.out`, `back.out(2)`…), CSS names, `steps(n)`                                                                                                                                                                                        |
+| `src/ticker.ts`   | One shared rAF loop, only while something plays; gaps clamp to 1/30 s                                                                                                                                                                                                   |
+| `src/split.ts`    | `splitText`, accessible                                                                                                                                                                                                                                                 |
 
 **Invariants:**
 
@@ -40,12 +40,17 @@ motion, `docs/plans/GREESE_PROP_PLAN.md`.
   render `from` immediately.
 - **Only root timelines tick.** `add()` pauses the child; the parent drives
   it.
-- **Starting values are read lazily, once,** on first sample.
-  `invalidate()` resets them.
+- **Starting values are read lazily, once,** on first sample, and always
+  before a track's first write (even when every keyframe is explicit), so
+  `kill()` can restore them. `invalidate()` resets them.
 - **`then()` resolves with no value**, and at once if already finished.
   Never resolve with the timeline, or it would be awaited again forever.
 - **SSR-safe:** no DOM access at import time, and plain objects work in Node
   (`verify:packages` checks this).
+- **Reads before writes:** never write a style while a render is still
+  reading; buffer it for `flush()`. Interleaving forces a style recalculation
+  per read (ADR 0008, 2026-10-19 addendum). Batch anything that starts many
+  timelines at once.
 - **Reduced motion:** playing under `prefers-reduced-motion: reduce` jumps to
   the end unless `reducedMotion: 'ignore'`.
 
@@ -55,8 +60,9 @@ motion, `docs/plans/GREESE_PROP_PLAN.md`.
   New mixing behaviour goes in `value.ts` with unit tests.
 - **New ease:** add it to `families` (as its _in_ form; out and inOut are
   derived) or to `keywords`.
-- **API changes:** greese.js is 0.x, but GSAP-compatible names and position
-  syntax are a promise to GLOP users. Keep them.
+- **API changes:** greese.js is 0.x, but its method names, ease names and
+  position syntax are a promise to GLOP users, whose engine code ports
+  directly. Keep them.
 - **Tests:**
   - `src/greese.test.ts` covers pure maths and plain objects, plus fake-timer
     playback (`vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] })`);
@@ -66,7 +72,7 @@ motion, `docs/plans/GREESE_PROP_PLAN.md`.
     it's a thenable and would be awaited.
 - **Size:** `npm run build -w @greese-ui/greese && npm run size -w @greese-ui/greese`.
   The budget is 6.5 kB for everything (`animate` alone 5.25 kB). Measure per module (see
-  `greese-lightweight`) before adding features. GSAP-scale features (plugins,
+  `greese-lightweight`) before adding features. Heavyweight features (plugins,
   ScrollTrigger, morphing, physics) are out of scope.
 - **Docs:**
   - `stories/guides/Animation.mdx` (the API tables);
@@ -78,19 +84,29 @@ motion, `docs/plans/GREESE_PROP_PLAN.md`.
 
 ## Motion in components: the `greese` prop (ADR 0009)
 
-| File                                 | Role                                                                                                                                                   |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `utils/greese.ts`                    | Types, `resolveGreese` (pure: classes + `--greese-motion-*` variables), `withGreese` (clones the root; adds the island only when JavaScript is needed) |
-| `components/Motion/Motion.scss`      | CSS presets, stagger `:nth-child` indices, `--greese-ease-*`, exit classes; all behind `prefers-reduced-motion: no-preference`                         |
-| `components/Motion/GreeseIsland.tsx` | The client island: Slot onto the root, marks out-of-view `inView` targets pending before paint, loads the runtime                                      |
-| `components/Motion/registry.ts`      | `loadGreeseRuntime()`: the registered runtime, or a dynamic import (a lazy chunk)                                                                      |
-| `components/Motion/greeseRuntime.ts` | Reveals, interactions, text effects, keyframe entrances, timelines                                                                                     |
-| `src/greese.ts`                      | The `@greese-ui/react/greese` opt-in: registers the runtime eagerly                                                                                    |
+| File                                 | Role                                                                                                                                                                                                                         |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `utils/greese.ts`                    | Types, `resolveGreese` (pure: classes + `--greese-motion-*` variables), `withGreese` (clones the root; adds the island only when JavaScript is needed)                                                                       |
+| `components/Motion/Motion.scss`      | CSS presets (each sets `--greese-motion-name`; shared rules animate), stagger index via `sibling-index()` with an `:nth-child` fallback, `--greese-ease-*`, exit classes; all behind `prefers-reduced-motion: no-preference` |
+| `components/Motion/GreeseIsland.tsx` | The client island: Slot onto the root, marks out-of-view `inView` targets pending before paint, loads the runtime                                                                                                            |
+| `components/Motion/registry.ts`      | `loadGreeseRuntime()`: the registered runtime, or a dynamic import (a lazy chunk)                                                                                                                                            |
+| `components/Motion/greeseRuntime.ts` | Reveals, interactions, text effects, keyframe entrances, timelines; the `BUILT_IN` effect table and the sequence parser (`parseSequence`, `addMotion`)                                                                       |
+| `components/Motion/effects.ts`       | `defineGreeseEffect()`: the custom-effect `Map`, outside the lazy chunk so defining never loads greese.js                                                                                                                    |
+| `hooks/useGreese.ts`                 | greese.js tied to a component's lifetime: layout-effect build, a recorder of every timeline made through `g`, scope via greese.js `TimelineOptions.scope`; `useTimeline` wraps it                                            |
+| `src/greese.ts`                      | The `@greese-ui/react/greese` opt-in: registers the runtime eagerly                                                                                                                                                          |
 
 **Rules:**
 
 - **New presets** go in CSS first (a `@keyframes` and a class), and are
-  mirrored as keyframes in `presetKeyframes()` for when greese.js plays them.
+  mirrored in `BUILT_IN` (greeseRuntime.ts) for when greese.js plays them
+  (sequences, non-CSS eases). Add the name to `CSS_PRESETS` in
+  `utils/greese.ts` too.
+- **Effect names are camelCase** in the API; CSS classes and keyframes are
+  their kebab-case form (stylelint enforces kebab modifiers).
+- **Sequences** (`'a+b,+2,c'`) always run in greese.js. Keep runtime code
+  free of locals reassigned from each other (`let end = cursor` …
+  `cursor = end`): Storybook's react-docgen recursed on that until the
+  stack overflowed and the docs build failed.
 - **Defaults** are `var()` fallbacks, never declarations on `.greese-Motion`,
   so ancestors can tune them.
 - **Fill mode** is `backwards`, never `both`: overlays' exit transitions
@@ -99,6 +115,10 @@ motion, `docs/plans/GREESE_PROP_PLAN.md`.
   resolver pure (it runs in Server Components).
 - **Tests:**
   - unit: `src/components/motion.test.tsx`;
-  - browsers: `apps/playground/e2e/greese-prop.spec.ts`;
+  - browsers: `apps/playground/e2e/greese-prop.spec.ts` (and
+    `e2e/motion.spec.ts` for `useGreese`);
+  - fake-timer tests: drain the shared ticker after each test (unmount,
+    then advance a frame), or a frame left pending when real timers return
+    stalls the loop for every later test;
   - visual snapshots run with reduced motion, so stories show final
     states.
