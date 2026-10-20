@@ -10,8 +10,9 @@ later power a `greese` prop on components (see
 [the plan](../plans/GREESE_PROP_PLAN.md)). GLOP, the codebase this work comes
 from, uses two systems:
 
-- **GSAP** in the game engine, used lightly: `gsap.to`, `fromTo` and
-  `killTweensOf` with named eases (`'elastic.out(1.2, 0.5)'`).
+- **A third-party tween library** in the game engine, used lightly: `to`,
+  `fromTo` and kill-all-tweens-of-a-target, with named eases
+  (`'elastic.out(1.2, 0.5)'`).
 - **The Pixels timeline** (`@beta/ui/features/authoring`). Animation is data:
   per-layer keyframes on named numeric channels, tweens between adjacent keys,
   and `sampleTweenedRecord(timeline, frame)` returning every channel's value
@@ -90,9 +91,9 @@ long-running decorative loops.
 - **Starting values** are read from computed style once per property; call
   `invalidate()` to re-read them.
 
-### 4. API: GSAP's vocabulary, WAAPI's keyframes
+### 4. API: the engine's tween vocabulary, WAAPI's keyframes
 
-- **From GSAP** come `to`, `from`, `fromTo`, `set`, `add`, `call`, labels,
+- **From the engine's tween code** come `to`, `from`, `fromTo`, `set`, `add`, `call`, labels,
   the position syntax (`'<'`, `'>-0.2'`, `'+=0.5'`, `'label+=1'`), `stagger`,
   and named eases (`power2.out`, `back.out(2)`, `elastic.out(a, p)`,
   `bounce`, `expo`…). GLOP's engine code ports directly. Times are in
@@ -133,7 +134,6 @@ readers read words, not letters.
   - `ease` alone: 0.85 kB.
   - The timeline core is about 2.5 kB, value mixing (colours, units, text)
     1.3 kB, easing 0.9 kB and targets 0.9 kB.
-  - For comparison, GSAP's core is about 27 kB.
 - **GreeseUI's whole-library budget** is split in two: components only
   (20 kB, greese.js excluded) and with greese.js (26 kB). The cost stays
   visible either way.
@@ -172,3 +172,36 @@ readers read words, not letters.
 - **Budgets:**
   - everything: 6.5 kB (measured 5.9 kB);
   - `animate`: unchanged at 5 kB.
+
+## Addendum (2026-10-19): writes wait for reads, and `batch()`
+
+The GreeseUI homepage profiled at hundreds of milliseconds of main-thread
+work starting a few dozen animations. `transformParts`, which reads computed
+style, accounted for most of it. Writes went out as each track was sampled,
+so every later computed-style read forced a style recalculation.
+
+- **Within a timeline,** the element adapter now holds style writes until
+  `flush()`, as it already did for transforms. A render reads every starting
+  value before it writes anything.
+- **Across timelines,** `batch(fn)` queues every adapter's flush until `fn`
+  returns. The ticker renders each frame inside one batch, and the `greese`
+  prop's runtime attaches a commit's elements inside one. Reads made inside a
+  batch (in `onUpdate`, say) see values from before it.
+- **Selector scope:** `TimelineOptions.scope` resolves selector strings
+  inside an element (used by `useGreese`, ADR 0009 decision 11).
+- **`kill()` restores explicit keyframes:** tracks read their original value
+  before their first write, even when every keyframe is given.
+- **Cost:** greese.js "everything" went from 6.04 to 6.1 kB (budget 6.5 kB).
+  The `greese` prop's lazy runtime went from 6.98 to 7.08 kB, over its 7 kB
+  budget, which was raised to 7.25 kB for this change.
+- **Measured gain, honestly:** on the homepage's first screen, these changes
+  cut layouts during load from 194 to 94 and style recalculations from 338
+  to 160. The time inside the forced first style calculation fell by about
+  a fifth (130 → 107 ms at 4× CPU throttling). That first calculation is
+  inherent, so most of the blocking-time win came from the finding below.
+
+A finding for apps rather than the library: on the homepage, loading the
+`greese` prop's runtime up front (`@greese-ui/react/greese`) moved the page's
+first full style calculation into a JavaScript task, which counted as
+blocking time. Animating the first screen with CSS presets and letting the
+runtime load lazily took Lighthouse's Total Blocking Time to 20 ms.

@@ -15,17 +15,17 @@ aims to ship little JavaScript.
 
 ### 1. The native element is the control
 
-| Component | Element |
-|---|---|
+| Component                        | Element                                 |
+| -------------------------------- | --------------------------------------- |
 | Button, IconButton, ToggleButton | `<button>` (`aria-pressed` for toggles) |
-| Input, TextField | `<input>` |
-| Textarea | `<textarea>` |
-| Select | `<select>` |
-| Checkbox | `<input type="checkbox">` |
-| Switch | `<input type="checkbox" role="switch">` |
-| Radio | `<input type="radio">` |
-| Slider | `<input type="range">` |
-| FileInput | `<input type="file">` |
+| Input, TextField                 | `<input>`                               |
+| Textarea                         | `<textarea>`                            |
+| Select                           | `<select>`                              |
+| Checkbox                         | `<input type="checkbox">`               |
+| Switch                           | `<input type="checkbox" role="switch">` |
+| Radio                            | `<input type="radio">`                  |
+| Slider                           | `<input type="range">`                  |
+| FileInput                        | `<input type="file">`                   |
 
 Checkboxes, radios and switches use `appearance: none`, and the box or track is
 drawn on the **input itself**, so focus, the focus ring, clicks and

@@ -35,26 +35,34 @@ Breakpoint values are compile-time constants (media queries can't read
 variables). The published SCSS entry forwards a `$breakpoints !default`:
 
 ```scss
-@use 'pkg:@greese-ui/react/scss' with ($breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px));
+@use 'pkg:@greese-ui/react/scss' with (
+  $breakpoints: (
+    xs: 0px,
+    sm: 480px,
+    md: 768px,
+    lg: 1024px,
+    xl: 1440px,
+  )
+);
 ```
 
 `configureBreakpoints()` gives the hooks and Sidebar the same values in JS.
 **The keys stay `xs`–`xl`**, and the SCSS fails the build if they change. Keys
 are baked into every generated class name, every `Responsive<T>` type and
-`resolveResponsive`. Custom keys would need TypeScript module augmentation *and*
-a matching runtime list *and* a recompile, all of which would have to stay in
+`resolveResponsive`. Custom keys would need TypeScript module augmentation _and_
+a matching runtime list _and_ a recompile, all of which would have to stay in
 sync, and changing values covers almost every real need.
 
 ### 3. Quality gates
 
-| Gate | What it proves | Where |
-|---|---|---|
-| Unit (Vitest + axe) | Behaviour, ARIA, coverage gate on `resolveResponsive` | CI |
-| E2E (Playwright) | Real layout, keyboard, top layer: Chromium, Pixel 7, Firefox, WebKit, iPhone 15 | CI |
-| **Visual regression** | Every story × light/dark × phone/desktop (572 screenshots) | CI (Linux image) + local |
-| **Lighthouse** | Performance ≥ 0.95, accessibility ≥ 0.95, best practices ≥ 0.95, LCP < 2 s, TBT < 100 ms, CLS < 0.05 on every playground page, mobile throttled | CI |
-| **Package verification** | The tarballs as a consumer installs them: Node ESM + SSR, types (bundler and nodenext), SCSS recompilation, per-component imports, Vite bundling | CI |
-| Size budgets | Whole library and tree-shaken components | CI |
+| Gate                     | What it proves                                                                                                                                   | Where                    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------ |
+| Unit (Vitest + axe)      | Behaviour, ARIA, coverage gate on `resolveResponsive`                                                                                            | CI                       |
+| E2E (Playwright)         | Real layout, keyboard, top layer: Chromium, Pixel 7, Firefox, WebKit, iPhone 15                                                                  | CI                       |
+| **Visual regression**    | Every story × light/dark × phone/desktop (572 screenshots)                                                                                       | CI (Linux image) + local |
+| **Lighthouse**           | Performance ≥ 0.95, accessibility ≥ 0.95, best practices ≥ 0.95, LCP < 2 s, TBT < 100 ms, CLS < 0.05 on every playground page, mobile throttled  | CI                       |
+| **Package verification** | The tarballs as a consumer installs them: Node ESM + SSR, types (bundler and nodenext), SCSS recompilation, per-component imports, Vite bundling | CI                       |
+| Size budgets             | Whole library and tree-shaken components                                                                                                         | CI                       |
 
 **Visual baselines are per platform**, because font rendering differs. Local
 macOS baselines are committed. Linux baselines are recorded by the Visual
@@ -78,7 +86,8 @@ Storybook with `@storybook/addon-docs`:
   page and a props table generated from the TSDoc already on every prop.
   Compound parts (TabList, MenuItem…) are listed as `subcomponents`.
   `scripts/check-story-coverage.mjs`, part of the docs `lint` task, fails if
-  an exported component appears in no story meta.
+  an exported component appears in no story meta. (Since 2026-10-19, parts
+  need a page of their own too: see ADR 0010.)
 - **Colour scheme:** the toolbar's scheme is applied from the globals channel,
   so it reaches docs pages too, and the docs container uses a Storybook theme
   built from GreeseUI's tokens for the resolved scheme. Storybook's default

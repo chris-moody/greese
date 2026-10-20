@@ -7,6 +7,7 @@
 ## Context
 
 Components needed simple, configurable motion through one prop, without:
+
 - costing anything per render;
 - breaking Server Components;
 - flashing on first paint;
@@ -19,15 +20,15 @@ Button, Card…), so the prop can't simply add a client hook everywhere.
 
 ### 1. One prop, three tiers
 
-`greese` is one prop: a preset name, or an options object (`enter`, `inView`,
+`greese` is one prop: an effect name or sequence (decision 10), or an options object (`enter`, `inView`,
 `once`, `exit`, `hover`, `press`, `focus`, `text`, `duration`, `delay`,
 `ease`, `distance`, `stagger`, `timeline`).
 
-| Tier | Covers | How |
-|---|---|---|
-| CSS | Entrance presets, stagger, overlay exits, CSS-expressible eases | `resolveGreese()`, a pure function run during render, returns classes and custom properties; `Motion.scss` does the rest |
-| Runtime | Scroll reveals, hover/press/focus, text effects, keyframe entrances, non-CSS eases | `GreeseIsland` (a client component, rendered only when needed) wraps the root via Slot and hands it to `greeseRuntime.ts` |
-| Timeline | `timeline: (tl, el) => …` | The runtime fills and plays a greese.js timeline |
+| Tier     | Covers                                                                             | How                                                                                                                       |
+| -------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| CSS      | Entrance presets, stagger, overlay exits, CSS-expressible eases                    | `resolveGreese()`, a pure function run during render, returns classes and custom properties; `Motion.scss` does the rest  |
+| Runtime  | Scroll reveals, hover/press/focus, text effects, keyframe entrances, non-CSS eases | `GreeseIsland` (a client component, rendered only when needed) wraps the root via Slot and hands it to `greeseRuntime.ts` |
+| Timeline | `timeline: (tl, el) => …`                                                          | The runtime fills and plays a greese.js timeline                                                                          |
 
 ### 2. Server-safe by construction
 
@@ -57,6 +58,7 @@ CSS presets never do.
 
 The resolver plus the island add about 0.75 kB (brotli) to an app that uses
 any GreeseUI component. It's shared, not per component.
+
 - **Per-component budgets** rose by that amount: Button 1.25 → 2.25 kB,
   Dialog 2.5 → 3.25 kB, and so on. All components 20 → 22 kB.
 - **CSS:** `greese-ui.css` rose to a budget of 18 kB, measured at 16.45 kB
@@ -76,8 +78,11 @@ any GreeseUI component. It's shared, not per component.
   during a delay; afterwards the element's own styles apply again. With
   `both`, a dialog's enter animation would pin its open state, and its exit
   transition would never show.
-- **Stagger** uses `:nth-child` rules (up to 24) to set
-  `--greese-motion-index`: no JavaScript, and it works on the server.
+- **Stagger** sets `--greese-motion-index` with one `sibling-index()` rule,
+  or, where that's unsupported, `:nth-child` rules (up to 24) inside
+  `@supports not`: no JavaScript, and it works on the server. (Changed
+  2026-10-19: the `:nth-child` rules were tried against every element on
+  every page; see ADR 0001's addendum.)
   **Open question 2** is therefore moot: server-rendered stagger works
   before hydration.
 - **Defaults are `var()` fallbacks,** not declarations on `.greese-Motion`.
@@ -112,7 +117,8 @@ any GreeseUI component. It's shared, not per component.
 - **Enforced by:** `src/test/greeseCoverage.ts`, a type-level check run by
   `check-types`, names any component missing the prop.
 - **`<Motion>`** gives any element the prop.
-- **`useTimeline()`** ties a greese.js timeline to a component's lifetime.
+- **`useGreese()`** ties greese.js to a component's lifetime (decision 11);
+  `useTimeline()` is its one-timeline shortcut.
 
 ### 8. Exit animations on unmount: deferred
 
@@ -126,6 +132,74 @@ in the DOM; anything else can run a timeline before removing state.
 Implemented in greese.js (ADR 0008 addendum), so designers can author motion
 in Pixels Studio and play it through `greese={{ timeline: (tl, el) => tl.add(fromPixels(…)) }}`
 or directly.
+
+### 10. Effects: camelCase names, composition, custom definitions
+
+- **Names are camelCase** (`fadeUp`, `scaleOut`), like the rest of the
+  props. CSS class and keyframe names stay kebab-case (`greese-Motion--enter-fade-up`)
+  because stylelint enforces it; the resolver converts.
+- **Every named motion is an effect:** entrances, leaving effects
+  (`fadeOut`, `fadeOutUp`, `fadeOutDown`, `scaleOut`, `blurOut`) and
+  interactions share one table in the runtime, and any slot (`enter`,
+  `inView`, `hover`, `press`, `focus`) takes any effect.
+- **Composition is a string:** `+` plays effects together, `,` separates
+  groups played in turn, a number is a pause. `'fadeIn+scaleIn,+2,fadeOut'`.
+  A string stays serialisable, so Server Components can pass sequences, and
+  it reads like the motion it describes. Typed as a template literal: a lone
+  name must be a known effect, anything with `+` or `,` is a sequence.
+- **Only a lone preset is CSS.** Sequences run in greese.js: CSS can't hold
+  a later group's end state with `backwards` fill (decision 5), and chaining
+  `animation` lists per element would duplicate the timeline model.
+- **`defineGreeseEffect(name, effect)`** registers keyframes, a function of
+  `{ el, distance, rtl }`, or keyframes with a default `duration`/`ease`. The
+  registry is a `Map` in its own module, outside the lazy runtime, so
+  defining effects never loads greese.js. Instance options win over an
+  effect's defaults; built-in names win over definitions, so a CSS preset
+  and its JavaScript twin can't disagree. Names type-check through module
+  augmentation of `GreeseEffectRegistry`.
+- **Reduced motion** turns each effect in a sequence into a cut and drops the
+  delay, but keeps pauses, so "show, wait, hide" still shows. With a
+  `timeline` option the whole entrance jumps to its end as before.
+- **Not for `exit`:** overlay exits stay CSS transitions with built-in names.
+- **Cost:** the runtime chunk went from 6.46 to 6.85 kB (budget 7 kB): the
+  parser, the leaving effects and the registry lookup. Each component's
+  static part grew about 70 B (the preset check and the kebab conversion).
+  No budget was raised.
+
+### 11. `useGreese()`: greese.js in components
+
+`useTimeline` had gaps for React use: it ran in `useEffect`
+(a from-tween's end state flashed for a frame), it reverted only the one
+timeline it returned (animations started in handlers leaked), and selector
+strings matched the whole document.
+
+- **Signature:** `useGreese(build?, dependencies | { scope, dependencies, revertOnUpdate })`, the familiar React shape of an effect with dependencies.
+- **Timing:** the build runs in a layout effect (an effect on the server,
+  where it never runs), so starting values apply before paint and refs are
+  set.
+- **Tracking without global state:** the build gets a context `g`
+  (`timeline`, `animate`, `select`), and the hook returns the same helpers,
+  stable across renders, for handlers. Whatever they make is recorded and
+  reverted on unmount, newest first, so the oldest originals win. Recording
+  through a global "current context" in greese.js was the alternative; doing
+  it in the hook keeps greese.js free of React-shaped state. `contextSafe`
+  wraps a handler so it receives the context.
+- **Scope** is a greese.js feature, not a wrapper: `TimelineOptions.scope`
+  makes a timeline resolve selector strings inside an element. `g` passes the
+  ref's element when it creates a timeline. (A first version patched each
+  timeline's `animate`/`fromTo` methods, which depended on how the others
+  route internally.)
+- **Updates:** by default the last build is paused, not reverted, so a
+  rebuild reads current values and continues smoothly; `revertOnUpdate`
+  reverts first. `useTimeline` is now `useGreese` with `revertOnUpdate`.
+- **greese.js fix it exposed:** `kill()` only restored properties whose
+  original value had been read, and with explicit keyframes it never was.
+  Tracks now read the original before their first write.
+- **Known trade-off:** animations started in handlers are kept until
+  unmount so they can be reverted, so a long-lived component that animates
+  on every click holds every one of those timelines.
+- **Known limit:** reverting writes the original _computed_ value inline; it
+  doesn't remove the inline style it added.
 
 ## Consequences
 
@@ -142,3 +216,13 @@ or directly.
     every story snapshots its final state. Existing baselines were unchanged.
 - **Docs:** **Guides/Animation** (with GreeseUI), **Guides/greese.js**
   (standalone, every install form), and **Motion/greese prop** stories.
+
+## Addendum (2026-10-19): reveals wait until an element is clear
+
+Scroll reveals played at 15% visibility, so an element animated in while
+mostly below the fold, cut off by the bottom edge. Now an `inView` element
+reveals once it is wholly in view and clear of a band at the bottom (10% of
+the viewport, as a root margin). One taller than half the viewport reveals
+once it fills half of it. Near the end of a page, which may not scroll far
+enough to clear the band, a second observer reveals an element once it is
+wholly visible. The runtime budget rose 7.25 → 7.5 kB for it.

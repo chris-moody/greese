@@ -29,8 +29,8 @@ control, and swipe-to-dismiss for bottom sheets.
   - Escape closes the list, and a second Escape clears the input.
 - **Blur:** text matching nothing reverts to the selection. With
   `allowCustomValue` it becomes the value instead.
-- **Forms:** a hidden input submits the option's *value*, not its label.
-- **Empty state:** "No results" is rendered *outside* the listbox, because an
+- **Forms:** a hidden input submits the option's _value_, not its label.
+- **Empty state:** "No results" is rendered _outside_ the listbox, because an
   empty `role="listbox"` fails axe's required-children rule.
 
 ### 2. NumberField is a spinbutton on a text input

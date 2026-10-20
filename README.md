@@ -18,6 +18,7 @@ Plan and architecture: [docs/plans/DEVELOPMENT_PLAN.md](docs/plans/DEVELOPMENT_P
 | `packages/eslint-config`, `packages/typescript-config` | Internal shared config |
 | `apps/docs` | Storybook. Uses the library **source**, so edits hot-reload |
 | `apps/playground` | Vite app that uses the **built** `dist/`, the same way a real consumer does. Playwright e2e and perf benchmarks run against it |
+| `apps/site` | The greese homepage (GitHub Pages), built with GreeseUI from the **built** `dist/`. Its numbers come from `npm run stats -w site` and the benchmark |
 
 ## Setup
 
@@ -71,6 +72,16 @@ Run `npm run dev` and open http://localhost:6006. You'll find guides (getting
 started, theming, responsive props, accessibility, migrating from MUI), a docs
 page for every component, and live stories. Decisions are recorded in
 [docs/adr](docs/adr).
+
+## Homepage
+
+`apps/site` is a static site for GitHub Pages. `.github/workflows/pages.yml`
+publishes it on pushes to `main` (or run it by hand), with Storybook at
+`/storybook/`. Enable it once under Settings → Pages → Source: GitHub
+Actions. To refresh its numbers, rebuild, run `npm run stats -w site`, and
+re-run the benchmark with `node bench/run.ts --json ../site/src/data/bench.json`
+in `apps/playground`. `npm run lighthouse -w site` checks it against the same
+budgets as the playground.
 
 ## Docs hosting
 

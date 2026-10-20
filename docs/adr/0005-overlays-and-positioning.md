@@ -60,7 +60,7 @@ Escape to close and `::backdrop`. We add:
 - **Mobile layout:** footer actions stack full-width on phones, primary
   action on top.
 - **Drawer placement can vary by breakpoint**, for example `{ xs: 'bottom',
-  md: 'end' }` for a bottom sheet on phones and a side panel on desktop. Each
+md: 'end' }` for a bottom sheet on phones and a side panel on desktop. Each
   placement class sets the complete geometry in logical properties, so RTL
   works and a larger breakpoint fully replaces a smaller one. Swipe-to-dismiss
   isn't included.
@@ -90,9 +90,9 @@ Escape to close and `::backdrop`. We add:
 The Toaster is a `popover="manual"` region, re-shown for each new toast so it
 stacks above anything opened since. Everything outside an open modal dialog
 is **inert**, though: unclickable and hidden from assistive tech. So while a
-modal is open, the Toaster portals itself *into* the topmost modal. It stays
+modal is open, the Toaster portals itself _into_ the topmost modal. It stays
 visible above it, its buttons work, and it's announced. The e2e suite caught
-this: the toast *looked* right on top of the dialog, but hit-testing showed
+this: the toast _looked_ right on top of the dialog, but hit-testing showed
 it was inert.
 
 Announcements go through two always-present visually hidden live regions,

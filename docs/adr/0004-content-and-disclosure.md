@@ -48,7 +48,7 @@ failed before hydration never fires React's `onError`.
 
 ### 4. Alerts stay quiet unless asked to announce
 
-A live region announces content *when it changes*. An alert that's already on
+A live region announces content _when it changes_. An alert that's already on
 the page when it loads shouldn't interrupt a screen-reader user. So `Alert`
 has no role by default, and `announce` opts in: `role="alert"` for
 negative/warning and `role="status"` for the rest. `Spinner` is always

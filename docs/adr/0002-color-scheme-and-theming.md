@@ -82,3 +82,77 @@ can't see it. Use `<ThemeProvider scheme>` for scheme scopes.
 system/light/dark across seven nested probes. It also checks that a saved
 scheme is applied before React runs, and that each theme's CSS is injected
 once. It runs in Chromium against the production build.
+
+## Addendum (2026-10-19): build-time themes
+
+The SCSS kit's `theme(name)` + `tokens()` compiles the same complete theme
+as `createTheme`, with the same selectors (a test compares them), into the
+app's own CSS. `ThemeProvider`'s `theme` prop now also takes a theme **name**,
+so such a theme still gets decision 4's attribute stamping without a
+`<style>` element. Page-level `tokens()` overrides go in `greese.theme` on
+the default selectors. See [ADR 0010](0010-theme-kit-and-studio.md).
+
+## Addendum (2026-10-19): brand roles and the palette
+
+- **`primary`, `secondary`, `tertiary`** join the colour roles, each with
+  `…Strong` and `on…`, as MUI users expect. Components keep reading
+  `accent`; its default is `var(--greese-color-primary)` (likewise
+  `accentStrong`, `onAccent`, and `focusRing`), declared on the same element,
+  so a theme that sets only `primary` rebrands every component, and one that
+  sets `accent` too can separate the two. No component CSS changed.
+- **The palette** (`palette.ts`): 22 hues × 11 shades. The default roles are palette
+  colours (the greys stay GreeseUI's own), written out as hex with the
+  palette name beside each and a test that they match: reading them from
+  the palette made bundlers keep its hues in everything that imports
+  `color`, `createTheme` included (185 B). It's exposed:
+  - in TypeScript, one export per hue (a plain object), so bundles keep only the
+    hues they import;
+  - in the SCSS kit, as `palette(hue, shade)`, and as any value written
+    `hue-shade` (`lavender-600`), resolved at build time. No CSS value has
+    that shape, so the shorthand can't capture a real one. `createTheme`
+    doesn't resolve it: that would put the whole palette in every bundle that
+    calls it; TypeScript has `palette.lavender[600]` instead;
+  - in CSS, as `palette.css`, opt-in. 242 properties are about 2 kB
+    compressed, more than a tenth of the library's CSS budget, for colours
+    most pages never reference, so `tokens.css` doesn't include them.
+- **Brand tones.** Every component with a `tone` prop also takes `primary`,
+  `secondary` and `tertiary` (the shared `BrandTone` type), through the
+  shared tone map (`styles/_tones.scss`). Chip gained a `tone` prop: a plain
+  chip is tinted in it, a selectable one shows it when selected, and with
+  none it looks as before. The plain-chip tint is a `:has()` selector rather
+  than a class from JavaScript, which kept the whole-library JS within its
+  budget. ToggleButton now presses to its tone; the default `neutral` still
+  presses to accent. About 0.3 kB of CSS (brotli) in all; no budget raised.
+
+## Addendum (2026-10-19): primary leads, content colours are derived
+
+This supersedes the "accent follows primary" part of the addendum above.
+
+- **Four brand colours, in order:** `primary`, `secondary`, `tertiary`,
+  `accent`. Components read `primary` for interactive emphasis (solid
+  buttons, links, focus, selection; 29 places in component CSS), and the
+  default `tone` is `primary` wherever there is one. `accent` is a colour of
+  its own (pink by default), a tone like the others. The focus ring follows
+  `primary`.
+- **`on<Colour>` became `<colour>Content`** (`--greese-color-primary-content`)
+  for the four brand colours and `negative`. Unreleased, so
+  renamed outright; Theme Studio's importer and tests followed.
+- **WCAG-safe by construction.** Every default content colour meets 4.5:1
+  against its colour in both schemes (a test). When a theme sets a brand
+  colour but not its content colour, `createTheme` derives one per scheme:
+  the more readable of white and near-black, or pure black where neither
+  reaches 4.5:1 (when white fails, black always passes). It also derives
+  `…Strong` as `color-mix(in oklab, <colour> 80%, #000)` in light and
+  `70%, #fff` in dark, computed by the browser. Explicit values win. Colours
+  it can't measure (`var()`, `oklch()`) keep the default content colour.
+  The SCSS kit's `tokens()` does the same in Sass, and a test checks it
+  emits exactly what `createTheme` does, palette names included.
+- **Why JavaScript, not CSS:** relative colour syntax could pick black or
+  white in CSS with no script, and would handle any colour format, but it
+  thresholds on perceptual lightness rather than WCAG luminance, so near the
+  crossover it can pick the ink that fails AA. Exact WCAG cost about 0.4 kB
+  in `createTheme`; its budget rose 2.25 → 2.75 kB, and the whole-library
+  budgets by 0.5 kB each. Only apps that call `createTheme` pay it.
+- **Exported:** `contentColor`, `contrastRatio`, `luminance`, `AA`,
+  `CONTENT_LIGHT`, `CONTENT_DARK` and `deriveColors`, so docs and tools show
+  the same numbers.
