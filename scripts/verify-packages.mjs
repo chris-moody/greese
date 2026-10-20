@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Proves the packages work as published: packs @greese-ui/tokens,
- * @greese-ui/greese (greese.js) and @greese-ui/react, installs the tarballs into an empty project, and checks
+ * @greese-ui/greese (greese.js), @greese-ui/react and @greese-ui/icons, installs the tarballs into an empty project, and checks
  * what a consumer would do with them.
  *
  *   npm run build && npm run verify:packages
@@ -36,6 +36,8 @@ try {
       '@greese-ui/greese',
       '-w',
       '@greese-ui/react',
+      '-w',
+      '@greese-ui/icons',
       '--pack-destination',
       work,
     ],
@@ -50,7 +52,7 @@ try {
       type: 'module',
       dependencies: Object.fromEntries(
         tarballs.map((t) => [
-          `@greese-ui/${/^greese-ui-(tokens|greese|react)-/.exec(t)[1]}`,
+          `@greese-ui/${/^greese-ui-(tokens|greese|react|icons)-/.exec(t)[1]}`,
           `file:./${t}`,
         ])
       ),
@@ -88,7 +90,7 @@ const o = { v: 0 }
 timeline({ paused: true }).to(o, { v: 10, duration: 1, ease: 'linear' }).seek(0.5)
 if (o.v !== 5 || typeof animate !== 'function') throw new Error('greese.js')
 // greese prop CSS presets render on the server with no client code.
-const card = renderToString(createElement(Card, { greese: { enter: 'fade-up', delay: 0.1 } }, 'x'))
+const card = renderToString(createElement(Card, { greese: { enter: 'fadeUp', delay: 0.1 } }, 'x'))
 if (!card.includes('greese-Motion--enter-fade-up') || !card.includes('--greese-motion-delay:0.1s')) throw new Error(card)
 const html = renderToString(createElement(Stack, { gap: 2, direction: { md: 'row' } }, createElement(Button, null, 'Hi')))
 if (!html.includes('greese-Stack--md-direction-row') || !html.includes('greese-Button')) throw new Error(html)
@@ -158,6 +160,45 @@ if (!css.includes('(width >= 768px)') || css.includes('(width >= 900px)')) throw
   )
   run('node', ['custom.mjs'], work)
   ok('pkg:@greese-ui/react/scss recompiles with custom breakpoints')
+
+  // 4b. The SCSS kit and the style manifest, as published.
+  writeFileSync(
+    join(work, 'kit.mjs'),
+    `import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
+import { compileString, NodePackageImporter } from 'sass-embedded'
+const compile = (scss) => compileString("@use 'pkg:@greese-ui/react/scss/kit' as greese;\\n" + scss, { importers: [new NodePackageImporter()], url: new URL(import.meta.url) }).css
+const css = compile('@include greese.component(Button) { @include greese.part(icon) { opacity: 0.5; } }')
+if (!css.includes('.greese-Button .greese-Button-icon') || !css.includes('greese.overrides, greese.utilities;')) throw new Error('kit output wrong: ' + css)
+let failed = false
+try { compile('@include greese.component(Buton) {}') } catch { failed = true }
+if (!failed) throw new Error('kit accepted an unknown component')
+const manifest = JSON.parse(readFileSync(createRequire(import.meta.url).resolve('@greese-ui/react/style-manifest.json'), 'utf8'))
+if (!manifest.blocks.Button?.variables.includes('--greese-button-tone')) throw new Error('style manifest incomplete')
+`
+  )
+  run('node', ['kit.mjs'], work)
+  ok(
+    'pkg:@greese-ui/react/scss/kit compiles and checks names; style-manifest.json resolves'
+  )
+
+  // 4c. The icons, separate from the library: they render on the server and
+  // the library doesn't pull them in.
+  writeFileSync(
+    join(work, 'icons.mjs'),
+    `import { readFileSync } from 'node:fs'
+import { createElement } from 'react'
+import { renderToString } from 'react-dom/server'
+import { SearchIcon, createIcon } from '@greese-ui/icons'
+const html = renderToString(createElement(SearchIcon, { title: 'Search' }))
+if (!html.includes('role="img"') || !html.includes('<title>Search</title>')) throw new Error('icon html: ' + html)
+if (createIcon('Kite', 'M0 0').displayName !== 'KiteIcon') throw new Error('createIcon')
+const react = JSON.parse(readFileSync('node_modules/@greese-ui/react/package.json', 'utf8'))
+if (react.dependencies?.['@greese-ui/icons']) throw new Error('@greese-ui/react must not depend on the icons')
+`
+  )
+  run('node', ['icons.mjs'], work)
+  ok('@greese-ui/icons renders on the server, and @greese-ui/react does not depend on it')
 
   // 5. Every per-component @import points at a shipped file.
   const cssDir = join(work, 'node_modules/@greese-ui/react/dist/css')
