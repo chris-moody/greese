@@ -93,4 +93,6 @@ Storybook with `@storybook/addon-docs`:
   built from GreeseUI's tokens for the resolved scheme. Storybook's default
   docs theme is static light, which left dark-mode text on a white page.
 
-The site is hosted on Firebase Hosting from `apps/docs/storybook-static`.
+The site is hosted on GitHub Pages at `/storybook/`, beside the homepage and
+Theme Studio (`.github/workflows/pages.yml`; ADR 0013). `firebase.json`
+remains for Firebase Hosting from `apps/docs/storybook-static`.

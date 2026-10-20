@@ -242,3 +242,30 @@ through every story on its docs page. The stories aren't copied:
 
 The preview follows the Components tab and Inspect picks. The theme CSS is
 injected into the same frame, so every edit shows on the stories at once.
+
+## Addendum (2026-10-20): the hosted studio
+
+Theme Studio is also deployed to GitHub Pages (`/studio/`), where there's no
+dev server to read files, compile Sass or run modules. The built studio
+(`import.meta.env.DEV` false) uses `src/hosted.ts` instead of the `/api`
+endpoints:
+
+- **Compiling:** the `sass` package (Dart Sass in JavaScript, the same
+  compiler `sass-embedded` runs natively) compiles in the browser. It's a
+  lazy chunk, about 0.7 MB compressed, loaded on the first compile. The
+  kit's partials and the token maps reach it as a virtual module
+  (`virtual:greese-kit`, from `server/kitSources.ts`), and an importer
+  resolves the `pkg:` entry points over them. A test checks that a theme
+  compiles to exactly the CSS the dev server produces.
+- **Loading and saving:** the theme lives in the browser (localStorage),
+  starting from the example theme. Saving writes it there; the Code tab
+  downloads `greese-theme.json`, `.scss` and `.css`, and the JSON opens in
+  `npm run studio` to carry on.
+- **Importing:** pasted and uploaded JSON, CSS and SCSS work as before.
+  "From project" is hidden: reading project files and running modules
+  needs the dev server.
+- **Paths:** the build uses `base: './'` and the preview frame loads
+  `preview.html` relative to it, so it works under any subpath.
+
+`sass` is a dev dependency of the private studio app, not a dependency of
+any published package.

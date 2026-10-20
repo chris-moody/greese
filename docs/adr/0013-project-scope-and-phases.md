@@ -60,32 +60,36 @@ The phase numbers other ADRs cite:
 | —     | SCSS kit, style manifest, Theme Studio                | 2026-10-19 | ADR 0010          |
 | —     | Component gap review                                  | 2026-10-19 | ADR 0011          |
 | —     | `@greese-ui/icons` and the docs rules                 | 2026-10-19 | ADR 0012          |
+| —     | Repository, npm metadata, the three apps on Pages     | 2026-10-20 | This ADR, 0010    |
 
 When a new body of work lands, add a row here; that's the status record the
 skills and agents keep up to date.
 
 ## Standing decisions
 
-| Question           | Decision                                                                                                                                            |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Publish target     | Public npm under `@greese-ui`. The npm org and the `NPM_TOKEN` secret wait for the first release                                                    |
-| React floor        | React 19 only                                                                                                                                       |
-| Browser baseline   | Baseline 2024 (`@property`, container queries and cascade layers; ADR 0001)                                                                         |
-| Docs hosting       | Firebase Hosting for Storybook (`apps/docs/storybook-static`); the homepage and a copy of Storybook on GitHub Pages (`.github/workflows/pages.yml`) |
-| Licence            | MIT                                                                                                                                                 |
-| Package manager    | npm workspaces                                                                                                                                      |
-| TypeScript         | Pinned to `~6.0` until typescript-eslint supports TS 7                                                                                              |
-| ESLint             | Stays on 9 until eslint-plugin-react supports 10                                                                                                    |
-| Icons              | Components take icons as `ReactNode`; the optional `@greese-ui/icons` package is separate and never imported by the library (ADR 0012)              |
-| Private registries | None: installing needs only the public npm registry                                                                                                 |
+| Question           | Decision                                                                                                                               |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Publish target     | Public npm under `@greese-ui`, with provenance. The npm org and the `NPM_TOKEN` secret wait for the first release                      |
+| React floor        | React 19 only                                                                                                                          |
+| Browser baseline   | Baseline 2024 (`@property`, container queries and cascade layers; ADR 0001)                                                            |
+| Docs hosting       | GitHub Pages (`.github/workflows/pages.yml`): the homepage at `/`, Storybook at `/storybook/`, the hosted Theme Studio at `/studio/`   |
+| Repository         | <https://github.com/chris-moody/greese>; each published package's `repository`, `homepage` and `bugs` point there                      |
+| Licence            | MIT                                                                                                                                    |
+| Package manager    | npm workspaces                                                                                                                         |
+| TypeScript         | Pinned to `~6.0` until typescript-eslint supports TS 7                                                                                 |
+| ESLint             | Stays on 9 until eslint-plugin-react supports 10                                                                                       |
+| Icons              | Components take icons as `ReactNode`; the optional `@greese-ui/icons` package is separate and never imported by the library (ADR 0012) |
+| Private registries | None: installing needs only the public npm registry                                                                                    |
 
 ## Deferred
 
-- Publishing 1.0.0: needs a GitHub remote, the npm org and `NPM_TOKEN`; the
-  Release workflow then publishes on the next push to `main`.
+- Publishing 1.0.0: needs the npm org and `NPM_TOKEN`; the Release workflow
+  then publishes on the next push to `main`. The first push replaces the
+  remote's generated initial commit (a LICENSE), so it needs
+  `--force-with-lease`.
+- Enabling Pages: Settings → Pages → Source: GitHub Actions, once.
 - Linux visual baselines: run the Visual workflow with `update` and commit
   its `linux-baselines` artifact.
-- A `repository` field in each package once the GitHub URL exists.
 - Custom breakpoint _keys_ (values are already configurable through the SCSS
   entry), and the non-goals above.
 

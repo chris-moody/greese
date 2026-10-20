@@ -7,6 +7,11 @@ static CSS compiled at build time, themed with CSS custom properties.
 |---|---|
 | [`@greese-ui/react`](packages/react) | Components, hooks, and the compiled stylesheet |
 | [`@greese-ui/tokens`](packages/tokens) | Design tokens as CSS variables, Sass maps, and TS constants |
+| [`@greese-ui/greese`](packages/greese) | greese.js, the animation library behind the `greese` prop |
+| [`@greese-ui/icons`](packages/icons) | Optional line icons; GreeseUI takes any icons |
+
+Homepage, docs and Theme Studio: <https://chris-moody.github.io/greese/>.
+Source: <https://github.com/chris-moody/greese>.
 
 Scope, phases and standing decisions: [ADR 0013](docs/adr/0013-project-scope-and-phases.md); every decision is in [docs/adr](docs/adr).
 
@@ -14,11 +19,12 @@ Scope, phases and standing decisions: [ADR 0013](docs/adr/0013-project-scope-and
 
 | Path | |
 |---|---|
-| `packages/react`, `packages/tokens` | Published packages |
+| `packages/react`, `packages/tokens`, `packages/greese`, `packages/icons` | Published packages |
 | `packages/eslint-config`, `packages/typescript-config` | Internal shared config |
 | `apps/docs` | Storybook. Uses the library **source**, so edits hot-reload |
 | `apps/playground` | Vite app that uses the **built** `dist/`, the same way a real consumer does. Playwright e2e and perf benchmarks run against it |
 | `apps/site` | The greese homepage (GitHub Pages), built with GreeseUI from the **built** `dist/`. Its numbers come from `npm run stats -w site` and the benchmark |
+| `apps/theme-studio` | Theme Studio: `npm run studio` edits a theme file; built, it's the hosted studio on GitHub Pages |
 
 ## Setup
 
@@ -63,8 +69,11 @@ Code also uses as its `/commit` skill.
 ## Releasing
 
 Changesets on `main` produce a "Version Packages" PR, and merging it publishes
-to npm (`.github/workflows/release.yml`). `@greese-ui/react` and
-`@greese-ui/tokens` share one version number.
+to public npm under `@greese-ui`, with provenance
+(`.github/workflows/release.yml`). `@greese-ui/react` and
+`@greese-ui/tokens` share one version number. Before the first release:
+create the `@greese-ui` npm organisation and add an npm automation token as
+the repository secret `NPM_TOKEN`.
 
 ## Documentation
 
@@ -73,17 +82,28 @@ started, theming, responsive props, accessibility, migrating from MUI), a docs
 page for every component, and live stories. Decisions are recorded in
 [docs/adr](docs/adr).
 
-## Homepage
+## GitHub Pages
 
-`apps/site` is a static site for GitHub Pages. `.github/workflows/pages.yml`
-publishes it on pushes to `main` (or run it by hand), with Storybook at
-`/storybook/`. Enable it once under Settings → Pages → Source: GitHub
-Actions. To refresh its numbers, rebuild, run `npm run stats -w site`, and
+`.github/workflows/pages.yml` publishes three apps to
+<https://chris-moody.github.io/greese/> on pushes to `main` (or run it by
+hand):
+
+| Path | App |
+|---|---|
+| `/` | The homepage, `apps/site` |
+| `/storybook/` | The docs, `apps/docs` |
+| `/studio/` | Theme Studio, `apps/theme-studio`, hosted: it compiles in the browser and keeps the theme there |
+
+Each builds with relative asset paths, so the repository name lives only in
+links. Enable Pages once under Settings → Pages → Source: GitHub Actions.
+
+To refresh the homepage's numbers, rebuild, run `npm run stats -w site`, and
 re-run the benchmark with `node bench/run.ts --json ../site/src/data/bench.json`
 in `apps/playground`. `npm run lighthouse -w site` checks it against the same
 budgets as the playground.
 
-## Docs hosting
+## Other docs hosting
 
-`firebase deploy --only hosting` publishes `apps/docs/storybook-static`, so run
-`npm run build` first.
+GitHub Pages hosts the docs. `firebase.json` remains for Firebase Hosting:
+`firebase deploy --only hosting` publishes `apps/docs/storybook-static`, so
+run `npm run build` first.
