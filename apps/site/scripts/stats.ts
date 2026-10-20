@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Refreshes src/data/stats.json, the numbers the homepage quotes, from the
- * repository itself: size-limit's measurements (brotli) for both packages,
+ * repository itself: size-limit's measurements (brotli) for the packages,
  * the exported component count, and the runtime dependencies.
  *
  *   npm run build            (at the root: size-limit measures dist/)
@@ -60,9 +60,10 @@ const stats = {
   components,
   dependencies,
   react: measure('react'),
-  greese: measure('greese'),
+  ui: measure('ui'),
+  js: measure('js'),
 }
 writeFileSync(out, `${JSON.stringify(stats, null, 2)}\n`)
 console.log(
-  `wrote ${out}: ${components} components, ${stats.react.length + stats.greese.length} measurements`
+  `wrote ${out}: ${components} components, ${stats.react.length + stats.ui.length + stats.js.length} measurements`
 )

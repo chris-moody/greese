@@ -8,7 +8,7 @@
   "react": [
     {
       "name": "JS: whole library (components)",
-      "size": 25838,
+      "size": 25822,
       "sizeLimit": 26000
     },
     {
@@ -133,21 +133,23 @@
     },
     {
       "name": "JS: greese prop runtime (lazy chunk, with greese.js)",
-      "size": 7178,
-      "sizeLimit": 7250
-    },
+      "size": 7258,
+      "sizeLimit": 7500
+    }
+  ],
+  "ui": [
     {
-      "name": "CSS: greese-ui.css",
-      "size": 19917,
+      "name": "CSS: greese.css",
+      "size": 19842,
       "sizeLimit": 20000
     },
     {
       "name": "CSS: base.css",
-      "size": 425,
+      "size": 424,
       "sizeLimit": 1000
     }
   ],
-  "greese": [
+  "js": [
     {
       "name": "greese.js: everything",
       "size": 6104,

@@ -58,8 +58,8 @@ export const facts = {
   library: find(stats.react, 'JS: whole library (components)'),
   libraryWithGreese: find(stats.react, 'JS: whole library, with greese.js'),
   button: find(stats.react, 'JS: tree-shaken { Button }'),
-  css: find(stats.react, 'CSS: greese-ui.css'),
-  greese: find(stats.greese, 'greese.js: everything'),
+  css: find(stats.ui, 'CSS: greese.css'),
+  greese: find(stats.js, 'greese.js: everything'),
   runtime: find(stats.react, 'JS: greese prop runtime (lazy chunk, with greese.js)'),
 }
 
@@ -72,12 +72,15 @@ export const sizeTables = {
     )
   ).sort((a, b) => a.size - b.size),
   motion: rows([
-    ...stats.greese,
+    ...stats.js,
     ...stats.react.filter(
       (m) => /greese/.test(m.name) && !m.name.startsWith('JS: whole')
     ),
   ]),
-  bundles: rows(stats.react.filter((m) => /^(CSS:|JS: whole)/.test(m.name))),
+  bundles: rows([
+    ...stats.react.filter((m) => m.name.startsWith('JS: whole')),
+    ...stats.ui,
+  ]),
 }
 
 export interface Metric {
