@@ -152,3 +152,36 @@ describe('createTheme', () => {
     )
   })
 })
+
+describe('createTheme: extend', () => {
+  it('declares new tokens, a color in both schemes', () => {
+    const { css } = createTheme({
+      name: 'ext',
+      extend: {
+        color: { 'brand-ink': { light: '#1b1340', dark: '#e5defc' }, flat: '#123456' },
+        space: { 9: '4rem' },
+        fontSize: { '5xl': '3rem' },
+      },
+    })
+    expect(css).toContain('--greese-space-9: 4rem;')
+    expect(css).toContain('--greese-font-size-5xl: 3rem;')
+    expect(css).toContain('--greese-color-brand-ink: #1b1340;')
+    expect(css).toContain('--greese-color-brand-ink: #e5defc;')
+    expect(css).toContain('--greese-color-flat: #123456;')
+  })
+
+  it('refuses names that exist, unknown groups and unsafe values', () => {
+    expect(() =>
+      createTheme({ name: 'a', extend: { color: { fgMuted: '#000' } } })
+    ).toThrow(/invalid or already exists/)
+    expect(() => createTheme({ name: 'a', extend: { radius: { md: '1px' } } })).toThrow(
+      /invalid or already exists/
+    )
+    expect(() =>
+      createTheme({ name: 'a', extend: { colr: { x: 'red' } } as never })
+    ).toThrow(/no token group colr/)
+    expect(() => createTheme({ name: 'a', extend: { shadow: { x: 'red; }' } } })).toThrow(
+      /invalid value/
+    )
+  })
+})

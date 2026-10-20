@@ -31,6 +31,10 @@
 $strict: true !default;
 $_ordered: false;
 $_theme: null;
+
+// Tokens declared with `tokens(…, $extend: …)`, by group, so `token()` and
+// `component()` variables accept them from then on.
+$_extended: ();
 $_block: null;
 $_part: null;
 $_scheme-attr: 'data-greese-scheme';
@@ -275,10 +279,18 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
   @return null;
 }
 
+@function _is-extended($group, $key) {
+  @return list.index(map.get($_extended, '#{$group}') or (), '#{$key}') != null;
+}
+
 /// A design token: `token(color, accent)` is `var(--greese-color-accent)`.
 @function token($group, $key) {
   $group: _kebab($group);
   $key: _kebab($key);
+
+  @if _is-extended($group, $key) {
+    @return var(--greese-#{$group}-#{$key});
+  }
 
   @if $group == color {
     $checked: _check(
@@ -304,6 +316,14 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 }
 
 @function _is-token-var($name) {
+  @each $group, $keys in $_extended {
+    @each $key in $keys {
+      @if $name == '--greese-#{$group}-#{$key}' {
+        @return true;
+      }
+    }
+  }
+
   @each $role, $unused in defaults.$color {
     @if $name == '--greese-color-#{$role}' {
       @return true;
@@ -738,7 +758,24 @@ $_derived: (primary, secondary, tertiary, accent, negative);
   @return $colors;
 }
 
-@function _token-decls($overrides, $complete) {
+/// The extended tokens known so far, plus these.
+@function _register-extended($extend) {
+  $known: $_extended;
+
+  @each $group, $values in $extend {
+    $list: map.get($known, _kebab($group)) or ();
+
+    @each $key, $unused in $values {
+      $list: list.append($list, '#{_kebab($key)}', comma);
+    }
+
+    $known: map.set($known, _kebab($group), $list);
+  }
+
+  @return $known;
+}
+
+@function _token-decls($overrides, $complete, $extend: ()) {
   $base: ();
   $light: ();
   $dark: ();
@@ -815,6 +852,52 @@ $_derived: (primary, secondary, tertiary, accent, negative);
     }
   }
 
+  // New tokens: declared, never guessed. Each is `--greese-<group>-<key>`,
+  // alongside the built-in ones; a color takes one value or a light/dark pair.
+  @each $group, $values in $extend {
+    $group: _kebab($group);
+    $checked: _check(
+      $group == color or map.has-key(defaults.$scalars, $group),
+      'no token group `#{$group}` to extend. Groups: color, #{_join(map.keys(defaults.$scalars))}.'
+    );
+
+    @each $key, $value in $values {
+      $key: '#{_kebab($key)}';
+      $known: map.get(defaults.$scalars, $group) or ();
+
+      @if $group == color {
+        $known: defaults.$color;
+      }
+
+      $checked: _check(
+        not map.has-key($known, $key),
+        '`#{$group}` token `#{$key}` already exists: set it in tokens(), not $extend.'
+      );
+      $checked: _check(
+        string.index($key, ' ') == null and string.length($key) > 0,
+        'new token names are kebab-case words, got `#{$key}`.'
+      );
+
+      @if $group == color {
+        @if meta.type-of($value) != map {
+          $value: (
+            light: $value,
+            dark: $value,
+          );
+        }
+
+        $light: map.set($light, --greese-color-#{$key}, _css(map.get($value, light)));
+        $dark: map.set($dark, --greese-color-#{$key}, _css(map.get($value, dark)));
+      } @else {
+        $base: map.set($base, --greese-#{$group}-#{$key}, _css($value));
+
+        @if $group == duration {
+          $durations: map.set($durations, --greese-#{$group}-#{$key}, 0.01ms);
+        }
+      }
+    }
+  }
+
   @return (base: $base, light: $light, dark: $dark, durations: $durations);
 }
 
@@ -836,8 +919,21 @@ $_derived: (primary, secondary, tertiary, accent, negative);
 /// At the top level it changes the page's defaults, overriding only what you
 /// pass. Inside `theme(name)` it declares a complete theme, as `createTheme`
 /// does, for `data-greese-theme="name"`.
-@mixin tokens($overrides) {
-  $d: _token-decls($overrides, $_theme != null);
+///
+/// To add tokens the system doesn't have, name them in `$extend` (same shape):
+///
+///   @include greese.tokens((), $extend: (
+///     color: (brand-ink: (light: #1b1340, dark: #e5defc)),
+///     space: (9: 4rem),
+///   ));
+///
+/// Each becomes `--greese-<group>-<key>` in the built CSS, and `token()` and
+/// component overrides accept it from then on. Names that already exist, or
+/// groups that don't, still stop the build. (A new `space` key is a variable
+/// only: the responsive classes come with the stylesheet's build.)
+@mixin tokens($overrides, $extend: ()) {
+  $_extended: _register-extended($extend) !global;
+  $d: _token-decls($overrides, $_theme != null, $extend);
   $base: map.get($d, base);
   $light: map.get($d, light);
   $dark: map.get($d, dark);

@@ -2,6 +2,7 @@ import {
   allDurationKeys,
   cssVar,
   decls,
+  kebab,
   LAYER_ORDER,
   reducedMotionDecls,
   SCHEME_ATTR,
@@ -20,10 +21,25 @@ import {
 /** A color override: one value for both schemes, or a light/dark pair. */
 export type ColorValue = string | TokenPair
 
+/** Tokens the system doesn't have, by group: `{ color: { 'brand-ink': '#1b1340' } }`. */
+export type ExtendTokens = {
+  /** A new color role: one value, or a light/dark pair. */
+  color?: Record<string, ColorValue>
+} & {
+  [G in ScalarGroup]?: Record<string, string>
+}
+
 export type ThemeOptions = {
   /** Scopes the theme: `[data-greese-theme="<name>"]`. Letters, digits, `-`. */
   name: string
   color?: Partial<Record<ColorRole, ColorValue>>
+  /**
+   * Adds tokens that don't exist yet, each declared as
+   * `--greese-<group>-<key>` in this theme (in both schemes, for a color).
+   * Names that already exist, and groups that don't, throw: set an existing
+   * token through its group above.
+   */
+  extend?: ExtendTokens
 } & {
   [G in ScalarGroup]?: Partial<Record<keyof (typeof scalarTokens)[G], string>>
 }
@@ -114,7 +130,7 @@ export const deriveColors = (
  * Call it at module scope, not during render: the result is meant to be static.
  */
 export const createTheme = (options: ThemeOptions): Theme => {
-  const { name, color: colorOverrides = {}, ...scalarOverrides } = options
+  const { name, color: colorOverrides = {}, extend = {}, ...scalarOverrides } = options
   if (!NAME.test(name)) {
     throw new Error(`createTheme: name must match ${NAME}, got ${JSON.stringify(name)}`)
   }
@@ -140,7 +156,41 @@ export const createTheme = (options: ThemeOptions): Theme => {
     }
   }
 
+  addExtended(extend, base, light, dark)
+
   return { name, css: themeCss(name, base, light, dark) }
+}
+
+const TOKEN_KEY = /^[a-z0-9][a-z0-9-]*$/
+
+/** Declares `extend`'s new tokens, refusing names that exist or groups that don't. */
+const addExtended = (
+  extend: ExtendTokens,
+  base: Declarations,
+  light: Declarations,
+  dark: Declarations
+): void => {
+  for (const [group, values] of Object.entries(extend)) {
+    const known: Record<string, unknown> | undefined =
+      group === 'color'
+        ? color
+        : (scalarTokens as Record<string, Record<string, string>>)[group]
+    if (!known) throw new Error(`createTheme: no token group ${group} to extend`)
+    for (const [key, value] of Object.entries(values ?? {})) {
+      const name = kebab(key)
+      if (!TOKEN_KEY.test(name) || Object.keys(known).some((k) => kebab(k) === name)) {
+        throw new Error(`createTheme: ${group} token ${key} is invalid or already exists`)
+      }
+      const prop = cssVar(group as ScalarGroup | 'color', name)
+      if (group === 'color') {
+        const pair = toPair(value as ColorValue)
+        light.push([prop, check(prop, pair.light)])
+        dark.push([prop, check(prop, pair.dark)])
+      } else {
+        base.push([prop, check(prop, value as string)])
+      }
+    }
+  }
 }
 
 /*

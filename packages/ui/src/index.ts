@@ -6,6 +6,7 @@ export {
   deriveColors,
   type ColorValue,
   type Theme,
+  type ExtendTokens,
   type ThemeOptions,
 } from './theme.ts'
 export {

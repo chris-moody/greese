@@ -26,7 +26,9 @@ module.exports = [
     // apps that don't import them; per-component budgets are below.
     // 25.5 → 26 kB (2026-10-19): createTheme's derived content colors
     // (contrast maths, about 0.4 kB), as on the ThemeProvider entry.
-    limit: '26 kB',
+    // 26 → 26.25 kB (2026-10-20): createTheme's `extend` for new tokens
+    // (ADR 0015) and breakpoints with added keys (ADR 0006), about 0.25 kB.
+    limit: '26.25 kB',
     modifyRolldownConfig: external,
   },
   {

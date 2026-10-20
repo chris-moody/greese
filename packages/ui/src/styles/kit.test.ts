@@ -306,6 +306,53 @@ describe('SCSS kit: tokens() and theme()', () => {
   })
 })
 
+describe('SCSS kit: new tokens', () => {
+  const extended = `@include greese.tokens((), $extend: (
+    color: (brand-ink: (light: #1b1340, dark: #e5defc), brand-flat: #123456),
+    space: (9: 4rem),
+    shadow: (glow: 0 0 12px red),
+    duration: (glacial: 900ms),
+  ));`
+
+  it('declares them alongside the built-in tokens', () => {
+    const css = compile(extended)
+    expect(css).toContain('--greese-space-9: 4rem;')
+    expect(css).toContain('--greese-shadow-glow: 0 0 12px red;')
+    expect(css).toContain('--greese-color-brand-ink: #1b1340;')
+    expect(css).toContain('--greese-color-brand-flat: #123456;')
+    expect(css).toMatch(/--greese-color-brand-ink: #e5defc;/)
+    expect(css).toMatch(/prefers-reduced-motion[^}]*--greese-duration-glacial: 0\.01ms/s)
+  })
+
+  it('lets token() and component variables use them afterwards', () => {
+    const css = compile(`${extended}
+      @include greese.component(Button) {
+        color: greese.token(color, brand-ink);
+        @include greese.vars((tone: greese.token(color, brand-flat)));
+      }`)
+    expect(css).toContain('color: var(--greese-color-brand-ink)')
+  })
+
+  it('still stops the build on unknown names, groups and repeats', () => {
+    expect(() =>
+      compile('@include greese.tokens((), $extend: (color: (accent: red)));')
+    ).toThrow(/`color` token `accent` already exists/)
+    expect(() =>
+      compile('@include greese.tokens((), $extend: (colr: (x: red)));')
+    ).toThrow(/no token group `colr` to extend/)
+    expect(() =>
+      compile('@include greese.component(Button) { color: greese.token(color, nope); }')
+    ).toThrow(/no color token `nope`/)
+  })
+
+  it('declares them in a named theme too, in both schemes', () => {
+    const css = compile(`@include greese.theme(brand) { ${extended} }`)
+    expect(css).toContain('[data-greese-theme=brand]')
+    expect(css).toContain('--greese-color-brand-ink: #e5defc;')
+    expect(css).toContain('--greese-space-9: 4rem;')
+  })
+})
+
 describe('style manifest', () => {
   it('is current: rebuild with `npm run build` after changing a stylesheet', async () => {
     const { manifestScss, styleManifest } = await import('../../scripts/styleManifest.ts')
