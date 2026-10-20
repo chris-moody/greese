@@ -1,0 +1,62 @@
+:root {
+  --studio-pick: #e11d8f;
+}
+
+.studio-preview {
+  padding-block: var(--greese-space-6);
+}
+
+/* The theme's own canvas and type, inside a named theme too. */
+.studio-preview-root {
+  min-block-size: 100vh;
+  font-family: var(--greese-font-body);
+  color: var(--greese-color-fg);
+  background: var(--greese-color-canvas);
+}
+
+.studio-inspect-box {
+  position: fixed;
+  z-index: 2147483647;
+  pointer-events: none;
+  outline: 2px solid var(--studio-pick);
+  background: color-mix(in oklab, var(--studio-pick) 8%, transparent);
+}
+
+.studio-inspect-box > span {
+  position: absolute;
+  inset-block-end: 100%;
+  inset-inline-start: -2px;
+  padding: 2px 6px;
+  font:
+    12px/1.4 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  white-space: nowrap;
+  color: #fff;
+  background: var(--studio-pick);
+}
+
+.studio-component-preview {
+  padding-block-end: var(--greese-space-6);
+  border-block-end: 1px solid var(--greese-color-border);
+}
+
+/* Each story's root, matching the docs' `layout` parameter. */
+.studio-story {
+  min-inline-size: 0;
+}
+
+.studio-story[data-layout='centered'] {
+  display: grid;
+  place-items: center;
+}
+
+/* Full-page stories (AppBar, SidebarLayout) get a frame of their own, a
+   short window onto a page that would otherwise fill the viewport. */
+.studio-story[data-layout='fullscreen'] {
+  max-block-size: 24rem;
+  overflow: auto;
+  border: 1px solid var(--greese-color-border);
+  border-radius: var(--greese-radius-md);
+}

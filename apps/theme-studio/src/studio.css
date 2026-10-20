@@ -1,0 +1,292 @@
+/* The editor's own layout. It uses GreeseUI's defaults: the theme being
+   edited only reaches the preview iframe. */
+
+.studio {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
+}
+
+.studio-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--greese-space-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--greese-space-3) var(--greese-space-4);
+  border-block-end: 1px solid var(--greese-color-border);
+}
+
+.studio-file {
+  font-family: var(--greese-font-mono);
+}
+
+/* Phones: the page scrolls, editor above the preview. Wider: side by side,
+   each scrolling on its own. */
+.studio-body {
+  display: grid;
+  flex: 1;
+  grid-template-rows: auto 80vh;
+  /* One column that never grows past the screen, whatever scrolls inside. */
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.studio-editor {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: var(--greese-space-4);
+  min-inline-size: 0;
+  padding: var(--greese-space-4);
+  background: var(--greese-color-surface);
+}
+
+.studio-preview-frame {
+  inline-size: 100%;
+  block-size: 100%;
+  border: 0;
+}
+
+@media (width >= 900px) {
+  .studio {
+    block-size: 100dvh;
+  }
+
+  .studio-body {
+    grid-template-rows: none;
+    grid-template-columns: minmax(24rem, 34rem) 1fr;
+    min-block-size: 0;
+  }
+
+  .studio-editor {
+    overflow: auto;
+    border-inline-end: 1px solid var(--greese-color-border);
+  }
+}
+
+/* Label above the value in a narrow editor, beside it when there's room. */
+.studio-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--greese-space-1) var(--greese-space-2);
+  align-items: center;
+}
+
+.studio-row-label {
+  overflow-wrap: anywhere;
+  font-size: var(--greese-font-size-sm);
+}
+
+code.studio-row-label {
+  font-family: var(--greese-font-mono);
+}
+
+.studio-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--greese-space-2);
+  min-inline-size: 0;
+}
+
+.studio-pair > * {
+  min-inline-size: 0;
+}
+
+@container (width >= 24rem) {
+  .studio-row:not(.studio-row--stack) {
+    grid-template-columns: minmax(7rem, 38%) minmax(0, 1fr);
+  }
+}
+
+.studio-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--greese-space-1);
+}
+
+.studio-add {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--greese-space-2);
+  align-items: end;
+}
+
+.studio-swatch {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  overflow: hidden;
+  border: 1px solid var(--greese-color-border-strong);
+  border-radius: var(--greese-radius-sm);
+}
+
+.studio-swatch > span {
+  position: absolute;
+  inset: 0;
+}
+
+/* The native picker covers the swatch, invisible, so a click opens it. */
+.studio-swatch > input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0;
+  border: 0;
+}
+
+/* Behind colours that may be translucent, so their alpha shows. */
+.studio-checker {
+  background-color: var(--greese-color-canvas);
+  background-image: conic-gradient(
+    var(--greese-color-border) 25%,
+    transparent 0 50%,
+    var(--greese-color-border) 0 75%,
+    transparent 0
+  );
+  background-size: 0.5rem 0.5rem;
+}
+
+.studio-code {
+  max-block-size: 50vh;
+  overflow: auto;
+  white-space: pre;
+}
+
+.studio-errors {
+  margin: 0;
+  font: var(--greese-font-size-sm) / 1.4 var(--greese-font-mono);
+  white-space: pre-wrap;
+}
+
+.studio-mono {
+  font-family: var(--greese-font-mono);
+  font-size: var(--greese-font-size-sm);
+}
+
+/* A preset's brand colours, in the theme menu. */
+.studio-theme-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.studio-theme-dots > span {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  border-radius: 50%;
+}
+
+/* Colour chips: light and dark halves with "Aa" in the content colour. */
+.studio-chips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: var(--greese-space-2);
+}
+
+.studio-chip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--greese-space-1);
+  padding: var(--greese-space-1);
+  font: inherit;
+  color: var(--greese-color-fg);
+  text-align: start;
+  cursor: pointer;
+  background: var(--greese-color-canvas);
+  border: 1px solid var(--greese-color-border);
+  border-radius: var(--greese-radius-md);
+}
+
+.studio-chip[aria-expanded='true'] {
+  border-color: var(--greese-color-primary);
+}
+
+.studio-chip-swatches {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  border: 1px solid var(--greese-color-border);
+  border-radius: var(--greese-radius-sm);
+}
+
+.studio-chip-half {
+  display: grid;
+  min-inline-size: 0;
+}
+
+.studio-chip-paint {
+  display: grid;
+  block-size: 2.25rem;
+}
+
+.studio-chip-paint > span {
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+.studio-chip-code {
+  padding: 2px var(--greese-space-1);
+  font: var(--greese-font-size-xs) / 1.4 var(--greese-font-mono);
+  color: var(--greese-color-fg);
+  overflow-wrap: anywhere;
+  background: var(--greese-color-surface);
+}
+
+.studio-chip-label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--greese-space-1);
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--greese-space-1);
+  font-size: var(--greese-font-size-xs);
+}
+
+.studio-chip[data-set] .studio-chip-label > :first-child {
+  font-weight: 600;
+}
+
+.studio-chip-editor {
+  display: grid;
+  gap: var(--greese-space-2);
+  padding: var(--greese-space-3);
+  background: var(--greese-color-canvas);
+  border: 1px solid var(--greese-color-border);
+  border-radius: var(--greese-radius-md);
+}
+
+/* Radius: a tile per option, each showing its corner. */
+.studio-radii {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--greese-space-1);
+}
+
+.studio-radius {
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  cursor: pointer;
+  background: var(--greese-color-canvas);
+  border: 1px solid var(--greese-color-border);
+  border-radius: var(--greese-radius-sm);
+}
+
+.studio-radius > span {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border-block-start: 3px solid currentcolor;
+  border-inline-start: 3px solid currentcolor;
+}
+
+.studio-radius[aria-pressed='true'] {
+  color: var(--greese-color-primary-content);
+  background: var(--greese-color-primary);
+  border-color: var(--greese-color-primary);
+}

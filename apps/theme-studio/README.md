@@ -1,0 +1,97 @@
+# Theme Studio
+
+A local web app for building a GreeseUI theme: tokens, component overrides
+and theme-wide motion, previewed live on real components and saved to your
+project as files.
+
+```sh
+npm run studio                                             # the example theme
+GREESE_THEME=src/styles/greese-theme.json npm run studio   # your own
+```
+
+`GREESE_THEME` is resolved from the directory you ran npm in. It opens on
+<http://localhost:5180>.
+
+## Files
+
+| File                | Written by          | Use                                                                     |
+| ------------------- | ------------------- | ----------------------------------------------------------------------- |
+| `greese-theme.json` | You and the studio  | The theme. Commit it                                                    |
+| `greese-theme.scss` | The studio, on save | Kit calls (`pkg:@greese-ui/react/scss/kit`), for apps that compile Sass |
+| `greese-theme.css`  | The studio, on save | The same, compiled, for apps that don't                                 |
+
+The SCSS and CSS are generated: edit the JSON or use the studio, and keep
+hand-written overrides in a stylesheet of your own. If the JSON changes on
+disk, the studio reloads it, or asks first when you have unsaved edits.
+
+## Component preview
+
+Above the theme preview, the component chosen in the Components tab (Button
+at first, or whatever Inspect picks) is shown through every story on its
+docs page. They're the docs' own story files, composed with Storybook's
+portable-stories API (`src/preview/stories.ts`), so their args, decorators
+and renders apply exactly as in the docs, with the theme being edited
+applied. A story added to the docs appears here with no extra work. Each
+story renders in a block root, as in Storybook, and honours its `layout`
+parameter (`centered`, or `fullscreen` in a short scrolling frame).
+
+## Themes, colours and radius
+
+The **Theme** menu in the header offers starting points (Ocean, Sunset,
+Forest…) and **Random**: each replaces the theme's colours and radii and
+keeps your component and motion edits. Colours show as chips, light and
+dark, each with its full code and "Aa" in its content colour, and the weaker
+contrast ratio of the two. Chips and swatches show what the preview actually
+renders, measured there per scheme, so `color-mix()`, `rgb()` and `var()`
+values match exactly; a translucent colour shows eight hex digits over a
+checkerboard. Open a chip to edit it, along with its strong and content
+colours. Radius tokens
+are picked as corner shapes, or typed. The other token groups are under
+**More tokens**.
+
+## Colours
+
+Colour fields take any CSS colour, or a palette name such as `lavender-600`
+(suggested as you type). The kit compiles a palette name to its colour, so
+the saved SCSS reads `lavender-600` and the CSS has the hex. Setting `primary`
+rebrands every component, and its content (readable text on it, WCAG AA)
+and strong colours follow unless you set them too.
+
+## Importing an existing theme
+
+**Import**, in the toolbar, takes a theme you already have:
+
+- a studio JSON file;
+- `createTheme()` options or output;
+- a `.ts`/`.js` module exporting either;
+- the kit's SCSS or your own;
+- hand-written CSS overrides.
+
+Paste it, upload it, or give a path inside your project. Everything is read
+as CSS (SCSS compiled first, modules run, their `createTheme()` CSS taken),
+then mapped back to tokens, component rules and motion.
+
+What doesn't fit is listed with its CSS so you can keep it. You can replace
+the current theme or merge into it, and save writes to `GREESE_THEME` as
+usual.
+
+The importer is `src/importer.ts`. Its tests (`server/importer.test.ts`)
+include a round trip: a theme the studio writes reads back unchanged.
+
+## How it works
+
+- **`server/studio.ts`:** a dev-server plugin. It reads and writes the theme
+  file and compiles it through the real SCSS kit. It runs under `vite`
+  (serve) only and answers same-origin requests only, since it writes files.
+- **`src/spec.ts`:** the JSON format and its SCSS generator, shared by the
+  server and the page.
+- **`src/App.tsx` and `src/panels/`:** the editor, built with GreeseUI.
+- **`src/preview/`:** the themed gallery, in an iframe so the theme never
+  restyles the editor. Inspect mode reports a clicked element's classes and
+  computed variables.
+
+Component data (parts, modifiers, variables) comes from
+`@greese-ui/react/style-manifest.json`, so build the library first
+(`npm run build`) after changing its styles.
+
+Design and trade-offs: [ADR 0010](../../docs/adr/0010-theme-kit-and-studio.md).
