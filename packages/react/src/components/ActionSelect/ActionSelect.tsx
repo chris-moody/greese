@@ -8,10 +8,13 @@ import { Select, type SelectProps } from '../Select/Select.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface ActionSelectOption {
+  /** Submitted with the form and passed to `onValueChange`. */
   value: string
+  /** The text shown in the list. */
   label: string
   /** Options sharing a group are listed under it, in order of appearance. */
   group?: string
+  /** Listed but can't be chosen. */
   disabled?: boolean
 }
 
@@ -21,9 +24,13 @@ export interface ActionSelectProps
     Omit<ButtonGroupProps, 'onChange' | 'defaultValue' | 'attached' | 'orientation'> {
   /** The choices. Or pass `<option>` / `<optgroup>` children instead. */
   options?: readonly ActionSelectOption[]
+  /** `<option>` and `<optgroup>` elements, instead of `options`. */
   children?: ReactNode
+  /** The chosen option's value, when you control it. Pair with `onValueChange`. */
   value?: string
+  /** The option chosen at first, when the component keeps its own state. */
   defaultValue?: string
+  /** Called with the new value when the user chooses an option. */
   onValueChange?: (value: string) => void
   /** The button's icon: any element, from any icon set. */
   icon: ReactNode
@@ -33,8 +40,9 @@ export interface ActionSelectProps
   onAction: () => void
   /** The select's accessible name, e.g. "Project". */
   selectLabel: string
-  /** @default 'md' */
+  /** Height and text size of the button and select together. @default 'md' */
   size?: ControlSize
+  /** Disables both the button and the select. */
   disabled?: boolean
   /** Extra props for the Select (name, required, placeholder…). */
   selectProps?: Omit<

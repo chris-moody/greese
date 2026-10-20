@@ -1,0 +1,115 @@
+@use '../../styles/mixins';
+
+@layer greese.components {
+  .greese-Rating {
+    @include mixins.component-root;
+
+    --greese-rating-size: 1.5rem;
+    --greese-rating-on: var(--greese-color-warning);
+    --greese-rating-off: var(--greese-color-border-strong);
+
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--greese-space-1);
+    min-inline-size: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+
+  .greese-Rating--sm {
+    --greese-rating-size: 1.125rem;
+  }
+
+  .greese-Rating--lg {
+    --greese-rating-size: 2rem;
+  }
+
+  // The stars: an empty row with a filled row over it, clipped to the value
+  // (--greese-rating-fill), so any fraction draws exactly.
+  .greese-Rating-items,
+  .greese-Rating-stars {
+    position: relative;
+    display: inline-grid;
+    inline-size: max-content;
+
+    > * {
+      grid-area: 1 / 1;
+    }
+  }
+
+  .greese-Rating-items {
+    cursor: pointer;
+    touch-action: none;
+
+    &:has(.greese-Rating-input:focus-visible) {
+      border-radius: var(--greese-radius-sm);
+      outline: 2px solid var(--greese-color-focus-ring);
+      outline-offset: 2px;
+    }
+  }
+
+  // At least 44px tall to touch: the slices share the stars' cell, so they
+  // stretch over this padding too.
+  @media (pointer: coarse) {
+    .greese-Rating-items > .greese-Rating-stars {
+      padding-block: max(0px, (44px - var(--greese-rating-size)) / 2);
+    }
+  }
+
+  .greese-Rating:disabled .greese-Rating-items {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .greese-Rating-empty,
+  .greese-Rating-filled {
+    display: inline-flex;
+  }
+
+  .greese-Rating-filled {
+    clip-path: inset(0 calc(100% - var(--greese-rating-fill)) 0 0);
+    transition: clip-path var(--greese-duration-fast) var(--greese-easing-standard);
+
+    &:dir(rtl) {
+      clip-path: inset(0 0 0 calc(100% - var(--greese-rating-fill)));
+    }
+
+    .greese-Rating-icon {
+      color: var(--greese-rating-on);
+    }
+  }
+
+  .greese-Rating-icon {
+    display: inline-flex;
+    inline-size: var(--greese-rating-size);
+    block-size: var(--greese-rating-size);
+    padding: 0.0625rem;
+    color: var(--greese-rating-off);
+
+    > svg {
+      inline-size: 100%;
+      block-size: 100%;
+    }
+  }
+
+  // One slice per choice over the stars: clicking a slice chooses it.
+  .greese-Rating-choices {
+    display: flex;
+  }
+
+  .greese-Rating-choice {
+    position: relative;
+    flex: 1;
+  }
+
+  .greese-Rating-input {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    margin: 0;
+    cursor: inherit;
+    opacity: 0;
+  }
+}

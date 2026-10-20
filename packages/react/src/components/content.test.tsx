@@ -7,12 +7,14 @@ import { Accordion, AccordionItem } from './Accordion/Accordion.tsx'
 import { Alert } from './Alert/Alert.tsx'
 import { Avatar, AvatarGroup, initials } from './Avatar/Avatar.tsx'
 import { Badge } from './Badge/Badge.tsx'
+import { Button } from './Button/Button.tsx'
 import { Card, CardMedia } from './Card/Card.tsx'
 import { Chip } from './Chip/Chip.tsx'
 import { Code } from './Code/Code.tsx'
 import { Collapsible } from './Collapsible/Collapsible.tsx'
 import { Heading } from './Heading/Heading.tsx'
 import { Icon } from './Icon/Icon.tsx'
+import { IconButton } from './IconButton/IconButton.tsx'
 import { Image, isPlaceholderColor } from './Image/Image.tsx'
 import { Link } from './Link/Link.tsx'
 import { Embed, Video } from './Media/Media.tsx'
@@ -21,6 +23,7 @@ import { Skeleton } from './Skeleton/Skeleton.tsx'
 import { Spinner } from './Spinner/Spinner.tsx'
 import { Tab, TabList, TabPanel, Tabs } from './Tabs/Tabs.tsx'
 import { Text } from './Text/Text.tsx'
+import { ToggleButton } from './ToggleButton/ToggleButton.tsx'
 
 describe('typography', () => {
   it('Text is a paragraph with responsive size, tone and truncation', () => {
@@ -70,7 +73,7 @@ describe('typography', () => {
         </Link>
       </>
     )
-    expect(screen.getByRole('link', { name: 'Plain' })).toHaveClass('greese-Link--accent')
+    expect(screen.getByRole('link', { name: 'Plain' })).toHaveClass('greese-Link--primary')
     expect(screen.getByRole('link', { name: 'Routed' })).toHaveClass(
       'greese-Link--neutral',
       'greese-Link--underline-hover'
@@ -452,5 +455,51 @@ describe('Phase 4 accessibility', () => {
       </main>
     )
     await expectNoAxeViolations(container)
+  })
+})
+
+describe('brand tones', () => {
+  const brand = ['primary', 'secondary', 'tertiary'] as const
+
+  it.each(brand)('every tone prop takes %s', async (tone) => {
+    const { container } = render(
+      <>
+        <Button tone={tone}>Save</Button>
+        <IconButton tone={tone} label="Star">
+          *
+        </IconButton>
+        <ToggleButton tone={tone}>Bold</ToggleButton>
+        <Badge tone={tone}>New</Badge>
+        <Chip tone={tone}>Tag</Chip>
+        <Text tone={tone}>Body</Text>
+        <Heading tone={tone}>Title</Heading>
+        <Link href="#" tone={tone}>
+          Docs
+        </Link>
+        <Alert tone={tone} title="News" />
+      </>
+    )
+    for (const block of ['Button', 'Badge', 'Chip', 'Text', 'Link', 'Alert'])
+      expect(container.querySelector(`.greese-${block}--${tone}`)).not.toBeNull()
+    expect(container.querySelectorAll(`.greese-Button--${tone}`)).toHaveLength(3)
+    await expectNoAxeViolations(container)
+  })
+
+  it('Chip: no tone keeps today’s look; a selectable chip selects to its tone', async () => {
+    const user = userEvent.setup()
+    const { container } = render(
+      <>
+        <Chip>Plain</Chip>
+        <Chip selectable tone="secondary">
+          Filter
+        </Chip>
+      </>
+    )
+    const [plain, filter] = container.querySelectorAll('.greese-Chip')
+    expect(plain!.className).toBe('greese-Chip')
+    expect(filter).toHaveClass('greese-Chip--secondary')
+    expect(filter).not.toHaveClass('greese-Chip--selected')
+    await user.click(screen.getByRole('button', { name: 'Filter' }))
+    expect(filter).toHaveClass('greese-Chip--secondary', 'greese-Chip--selected')
   })
 })

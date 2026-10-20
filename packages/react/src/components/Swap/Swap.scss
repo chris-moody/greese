@@ -1,0 +1,62 @@
+@use '../../styles/mixins';
+
+@layer greese.components {
+  // Both faces share one grid cell; the inactive one is hidden.
+  .greese-Swap {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    min-inline-size: 2.75rem;
+    min-block-size: 2.75rem;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-radius: var(--greese-radius-md);
+
+    @include mixins.focus-ring;
+
+    @include mixins.hover {
+      background-color: color-mix(in oklab, currentcolor 8%, transparent);
+    }
+
+    svg {
+      inline-size: 1.5rem;
+      block-size: 1.5rem;
+    }
+  }
+
+  .greese-Swap-on,
+  .greese-Swap-off {
+    display: inline-flex;
+    grid-area: 1 / 1;
+    transition:
+      opacity var(--greese-duration-normal) var(--greese-easing-standard),
+      rotate var(--greese-duration-normal) var(--greese-easing-standard),
+      scale var(--greese-duration-normal) var(--greese-easing-standard);
+  }
+
+  .greese-Swap[aria-pressed='true'] .greese-Swap-off,
+  .greese-Swap[aria-pressed='false'] .greese-Swap-on {
+    opacity: 0;
+  }
+
+  .greese-Swap--rotate {
+    &[aria-pressed='true'] .greese-Swap-off {
+      rotate: 45deg;
+    }
+
+    &[aria-pressed='false'] .greese-Swap-on {
+      rotate: -45deg;
+    }
+  }
+
+  .greese-Swap--flip {
+    &[aria-pressed='true'] .greese-Swap-off,
+    &[aria-pressed='false'] .greese-Swap-on {
+      scale: -1 1;
+    }
+  }
+}

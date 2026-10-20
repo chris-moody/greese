@@ -32,7 +32,8 @@ export const Spacer = ({
   ...props
 }: SpacerProps): JSX.Element => {
   const resolved = resolveResponsive([[size, SIZE]], {
-    className: cx('greese-Spacer', className),
+    // A fixed size stops it growing (Spacer.scss).
+    className: cx('greese-Spacer', size != null && 'greese-Spacer--fixed', className),
     style,
   })
   return (

@@ -244,8 +244,8 @@ describe('AutoLayout', () => {
     expect(classes(row)).toEqual([
       'greese-Box',
       'greese-AutoLayout',
-      'greese-AutoLayout--gap',
       'greese-AutoLayout--xs-gap-2',
+      'greese-AutoLayout--md-gap',
     ])
     expect(row.style.getPropertyValue('--greese-autolayout-columns')).toBe('6')
     expect(row.style.getPropertyValue('--greese-autolayout-gap-md')).toBe('20px')

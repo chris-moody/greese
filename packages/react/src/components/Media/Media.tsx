@@ -5,7 +5,11 @@ import { AspectRatio } from '../AspectRatio/AspectRatio.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface VideoProps extends GreeseProps, ComponentPropsWithRef<'video'> {
-  /** @default 16 / 9 */
+  /**
+   * Width to height, as a number (`16 / 9`) or a string (`'4 / 3'`), per
+   * breakpoint if you like.
+   * @default 16 / 9
+   */
   ratio?: Responsive<number | string>
 }
 
@@ -31,7 +35,11 @@ export interface EmbedProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'iframe'>, 'title'> {
   /** Required: names the frame for screen readers, e.g. "Product demo video". */
   title: string
-  /** @default 16 / 9 */
+  /**
+   * Width to height, as a number (`16 / 9`) or a string (`'4 / 3'`), per
+   * breakpoint if you like.
+   * @default 16 / 9
+   */
   ratio?: Responsive<number | string>
 }
 

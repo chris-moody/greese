@@ -1,0 +1,48 @@
+@layer greese.components {
+  .greese-Indicator {
+    position: relative;
+    display: inline-flex;
+    inline-size: max-content;
+  }
+
+  // Centred on the corner or edge: each axis is start (0), middle or end.
+  .greese-Indicator-item {
+    --greese-indicator-x: 100%;
+    --greese-indicator-y: 0%;
+
+    position: absolute;
+    inset-block-start: var(--greese-indicator-y);
+    inset-inline-start: var(--greese-indicator-x);
+    z-index: 1;
+    display: inline-flex;
+    translate: -50% -50%;
+
+    &:dir(rtl) {
+      translate: 50% -50%;
+    }
+  }
+
+  .greese-Indicator-item--top-start,
+  .greese-Indicator-item--start,
+  .greese-Indicator-item--bottom-start {
+    --greese-indicator-x: 0%;
+  }
+
+  .greese-Indicator-item--top,
+  .greese-Indicator-item--center,
+  .greese-Indicator-item--bottom {
+    --greese-indicator-x: 50%;
+  }
+
+  .greese-Indicator-item--start,
+  .greese-Indicator-item--center,
+  .greese-Indicator-item--end {
+    --greese-indicator-y: 50%;
+  }
+
+  .greese-Indicator-item--bottom-start,
+  .greese-Indicator-item--bottom,
+  .greese-Indicator-item--bottom-end {
+    --greese-indicator-y: 100%;
+  }
+}

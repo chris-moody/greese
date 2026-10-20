@@ -30,19 +30,23 @@ export interface NumberFieldProps
       | 'max'
       | 'step'
     > {
+  /** The number, when you control it; `null` when empty. Pair with `onValueChange`. */
   value?: number | null
+  /** The starting number, when it keeps its own state; `null` for empty. */
   defaultValue?: number | null
   /** Called with the committed number, or `null` when cleared. */
   onValueChange?: (value: number | null) => void
+  /** The lowest allowed value. Typed values are clamped to it on blur or Enter. */
   min?: number
+  /** The highest allowed value. Typed values are clamped to it on blur or Enter. */
   max?: number
   /** Arrow keys and buttons move by this; values snap to it from `min`. @default 1 */
   step?: number
   /** Page Up / Page Down move by this. @default step × 10 */
   largeStep?: number
-  /** @default 'Increase' */
+  /** Accessible name of the plus button. @default 'Increase' */
   incrementLabel?: string
-  /** @default 'Decrease' */
+  /** Accessible name of the minus button. @default 'Decrease' */
   decrementLabel?: string
 }
 

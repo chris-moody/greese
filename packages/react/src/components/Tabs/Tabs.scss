@@ -59,7 +59,7 @@
 
     &[aria-selected='true'] {
       color: var(--greese-color-fg);
-      box-shadow: inset 0 -2px 0 var(--greese-color-accent);
+      box-shadow: inset 0 -2px 0 var(--greese-color-primary);
     }
 
     &:disabled {
@@ -72,7 +72,7 @@
       border-radius: var(--greese-radius-sm) 0 0 var(--greese-radius-sm);
 
       &[aria-selected='true'] {
-        box-shadow: inset -2px 0 0 var(--greese-color-accent);
+        box-shadow: inset -2px 0 0 var(--greese-color-primary);
       }
     }
   }

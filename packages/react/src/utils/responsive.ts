@@ -35,20 +35,23 @@ export interface ResponsiveConfig<T extends ResponsiveValue = ResponsiveValue> {
   readonly toCss?: (value: T) => string
 }
 
-/**
- * "Uses" class, added whenever the prop is set at any breakpoint. The SCSS
- * hangs the prop's rules off it, so unset props cost nothing.
- */
-export const responsivePropClass = (block: string, prop: string): string =>
-  `${block}--${prop}`
-
-/** Class that sets one breakpoint's value. Must match the SCSS mixin. */
+/** Class that sets one breakpoint's token value. Must match the SCSS mixin. */
 export const responsiveClass = (
   block: string,
   bp: Breakpoint,
   prop: string,
   value: ResponsiveValue
 ): string => `${block}--${bp}-${prop}-${value}`
+
+/**
+ * Class that reads one breakpoint's inline variable, for values without a
+ * class of their own. Must match the SCSS mixin.
+ */
+export const responsiveValueClass = (
+  block: string,
+  bp: Breakpoint,
+  prop: string
+): string => `${block}--${bp}-${prop}`
 
 /** Custom property holding one breakpoint's value. Must match the SCSS mixin. */
 export const responsiveVar = (block: string, prop: string, bp: Breakpoint): string =>
@@ -97,7 +100,8 @@ const isPerBreakpoint = (
 
 /**
  * Turns responsive props into the class names and inline custom properties
- * that the `responsive-prop` SCSS mixin reads. Pure and cheap: no CSS is
+ * that the `responsive-prop` SCSS mixin reads: one class per breakpoint set,
+ * and nothing at all for props that aren't. Pure and cheap: no CSS is
  * generated, nothing is injected, and `style` is only copied when a value needs
  * an inline variable.
  *
@@ -108,7 +112,7 @@ const isPerBreakpoint = (
  *   style: props.style,
  * })
  * // gap={{ xs: 2, md: '13px' }} →
- * //   className: 'greese-Stack greese-Stack--gap greese-Stack--xs-gap-2'
+ * //   className: 'greese-Stack greese-Stack--xs-gap-2 greese-Stack--md-gap'
  * //   style:     { '--greese-stack-gap-md': '13px' }
  * ```
  *
@@ -133,6 +137,7 @@ export const resolveResponsive = (
     if (!config.isToken || config.isToken(value)) {
       addClass(responsiveClass(config.block, bp, config.prop, value))
     } else {
+      addClass(responsiveValueClass(config.block, bp, config.prop))
       vars ??= {}
       vars[responsiveVar(config.block, config.prop, bp)] = config.toCss
         ? config.toCss(value)
@@ -144,7 +149,6 @@ export const resolveResponsive = (
     if (value == null) continue
     // Safe: each entry pairs a value with the config written for its type.
     const config = entryConfig as unknown as ResponsiveConfig
-    addClass(responsivePropClass(config.block, config.prop))
     if (isPerBreakpoint(value)) {
       for (const bp of breakpointKeys) {
         const v = value[bp]

@@ -34,7 +34,7 @@ The scheme follows the OS by default. To let users choose:
 import { getSchemeScript, useColorScheme } from '@greese-ui/react'
 
 // In <head>, so a saved choice applies before first paint:
-<script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
+;<script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
 
 // Anywhere:
 const { scheme, resolvedScheme, setScheme } = useColorScheme()
@@ -49,7 +49,7 @@ import { createTheme, ThemeProvider } from '@greese-ui/react'
 // At module scope: builds static CSS once.
 const brand = createTheme({
   name: 'brand',
-  color: { accent: { light: '#7c3aed', dark: '#c4b5fd' } },
+  color: { primary: { light: '#7c3aed', dark: '#c4b5fd' } },
   radius: { md: '12px' },
 })
 
@@ -66,16 +66,82 @@ You can also theme in plain CSS, with no JavaScript:
 
 ```css
 :root {
-  --greese-color-accent: #7c3aed;
+  --greese-color-primary: #7c3aed;
 }
 ```
 
 Every library rule sits in `@layer greese.*`, so unlayered CSS in your app always
 wins over it. You never need `!important`.
 
+## Component overrides: the SCSS kit and Theme Studio
+
+The SCSS kit compiles a theme of tokens, component overrides and theme-wide
+motion in your build. You write component, part and modifier names; it adds
+the `greese-` prefix, and stops the build on names the library doesn't have:
+
+```scss
+@use 'pkg:@greese-ui/react/scss/kit' as greese;
+
+@include greese.tokens(
+  (
+    color: (
+      primary: (
+        light: #7c3aed,
+        dark: #c4b5fd,
+      ),
+    ),
+  )
+);
+
+@include greese.component(Button) {
+  font-weight: 700;
+  @include greese.vars(
+    (
+      tone: greese.token(color, positive),
+    )
+  );
+  @include greese.modifier(outline) {
+    border-width: 2px;
+  }
+}
+
+@include greese.component(Card) {
+  @include greese.motion(
+    (
+      enter: fade-up,
+    )
+  ); // every Card, in CSS
+}
+```
+
+Overrides land in `@layer greese.overrides`. They beat component styles, and
+style props and the `greese` prop still beat them per instance. Compile with
+Sass's `NodePackageImporter`. A named `greese.theme(brand) { … }` works with
+`<ThemeProvider theme="brand">`.
+
+`@greese-ui/react/style-manifest.json` lists every component's classes,
+parts, modifiers, states and variables. Theme Studio (`npm run studio` in
+this repository) edits a theme visually and writes the SCSS and CSS. See
+**Guides/Styling components** in the docs.
+
+## Icons
+
+GreeseUI ships no icon set: every icon slot takes any `ReactNode`. The
+optional `@greese-ui/icons` package has the line icons these docs use, sized
+to text and drawn in `currentColor`:
+
+```tsx
+import { SearchIcon } from '@greese-ui/icons'
+
+;<IconButton label="Search">
+  <SearchIcon />
+</IconButton>
+```
+
 ## Layout
 
-`Box`, `Stack`, `Grid` + `GridItem`, `AutoLayout` + `AutoLayoutItem` (items
+`Box`, `Stack`, `Grid` (`container` for a grid, `size` for a cell, as in
+MUI), `Tile`, `AutoLayout` + `AutoLayoutItem` (items
 sized in columns that grow into spare room), `Container`, `Center`, `Spacer`,
 `Divider`, `Show`/`Hide` and `AspectRatio`. They're all server-component safe
 and accept `asChild`.
@@ -83,17 +149,23 @@ and accept `asChild`.
 ```tsx
 <Container>
   <Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 2, md: 4 }} align="center">
-    <Box p={4} maxW="40rem">…</Box>
+    <Box p={4} maxW="40rem">
+      …
+    </Box>
   </Stack>
-  <Grid minChildWidth="14rem" gap={4}>…</Grid>
-  <Show above="md"><DesktopNav /></Show>
+  <Grid container minChildWidth="14rem" gap={4}>
+    …
+  </Grid>
+  <Show above="md">
+    <DesktopNav />
+  </Show>
 </Container>
 ```
 
 Box style props (`m`, `p` and their `x`/`y`/`t`/`b`/`s`/`e` sides, `gap`,
 `w`, `maxW`, `display`, `textAlign`) work on every layout component. Spacing
-takes a scale token (`0`–`8`) or any CSS length. `<Grid container>` makes
-`GridItem` spans respond to the grid's own width instead of the viewport.
+takes a scale token (`0`–`8`) or any CSS length. `<Grid container containerQueries>`
+makes its cells' `size`s respond to the grid's own width instead of the viewport.
 
 ## Forms
 
@@ -116,7 +188,10 @@ steppers), `DateField` (native date and time pickers), `MaskedInput` (formats
 as you type: phones, cards, codes), `ColorPicker` (touch-friendly, with
 opacity and swatches), `ActionSelect` (a button joined to a select),
 `SegmentedControl`, and `Table` primitives with sortable headers and a stacked
-card layout on phones.
+card layout on phones. `Rating` (stars on native radios; whole, half or quarter steps; any fraction read-only),
+`OtpField` (one-time codes: one input, so SMS autofill and paste work),
+`Fieldset` (a native group with a legend), and `Swap` (a toggle that swaps two
+icons).
 
 `Field` connects its label, description and error to its control. Call
 `useFieldControl()` to make your own controls Field-aware. On touch screens,
@@ -125,21 +200,23 @@ are at least 44px.
 
 ## Content
 
-| Area | Components |
-|---|---|
-| **Typography** | `Text` (responsive size, tone, truncate), `Heading` (outline level separate from size), `Link`, `Code`, `Break` (a line break per breakpoint, with a fallback where it doesn't break) |
-| **Media** | `Card` + `CardMedia`, `Image` (lazy by default, `priority` for LCP, CSS placeholder, fallback), `Video` (plays inline on iOS), `Embed`, `Icon`, `Avatar` + `AvatarGroup` |
-| **Disclosure** | `Collapsible` and `Accordion` (native `<details>`; `exclusive` keeps one open with no JS), `Tabs` |
-| **Feedback** | `Alert` (announces only when you ask), `Badge`, `Chip` (removable or selectable), `Spinner`, `Progress`, `Skeleton` |
+| Area             | Components                                                                                                                                                                                                                              |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Typography**   | `Text` (responsive size, tone, truncate), `Heading` (outline level separate from size), `Link`, `Code`, `Break` (a line break per breakpoint, with a fallback where it doesn't break)                                                   |
+| **Media**        | `Card` + `CardMedia`, `Image` (lazy by default, `priority` for LCP, CSS placeholder, fallback), `Video` (plays inline on iOS), `Embed`, `Icon`, `Avatar` + `AvatarGroup`                                                                |
+| **Disclosure**   | `Collapsible` and `Accordion` (native `<details>`; `exclusive` keeps one open with no JS), `Tabs`                                                                                                                                       |
+| **Feedback**     | `Alert` (announces only when you ask), `Badge`, `Chip` (removable or selectable), `Spinner`, `Progress`, `RadialProgress`, `Skeleton`, `Status` (a state dot), `Countdown`                                                              |
+| **Data display** | `Stat` + `StatGroup`, `List` + `ListItem`, `ChatBubble`, `Key`, `Indicator` (a badge or dot on a corner), `Diff` (a before/after slider), `ScrollCarousel` + `ScrollCarouselSlide` (native scroll snapping), `TextRotate` (CSS-only rotating words) |
 
 ## Overlays and navigation
 
-| Area | Components |
-|---|---|
-| **Modal** | `Dialog`, `Drawer` (responsive `placement`: a bottom sheet on phones, a side panel on desktop). Native `<dialog>`: focus trapped and returned, page inert, scroll locked with CSS |
-| **Anchored** | `Popover`, `Menu` + `MenuItem`, `Tooltip`. Popover API plus CSS anchor positioning; no positioning library |
-| **Feedback** | `toast()` + `<Toaster />`: announced, pausable, and usable above open dialogs |
-| **Navigation** | `SidebarLayout` + `Sidebar` + `SidebarTrigger` (off-canvas below a breakpoint, persistent above), `AppBar`, `Breadcrumbs`, `Pagination` |
+| Area           | Components                                                                                                                                                                                                                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Modal**      | `Dialog`, `Drawer` (responsive `placement`: a bottom sheet on phones, a side panel on desktop). Native `<dialog>`: focus trapped and returned, page inert, scroll locked with CSS                                                                                              |
+| **Anchored**   | `Popover`, `Menu` + `MenuItem`, `Tooltip`. Popover API plus CSS anchor positioning; no positioning library                                                                                                                                                                     |
+| **Feedback**   | `toast()` + `<Toaster />`: announced, pausable, and usable above open dialogs                                                                                                                                                                                                  |
+| **Navigation** | `SidebarLayout` + `Sidebar` + `SidebarTrigger` (off-canvas below a breakpoint, persistent above), `AppBar`, `Breadcrumbs`, `Pagination`, `Steps` + `Step` (processes, and timelines: `direction`, `markers`, a step's `prefix`), `Dock` + `DockItem` (a bottom bar for phones) |
+| **Actions**    | `SpeedDial` + `SpeedDialAction` (a floating action button with a popover of actions)                                                                                                                                                                                           |
 
 ```tsx
 <Dialog trigger={<Button>Delete</Button>} title="Delete project?" footer={<Button tone="negative">Delete</Button>} />
@@ -152,21 +229,28 @@ toast({ title: 'Archived', action: { label: 'Undo', onClick: restore } })
 Every component that draws something accepts `greese`:
 
 ```tsx
-<Card greese="fade-up" />                                    // entrance preset: CSS only
-<Stack greese={{ inView: 'fade-up', stagger: 0.05 }}>…</Stack> // reveal on scroll, children in turn
+<Card greese="fadeUp" />                                     // entrance preset: CSS only
+<Stack greese={{ inView: 'fadeUp', stagger: 0.05 }}>…</Stack> // reveal on scroll, children in turn
 <Button greese={{ hover: 'lift', press: 'squish' }} />       // interactions
 <Heading greese={{ text: 'split' }}>Served fast</Heading>    // text effects
-<Dialog greese={{ enter: 'pop', exit: 'scale-out' }} … />    // overlay enter and exit
+<Dialog greese={{ enter: 'pop', exit: 'scaleOut' }} … />     // overlay enter and exit
+<Card greese="fadeIn+scaleIn,+2,fadeOut" />                  // sequence: + together, comma next, number pause
 ```
+
+Define your own effects with `defineGreeseEffect('wobble', { rotate: [0, -6, 6, 0] })`
+and use them by name, alone or in sequences.
 
 - **Entrance presets are pure CSS:** they render in Server Components and
   cost no JavaScript.
-- **Everything else loads a small runtime plus greese.js** (about 6.4 kB,
+- **Everything else loads a small runtime plus greese.js** (about 6.9 kB,
   brotli) as a lazy chunk, the first time a prop needs it. Add
   `import '@greese-ui/react/greese'` at your entry to load it up front.
 - **Reduced motion is respected throughout.**
 - **`<Motion>` gives any element the prop.**
-- **`useTimeline()`** ties a timeline to a component's lifetime.
+- **`useGreese()`** ties greese.js to a component:
+  scoped selectors, dependencies, and everything reverted on unmount,
+  including animations started in handlers. `useTimeline()` is its
+  one-timeline shortcut.
 - **greese.js** (`@greese-ui/greese`) is re-exported (`animate`, `timeline`,
   `ease`, `splitText`) for full keyframe timelines.
 
@@ -175,9 +259,9 @@ Every component that draws something accepts `greese`:
 Every responsive prop takes one value, or a value per breakpoint,
 mobile-first, the same way MUI does:
 
-| Breakpoint | `xs` | `sm` | `md` | `lg` | `xl` |
-|---|---|---|---|---|---|
-| min-width | 0 | 600px | 900px | 1200px | 1536px |
+| Breakpoint | `xs` | `sm`  | `md`  | `lg`   | `xl`   |
+| ---------- | ---- | ----- | ----- | ------ | ------ |
+| min-width  | 0    | 600px | 900px | 1200px | 1536px |
 
 Prefer CSS-driven responsive props. When the rendered tree itself must change,
 use `useBreakpoint()`, `useBreakpointValue()` or `useMediaQuery()`.
@@ -187,7 +271,13 @@ keys stay `xs`–`xl`:
 
 ```scss
 @use 'pkg:@greese-ui/react/scss' with (
-  $breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px)
+  $breakpoints: (
+    xs: 0px,
+    sm: 480px,
+    md: 768px,
+    lg: 1024px,
+    xl: 1440px,
+  )
 );
 ```
 

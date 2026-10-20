@@ -24,10 +24,15 @@ const FieldContext = createContext<FieldContextValue | null>(null)
 
 /** Props a control may set itself; each wins over the surrounding Field. */
 export interface FieldControlProps {
+  /** The control's own id; wins over the Field's. */
   id?: string
+  /** Extra ids describing the control, joined with the Field's description and error. */
   'aria-describedby'?: string
+  /** Marks the control invalid; wins over the Field's state. */
   invalid?: boolean
+  /** Marks the control required; wins over the Field's. */
   required?: boolean
+  /** Disables the control; wins over the Field's. */
   disabled?: boolean
 }
 
@@ -67,7 +72,9 @@ export interface FieldProps
   error?: ReactNode
   /** Mark invalid without (or before) an error message. */
   invalid?: boolean
+  /** Marks the control required and shows an asterisk after the label. */
   required?: boolean
+  /** Disables the control and dims the label. */
   disabled?: boolean
   /** Keep the label for screen readers but hide it on screen. */
   hideLabel?: boolean

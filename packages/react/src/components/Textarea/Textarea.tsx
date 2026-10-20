@@ -6,8 +6,16 @@ import { useFieldControl } from '../Field/Field.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface TextareaProps extends GreeseProps, ComponentPropsWithRef<'textarea'> {
-  /** @default 'md' */
+  /**
+   * Padding and text size: `sm`, `md` or `lg`. Text stays at least 16px on touch
+   * screens.
+   * @default 'md'
+   */
   size?: ControlSize
+  /**
+   * Marks it invalid (`aria-invalid`) and colours it as an error. A surrounding
+   * Field's `error` sets it too.
+   */
   invalid?: boolean
   /**
    * Grow with the content (CSS `field-sizing`, no JS). Where unsupported, it

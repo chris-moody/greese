@@ -1,16 +1,45 @@
 'use client'
 import { useLayoutEffect, useRef, type JSX, type ReactNode } from 'react'
-import type { GreeseOptions, GreeseProp } from '../../utils/greese.ts'
+import type { GreeseOptions } from '../../utils/greese.ts'
 import { Slot } from '../Slot/Slot.tsx'
 import { loadGreeseRuntime } from './registry.ts'
-
-const normalize = (prop: GreeseProp): GreeseOptions =>
-  typeof prop === 'string' ? { enter: prop } : prop
 
 /** Above the fold right now? Then a scroll reveal would only flash it. */
 const inViewport = (el: Element): boolean => {
   const r = el.getBoundingClientRect()
   return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth
+}
+
+interface Attachment {
+  el: HTMLElement
+  options: GreeseOptions
+  live: boolean
+  detach?: () => void
+}
+
+// Islands mounted in one commit are handled together, in a microtask (still
+// before paint): every position is read first, then every write is made.
+// Measuring each island right after the previous one wrote would force a
+// layout per island; a page of animated components paid hundreds.
+let batch: Attachment[] = []
+
+const flush = () => {
+  const items = batch.filter((a) => a.live)
+  batch = []
+  const hidden = items.map((a) => a.options.inView !== undefined && !inViewport(a.el))
+  // Hide scroll-reveal targets that are out of view; ones already visible
+  // are left alone.
+  items.forEach((a, i) => {
+    if (hidden[i]) a.el.dataset.greeseView = 'pending'
+  })
+  void loadGreeseRuntime().then((runtime) =>
+    runtime.attachAll(items.filter((a) => a.live))
+  )
+}
+
+const schedule = (attachment: Attachment) => {
+  if (!batch.length) queueMicrotask(flush)
+  batch.push(attachment)
 }
 
 /**
@@ -19,33 +48,29 @@ const inViewport = (el: Element): boolean => {
  * element) and hands it to the runtime, which is loaded on demand.
  */
 export const GreeseIsland = ({
-  greese,
+  options,
   children,
 }: {
-  greese: GreeseProp
+  /** The `greese` prop, normalized by withGreese. */
+  options: GreeseOptions
   children?: ReactNode
 }): JSX.Element => {
   const ref = useRef<HTMLElement>(null)
   // The latest options, so a new object each render doesn't re-attach.
-  const latest = useRef(greese)
-  latest.current = greese
-  const key = typeof greese === 'string' ? greese : JSON.stringify(greese)
+  const latest = useRef(options)
+  latest.current = options
+  // Functions (`timeline`) drop out of the key: a new closure each render
+  // doesn't re-attach, and the latest one is used when it does.
+  const key = JSON.stringify(options)
 
   useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
-    const options = normalize(latest.current)
-    // Hide scroll-reveal targets that are out of view before the first
-    // paint; ones already visible are left alone.
-    if (options.inView && !inViewport(el)) el.dataset.greeseView = 'pending'
-    let detach: (() => void) | undefined
-    let live = true
-    void loadGreeseRuntime().then((runtime) => {
-      if (live) detach = runtime.attach(el, options)
-    })
+    const attachment: Attachment = { el, options: latest.current, live: true }
+    schedule(attachment)
     return () => {
-      live = false
-      detach?.()
+      attachment.live = false
+      attachment.detach?.()
       delete el.dataset.greeseView
     }
   }, [key])

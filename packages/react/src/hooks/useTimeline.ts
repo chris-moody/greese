@@ -1,10 +1,13 @@
 'use client'
-import { useEffect, useRef, useState, type DependencyList } from 'react'
-import { timeline, type Timeline, type TimelineOptions } from '@greese-ui/greese'
+import { useState, type DependencyList } from 'react'
+import type { Timeline, TimelineOptions } from '@greese-ui/greese'
+import { useGreese } from './useGreese.ts'
 
 /**
- * A greese.js timeline built after mount (so refs are set), rebuilt when
- * `deps` change, and killed on unmount, which restores what it animated.
+ * A greese.js timeline built after mount (so refs are set) and before
+ * paint, rebuilt when `deps` change, and killed on unmount, which restores
+ * what it animated. For several animations, scoped selectors or animations
+ * started in handlers, use {@link useGreese}.
  *
  * ```tsx
  * const box = useRef<HTMLDivElement>(null)
@@ -18,15 +21,13 @@ export const useTimeline = (
   options?: TimelineOptions
 ): Timeline | undefined => {
   const [tl, setTl] = useState<Timeline>()
-  const latest = useRef(build)
-  latest.current = build
-  useEffect(() => {
-    const t = timeline(options)
-    latest.current(t)
-    setTl(t)
-    return () => {
-      t.kill()
-    }
-  }, deps)
+  useGreese(
+    (g) => {
+      const t = g.timeline(options)
+      build(t)
+      setTl(t)
+    },
+    { dependencies: deps, revertOnUpdate: true }
+  )
   return tl
 }

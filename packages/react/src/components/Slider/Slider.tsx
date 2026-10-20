@@ -8,15 +8,22 @@ export interface SliderProps
   extends
     GreeseProps,
     Omit<ComponentPropsWithRef<'input'>, 'type' | 'size' | 'value' | 'defaultValue'> {
+  /** The value, when you control it. Pair with `onValueChange`. */
   value?: number
+  /** The starting value, when it keeps its own state. */
   defaultValue?: number
-  /** @default 0 */
+  /** The value at the inline start. @default 0 */
   min?: number
-  /** @default 100 */
+  /** The value at the inline end. @default 100 */
   max?: number
-  /** @default 1 */
+  /** The increment the arrow keys and dragging snap to. @default 1 */
   step?: number
+  /** Called with the new value as it moves. */
   onValueChange?: (value: number) => void
+  /**
+   * Marks it invalid and colours it as an error. A surrounding Field's `error`
+   * sets it too.
+   */
   invalid?: boolean
 }
 

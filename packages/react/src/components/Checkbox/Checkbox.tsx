@@ -30,6 +30,10 @@ export interface CheckboxProps
   description?: ReactNode
   /** The "some selected" state, e.g. for a select-all checkbox. */
   indeterminate?: boolean
+  /**
+   * Marks it invalid (`aria-invalid`) and colours it as an error. A surrounding
+   * group's `error` sets it too.
+   */
   invalid?: boolean
   /** Convenience alongside `onChange`: receives the new checked state. */
   onCheckedChange?: (checked: boolean) => void
@@ -133,7 +137,9 @@ export interface CheckboxGroupProps extends GreeseProps, ChoiceGroupProps {
   name?: string
   /** Checked values (each Checkbox's `value`). */
   value?: string[]
+  /** The values checked at first, when the group keeps its own state. */
   defaultValue?: string[]
+  /** Called with every checked value whenever one is checked or unchecked. */
   onValueChange?: (value: string[]) => void
 }
 

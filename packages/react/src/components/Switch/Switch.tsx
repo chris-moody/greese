@@ -10,8 +10,14 @@ export interface SwitchProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'input'>, 'type' | 'size'> {
   /** Text beside the switch. Without it, give the switch an `aria-label`. */
   label?: ReactNode
+  /** A muted line under the label, announced with it. */
   description?: ReactNode
+  /**
+   * Marks it invalid and colours it as an error. A surrounding Field's `error`
+   * sets it too.
+   */
   invalid?: boolean
+  /** Called with the new state when it's turned on or off. */
   onCheckedChange?: (checked: boolean) => void
 }
 

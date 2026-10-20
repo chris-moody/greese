@@ -3,15 +3,27 @@ import { cx } from '../../utils/cx.ts'
 import { CloseGlyph } from '../../utils/glyphs.tsx'
 import { IconButton } from '../IconButton/IconButton.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
+import type { BrandTone } from '../../utils/tone.ts'
 
-export type FeedbackTone = 'info' | 'positive' | 'warning' | 'negative' | 'neutral'
+export type FeedbackTone =
+  'info' | 'positive' | 'warning' | 'negative' | 'neutral' | BrandTone
 
 export interface AlertProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'div'>, 'title'> {
-  /** @default 'info' */
+  /**
+   * What kind of message it is, which sets its colour: info, positive,
+   * warning, negative, neutral, or a brand colour (primary, secondary,
+   * tertiary) for announcements.
+   * @default 'info'
+   */
   tone?: FeedbackTone
-  /** @default 'soft' */
+  /**
+   * `soft` fills the background with a tint of the tone; `outline` draws only a
+   * border.
+   * @default 'soft'
+   */
   variant?: 'soft' | 'outline'
+  /** A short heading shown in bold above the message. */
   title?: ReactNode
   /** Leading icon from your icon set. Decorative: the text carries the meaning. */
   icon?: ReactNode

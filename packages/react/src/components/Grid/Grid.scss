@@ -13,7 +13,7 @@ $column-counts: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
   @return $map;
 }
 
-@function span-tokens() {
+@function size-tokens() {
   $map: (
     full: #{'1 / -1'},
   );
@@ -26,17 +26,17 @@ $column-counts: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 }
 
 @layer greese.components {
+  // Every Grid can be a cell; `container` makes it a grid too.
   .greese-Grid {
-    display: grid;
     min-inline-size: 0;
   }
 
   .greese-Grid--container {
-    container-type: inline-size;
+    display: grid;
   }
 
-  .greese-GridItem {
-    min-inline-size: 0;
+  .greese-Grid--queries {
+    container-type: inline-size;
   }
 
   @include mixins.responsive-prop(
@@ -77,10 +77,10 @@ $column-counts: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
     )
   );
   @include mixins.responsive-prop(
-    'greese-GridItem',
-    'span',
+    'greese-Grid',
+    'size',
     grid-column,
-    span-tokens(),
-    $container-scope: '.greese-Grid--container >'
+    size-tokens(),
+    $container-scope: '.greese-Grid--queries >'
   );
 }

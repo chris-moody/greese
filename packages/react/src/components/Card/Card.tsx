@@ -12,7 +12,11 @@ import { Box, type BoxProps } from '../Box/Box.tsx'
 import { withGreese } from '../../utils/greese.ts'
 
 export interface CardProps extends BoxProps {
-  /** @default 'outline' */
+  /**
+   * `outline` (a border), `elevated` (a shadow) or `filled` (a surface colour,
+   * no border).
+   * @default 'outline'
+   */
   variant?: 'outline' | 'elevated' | 'filled'
   /** Inner spacing; CardMedia bleeds through it. Default: 4, or 5 from `md`. */
   padding?: Responsive<SpaceValue>

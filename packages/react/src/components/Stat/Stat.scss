@@ -1,0 +1,96 @@
+@use '../../styles/mixins';
+@use '../../styles/tones';
+
+@mixin row {
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+
+  > * + * {
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--greese-color-border);
+  }
+}
+
+@layer greese.components {
+  .greese-Stat {
+    @include mixins.component-root;
+
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--greese-space-1) var(--greese-space-4);
+    align-content: start;
+    padding: var(--greese-stat-padding, var(--greese-space-4));
+    margin: 0;
+
+    > dd {
+      margin: 0;
+    }
+  }
+
+  .greese-Stat-label {
+    grid-column: 1;
+    font-size: var(--greese-font-size-sm);
+    color: var(--greese-color-fg-muted);
+  }
+
+  .greese-Stat-value {
+    grid-column: 1;
+    font-size: var(--greese-font-size-3xl);
+    font-weight: var(--greese-font-weight-bold);
+    font-variant-numeric: tabular-nums;
+    line-height: var(--greese-line-height-tight);
+    color: var(--greese-color-fg);
+  }
+
+  .greese-Stat-description {
+    grid-column: 1;
+    font-size: var(--greese-font-size-sm);
+  }
+
+  .greese-Stat-description--muted {
+    color: var(--greese-color-fg-muted);
+  }
+
+  @each $tone in tones.$brand {
+    .greese-Stat-description--#{$tone} {
+      color: var(--greese-color-#{$tone});
+    }
+  }
+
+  .greese-Stat-description--positive {
+    color: var(--greese-color-positive);
+  }
+
+  .greese-Stat-description--negative {
+    color: var(--greese-color-negative);
+  }
+
+  .greese-Stat-media {
+    grid-row: 1 / span 3;
+    grid-column: 2;
+    align-self: center;
+    color: var(--greese-color-primary);
+  }
+
+  // Stacked with dividers between; a row with dividers from `rowFrom` up.
+  .greese-StatGroup {
+    @include mixins.component-root;
+
+    display: grid;
+    overflow: hidden;
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-radius-lg);
+
+    > * + * {
+      border-block-start: 1px solid var(--greese-color-border);
+    }
+  }
+
+  @each $bp in (xs, sm, md, lg) {
+    @include mixins.up($bp) {
+      .greese-StatGroup--row-#{$bp} {
+        @include row;
+      }
+    }
+  }
+}

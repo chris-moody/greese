@@ -1,0 +1,86 @@
+@use '../../styles/mixins';
+
+@layer greese.components {
+  .greese-Dock {
+    @include mixins.component-root;
+
+    z-index: var(--greese-z-index-sticky);
+    padding-block-end: env(safe-area-inset-bottom);
+    background-color: var(--greese-color-surface-overlay);
+    border-block-start: 1px solid var(--greese-color-border);
+  }
+
+  .greese-Dock--fixed {
+    position: fixed;
+    inset-block-end: 0;
+    inset-inline: 0;
+  }
+
+  @each $bp in (sm, md, lg, xl) {
+    @include mixins.up($bp) {
+      .greese-Dock--hide-from-#{$bp} {
+        display: none;
+      }
+    }
+  }
+
+  .greese-Dock-list {
+    display: flex;
+    justify-content: space-around;
+    max-inline-size: 40rem;
+    padding: 0;
+    margin: 0 auto;
+    list-style: none;
+  }
+
+  .greese-DockItem {
+    display: flex;
+    flex: 1;
+  }
+
+  .greese-DockItem-link {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.125rem;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 3.5rem;
+    padding: var(--greese-space-1);
+    font-size: var(--greese-font-size-xs);
+    font-weight: var(--greese-font-weight-medium);
+    color: var(--greese-color-fg-muted);
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-radius: var(--greese-radius-md);
+    transition: color var(--greese-duration-fast) var(--greese-easing-standard);
+
+    @include mixins.focus-ring(-2px);
+
+    @include mixins.hover {
+      color: var(--greese-color-fg);
+    }
+
+    &[aria-current='page'] {
+      color: var(--greese-color-primary);
+    }
+
+    svg {
+      inline-size: 1.5rem;
+      block-size: 1.5rem;
+    }
+  }
+
+  .greese-DockItem-icon {
+    display: inline-flex;
+  }
+
+  .greese-DockItem-label {
+    max-inline-size: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

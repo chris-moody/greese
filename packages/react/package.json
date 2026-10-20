@@ -42,6 +42,10 @@
     "./scss": {
       "sass": "./src/styles/index.scss"
     },
+    "./scss/kit": {
+      "sass": "./src/styles/_kit.scss"
+    },
+    "./style-manifest.json": "./dist/style-manifest.json",
     "./package.json": "./package.json"
   },
   "publishConfig": {

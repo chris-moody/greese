@@ -1,6 +1,6 @@
 @use 'sass:list';
 
-// Colour roles shared by content components (Text, Link, Badge, Alert, Chip).
+// Colour roles shared by every component with a `tone` prop.
 // A tone sets two variables on the component: the colour and the colour of
 // content drawn on top of it.
 
@@ -13,9 +13,21 @@ $tones: (
     var(--greese-color-fg-muted),
     var(--greese-color-canvas),
   ),
+  primary: (
+    var(--greese-color-primary),
+    var(--greese-color-primary-content),
+  ),
+  secondary: (
+    var(--greese-color-secondary),
+    var(--greese-color-secondary-content),
+  ),
+  tertiary: (
+    var(--greese-color-tertiary),
+    var(--greese-color-tertiary-content),
+  ),
   accent: (
     var(--greese-color-accent),
-    var(--greese-color-on-accent),
+    var(--greese-color-accent-content),
   ),
   positive: (
     var(--greese-color-positive),
@@ -23,7 +35,7 @@ $tones: (
   ),
   negative: (
     var(--greese-color-negative),
-    var(--greese-color-on-negative),
+    var(--greese-color-negative-content),
   ),
   warning: (
     var(--greese-color-warning),
@@ -34,6 +46,9 @@ $tones: (
     var(--greese-color-canvas),
   ),
 );
+
+// The brand roles, in order, as a list for components that style them by hand.
+$brand: (primary, secondary, tertiary, accent);
 
 /// Emits `.#{$block}--#{tone}` classes setting `--#{$var}` and `--#{$var}-on`.
 @mixin classes($block, $var, $only: null) {

@@ -27,7 +27,12 @@ import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 interface ModalBaseProps extends Omit<ComponentPropsWithRef<'dialog'>, 'title' | 'open'> {
   /** Controlled open state. */
   open?: boolean
+  /** Whether it starts open, when it keeps its own state. */
   defaultOpen?: boolean
+  /**
+   * Called with the new state when it opens or closes (Escape, the close button,
+   * a backdrop click).
+   */
   onOpenChange?: (open: boolean) => void
   /** An element (usually a Button) that opens it on click. */
   trigger?: ReactElement
@@ -35,10 +40,11 @@ interface ModalBaseProps extends Omit<ComponentPropsWithRef<'dialog'>, 'title' |
   title: ReactNode
   /** Visually hide the title, keeping it as the accessible name. */
   hideTitle?: boolean
+  /** A line under the title, announced when it opens. */
   description?: ReactNode
   /** Actions row, e.g. Cancel / Confirm buttons. */
   footer?: ReactNode
-  /** @default 'Close' */
+  /** Accessible name of the close button. @default 'Close' */
   closeLabel?: string
 }
 

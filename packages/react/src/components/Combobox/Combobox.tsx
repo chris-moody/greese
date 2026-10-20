@@ -22,8 +22,11 @@ import { composeRefs } from '../Slot/Slot.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface ComboboxOption {
+  /** Submitted with the form and passed to `onValueChange`. */
   value: string
+  /** The text shown and searched. */
   label: string
+  /** Listed but can't be chosen. */
   disabled?: boolean
 }
 
@@ -31,15 +34,21 @@ export interface ComboboxProps
   extends
     GreeseProps,
     Omit<InputProps, 'value' | 'defaultValue' | 'onChange' | 'type' | 'endAdornment'> {
+  /** The visible label. Required: use `hideLabel` to hide it visually. */
   label: ReactNode
+  /** Help text under the label, announced with the input. */
   description?: ReactNode
+  /** Error text. Setting it marks the input invalid. */
   error?: ReactNode
+  /** Keep the label for screen readers but hide it on screen. */
   hideLabel?: boolean
   /** Options: objects, or plain strings used as both value and label. */
   options: ReadonlyArray<ComboboxOption | string>
   /** Selected option value (or custom text with `allowCustomValue`). */
   value?: string | null
+  /** The option chosen at first, when the combobox keeps its own state. `null` for none. */
   defaultValue?: string | null
+  /** Called with the chosen option's value, or `null` when cleared. */
   onValueChange?: (value: string | null) => void
   /** Called as the user types: load options asynchronously from here. */
   onInputChange?: (text: string) => void
@@ -51,9 +60,12 @@ export interface ComboboxProps
   emptyMessage?: ReactNode
   /** Announced with the result count, e.g. `(n) => \`${n} results\``. */
   resultsLabel?: (count: number) => string
-  /** @default 'Show options' */
+  /** Accessible name of the button that opens the full list. @default 'Show options' */
   toggleLabel?: string
-  /** @default 'bottom-start' */
+  /**
+   * Where the list opens relative to the input. It flips if there's no room.
+   * @default 'bottom-start'
+   */
   placement?: Placement
 }
 

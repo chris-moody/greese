@@ -26,8 +26,8 @@
 
     &:checked,
     &:indeterminate {
-      background-color: var(--greese-color-accent);
-      border-color: var(--greese-color-accent);
+      background-color: var(--greese-color-primary);
+      border-color: var(--greese-color-primary);
     }
 
     &[aria-invalid='true'] {
@@ -41,7 +41,7 @@
     block-size: 0.875rem;
     pointer-events: none;
     fill: none;
-    stroke: var(--greese-color-on-accent);
+    stroke: var(--greese-color-primary-content);
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 2.25;

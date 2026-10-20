@@ -16,8 +16,7 @@
       column: column,
       row-reverse: row-reverse,
       column-reverse: column-reverse,
-    ),
-    $fallback: column
+    )
   );
   @include mixins.responsive-prop('greese-Stack', 'gap', gap, mixins.space-tokens());
   @include mixins.responsive-prop(

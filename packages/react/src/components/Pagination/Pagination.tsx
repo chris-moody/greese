@@ -46,22 +46,28 @@ export interface PaginationProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'nav'>, 'onChange'> {
   /** Total pages. */
   count: number
+  /** The current page, from 1, when you control it. Pair with `onPageChange`. */
   page?: number
-  /** @default 1 */
+  /** The page shown first, when it keeps its own state. @default 1 */
   defaultPage?: number
+  /** Called with the new page number when the user picks one. */
   onPageChange?: (page: number) => void
   /**
    * Render real links, e.g. `(page) => \`?page=${page}\``: crawlable, and they
    * work without JS. Without it, pages are buttons.
    */
   getHref?: (page: number) => string
-  /** @default 1 */
+  /** How many page numbers to show on each side of the current one. @default 1 */
   siblings?: number
-  /** @default 1 */
+  /** How many page numbers to always show at the start and the end. @default 1 */
   boundaries?: number
-  /** @default 'Pagination' */
+  /** Names the navigation landmark for screen readers. @default 'Pagination' */
   label?: string
-  /** @default { previous: 'Previous page', next: 'Next page', page: (n) => `Page ${n}` } */
+  /**
+   * Accessible names for the previous and next buttons and each page, for
+   * translation.
+   * @default { previous: 'Previous page', next: 'Next page', page: (n) => `Page ${n}` }
+   */
   labels?: { previous?: string; next?: string; page?: (page: number) => string }
 }
 
@@ -134,7 +140,7 @@ export const Pagination = ({
                 'aria-label': pageLabel(item),
                 'aria-current': item === page ? 'page' : undefined,
                 variant: item === page ? 'soft' : 'ghost',
-                tone: item === page ? 'accent' : 'neutral',
+                tone: item === page ? 'primary' : 'neutral',
               })}
             </li>
           ) : (

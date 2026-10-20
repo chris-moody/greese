@@ -32,7 +32,7 @@
     @include mixins.focus-ring;
 
     &:checked {
-      background-color: var(--greese-color-accent);
+      background-color: var(--greese-color-primary);
     }
 
     &[aria-invalid='true'] {

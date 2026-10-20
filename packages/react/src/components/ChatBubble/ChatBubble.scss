@@ -1,0 +1,119 @@
+@use '../../styles/mixins';
+@use '../../styles/tones';
+
+@layer greese.components {
+  @include tones.classes('greese-ChatBubble', 'greese-chat-tone');
+
+  .greese-ChatBubble--neutral {
+    --greese-chat-tone: var(--greese-color-surface);
+    --greese-chat-tone-on: var(--greese-color-fg);
+  }
+
+  // Avatar column at the bottom, then header, bubble and footer stacked.
+  .greese-ChatBubble {
+    @include mixins.component-root;
+
+    --greese-chat-tail: 0.75rem;
+
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+
+    // Room for the tail between the avatar and the bubble.
+    column-gap: calc(var(--greese-chat-tail) + var(--greese-space-1));
+    justify-items: start;
+
+    // No avatar: keep the tail inside the message's own box.
+    &:not(:has(> .greese-ChatBubble-avatar)) {
+      padding-inline-start: var(--greese-chat-tail);
+    }
+
+    > :not(.greese-ChatBubble-avatar) {
+      grid-column: 2;
+    }
+  }
+
+  .greese-ChatBubble--end {
+    grid-template-columns: minmax(0, 1fr) auto;
+    justify-items: end;
+
+    &:not(:has(> .greese-ChatBubble-avatar)) {
+      padding-inline: 0 var(--greese-chat-tail);
+    }
+
+    > :not(.greese-ChatBubble-avatar) {
+      grid-column: 1;
+    }
+
+    > .greese-ChatBubble-avatar {
+      grid-column: 2;
+    }
+  }
+
+  .greese-ChatBubble-avatar {
+    grid-row: 1 / span 3;
+    align-self: end;
+  }
+
+  .greese-ChatBubble-header {
+    display: flex;
+    gap: var(--greese-space-2);
+    align-items: baseline;
+    margin-block-end: var(--greese-space-1);
+    font-size: var(--greese-font-size-xs);
+  }
+
+  .greese-ChatBubble-author {
+    font-weight: var(--greese-font-weight-semibold);
+    color: var(--greese-color-fg);
+  }
+
+  .greese-ChatBubble-time,
+  .greese-ChatBubble-footer {
+    font-size: var(--greese-font-size-xs);
+    color: var(--greese-color-fg-muted);
+  }
+
+  .greese-ChatBubble-footer {
+    margin-block-start: var(--greese-space-1);
+  }
+
+  .greese-ChatBubble-bubble {
+    position: relative;
+    max-inline-size: min(36rem, 85%);
+    padding: var(--greese-space-2) var(--greese-space-3);
+    overflow-wrap: anywhere;
+    color: var(--greese-chat-tone-on);
+    background-color: var(--greese-chat-tone);
+    border-radius: var(--greese-radius-lg);
+
+    // Square where the tail joins, so the bubble runs into its point.
+    border-end-start-radius: 0;
+  }
+
+  .greese-ChatBubble--end .greese-ChatBubble-bubble {
+    border-end-start-radius: var(--greese-radius-lg);
+    border-end-end-radius: 0;
+  }
+
+  // The tail: a wedge at the lower corner on the author's side, pointing out.
+  .greese-ChatBubble-bubble::before {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: calc(var(--greese-chat-tail) * -1 + 1px);
+    inline-size: var(--greese-chat-tail);
+    block-size: var(--greese-chat-tail);
+    content: '';
+    background-color: inherit;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  }
+
+  .greese-ChatBubble--end .greese-ChatBubble-bubble::before {
+    inset-inline: auto calc(var(--greese-chat-tail) * -1 + 1px);
+    clip-path: polygon(0 0, 100% 100%, 0 100%);
+  }
+
+  // clip-path is physical: mirror the wedge in right-to-left text.
+  .greese-ChatBubble-bubble:dir(rtl)::before {
+    scale: -1 1;
+  }
+}

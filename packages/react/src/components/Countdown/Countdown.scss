@@ -1,0 +1,28 @@
+@layer greese.components {
+  .greese-Countdown {
+    display: inline-flex;
+    gap: 0.35em;
+    align-items: baseline;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .greese-Countdown--clock {
+    gap: 0;
+  }
+
+  .greese-Countdown-unit {
+    display: inline-flex;
+    align-items: baseline;
+  }
+
+  .greese-Countdown-separator {
+    padding-inline: 0.1em;
+    opacity: 0.6;
+  }
+
+  .greese-Countdown-label {
+    margin-inline-start: 0.1em;
+    font-size: 0.7em;
+    color: var(--greese-color-fg-muted);
+  }
+}

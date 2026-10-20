@@ -7,6 +7,7 @@ import {
   spaceToCss,
   type Responsive,
   type ResponsiveConfig,
+  type ResponsiveEntry,
   type ResponsiveValue,
   type SpaceValue,
 } from '../../utils/responsive.ts'
@@ -15,29 +16,49 @@ import { Box, type BoxProps } from '../Box/Box.tsx'
 /** Column counts with pre-generated classes. */
 export type GridColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
 
+/** How many columns a cell spans: `1`–`12`, or `'full'` for the whole row. */
+export type GridSize = GridColumnCount | 'full'
+
 export interface GridProps extends Omit<BoxProps, 'gap'> {
   /**
-   * Equal columns (`1`–`12`), or any `grid-template-columns` value such as
-   * `'200px 1fr'`.
+   * Makes this element a grid: its children are laid out in its columns.
+   * Without it, a Grid is a cell of the grid around it. One element can be
+   * both, to nest grids.
+   * @default false
+   */
+  container?: boolean
+  /**
+   * How many of the parent grid's columns this cell spans: `1`–`12`, or
+   * `'full'` for the whole row, per breakpoint if you like
+   * (`{ xs: 12, md: 6 }`).
+   */
+  size?: Responsive<GridSize>
+  /**
+   * With `container`: equal columns (`1`–`12`), or any `grid-template-columns`
+   * value such as `'200px 1fr'`, per breakpoint if you like.
    */
   columns?: Responsive<GridColumnCount | (string & {})>
   /**
-   * Fits as many columns as possible, each at least this wide: responsive
-   * without breakpoints. Overrides `columns` where both apply.
+   * With `container`: fits as many columns as possible, each at least this
+   * wide, so the grid is responsive without breakpoints. Overrides `columns`
+   * where both apply.
    */
   minChildWidth?: Responsive<string>
-  /** Space between cells: a scale token (`0`–`8`) or any CSS length. */
+  /**
+   * With `container`: space between cells, a scale token (`0`–`8`) or any CSS
+   * length, per breakpoint if you like.
+   */
   gap?: Responsive<SpaceValue>
-  /** Cell alignment in the block axis (`align-items`). */
+  /** With `container`: how cells align in the block axis (`align-items`). */
   align?: Responsive<'start' | 'center' | 'end' | 'stretch'>
-  /** Cell alignment in the inline axis (`justify-items`). */
+  /** With `container`: how cells align in the inline axis (`justify-items`). */
   justify?: Responsive<'start' | 'center' | 'end' | 'stretch'>
   /**
-   * Makes the grid a size container: GridItem `span`s then respond to the
-   * grid's own width instead of the viewport, so the same grid adapts in a
-   * sidebar or a full-width page.
+   * With `container`: the cells' `size`s respond to this grid's own width
+   * instead of the viewport's, so the same grid adapts in a sidebar or a
+   * full-width page.
    */
-  container?: boolean
+  containerQueries?: boolean
 }
 
 const G = 'greese-Grid'
@@ -53,59 +74,52 @@ const GAP: ResponsiveConfig = {
 }
 const ALIGN: ResponsiveConfig = { block: G, prop: 'align' }
 const JUSTIFY: ResponsiveConfig = { block: G, prop: 'justify' }
+const SIZE: ResponsiveConfig = { block: G, prop: 'size' }
 
 /**
- * Two-dimensional CSS grid layout.
+ * Two-dimensional CSS grid layout. `container` makes a grid; a Grid without
+ * it is a cell that spans `size` columns. The same element can be both.
  *
  * ```tsx
- * <Grid columns={{ xs: 1, sm: 2, lg: 4 }} gap={4}>…</Grid>
- * <Grid minChildWidth="14rem" gap={4}>…</Grid>
+ * <Grid container columns={12} gap={4}>
+ *   <Grid size={{ xs: 12, md: 8 }}>…</Grid>
+ *   <Grid size={{ xs: 12, md: 4 }}>…</Grid>
+ * </Grid>
+ * <Grid container minChildWidth="14rem" gap={4}>…</Grid>
  * ```
  *
  * Accepts every Box style prop and `asChild`. Server-component safe.
  */
 export const Grid = ({
+  container,
+  size,
   columns,
   minChildWidth,
   gap,
   align,
   justify,
-  container,
+  containerQueries,
   className,
   style,
   ...props
 }: GridProps): JSX.Element => {
-  const resolved = resolveResponsive(
-    [
+  const entries: ResponsiveEntry[] = [[size, SIZE]]
+  // Grid props only mean something on a grid.
+  if (container)
+    entries.push(
       [columns, COLUMNS],
       [minChildWidth, MIN_CHILD],
       [gap, GAP],
       [align, ALIGN],
-      [justify, JUSTIFY],
-    ],
-    { className: cx(G, container && `${G}--container`, className), style }
-  )
-  return <Box {...props} className={resolved.className} style={resolved.style} />
-}
-
-export type GridSpan = GridColumnCount | 'full'
-
-export interface GridItemProps extends BoxProps {
-  /** Columns to span (`1`–`12`), or `'full'` for the whole row. */
-  span?: Responsive<GridSpan>
-}
-
-const SPAN: ResponsiveConfig = { block: 'greese-GridItem', prop: 'span' }
-
-/** A Grid cell that spans columns, per breakpoint or per container width. */
-export const GridItem = ({
-  span,
-  className,
-  style,
-  ...props
-}: GridItemProps): JSX.Element => {
-  const resolved = resolveResponsive([[span, SPAN]], {
-    className: cx('greese-GridItem', className),
+      [justify, JUSTIFY]
+    )
+  const resolved = resolveResponsive(entries, {
+    className: cx(
+      G,
+      container && `${G}--container`,
+      container && containerQueries && `${G}--queries`,
+      className
+    ),
     style,
   })
   return <Box {...props} className={resolved.className} style={resolved.style} />

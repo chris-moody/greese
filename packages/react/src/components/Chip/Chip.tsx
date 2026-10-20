@@ -4,9 +4,14 @@ import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
 import { CloseGlyph } from '../../utils/glyphs.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
+import type { BrandTone } from '../../utils/tone.ts'
+
+export type ChipTone =
+  'neutral' | BrandTone | 'positive' | 'negative' | 'warning' | 'info'
 
 export interface ChipProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'span'>, 'children'> {
+  /** The chip's text. */
   children: ReactNode
   /** Leading icon or avatar. */
   icon?: ReactNode
@@ -16,9 +21,22 @@ export interface ChipProps
   removeLabel?: string
   /** Makes the chip a toggle (`aria-pressed`), e.g. a filter choice. */
   selectable?: boolean
+  /**
+   * Whether a `selectable` chip is on, when you control it. Pair with
+   * `onSelectedChange`.
+   */
   selected?: boolean
+  /** Whether a `selectable` chip starts on, when it keeps its own state. */
   defaultSelected?: boolean
+  /** Called with the new state when a `selectable` chip is toggled. */
   onSelectedChange?: (selected: boolean) => void
+  /**
+   * The chip's colour: neutral, accent, a brand colour (primary, secondary,
+   * tertiary), positive, negative, warning or info. A plain chip is tinted
+   * in it; a `selectable` one shows it when selected. Without it, chips are
+   * plain and selected ones use `accent`.
+   */
+  tone?: ChipTone
 }
 
 /**
@@ -27,6 +45,7 @@ export interface ChipProps
  * ```tsx
  * <Chip onRemove={() => drop(tag)}>{tag}</Chip>
  * <Chip selectable defaultSelected>In stock</Chip>
+ * <Chip tone="secondary">Featured</Chip>
  * ```
  */
 export const Chip = ({
@@ -39,6 +58,7 @@ export const Chip = ({
   selected: selectedProp,
   defaultSelected = false,
   onSelectedChange,
+  tone,
   className,
   ...props
 }: ChipProps): JSX.Element => {
@@ -64,6 +84,7 @@ export const Chip = ({
       {...props}
       className={cx(
         'greese-Chip',
+        tone && `greese-Chip--${tone}`,
         selectable && selected && 'greese-Chip--selected',
         className
       )}

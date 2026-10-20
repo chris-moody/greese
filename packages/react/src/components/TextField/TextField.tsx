@@ -5,9 +5,13 @@ import { Input, type InputProps } from '../Input/Input.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface TextFieldProps extends GreeseProps, InputProps {
+  /** The visible label. Required: use `hideLabel` to hide it visually. */
   label: ReactNode
+  /** Help text under the label, announced with the input. */
   description?: ReactNode
+  /** Error text. Setting it marks the input invalid. */
   error?: ReactNode
+  /** Keep the label for screen readers but hide it on screen. */
   hideLabel?: boolean
 }
 

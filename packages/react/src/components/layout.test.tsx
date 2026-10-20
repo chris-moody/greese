@@ -8,7 +8,8 @@ import { Box } from './Box/Box.tsx'
 import { Center } from './Center/Center.tsx'
 import { Container } from './Container/Container.tsx'
 import { Divider } from './Divider/Divider.tsx'
-import { Grid, GridItem } from './Grid/Grid.tsx'
+import { Grid } from './Grid/Grid.tsx'
+import { Tile } from './Tile/Tile.tsx'
 import { Spacer } from './Spacer/Spacer.tsx'
 import { Stack } from './Stack/Stack.tsx'
 import { Hide, Show } from './Visibility/Visibility.tsx'
@@ -39,12 +40,12 @@ describe('Box', () => {
     expect(classes(box)).toEqual(
       [
         'greese-Box',
-        'greese-Box--display',
-        'greese-Box--max-w',
         'greese-Box--md-display-block',
-        'greese-Box--mx',
-        'greese-Box--p',
+        'greese-Box--md-p',
         'greese-Box--xs-display-none',
+        'greese-Box--xs-max-w',
+        'greese-Box--xs-mx',
+        'greese-Box--xs-p',
       ].sort()
     )
     expect(box.style.getPropertyValue('--greese-box-p-xs')).toBe('var(--greese-space-4)')
@@ -77,7 +78,7 @@ describe('Box', () => {
     )
     const section = screen.getByRole('region', { name: 's' })
     expect(ref.current).toBe(section)
-    expect(section).toHaveClass('greese-Box', 'greese-Box--p')
+    expect(section).toHaveClass('greese-Box', 'greese-Box--xs-p')
   })
 })
 
@@ -98,14 +99,10 @@ describe('Stack', () => {
     expect(classes(stack)).toEqual(
       [
         'greese-Box',
-        'greese-Box--p',
+        'greese-Box--xs-p',
         'greese-Stack',
-        'greese-Stack--align',
-        'greese-Stack--direction',
-        'greese-Stack--gap',
-        'greese-Stack--justify',
+        'greese-Stack--lg-gap',
         'greese-Stack--md-direction-row',
-        'greese-Stack--wrap',
         'greese-Stack--xs-align-center',
         'greese-Stack--xs-direction-column',
         'greese-Stack--xs-gap-2',
@@ -120,36 +117,68 @@ describe('Stack', () => {
   })
 })
 
-describe('Grid and GridItem', () => {
-  it('maps column counts to classes and templates or widths to variables', () => {
+describe('Grid', () => {
+  it('is a grid with `container`: columns to classes, templates and widths to variables', () => {
     render(
       <Grid
         data-testid="g"
+        container
         columns={{ xs: 1, md: '200px 1fr' }}
         minChildWidth={{ lg: '14rem' }}
         gap={4}
-        container
+        containerQueries
       >
-        <GridItem data-testid="i" span={{ xs: 'full', md: 6 }} />
+        <Grid data-testid="i" size={{ xs: 'full', md: 6 }} />
       </Grid>
     )
     const grid = screen.getByTestId('g')
     expect(grid).toHaveClass(
       'greese-Grid',
       'greese-Grid--container',
-      'greese-Grid--columns',
+      'greese-Grid--queries',
       'greese-Grid--xs-columns-1',
-      'greese-Grid--min-child',
+      'greese-Grid--md-columns',
+      'greese-Grid--lg-min-child',
       'greese-Grid--xs-gap-4'
     )
     expect(grid.style.getPropertyValue('--greese-grid-columns-md')).toBe('200px 1fr')
     expect(grid.style.getPropertyValue('--greese-grid-min-child-lg')).toBe('14rem')
-    expect(screen.getByTestId('i')).toHaveClass(
-      'greese-GridItem',
-      'greese-GridItem--span',
-      'greese-GridItem--xs-span-full',
-      'greese-GridItem--md-span-6'
+  })
+
+  it('is a cell without `container`, spanning `size` columns', () => {
+    render(<Grid data-testid="i" size={{ xs: 'full', md: 6 }} columns={3} gap={2} />)
+    const cell = screen.getByTestId('i')
+    expect(cell).toHaveClass(
+      'greese-Grid',
+      'greese-Grid--xs-size-full',
+      'greese-Grid--md-size-6'
     )
+    // Grid props only apply to grids.
+    expect(cell).not.toHaveClass('greese-Grid--container')
+    expect(cell.className).not.toMatch(/columns|gap/)
+  })
+
+  it('can be a cell and a grid at once, to nest', () => {
+    render(<Grid data-testid="n" container size={8} columns={2} />)
+    expect(screen.getByTestId('n')).toHaveClass(
+      'greese-Grid--container',
+      'greese-Grid--xs-size-8',
+      'greese-Grid--xs-columns-2'
+    )
+  })
+})
+
+describe('Tile', () => {
+  it('is a Box with a surface, taking style props and asChild', () => {
+    render(
+      <Tile data-testid="t" variant="dashed" p={6} asChild>
+        <section aria-label="Drop zone">Drop files here</section>
+      </Tile>
+    )
+    const tile = screen.getByRole('region', { name: 'Drop zone' })
+    expect(tile).toBe(screen.getByTestId('t'))
+    expect(tile).toHaveClass('greese-Tile', 'greese-Tile--dashed', 'greese-Box')
+    expect(tile.style.getPropertyValue('--greese-box-p-xs')).toBe('var(--greese-space-6)')
   })
 })
 
@@ -171,7 +200,12 @@ describe('Container, Center, Spacer, Divider, AspectRatio', () => {
     render(<Spacer data-testid="s" size={{ xs: 2, md: '3rem' }} />)
     const spacer = screen.getByTestId('s')
     expect(spacer).toHaveAttribute('aria-hidden', 'true')
-    expect(spacer).toHaveClass('greese-Spacer', 'greese-Spacer--size')
+    expect(spacer).toHaveClass(
+      'greese-Spacer',
+      'greese-Spacer--fixed',
+      'greese-Spacer--xs-size',
+      'greese-Spacer--md-size'
+    )
     expect(spacer.style.getPropertyValue('--greese-spacer-size-xs')).toBe(
       'var(--greese-space-2)'
     )
@@ -273,8 +307,8 @@ describe('layout primitives', () => {
     const html = renderToString(
       <Container>
         <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
-          <Grid columns={2}>
-            <GridItem span={2} />
+          <Grid container columns={2}>
+            <Grid size={2} />
           </Grid>
           <Center>
             <Spacer />
@@ -295,9 +329,9 @@ describe('layout primitives', () => {
           <Stack gap={4}>
             <h1>Title</h1>
             <Divider />
-            <Grid minChildWidth="10rem" gap={2}>
-              <GridItem>one</GridItem>
-              <GridItem>two</GridItem>
+            <Grid container minChildWidth="10rem" gap={2}>
+              <Tile>one</Tile>
+              <Tile>two</Tile>
             </Grid>
             <AspectRatio ratio={16 / 9}>
               <img src="data:," alt="Placeholder" />

@@ -4,7 +4,7 @@
   @include tones.classes(
     'greese-Alert',
     'greese-alert-tone',
-    (info, positive, warning, negative, neutral)
+    (info, positive, warning, negative, neutral, primary, secondary, tertiary)
   );
 
   .greese-Alert {

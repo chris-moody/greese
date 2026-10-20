@@ -5,7 +5,7 @@ import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 export interface SpinnerProps extends GreeseProps, ComponentPropsWithRef<'span'> {
   /** Announced to screen readers. @default 'Loading' */
   label?: string
-  /** @default 'md' */
+  /** Diameter: `sm` (1rem), `md` (1.5rem) or `lg` (2.5rem). @default 'md' */
   size?: 'sm' | 'md' | 'lg'
 }
 

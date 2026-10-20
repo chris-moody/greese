@@ -24,9 +24,9 @@
 
     @include mixins.focus-ring;
 
-    // A thick accent ring around the canvas centre reads as the dot.
+    // A thick primary ring around the canvas centre reads as the dot.
     &:checked {
-      border: 5px solid var(--greese-color-accent);
+      border: 5px solid var(--greese-color-primary);
     }
 
     &[aria-invalid='true']:not(:checked) {

@@ -1,14 +1,19 @@
 import type { ComponentPropsWithRef, JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
+import type { BrandTone } from '../../utils/tone.ts'
 
 export type BadgeTone =
-  'neutral' | 'accent' | 'positive' | 'negative' | 'warning' | 'info'
+  'neutral' | BrandTone | 'positive' | 'negative' | 'warning' | 'info'
 
 export interface BadgeProps extends GreeseProps, ComponentPropsWithRef<'span'> {
-  /** @default 'neutral' */
+  /**
+   * The colour and meaning: neutral, accent, a brand colour (primary,
+   * secondary, tertiary), positive, negative, warning or info.
+   * @default 'neutral'
+   */
   tone?: BadgeTone
-  /** @default 'soft' */
+  /** `soft` (a light tint), `solid` (filled) or `outline` (border only). @default 'soft' */
   variant?: 'soft' | 'solid' | 'outline'
 }
 

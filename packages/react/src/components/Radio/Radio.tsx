@@ -32,9 +32,13 @@ const RadioGroupContext = createContext<RadioGroupContextValue | null>(null)
 
 export interface RadioProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'input'>, 'type' | 'size' | 'value'> {
+  /** Submitted with the form and reported by the group when chosen. */
   value: string
+  /** The visible label, beside the radio. */
   label?: ReactNode
+  /** A muted line under the label, announced with it. */
   description?: ReactNode
+  /** Marks it invalid and colours it as an error. The group's `error` sets it too. */
   invalid?: boolean
 }
 
@@ -106,8 +110,11 @@ export const Radio = ({
 export interface RadioGroupProps extends GreeseProps, ChoiceGroupProps {
   /** Shared `name`; generated when omitted. */
   name?: string
+  /** The chosen value, when you control it. Pair with `onValueChange`. */
   value?: string
+  /** The value chosen at first, when the group keeps its own state. */
   defaultValue?: string
+  /** Called with the newly chosen value. */
   onValueChange?: (value: string) => void
 }
 

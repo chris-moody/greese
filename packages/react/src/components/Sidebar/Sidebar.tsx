@@ -65,6 +65,7 @@ export interface SidebarProps
   label: string
   /** Narrow rail mode on wide screens (content decides what to show). */
   collapsed?: boolean
+  /** The navigation: links, a Stack of Buttons, anything. */
   children: ReactNode
 }
 
@@ -120,7 +121,7 @@ export const Sidebar = ({
 
 export interface SidebarTriggerProps
   extends GreeseProps, Omit<IconButtonProps, 'label' | 'children'> {
-  /** @default 'Open navigation' */
+  /** Accessible name of the button. @default 'Open navigation' */
   label?: string
   /** Your menu icon. A built-in one is used if omitted. */
   children?: ReactNode

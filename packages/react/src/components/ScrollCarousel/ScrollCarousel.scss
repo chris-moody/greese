@@ -1,0 +1,161 @@
+@use '../../styles/mixins';
+
+@layer greese.components {
+  .greese-ScrollCarousel {
+    @include mixins.component-root;
+
+    position: relative;
+    display: grid;
+    gap: var(--greese-space-3);
+    min-inline-size: 0;
+  }
+
+  // Native scrolling and snapping: swipe, trackpad and keys all work.
+  .greese-ScrollCarousel-viewport {
+    --greese-scrollcarousel-per-view: 1;
+    --greese-scrollcarousel-gap: var(--greese-space-3);
+
+    display: flex;
+    gap: var(--greese-scrollcarousel-gap);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    border-radius: var(--greese-radius-md);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    @include mixins.focus-ring;
+
+    @media (prefers-reduced-motion: no-preference) {
+      scroll-behavior: smooth;
+    }
+  }
+
+  // Each slide's width: the viewport shared by `per-view` slides and the gaps.
+  .greese-ScrollCarouselSlide {
+    --greese-scrollcarousel-gaps: calc(
+      (var(--greese-scrollcarousel-per-view) - 1) * var(--greese-scrollcarousel-gap)
+    );
+
+    flex: 0 0 calc((100% - var(--greese-scrollcarousel-gaps)) / var(--greese-scrollcarousel-per-view));
+    min-inline-size: 0;
+    scroll-snap-align: start;
+  }
+
+  // Previous and next sit over the viewport's edges, centred on it.
+  .greese-ScrollCarousel-control {
+    position: absolute;
+    inset-block-start: calc(50% - 1.25rem - var(--greese-scrollcarousel-dots, 0px) / 2);
+    display: inline-grid;
+    place-items: center;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    padding: 0;
+    color: var(--greese-color-fg);
+    cursor: pointer;
+    background-color: color-mix(
+      in oklab,
+      var(--greese-color-surface-overlay) 88%,
+      transparent
+    );
+    border: 1px solid var(--greese-color-border);
+    border-radius: 50%;
+    box-shadow: var(--greese-shadow-md);
+    translate: 0 -50%;
+    transition: opacity var(--greese-duration-fast) var(--greese-easing-standard);
+
+    @include mixins.focus-ring;
+    @include mixins.touch-target;
+
+    &:disabled {
+      cursor: default;
+      opacity: 0;
+    }
+
+    > svg {
+      inline-size: 1.125rem;
+      block-size: 1.125rem;
+    }
+  }
+
+  .greese-ScrollCarousel:has(.greese-ScrollCarousel-indicators) {
+    --greese-scrollcarousel-dots: calc(0.5rem + var(--greese-space-3));
+  }
+
+  .greese-ScrollCarousel-control--previous {
+    inset-inline-start: var(--greese-space-2);
+  }
+
+  .greese-ScrollCarousel-control--next {
+    inset-inline-end: var(--greese-space-2);
+
+    > svg {
+      scale: -1 1;
+    }
+  }
+
+  // The chevron points to the inline start; mirror both in RTL.
+  .greese-ScrollCarousel-control:dir(rtl) > svg {
+    scale: -1 1;
+  }
+
+  .greese-ScrollCarousel-control--next:dir(rtl) > svg {
+    scale: 1;
+  }
+
+  // Phones swipe; the buttons come back where a pointer can hover.
+  @media (hover: none) {
+    .greese-ScrollCarousel-control {
+      display: none;
+    }
+  }
+
+  .greese-ScrollCarousel-indicators {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--greese-space-1);
+    justify-content: center;
+  }
+
+  // Each dot keeps one size; the active pill is drawn by clip-path, which
+  // never changes layout. A width change would: mid-scroll, every frame of
+  // it made WebKit re-snap the viewport and pull it back a slide.
+  .greese-ScrollCarousel-indicator {
+    position: relative;
+    inline-size: 1.5rem;
+    block-size: 0.5rem;
+    padding: 0;
+    cursor: pointer;
+    background: none;
+    border: 0;
+
+    @include mixins.focus-ring;
+    @include mixins.touch-target(24px);
+
+    &::before {
+      position: absolute;
+      inset: 0;
+      content: '';
+      background-color: var(--greese-color-border-strong);
+      border-radius: var(--greese-radius-pill);
+      clip-path: inset(0 calc(50% - 0.25rem) round var(--greese-radius-pill));
+      transition:
+        clip-path var(--greese-duration-normal) var(--greese-easing-standard),
+        background-color var(--greese-duration-normal) var(--greese-easing-standard);
+    }
+
+    &[aria-current='true']::before {
+      background-color: var(--greese-color-primary);
+      clip-path: inset(0 round var(--greese-radius-pill));
+    }
+  }
+
+  @include mixins.responsive-prop(
+    'greese-ScrollCarousel',
+    'per-view',
+    --greese-scrollcarousel-per-view
+  );
+}

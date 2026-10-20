@@ -13,44 +13,42 @@ const compile = (scss: string): string =>
 describe('responsive-prop mixin', () => {
   const css = compile(`
     @include mixins.responsive-prop('greese-Test', 'gap', gap, mixins.space-tokens());
-    @include mixins.responsive-prop('greese-Test', 'direction', flex-direction, (row: row, column: column), column);
+    @include mixins.responsive-prop('greese-Test', 'direction', flex-direction, (row: row, column: column));
   `)
 
-  it('hangs everything off the uses class, never the block class', () => {
-    expect(css).not.toMatch(/^\.greese-Test \{/m)
-    expect(css).toMatch(/^\.greese-Test--gap \{/m)
-  })
-
-  it('registers every breakpoint variable as non-inheriting, so nested instances never leak', () => {
-    for (const bp of ['xs', 'sm', 'md', 'lg', 'xl']) {
-      expect(css).toContain(
-        `@property ${responsiveVar('greese-Test', 'gap', bp as 'xs')} {\n  syntax: "*";\n  inherits: false;\n}`
-      )
-    }
-    expect(css).not.toContain(': initial;')
-  })
-
-  it('reads a mobile-first fallback chain, with the fallback at the end', () => {
-    expect(css).toContain('gap: var(--greese-test-gap-xs);')
-    expect(css).toContain(
-      'flex-direction: var(--greese-test-direction-md, var(--greese-test-direction-sm, var(--greese-test-direction-xs, column)));'
-    )
+  it('sets the property directly, xs with no media query', () => {
+    expect(css).toMatch(/^\.greese-Test--xs-gap-2 \{\s+gap: var\(--greese-space-2\);/m)
     expect(css).toMatch(
-      /@media \(width >= 900px\) \{\s+\.greese-Test--gap \{\s+gap: var\(--greese-test-gap-md,/
+      /@media \(width >= 900px\) \{[^@]*\.greese-Test--md-gap-2 \{\s+gap: var\(--greese-space-2\);/
     )
   })
 
-  it('token classes set the variable, never the property', () => {
-    expect(css).toContain(
-      '.greese-Test--md-gap-2 {\n  --greese-test-gap-md: var(--greese-space-2);\n}'
+  it('emits breakpoints smallest first, so source order is the mobile-first fallback', () => {
+    const at = ['xs', 'sm', 'md', 'lg', 'xl'].map((bp) =>
+      css.indexOf(`.greese-Test--${bp}-gap-2 {`)
     )
-    expect(css).not.toMatch(/\.greese-Test--[a-z]+-gap-\d+ \{\s+gap:/)
+    expect(at.every((i) => i >= 0)).toBe(true)
+    expect([...at].sort((x, y) => x - y)).toEqual(at)
+  })
+
+  it('reads open-ended values from the breakpoint variable on a value class', () => {
+    expect(css).toMatch(
+      /@media \(width >= 900px\) \{[^@]*\.greese-Test--md-gap \{\s+gap: var\(--greese-test-gap-md\);/
+    )
+  })
+
+  it('has no uses class, no fallback chain and nothing to register', () => {
+    expect(css).not.toMatch(/\.greese-Test--gap \{/)
+    expect(css).not.toContain('var(--greese-test-gap-md, ')
+    expect(css).not.toContain('@property')
+    // An unset prop never touches the element: nothing hangs off the block class.
+    expect(css).not.toMatch(/^\.greese-Test \{/m)
   })
 
   it('generates every class resolveResponsive can produce', () => {
     const { className } = resolveResponsive([
       [
-        { xs: 0, sm: 1, md: 4, lg: 8, xl: 3 },
+        { xs: 0, sm: 1, md: '13px', lg: 8, xl: 3 },
         { block: 'greese-Test', prop: 'gap', isToken: isSpaceToken },
       ],
       [
@@ -59,11 +57,12 @@ describe('responsive-prop mixin', () => {
       ],
     ])
     for (const cls of className.split(' ')) expect(css).toContain(`.${cls} {`)
+    expect(responsiveVar('greese-Test', 'gap', 'md')).toBe('--greese-test-gap-md')
   })
 })
 
 describe('responsive-prop options', () => {
-  it('wraps the chain in a template', () => {
+  it('wraps values in a template', () => {
     const css =
       compile(`@include mixins.responsive-prop('greese-T', 'min', grid-template-columns,
       $template: 'repeat(auto-fill, minmax(min(VALUE, 100%), 1fr))');`)
@@ -76,13 +75,13 @@ describe('responsive-prop options', () => {
     const css = compile(`@include mixins.responsive-prop('greese-I', 'span', grid-column,
       (2: span 2), $container-scope: '.greese-G--container >');`)
     expect(css).toContain(
-      '.greese-G--container > .greese-I--span {\n  grid-column: var(--greese-i-span-xs);'
+      '.greese-G--container > .greese-I--xs-span-2 {\n  grid-column: span 2;'
     )
     expect(css).toMatch(
-      /@container \(width >= 900px\) \{\s+\.greese-G--container > \.greese-I--span \{\s+grid-column: var\(--greese-i-span-md,/
+      /@container \(width >= 900px\) \{[^@]*\.greese-G--container > \.greese-I--md-span \{\s+grid-column: var\(--greese-i-span-md\);/
     )
     // The viewport variant is still there for grids that are not containers.
-    expect(css).toMatch(/@media \(width >= 900px\) \{\s+\.greese-I--span \{/)
+    expect(css).toMatch(/@media \(width >= 900px\) \{[^@]*\.greese-I--md-span-2 \{/)
   })
 })
 

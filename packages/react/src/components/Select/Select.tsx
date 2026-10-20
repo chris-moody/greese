@@ -7,8 +7,16 @@ import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface SelectProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'select'>, 'size'> {
-  /** @default 'md' */
+  /**
+   * Height, padding and text size: `sm`, `md` or `lg`. Text stays at least 16px
+   * on touch screens.
+   * @default 'md'
+   */
   size?: ControlSize
+  /**
+   * Marks it invalid (`aria-invalid`) and colours it as an error. A surrounding
+   * Field's `error` sets it too.
+   */
   invalid?: boolean
   /** Shown until a choice is made; not itself selectable. */
   placeholder?: string

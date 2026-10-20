@@ -28,7 +28,7 @@ describe('Button', () => {
     expect(button).toHaveAttribute('type', 'button')
     expect(button).toHaveClass(
       'greese-Button--solid',
-      'greese-Button--accent',
+      'greese-Button--primary',
       'greese-Button--size-md'
     )
     await userEvent.tab()
@@ -86,7 +86,6 @@ describe('Button', () => {
   it('resolves responsive fullWidth to classes', () => {
     render(<Button fullWidth={{ xs: true, md: false }}>Wide</Button>)
     expect(screen.getByRole('button')).toHaveClass(
-      'greese-Button--width',
       'greese-Button--xs-width-full',
       'greese-Button--md-width-auto'
     )

@@ -16,10 +16,17 @@ export interface AvatarProps
   extends Omit<ComponentPropsWithRef<'span'>, 'children'>, GreeseProps {
   /** The person or thing: used for the alt text and the initials fallback. */
   name: string
+  /**
+   * Image URL. If it's missing or fails to load, initials from `name` (or
+   * `fallback`) show instead.
+   */
   src?: string
-  /** @default 'md' */
+  /** Diameter: `xs` to `xl`, from 1.5rem to 4rem. @default 'md' */
   size?: AvatarSize
-  /** @default 'circle' */
+  /**
+   * `circle`, or `square` with rounded corners (for organisations and things).
+   * @default 'circle'
+   */
   shape?: 'circle' | 'square'
   /** Shown instead of initials when there is no image (an icon, say). */
   fallback?: ReactNode
@@ -84,8 +91,9 @@ export const Avatar = ({
 export interface AvatarGroupProps extends ComponentPropsWithRef<'div'>, GreeseProps {
   /** Show at most this many, then a "+N" count. */
   max?: number
-  /** @default 'md' */
+  /** Size of every avatar in the group, overriding their own. @default 'md' */
   size?: AvatarSize
+  /** The Avatars, overlapping in order. */
   children: ReactNode
 }
 

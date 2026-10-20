@@ -34,10 +34,17 @@ const idFor = (base: string, kind: 'tab' | 'panel', value: string) =>
 
 export interface TabsProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'div'>, 'defaultValue' | 'dir'> {
+  /** The selected tab's value, when you control it. Pair with `onValueChange`. */
   value?: string
+  /** The tab selected at first, when it keeps its own state. */
   defaultValue?: string
+  /** Called with the newly selected tab's value. */
   onValueChange?: (value: string) => void
-  /** @default 'horizontal' */
+  /**
+   * Tabs in a row above the panels (`horizontal`) or a column beside them
+   * (`vertical`). Sets which arrow keys move between them.
+   * @default 'horizontal'
+   */
   orientation?: 'horizontal' | 'vertical'
   /**
    * `automatic` selects a tab as soon as it is focused with the arrow keys;
@@ -150,6 +157,7 @@ export const TabList = ({
 
 export interface TabProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'button'>, 'value'> {
+  /** Pairs the tab with the TabPanel of the same value. */
   value: string
 }
 
@@ -184,6 +192,7 @@ export const Tab = ({
 }
 
 export interface TabPanelProps extends GreeseProps, ComponentPropsWithRef<'div'> {
+  /** Shown while the Tab of the same value is selected. */
   value: string
 }
 

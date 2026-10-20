@@ -1,0 +1,63 @@
+@use '../../styles/mixins';
+
+@layer greese.components {
+  .greese-Fieldset {
+    @include mixins.component-root;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--greese-space-2);
+    min-inline-size: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
+
+  .greese-Fieldset--card {
+    padding: var(--greese-space-4);
+    background-color: var(--greese-color-surface);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-radius-lg);
+
+    @include mixins.up(md) {
+      padding: var(--greese-space-5);
+    }
+  }
+
+  // A float takes the legend out of the border, so it lays out like a heading.
+  .greese-Fieldset-legend {
+    float: inline-start;
+    inline-size: 100%;
+    padding: 0;
+    font-size: var(--greese-font-size-md);
+    font-weight: var(--greese-font-weight-semibold);
+    color: var(--greese-color-fg);
+
+    + * {
+      clear: both;
+    }
+  }
+
+  .greese-Fieldset-description {
+    margin: 0;
+    font-size: var(--greese-font-size-sm);
+    color: var(--greese-color-fg-muted);
+  }
+
+  .greese-Fieldset-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--greese-space-4);
+    margin-block-start: var(--greese-space-2);
+  }
+
+  .greese-Fieldset-error {
+    margin: 0;
+    font-size: var(--greese-font-size-sm);
+    color: var(--greese-color-negative);
+  }
+}

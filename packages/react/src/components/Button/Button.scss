@@ -1,14 +1,15 @@
 @use 'sass:map';
 @use '../../styles/mixins';
 @use '../../styles/controls';
+@use '../../styles/tones';
 
 @layer greese.components {
   .greese-Button {
     @include mixins.component-root;
 
     // Per-instance theming hooks: override these on any button.
-    --greese-button-tone: var(--greese-color-accent);
-    --greese-button-on-tone: var(--greese-color-on-accent);
+    --greese-button-tone: var(--greese-color-primary);
+    --greese-button-on-tone: var(--greese-color-primary-content);
 
     position: relative;
     display: inline-flex;
@@ -59,9 +60,16 @@
     --greese-button-on-tone: var(--greese-color-canvas);
   }
 
+  @each $tone in tones.$brand {
+    .greese-Button--#{$tone} {
+      --greese-button-tone: var(--greese-color-#{$tone});
+      --greese-button-on-tone: var(--greese-color-#{$tone}-content);
+    }
+  }
+
   .greese-Button--negative {
     --greese-button-tone: var(--greese-color-negative);
-    --greese-button-on-tone: var(--greese-color-on-negative);
+    --greese-button-on-tone: var(--greese-color-negative-content);
   }
 
   // Variants. color-mix() derives hover/soft states from the tone, toward the

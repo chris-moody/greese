@@ -1,0 +1,125 @@
+@use '../../styles/mixins';
+
+/* stylelint-disable selector-no-vendor-prefix */
+
+@layer greese.components {
+  // Both versions share one grid cell; `before` is clipped at the divider.
+  .greese-Diff {
+    @include mixins.component-root;
+
+    --greese-diff-thumb: 44px;
+
+    position: relative;
+    display: grid;
+    overflow: hidden;
+    user-select: none;
+    border-radius: var(--greese-radius-md);
+
+    > .greese-Diff-item {
+      grid-area: 1 / 1;
+    }
+  }
+
+  .greese-Diff-item {
+    position: relative;
+    display: grid;
+    min-inline-size: 0;
+
+    > img,
+    > video,
+    > picture {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .greese-Diff-item--before {
+    clip-path: inset(0 calc(100% - var(--greese-diff-position)) 0 0);
+
+    &:dir(rtl) {
+      clip-path: inset(0 0 0 calc(100% - var(--greese-diff-position)));
+    }
+  }
+
+  .greese-Diff-tag {
+    position: absolute;
+    inset-block-start: var(--greese-space-2);
+    inset-inline-start: var(--greese-space-2);
+    padding: 0.125rem 0.5rem;
+    font-size: var(--greese-font-size-xs);
+    font-weight: var(--greese-font-weight-semibold);
+    color: var(--greese-color-canvas);
+    pointer-events: none;
+    background-color: color-mix(in oklab, var(--greese-color-fg) 70%, transparent);
+    border-radius: var(--greese-radius-pill);
+  }
+
+  .greese-Diff-tag--after {
+    inset-inline: auto var(--greese-space-2);
+  }
+
+  // The divider line with a round grip in the middle.
+  .greese-Diff-handle {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: var(--greese-diff-position);
+    inline-size: 2px;
+    pointer-events: none;
+    background-color: var(--greese-color-canvas);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--greese-color-fg) 25%, transparent);
+    translate: -50% 0;
+
+    &:dir(rtl) {
+      translate: 50% 0;
+    }
+
+    &::after {
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-start: 50%;
+      inline-size: 2rem;
+      block-size: 2rem;
+      content: '';
+      background-color: var(--greese-color-canvas);
+      border: 2px solid var(--greese-color-border-strong);
+      border-radius: 50%;
+      box-shadow: var(--greese-shadow-md);
+      translate: -50% -50%;
+    }
+  }
+
+  .greese-Diff:has(.greese-Diff-range:focus-visible) .greese-Diff-handle::after {
+    outline: 2px solid var(--greese-color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  // The real control: a range covering the whole area, invisible, whose
+  // thumb is exactly under the grip, so dragging the grip works on touch.
+  .greese-Diff-range {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(var(--greese-diff-thumb) / -2);
+    inline-size: calc(100% + var(--greese-diff-thumb));
+    block-size: 100%;
+    margin: 0;
+    cursor: ew-resize;
+    touch-action: pan-y;
+    background: transparent;
+    opacity: 0;
+    appearance: none;
+
+    &::-webkit-slider-thumb {
+      inline-size: var(--greese-diff-thumb);
+      block-size: 100vh;
+      appearance: none;
+    }
+
+    &::-moz-range-thumb {
+      inline-size: var(--greese-diff-thumb);
+      block-size: 100vh;
+      border: 0;
+    }
+  }
+}

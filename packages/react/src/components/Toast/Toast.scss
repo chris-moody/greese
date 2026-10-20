@@ -35,7 +35,7 @@
   @include tones.classes(
     'greese-Toast',
     'greese-toast-tone',
-    (neutral, info, positive, warning, negative)
+    (neutral, primary, secondary, tertiary, info, positive, warning, negative)
   );
 
   .greese-Toast {

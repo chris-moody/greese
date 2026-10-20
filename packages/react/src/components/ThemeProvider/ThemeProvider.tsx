@@ -24,8 +24,12 @@ export const useThemeScope = (): ThemeScope => use(ThemeScopeContext)
 export interface ThemeProviderProps extends ComponentPropsWithoutRef<'div'> {
   /** The wrapper `<div>`, or your element with `asChild`. */
   ref?: Ref<HTMLElement>
-  /** A theme from `createTheme()`. Omit to only set a scheme. */
-  theme?: Theme
+  /**
+   * A theme from `createTheme()`, or the name of one whose CSS you load
+   * yourself, such as a theme compiled with the SCSS kit's `theme()`. Omit to
+   * only set a scheme.
+   */
+  theme?: Theme | string
   /** Force `light` or `dark` for this subtree, or `system` to follow the OS. */
   scheme?: ColorScheme
   /** Scope your own element instead of rendering a wrapper. */
@@ -51,7 +55,7 @@ export const ThemeProvider = ({
   ...props
 }: ThemeProviderProps): JSX.Element => {
   const parent = use(ThemeScopeContext)
-  const themeName = theme?.name ?? parent.theme
+  const themeName = (typeof theme === 'string' ? theme : theme?.name) ?? parent.theme
   // Stamp the inherited scheme too: theme rules resolve on this element alone,
   // so it must carry both attributes (see createTheme's CSS).
   const resolvedScheme = scheme ?? parent.scheme
@@ -65,7 +69,7 @@ export const ThemeProvider = ({
   const Root = (asChild ? Slot : 'div') as typeof Slot
   return (
     <ThemeScopeContext value={scope}>
-      {theme && (
+      {typeof theme === 'object' && (
         <style href={`greese-theme-${theme.name}`} precedence="greese">
           {theme.css}
         </style>

@@ -13,7 +13,9 @@ export interface VisibilityProps {
   below?: BreakpointBoundary
   /** Apply to your element instead of a layout-neutral wrapper. */
   asChild?: boolean
+  /** Classes for the wrapper, or for your element with `asChild`. */
   className?: string
+  /** What to show or hide. */
   children?: ReactNode
 }
 

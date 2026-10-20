@@ -7,8 +7,12 @@ import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface FileInputProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'input'>, 'type' | 'size'> {
-  /** @default 'md' */
+  /** Height and text size: `sm`, `md` or `lg`. @default 'md' */
   size?: ControlSize
+  /**
+   * Marks it invalid (`aria-invalid`) and colours it as an error. A surrounding
+   * Field's `error` sets it too.
+   */
   invalid?: boolean
 }
 

@@ -45,10 +45,10 @@ $sizes: (
     place-items: center;
     inline-size: 100%;
     block-size: 100%;
-    color: var(--greese-color-accent);
+    color: var(--greese-color-primary);
     background-color: color-mix(
       in oklab,
-      var(--greese-color-accent) 16%,
+      var(--greese-color-primary) 16%,
       var(--greese-color-canvas)
     );
   }

@@ -10,7 +10,7 @@
     inline-size: 100%;
     block-size: var(--greese-progress-height);
     overflow: hidden;
-    color: var(--greese-color-accent);
+    color: var(--greese-color-primary);
     background-color: var(--greese-color-border);
     border: 0;
     border-radius: var(--greese-radius-pill);
@@ -21,13 +21,13 @@
     }
 
     &::-webkit-progress-value {
-      background-color: var(--greese-color-accent);
+      background-color: var(--greese-color-primary);
       border-radius: var(--greese-radius-pill);
       transition: inline-size var(--greese-duration-normal) var(--greese-easing-standard);
     }
 
     &::-moz-progress-bar {
-      background-color: var(--greese-color-accent);
+      background-color: var(--greese-color-primary);
       border-radius: var(--greese-radius-pill);
     }
 
@@ -36,7 +36,7 @@
       background-image: linear-gradient(
         to right,
         transparent 0%,
-        var(--greese-color-accent) 50%,
+        var(--greese-color-primary) 50%,
         transparent 100%
       );
       background-repeat: no-repeat;

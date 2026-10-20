@@ -23,6 +23,7 @@ export interface StackProps extends Omit<BoxProps, 'gap'> {
   align?: Responsive<StackAlign>
   /** Main-axis distribution (`justify-content`). */
   justify?: Responsive<StackJustify>
+  /** Whether items move to a new line when they don't fit, per breakpoint if you like. */
   wrap?: Responsive<'wrap' | 'nowrap' | 'wrap-reverse'>
 }
 

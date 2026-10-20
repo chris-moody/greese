@@ -18,10 +18,19 @@ export interface PopoverProps
   extends Omit<ComponentPropsWithRef<'div'>, 'popover' | 'onToggle'>, GreeseProps {
   /** The element that toggles it: usually a Button. */
   trigger: ReactElement
-  /** @default 'bottom-start' */
+  /**
+   * Where it opens relative to its trigger. It flips if there's no room.
+   * @default 'bottom-start'
+   */
   placement?: Placement
+  /** Whether it's open, when you control it. Pair with `onOpenChange`. */
   open?: boolean
+  /** Whether it starts open, when it keeps its own state. */
   defaultOpen?: boolean
+  /**
+   * Called with the new state when it opens or closes (the trigger, Escape, a
+   * click outside).
+   */
   onOpenChange?: (open: boolean) => void
   /** Accessible name for the popover, if its content has no heading. */
   label?: string

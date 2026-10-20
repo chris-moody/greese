@@ -1,0 +1,51 @@
+@use 'sass:math';
+@use '../../styles/mixins';
+
+// Keep in step with TEXT_ROTATE_MAX: each count compiles its own keyframes.
+$max: 6;
+
+@layer greese.components {
+  .greese-TextRotate {
+    display: inline-grid;
+    block-size: 1lh;
+    overflow: hidden;
+    vertical-align: bottom;
+  }
+
+  .greese-TextRotate-track {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .greese-TextRotate-item {
+    block-size: 1lh;
+    white-space: nowrap;
+  }
+
+  // Each count gets keyframes that hold an item, then move up one line in
+  // the last fifth of its slot; the duplicate first item makes the wrap seamless.
+  @for $n from 2 through $max {
+    .greese-TextRotate--#{$n} .greese-TextRotate-track {
+      @include mixins.motion-safe {
+        animation: greese-textrotate-#{$n} var(--greese-textrotate-duration) infinite;
+      }
+    }
+
+    @keyframes greese-textrotate-#{$n} {
+      @for $i from 0 to $n {
+        $start: math.div($i, $n) * 100%;
+        $hold: math.div($i + 0.8, $n) * 100%;
+
+        #{$start},
+        #{$hold} {
+          animation-timing-function: var(--greese-easing-standard);
+          translate: 0 calc(-1lh * #{$i});
+        }
+      }
+
+      100% {
+        translate: 0 calc(-1lh * #{$n});
+      }
+    }
+  }
+}

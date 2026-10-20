@@ -1,18 +1,23 @@
 @layer greese.components {
-  // Pressed reads as the soft accent variant, whatever the resting variant.
+  // Pressed reads as the soft variant of the button's tone, whatever the
+  // resting variant: primary for the default neutral tone, or the tone given
+  // (tone="secondary" presses to a secondary tint).
   .greese-ToggleButton[aria-pressed='true'] {
-    --greese-button-tone: var(--greese-color-accent);
-    --greese-button-fg: var(--greese-color-accent);
-    --greese-button-bg: color-mix(in oklab, var(--greese-color-accent) 14%, transparent);
+    --greese-button-fg: var(--greese-button-tone);
+    --greese-button-bg: color-mix(in oklab, var(--greese-button-tone) 14%, transparent);
     --greese-button-bg-hover: color-mix(
       in oklab,
-      var(--greese-color-accent) 22%,
+      var(--greese-button-tone) 22%,
       transparent
     );
     --greese-button-border: color-mix(
       in oklab,
-      var(--greese-color-accent) 55%,
+      var(--greese-button-tone) 55%,
       transparent
     );
+  }
+
+  .greese-ToggleButton.greese-Button--neutral[aria-pressed='true'] {
+    --greese-button-tone: var(--greese-color-primary);
   }
 }

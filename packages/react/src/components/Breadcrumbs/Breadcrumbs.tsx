@@ -13,10 +13,11 @@ import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 export interface BreadcrumbsProps extends GreeseProps, ComponentPropsWithRef<'nav'> {
   /** Collapse the middle into "…" beyond this many items; the button expands them. */
   maxItems?: number
-  /** @default 'Breadcrumb' */
+  /** Names the navigation landmark for screen readers. @default 'Breadcrumb' */
   label?: string
   /** Name of the expand button. @default 'Show full path' */
   expandLabel?: string
+  /** BreadcrumbItems, from the top level to the current page. */
   children: ReactNode
 }
 

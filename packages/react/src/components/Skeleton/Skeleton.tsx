@@ -3,7 +3,11 @@ import { cx } from '../../utils/cx.ts'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface SkeletonProps extends GreeseProps, ComponentPropsWithRef<'span'> {
-  /** @default 'text' */
+  /**
+   * `text` lines, a `rect` block (for images and cards) or a `circle` (for
+   * avatars).
+   * @default 'text'
+   */
   shape?: 'text' | 'rect' | 'circle'
   /** Any CSS length. Text defaults to full width; circles to 2.5rem. */
   width?: string

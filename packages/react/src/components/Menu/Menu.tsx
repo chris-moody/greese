@@ -17,6 +17,7 @@ import { useAnchoredPopover, type Placement } from '../../utils/anchor.ts'
 import { cx } from '../../utils/cx.ts'
 import { composeRefs, Slot } from '../Slot/Slot.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
+import type { BrandTone } from '../../utils/tone.ts'
 
 const MenuContext = createContext<{ close: () => void } | null>(null)
 
@@ -24,8 +25,12 @@ export interface MenuProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'div'>, 'popover' | 'onToggle'> {
   /** The menu button: usually a Button. */
   trigger: ReactElement
-  /** @default 'bottom-start' */
+  /**
+   * Where the menu opens relative to its trigger. It flips if there's no room.
+   * @default 'bottom-start'
+   */
   placement?: Placement
+  /** Called with the new state when the menu opens or closes. */
   onOpenChange?: (open: boolean) => void
 }
 
@@ -147,8 +152,12 @@ export interface MenuItemProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'button'>, 'onSelect'> {
   /** Called when chosen by click, Enter or Space; the menu then closes. */
   onSelect?: () => void
-  /** `negative` for destructive actions. */
-  tone?: 'neutral' | 'negative'
+  /**
+   * The item's colour: `negative` for destructive actions, or a brand colour
+   * (primary, secondary, tertiary) to set one apart.
+   * @default 'neutral'
+   */
+  tone?: 'neutral' | BrandTone | 'negative'
   /** Render a link (`<a>`, a router Link) as the item. */
   asChild?: boolean
 }

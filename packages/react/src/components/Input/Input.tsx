@@ -14,7 +14,11 @@ import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface InputProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'input'>, 'size'> {
-  /** @default 'md' */
+  /**
+   * Height, padding and text size: `sm`, `md` or `lg`. Text stays at least 16px
+   * on touch screens.
+   * @default 'md'
+   */
   size?: ControlSize
   /** Mark invalid (also set by a surrounding Field's `error`). */
   invalid?: boolean

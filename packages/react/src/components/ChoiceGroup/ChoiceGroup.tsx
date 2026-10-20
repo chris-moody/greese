@@ -9,16 +9,23 @@ export interface ChoiceGroupProps extends Omit<
 > {
   /** The group's name, rendered as the `<legend>`. */
   label: ReactNode
+  /** Help text under the label, announced with the group. */
   description?: ReactNode
   /** Error text. Setting it marks every choice invalid. */
   error?: ReactNode
+  /** Marks every choice invalid without showing an error message. */
   invalid?: boolean
   /** Shows the required marker. */
   required?: boolean
+  /** Keep the label for screen readers but hide it on screen. */
   hideLabel?: boolean
   /** Layout of the choices. @default 'column' */
   direction?: Responsive<StackDirection>
-  /** @default 3 */
+  /**
+   * Space between the choices: a scale token (`0`–`8`) or any CSS length, per
+   * breakpoint if you like.
+   * @default 3
+   */
   gap?: Responsive<SpaceValue>
 }
 

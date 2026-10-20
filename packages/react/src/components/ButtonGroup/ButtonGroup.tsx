@@ -3,7 +3,10 @@ import { cx } from '../../utils/cx.ts'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface ButtonGroupProps extends GreeseProps, ComponentPropsWithRef<'div'> {
-  /** @default 'horizontal' */
+  /**
+   * Lay the buttons out in a row (`horizontal`) or a column (`vertical`).
+   * @default 'horizontal'
+   */
   orientation?: 'horizontal' | 'vertical'
   /** Join the buttons into one segmented control. */
   attached?: boolean

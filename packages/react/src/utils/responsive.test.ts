@@ -6,7 +6,7 @@ import {
   neverToken,
   resolveResponsive,
   responsiveClass,
-  responsivePropClass,
+  responsiveValueClass,
   responsiveVar,
   spaceToCss,
   type ResponsiveConfig,
@@ -24,7 +24,7 @@ describe('naming', () => {
   it('builds class and variable names the SCSS mixin also builds', () => {
     expect(responsiveClass('greese-Stack', 'md', 'gap', 2)).toBe('greese-Stack--md-gap-2')
     expect(responsiveVar('greese-Stack', 'gap', 'md')).toBe('--greese-stack-gap-md')
-    expect(responsivePropClass('greese-Stack', 'gap')).toBe('greese-Stack--gap')
+    expect(responsiveValueClass('greese-Stack', 'md', 'gap')).toBe('greese-Stack--md-gap')
   })
 })
 
@@ -80,7 +80,7 @@ describe('resolveResponsive', () => {
 
   it('treats a plain value as xs', () => {
     expect(resolveResponsive([[2, gap]])).toEqual({
-      className: 'greese-Stack--gap greese-Stack--xs-gap-2',
+      className: 'greese-Stack--xs-gap-2',
       style: undefined,
     })
   })
@@ -94,8 +94,8 @@ describe('resolveResponsive', () => {
       { className: 'greese-Stack' }
     )
     expect(className).toBe(
-      'greese-Stack greese-Stack--gap greese-Stack--xs-gap-1 greese-Stack--lg-gap-6 ' +
-        'greese-Stack--direction greese-Stack--xs-direction-column greese-Stack--md-direction-row'
+      'greese-Stack greese-Stack--xs-gap-1 greese-Stack--md-gap greese-Stack--lg-gap-6 ' +
+        'greese-Stack--xs-direction-column greese-Stack--md-direction-row'
     )
     expect(style).toEqual({ '--greese-stack-gap-md': '2.5rem' })
   })
@@ -105,8 +105,8 @@ describe('resolveResponsive', () => {
       [{ xl: 'row', xs: 'column', sm: 'row' }, direction],
     ])
     expect(className).toBe(
-      'greese-Stack--direction greese-Stack--xs-direction-column ' +
-        'greese-Stack--sm-direction-row greese-Stack--xl-direction-row'
+      'greese-Stack--xs-direction-column greese-Stack--sm-direction-row ' +
+        'greese-Stack--xl-direction-row'
     )
   })
 
@@ -114,7 +114,7 @@ describe('resolveResponsive', () => {
     const { className } = resolveResponsive([
       [{ xs: undefined, md: null as unknown as string, lg: 'row' }, direction],
     ])
-    expect(className).toBe('greese-Stack--direction greese-Stack--lg-direction-row')
+    expect(className).toBe('greese-Stack--lg-direction-row')
   })
 
   it('lets caller style override generated variables', () => {
@@ -128,7 +128,7 @@ describe('resolveResponsive', () => {
     const { className, style } = resolveResponsive([
       [7, { block: 'greese-Grid', prop: 'columns' }],
     ])
-    expect(className).toBe('greese-Grid--columns greese-Grid--xs-columns-7')
+    expect(className).toBe('greese-Grid--xs-columns-7')
     expect(style).toBeUndefined()
   })
 
@@ -140,7 +140,7 @@ describe('resolveResponsive', () => {
       toCss: spaceToCss,
     }
     expect(resolveResponsive([[{ xs: 4, md: '2rem' }, space]])).toEqual({
-      className: 'greese-Box--p',
+      className: 'greese-Box--xs-p greese-Box--md-p',
       style: {
         '--greese-box-p-xs': 'var(--greese-space-4)',
         '--greese-box-p-md': '2rem',

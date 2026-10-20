@@ -25,26 +25,94 @@ export type Display =
  * layouts flip correctly in right-to-left languages.
  */
 export interface BoxStyleProps {
+  /**
+   * Margin on all four sides: a space token (`0`–`8`, where `4` is 1rem) or any
+   * CSS length, per breakpoint if you like (`{ xs: 2, md: 4 }`).
+   */
   m?: Responsive<SpaceValue>
+  /**
+   * Margin on the inline start and end (left and right in English). A space
+   * token or any CSS length, per breakpoint if you like.
+   */
   mx?: Responsive<SpaceValue>
+  /**
+   * Margin on the block start and end (top and bottom). A space token or any CSS
+   * length, per breakpoint if you like.
+   */
   my?: Responsive<SpaceValue>
+  /**
+   * Margin on the block start (top). A space token or any CSS length, per
+   * breakpoint if you like.
+   */
   mt?: Responsive<SpaceValue>
+  /**
+   * Margin on the block end (bottom). A space token or any CSS length, per
+   * breakpoint if you like.
+   */
   mb?: Responsive<SpaceValue>
+  /**
+   * Margin on the inline start (left in left-to-right text, right in
+   * right-to-left). A space token or any CSS length, per breakpoint if you like.
+   */
   ms?: Responsive<SpaceValue>
+  /**
+   * Margin on the inline end (right in left-to-right text, left in
+   * right-to-left). A space token or any CSS length, per breakpoint if you like.
+   */
   me?: Responsive<SpaceValue>
+  /**
+   * Padding on all four sides: a space token (`0`–`8`, where `4` is 1rem) or any
+   * CSS length, per breakpoint if you like (`{ xs: 3, md: 5 }`).
+   */
   p?: Responsive<SpaceValue>
+  /**
+   * Padding on the inline start and end (left and right in English). A space
+   * token or any CSS length, per breakpoint if you like.
+   */
   px?: Responsive<SpaceValue>
+  /**
+   * Padding on the block start and end (top and bottom). A space token or any
+   * CSS length, per breakpoint if you like.
+   */
   py?: Responsive<SpaceValue>
+  /**
+   * Padding on the block start (top). A space token or any CSS length, per
+   * breakpoint if you like.
+   */
   pt?: Responsive<SpaceValue>
+  /**
+   * Padding on the block end (bottom). A space token or any CSS length, per
+   * breakpoint if you like.
+   */
   pb?: Responsive<SpaceValue>
+  /**
+   * Padding on the inline start (left in left-to-right text, right in
+   * right-to-left). A space token or any CSS length, per breakpoint if you like.
+   */
   ps?: Responsive<SpaceValue>
+  /**
+   * Padding on the inline end (right in left-to-right text, left in
+   * right-to-left). A space token or any CSS length, per breakpoint if you like.
+   */
   pe?: Responsive<SpaceValue>
+  /**
+   * Space between children, when this element is a flex or grid container: a
+   * space token or any CSS length, per breakpoint if you like.
+   */
   gap?: Responsive<SpaceValue>
   /** Inline size (width in horizontal writing), any CSS length. */
   w?: Responsive<string>
   /** Maximum inline size, any CSS length. */
   maxW?: Responsive<string>
+  /**
+   * The CSS `display` value (`flex`, `grid`, `none`…), per breakpoint if you
+   * like: `{ xs: 'none', md: 'block' }` shows it from md up.
+   */
   display?: Responsive<Display>
+  /**
+   * Text alignment: logical `start` and `end` follow the writing direction. Per
+   * breakpoint if you like.
+   */
   textAlign?: Responsive<'start' | 'center' | 'end' | 'justify'>
 }
 

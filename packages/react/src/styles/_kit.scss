@@ -1,0 +1,931 @@
+// GreeseUI's SCSS kit for themes and component overrides, compiled in your
+// build (docs/adr/0010-theme-kit-and-studio.md). For example:
+//   @use 'pkg:@greese-ui/react/scss/kit' as greese;
+//   @include greese.tokens((color: (primary: (light: lavender-600, dark: lavender-300))));
+//   @include greese.component(Button) {
+//     font-weight: 700;
+//     @include greese.vars((tone: greese.token(color, positive)));
+//     @include greese.modifier(outline) { border-width: 2px; }
+//     @include greese.part(icon) { opacity: 0.8; }
+//     @include greese.motion((durations: (fast: 80ms)));
+//   }
+// You write names (`Button`, `icon`, `outline`); the kit adds the `greese-`
+// prefix and the BEM separators, and stops the build on a name the library
+// doesn't have. Token overrides go in `@layer greese.theme`, component
+// overrides in `@layer greese.overrides`: above component styles, below style
+// props and the `greese` prop, and below any unlayered CSS of yours.
+// Using this module emits no CSS by itself. Call its mixins at the top level
+// of a stylesheet, or inside `theme()`.
+@use 'sass:color';
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:meta';
+@use 'sass:string';
+@use 'pkg:@greese-ui/tokens/scss/maps' as defaults;
+@use 'manifest';
+@forward 'mixins' show up, down, hover, focus-ring, touch-target, motion-safe;
+
+/// Stop the build on unknown components, parts, modifiers, variables and
+/// tokens. Turn off to target classes this version doesn't know yet.
+$strict: true !default;
+$_ordered: false;
+$_theme: null;
+$_block: null;
+$_part: null;
+$_scheme-attr: 'data-greese-scheme';
+$_theme-attr: 'data-greese-theme';
+
+// The `greese` prop's CSS presets (components/Motion/Motion.scss).
+$_presets: (
+  'fade-in',
+  'fade-up',
+  'fade-down',
+  'fade-start',
+  'fade-end',
+  'scale-in',
+  'blur-in',
+  'slide-up',
+  'pop'
+);
+$_exits: (
+  'fade-out': (),
+  'fade-out-up': (
+    translate: '0 calc(-1 * var(--greese-motion-distance, 1rem))',
+  ),
+  'fade-out-down': (
+    translate: '0 var(--greese-motion-distance, 1rem)',
+  ),
+  'scale-out': (
+    scale: '0.95',
+  ),
+);
+$_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', 'in-out');
+
+// --- helpers ---------------------------------------------------------------
+
+/// `primaryContent` → `primary-content`, `fontSize` → `font-size`; kebab-case stays.
+@function _kebab($name) {
+  $name: '#{$name}';
+  $out: '';
+
+  @for $i from 1 through string.length($name) {
+    $char: string.slice($name, $i, $i);
+    $lower: string.to-lower-case($char);
+
+    @if $char != $lower {
+      $out: $out + '-' + $lower;
+    } @else {
+      $out: $out + $char;
+    }
+  }
+
+  @return string.unquote($out);
+}
+
+@function _join($items) {
+  $out: '';
+
+  @each $item in $items {
+    @if $out == '' {
+      $out: '#{$item}';
+    } @else {
+      $out: '#{$out}, #{$item}';
+    }
+  }
+
+  @if $out == '' {
+    @return '(none)';
+  }
+
+  @return $out;
+}
+
+@function _check($ok, $message) {
+  @if not $ok and $strict {
+    @error 'GreeseUI kit: #{$message}';
+  }
+
+  @return $ok;
+}
+
+/// A value as CSS text: quoted strings unquote, lists keep inner quotes, and
+/// a palette name (`lavender-600`) becomes its colour.
+@function _css($value) {
+  @if meta.type-of($value) == string {
+    @return _palette-name($value) or string.unquote($value);
+  }
+
+  @if meta.type-of($value) == list {
+    @return string.unquote(meta.inspect($value));
+  }
+
+  @return $value;
+}
+
+@function _in($list, $item) {
+  @return list.index($list, $item) != null;
+}
+
+@function _info($block) {
+  @return map.get(manifest.$blocks, $block);
+}
+
+@function _scoped($selector) {
+  @if $_theme {
+    @return "[#{$_theme-attr}='#{$_theme}'] #{$selector}";
+  }
+
+  @return $selector;
+}
+
+@function _scheme($scheme) {
+  @return "[#{$_scheme-attr}='#{$scheme}']";
+}
+
+/// The layer order, once per stylesheet, before the first rule: every
+/// GreeseUI sheet starts with it, so whichever loads first the order holds.
+/// Without it, a theme loaded before GreeseUI's CSS would make
+/// `greese.theme` the first, weakest layer.
+@mixin _layer-order {
+  @if not $_ordered {
+    $_ordered: true !global;
+
+    // stylelint-disable-next-line layer-name-pattern -- the whole list, interpolated
+    @layer #{defaults.$layer-order};
+  }
+}
+
+// --- names -----------------------------------------------------------------
+
+@function _block-name($name) {
+  $name: '#{$name}';
+  $known: map.has-key(manifest.$blocks, $name);
+  $checked: _check(
+    $known,
+    'no component `#{$name}`. Components are PascalCase, as in the docs: #{_join(map.keys(manifest.$blocks))}.'
+  );
+
+  @return string.unquote($name);
+}
+
+@function _part-name($block, $part) {
+  $part: _kebab($part);
+  $info: _info($block);
+
+  @if $info {
+    $parts: map.get($info, parts);
+    $checked: _check(
+      _in($parts, $part),
+      '`#{$block}` has no part `#{$part}`. Parts: #{_join($parts)}.'
+    );
+  }
+
+  @return $part;
+}
+
+@function _modifier-name($block, $part, $modifier) {
+  $modifier: _kebab($modifier);
+  $info: _info($block);
+
+  @if $info {
+    @if $part {
+      $mods: map.get($info, part-modifiers, $part) or ();
+      $checked: _check(
+        _in($mods, $modifier),
+        '`#{$block}-#{$part}` has no modifier `#{$modifier}`. Modifiers: #{_join($mods)}.'
+      );
+    } @else {
+      $mods: map.get($info, modifiers);
+      $checked: _check(
+        _in($mods, $modifier),
+        '`#{$block}` has no modifier `#{$modifier}`. Modifiers: #{_join($mods)}.'
+      );
+    }
+  }
+
+  @return $modifier;
+}
+
+/// The selector for a component, part or modifier, prefix included:
+/// `class(Button, $part: icon)` is `.greese-Button-icon`. For your own
+/// selectors: `#{greese.class(Card)} > p { … }`.
+@function class($component, $part: null, $modifier: null) {
+  $block: _block-name($component);
+  $selector: 'greese-#{$block}';
+
+  @if $part {
+    $part: _part-name($block, $part);
+    $selector: '#{$selector}-#{$part}';
+  }
+
+  @if $modifier {
+    $selector: '#{$selector}--#{_modifier-name($block, $part, $modifier)}';
+  }
+
+  @return string.unquote('.#{$selector}');
+}
+
+/// A palette colour: `palette(lavender, 600)` is `#7e5bd0`. As a token or
+/// variable value, `lavender-600` does the same.
+@function palette($hue, $shade) {
+  $shades: map.get(defaults.$palette, '#{$hue}');
+  $checked: _check(
+    $shades,
+    'no palette hue `#{$hue}`. Hues: #{_join(map.keys(defaults.$palette))}.'
+  );
+  $value: null;
+
+  @if $shades {
+    $value: map.get($shades, $shade);
+  }
+
+  $checked: _check(
+    $value,
+    'no `#{$hue}` shade `#{$shade}`. Shades: #{_join(map.keys($shades or ()))}.'
+  );
+
+  @return $value;
+}
+
+/// `lavender-600` → `#7e5bd0`; null for anything else. No CSS value looks like
+/// a hue and a shade, so this can't capture one.
+@function _palette-name($value) {
+  $value: '#{$value}';
+  $dash: string.index($value, '-');
+
+  @if not $dash or $dash == 1 {
+    @return null;
+  }
+
+  $shades: map.get(defaults.$palette, string.slice($value, 1, $dash - 1));
+
+  @if not $shades {
+    @return null;
+  }
+
+  $shade: string.slice($value, $dash + 1);
+
+  @each $key, $color in $shades {
+    @if '#{$key}' == $shade {
+      @return $color;
+    }
+  }
+
+  @return null;
+}
+
+/// A design token: `token(color, accent)` is `var(--greese-color-accent)`.
+@function token($group, $key) {
+  $group: _kebab($group);
+  $key: _kebab($key);
+
+  @if $group == color {
+    $checked: _check(
+      map.has-key(defaults.$color, $key),
+      'no colour token `#{$key}`. Colours: #{_join(map.keys(defaults.$color))}.'
+    );
+  } @else {
+    $values: map.get(defaults.$scalars, $group);
+    $checked: _check(
+      $values,
+      'no token group `#{$group}`. Groups: color, #{_join(map.keys(defaults.$scalars))}.'
+    );
+
+    @if $values {
+      $checked: _check(
+        map.has-key($values, '#{$key}'),
+        'no `#{$group}` token `#{$key}`. Keys: #{_join(map.keys($values))}.'
+      );
+    }
+  }
+
+  @return var(--greese-#{$group}-#{$key});
+}
+
+@function _is-token-var($name) {
+  @each $role, $unused in defaults.$color {
+    @if $name == '--greese-color-#{$role}' {
+      @return true;
+    }
+  }
+
+  @each $group, $values in defaults.$scalars {
+    @each $key, $unused in $values {
+      @if $name == '--greese-#{$group}-#{$key}' {
+        @return true;
+      }
+    }
+  }
+
+  @return false;
+}
+
+/// A component variable's full name. `tone` inside `component(Button)` is
+/// `--greese-button-tone`; full names (`button-tone`, `radius-md`) work
+/// anywhere. Tokens are allowed too: they rescope to that component.
+@function _var-name($name) {
+  $name: _kebab($name);
+  $full: '--greese-#{$name}';
+
+  @if _is-token-var($full) {
+    @return $full;
+  }
+
+  @if $_block {
+    $vars: map.get(_info($_block), variables) or ();
+    $short: '--greese-#{string.to-lower-case($_block)}-#{$name}';
+
+    @if _in($vars, $short) {
+      @return $short;
+    }
+
+    $checked: _check(
+      _in($vars, $full),
+      '`#{$_block}` has no variable `#{$name}`. Its variables: #{_join($vars)}; or any token, such as `radius-md`.'
+    );
+  } @else {
+    $all: ();
+
+    @each $_, $info in manifest.$blocks {
+      $all: list.join($all, map.get($info, variables));
+    }
+
+    $checked: _check(_in($all, $full), 'no variable `#{$full}`.');
+  }
+
+  @return $full;
+}
+
+/// A component variable or token, as `var()`: `variable(button-tone)`.
+@function variable($name) {
+  @return var(#{_var-name($name)});
+}
+
+// --- component overrides ---------------------------------------------------
+
+/// Styles for one component, in `@layer greese.overrides`. Nest `part()`,
+/// `modifier()`, `vars()`, `motion()` and plain declarations inside.
+@mixin component($name) {
+  $block: _block-name($name);
+  $outer-block: $_block;
+  $outer-part: $_part;
+  $_block: $block !global;
+  $_part: null !global;
+
+  @include _layer-order;
+
+  @layer greese.overrides {
+    #{_scoped('.greese-#{$block}')} {
+      @content;
+    }
+  }
+
+  $_block: $outer-block !global;
+  $_part: $outer-part !global;
+}
+
+@function _require-component($mixin) {
+  @return _check($_block, '#{$mixin}() goes inside component().') or true;
+}
+
+/// A part of the component: `part(icon)` is `& .greese-Button-icon`.
+@mixin part($name) {
+  $checked: _require-component('part');
+  $part: _part-name($_block, $name);
+  $outer: $_part;
+  $_part: $part !global;
+
+  & .greese-#{$_block}-#{$part} {
+    @content;
+  }
+
+  $_part: $outer !global;
+}
+
+/// A modifier of the component, or of the enclosing part:
+/// `modifier(solid)` is `&.greese-Button--solid`.
+@mixin modifier($name) {
+  $checked: _require-component('modifier');
+  $modifier: _modifier-name($_block, $_part, $name);
+  $base: 'greese-#{$_block}';
+
+  @if $_part {
+    $base: '#{$base}-#{$_part}';
+  }
+
+  &.#{$base}--#{$modifier} {
+    @content;
+  }
+}
+
+@function _is-duration($name) {
+  @return string.index($name, '--greese-duration-') == 1;
+}
+
+/// Custom properties, prefix added: `vars((tone: red, radius-md: 2px))`.
+/// A `(light: …, dark: …)` value becomes `light-dark()`, which follows the
+/// nearest colour scheme. Duration tokens stay out of reduced motion.
+@mixin vars($values) {
+  $calm: ();
+
+  @each $name, $value in $values {
+    $property: _var-name($name);
+
+    @if meta.type-of($value) == map {
+      $value: light-dark(#{_css(map.get($value, light))}, #{_css(map.get($value, dark))});
+    }
+
+    @if _is-duration($property) {
+      $calm: map.set($calm, $property, $value);
+    } @else {
+      #{$property}: #{_css($value)};
+    }
+  }
+
+  @if list.length($calm) > 0 {
+    @media (prefers-reduced-motion: no-preference) {
+      @each $property, $value in $calm {
+        #{$property}: #{_css($value)};
+      }
+    }
+  }
+}
+
+// --- motion ----------------------------------------------------------------
+
+@function _ease($ease) {
+  @if meta.type-of($ease) == string and _in($_eases, _kebab($ease)) {
+    @return var(--greese-ease-#{_kebab($ease)});
+  }
+
+  @return _css($ease);
+}
+
+/// Theme-wide motion for the component: what the `greese` prop does per
+/// instance, as a default for every instance. Pure CSS, behind
+/// `prefers-reduced-motion: no-preference`.
+///
+///   enter      a preset (`fade-up`, `scale-in`, …) played when it appears
+///   keyframes  your own `@keyframes` name, instead of a preset
+///   exit       how an overlay leaves: fade-out, fade-out-up, fade-out-down, scale-out
+///   duration, delay, ease, distance   tune the entrance (`ease: out` or a cubic-bezier())
+///   durations  the component's transition speeds: (fast: 80ms, normal: 150ms)
+///   easings    its transition curves: (standard: cubic-bezier(…))
+///
+/// An instance's own `greese` entrance replaces this one; its `duration`,
+/// `delay` and `ease` tune it.
+@mixin motion($options) {
+  $checked: _require-component('motion');
+  $known: (enter, keyframes, exit, duration, delay, ease, distance, durations, easings);
+
+  @each $key, $unused in $options {
+    $checked: _check(
+      _in($known, $key),
+      'motion() has no option `#{$key}`. Options: #{_join($known)}.'
+    );
+  }
+
+  $enter: map.get($options, enter);
+  $name: map.get($options, keyframes);
+
+  @if $enter {
+    $enter: _kebab($enter);
+    $checked: _check(
+      _in($_presets, $enter),
+      'no entrance `#{$enter}`. Presets: #{_join($_presets)}.'
+    );
+    $name: greese-#{$enter};
+  }
+
+  @if map.has-key($options, distance) {
+    --greese-motion-distance: #{_css(map.get($options, distance))};
+  }
+
+  $exit: map.get($options, exit);
+
+  @if $exit {
+    $exit: _kebab($exit);
+    $checked: _check(
+      map.has-key($_exits, $exit),
+      'no exit `#{$exit}`. Exits: #{_join(map.keys($_exits))}.'
+    );
+
+    // As the `exit` classes in Motion.scss: only what the preset changes, so
+    // `fade-out` keeps the overlay's own exit.
+    @each $property, $value in map.get($_exits, $exit) or () {
+      --greese-motion-exit-#{$property}: #{string.unquote($value)};
+    }
+  }
+
+  $tokens: ();
+
+  @each $key, $value in map.get($options, durations) or () {
+    $tokens: map.set($tokens, duration-#{_kebab($key)}, $value);
+  }
+
+  @each $key, $value in map.get($options, easings) or () {
+    $tokens: map.set($tokens, easing-#{_kebab($key)}, $value);
+  }
+
+  @if list.length($tokens) > 0 {
+    @include vars($tokens);
+  }
+
+  @if $name {
+    $duration: _css(map.get($options, duration) or 0.5s);
+    $delay: _css(map.get($options, delay) or 0s);
+    $ease: _ease(map.get($options, ease) or out);
+
+    // `backwards`, as the presets: the first frame holds during the delay,
+    // then the component's own styles apply again.
+    @media (prefers-reduced-motion: no-preference) {
+      animation: #{$name} var(--greese-motion-duration, #{$duration})
+        var(--greese-motion-ease, #{$ease}) var(--greese-motion-delay, #{$delay})
+        backwards;
+    }
+  }
+}
+
+/// Tunes every `greese` prop entrance on the page (or in the theme):
+/// `motion-defaults((duration: 0.3s, ease: out, distance: 2rem))`.
+@mixin motion-defaults($options) {
+  $known: (duration, delay, ease, distance, stagger);
+  $root: ':root';
+
+  @include _layer-order;
+
+  @if $_theme {
+    $root: "[#{$_theme-attr}='#{$_theme}']";
+  }
+
+  @layer greese.overrides {
+    #{$root} {
+      @each $key, $value in $options {
+        $checked: _check(
+          _in($known, $key),
+          'motion-defaults() has no option `#{$key}`. Options: #{_join($known)}.'
+        );
+
+        @if $key == ease {
+          $value: _ease($value);
+        }
+
+        --greese-motion-#{$key}: #{_css($value)};
+      }
+    }
+  }
+}
+
+// --- tokens and themes -----------------------------------------------------
+
+/// Declarations for the token overrides, split by scheme.
+// --- derived brand colours (createTheme's deriveColors, in Sass) -------------
+
+$_derived: (primary, secondary, tertiary, accent, negative);
+
+// The WCAG formula's constants need their full precision, and the inks are
+// literal colours by definition (the same ones @greese-ui/tokens uses).
+// stylelint-disable number-max-precision, color-no-hex, color-hex-length
+
+/// WCAG relative luminance of a colour.
+@function _luminance($c) {
+  $sum: 0;
+
+  @each $channel, $weight in ('red': 0.2126, 'green': 0.7152, 'blue': 0.0722) {
+    $s: math.div(color.channel($c, $channel, $space: rgb), 255);
+    $linear: math.div($s, 12.92);
+
+    @if $s > 0.04045 {
+      $linear: math.pow(math.div($s + 0.055, 1.055), 2.4);
+    }
+
+    $sum: $sum + $weight * $linear;
+  }
+
+  @return $sum;
+}
+
+@function _ratio($a, $b) {
+  $la: _luminance($a);
+  $lb: _luminance($b);
+
+  @return math.div(math.max($la, $lb) + 0.05, math.min($la, $lb) + 0.05);
+}
+
+/// A colour from a hex string (`"#c2410c"`, `"#fff"`), as Theme Studio and
+/// JSON-driven themes write them; colours pass through. Null otherwise.
+@function _hex-color($value) {
+  @if meta.type-of($value) == color {
+    @return $value;
+  }
+
+  @if meta.type-of($value) != string {
+    @return null;
+  }
+
+  $s: string.to-lower-case(string.unquote('#{$value}'));
+
+  @if string.slice($s, 1, 1) != '#' {
+    @return null;
+  }
+
+  $hex: string.slice($s, 2);
+
+  @if string.length($hex) == 3 {
+    $short: $hex;
+    $hex: '';
+
+    @for $i from 1 through 3 {
+      $hex: $hex + string.slice($short, $i, $i) + string.slice($short, $i, $i);
+    }
+  }
+
+  @if string.length($hex) != 6 {
+    @return null;
+  }
+
+  $digits: '0123456789abcdef';
+  $channels: ();
+
+  @for $i from 0 through 2 {
+    $high: string.index($digits, string.slice($hex, $i * 2 + 1, $i * 2 + 1));
+    $low: string.index($digits, string.slice($hex, $i * 2 + 2, $i * 2 + 2));
+
+    @if not $high or not $low {
+      @return null;
+    }
+
+    $channels: list.append($channels, ($high - 1) * 16 + $low - 1);
+  }
+
+  @return rgb(list.nth($channels, 1), list.nth($channels, 2), list.nth($channels, 3));
+}
+
+/// Text for content on `$c`: as `contentColor()` in @greese-ui/tokens, the
+/// more readable of white and near-black if it reaches AA, else black. Null
+/// for anything that isn't a colour (a `var()`), which keeps the default.
+@function _content($c) {
+  @if meta.type-of($c) != color {
+    @return null;
+  }
+
+  $light: _ratio($c, #ffffff);
+  $dark: _ratio($c, #0b0d10);
+  $best: '#ffffff';
+  $ratio: $light;
+
+  @if $dark > $light {
+    $best: '#0b0d10';
+    $ratio: $dark;
+  }
+
+  @if $ratio < 4.5 {
+    $best: '#000000';
+  }
+
+  @return string.unquote($best);
+}
+
+// stylelint-enable number-max-precision, color-no-hex, color-hex-length
+
+/// Fills in `-content` and `-strong` for brand colours the overrides set,
+/// unless they set those too.
+@function _derive($colors) {
+  @each $role in $_derived {
+    $main: map.get($colors, '#{$role}');
+
+    @if $main {
+      $pair: $main;
+
+      @if meta.type-of($pair) != map {
+        $pair: (
+          light: $main,
+          dark: $main,
+        );
+      }
+
+      @if not map.has-key($colors, '#{$role}-content') {
+        $fallback: map.get(defaults.$color, '#{$role}-content');
+        $colors: map.set(
+          $colors,
+          '#{$role}-content',
+          (
+            light: _content(_hex-color(_css(map.get($pair, light)))) or
+              map.get($fallback, light),
+            dark: _content(_hex-color(_css(map.get($pair, dark)))) or
+              map.get($fallback, dark),
+          )
+        );
+      }
+
+      @if map.has-key(defaults.$color, '#{$role}-strong') and not
+        map.has-key($colors, '#{$role}-strong')
+      {
+        $self: 'var(--greese-color-#{$role})';
+        $colors: map.set(
+          $colors,
+          '#{$role}-strong',
+          (
+            light: string.unquote('color-mix(in oklab, #{$self} 80%, #000)'),
+            dark: string.unquote('color-mix(in oklab, #{$self} 70%, #fff)'),
+          )
+        );
+      }
+    }
+  }
+
+  @return $colors;
+}
+
+@function _token-decls($overrides, $complete) {
+  $base: ();
+  $light: ();
+  $dark: ();
+  $durations: ();
+
+  @each $group, $values in $overrides {
+    $group: _kebab($group);
+    $checked: _check(
+      $group == color or map.has-key(defaults.$scalars, $group),
+      'no token group `#{$group}`. Groups: color, #{_join(map.keys(defaults.$scalars))}.'
+    );
+
+    @each $key, $unused in $values {
+      $key: '#{_kebab($key)}';
+      $known: map.get(defaults.$scalars, $group) or ();
+
+      @if $group == color {
+        $known: defaults.$color;
+      }
+
+      $checked: _check(
+        map.has-key($known, $key),
+        'no `#{$group}` token `#{$key}`. Keys: #{_join(map.keys($known))}.'
+      );
+    }
+  }
+
+  // Normalised overrides: kebab keys, so they match the defaults.
+  $colors: ();
+  $scalars: ();
+
+  @each $group, $values in $overrides {
+    @each $key, $value in $values {
+      @if _kebab($group) == color {
+        $colors: map.set($colors, '#{_kebab($key)}', $value);
+      } @else {
+        $scalars: map.set($scalars, '#{_kebab($group)}', '#{_kebab($key)}', $value);
+      }
+    }
+  }
+
+  $colors: _derive($colors);
+
+  @each $role, $pair in defaults.$color {
+    $value: map.get($colors, $role);
+
+    @if $value or $complete {
+      $value: $value or $pair;
+
+      @if meta.type-of($value) != map {
+        $value: (
+          light: $value,
+          dark: $value,
+        );
+      }
+
+      $pair: $value;
+      $light: map.set($light, --greese-color-#{$role}, _css(map.get($pair, light)));
+      $dark: map.set($dark, --greese-color-#{$role}, _css(map.get($pair, dark)));
+    }
+  }
+
+  @each $group, $values in defaults.$scalars {
+    @each $key, $fallback in $values {
+      $value: map.get($scalars, $group, $key);
+
+      @if $value or $complete {
+        $base: map.set($base, --greese-#{$group}-#{$key}, _css($value or $fallback));
+
+        @if $group == duration {
+          $durations: map.set($durations, --greese-#{$group}-#{$key}, 0.01ms);
+        }
+      }
+    }
+  }
+
+  @return (base: $base, light: $light, dark: $dark, durations: $durations);
+}
+
+@mixin _declare($map) {
+  @each $property, $value in $map {
+    #{$property}: #{$value};
+  }
+}
+
+/// Token overrides, compiled: the build-time `createTheme()`. Takes the same
+/// groups as `createTheme` in kebab-case, and a colour takes one value or a
+/// `(light: …, dark: …)` pair:
+///
+///   @include greese.tokens((
+///     color: (primary: (light: #7c3aed, dark: #c4b5fd), primary-content: #fff),
+///     radius: (md: 12px),
+///   ));
+///
+/// At the top level it changes the page's defaults, overriding only what you
+/// pass. Inside `theme(name)` it declares a complete theme, as `createTheme`
+/// does, for `data-greese-theme="name"`.
+@mixin tokens($overrides) {
+  $d: _token-decls($overrides, $_theme != null);
+  $base: map.get($d, base);
+  $light: map.get($d, light);
+  $dark: map.get($d, dark);
+  $durations: map.get($d, durations);
+
+  @include _layer-order;
+
+  @layer greese.theme {
+    @if $_theme {
+      $t: "[#{$_theme-attr}='#{$_theme}']";
+      $s: '[#{$_scheme-attr}]';
+
+      #{$t} {
+        @include _declare($base);
+        @include _declare($light);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #{$t}:not(#{_scheme(light)}) {
+          @include _declare($dark);
+        }
+      }
+
+      #{$t}#{_scheme(dark)},
+      :root#{_scheme(dark)} #{$t}:not(#{$s}) {
+        @include _declare($dark);
+      }
+
+      :root#{_scheme(light)} #{$t}:not(#{$s}) {
+        @include _declare($light);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #{$t} {
+          @include _declare($durations);
+        }
+      }
+    } @else {
+      // The selectors of the default tokens (tokens.css), one layer up.
+      @if list.length($base) > 0 {
+        :root {
+          @include _declare($base);
+        }
+      }
+
+      @if list.length($light) > 0 {
+        :root,
+        #{_scheme(light)},
+        #{_scheme(system)} {
+          @include _declare($light);
+        }
+
+        @media (prefers-color-scheme: dark) {
+          :root:not(#{_scheme(light)}),
+          #{_scheme(system)} {
+            @include _declare($dark);
+          }
+        }
+
+        #{_scheme(dark)} {
+          @include _declare($dark);
+        }
+      }
+
+      @if list.length($durations) > 0 {
+        @media (prefers-reduced-motion: reduce) {
+          :root {
+            @include _declare($durations);
+          }
+        }
+      }
+    }
+  }
+}
+
+/// A named theme: `tokens()` inside declares it for
+/// `data-greese-theme="name"` (set it with `<ThemeProvider>`'s
+/// `data-greese-theme`, or on any element), and `component()`,
+/// `motion-defaults()` inside apply only within it.
+@mixin theme($name) {
+  $checked: _check(
+    meta.type-of($name) == string and string.length('#{$name}') > 0,
+    'theme() needs a name: letters, digits and `-`.'
+  );
+  $outer: $_theme;
+  $_theme: '#{$name}' !global;
+
+  @content;
+
+  $_theme: $outer !global;
+}

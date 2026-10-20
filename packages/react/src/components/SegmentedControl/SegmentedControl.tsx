@@ -26,14 +26,17 @@ export interface SegmentedControlProps
     Omit<ComponentPropsWithRef<'fieldset'>, 'onChange' | 'defaultValue'> {
   /** Names the group for assistive tech. Hidden visually unless `hideLabel={false}`. */
   label: ReactNode
-  /** @default true */
+  /** Keep the label for screen readers but hide it on screen. @default true */
   hideLabel?: boolean
   /** Shared `name` for form submission; generated when omitted. */
   name?: string
+  /** The chosen segment's value, when you control it. Pair with `onValueChange`. */
   value?: string
+  /** The segment chosen at first, when it keeps its own state. */
   defaultValue?: string
+  /** Called with the newly chosen segment's value. */
   onValueChange?: (value: string) => void
-  /** @default 'md' */
+  /** Height and text size: `sm` or `md`. @default 'md' */
   size?: 'sm' | 'md'
   /** Stretch to the container's width, segments sharing it equally. */
   fullWidth?: boolean
@@ -100,7 +103,9 @@ export interface SegmentProps
   extends
     GreeseProps,
     Omit<ComponentPropsWithRef<'input'>, 'type' | 'value' | 'children'> {
+  /** Submitted with the form and reported by the control when chosen. */
   value: string
+  /** The segment's label: text, an icon, or both. */
   children: ReactNode
 }
 

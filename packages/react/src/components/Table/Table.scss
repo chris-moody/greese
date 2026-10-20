@@ -68,7 +68,7 @@
 
   .greese-Table--hoverable tbody > .greese-TableRow {
     @include mixins.hover {
-      background-color: color-mix(in oklab, var(--greese-color-accent) 6%, transparent);
+      background-color: color-mix(in oklab, var(--greese-color-primary) 6%, transparent);
     }
   }
 

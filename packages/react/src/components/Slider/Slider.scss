@@ -7,7 +7,7 @@
   block-size: 0.375rem;
   background: linear-gradient(
     to var(--greese-slider-towards),
-    var(--greese-color-accent) var(--greese-slider-fill),
+    var(--greese-color-primary) var(--greese-slider-fill),
     var(--greese-color-border) var(--greese-slider-fill)
   );
   border-radius: var(--greese-radius-pill);
@@ -18,7 +18,7 @@
   inline-size: var(--greese-slider-thumb);
   block-size: var(--greese-slider-thumb);
   background-color: var(--greese-color-canvas);
-  border: 2px solid var(--greese-color-accent);
+  border: 2px solid var(--greese-color-primary);
   border-radius: 50%;
   box-shadow: var(--greese-shadow-sm);
 }

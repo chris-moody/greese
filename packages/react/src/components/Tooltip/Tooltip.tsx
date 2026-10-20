@@ -19,10 +19,11 @@ export interface TooltipProps extends GreeseProps {
   content: ReactNode
   /** The element it describes: must be focusable (a Button, a link). */
   children: ReactElement
-  /** @default 'top' */
+  /** Where it shows relative to its child. It flips if there's no room. @default 'top' */
   placement?: Placement
   /** Hover delay before showing, ms. Keyboard focus shows it at once. @default 400 */
   delay?: number
+  /** Classes for the tooltip itself (the floating text), not its child. */
   className?: string
 }
 

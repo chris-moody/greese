@@ -1,0 +1,23 @@
+@use '../../styles/mixins';
+
+@layer greese.components {
+  // Padding is a default here, so the Box style props (utilities) override it.
+  .greese-Tile {
+    @include mixins.component-root;
+
+    min-inline-size: 0;
+    padding: var(--greese-tile-padding, var(--greese-space-3) var(--greese-space-4));
+    color: var(--greese-color-fg);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-radius-md);
+  }
+
+  .greese-Tile--filled {
+    background-color: var(--greese-color-surface);
+  }
+
+  .greese-Tile--dashed {
+    border-style: dashed;
+    border-color: var(--greese-color-border-strong);
+  }
+}

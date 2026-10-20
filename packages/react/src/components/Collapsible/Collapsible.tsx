@@ -11,6 +11,7 @@ export interface CollapsibleProps
   defaultOpen?: boolean
   /** Controlled state; pair with `onOpenChange`. */
   open?: boolean
+  /** Called with the new state when it opens or closes. */
   onOpenChange?: (open: boolean) => void
   /**
    * Exclusive group name: only one `<details>` with the same name is open at

@@ -14,13 +14,21 @@ import { cx } from '../../utils/cx.ts'
 import { CloseGlyph } from '../../utils/glyphs.tsx'
 import { Button } from '../Button/Button.tsx'
 import { IconButton } from '../IconButton/IconButton.tsx'
+import type { BrandTone } from '../../utils/tone.ts'
 
-export type ToastTone = 'neutral' | 'info' | 'positive' | 'warning' | 'negative'
+export type ToastTone =
+  'neutral' | BrandTone | 'info' | 'positive' | 'warning' | 'negative'
 
 export interface ToastOptions {
+  /** The message, in bold. */
   title: ReactNode
+  /** A second, muted line. */
   description?: ReactNode
-  /** @default 'neutral' */
+  /**
+   * Colour and meaning: neutral, a brand colour (primary, secondary,
+   * tertiary), info, positive, warning or negative.
+   * @default 'neutral'
+   */
   tone?: ToastTone
   /** One action button, e.g. Undo. Choosing it dismisses the toast. */
   action?: { label: string; onClick: () => void }

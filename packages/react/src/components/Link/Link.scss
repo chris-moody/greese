@@ -1,8 +1,9 @@
 @use '../../styles/mixins';
+@use '../../styles/tones';
 
 @layer greese.components {
   .greese-Link {
-    color: var(--greese-color-accent);
+    color: var(--greese-color-primary);
     text-decoration-line: underline;
     text-decoration-thickness: from-font;
     text-underline-offset: 0.2em;
@@ -12,7 +13,17 @@
     @include mixins.focus-ring(1px);
 
     @include mixins.hover {
-      color: var(--greese-color-accent-strong);
+      color: var(--greese-color-primary-strong);
+    }
+  }
+
+  @each $tone in tones.$brand {
+    .greese-Link--#{$tone} {
+      color: var(--greese-color-#{$tone});
+
+      @include mixins.hover {
+        color: var(--greese-color-#{$tone}-strong);
+      }
     }
   }
 

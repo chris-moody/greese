@@ -7,18 +7,31 @@ import {
 } from '../../utils/responsive.ts'
 import { Slot } from '../Slot/Slot.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
+import type { BrandTone } from '../../utils/tone.ts'
 
 export type FontSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl'
 export type FontWeight = 'regular' | 'medium' | 'semibold' | 'bold'
 export type TextTone =
-  'neutral' | 'muted' | 'accent' | 'positive' | 'negative' | 'warning' | 'info'
+  | 'neutral'
+  | 'muted'
+  | BrandTone
+  | 'positive'
+  | 'negative'
+  | 'warning'
+  | 'info'
 
 export interface TextProps extends ComponentPropsWithoutRef<'p'>, GreeseProps {
+  /** The rendered element: a `<p>`, or yours with `asChild`. */
   ref?: Ref<HTMLElement>
   /** Font size from the scale, per breakpoint if needed. */
   size?: Responsive<FontSize>
+  /** Font weight: regular, medium, semibold or bold. */
   weight?: FontWeight
-  /** @default 'neutral' */
+  /**
+   * Text colour: neutral, muted, accent, a brand colour (primary, secondary,
+   * tertiary), positive, negative, warning or info.
+   * @default 'neutral'
+   */
   tone?: TextTone
   /** `true` cuts to one line with an ellipsis; a number clamps to that many lines. */
   truncate?: boolean | number

@@ -6,9 +6,9 @@ export interface ProgressProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'progress'>, 'value'> {
   /** Omit for an indeterminate (unknown duration) bar. */
   value?: number
-  /** @default 100 */
+  /** The value that means complete. @default 100 */
   max?: number
-  /** @default 'md' */
+  /** Bar thickness: `sm` (4px) or `md` (8px). @default 'md' */
   size?: 'sm' | 'md'
 }
 

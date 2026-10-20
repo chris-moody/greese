@@ -11,7 +11,9 @@ import {
 import { cx } from '../../utils/cx.ts'
 
 export interface SlotProps extends HTMLAttributes<HTMLElement> {
+  /** One element, which receives Slot's props, merged with its own. */
   children?: ReactNode
+  /** Merged with the child's own ref; both receive the element. */
   ref?: Ref<HTMLElement>
 }
 

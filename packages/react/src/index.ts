@@ -6,15 +6,26 @@ export {
   cssEase,
   resolveGreese,
   withGreese,
+  type GreeseEffectName,
+  type GreeseEffectRegistry,
   type GreeseExit,
   type GreeseInteraction,
+  type GreeseMotion,
   type GreeseOptions,
   type GreesePreset,
   type GreeseProp,
   type GreeseProps,
+  type GreeseSequence,
   type GreeseTextEffect,
   type ResolvedGreese,
 } from './utils/greese.ts'
+export {
+  defineGreeseEffect,
+  type GreeseEffect,
+  type GreeseEffectContext,
+  type GreeseEffectKeyframes,
+  type GreeseEffectWithDefaults,
+} from './components/Motion/effects.ts'
 export {
   computeFallbackPosition,
   positionArea,
@@ -23,12 +34,13 @@ export {
   type Placement,
 } from './utils/anchor.ts'
 export type { BoxStyleProps, Display } from './utils/styleProps.ts'
+export type { BrandTone } from './utils/tone.ts'
 export {
   isSpaceToken,
   neverToken,
   resolveResponsive,
   responsiveClass,
-  responsivePropClass,
+  responsiveValueClass,
   responsiveVar,
   spaceToCss,
   type ResolvedResponsive,

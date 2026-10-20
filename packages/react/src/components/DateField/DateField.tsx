@@ -7,7 +7,7 @@ import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 export type DateFieldType = 'date' | 'time' | 'datetime-local' | 'month' | 'week'
 
 export interface DateFieldProps extends GreeseProps, Omit<TextFieldProps, 'type'> {
-  /** @default 'date' */
+  /** Which native picker: a date, a time, both, a month or a week. @default 'date' */
   type?: DateFieldType
 }
 

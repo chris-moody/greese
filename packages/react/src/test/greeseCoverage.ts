@@ -26,7 +26,9 @@ type ComponentNames = {
     : never
 }[keyof typeof Library]
 
-type PropsOf<K extends ComponentNames> = (typeof Library)[K] extends (props: infer P) => unknown
+type PropsOf<K extends ComponentNames> = (typeof Library)[K] extends (
+  props: infer P
+) => unknown
   ? P
   : never
 
@@ -35,4 +37,6 @@ type MissingGreese = {
 }[Exclude<ComponentNames, Excluded>]
 
 // Fails with "Type 'true' is not assignable to type '"<Name>"'" naming each one.
-export const everyComponentAcceptsGreese: [MissingGreese] extends [never] ? true : MissingGreese = true
+export const everyComponentAcceptsGreese: [MissingGreese] extends [never]
+  ? true
+  : MissingGreese = true

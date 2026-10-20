@@ -23,7 +23,11 @@ export interface ImageProps
   alt: string
   /** Width / height. Reserves space before loading, so nothing shifts (no CLS). */
   ratio?: Responsive<number | string>
-  /** @default 'cover' */
+  /**
+   * How the image fills its ratio box: `cover` crops to fill, `contain` shows
+   * all of it.
+   * @default 'cover'
+   */
   fit?: 'cover' | 'contain'
   /**
    * Shown behind the image until it paints: a colour, or a tiny blurred

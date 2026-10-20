@@ -1,0 +1,91 @@
+@use 'sass:map';
+@use '../../styles/controls';
+@use '../../styles/mixins';
+
+@layer greese.components {
+  // The input covers the boxes, invisible; the boxes draw its value.
+  .greese-OtpField {
+    @include mixins.component-root;
+
+    position: relative;
+    display: inline-flex;
+    gap: var(--greese-space-2);
+    max-inline-size: 100%;
+  }
+
+  @each $size, $spec in controls.$sizes {
+    .greese-OtpField--size-#{$size} {
+      --greese-otp-size: #{map.get($spec, height)};
+
+      font-size: max(16px, #{map.get($spec, font)});
+    }
+  }
+
+  .greese-OtpField-input {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+    color: transparent;
+    letter-spacing: 1em;
+    caret-color: transparent;
+    cursor: text;
+    background: transparent;
+    border: 0;
+    outline: none;
+    opacity: 0;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .greese-OtpField-slot {
+    display: grid;
+    flex: 0 1 var(--greese-otp-size);
+    place-items: center;
+    min-inline-size: 2rem;
+    block-size: calc(var(--greese-otp-size) * 1.15);
+    font-family: var(--greese-font-mono);
+    font-weight: var(--greese-font-weight-semibold);
+    color: var(--greese-color-fg);
+    pointer-events: none;
+    background-color: var(--greese-color-canvas);
+    border: 1px solid var(--greese-color-border-strong);
+    border-radius: var(--greese-radius-md);
+    transition: border-color var(--greese-duration-fast) var(--greese-easing-standard);
+  }
+
+  .greese-OtpField-slot--active {
+    border-color: var(--greese-color-focus-ring);
+    box-shadow: 0 0 0 1px var(--greese-color-focus-ring);
+
+    // A blinking caret in the empty active box.
+    &:empty::after {
+      inline-size: 1px;
+      block-size: 1.2em;
+      content: '';
+      background-color: currentcolor;
+
+      @include mixins.motion-safe {
+        animation: greese-otp-caret 1s steps(1) infinite;
+      }
+    }
+  }
+
+  .greese-OtpField[data-invalid] .greese-OtpField-slot {
+    border-color: var(--greese-color-negative);
+  }
+
+  .greese-OtpField[data-disabled] .greese-OtpField-slot {
+    opacity: 0.55;
+  }
+
+  @keyframes greese-otp-caret {
+    50% {
+      opacity: 0;
+    }
+  }
+}

@@ -12,6 +12,7 @@ import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6
 
 export interface HeadingProps extends ComponentPropsWithoutRef<'h2'>, GreeseProps {
+  /** The rendered heading element (or your element, with `asChild`). */
   ref?: Ref<HTMLHeadingElement>
   /** Document outline level: renders `<h1>`–`<h6>`. @default 2 */
   level?: HeadingLevel
@@ -20,6 +21,7 @@ export interface HeadingProps extends ComponentPropsWithoutRef<'h2'>, GreeseProp
    * are smaller on phones (level 1: 3xl → 4xl).
    */
   size?: Responsive<FontSize>
+  /** Text colour: neutral, muted, accent, positive, negative, warning or info. */
   tone?: TextTone
   /** Render your own element (e.g. a heading inside a `<summary>`) with heading styles. */
   asChild?: boolean

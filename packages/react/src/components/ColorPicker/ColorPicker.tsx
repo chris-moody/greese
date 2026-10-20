@@ -33,6 +33,7 @@ export interface ColorPickerProps
   swatches?: readonly string[]
   /** Name for the whole picker. @default 'Colour' */
   label?: string
+  /** Disables every part of the picker. */
   disabled?: boolean
 }
 

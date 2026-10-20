@@ -88,3 +88,25 @@ export const SortGlyph = (): JSX.Element => (
     <path className="greese-SortGlyph-down" d="M5 9.5l3 3 3-3" />
   </svg>
 )
+
+/** A five-point star, for Rating. Filled with `currentColor`. */
+export const StarGlyph = (): JSX.Element => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 2.5l2.94 6.08 6.56.82-4.83 4.6 1.22 6.5L12 17.27 6.11 20.5l1.22-6.5-4.83-4.6 6.56-.82z" />
+  </svg>
+)
+
+/** A tick, for completed Steps. */
+export const CheckGlyph = (): JSX.Element => (
+  <svg
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M3.5 8.5l3 3 6-7" />
+  </svg>
+)

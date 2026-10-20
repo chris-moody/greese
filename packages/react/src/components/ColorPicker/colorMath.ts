@@ -1,16 +1,24 @@
 /** Red, green and blue in `0`–`255`; alpha in `0`–`1`. */
 export interface RgbColor {
+  /** Red, 0–255. */
   r: number
+  /** Green, 0–255. */
   g: number
+  /** Blue, 0–255. */
   b: number
+  /** Opacity, 0–1. */
   a: number
 }
 
 /** Hue in `0`–`360`; saturation, value (brightness) and alpha in `0`–`1`. */
 export interface HsvColor {
+  /** Hue in degrees, 0–360. */
   h: number
+  /** Saturation, 0–1. */
   s: number
+  /** Value (brightness), 0–1. */
   v: number
+  /** Opacity, 0–1. */
   a: number
 }
 

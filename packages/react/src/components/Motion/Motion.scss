@@ -1,10 +1,11 @@
 // The `greese` prop's CSS presets (utils/greese.ts): entrances and scroll
 // reveals with no JavaScript. Every rule sits behind
 // `prefers-reduced-motion: no-preference`, so reduced motion means no motion.
-// Configuration arrives as inline custom properties on the element.
+// Configuration arrives as inline custom properties on the element. Effect
+// names are camelCase in the API (`fadeUp`) and kebab-case here (`fade-up`).
 
 $presets: (
-  'fade',
+  'fade-in',
   'fade-up',
   'fade-down',
   'fade-start',
@@ -37,11 +38,11 @@ $presets: (
   }
 
   // Exit presets for overlays: read by the floating enter-exit mixin.
-  .greese-Motion--exit-fade-down {
+  .greese-Motion--exit-fade-out-down {
     --greese-motion-exit-translate: 0 var(--greese-motion-distance, 1rem);
   }
 
-  .greese-Motion--exit-fade-up {
+  .greese-Motion--exit-fade-out-up {
     --greese-motion-exit-translate: 0 calc(-1 * var(--greese-motion-distance, 1rem));
   }
 
@@ -50,47 +51,60 @@ $presets: (
   }
 
   // Stagger: each child's position, for the delay. Children past 24 share
-  // the last slot.
-  @for $i from 1 through 24 {
-    .greese-Motion--stagger > :nth-child(#{$i}) {
-      --greese-motion-index: #{$i - 1};
+  // the last slot. Where sibling-index() exists, one rule does it; the
+  // :nth-child fallback sits in @supports so those browsers never even match
+  // it, since structural selectors are tried against every element.
+  @supports (order: sibling-index()) {
+    .greese-Motion--stagger > * {
+      --greese-motion-index: min(sibling-index() - 1, 24);
     }
   }
 
-  .greese-Motion--stagger > :nth-child(n + 25) {
-    --greese-motion-index: 24;
+  @supports not (order: sibling-index()) {
+    @for $i from 1 through 24 {
+      .greese-Motion--stagger > :nth-child(#{$i}) {
+        --greese-motion-index: #{$i - 1};
+      }
+    }
+
+    .greese-Motion--stagger > :nth-child(n + 25) {
+      --greese-motion-index: 24;
+    }
+  }
+
+  // Each preset only names its keyframes (inherited by staggered children);
+  // the shared rules below animate. One rule set for every preset keeps the
+  // child selectors, which the browser tries on every element, few.
+  @each $preset in $presets {
+    .greese-Motion--enter-#{$preset},
+    .greese-Motion--view-#{$preset} {
+      --greese-motion-name: greese-#{$preset};
+    }
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    @each $preset in $presets {
-      // `backwards`: the first frame applies during the delay; afterwards the
-      // element's own styles rule again (presets end at its natural state).
-      .greese-Motion--enter-#{$preset}:not(.greese-Motion--stagger),
-      .greese-Motion--enter-#{$preset}.greese-Motion--stagger > *,
-      .greese-Motion--view-#{$preset}[data-greese-view='in']:not(.greese-Motion--stagger),
-      .greese-Motion--view-#{$preset}.greese-Motion--stagger[data-greese-view='in'] > * {
-        --greese-motion-offset: calc(
-          var(--greese-motion-index, 0) * var(--greese-motion-stagger, 0s)
-        );
+    // `backwards`: the first frame applies during the delay; afterwards the
+    // element's own styles rule again (presets end at its natural state).
+    .greese-Motion--enter:not(.greese-Motion--stagger),
+    .greese-Motion--enter.greese-Motion--stagger > *,
+    .greese-Motion--view[data-greese-view='in']:not(.greese-Motion--stagger),
+    .greese-Motion--view.greese-Motion--stagger[data-greese-view='in'] > * {
+      --greese-motion-offset: calc(
+        var(--greese-motion-index, 0) * var(--greese-motion-stagger, 0s)
+      );
 
-        animation: greese-#{$preset}
-          var(--greese-motion-duration, 0.5s)
-          var(--greese-motion-ease, var(--greese-ease-out))
-          calc(var(--greese-motion-delay, 0s) + var(--greese-motion-offset))
-          backwards;
-      }
-
-      // Waiting to scroll into view (set by the runtime, never without JS).
-      .greese-Motion--view-#{$preset}[data-greese-view='pending']:not(
-          .greese-Motion--stagger
-        ),
-      .greese-Motion--view-#{$preset}.greese-Motion--stagger[data-greese-view='pending']
-        > * {
-        opacity: 0;
-      }
+      animation: var(--greese-motion-name) var(--greese-motion-duration, 0.5s)
+        var(--greese-motion-ease, var(--greese-ease-out))
+        calc(var(--greese-motion-delay, 0s) + var(--greese-motion-offset)) backwards;
     }
 
-    @keyframes greese-fade {
+    // Waiting to scroll into view (set by the runtime, never without JS).
+    .greese-Motion--view[data-greese-view='pending']:not(.greese-Motion--stagger),
+    .greese-Motion--view.greese-Motion--stagger[data-greese-view='pending'] > * {
+      opacity: 0;
+    }
+
+    @keyframes greese-fade-in {
       from {
         opacity: 0;
       }

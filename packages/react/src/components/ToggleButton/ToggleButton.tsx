@@ -10,6 +10,7 @@ export interface ToggleButtonProps extends GreeseProps, Omit<ButtonProps, 'asChi
   pressed?: boolean
   /** Initial pressed state when uncontrolled. */
   defaultPressed?: boolean
+  /** Called with the new state when it's pressed. */
   onPressedChange?: (pressed: boolean) => void
 }
 

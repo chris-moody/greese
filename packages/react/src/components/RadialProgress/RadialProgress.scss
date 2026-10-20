@@ -1,0 +1,65 @@
+@use '../../styles/mixins';
+
+// Registered so the ring animates between values. Read only by the ring
+// itself (::before), so nothing inherits it.
+@property --greese-radialprogress-angle {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+@layer greese.components {
+  // A conic-gradient disc, masked to a ring.
+  .greese-RadialProgress {
+    @include mixins.component-root;
+
+    position: relative;
+    display: inline-grid;
+    flex-shrink: 0;
+    place-items: center;
+    inline-size: var(--greese-radialprogress-size, 4rem);
+    aspect-ratio: 1;
+    font-size: calc(var(--greese-radialprogress-size, 4rem) / 4.5);
+    font-weight: var(--greese-font-weight-semibold);
+    font-variant-numeric: tabular-nums;
+    color: var(--greese-color-fg);
+
+    &::before {
+      --greese-radialprogress-angle: calc(var(--greese-radialprogress-value) * 1%);
+
+      position: absolute;
+      inset: 0;
+      content: '';
+      background: conic-gradient(
+        var(--greese-color-primary) var(--greese-radialprogress-angle),
+        var(--greese-color-border) 0
+      );
+      border-radius: 50%;
+
+      // Only the mask's alpha matters; the colour is any opaque one.
+      mask: radial-gradient(
+        farthest-side,
+        transparent calc(100% - var(--greese-radialprogress-thickness, 10%) - 0.5px),
+        var(--greese-color-fg) calc(100% - var(--greese-radialprogress-thickness, 10%))
+      );
+      transition: --greese-radialprogress-angle var(--greese-duration-slow)
+        var(--greese-easing-standard);
+    }
+  }
+
+  .greese-RadialProgress-label {
+    position: relative;
+  }
+
+  .greese-RadialProgress--indeterminate::before {
+    @include mixins.motion-safe {
+      animation: greese-radialprogress-spin 1s linear infinite;
+    }
+  }
+
+  @keyframes greese-radialprogress-spin {
+    to {
+      rotate: 1turn;
+    }
+  }
+}

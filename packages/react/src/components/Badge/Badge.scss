@@ -4,7 +4,7 @@
   @include tones.classes(
     'greese-Badge',
     'greese-badge-tone',
-    (neutral, accent, positive, negative, warning, info)
+    (neutral, primary, secondary, tertiary, accent, positive, negative, warning, info)
   );
 
   .greese-Badge {

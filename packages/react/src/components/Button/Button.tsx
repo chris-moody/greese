@@ -8,18 +8,32 @@ import {
 } from '../../utils/responsive.ts'
 import { Slot, Slottable } from '../Slot/Slot.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
+import type { BrandTone } from '../../utils/tone.ts'
 
 export type ButtonVariant = 'solid' | 'soft' | 'outline' | 'ghost'
-export type ButtonTone = 'accent' | 'neutral' | 'negative'
+export type ButtonTone = BrandTone | 'neutral' | 'negative'
 export type ControlSize = 'sm' | 'md' | 'lg'
 
 export interface ButtonProps extends GreeseProps, ComponentPropsWithoutRef<'button'> {
+  /** The rendered `<button>` (or your element, with `asChild`). */
   ref?: Ref<HTMLButtonElement>
-  /** @default 'solid' */
+  /**
+   * Visual weight: `solid` for the main action, `soft`, `outline`, then `ghost`
+   * for the least.
+   * @default 'solid'
+   */
   variant?: ButtonVariant
-  /** Colour role. `negative` is for destructive actions. @default 'accent' */
+  /**
+   * Colour role: `accent`, a brand colour (primary, secondary, tertiary),
+   * `neutral`, or `negative` for destructive actions.
+   * @default 'primary'
+   */
   tone?: ButtonTone
-  /** @default 'md' */
+  /**
+   * Height, padding and text size: `sm`, `md` or `lg`. Touch targets stay at
+   * least 44px.
+   * @default 'md'
+   */
   size?: ControlSize
   /** Fill the container's width, e.g. `{ xs: true, md: false }` on phones only. */
   fullWidth?: Responsive<boolean>
@@ -51,7 +65,7 @@ const FULL_WIDTH: ResponsiveConfig = { block: 'greese-Button', prop: 'width' }
 export const Button = ({
   greese,
   variant = 'solid',
-  tone = 'accent',
+  tone = 'primary',
   size = 'md',
   fullWidth,
   loading,

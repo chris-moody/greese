@@ -2,7 +2,10 @@ import type { GreeseOptions } from '../../utils/greese.ts'
 
 /** The client runtime behind the `greese` prop: see greeseRuntime.ts. */
 export interface GreeseRuntime {
-  attach(el: HTMLElement, options: GreeseOptions): () => void
+  /** Attaches each element's options and stores its cleanup on it. */
+  attachAll(
+    items: Array<{ el: HTMLElement; options: GreeseOptions; detach?: () => void }>
+  ): void
 }
 
 let registered: Promise<GreeseRuntime> | undefined

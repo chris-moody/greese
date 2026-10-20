@@ -25,8 +25,9 @@ export interface TableProps extends GreeseProps, ComponentPropsWithRef<'table'> 
   caption: ReactNode
   /** Keep the caption for assistive tech but hide it on screen. */
   hideCaption?: boolean
-  /** @default 'comfortable' */
+  /** Row height: `comfortable`, or `compact` for dense data. @default 'comfortable' */
   density?: 'compact' | 'comfortable'
+  /** Shade every other body row. */
   striped?: boolean
   /** Highlight the row under the pointer. */
   hoverable?: boolean
@@ -113,7 +114,7 @@ export const TableHead = ({
 }: ComponentPropsWithRef<'thead'> & GreeseProps): JSX.Element =>
   withGreese(<thead role={role(use(StackedContext), 'rowgroup')} {...props} />, greese)
 
-/** Rows here can enter in sequence: `greese={{ enter: 'fade-up', stagger: 0.04 }}`. */
+/** Rows here can enter in sequence: `greese={{ enter: 'fadeUp', stagger: 0.04 }}`. */
 export const TableBody = ({
   greese,
   ...props
@@ -148,8 +149,9 @@ export interface TableHeaderCellProps
   sort?: SortDirection
   /** Makes the header a sort button. */
   onSort?: () => void
-  /** @default 'start' */
+  /** Text alignment in the column. Use `end` for numbers. @default 'start' */
   align?: 'start' | 'center' | 'end'
+  /** The column's name. */
   children?: ReactNode
 }
 
@@ -194,7 +196,7 @@ export interface TableCellProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'td'>, 'align'> {
   /** The column name, shown beside the value when rows stack into cards. */
   label?: string
-  /** @default 'start' */
+  /** Text alignment in the cell. Use `end` for numbers. @default 'start' */
   align?: 'start' | 'center' | 'end'
 }
 

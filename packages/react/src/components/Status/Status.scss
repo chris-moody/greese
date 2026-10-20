@@ -1,0 +1,54 @@
+@use '../../styles/mixins';
+@use '../../styles/tones';
+
+@layer greese.components {
+  @include tones.classes(
+    'greese-Status',
+    'greese-status-tone',
+    (neutral, primary, secondary, tertiary, accent, positive, negative, warning, info)
+  );
+
+  .greese-Status {
+    --greese-status-size: 0.625rem;
+
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    inline-size: var(--greese-status-size);
+    block-size: var(--greese-status-size);
+    vertical-align: middle;
+    background-color: var(--greese-status-tone);
+    border-radius: 50%;
+  }
+
+  .greese-Status--neutral {
+    --greese-status-tone: var(--greese-color-fg-muted);
+  }
+
+  .greese-Status--sm {
+    --greese-status-size: 0.5rem;
+  }
+
+  .greese-Status--lg {
+    --greese-status-size: 0.875rem;
+  }
+
+  .greese-Status--pulse::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background-color: inherit;
+    border-radius: inherit;
+
+    @include mixins.motion-safe {
+      animation: greese-status-pulse 1.6s var(--greese-easing-exit) infinite;
+    }
+  }
+
+  @keyframes greese-status-pulse {
+    to {
+      opacity: 0;
+      scale: 2.6;
+    }
+  }
+}

@@ -1,0 +1,62 @@
+@use '../../styles/mixins';
+
+@layer greese.components {
+  .greese-List {
+    @include mixins.component-root;
+
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .greese-List--divided > .greese-ListItem + .greese-ListItem {
+    border-block-start: 1px solid var(--greese-color-border);
+  }
+
+  .greese-List--framed {
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-radius-lg);
+
+    > .greese-ListItem {
+      padding-inline: var(--greese-space-4);
+    }
+  }
+
+  .greese-ListItem {
+    display: flex;
+    gap: var(--greese-space-3);
+    align-items: center;
+    min-inline-size: 0;
+    padding-block: var(--greese-list-padding, var(--greese-space-3));
+  }
+
+  .greese-ListItem-start,
+  .greese-ListItem-end {
+    display: flex;
+    flex-shrink: 0;
+    gap: var(--greese-space-2);
+    align-items: center;
+  }
+
+  .greese-ListItem-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-inline-size: 0;
+  }
+
+  .greese-ListItem-title {
+    overflow: hidden;
+    font-weight: var(--greese-font-weight-medium);
+    color: var(--greese-color-fg);
+    text-overflow: ellipsis;
+  }
+
+  .greese-ListItem-description {
+    font-size: var(--greese-font-size-sm);
+    color: var(--greese-color-fg-muted);
+  }
+}

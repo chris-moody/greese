@@ -9,11 +9,12 @@
  *                         it builds on, so bundlers pull in (and de-duplicate)
  *                         exactly what is used
  */
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { compile, compileString, NodePackageImporter } from 'sass-embedded'
 import { dependenciesOf, readComponents } from './cssGraph.ts'
+import { manifestScss, styleManifest } from './styleManifest.ts'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const SRC = join(ROOT, 'src')
@@ -62,6 +63,26 @@ if (unresolved.length) {
   )
 }
 
+const tokensCss = readFileSync(
+  fileURLToPath(import.meta.resolve('@greese-ui/tokens/tokens.css')),
+  'utf8'
+)
+const tokenVars = new Set(tokensCss.match(/--greese-[a-z0-9-]+(?=:)/g))
+const sources = new Map(
+  components.flatMap(({ name }) => {
+    const dir = join(SRC, 'components', name)
+    return readdirSync(dir)
+      .filter((file) => /\.tsx?$/.test(file) && !/\.test\./.test(file))
+      .map((file): [string, string] => [file, readFileSync(join(dir, file), 'utf8')])
+  })
+)
+const manifest = styleManifest(compiled, tokenVars, sources)
+writeFileSync(join(DIST, 'style-manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
+const manifestFile = join(SRC, 'styles/_manifest.scss')
+const scss = manifestScss(manifest)
+if (readFileSync(manifestFile, { encoding: 'utf8', flag: 'a+' }) !== scss)
+  writeFileSync(manifestFile, scss)
+
 let written = 0
 for (const { name } of components) {
   const own = compiled.get(name) ?? ''
@@ -72,5 +93,5 @@ for (const { name } of components) {
   written++
 }
 console.log(
-  `wrote dist/greese-ui.css, dist/base.css, dist/css/core.css and ${written} component stylesheets`
+  `wrote dist/greese-ui.css, dist/base.css, dist/css/core.css, dist/style-manifest.json and ${written} component stylesheets`
 )

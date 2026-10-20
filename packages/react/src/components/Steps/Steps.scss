@@ -1,0 +1,216 @@
+@use '../../styles/mixins';
+@use '../../styles/tones';
+
+@layer greese.components {
+  @include tones.classes('greese-Step', 'greese-step-tone');
+
+  // Neutral events read as grey dots, not black ones.
+  .greese-Step--neutral {
+    --greese-step-tone: var(--greese-color-fg-muted);
+  }
+
+  .greese-Steps {
+    @include mixins.component-root;
+
+    --greese-steps-marker: 2rem;
+
+    display: flex;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .greese-Steps--dots {
+    --greese-steps-marker: 1.25rem;
+  }
+
+  .greese-Step {
+    position: relative;
+    min-inline-size: 0;
+    color: var(--greese-color-fg-muted);
+  }
+
+  .greese-Step-marker {
+    position: relative;
+    display: inline-grid;
+    flex-shrink: 0;
+    place-items: center;
+    inline-size: var(--greese-steps-marker);
+    block-size: var(--greese-steps-marker);
+    font-size: var(--greese-font-size-sm);
+    font-weight: var(--greese-font-weight-semibold);
+    color: var(--greese-color-fg-muted);
+    background-color: var(--greese-color-canvas);
+    border: 2px solid var(--greese-color-border-strong);
+    border-radius: 50%;
+
+    > svg {
+      inline-size: min(1rem, 65%);
+      block-size: min(1rem, 65%);
+    }
+  }
+
+  // Numbers: current and event markers take the tone; complete ones fill.
+  .greese-Step--current .greese-Step-marker,
+  .greese-Step--event .greese-Step-marker {
+    color: var(--greese-step-tone);
+    border-color: var(--greese-step-tone);
+  }
+
+  .greese-Step--complete .greese-Step-marker,
+  .greese-Steps--dots .greese-Step--event .greese-Step-marker {
+    color: var(--greese-step-tone-on);
+    background-color: var(--greese-step-tone);
+    border-color: var(--greese-step-tone);
+  }
+
+  // Dots: the current step is a ring with a dot in it.
+  .greese-Steps--dots .greese-Step--current .greese-Step-marker:empty::before {
+    inline-size: 45%;
+    block-size: 45%;
+    content: '';
+    background-color: currentcolor;
+    border-radius: 50%;
+  }
+
+  .greese-Step-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--greese-space-1);
+    min-inline-size: 0;
+  }
+
+  .greese-Step-title {
+    font-size: var(--greese-font-size-sm);
+    font-weight: var(--greese-font-weight-medium);
+  }
+
+  .greese-Step--current .greese-Step-title,
+  .greese-Step--complete .greese-Step-title,
+  .greese-Step--event .greese-Step-title {
+    color: var(--greese-color-fg);
+  }
+
+  .greese-Step-prefix {
+    font-size: var(--greese-font-size-xs);
+    color: var(--greese-color-fg-muted);
+  }
+
+  .greese-Step-description {
+    font-size: var(--greese-font-size-sm);
+    color: var(--greese-color-fg-muted);
+  }
+
+  // Horizontal: [prefix], marker and text stacked and centred, in equal
+  // columns. Each step is a size container, so its line can span exactly to
+  // the next marker (100cqi is the step's width, the distance between markers).
+  .greese-Steps--horizontal {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+
+    > .greese-Step {
+      display: flex;
+      flex: 1 1 0;
+      flex-direction: column;
+      gap: var(--greese-space-2);
+      align-items: center;
+      min-inline-size: 7rem;
+      padding-block-end: var(--greese-space-2);
+      text-align: center;
+      container-type: inline-size;
+    }
+
+    > .greese-Step:not(:last-child) > .greese-Step-marker::after {
+      position: absolute;
+      inset-block-start: calc(50% - 1px);
+      inset-inline-start: calc(100% + var(--greese-space-2));
+      inline-size: calc(100cqi - var(--greese-steps-marker) - 2 * var(--greese-space-2));
+      block-size: 2px;
+      content: '';
+      background-color: var(--greese-color-border);
+    }
+
+    // As specific as the rule above, which it overrides.
+    > .greese-Step--complete:not(:last-child) > .greese-Step-marker::after {
+      background-color: var(--greese-step-tone);
+    }
+
+    // When any step has a prefix above its marker, the others keep a line's
+    // room for one, so every marker (and the lines between them) stays level.
+    &:has(> .greese-Step--prefix-before)
+      > .greese-Step:not(.greese-Step--prefix-before)::before {
+      block-size: 1lh;
+      font-size: var(--greese-font-size-xs);
+      content: '';
+    }
+
+    > .greese-Step > .greese-Step-prefix {
+      white-space: nowrap;
+    }
+  }
+
+  // Vertical: a grid of [prefix] marker text. When any step puts its prefix
+  // before the marker, every step gets that column, so markers line up.
+  .greese-Steps--vertical {
+    --greese-steps-before: 0px;
+
+    flex-direction: column;
+
+    &:has(> .greese-Step--prefix-before) {
+      --greese-steps-before: calc(
+        var(--greese-steps-prefix, 6rem) + var(--greese-space-3)
+      );
+    }
+
+    > .greese-Step {
+      display: grid;
+      grid-template-columns: var(--greese-steps-marker) minmax(0, 1fr);
+      column-gap: var(--greese-space-3);
+      padding-block-end: var(--greese-space-5);
+    }
+
+    &:has(> .greese-Step--prefix-before) > .greese-Step {
+      grid-template-columns:
+        var(--greese-steps-prefix, 6rem) var(--greese-steps-marker)
+        minmax(0, 1fr);
+
+      > .greese-Step-marker {
+        grid-column: 2;
+      }
+
+      > .greese-Step-body {
+        grid-column: 3;
+      }
+    }
+
+    > .greese-Step > .greese-Step-prefix {
+      grid-row: 1;
+      grid-column: 1;
+      text-align: end;
+    }
+
+    // Text and prefix start level with the marker's centre.
+    > .greese-Step > .greese-Step-body,
+    > .greese-Step > .greese-Step-prefix {
+      padding-block-start: max(0px, (var(--greese-steps-marker) - 1lh) / 2);
+    }
+
+    // The line, from under this marker down to the next one.
+    > .greese-Step:not(:last-child)::after {
+      position: absolute;
+      inset-block: calc(var(--greese-steps-marker) + var(--greese-space-1))
+        var(--greese-space-1);
+      inset-inline-start: calc(
+        var(--greese-steps-before) + var(--greese-steps-marker) / 2 - 1px
+      );
+      inline-size: 2px;
+      content: '';
+      background-color: var(--greese-color-border);
+    }
+
+    > .greese-Step--complete:not(:last-child)::after {
+      background-color: var(--greese-step-tone);
+    }
+  }
+}

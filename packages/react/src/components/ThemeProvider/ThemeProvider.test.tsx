@@ -39,6 +39,19 @@ describe('ThemeProvider', () => {
     expect(styles[0]!.textContent).toBe(brand.css)
   })
 
+  it('scopes a theme by name, leaving its CSS to you', () => {
+    render(
+      <ThemeProvider theme="compiled" data-testid="named">
+        <ThemeProvider scheme="dark" data-testid="dark" />
+      </ThemeProvider>
+    )
+    expect(screen.getByTestId('named')).toHaveAttribute('data-greese-theme', 'compiled')
+    expect(screen.getByTestId('dark')).toHaveAttribute('data-greese-theme', 'compiled')
+    expect(
+      document.head.querySelector('style[data-href="greese-theme-compiled"]')
+    ).toBeNull()
+  })
+
   it('makes nested providers inherit what they do not set', () => {
     render(
       <ThemeProvider theme={brand} data-testid="outer">

@@ -1,5 +1,6 @@
 @use '../../styles/floating';
 @use '../../styles/mixins';
+@use '../../styles/tones';
 
 @layer greese.components {
   .greese-Menu {
@@ -54,6 +55,12 @@
     > svg {
       inline-size: 1.1em;
       block-size: 1.1em;
+    }
+  }
+
+  @each $tone in tones.$brand {
+    .greese-MenuItem--#{$tone} {
+      color: var(--greese-color-#{$tone});
     }
   }
 
