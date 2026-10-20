@@ -15,9 +15,11 @@ export interface Adapter {
   mixer(prop: string, from: Value, to: Value): Mixer
 }
 
-export const toTargets = (targets: Targets): Target[] => {
+/** Resolves targets; selector strings match inside `scope` (the document by default). */
+export const toTargets = (targets: Targets, scope?: ParentNode): Target[] => {
   if (targets == null) return []
-  if (typeof targets === 'string') return [...document.querySelectorAll(targets)]
+  if (typeof targets === 'string')
+    return [...(scope ?? document).querySelectorAll(targets)]
   if (
     typeof (targets as ArrayLike<Target>).length === 'number' &&
     !(targets instanceof Element)
@@ -73,6 +75,10 @@ const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
   // Current parts of each transform property, and which changed this render.
   const parts: Record<string, string[]> = {}
   const dirty = new Set<string>()
+  // Style writes wait for flush(), like transforms, so a render reads every
+  // starting value before it writes anything. Written at once, each write
+  // made the next computed-style read recalculate styles.
+  const styles = new Map<string, string>()
 
   const transformParts = (property: string): string[] => {
     if (!parts[property]) {
@@ -124,17 +130,17 @@ const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
         dirty.add(t[0])
       } else if (prop === 'text') el.textContent = String(value)
       else if (isAttr(prop)) el.setAttribute(prop, String(value))
-      else if (prop.startsWith('--')) el.style.setProperty(prop, String(value))
-      else if (prop in el.style)
-        el.style.setProperty(kebab(prop), String(withUnit(prop, value)))
+      else if (prop.startsWith('--')) styles.set(prop, String(value))
+      else if (prop in el.style) styles.set(kebab(prop), String(withUnit(prop, value)))
       else if (typeof (el as unknown as Record<string, unknown>)[prop] === 'number') {
         ;(el as unknown as Record<string, unknown>)[prop] = Number(value)
       } else el.setAttribute(prop, String(value))
     },
     flush() {
-      for (const property of dirty)
-        el.style.setProperty(property, parts[property]!.join(' '))
+      for (const property of dirty) styles.set(property, parts[property]!.join(' '))
+      for (const [property, value] of styles) el.style.setProperty(property, value)
       dirty.clear()
+      styles.clear()
     },
     mixer(prop, from, to) {
       if (prop === 'text') return mixText(from, to)
@@ -156,6 +162,35 @@ const objectAdapter = (obj: Record<string, unknown>): Adapter => ({
 })
 
 const adapters = new WeakMap<object, Adapter>()
+
+let batching = 0
+const queued = new Set<Adapter>()
+
+/** Commits an adapter's writes, or queues them while a batch is open. */
+export const flushAdapter = (adapter: Adapter): void => {
+  if (batching) queued.add(adapter)
+  else adapter.flush()
+}
+
+/**
+ * Runs `fn` with every timeline's writes held until it returns, so all of
+ * them read their starting values before any of them writes. Rendering many
+ * timelines one after another otherwise recalculates styles once per
+ * timeline. The ticker batches every frame; batch your own bursts, such as
+ * starting many animations at once. Reads made inside `fn` (in `onUpdate`,
+ * say) see values from before the batch.
+ */
+export const batch = (fn: () => void): void => {
+  batching++
+  try {
+    fn()
+  } finally {
+    if (!--batching) {
+      for (const adapter of queued) adapter.flush()
+      queued.clear()
+    }
+  }
+}
 
 /** One adapter per target, shared by every timeline that animates it. */
 export const adapterFor = (target: Target): Adapter => {

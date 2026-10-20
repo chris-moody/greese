@@ -1,3 +1,5 @@
+import { batch } from './target.ts'
+
 /** Anything the ticker can advance: top-level timelines. */
 export interface Tickable {
   tick(dt: number): void
@@ -13,7 +15,10 @@ let last = 0
 const loop = (now: number) => {
   const dt = Math.min((now - last) / 1000, 1 / 30)
   last = now
-  for (const item of [...active]) item.tick(dt)
+  // One batch per frame: every timeline reads, then every timeline writes.
+  batch(() => {
+    for (const item of [...active]) item.tick(dt)
+  })
   frame = active.size ? requestAnimationFrame(loop) : 0
 }
 

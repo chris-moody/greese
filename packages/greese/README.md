@@ -9,7 +9,7 @@ A small keyframe and timeline animation library for the web: about 5 kB
   **nest**.
 - Animates **CSS properties, individual transforms, custom properties, text,
   SVG attributes and plain objects**.
-- **Stagger**, an accessible **`splitText`**, GSAP-style **eases** and
+- **Stagger**, an accessible **`splitText`**, named **eases** and
   **positions**.
 - **`fromPixels`** plays animation authored in GLOP's Pixels studio.
 - **Respects `prefers-reduced-motion`** by default.
@@ -80,10 +80,10 @@ plain JavaScript examples.
 |---|---|
 | Build | `.to`, `.from`, `.fromTo`, `.animate` (keyframes), `.set`, `.add` (timeline or callback), `.call`, `.label` |
 | Control | `play`, `pause`, `resume`, `reverse`, `restart`, `seek`, `progress`, `time`, `timeScale`, `kill`, `invalidate`, `await` |
-| Options | `paused`, `repeat`, `yoyo`, `repeatDelay`, `timeScale`, `reducedMotion`, `onUpdate`, `onComplete` |
+| Options | `paused`, `repeat`, `yoyo`, `repeatDelay`, `timeScale`, `reducedMotion`, `scope`, `onUpdate`, `onComplete` |
 | Positions | `1.5`, `'+=0.2'`, `'-=0.2'`, `'<'`, `'>-0.1'`, `'label+=0.5'` |
 | Eases | `'out'` (default), `'power1'`–`'power4'`, `'sine'`, `'expo'`, `'circ'`, `'back'`, `'elastic'`, `'bounce'` with `.in`/`.out`/`.inOut`; CSS names; `steps(n)`; cubic-bézier arrays; functions |
-| Extras | `splitText(el, { by })`, `fromPixels(animation, targets)`, `ease(name)`, `mix(a, b)` |
+| Extras | `splitText(el, { by })`, `fromPixels(animation, targets)`, `ease(name)`, `mix(a, b)`, `batch(fn)` (start many animations: all read, then all write) |
 
 Times are seconds. Transforms use the individual CSS `translate`, `rotate` and
 `scale` properties, so they never fight your CSS `transform`. Colours mix in

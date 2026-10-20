@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   animate,
+  batch,
   cubicBezier,
   ease,
   mix,
@@ -219,6 +220,44 @@ describe('timeline on plain objects', () => {
     expect(o.v).toBe(10)
     tl.kill()
     expect(o.v).toBe(3)
+  })
+
+  it('matches selector strings inside its scope only', () => {
+    const inside = document.createElement('div')
+    const outside = document.createElement('div')
+    inside.innerHTML = outside.innerHTML = '<i class="dot"></i>'
+    document.body.append(inside, outside)
+    timeline({ paused: true, scope: inside })
+      .to('.dot', { opacity: 0.5, duration: 1 })
+      .progress(1)
+    expect(inside.querySelector('i')!.style.opacity).toBe('0.5')
+    expect(outside.querySelector('i')!.style.opacity).toBe('')
+    inside.remove()
+    outside.remove()
+  })
+
+  it('holds every write in a batch until it ends, so reads come first', () => {
+    const el = document.createElement('div')
+    document.body.append(el)
+    const seen: string[] = []
+    batch(() => {
+      timeline({ paused: true }).to(el, { opacity: 0.5, duration: 1 }).progress(1)
+      seen.push(el.style.opacity)
+    })
+    expect(seen).toEqual([''])
+    expect(el.style.opacity).toBe('0.5')
+    el.remove()
+  })
+
+  it('restores values it never needed to read: explicit keyframes and fromTo', () => {
+    const o = { a: 3, b: 4 }
+    const tl = timeline({ paused: true })
+      .animate(o, { a: [0, 10] }, { duration: 1 })
+      .fromTo(o, { b: 0 }, { b: 10, duration: 1 })
+    tl.progress(1)
+    expect(o).toEqual({ a: 10, b: 10 })
+    tl.kill()
+    expect(o).toEqual({ a: 3, b: 4 })
   })
 })
 

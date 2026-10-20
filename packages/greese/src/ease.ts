@@ -6,7 +6,7 @@ export type EaseFn = (t: number) => number
  *
  * Names: `linear`; the CSS keywords `ease`, `ease-in`, `ease-out`,
  * `ease-in-out`; `steps(n)`; `in`, `out`, `inOut` (power2); or a family with
- * a direction, GSAP-style: `power1`–`power4`, `sine`, `expo`, `circ`, `back`,
+ * a direction: `power1`–`power4`, `sine`, `expo`, `circ`, `back`,
  * `elastic`, `bounce`, each `.in`, `.out` or `.inOut`, e.g. `power3.out`,
  * `back.out(2)`, `elastic.out(1.2, 0.4)`.
  */

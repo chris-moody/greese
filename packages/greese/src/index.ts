@@ -15,7 +15,7 @@ export {
   type PixelsTweenType,
 } from './pixels.ts'
 export { splitText, type SplitText, type SplitTextOptions } from './split.ts'
-export { toTargets, type Target, type Targets } from './target.ts'
+export { batch, toTargets, type Target, type Targets } from './target.ts'
 export {
   animate,
   timeline,

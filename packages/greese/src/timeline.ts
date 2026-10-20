@@ -1,6 +1,7 @@
 import { ease as toEase, type Ease, type EaseFn } from './ease.ts'
 import {
   adapterFor,
+  flushAdapter,
   toTargets,
   type Adapter,
   type Target,
@@ -75,6 +76,8 @@ export interface TimelineOptions {
    * @default 'reduce'
    */
   reducedMotion?: 'reduce' | 'ignore'
+  /** Selector strings passed to this timeline match only inside this element. */
+  scope?: ParentNode
   onUpdate?: (timeline: Timeline) => void
   onComplete?: (timeline: Timeline) => void
 }
@@ -149,7 +152,7 @@ class Track {
       i = k
     if (i < 0) {
       const first = this.segments[0]!
-      if (first.immediate) return this.valueOf(0, first.start)
+      if (first.immediate) return this.firstWrite(this.valueOf(0, first.start))
       // Not started: leave the property alone, but restore it once when the
       // playhead moves back before the track (a rewind or seek).
       if (!this.live) return undefined
@@ -157,7 +160,16 @@ class Track {
       return this.original()
     }
     this.live = true
-    return this.valueOf(i, time)
+    return this.firstWrite(this.valueOf(i, time))
+  }
+
+  /**
+   * Reads the original before the first write, even when every value was
+   * given explicitly and none was needed, so `kill()` can restore it.
+   */
+  private firstWrite(value: Value): Value {
+    this.original()
+    return value
   }
 
   invalidate() {
@@ -277,7 +289,7 @@ export class Timeline implements PromiseLike<void> {
     options: AnimateOptions = {},
     position?: Position
   ): this {
-    const list = toTargets(targets)
+    const list = toTargets(targets, this.#options.scope)
     // `to()` passes its options inside the keyframe object.
     const inline = (Array.isArray(keyframes) ? {} : keyframes) as AnimateOptions
     const duration = options.duration ?? inline.duration ?? 0.5
@@ -321,7 +333,7 @@ export class Timeline implements PromiseLike<void> {
   /** Animates from `fromVars` to `toVars` (options go on `toVars`). */
   fromTo(targets: Targets, fromVars: Keyframe, toVars: Vars, position?: Position): this {
     const { duration = 0.5, ease, stagger } = toVars
-    const list = toTargets(targets)
+    const list = toTargets(targets, this.#options.scope)
     const at = this.#resolve(position)
     let end = at
     list.forEach((target, i) => {
@@ -601,7 +613,7 @@ export class Timeline implements PromiseLike<void> {
 
   #flush() {
     for (const props of this.#tracks.values())
-      props.values().next().value?.adapter.flush()
+      flushAdapter(props.values().next().value!.adapter)
   }
 
   #track(target: Target, prop: string): Track {
