@@ -50,6 +50,11 @@ export interface ThemeSpec {
   name?: string
   /** Token overrides by group, kebab-case: `{ color: { accent: … }, radius: { md: '12px' } }`. */
   tokens?: Record<string, Record<string, SchemeValue>>
+  /**
+   * The type system by variant, then `base` or a breakpoint, then property:
+   * `{ h1: { base: { size: '2rem' }, lg: { size: '4rem' } } }`.
+   */
+  typography?: Record<string, Record<string, Record<string, string>>>
   /** Tunes every `greese` prop entrance: duration, delay, ease, distance. */
   motionDefaults?: Record<string, string>
   /** Overrides by component name: `{ Button: { … } }`. */
@@ -94,6 +99,16 @@ export const validateSpec = (spec: ThemeSpec): string[] => {
     for (const [k, v] of Object.entries(values)) {
       key(`tokens.${group}`, k)
       value(`tokens.${group}.${k}`, v)
+    }
+  }
+  for (const [variant, points] of Object.entries(spec.typography ?? {})) {
+    key('typography', variant)
+    for (const [point, style] of Object.entries(points)) {
+      key(`typography.${variant}`, point)
+      for (const [prop, v] of Object.entries(style)) {
+        key(`typography.${variant}.${point}`, prop)
+        value(`typography.${variant}.${point}.${prop}`, v)
+      }
     }
   }
   for (const [k, v] of Object.entries(spec.motionDefaults ?? {})) {
@@ -243,6 +258,37 @@ export const specToScss = (spec: ThemeSpec, source = 'greese-theme.json'): strin
       `${indent}@include greese.tokens(${overrides.length ? tokenMap(overrides) : '()'}${
         extended.length ? `, $extend: ${tokenMap(extended)}` : ''
       });`
+    )
+
+  const types = filled(spec.typography)
+    .map(
+      ([variant, points]) =>
+        [
+          variant,
+          filled(points)
+            .map(([point, style]) => [point, filled(style)] as const)
+            .filter(([, values]) => values.length),
+        ] as const
+    )
+    .filter(([, points]) => points.length)
+  if (types.length)
+    blocks.push(
+      `${indent}@include greese.typography(${map(
+        types.map(([variant, points]) => [
+          variant,
+          map(
+            points.map(([point, values]) => [
+              point,
+              map(
+                values.map(([prop, v]) => [prop, str(v)]),
+                `${indent}    `
+              ),
+            ]),
+            `${indent}  `
+          ),
+        ]),
+        indent
+      )});`
     )
 
   const defaults = filled(spec.motionDefaults)

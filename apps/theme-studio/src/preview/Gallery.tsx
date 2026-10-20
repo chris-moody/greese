@@ -126,6 +126,46 @@ const Typography = (): JSX.Element => (
   </Group>
 )
 
+const VARIANTS = [
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  's1',
+  's2',
+  'p1',
+  'p2',
+  'p3',
+  'caption',
+] as const
+
+/** The type variants as they set themselves: resize the preview to watch them change. */
+const TypeVariants = (): JSX.Element => (
+  <Group title="Type variants">
+    <Stack gap={2}>
+      {VARIANTS.map((variant) => (
+        <Stack key={variant} direction="row" gap={3} align="baseline">
+          <Text
+            variant="caption"
+            tone="muted"
+            style={{ inlineSize: '3.5rem', flexShrink: 0 }}
+          >
+            {variant}
+          </Text>
+          <Text variant={variant} style={{ minInlineSize: 0 }}>
+            {variant === 'caption' ? 'Small print' : 'The quick brown fox'}
+          </Text>
+        </Stack>
+      ))}
+      <Button variant="soft" size="sm" style={{ alignSelf: 'start' }}>
+        Button variant
+      </Button>
+    </Stack>
+  </Group>
+)
+
 const people = [
   { name: 'Ada Lovelace', role: 'Analyst', commits: 128 },
   { name: 'Grace Hopper', role: 'Compiler', commits: 342 },
@@ -144,6 +184,7 @@ export const Gallery = (): JSX.Element => (
     </Stack>
     <Grid container minChildWidth="17rem" gap={4}>
       <Typography />
+      <TypeVariants />
       <Group title="Buttons">
         <Stack direction="row" gap={2} wrap="wrap">
           <Button>Solid</Button>

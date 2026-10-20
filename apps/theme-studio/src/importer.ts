@@ -5,7 +5,7 @@
  * can hold is imported; the rest is reported, with its CSS, never dropped
  * silently. Pure: the server and the tests use it.
  */
-import { color, deriveColors, scalarTokens } from '@greese/ui'
+import { breakpoints, color, deriveColors, scalarTokens, typography } from '@greese/ui'
 import { blocks } from './manifest.ts'
 import type { ComponentSpec, Declarations, SchemeValue, ThemeSpec } from './spec.ts'
 
@@ -157,6 +157,15 @@ const tokenOf = (property: string): Token | undefined => {
   return key ? { group, key } : undefined
 }
 
+const TYPE_VAR = /^--greese-type-([a-z0-9]+)-([a-z]+)$/
+/** `@media (width >= 900px)` → the default breakpoint with that width. */
+const typePoint = (context: string): string | undefined => {
+  const px = /^@media \(width >= (\d+)px\)$/.exec(context.trim())?.[1]
+  return px === undefined
+    ? undefined
+    : Object.entries(breakpoints).find(([, width]) => width === Number(px))?.[0]
+}
+
 const THEME = /\[data-greese-theme=['"]?([\w-]+)['"]?\]/
 const SCHEME = /\[data-greese-scheme=['"]?(light|dark|system)['"]?\]/
 const PRESETS = new Set([
@@ -280,6 +289,7 @@ export const importCss = (css: string, prefer?: string): ImportResult => {
   }
   const components: Record<string, ComponentSpec> = {}
   const motionDefaults: Record<string, string> = {}
+  const typed: Record<string, Record<string, Record<string, string>>> = {}
   const component = (block: string) => (components[block] ??= {})
   const skip = (rule: Rule, reason: string, decls?: Array<[string, string]>) =>
     skipped.push({ where: rule.selector, css: cssOf(rule, decls), reason })
@@ -293,7 +303,11 @@ export const importCss = (css: string, prefer?: string): ImportResult => {
       (c) =>
         !/prefers-color-scheme:\s*dark|prefers-reduced-motion:\s*no-preference/.test(c)
     )
-    if (other.length) {
+    // The type system's media queries: a breakpoint's values, kept as typography.
+    const point = other.length === 1 ? typePoint(other[0]!) : undefined
+    const typeOnly =
+      point !== undefined && rule.decls.every(([property]) => TYPE_VAR.test(property))
+    if (other.length && !typeOnly) {
       skip(
         rule,
         `inside ${other.join(' ')}: the studio has no responsive or conditional rules`
@@ -315,8 +329,12 @@ export const importCss = (css: string, prefer?: string): ImportResult => {
       const rest: Array<[string, string]> = []
       for (const [property, value] of rule.decls) {
         const token = tokenOf(property)
+        const type = TYPE_VAR.exec(property)
         const motion = /^--greese-motion-([\w-]+)$/.exec(property)?.[1]
-        if (token) tokens[scheme].set(`${token.group}\u0000${token.key}`, value)
+        if (type) {
+          const at = point ?? 'base'
+          ;((typed[type[1]!] ??= {})[at] ??= {})[type[2]!] = value
+        } else if (token) tokens[scheme].set(`${token.group}\u0000${token.key}`, value)
         else if (motion && MOTION_DEFAULTS.has(motion))
           motionDefaults[motion] = motion === 'ease' ? easeName(value) : value
         else if (property !== 'color-scheme' && property !== '--greese-loaded')
@@ -425,14 +443,38 @@ export const importCss = (css: string, prefer?: string): ImportResult => {
 
   if (specTokens.color) dropDerived(specTokens.color)
 
+  // Type system: only what differs from the defaults, so a complete theme
+  // (createTheme's, the kit's) imports as its changes.
+  const types: Record<string, Record<string, Record<string, string>>> = {}
+  for (const [variant, points] of Object.entries(typed)) {
+    const known = (
+      typography as unknown as Record<string, Record<string, Record<string, string>>>
+    )[variant]
+    if (!known) continue
+    for (const [at, style] of Object.entries(points)) {
+      for (const [prop, value] of Object.entries(style)) {
+        const standard =
+          known[at]?.[prop] ?? (at === 'base' ? known.xs?.[prop] : undefined)
+        if (standard !== undefined && norm(standard) === norm(value)) continue
+        ;((types[variant] ??= {})[at] ??= {})[prop] = value
+      }
+    }
+  }
+
   const spec: ThemeSpec = { tokens: specTokens, components }
+  if (Object.keys(types).length) spec.typography = types
   if (name) spec.name = name
   if (Object.keys(motionDefaults).length) spec.motionDefaults = motionDefaults
   return {
     spec,
     themes,
     counts: {
-      tokens: Object.values(specTokens).reduce((n, g) => n + Object.keys(g).length, 0),
+      tokens:
+        Object.values(specTokens).reduce((n, g) => n + Object.keys(g).length, 0) +
+        Object.values(types).reduce(
+          (n, p) => n + Object.values(p).reduce((m, s) => m + Object.keys(s).length, 0),
+          0
+        ),
       components: Object.keys(components).length,
       motion:
         Object.values(components).filter((c) => c.motion).length +

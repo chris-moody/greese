@@ -8,6 +8,7 @@ import type { ThemeSpec } from '../spec.ts'
 import { ColorsSection } from './ColorsSection.tsx'
 import { CustomTokens } from './CustomTokens.tsx'
 import { RadiusSection } from './RadiusSection.tsx'
+import { TypographySection } from './TypographySection.tsx'
 
 export const kebab = (value: string): string =>
   value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
@@ -69,6 +70,9 @@ export const TokensPanel = ({ spec, onChange, rendered }: PanelProps): JSX.Eleme
           </Stack>
         </AccordionItem>
       ))}
+      <AccordionItem title="typography">
+        <TypographySection spec={spec} onChange={onChange} />
+      </AccordionItem>
       <AccordionItem title="breakpoint">
         <Stack gap={2}>
           <Text size="sm" tone="muted">

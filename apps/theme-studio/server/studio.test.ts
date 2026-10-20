@@ -156,3 +156,62 @@ describe('new tokens', () => {
     })
   })
 })
+
+describe('typography', () => {
+  const spec: ThemeSpec = {
+    tokens: {},
+    components: {},
+    typography: {
+      h1: { base: { size: '2rem' }, lg: { size: '4rem', tracking: '-0.03em' } },
+      caption: { base: { transform: 'uppercase' } },
+    },
+  }
+
+  it('writes the kit call', () => {
+    const scss = specToScss(spec)
+    expect(scss).toContain('@include greese.typography(')
+    expect(scss).toMatch(/h1: \(\s+base: \(\s+size: "2rem"/)
+    expect(scss).toMatch(/lg: \(\s+size: "4rem",\s+tracking: "-0.03em"/)
+  })
+
+  it('compiles through the real kit', () => {
+    const result = compileSpec(spec)
+    expect(result).not.toHaveProperty('errors')
+    const css = (result as { css: string }).css
+    expect(css).toContain('--greese-type-h1-size: 2rem;')
+    expect(css).toMatch(/@media \(width >= 1200px\)[^@]*--greese-type-h1-size: 4rem;/)
+    expect(css).toContain('--greese-type-caption-transform: uppercase;')
+  })
+
+  it('reports unknown variants and properties from the kit', () => {
+    expect(compileSpec({ typography: { h9: { base: { size: '1rem' } } } })).toEqual({
+      errors: [expect.stringMatching(/no type variant `h9`/)],
+    })
+    expect(compileSpec({ typography: { h1: { base: { colour: 'red' } } } })).toEqual({
+      errors: [expect.stringMatching(/no type property `colour`/)],
+    })
+  })
+
+  it('imports it back, leaving out the defaults a complete theme repeats', () => {
+    const css = (compileSpec({ ...spec, name: 'brand' }) as { css: string }).css
+    const back = importCss(css)
+    expect(back.skipped).toEqual([])
+    expect(back.spec.typography?.h1?.base).toEqual({ size: '2rem' })
+    expect(back.spec.typography?.h1?.lg).toEqual({ size: '4rem', tracking: '-0.03em' })
+    expect(back.spec.typography?.caption?.base).toEqual({ transform: 'uppercase' })
+    // Everything else in h1 and the other variants is the default.
+    expect(back.spec.typography?.h2).toBeUndefined()
+    expect(back.spec.typography?.h1?.md).toBeUndefined()
+  })
+
+  it('reads createTheme() output as just its changes', async () => {
+    const { createTheme } = await import('@greese/ui')
+    const theme = createTheme({
+      name: 'brand',
+      typography: { h3: { md: { size: '2.5rem' } } },
+    })
+    const back = importCss(theme.css)
+    expect(back.skipped).toEqual([])
+    expect(back.spec.typography).toEqual({ h3: { md: { size: '2.5rem' } } })
+  })
+})

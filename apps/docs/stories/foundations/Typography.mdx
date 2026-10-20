@@ -1,0 +1,89 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as TypographyStories from './Typography.stories.tsx'
+
+<Meta of={TypographyStories} />
+
+# Typography
+
+The type system is a set of named text styles, **variants**, that change across
+breakpoints: `p1`, `p2`, `p3`, `h1`–`h6`, `s1`, `s2`, `caption` and `button`.
+
+Each variant has four values on every screen: **size**, **weight**, **tracking**
+(letter spacing) and **leading** (line height). It may also set `family`,
+`style`, `transform`, `features`, `variation`, `stretch`, `wrap`, `spacing` and
+`numeric`, which map to the CSS properties of those names (`transform` is
+`text-transform`; `leading` is `line-height`).
+
+<Canvas of={TypographyStories.Variants} />
+
+## How it's built
+
+Every value is a custom property, `--greese-type-<variant>-<prop>`, for
+example `--greese-type-h1-size`. They're set mobile-first in the token layer:
+the smallest screen's values on `:root`, then a media query at each breakpoint
+that changes any. A value set at a breakpoint applies from there up until a
+larger breakpoint sets another, so only changes are written.
+
+<Canvas of={TypographyStories.DefaultValues} />
+
+## Using a variant
+
+```tsx
+<Heading level={2} variant="h4">…</Heading> {/* an <h2> that looks like an h4 */}
+<Text variant="p2">Body copy</Text>
+```
+
+`level` sets the document outline and `variant` sets the look. With a
+`variant`, `size` and `weight` are ignored: the variant owns them.
+
+In plain HTML, or any element, use the class:
+
+```html
+<p class="greese-Type--p2">Body copy</p>
+<span class="greese-Type--caption">Small print</span>
+```
+
+Buttons use the `button` variant's weight, letter spacing, line height and
+other properties; their size still comes from the `size` prop, because a
+control's height and touch target depend on it.
+
+## Changing the type system
+
+In a theme (static CSS):
+
+```ts
+createTheme({
+  name: 'brand',
+  typography: {
+    h1: { base: { size: '2rem' }, lg: { size: '4rem', tracking: '-0.03em' } },
+    caption: { base: { transform: 'uppercase' } },
+  },
+})
+```
+
+In the SCSS kit, which uses your build's breakpoints:
+
+```scss
+@include greese.typography(
+  (
+    h1: (
+      base: (
+        size: 2rem,
+      ),
+      lg: (
+        size: 4rem,
+        tracking: -0.03em,
+      ),
+    ),
+  )
+);
+```
+
+What you set replaces the default at that exact point, and everything else, the
+other breakpoints included, stays. Unknown variants, breakpoints and properties
+stop the SCSS build. To change one element, set its custom properties:
+`style={{ '--greese-type-h1-size': '5rem' }}`.
+
+A whole build can change the defaults with
+`@use 'pkg:@greese/ui/scss' with ($typography: …)`, shaped like the table above;
+Theme Studio edits all of this in its Typography section.

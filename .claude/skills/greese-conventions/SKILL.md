@@ -34,6 +34,7 @@ the ADR wins: fix this file in the same change.
 | 0012 icons package and docs rules   | `@greese/icons`, prop descriptions, docs page layout                   |
 | 0013 project scope and phases       | goals, non-goals, the phase table, React/browser/licence decisions     |
 | 0015 extensible tokens              | `$extend` / `createTheme({ extend })`; added tokens in Theme Studio    |
+| 0016 typography system              | type variants, `--greese-type-*`, `greese-Type--*`, `typography()`     |
 | 0014 framework-agnostic packages    | `@greese/ui` owns the CSS; framework packages render its markup        |
 
 ## Workspace

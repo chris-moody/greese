@@ -65,6 +65,7 @@ The phase numbers other ADRs cite:
 | —     | Repository, npm metadata, the three apps on Pages     | 2026-10-20 | This ADR, 0010    |
 | —     | Framework-agnostic packages: `@greese/ui`, `js`       | 2026-10-20 | ADR 0014          |
 | —     | Breakpoint keys; extensible tokens                    | 2026-10-20 | ADR 0006, 0015    |
+| —     | Typography system                                     | 2026-10-20 | ADR 0016          |
 
 When a new body of work lands, add a row here; that's the status record the
 skills and agents keep up to date.

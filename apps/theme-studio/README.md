@@ -54,6 +54,15 @@ colors. Radius tokens
 are picked as corner shapes, or typed. The other token groups are under
 **More tokens**.
 
+## Typography
+
+The **typography** section edits the type system (ADR 0016): pick a variant
+(`p1`–`p3`, `h1`–`h6`, `s1`, `s2`, `caption`, `button`) and a breakpoint, and
+set its size, weight, tracking and leading there, or add other properties
+such as `transform`. An empty field keeps what it inherits (the placeholder
+says what), and **Reset** returns the variant to its defaults. The theme file
+holds `typography`; the SCSS writes `greese.typography(…)`.
+
 ## Adding tokens
 
 Every token section ends with an "Add a … token" row: name it (lower-case
