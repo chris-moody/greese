@@ -94,5 +94,4 @@ Storybook with `@storybook/addon-docs`:
   docs theme is static light, which left dark-mode text on a white page.
 
 The site is hosted on GitHub Pages at `/storybook/`, beside the homepage and
-Theme Studio (`.github/workflows/pages.yml`; ADR 0013). `firebase.json`
-remains for Firebase Hosting from `apps/docs/storybook-static`.
+Theme Studio (`.github/workflows/pages.yml`; ADR 0013).

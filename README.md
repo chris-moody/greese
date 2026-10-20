@@ -105,9 +105,3 @@ To refresh the homepage's numbers, rebuild, run `npm run stats -w site`, and
 re-run the benchmark with `node bench/run.ts --json ../site/src/data/bench.json`
 in `apps/playground`. `npm run lighthouse -w site` checks it against the same
 budgets as the playground.
-
-## Other docs hosting
-
-GitHub Pages hosts the docs. `firebase.json` remains for Firebase Hosting:
-`firebase deploy --only hosting` publishes `apps/docs/storybook-static`, so
-run `npm run build` first.

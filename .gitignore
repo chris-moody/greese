@@ -9,7 +9,6 @@ test-results/
 *.log
 .env
 .env.local
-.firebase/
 .npmrc
 .npmrc.local
 lighthouse-report/
