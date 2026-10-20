@@ -53,6 +53,25 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: { index: join(ROOT, 'index.html'), preview: join(ROOT, 'preview.html') },
+      output: {
+        // The homepage and the lazy studio share many small components, which
+        // would each become a chunk, and each chunk a round trip on a slow
+        // connection: React, and GreeseUI's packages, are one chunk each.
+        advancedChunks: {
+          groups: [
+            {
+              name: 'react',
+              test: /node_modules\/(react|react-dom|scheduler)\//,
+              minShareCount: 1,
+            },
+            {
+              name: 'greese',
+              test: /packages\/(react|ui|js)\/(dist|src)\//,
+              minShareCount: 2,
+            },
+          ],
+        },
+      },
     },
   },
   server: { port: 5180 },

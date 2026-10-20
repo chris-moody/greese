@@ -1,4 +1,4 @@
-import { lazy, Suspense, type JSX } from 'react'
+import { lazy, Suspense, useEffect, useState, type JSX } from 'react'
 import {
   AppBar,
   Button,
@@ -28,6 +28,25 @@ const StudioControls = lazy(() =>
   import('../studio/StudioControls.tsx').then((m) => ({ default: m.StudioControls }))
 )
 
+/**
+ * True once the page has loaded and the browser is idle: the theme menu's
+ * chunk (and the palette behind its swatches) is fetched then, so it never
+ * competes with the first screen for the network or the main thread.
+ */
+const useIdle = (): boolean => {
+  const [idle, setIdle] = useState(false)
+  useEffect(() => {
+    const ready = () =>
+      'requestIdleCallback' in window
+        ? requestIdleCallback(() => setIdle(true), { timeout: 4000 })
+        : setTimeout(() => setIdle(true), 1500)
+    if (document.readyState === 'complete') ready()
+    else addEventListener('load', ready, { once: true })
+    return () => removeEventListener('load', ready)
+  }, [])
+  return idle
+}
+
 const links = [
   ['why', 'Why'],
   ['size', 'Size'],
@@ -35,6 +54,12 @@ const links = [
   ['motion', 'Motion'],
   ['components', 'Components'],
 ] as const
+
+const themePlaceholder = (
+  <Button size="sm" variant="soft" tone="neutral" disabled>
+    Theme
+  </Button>
+)
 
 /**
  * The header, on every page: the wordmark, the section links and the Studio
@@ -45,6 +70,7 @@ export const Nav = (): JSX.Element => {
   const { scheme, setScheme } = useColorScheme()
   const route = useCurrentRoute()
   const { replayMotion } = useShell()
+  const idle = useIdle()
   return (
     <AppBar sticky elevateOnScroll greese={{ enter: 'fadeDown', distance: '0.5rem' }}>
       <Container size={route === 'studio' ? 'full' : 'lg'}>
@@ -114,14 +140,9 @@ export const Nav = (): JSX.Element => {
                 <RouteLink to="studio">Studio</RouteLink>
               </Button>
             </Show>
-            <Suspense
-              fallback={
-                <Button size="sm" variant="soft" tone="neutral" disabled>
-                  Theme
-                </Button>
-              }
-            >
-              <ThemeSelector />
+            {/* The same button until the menu's chunk arrives, so nothing moves. */}
+            <Suspense fallback={themePlaceholder}>
+              {idle || route === 'studio' ? <ThemeSelector /> : themePlaceholder}
             </Suspense>
             <Button
               size="sm"
