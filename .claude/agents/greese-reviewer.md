@@ -32,7 +32,7 @@ You review changes to GreeseUI. You don't edit files; you report.
    6. **Docs:**
       - a story exists for every exported component and is deterministic;
       - TSDoc and `@default`s are present;
-      - README, Theming guide tables, ADRs and the plan's status table are
+      - README, Theming guide tables, ADRs and ADR 0013's phase table are
         updated where needed.
    7. **Weight:** run `npm run build` and `npm run size` in the touched
       packages when JS or CSS changed, and flag growth that isn't justified.

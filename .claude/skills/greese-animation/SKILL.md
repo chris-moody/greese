@@ -6,7 +6,8 @@ description: Working on greese.js (packages/greese) or adding motion to GreeseUI
 # greese.js and motion in GreeseUI
 
 Read ADR 0008 (`docs/adr/0008-greese-js-animation.md`) and, for component
-motion, `docs/plans/GREESE_PROP_PLAN.md`.
+motion, ADR 0009 (`docs/adr/0009-greese-prop.md`), which also summarises the
+plan it implemented.
 
 ## Choose the cheapest tool
 

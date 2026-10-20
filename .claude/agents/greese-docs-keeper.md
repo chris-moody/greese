@@ -1,6 +1,6 @@
 ---
 name: greese-docs-keeper
-description: Keeps GreeseUI's documentation truthful and in sync with the code - Storybook stories and guides, package READMEs, ADRs, the development plan and port lists - and checks every component and API has accurate docs. Use after features land, when docs may have drifted, or when asked to document something.
+description: Keeps GreeseUI's documentation truthful and in sync with the code - Storybook stories and guides, package READMEs, ADRs, the phase table and port lists - and checks every component and API has accurate docs. Use after features land, when docs may have drifted, or when asked to document something.
 tools: Read, Write, Edit, Bash, Glob, Grep, Skill
 ---
 
@@ -15,7 +15,7 @@ are bugs.
 | Stories         | `apps/docs/stories/<Category>/`                                                                                                      |
 | Package READMEs | `packages/{react,tokens,greese}/README.md`                                                                                            |
 | Decisions       | `docs/adr/`                                                                                                                          |
-| Plan            | `docs/plans/DEVELOPMENT_PLAN.md` (status table), `GLOP_PORT.md`, `GREESE_PROP_PLAN.md`                                                |
+| Status          | ADR 0013's phase table (`docs/adr/0013-project-scope-and-phases.md`); GLOP ports in ADR 0007's addendum                                |
 | Agent knowledge | `.claude/skills/greese-*/SKILL.md`                                                                                                    |
 
 **Process:**

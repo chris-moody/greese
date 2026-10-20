@@ -12,9 +12,9 @@ GreeseUI is a mobile-first, TypeScript-first React 19 component library:
 - few dependencies;
 - strict size budgets.
 
-These rules come from the ADRs in `docs/adr/` and the plan in
-`docs/plans/DEVELOPMENT_PLAN.md`. When a rule here and an ADR disagree, the
-ADR wins: fix this file in the same change.
+These rules come from the ADRs in `docs/adr/`; ADR 0013 holds the project's
+goals, phases and standing decisions. When a rule here and an ADR disagree,
+the ADR wins: fix this file in the same change.
 
 **Read the ADR for the area you touch before changing it:**
 
@@ -32,6 +32,7 @@ ADR wins: fix this file in the same change.
 | 0010 SCSS kit and Theme Studio      | style manifest, `greese.overrides` layer, kit API, `apps/theme-studio` |
 | 0011 component gap review           | ScrollCarousel, Rating, Diff, OtpField…: native bases, what was skipped      |
 | 0012 icons package and docs rules   | `@greese-ui/icons`, prop descriptions, docs page layout                |
+| 0013 project scope and phases       | goals, non-goals, the phase table, React/browser/licence decisions     |
 
 ## Workspace
 
@@ -161,8 +162,8 @@ See the `greese-styles` skill for detail. In short:
   randomness, no dates. Visual tests snapshot them.
 - Update `packages/react/README.md` (the component lists), and the guides,
   when behaviour or setup changes.
-- Record decisions that constrain future work in a new ADR, and update the
-  plan's status table.
+- Record decisions that constrain future work in a new ADR, and add a row to
+  ADR 0013's phase table when a body of work lands.
 
 ## Size
 

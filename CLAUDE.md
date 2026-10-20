@@ -28,7 +28,7 @@ ADRs in `docs/adr/` that govern each area. Then use the skill for the task:
 | Animation, greese.js, the `greese` prop | `greese-animation`        | —                             |
 | Size, dependencies, performance         | `greese-lightweight`      | `greese-size-guardian`        |
 | Checking work before calling it done    | `greese-verify`           | `greese-reviewer` (read-only) |
-| Docs, guides, ADRs, plan                | (conventions → Docs)      | `greese-docs-keeper`          |
+| Docs, guides, ADRs                      | (conventions → Docs)      | `greese-docs-keeper`          |
 | Committing                              | `commit`                  | —                             |
 
 ## House rules

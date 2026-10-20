@@ -36,7 +36,7 @@ how you get there without tripping either.
 | `perf`     | Faster or smaller with no behaviour change                    |
 | `refactor` | Code restructuring with no behaviour change                   |
 | `test`     | Tests only                                                    |
-| `docs`     | Documentation only (READMEs, ADRs, plan, stories' prose)      |
+| `docs`     | Documentation only (READMEs, ADRs, stories' prose)            |
 | `build`    | Build system, package exports, compilers, bundling            |
 | `ci`       | GitHub workflows                                              |
 | `chore`    | Repo upkeep that fits nothing above (configs, tooling)        |

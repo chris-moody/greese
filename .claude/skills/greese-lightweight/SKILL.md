@@ -79,8 +79,8 @@ contains Button's CSS once and nothing unrelated. Keep it passing.
   - code needed only on interaction (a positioning fallback, a drag) lives
     behind the event, not in render;
   - components must never statically import greese.js. Animation for the
-    `greese` prop is planned as CSS presets plus an opt-in engine (see
-    `docs/plans/GREESE_PROP_PLAN.md`).
+    `greese` prop is CSS presets plus a lazily loaded runtime (see
+    ADR 0009).
 - **Cut what doesn't earn its bytes:**
   - in ports, drop rarely used modes (ColorPicker dropped LAB/CMYK);
   - prefer one good default to many options.

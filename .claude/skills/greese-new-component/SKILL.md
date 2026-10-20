@@ -15,7 +15,7 @@ has a check.
   a component. ExportActionSelect became an ActionSelect recipe, for example.
 - Is it general purpose? App-specific components (tied to a data model, a
   backend or one screen) don't belong here. Record skipped candidates and
-  the reasons, as in `docs/plans/GLOP_PORT.md`.
+  the reasons, as in ADR 0007's GLOP addendum or ADR 0011.
 - Which native element or platform API does the job? Start from it: native
   `<select>` over a custom listbox, `<dialog>` over a portal, the Popover API
   over z-index stacks.

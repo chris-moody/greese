@@ -53,7 +53,7 @@ Internal parts (`greese-<Name>-<part>`) may change in a minor release.
 | Rendering or styles     | The story if needed, and **visual baselines** (`--update-snapshots -g "<story-id-prefix>"`); look at the new screenshots |
 | Props                   | The story's `args`/`argTypes`, the README if listed, and the MUI migration table if relevant                             |
 | Component CSS variables | The Theming guide's per-component table                                                                                  |
-| A documented decision   | The ADR (amend it, or add a superseding one) and the plan's status table                                                 |
+| A documented decision   | The ADR (amend it, or add a superseding one) and ADR 0013's phase table                                                  |
 | Anything shipped        | A changeset with the right bump                                                                                          |
 
 ## 5. Verify and commit
@@ -77,5 +77,5 @@ over a library.
 - **Sections:** Status / Date / Context / Decisions (numbered, each with its
   reason) / Consequences (sizes, tests, docs).
 - **Style:** short, concrete, and naming the tests that prove it.
-- **Link it** from the plan's status table, and from the conventions skill's
+- **Link it** from ADR 0013's phase table, and from the conventions skill's
   ADR table if it governs an area.
