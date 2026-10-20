@@ -1,5 +1,29 @@
 {
-  "tokens": {},
+  "tokens": {
+    "color": {
+      "primary": {
+        "light": "purple-700",
+        "dark": "purple-400"
+      },
+      "secondary": {
+        "light": "aqua-600",
+        "dark": "aqua-400"
+      },
+      "tertiary": {
+        "light": "azure-700",
+        "dark": "azure-400"
+      },
+      "accent": {
+        "light": "jade-600",
+        "dark": "jade-400"
+      }
+    },
+    "radius": {
+      "sm": "0",
+      "md": "2px",
+      "lg": "4px"
+    }
+  },
   "motionDefaults": {},
   "components": {
     "Card": {
@@ -34,5 +58,6 @@
         "enter": "fade-in"
       }
     }
-  }
+  },
+  "name": "plumsky"
 }

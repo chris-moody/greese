@@ -32,6 +32,9 @@
 }
 
 .studio-editor {
+  /* The containing block for the visually hidden inputs inside (switches,
+     segments): without it they sit against the page and make it scroll. */
+  position: relative;
   container-type: inline-size;
   display: flex;
   flex-direction: column;
@@ -42,6 +45,7 @@
 }
 
 .studio-preview-frame {
+  display: block;
   inline-size: 100%;
   block-size: 100%;
   border: 0;
@@ -56,6 +60,7 @@
     grid-template-rows: none;
     grid-template-columns: minmax(24rem, 34rem) 1fr;
     min-block-size: 0;
+    overflow: hidden;
   }
 
   .studio-editor {
