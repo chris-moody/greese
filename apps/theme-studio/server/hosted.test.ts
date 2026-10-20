@@ -2,9 +2,9 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { compileSpec as compileInBrowser, FILE, hostedApi } from '../src/hosted.ts'
 import type { ThemeSpec } from '../src/spec.ts'
-import { compileSpec, themeFiles } from './studio.ts'
+import { compileSpec, exampleFile } from './studio.ts'
 
-const example = JSON.parse(readFileSync(themeFiles(undefined).json, 'utf8')) as ThemeSpec
+const example = JSON.parse(readFileSync(exampleFile, 'utf8')) as ThemeSpec
 
 describe('the hosted studio', () => {
   it('compiles a theme exactly as the dev server does', async () => {

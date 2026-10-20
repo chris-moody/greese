@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { specToScss, validateSpec, type ThemeSpec } from '../src/spec.ts'
 import { importCss } from '../src/importer.ts'
-import { compileSpec, themeFiles } from './studio.ts'
+import { compileSpec, exampleFile, themeFiles } from './studio.ts'
 
 const spec: ThemeSpec = {
   tokens: {
@@ -94,9 +94,7 @@ describe('compileSpec', () => {
   })
 
   it('compiles the example theme', () => {
-    const example = JSON.parse(
-      readFileSync(themeFiles(undefined).json, 'utf8')
-    ) as ThemeSpec
+    const example = JSON.parse(readFileSync(exampleFile, 'utf8')) as ThemeSpec
     expect(compileSpec(example)).not.toHaveProperty('errors')
   })
 })

@@ -5,7 +5,7 @@ and theme-wide motion, previewed live on real components and saved to your
 project as files.
 
 ```sh
-npm run studio                                             # the example theme
+npm run studio                                             # a working copy of the example theme (.local/, untracked)
 GREESE_THEME=src/styles/greese-theme.json npm run studio   # your own
 ```
 

@@ -45,11 +45,16 @@ export interface ThemeFiles {
   css: string
 }
 
+/** The theme the studio starts from, and the hosted studio's (src/hosted.ts). */
+export const exampleFile = join(APP, 'example/greese-theme.json')
+
 export const themeFiles = (
   setting = process.env.GREESE_THEME,
   cwd = process.env.INIT_CWD ?? process.cwd()
 ): ThemeFiles => {
-  const json = setting ? resolve(cwd, setting) : join(APP, 'example/greese-theme.json')
+  // With no file named, the studio works on a local copy of the example, so
+  // saving never rewrites the example the hosted studio starts from.
+  const json = setting ? resolve(cwd, setting) : join(APP, '.local/greese-theme.json')
   const base = json.replace(/\.json$/, '')
   return { json, scss: `${base}.scss`, css: `${base}.css` }
 }
@@ -168,7 +173,11 @@ export const importTheme = async (
 }
 
 const readSpec = (file: string): ThemeSpec =>
-  existsSync(file) ? (JSON.parse(readFileSync(file, 'utf8')) as ThemeSpec) : emptySpec()
+  existsSync(file)
+    ? (JSON.parse(readFileSync(file, 'utf8')) as ThemeSpec)
+    : file === themeFiles(undefined).json
+      ? (JSON.parse(readFileSync(exampleFile, 'utf8')) as ThemeSpec)
+      : emptySpec()
 
 const body = async (req: IncomingMessage): Promise<ThemeSpec> => {
   let text = ''

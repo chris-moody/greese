@@ -1,3 +1,5 @@
 example/*.scss
 example/*.css
 .import-test/
+# The studio's working copy when no theme file is named (server/studio.ts).
+.local/
