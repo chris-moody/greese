@@ -5,7 +5,7 @@
  * like one written by hand. Pure: the server and the browser both use it.
  */
 
-import { color, scalarTokens } from '@greese/ui'
+import { breakpoints as defaultBreakpoints, color, scalarTokens } from '@greese/ui'
 
 /** One value for both schemes, or a light/dark pair. */
 export type SchemeValue = string | { light: string; dark: string }
@@ -51,6 +51,13 @@ export interface ThemeSpec {
   /** Token overrides by group, kebab-case: `{ color: { accent: … }, radius: { md: '12px' } }`. */
   tokens?: Record<string, Record<string, SchemeValue>>
   /**
+   * The breakpoints the stylesheet is built with, key to min-width in px:
+   * every key (the five built-in ones stay; added ones are new), smallest
+   * first. Absent means the defaults. Setting them makes the studio build the
+   * whole stylesheet, since the media queries are fixed in it.
+   */
+  breakpoints?: Record<string, number>
+  /**
    * The type system by variant, then `base` or a breakpoint, then property:
    * `{ h1: { base: { size: '2rem' }, lg: { size: '4rem' } } }`.
    */
@@ -62,6 +69,26 @@ export interface ThemeSpec {
 }
 
 export const emptySpec = (): ThemeSpec => ({ tokens: {}, components: {} })
+
+/** The breakpoints in effect, smallest first: the theme's, else the defaults. */
+export const breakpointsOf = (spec: ThemeSpec): Array<[string, number]> =>
+  Object.entries(spec.breakpoints ?? defaultBreakpoints).sort(([, a], [, b]) => a - b)
+
+/** The theme's own breakpoints, if they differ from the defaults. */
+export const customBreakpoints = (
+  spec: ThemeSpec
+): Array<[string, number]> | undefined => {
+  const own = breakpointsOf(spec)
+  const standard = Object.entries(defaultBreakpoints)
+  const same =
+    own.length === standard.length &&
+    own.every(([key, width], i) => key === standard[i]![0] && width === standard[i]![1])
+  return spec.breakpoints && !same ? own : undefined
+}
+
+/** A Sass map of breakpoints: `(xs: 0px, tablet: 700px, '2xl': 1800px)`. */
+const breakpointMap = (list: Array<[string, number]>): string =>
+  `(${list.map(([key, width]) => `${/^\d/.test(key) ? `'${key}'` : key}: ${width}px`).join(', ')})`
 
 const NAME = /^[a-z][a-z0-9-]*$/
 const COMPONENT = /^[A-Z][A-Za-z]*$/
@@ -100,6 +127,22 @@ export const validateSpec = (spec: ThemeSpec): string[] => {
       key(`tokens.${group}`, k)
       value(`tokens.${group}.${k}`, v)
     }
+  }
+  if (spec.breakpoints) {
+    const keys = Object.keys(spec.breakpoints)
+    for (const built of Object.keys(defaultBreakpoints))
+      if (!keys.includes(built))
+        errors.push(`breakpoints: ${built} is needed, components use it`)
+    for (const [k, width] of Object.entries(spec.breakpoints)) {
+      if (!/^[a-z0-9]+$/i.test(k))
+        errors.push(`breakpoints.${k}: a key is one word, letters and digits`)
+      if (!Number.isInteger(width) || width < 0)
+        errors.push(`breakpoints.${k}: ${JSON.stringify(width)} is not a width in px`)
+    }
+    if (spec.breakpoints.xs !== 0) errors.push('breakpoints.xs: must be 0')
+    const widths = Object.values(spec.breakpoints)
+    if (new Set(widths).size !== widths.length)
+      errors.push('breakpoints: every key needs its own width')
   }
   for (const [variant, points] of Object.entries(spec.typography ?? {})) {
     key('typography', variant)
@@ -221,10 +264,34 @@ const componentScss = (name: string, c: ComponentSpec, indent: string): string =
 }
 
 /**
+ * What a theme file starts with. With its own breakpoints it builds the whole
+ * stylesheet with them (`pkg:@greese/ui/scss`, which the kit then shares), so
+ * the compiled CSS is the complete stylesheet. `config` brings in only the
+ * settings, no CSS, so the theme part can be compiled alone.
+ */
+const useLines = (spec: ThemeSpec, entry: 'stylesheet' | 'config'): string => {
+  const own = customBreakpoints(spec)
+  const kit = "@use 'pkg:@greese/ui/scss/kit' as greese;"
+  return own ? `${stylesheetScss(own, entry)}\n${kit}` : kit
+}
+
+/** The line that builds the stylesheet (or just its settings) with these breakpoints. */
+export const stylesheetScss = (
+  breakpoints: Array<[string, number]>,
+  entry: 'stylesheet' | 'config' = 'stylesheet'
+): string =>
+  `@use 'pkg:@greese/ui/${entry === 'config' ? 'scss/config' : 'scss'}' with ($breakpoints: ${breakpointMap(breakpoints)});`
+
+/**
  * The theme as SCSS for the kit. Output is stable (sorted components) so the
  * file diffs cleanly in version control.
  */
-export const specToScss = (spec: ThemeSpec, source = 'greese-theme.json'): string => {
+export const specToScss = (
+  spec: ThemeSpec,
+  source = 'greese-theme.json',
+  /** How the stylesheet is brought in: whole (the output), or just its settings. */
+  entry: 'stylesheet' | 'config' = 'stylesheet'
+): string => {
   const indent = spec.name ? '  ' : ''
   const blocks: string[] = []
 
@@ -310,6 +377,6 @@ export const specToScss = (spec: ThemeSpec, source = 'greese-theme.json'): strin
     : blocks.join('\n\n')
   return `// Generated by GreeseUI Theme Studio from ${source}. Edit it there, or in
 // the studio (npm run studio); changes made here are overwritten.
-@use 'pkg:@greese/ui/scss/kit' as greese;
+${useLines(spec, entry)}
 ${body ? `\n${body}\n` : ''}`
 }

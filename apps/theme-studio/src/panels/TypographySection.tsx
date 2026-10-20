@@ -1,7 +1,6 @@
 import { useState, type JSX } from 'react'
 import { Button, Segment, SegmentedControl, Select, Stack, Text } from '@greese/react'
 import {
-  breakpoints,
   typeCoreProps,
   typeExtraProps,
   typeVariants,
@@ -10,15 +9,12 @@ import {
 } from '@greese/ui'
 import { setIn } from '../edit.ts'
 import { ValueRow } from '../fields.tsx'
-import type { ThemeSpec } from '../spec.ts'
+import { breakpointsOf, type ThemeSpec } from '../spec.ts'
 
 /** The smallest screen, then each breakpoint above it, smallest first. */
-const POINTS = [
-  'base',
-  ...Object.entries(breakpoints)
-    .filter(([, width]) => width > 0)
-    .sort(([, a], [, b]) => a - b)
-    .map(([key]) => key),
+const pointsOf = (spec: ThemeSpec): Array<[string, number]> => [
+  ['base', 0],
+  ...breakpointsOf(spec).filter(([, width]) => width > 0),
 ]
 
 type Styles = Record<string, Record<string, string> | undefined>
@@ -40,7 +36,7 @@ const fallback = (
   const own = (spec.typography?.[variant] ?? {}) as Styles
   const standard = defaultsOf(variant)
   let value: string | undefined
-  for (const at of POINTS) {
+  for (const [at] of pointsOf(spec)) {
     // `xs` is the same point as `base`.
     const std = standard[at]?.[prop] ?? (at === 'base' ? standard.xs?.[prop] : undefined)
     const candidate = (at === point ? undefined : own[at]?.[prop]) ?? std
@@ -109,9 +105,9 @@ export const TypographySection = ({
         value={point}
         onValueChange={setPoint}
       >
-        {POINTS.map((p) => (
+        {pointsOf(spec).map(([p, width]) => (
           <Segment key={p} value={p}>
-            {p === 'base' ? 'base' : `${p} ${breakpoints[p as keyof typeof breakpoints]}`}
+            {p === 'base' ? 'base' : `${p} ${width}`}
           </Segment>
         ))}
       </SegmentedControl>

@@ -54,6 +54,21 @@ colors. Radius tokens
 are picked as corner shapes, or typed. The other token groups are under
 **More tokens**.
 
+## Breakpoints
+
+The **breakpoint** section sets the widths the stylesheet is built with, and adds
+keys. Media queries can't read variables, so a change **rebuilds the whole
+stylesheet** with the new breakpoints (compiled natively by `npm run studio`,
+in the browser in the hosted studio; about a second, once per set of
+breakpoints), and the preview uses that build. The theme file records
+`breakpoints`; the SCSS starts with
+`@use 'pkg:@greese/ui/scss' with ($breakpoints: …)`, and the compiled CSS is then the
+whole stylesheet, to use instead of `styles.css`. The Code tab also shows what
+the app needs: `configureBreakpoints({ … })`, and, for an added key, the
+`BreakpointKeys` declaration for TypeScript. The five built-in keys stay (components use
+them), `xs` is always 0, and a key is one word. Each key, added ones included,
+gets responsive classes and `--greese-breakpoint-<key>`.
+
 ## Typography
 
 The **typography** section edits the type system (ADR 0016): pick a variant

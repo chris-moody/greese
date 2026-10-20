@@ -1,8 +1,15 @@
 import { StrictMode, useEffect, useState, type JSX } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Container, Stack, ThemeProvider, type ColorScheme } from '@greese/react'
+import {
+  configureBreakpoints,
+  Container,
+  resetBreakpoints,
+  Stack,
+  ThemeProvider,
+  type ColorScheme,
+} from '@greese/react'
 import '@greese/react/base.css'
-import '@greese/react/styles.css'
+import baseStyles from '@greese/react/styles.css?inline'
 import type { FromPreview, ToPreview } from '../protocol.ts'
 import { ComponentPreview } from './ComponentPreview.tsx'
 import { Gallery } from './Gallery.tsx'
@@ -13,6 +20,10 @@ import './preview.css'
 
 const post = (message: FromPreview) => window.parent.postMessage(message, location.origin)
 const themeStyle = document.getElementById('theme')!
+// The prebuilt stylesheet, as text: it's dropped when the theme brings a
+// whole one, built for its own breakpoints.
+const baseStyle = document.head.insertBefore(document.createElement('style'), themeStyle)
+baseStyle.textContent = baseStyles
 
 /** The colors a theme's CSS adds: `--greese-color-<name>` the system has no role for. */
 const addedColors = (css: string): string[] => [
@@ -43,6 +54,9 @@ const Preview = (): JSX.Element => {
       if (event.origin !== location.origin) return
       const message = event.data
       if (message.type === 'css') {
+        baseStyle.textContent = message.full ? '' : baseStyles
+        resetBreakpoints()
+        if (message.breakpoints) configureBreakpoints(message.breakpoints)
         themeStyle.textContent = message.css
         setCss((n) => n + 1)
       }

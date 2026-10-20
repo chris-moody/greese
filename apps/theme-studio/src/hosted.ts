@@ -10,7 +10,13 @@ import kit from 'virtual:greese-kit'
 import example from '../example/greese-theme.json'
 import type { Compiled, ImportSource, Loaded } from './api.ts'
 import { detectFormat, importCss, importJson, type ImportResult } from './importer.ts'
-import { specToScss, validateSpec, type ThemeSpec } from './spec.ts'
+import {
+  customBreakpoints,
+  specToScss,
+  stylesheetScss,
+  validateSpec,
+  type ThemeSpec,
+} from './spec.ts'
 
 const KEY = 'greese-theme-studio'
 export const FILE = 'greese-theme.json'
@@ -19,6 +25,8 @@ const files = new Map(Object.entries(kit))
 
 /** The package entry points the kit and themes `@use`. */
 const entries: Record<string, string> = {
+  'pkg:@greese/ui/scss': '/src/styles/index.scss',
+  'pkg:@greese/ui/scss/config': '/src/styles/_config.scss',
   'pkg:@greese/ui/scss/kit': '/src/styles/_kit.scss',
   'pkg:@greese/ui/scss/tokens': '/dist/_tokens.scss',
   'pkg:@greese/ui/scss/layers': '/dist/_layers.scss',
@@ -50,12 +58,32 @@ const compileScss = async (scss: string): Promise<string> => {
 /** Sass errors read well; keep the first line and the kit's message. */
 const firstPart = (error: unknown) => String((error as Error).message).split('\n\n')[0]!
 
+/** Every component's SCSS, fetched the first time a stylesheet is built (a lazy chunk). */
+let components: Promise<void> | undefined
+const loadComponents = () =>
+  (components ??= import('virtual:greese-stylesheet').then((m) => {
+    for (const [path, text] of Object.entries(m.default)) files.set(path, text)
+  }))
+
+/** The whole stylesheet for a set of breakpoints, built once. */
+const stylesheets = new Map<string, string>()
+
 export const compileSpec = async (spec: ThemeSpec): Promise<Compiled> => {
   const errors = validateSpec(spec)
   if (errors.length) return { errors }
   const scss = specToScss(spec, FILE)
   try {
-    return { scss, css: await compileScss(scss) }
+    const own = customBreakpoints(spec)
+    if (!own) return { scss, css: await compileScss(scss) }
+    // The stylesheet is built once per set of breakpoints; the theme alone
+    // each edit.
+    const key = JSON.stringify(own)
+    if (!stylesheets.has(key)) {
+      await loadComponents()
+      stylesheets.set(key, await compileScss(stylesheetScss(own)))
+    }
+    const theme = await compileScss(specToScss(spec, FILE, 'config'))
+    return { scss, css: `${stylesheets.get(key)}\n${theme}`, full: true }
   } catch (error) {
     return { errors: [firstPart(error)] }
   }

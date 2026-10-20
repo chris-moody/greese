@@ -26,7 +26,14 @@ import {
   type ImportResult,
 } from '../src/importer.ts'
 import type { ImportSource } from '../src/api.ts'
-import { emptySpec, specToScss, validateSpec, type ThemeSpec } from '../src/spec.ts'
+import {
+  customBreakpoints,
+  emptySpec,
+  specToScss,
+  stylesheetScss,
+  validateSpec,
+  type ThemeSpec,
+} from '../src/spec.ts'
 
 export type { ImportSource }
 
@@ -47,19 +54,36 @@ export const themeFiles = (
   return { json, scss: `${base}.scss`, css: `${base}.css` }
 }
 
-export type Compiled = { scss: string; css: string } | { errors: string[] }
+/**
+ * `css` is what the theme's file compiles to. With breakpoints of its own that's
+ * the whole stylesheet (`full`), built for them: the theme part is compiled
+ * alone and the stylesheet part once per set of breakpoints.
+ */
+export type Compiled =
+  { scss: string; css: string; full?: boolean } | { errors: string[] }
+
+const stylesheets = new Map<string, string>()
 
 /** The theme's SCSS and CSS, compiled through the real kit. */
 export const compileSpec = (spec: ThemeSpec, source?: string): Compiled => {
   const errors = validateSpec(spec)
   if (errors.length) return { errors }
   const scss = specToScss(spec, source)
-  try {
-    const { css } = compileString(scss, {
+  const build = (text: string) =>
+    compileString(text, {
       importers: [new NodePackageImporter(APP)],
       url: new URL(`file://${APP}/theme.scss`),
-    })
-    return { scss, css }
+    }).css
+  try {
+    const own = customBreakpoints(spec)
+    if (!own) return { scss, css: build(scss) }
+    const key = JSON.stringify(own)
+    if (!stylesheets.has(key)) stylesheets.set(key, build(stylesheetScss(own)))
+    return {
+      scss,
+      css: `${stylesheets.get(key)}\n${build(specToScss(spec, source, 'config'))}`,
+      full: true,
+    }
   } catch (error) {
     // Sass errors read well; keep the first line and the kit's message.
     return { errors: [String((error as Error).message).split('\n\n')[0]!] }

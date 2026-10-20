@@ -2,7 +2,12 @@ import type { ColorScheme } from '@greese/react'
 
 /** Messages from the studio to the preview iframe. */
 export type ToPreview =
-  | { type: 'css'; css: string }
+  /**
+   * The theme's CSS. `full`: it's the whole stylesheet, built for the theme's
+   * own breakpoints (`breakpoints`, which the components' JavaScript also
+   * follows), so the preview drops the prebuilt one.
+   */
+  | { type: 'css'; css: string; full?: boolean; breakpoints?: Record<string, number> }
   | { type: 'scope'; theme?: string; scheme: ColorScheme }
   | { type: 'inspect'; on: boolean }
   /** Outline every instance of this component (`Button`), or none. */

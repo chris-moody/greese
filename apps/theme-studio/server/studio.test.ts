@@ -215,3 +215,53 @@ describe('typography', () => {
     expect(back.spec.typography).toEqual({ h3: { md: { size: '2.5rem' } } })
   })
 })
+
+describe('breakpoints', () => {
+  const bp = { xs: 0, sm: 480, tablet: 700, md: 800, lg: 1100, xl: 1500 }
+  const spec: ThemeSpec = { breakpoints: bp, tokens: {}, components: {} }
+
+  it('writes the stylesheet build ahead of the kit', () => {
+    const scss = specToScss(spec)
+    expect(scss).toContain(
+      "@use 'pkg:@greese/ui/scss' with ($breakpoints: (xs: 0px, sm: 480px, tablet: 700px, md: 800px, lg: 1100px, xl: 1500px));"
+    )
+    expect(scss).toContain("@use 'pkg:@greese/ui/scss/kit' as greese;")
+    expect(specToScss(spec, 'x.json', 'config')).toContain(
+      "pkg:@greese/ui/scss/config' with"
+    )
+    expect(specToScss({ ...spec, breakpoints: undefined })).not.toContain('with (')
+    // Breakpoints equal to the defaults are no change.
+    expect(
+      specToScss({
+        ...spec,
+        breakpoints: { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 },
+      })
+    ).not.toContain('$breakpoints')
+  })
+
+  it('compiles the whole stylesheet for them, theme included', () => {
+    const result = compileSpec({
+      ...spec,
+      tokens: { radius: { md: '2px' } },
+    })
+    expect(result).not.toHaveProperty('errors')
+    const { css, full } = result as { css: string; full?: boolean }
+    expect(full).toBe(true)
+    expect(css).toContain('--greese-breakpoint-tablet: 700px;')
+    expect(css).toContain('.greese-Stack--tablet-gap-3')
+    expect(css).toContain('@media (width >= 800px)')
+    expect(css).not.toContain('@media (width >= 900px)')
+    expect(css).toContain('--greese-radius-md: 2px;')
+    // Typography follows them too.
+    expect(css).toMatch(/@media \(width >= 800px\)[^@]*--greese-type-h1-size: 2\.75rem/)
+  })
+
+  it('rejects breakpoints that components or the cascade can’t use', () => {
+    const errors = (b: Record<string, number>) => validateSpec({ breakpoints: b })
+    expect(errors({ xs: 0, sm: 600 }).join()).toMatch(/md is needed/)
+    expect(errors({ ...bp, xs: 10 }).join()).toMatch(/xs: must be 0/)
+    expect(errors({ ...bp, 'big-one': 1600 }).join()).toMatch(/one word/)
+    expect(errors({ ...bp, tablet: 800 }).join()).toMatch(/own width/)
+    expect(errors(bp)).toEqual([])
+  })
+})

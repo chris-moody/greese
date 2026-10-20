@@ -1,12 +1,13 @@
 import type { JSX } from 'react'
-import { Accordion, AccordionItem, Stack, Text, TextField } from '@greese/react'
-import { breakpoints, scalarTokens } from '@greese/ui'
+import { Accordion, AccordionItem, Stack, TextField } from '@greese/react'
+import { scalarTokens } from '@greese/ui'
 import { getIn, setIn } from '../edit.ts'
 import { ValueRow } from '../fields.tsx'
 import type { RenderedColors } from '../protocol.ts'
 import type { ThemeSpec } from '../spec.ts'
 import { ColorsSection } from './ColorsSection.tsx'
 import { CustomTokens } from './CustomTokens.tsx'
+import { BreakpointsSection } from './BreakpointsSection.tsx'
 import { RadiusSection } from './RadiusSection.tsx'
 import { TypographySection } from './TypographySection.tsx'
 
@@ -18,12 +19,19 @@ interface PanelProps {
   onChange: (spec: ThemeSpec) => void
   /** Each color as the preview renders it, once it has reported. */
   rendered?: RenderedColors
+  /** The stylesheet is being rebuilt for new breakpoints. */
+  building?: boolean
 }
 
 /** The other token groups, after color and radius, which have editors of their own. */
 const MORE = Object.entries(scalarTokens).filter(([group]) => group !== 'radius')
 
-export const TokensPanel = ({ spec, onChange, rendered }: PanelProps): JSX.Element => (
+export const TokensPanel = ({
+  spec,
+  onChange,
+  rendered,
+  building = false,
+}: PanelProps): JSX.Element => (
   <Stack gap={6}>
     <TextField
       label="Theme name"
@@ -74,22 +82,7 @@ export const TokensPanel = ({ spec, onChange, rendered }: PanelProps): JSX.Eleme
         <TypographySection spec={spec} onChange={onChange} />
       </AccordionItem>
       <AccordionItem title="breakpoint">
-        <Stack gap={2}>
-          <Text variant="p3" tone="muted">
-            Fixed when the stylesheet is built, so a theme can&apos;t change them: media
-            queries can&apos;t read variables. Set them (and add keys) by compiling with
-            your own <code className="studio-mono">$breakpoints</code>; each key also
-            becomes a custom property you can read in CSS.
-          </Text>
-          {Object.entries(breakpoints).map(([key, value]) => (
-            <div className="studio-row" key={key}>
-              <Text variant="p3" className="studio-row-label">
-                breakpoint-{key}
-              </Text>
-              <code className="studio-mono">{value}px</code>
-            </div>
-          ))}
-        </Stack>
+        <BreakpointsSection spec={spec} onChange={onChange} building={building} />
       </AccordionItem>
     </Accordion>
   </Stack>

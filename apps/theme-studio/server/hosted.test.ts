@@ -27,3 +27,16 @@ describe('the hosted studio', () => {
     expect(await hostedApi.import({ path: 'theme.ts' })).toHaveProperty('errors')
   })
 })
+
+describe('the hosted studio, with its own breakpoints', () => {
+  it('builds the whole stylesheet as the dev server does', async () => {
+    const spec: ThemeSpec = {
+      ...example,
+      breakpoints: { xs: 0, sm: 480, tablet: 700, md: 800, lg: 1100, xl: 1500 },
+    }
+    const served = compileSpec(spec, FILE)
+    const built = await compileInBrowser(spec)
+    expect(built).toEqual(served)
+    expect((built as { full?: boolean }).full).toBe(true)
+  }, 60_000)
+})

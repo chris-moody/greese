@@ -25,7 +25,7 @@ import { ComponentsPanel } from './panels/ComponentsPanel.tsx'
 import { MotionPanel } from './panels/MotionPanel.tsx'
 import { TokensPanel } from './panels/TokensPanel.tsx'
 import type { FromPreview, Picked, RenderedColors, ToPreview } from './protocol.ts'
-import { emptySpec, type ThemeSpec } from './spec.ts'
+import { customBreakpoints, emptySpec, type ThemeSpec } from './spec.ts'
 
 interface FileState {
   file: string
@@ -38,7 +38,10 @@ export const App = (): JSX.Element => {
   const [spec, setSpec] = useState<ThemeSpec>(emptySpec)
   const [file, setFile] = useState<FileState>()
   const [loadError, setLoadError] = useState<string>()
-  const [compiled, setCompiled] = useState({ scss: '', css: '' })
+  const [compiled, setCompiled] = useState({ scss: '', css: '', full: false })
+  const [building, setBuilding] = useState(false)
+  /** The latest compile, so a slow one (a whole stylesheet) never lands after a newer. */
+  const latest = useRef(0)
   const [errors, setErrors] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   /** What the last save wrote; cleared by the next edit, since the button then says Save. */
@@ -95,14 +98,28 @@ export const App = (): JSX.Element => {
   useEffect(() => {
     if (!file) return
     const timer = setTimeout(async () => {
+      const run = ++latest.current
+      // Only a theme with its own breakpoints builds the whole stylesheet.
+      setBuilding(!!customBreakpoints(spec))
       const result = await api.compile(spec)
+      if (run !== latest.current) return
+      setBuilding(false)
       setErrors(result.errors ?? [])
-      if (result.css !== undefined) setCompiled({ scss: result.scss!, css: result.css })
+      if (result.css !== undefined)
+        setCompiled({ scss: result.scss!, css: result.css, full: !!result.full })
     }, 150)
     return () => clearTimeout(timer)
   }, [spec, file])
 
-  useEffect(() => post({ type: 'css', css: compiled.css }), [compiled.css, post])
+  const custom = customBreakpoints(spec)
+  const breakpointsKey = JSON.stringify(custom ?? null)
+  const cssMessage = (): ToPreview => ({
+    type: 'css',
+    css: compiled.css,
+    full: compiled.full,
+    breakpoints: compiled.full && custom ? Object.fromEntries(custom) : undefined,
+  })
+  useEffect(() => post(cssMessage()), [compiled.css, compiled.full, breakpointsKey, post])
   useEffect(
     () => post({ type: 'scope', theme: spec.name || undefined, scheme }),
     [spec.name, scheme, post]
@@ -122,7 +139,7 @@ export const App = (): JSX.Element => {
     const onMessage = (event: MessageEvent<FromPreview>) => {
       if (event.origin !== location.origin) return
       if (event.data.type === 'ready') {
-        post({ type: 'css', css: compiled.css })
+        post(cssMessage())
         post({ type: 'scope', theme: spec.name || undefined, scheme })
         post({ type: 'inspect', on: inspect })
         post({ type: 'feature', block: component })
@@ -245,7 +262,12 @@ export const App = (): JSX.Element => {
               <Tab value="code">Code</Tab>
             </TabList>
             <TabPanel value="tokens">
-              <TokensPanel spec={spec} onChange={setSpec} rendered={rendered} />
+              <TokensPanel
+                spec={spec}
+                onChange={setSpec}
+                rendered={rendered}
+                building={building}
+              />
             </TabPanel>
             <TabPanel value="components">
               <ComponentsPanel
@@ -265,6 +287,7 @@ export const App = (): JSX.Element => {
                 css={compiled.css}
                 outputs={file?.outputs ?? []}
                 spec={hosted ? spec : undefined}
+                breakpoints={custom}
               />
             </TabPanel>
           </Tabs>

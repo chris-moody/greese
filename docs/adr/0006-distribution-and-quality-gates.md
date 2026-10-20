@@ -63,8 +63,13 @@ convention and test:
 - **TypeScript**: a key is added to the `BreakpointKeys` interface of
   `@greese/ui` by module augmentation, which `Responsive<T>` follows.
 
-Editing breakpoints stays a build-time act (so Theme Studio shows them but
-doesn't change them): once the CSS is built, it's a done deal.
+Editing breakpoints stays a build-time act: once the CSS is built, it's a done
+deal. Theme Studio does that build (2026-10-20): editing a breakpoint or adding a
+key makes it compile the whole stylesheet with the new `$breakpoints` (once per
+set of them; the theme part is compiled alone on each edit, against the
+`@greese/ui/scss/config` entry, which loads the settings and emits no CSS), and
+the preview uses the result. In the browser that means shipping every
+component's SCSS as a lazy chunk.
 
 ### 3. Quality gates
 
