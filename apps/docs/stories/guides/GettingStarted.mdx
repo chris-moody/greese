@@ -51,7 +51,7 @@ to `<head>` and call `useColorScheme()`:
 ```tsx
 import { getSchemeScript, useColorScheme } from '@greese-ui/react'
 
-;<script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
+<script dangerouslySetInnerHTML={{ __html: getSchemeScript() }} />
 
 const { setScheme } = useColorScheme()
 setScheme('dark') // 'light' | 'dark' | 'system'
