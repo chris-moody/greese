@@ -1,5 +1,29 @@
 {
-  "tokens": {},
+  "tokens": {
+    "color": {
+      "primary": {
+        "light": "silver-900",
+        "dark": "silver-100"
+      },
+      "secondary": {
+        "light": "silver-600",
+        "dark": "silver-400"
+      },
+      "tertiary": {
+        "light": "taupe-700",
+        "dark": "taupe-300"
+      },
+      "accent": {
+        "light": "red-900",
+        "dark": "red-400"
+      }
+    },
+    "radius": {
+      "sm": "0",
+      "md": "2px",
+      "lg": "4px"
+    }
+  },
   "motionDefaults": {},
   "components": {
     "Card": {
@@ -34,5 +58,6 @@
         "enter": "fade-in"
       }
     }
-  }
+  },
+  "name": "rawr"
 }

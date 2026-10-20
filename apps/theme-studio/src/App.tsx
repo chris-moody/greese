@@ -172,7 +172,11 @@ export const App = (): JSX.Element => {
               {file.file}
             </Text>
           )}
-          {dirty && <Badge tone="warning">Unsaved</Badge>}
+          {savedNote && (
+            <Badge tone="positive" variant="solid" title={savedNote}>
+              Saved
+            </Badge>
+          )}
         </Stack>
         <Stack direction="row" gap={3} align="center" wrap="wrap">
           <SegmentedControl
@@ -201,9 +205,8 @@ export const App = (): JSX.Element => {
             onClick={() => void save()}
             loading={saving}
             disabled={!dirty || errors.length > 0}
-            title={savedNote}
           >
-            {savedNote ? 'Saved' : 'Save'}
+            Save
           </Button>
           <VisuallyHidden role="status">{savedNote ?? ''}</VisuallyHidden>
         </Stack>
