@@ -30,14 +30,14 @@ test('seeks: reads computed starting values and writes transforms, colours and v
     'box',
     'translate',
     'background-color',
-    '--greese-color-accent'
+    '--greese-color-primary'
   )
   expect(end.translate).toBe('50px')
   expect(end['background-color']).toBe('rgb(0, 0, 255)')
-  expect(end['--greese-color-accent']).toMatch(/^rgb\(0 255 0 \/ 1\)$/)
+  expect(end['--greese-color-primary']).toMatch(/^rgb\(0 255 0 \/ 1\)$/)
   // Components read the animated token: the button's tone follows it (after
   // the button's own colour transition).
-  const button = page.getByRole('button', { name: 'Accent' })
+  const button = page.getByRole('button', { name: 'Primary' })
   await expect
     .poll(() => button.evaluate((el) => getComputedStyle(el).backgroundColor))
     .toBe('rgb(0, 255, 0)')
@@ -108,4 +108,30 @@ test('mixed units blend smoothly: a px radius token to rem, a px width to vw', a
   const quarter = await at(0.25)
   expect(quarter.radius).toBeCloseTo(16 * 0.75 + 2 * rem * 0.25, 1)
   expect(await at(1)).toEqual({ radius: 2 * rem, width: vw / 2 })
+})
+
+test('useGreese scopes selectors, applies its build before paint and reverts on unmount', async ({
+  page,
+}) => {
+  const item = (id: string) => page.getByTestId(id).locator('.hook-item')
+  const opacity = (id: string) =>
+    item(id).evaluate((el) => Number(getComputedStyle(el).opacity))
+  // A 10 s linear from(): only just started, so it was applied up front.
+  expect(await opacity('hook-a')).toBeLessThan(0.2)
+  await page.getByRole('button', { name: 'Pulse hook-a' }).click()
+  await expect
+    .poll(() => item('hook-a').evaluate((el) => parseFloat(el.style.scale)))
+    .toBe(1.5)
+  // The other instance's matching element is out of scope.
+  expect(await item('hook-b').evaluate((el) => el.style.scale)).toBe('')
+  await item('hook-a').evaluate(
+    (el) => ((window as { hookItem?: Element }).hookItem = el)
+  )
+  await page.getByRole('button', { name: 'Unmount hook-a' }).click()
+  const left = await page.evaluate(() => {
+    const el = (window as unknown as { hookItem: HTMLElement }).hookItem
+    return { scale: el.style.scale, opacity: Number(el.style.opacity || 1) }
+  })
+  expect(parseFloat(left.scale || '1')).toBe(1)
+  expect(left.opacity).toBe(1)
 })

@@ -4,7 +4,7 @@ import { expect, test, type Page } from '@playwright/test'
  * Real-browser check of the theming model (docs/adr/0002): nested themes and
  * schemes, OS preference, page scheme forced on <html>, and persistence.
  */
-const ACCENT = {
+const PRIMARY = {
   default: { light: 'rgb(37, 99, 235)', dark: 'rgb(96, 165, 250)' },
   brand: { light: 'rgb(124, 58, 237)', dark: 'rgb(196, 181, 253)' },
 }
@@ -18,36 +18,36 @@ type Mode = 'light' | 'dark'
 const read = (page: Page, id: string) =>
   page.getByTestId(id).evaluate((el) => {
     const s = getComputedStyle(el)
-    return { accent: s.color, surface: s.backgroundColor, radius: s.borderRadius }
+    return { primary: s.color, surface: s.backgroundColor, radius: s.borderRadius }
   })
 
 /** What every probe should resolve to, given the page's effective scheme. */
 const expected = (page: Mode, os: Mode) => ({
   default: {
-    accent: ACCENT.default[page],
+    primary: PRIMARY.default[page],
     surface: SURFACE.default[page],
     radius: '8px',
   },
   'plain-dark': {
-    accent: ACCENT.default.dark,
+    primary: PRIMARY.default.dark,
     surface: SURFACE.default.dark,
     radius: '8px',
   },
-  brand: { accent: ACCENT.brand[page], surface: SURFACE.brand, radius: '8px' },
-  'brand-dark': { accent: ACCENT.brand.dark, surface: SURFACE.brand, radius: '8px' },
+  brand: { primary: PRIMARY.brand[page], surface: SURFACE.brand, radius: '8px' },
+  'brand-dark': { primary: PRIMARY.brand.dark, surface: SURFACE.brand, radius: '8px' },
   // Themes replace, never stack: `rounded` inside `brand` is defaults + rounded.
   'rounded-in-dark': {
-    accent: ACCENT.default.dark,
+    primary: PRIMARY.default.dark,
     surface: SURFACE.default.dark,
     radius: '2px',
   },
   'brand-light-in-dark': {
-    accent: ACCENT.brand.light,
+    primary: PRIMARY.brand.light,
     surface: SURFACE.brand,
     radius: '8px',
   },
   // scheme="system" follows the OS even when the page scheme is forced.
-  'brand-system': { accent: ACCENT.brand[os], surface: SURFACE.brand, radius: '8px' },
+  'brand-system': { primary: PRIMARY.brand[os], surface: SURFACE.brand, radius: '8px' },
 })
 
 const assertAll = async (page: Page, pageMode: Mode, os: Mode) => {

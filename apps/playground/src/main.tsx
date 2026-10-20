@@ -15,8 +15,14 @@ const pages: Record<string, () => Promise<{ default: ComponentType }>> = {
   motion: () => import('./pages/Motion.tsx').then((m) => ({ default: m.Motion })),
   additions: () =>
     import('./pages/Additions.tsx').then((m) => ({ default: m.Additions })),
+  catalogue: () =>
+    import('./pages/Catalogue.tsx').then((m) => ({ default: m.Catalogue })),
   'bench-greese': () =>
     import('./pages/bench/GreeseBench.tsx').then((m) => ({ default: m.GreeseBench })),
+  'bench-greese-css': () =>
+    import('./pages/bench/GreeseCssBench.tsx').then((m) => ({
+      default: m.GreeseCssBench,
+    })),
   'bench-mui': () =>
     import('./pages/bench/MuiBench.tsx').then((m) => ({ default: m.MuiBench })),
 }

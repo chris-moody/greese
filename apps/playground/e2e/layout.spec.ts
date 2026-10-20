@@ -80,7 +80,7 @@ for (const [bp, width] of Object.entries(WIDTHS) as Array<[Bp, number]>) {
       )
     })
 
-    test('container-mode GridItems respond to the grid width, not the viewport', async ({
+    test('cells in a containerQueries grid respond to the grid width, not the viewport', async ({
       page,
     }) => {
       // Both grids are 400px wide (< md). Only the container grid knows that.

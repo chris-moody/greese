@@ -33,16 +33,45 @@ test('enter presets are CSS animations, staggered per child', async ({ page }) =
   expect((await style(page, 'stagger', 'animation-name'))['animation-name']).toBe('none')
 })
 
+test('sequences play groups together, pause, then play the next group', async ({
+  page,
+}) => {
+  const sequence = page.getByTestId('sequence')
+  // Sequences are greese.js, not CSS.
+  expect((await style(page, 'sequence', 'animation-name'))['animation-name']).toBe('none')
+  // In the pause: both effects of the first group have finished.
+  await expect
+    .poll(async () => style(page, 'sequence', 'opacity', 'scale'), { intervals: [50] })
+    .toEqual({ opacity: '1', scale: '1' })
+  // Then the last group fades it out, and it stays out.
+  await expect
+    .poll(async () => (await style(page, 'sequence', 'opacity')).opacity)
+    .toBe('0')
+  await expect(sequence).toHaveText('In together, wait, out')
+})
+
 test('scroll reveals wait out of view, then play', async ({ page }) => {
   const reveal = page.getByTestId('reveal')
   await expect(reveal).toHaveAttribute('data-greese-view', 'pending')
   expect((await style(page, 'reveal', 'opacity')).opacity).toBe('0')
-  await reveal.scrollIntoViewIfNeeded()
+  // Its top just above the fold: partly visible, so it waits rather than
+  // animating in cut off by the bottom edge.
+  await reveal.evaluate((el) =>
+    scrollBy(0, el.getBoundingClientRect().top - innerHeight + 24)
+  )
+  await page.waitForTimeout(300)
+  await expect(reveal).toHaveAttribute('data-greese-view', 'pending')
+  // Wholly in view, clear of the bottom edge: it plays.
+  await reveal.evaluate((el) => el.scrollIntoView({ block: 'center' }))
   await expect(reveal).toHaveAttribute('data-greese-view', 'in')
   expect((await style(page, 'reveal', 'animation-name'))['animation-name']).toBe(
     'greese-fade-up'
   )
   // Text effects run on reveal and leave the real text behind.
+  await page
+    .getByTestId('count-text')
+    .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+  await expect(page.getByTestId('count-text')).toHaveAttribute('data-greese-view', 'in')
   await expect(page.getByTestId('count-text')).toHaveText('2048')
   await expect(
     page.getByTestId('count-text').locator('[aria-hidden="true"]')

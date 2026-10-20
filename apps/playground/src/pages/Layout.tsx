@@ -4,7 +4,6 @@ import {
   Box,
   Container,
   Grid,
-  GridItem,
   Hide,
   Show,
   Spacer,
@@ -72,13 +71,18 @@ export const Layout = (): JSX.Element => (
     </Fixture>
 
     <Fixture name="grid">
-      <Grid data-testid="grid-columns" columns={{ xs: 1, sm: 2, lg: 4 }} gap={2}>
+      <Grid
+        container
+        data-testid="grid-columns"
+        columns={{ xs: 1, sm: 2, lg: 4 }}
+        gap={2}
+      >
         <C />
         <C />
         <C />
         <C />
       </Grid>
-      <Grid data-testid="grid-min" minChildWidth="200px" gap={2}>
+      <Grid container data-testid="grid-min" minChildWidth="200px" gap={2}>
         <C />
         <C />
         <C />
@@ -87,15 +91,15 @@ export const Layout = (): JSX.Element => (
         <C />
       </Grid>
       <div style={{ inlineSize: '400px' }}>
-        <Grid data-testid="grid-container" columns={12} container>
-          <GridItem data-testid="item-in-container" span={{ xs: 12, md: 6 }}>
+        <Grid container data-testid="grid-container" columns={12} containerQueries>
+          <Grid data-testid="item-in-container" size={{ xs: 12, md: 6 }}>
             <C />
-          </GridItem>
+          </Grid>
         </Grid>
-        <Grid data-testid="grid-viewport" columns={12}>
-          <GridItem data-testid="item-in-viewport" span={{ xs: 12, md: 6 }}>
+        <Grid container data-testid="grid-viewport" columns={12}>
+          <Grid data-testid="item-in-viewport" size={{ xs: 12, md: 6 }}>
             <C />
-          </GridItem>
+          </Grid>
         </Grid>
       </div>
     </Fixture>

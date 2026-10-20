@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties, type JSX } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type JSX } from 'react'
 import {
   Button,
   Card,
@@ -7,6 +7,7 @@ import {
   Stack,
   Text,
   timeline,
+  useGreese,
   type Timeline,
 } from '@greese-ui/react'
 import '@greese-ui/react/base.css'
@@ -19,6 +20,41 @@ declare global {
     /** Mixed-unit fixture: px → rem token, px → vw width. */
     units?: Timeline
   }
+}
+
+/** A useGreese user: a scoped selector entrance and a handler animation. */
+const HookList = ({ id }: { id: string }) => {
+  const root = useRef<HTMLDivElement>(null)
+  const { animate } = useGreese(
+    (g) => {
+      g.timeline().from('.hook-item', { opacity: 0, duration: 10, ease: 'linear' })
+    },
+    { scope: root }
+  )
+  return (
+    <div ref={root} data-testid={id}>
+      <span className="hook-item">{id}</span>
+      <Button
+        size="sm"
+        onClick={() => animate('.hook-item', { scale: [1, 1.5] }, { duration: 0.1 })}
+      >
+        {`Pulse ${id}`}
+      </Button>
+    </div>
+  )
+}
+
+const HookFixture = () => {
+  const [mounted, setMounted] = useState(true)
+  return (
+    <Stack direction="row" gap={2}>
+      {mounted && <HookList id="hook-a" />}
+      <HookList id="hook-b" />
+      <Button size="sm" onClick={() => setMounted(false)}>
+        Unmount hook-a
+      </Button>
+    </Stack>
+  )
 }
 
 /** Fixtures for e2e/motion.spec.ts: greese.js against real computed styles. */
@@ -35,7 +71,7 @@ export const Motion = (): JSX.Element => {
         x: 50,
         rotate: 90,
         backgroundColor: '#0000ff',
-        '--greese-color-accent': '#00ff00',
+        '--greese-color-primary': '#00ff00',
         duration: 1,
         ease: 'linear',
       })
@@ -66,7 +102,7 @@ export const Motion = (): JSX.Element => {
           backgroundColor: 'rgb(255, 0, 0)',
         }}
       >
-        <Button size="sm">Accent</Button>
+        <Button size="sm">Primary</Button>
       </div>
       <div
         ref={unitsBox}
@@ -75,7 +111,7 @@ export const Motion = (): JSX.Element => {
           inlineSize: '100px',
           blockSize: '2rem',
           borderRadius: 'var(--greese-radius-lg)',
-          background: 'var(--greese-color-accent)',
+          background: 'var(--greese-color-primary)',
         }}
       />
       <p ref={label} data-testid="label">
@@ -85,35 +121,47 @@ export const Motion = (): JSX.Element => {
         0
       </span>
 
+      {/* useGreese (e2e/motion.spec.ts). */}
+      <HookFixture />
+
       {/* The greese prop (e2e/greese-prop.spec.ts). */}
-      <Card data-testid="enter" greese={{ enter: 'fade-up', duration: 10 }}>
+      <Card data-testid="enter" greese={{ enter: 'fadeUp', duration: 10 }}>
         Fades up on load
       </Card>
       <div style={{ '--greese-motion-duration': '7s' } as CSSProperties}>
-        <Card data-testid="tuned" greese="fade">
+        <Card data-testid="tuned" greese="fadeIn">
           Tuned by an ancestor
         </Card>
       </div>
-      <Stack data-testid="stagger" greese={{ enter: 'fade', stagger: 0.1, duration: 10 }}>
+      <Stack
+        data-testid="stagger"
+        greese={{ enter: 'fadeIn', stagger: 0.1, duration: 10 }}
+      >
         <span>one</span>
         <span>two</span>
         <span>three</span>
       </Stack>
+      <Card
+        data-testid="sequence"
+        greese={{ enter: 'fadeIn+scaleIn,+1.5,fadeOut', duration: 0.3 }}
+      >
+        In together, wait, out
+      </Card>
       <Button data-testid="hover" greese={{ hover: 'lift', press: 'squish' }}>
         Hover me
       </Button>
       <Dialog
         trigger={<Button>Open exit dialog</Button>}
         title="Exit test"
-        greese={{ enter: 'scale-in', exit: 'scale-out' }}
+        greese={{ enter: 'scaleIn', exit: 'scaleOut' }}
       />
       <div style={{ blockSize: '150vh' }} />
-      <Card data-testid="reveal" greese={{ inView: 'fade-up', duration: 10 }}>
+      <Card data-testid="reveal" greese={{ inView: 'fadeUp', duration: 10 }}>
         Revealed on scroll
       </Card>
       <Text
         data-testid="count-text"
-        greese={{ text: 'count', inView: 'fade', duration: 0.3 }}
+        greese={{ text: 'count', inView: 'fadeIn', duration: 0.3 }}
       >
         2048
       </Text>

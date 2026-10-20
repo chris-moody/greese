@@ -11,7 +11,7 @@ import '@greese-ui/react/styles.css'
 
 const brand = createTheme({
   name: 'brand',
-  color: { accent: { light: '#7c3aed', dark: '#c4b5fd' }, surface: '#fef3c7' },
+  color: { primary: { light: '#7c3aed', dark: '#c4b5fd' }, surface: '#fef3c7' },
 })
 const rounded = createTheme({ name: 'rounded', radius: { md: '2px' } })
 
@@ -27,7 +27,7 @@ const Probe = ({ id, children }: { id: string; children?: ReactNode }) => (
       aria-hidden="true"
       style={{
         blockSize: '1.5rem',
-        color: 'var(--greese-color-accent)',
+        color: 'var(--greese-color-primary)',
         backgroundColor: 'var(--greese-color-surface)',
         borderRadius: 'var(--greese-radius-md)',
       }}
