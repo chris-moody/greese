@@ -8,7 +8,10 @@ import { Meta } from '@storybook/addon-docs/blocks'
 npm install @greese/react
 ```
 
-Requires React 19. Import the stylesheet once, at your app root:
+This also installs `@greese/ui`, the framework-free CSS and tokens it renders,
+and `@greese/js`, for the `greese` prop. Requires React 19.
+
+Import the stylesheet once, at your app root:
 
 ```tsx
 import '@greese/react/base.css' // optional: reset + body defaults, if GreeseUI owns the page
@@ -30,6 +33,28 @@ export const SignIn = () => (
   </Stack>
 )
 ```
+
+## Without a framework
+
+The CSS is its own package, `@greese/ui`, with no dependencies. Use it from
+plain HTML, or under a framework that has no GreeseUI package yet:
+
+```bash
+npm install @greese/ui
+```
+
+```html
+<link rel="stylesheet" href="node_modules/@greese/ui/dist/greese.css" />
+
+<button class="greese-Button greese-Button--solid">Save changes</button>
+```
+
+Every component's classes, parts, modifiers and state attributes are listed
+in its Styling section, and they're a public contract: the React components
+render exactly these. Native elements (`<dialog>`, `<details>`, form controls)
+work as they are; widgets with keyboard behaviour (Tabs, Combobox, Menu…) also
+need JavaScript, which comes with the framework packages. With a bundler,
+`import '@greese/ui/styles.css'` does the same as the link.
 
 ## Only the CSS you use
 

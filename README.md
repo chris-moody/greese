@@ -5,11 +5,14 @@ static CSS compiled at build time, themed with CSS custom properties.
 
 | Package | |
 |---|---|
-| [`@greese/react`](packages/react) | Components, hooks, and the compiled stylesheet |
-| [`@greese/ui`](packages/tokens) | Design tokens as CSS variables, Sass maps, and TS constants |
-| [`@greese/js`](packages/greese) | greese.js, the animation library behind the `greese` prop |
+| [`@greese/ui`](packages/ui) | The CSS and design tokens: the stylesheet, per-component CSS, custom properties, Sass kit. No framework needed |
+| [`@greese/react`](packages/react) | React components, styled by `@greese/ui` |
+| [`@greese/js`](packages/js) | greese.js, the animation library behind the `greese` prop |
 | [`@greese/icons`](packages/icons) | Optional line icons; GreeseUI takes any icons |
 
+`@greese/react` depends on `@greese/ui` and `@greese/js`, so one install is
+enough. `@greese/ui` works in plain HTML, and is what the planned Svelte, Vue
+and Angular packages will share ([ADR 0014](docs/adr/0014-framework-agnostic-packages.md)).
 Homepage, docs and Theme Studio: <https://chris-moody.github.io/greese/>.
 Source: <https://github.com/chris-moody/greese>.
 
@@ -19,7 +22,8 @@ Scope, phases and standing decisions: [ADR 0013](docs/adr/0013-project-scope-and
 
 | Path | |
 |---|---|
-| `packages/react`, `packages/tokens`, `packages/greese`, `packages/icons` | Published packages |
+| `packages/ui` | `@greese/ui`: the CSS, tokens and Sass kit, framework-free. Component styles are edited here |
+| `packages/react`, `packages/js`, `packages/icons` | The other published packages |
 | `packages/eslint-config`, `packages/typescript-config` | Internal shared config |
 | `apps/docs` | Storybook. Uses the library **source**, so edits hot-reload |
 | `apps/playground` | Vite app that uses the **built** `dist/`, the same way a real consumer does. Playwright e2e and perf benchmarks run against it |

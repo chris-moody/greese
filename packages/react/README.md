@@ -2,7 +2,9 @@
 
 Mobile-first, TypeScript-first React components. All styling is static CSS
 compiled at build time and themed with CSS custom properties, so there is no
-CSS-in-JS runtime.
+CSS-in-JS runtime. The CSS is [`@greese/ui`](../ui), which this package
+depends on (with [`@greese/js`](../js), for the `greese` prop), so one install
+is enough.
 
 ```bash
 npm install @greese/react
@@ -11,7 +13,7 @@ npm install @greese/react
 ```tsx
 // Once, at your app root:
 import '@greese/react/base.css' // optional: reset + body defaults
-import '@greese/react/styles.css' // tokens + component styles
+import '@greese/react/styles.css' // @greese/ui: tokens + component styles
 ```
 
 Requires React 19. `styles.css` styles only `.greese-*` classes. Import
@@ -74,6 +76,8 @@ Every library rule sits in `@layer greese.*`, so unlayered CSS in your app alway
 wins over it. You never need `!important`.
 
 ## Component overrides: the SCSS kit and Theme Studio
+
+The kit is `@greese/ui`'s (install it too to `@use` it directly).
 
 The SCSS kit compiles a theme of tokens, component overrides and theme-wide
 motion in your build. You write component, part and modifier names; it adds

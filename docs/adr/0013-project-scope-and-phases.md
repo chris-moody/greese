@@ -2,6 +2,8 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-20, recording decisions made from 2026-10-17
+- **Amended by:** [ADR 0014](0014-framework-agnostic-packages.md), which
+  renames the packages to `@greese/*` and makes the CSS framework-free.
 - **Replaces:** the development plan, which is no longer kept in the
   repository. This ADR keeps what the other ADRs, the skills and the agents
   rely on from it.
@@ -59,27 +61,28 @@ The phase numbers other ADRs cite:
 | —     | The `greese` prop                                     | 2026-10-18 | ADR 0009          |
 | —     | SCSS kit, style manifest, Theme Studio                | 2026-10-19 | ADR 0010          |
 | —     | Component gap review                                  | 2026-10-19 | ADR 0011          |
-| —     | `@greese/icons` and the docs rules                 | 2026-10-19 | ADR 0012          |
+| —     | `@greese/icons` and the docs rules                    | 2026-10-19 | ADR 0012          |
 | —     | Repository, npm metadata, the three apps on Pages     | 2026-10-20 | This ADR, 0010    |
+| —     | Framework-agnostic packages: `@greese/ui`, `js`       | 2026-10-20 | ADR 0014          |
 
 When a new body of work lands, add a row here; that's the status record the
 skills and agents keep up to date.
 
 ## Standing decisions
 
-| Question           | Decision                                                                                                                               |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Publish target     | Public npm under `@greese`, with provenance. The npm org and the `NPM_TOKEN` secret wait for the first release                      |
-| React floor        | React 19 only                                                                                                                          |
-| Browser baseline   | Baseline 2024 (`@property`, container queries and cascade layers; ADR 0001)                                                            |
-| Docs hosting       | GitHub Pages (`.github/workflows/pages.yml`): the homepage at `/`, Storybook at `/storybook/`, the hosted Theme Studio at `/studio/`   |
-| Repository         | <https://github.com/chris-moody/greese>; each published package's `repository`, `homepage` and `bugs` point there                      |
-| Licence            | MIT                                                                                                                                    |
-| Package manager    | npm workspaces                                                                                                                         |
-| TypeScript         | Pinned to `~6.0` until typescript-eslint supports TS 7                                                                                 |
-| ESLint             | Stays on 9 until eslint-plugin-react supports 10                                                                                       |
-| Icons              | Components take icons as `ReactNode`; the optional `@greese/icons` package is separate and never imported by the library (ADR 0012) |
-| Private registries | None: installing needs only the public npm registry                                                                                    |
+| Question           | Decision                                                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Publish target     | Public npm under `@greese`, with provenance. The npm org and the `NPM_TOKEN` secret wait for the first release                       |
+| React floor        | React 19 only                                                                                                                        |
+| Browser baseline   | Baseline 2024 (`@property`, container queries and cascade layers; ADR 0001)                                                          |
+| Docs hosting       | GitHub Pages (`.github/workflows/pages.yml`): the homepage at `/`, Storybook at `/storybook/`, the hosted Theme Studio at `/studio/` |
+| Repository         | <https://github.com/chris-moody/greese>; each published package's `repository`, `homepage` and `bugs` point there                    |
+| Licence            | MIT                                                                                                                                  |
+| Package manager    | npm workspaces                                                                                                                       |
+| TypeScript         | Pinned to `~6.0` until typescript-eslint supports TS 7                                                                               |
+| ESLint             | Stays on 9 until eslint-plugin-react supports 10                                                                                     |
+| Icons              | Components take icons as `ReactNode`; the optional `@greese/icons` package is separate and never imported by the library (ADR 0012)  |
+| Private registries | None: installing needs only the public npm registry                                                                                  |
 
 ## Deferred
 

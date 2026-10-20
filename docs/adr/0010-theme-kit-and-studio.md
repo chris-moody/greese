@@ -26,7 +26,7 @@ build time (no runtime, per ADR 0001), and a visual tool to build one.
 `scripts/styleManifest.ts` reads each component's compiled stylesheet and
 records every block's parts, modifiers (and modifiers of parts), responsive
 props, state attributes and custom properties (tokens and per-breakpoint
-variables excluded). `build:css` writes it two ways:
+variables excluded). `@greese/ui`'s build writes it two ways:
 
 - `dist/style-manifest.json`, exported as `@greese/ui/style-manifest.json`,
   for the docs and Theme Studio;
