@@ -19,9 +19,10 @@ any element forces a mode for that subtree, and modes can be nested. `createThem
 
 ## Colour roles and the palette
 
-`color` holds the semantic roles components use. `primary`, `secondary` and
-`tertiary` are brand colours (each with `…Strong` and `on…`); `accent`, the
-role for interactive emphasis, follows `primary` unless a theme sets it.
+`color` holds the semantic roles components use. The brand colours, in order,
+are `primary` (what components use for interactive emphasis), `secondary`,
+`tertiary` and `accent`, each with `…Strong` and a WCAG-safe `…Content`
+colour that `createTheme` derives when you set only the main colour.
 
 `palette` is 22 hues × 11 shades (`50`–`999`), like
 MUI's `colors`. Use it instead of hex literals: `palette.lavender[600]` or
