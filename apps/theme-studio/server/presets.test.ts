@@ -16,7 +16,7 @@ describe('derived colors, as the studio shows them', () => {
     const lum = (hex: string) => parseInt(hex.slice(1, 3), 16)
     expect(lum(derivedStrong('#c2410c', 'light'))).toBeLessThan(lum('#c2410c'))
     expect(lum(derivedStrong('#c2410c', 'dark'))).toBeGreaterThan(lum('#c2410c'))
-    expect(derivedContent('#fde047')).toBe('#0b0d10')
+    expect(derivedContent('#fde047')).toBe('#11171c')
   })
 })
 

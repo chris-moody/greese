@@ -6,12 +6,16 @@ import {
   VisuallyHidden,
   type ColorScheme,
 } from '@greese/react'
+import { palette } from '@greese/ui'
 import '@greese/react/base.css'
 import '@greese/react/styles.css'
 
 const brand = createTheme({
   name: 'brand',
-  color: { primary: { light: '#7c3aed', dark: '#c4b5fd' }, surface: '#fef3c7' },
+  color: {
+    primary: { light: palette.lavender[600], dark: palette.lavender[300] },
+    surface: palette.gold[100],
+  },
 })
 const rounded = createTheme({ name: 'rounded', radius: { md: '2px' } })
 

@@ -281,7 +281,7 @@ describe('SCSS kit: tokens() and theme()', () => {
     const norm = (list: Array<[string, string]>) =>
       list.map(([p, v]) => [p, v.replace(/"/g, "'")])
     const light = declared(css, `  ${sass}`)
-    expect(light).toContainEqual(['--greese-color-negative-content', '#0b0d10'])
+    expect(light).toContainEqual(['--greese-color-negative-content', '#11171c'])
     expect(norm(light)).toEqual(norm(declared(theme.css, `  ${T}`)))
   })
 

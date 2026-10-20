@@ -143,6 +143,10 @@ export type PaletteShade = (typeof paletteShades)[number]
 /** One hue: a color per shade. */
 export type Hue = Readonly<Record<PaletteShade, string>>
 
+/** The two colors that aren't a hue: the ends of every ramp. */
+export const white = '#ffffff'
+export const black = '#000000'
+
 // Greys first, then around the color wheel.
 `
 

@@ -1,4 +1,8 @@
 import { expect, test } from '@playwright/test'
+import { color } from '@greese/ui'
+
+const rgb = (hex: string) =>
+  `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ')})`
 
 /**
  * @greese/ui on its own (docs/adr/0014): a page of plain HTML, using the
@@ -14,12 +18,12 @@ test.describe('plain HTML with @greese/ui', () => {
       primary.evaluate((el) => getComputedStyle(el).backgroundColor)
 
     await page.evaluate(() => (document.documentElement.dataset.greeseScheme = 'light'))
-    await expect.poll(background).toBe('rgb(37, 99, 235)')
+    await expect.poll(background).toBe(rgb(color.primary.light))
     expect(await primary.evaluate((el) => getComputedStyle(el).borderRadius)).toBe('8px')
 
     await page.evaluate(() => (document.documentElement.dataset.greeseScheme = 'dark'))
     // The button transitions its colors, so wait for them to settle.
-    await expect.poll(background).toBe('rgb(96, 165, 250)')
+    await expect.poll(background).toBe(rgb(color.primary.dark))
   })
 
   test('draws components from classes alone', async ({ page }) => {

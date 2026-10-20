@@ -684,6 +684,11 @@ $_derived: (primary, secondary, tertiary, accent, negative);
   @return rgb(list.nth($channels, 1), list.nth($channels, 2), list.nth($channels, 3));
 }
 
+// The content inks: white, and steel-999 (the dark scheme's content color), as
+// `CONTENT_LIGHT` and `CONTENT_DARK` in contrast.ts (a test keeps them equal).
+$_white: #fff;
+$_dark-ink: #11171c;
+
 /// Text for content on `$c`: as `contentColor()` in @greese/ui, the
 /// more readable of white and near-black if it reaches AA, else black. Null
 /// for anything that isn't a color (a `var()`), which keeps the default.
@@ -692,13 +697,13 @@ $_derived: (primary, secondary, tertiary, accent, negative);
     @return null;
   }
 
-  $light: _ratio($c, #ffffff);
-  $dark: _ratio($c, #0b0d10);
+  $light: _ratio($c, $_white);
+  $dark: _ratio($c, $_dark-ink);
   $best: '#ffffff';
   $ratio: $light;
 
   @if $dark > $light {
-    $best: '#0b0d10';
+    $best: '#11171c';
     $ratio: $dark;
   }
 

@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { createTheme, ThemeProvider } from '@greese/react'
+import { palette } from '@greese/ui'
 
 const brand = createTheme({
   name: 'docs-brand',
-  color: { primary: { light: '#7c3aed', dark: '#c4b5fd' } },
+  color: { primary: { light: palette.lavender[600], dark: palette.lavender[300] } },
   radius: { md: '16px' },
 })
 

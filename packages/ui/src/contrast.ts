@@ -6,7 +6,7 @@
 
 /** Light and dark ink for content on a color: white, or GreeseUI's near-black canvas. */
 export const CONTENT_LIGHT = '#ffffff'
-export const CONTENT_DARK = '#0b0d10'
+export const CONTENT_DARK = '#11171c' // steel-999
 
 /** The WCAG AA minimum for normal text. */
 export const AA = 4.5

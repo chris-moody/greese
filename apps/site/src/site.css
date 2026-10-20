@@ -4,25 +4,12 @@
  */
 
 :root {
-  /* MUI's series color (see theme.ts). GreeseUI's is the primary color,
-     read on the bar itself: a var() declared here would resolve against
-     :root's default primary, outside the site's theme. */
-  --site-mui: #2563eb;
-  --site-glow: rgb(194 65 12 / 0.16);
   scroll-padding-block-start: 5rem;
 }
 
-:root[data-greese-scheme='dark'] {
-  --site-mui: #3b82f6;
-  --site-glow: rgb(251 146 60 / 0.14);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-greese-scheme='light']) {
-    --site-mui: #3b82f6;
-    --site-glow: rgb(251 146 60 / 0.14);
-  }
-}
+/* The chart's MUI series and the hero's glow are colors of the site's theme
+   (theme.ts), so they follow its scheme like any token. GreeseUI's series is
+   the primary color, read on the bar itself. */
 
 @media (prefers-reduced-motion: no-preference) {
   :root {
@@ -74,7 +61,7 @@
   inset: -20% -10% auto auto;
   inline-size: min(60rem, 120vw);
   aspect-ratio: 1;
-  background: radial-gradient(closest-side, var(--site-glow), transparent);
+  background: radial-gradient(closest-side, var(--greese-color-site-glow), transparent);
   z-index: -1;
   pointer-events: none;
 }
@@ -164,7 +151,7 @@
 }
 
 .site-key--mui {
-  --site-key: var(--site-mui);
+  --site-key: var(--greese-color-site-mui);
 }
 
 .site-metric {
@@ -207,7 +194,7 @@
 }
 
 .site-bar--mui {
-  --site-bar-color: var(--site-mui);
+  --site-bar-color: var(--greese-color-site-mui);
 }
 
 .site-bar-value {

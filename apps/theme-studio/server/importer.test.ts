@@ -79,7 +79,7 @@ describe('importCss: other sources', () => {
     expect(spec).toEqual({
       name: 'brand',
       tokens: {
-        // One value for both schemes: the dark default (#0b0d10) changes too.
+        // One value for both schemes: the dark default (#11171c) changes too.
         color: {
           accent: { light: '#0f766e', dark: '#5eead4' },
           'accent-content': '#ffffff',

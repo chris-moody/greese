@@ -1,16 +1,21 @@
 import { expect, test, type Page } from '@playwright/test'
+import { color, palette } from '@greese/ui'
+
+/** `#rrggbb` as the browser reports it: `rgb(r, g, b)`. */
+const rgb = (hex: string) =>
+  `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ')})`
 
 /**
  * Real-browser check of the theming model (docs/adr/0002): nested themes and
  * schemes, OS preference, page scheme forced on <html>, and persistence.
  */
 const PRIMARY = {
-  default: { light: 'rgb(37, 99, 235)', dark: 'rgb(96, 165, 250)' },
-  brand: { light: 'rgb(124, 58, 237)', dark: 'rgb(196, 181, 253)' },
+  default: { light: rgb(color.primary.light), dark: rgb(color.primary.dark) },
+  brand: { light: rgb(palette.lavender[600]), dark: rgb(palette.lavender[300]) },
 }
 const SURFACE = {
-  default: { light: 'rgb(245, 246, 248)', dark: 'rgb(20, 24, 29)' },
-  brand: 'rgb(254, 243, 199)', // single value: same in both schemes
+  default: { light: rgb(color.surface.light), dark: rgb(color.surface.dark) },
+  brand: rgb(palette.gold[100]), // single value: same in both schemes
 }
 
 type Mode = 'light' | 'dark'
