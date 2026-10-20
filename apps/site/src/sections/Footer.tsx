@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
 import { Container, Divider, Link, Stack, Text } from '@greese-ui/react'
-import { DOCS_URL, REPO_URL } from '../config.ts'
+import { DOCS_URL, REPO_URL, STUDIO_URL } from '../config.ts'
 import { facts } from '../data/index.ts'
 
 export const Footer = (): JSX.Element => (
@@ -21,6 +21,9 @@ export const Footer = (): JSX.Element => (
           <Stack direction="row" gap={4}>
             <Link href={DOCS_URL} tone="neutral" greese={{ hover: 'float' }}>
               Docs
+            </Link>
+            <Link href={STUDIO_URL} tone="neutral" greese={{ hover: 'float' }}>
+              Theme Studio
             </Link>
             <Link href={REPO_URL} tone="neutral" greese={{ hover: 'float' }}>
               GitHub

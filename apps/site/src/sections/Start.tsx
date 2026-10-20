@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
 import { Badge, Button, Card, Code, Grid, Heading, Stack, Text } from '@greese-ui/react'
-import { DOCS_URL, INSTALL } from '../config.ts'
+import { DOCS_URL, INSTALL, STUDIO_URL } from '../config.ts'
 import { Section } from '../Section.tsx'
 
 const steps = [
@@ -59,6 +59,15 @@ export const Start = (): JSX.Element => (
     >
       <Button asChild size="lg" greese={{ hover: 'lift', press: 'squish' }}>
         <a href={DOCS_URL}>Read the docs</a>
+      </Button>
+      <Button
+        asChild
+        size="lg"
+        variant="outline"
+        tone="neutral"
+        greese={{ hover: 'lift', press: 'squish' }}
+      >
+        <a href={STUDIO_URL}>Make a theme</a>
       </Button>
       <Text tone="muted" className="site-start-note">
         Using only a few components? Import their stylesheets instead, such as{' '}
