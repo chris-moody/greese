@@ -12,6 +12,11 @@ GREESE_THEME=src/styles/greese-theme.json npm run studio   # your own
 `GREESE_THEME` is resolved from the directory you ran npm in. It opens on
 <http://localhost:5180>.
 
+A hosted copy runs at <https://chris-moody.github.io/greese/studio/>. It
+compiles in your browser and keeps the theme there: save, then download
+`greese-theme.json` (and the SCSS and CSS) from the Code tab, and open the
+JSON here to carry on. Importing from project files needs `npm run studio`.
+
 ## Files
 
 | File                | Written by          | Use                                                                     |

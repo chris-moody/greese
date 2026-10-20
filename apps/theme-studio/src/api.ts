@@ -31,7 +31,13 @@ const send = (method: string, url: string, spec: ThemeSpec) =>
     body: JSON.stringify(spec),
   }).then((r) => json<Compiled & { written?: string[] }>(r))
 
-export const api = {
+/**
+ * True when built (GitHub Pages): no dev server, so the studio works in the
+ * browser instead (`hosted.ts`, loaded only then).
+ */
+export const hosted = !import.meta.env.DEV
+
+const devApi = {
   load: () => fetch('/api/theme').then((r) => json<Loaded>(r)),
   compile: (spec: ThemeSpec) => send('POST', '/api/compile', spec),
   save: (spec: ThemeSpec) => send('PUT', '/api/theme', spec),
@@ -42,3 +48,14 @@ export const api = {
       body: JSON.stringify(source),
     }).then((r) => json<ImportResult | { errors: string[] }>(r)),
 }
+
+const browser = () => import('./hosted.ts').then((m) => m.hostedApi)
+
+export const api: typeof devApi = hosted
+  ? {
+      load: async () => (await browser()).load(),
+      compile: async (spec) => (await browser()).compile(spec),
+      save: async (spec) => (await browser()).save(spec),
+      import: async (source) => (await browser()).import(source),
+    }
+  : devApi

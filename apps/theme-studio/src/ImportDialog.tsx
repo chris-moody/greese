@@ -18,7 +18,7 @@ import {
   Textarea,
   TextField,
 } from '@greese-ui/react'
-import { api, type ImportSource } from './api.ts'
+import { api, hosted, type ImportSource } from './api.ts'
 import { mergeSpecs, type ImportResult } from './importer.ts'
 import type { ThemeSpec } from './spec.ts'
 
@@ -107,7 +107,7 @@ export const ImportDialog = ({ spec, onImport }: ImportDialogProps): JSX.Element
           <TabList aria-label="Import from">
             <Tab value="paste">Paste</Tab>
             <Tab value="file">Upload</Tab>
-            <Tab value="project">From project</Tab>
+            {!hosted && <Tab value="project">From project</Tab>}
           </TabList>
           <TabPanel value="paste">
             <Stack gap={3}>
@@ -148,16 +148,18 @@ export const ImportDialog = ({ spec, onImport }: ImportDialogProps): JSX.Element
               />
             </Field>
           </TabPanel>
-          <TabPanel value="project">
-            <TextField
-              label="Path"
-              description="Relative to where you ran npm. .json, .css or .scss, or a .ts/.js module that exports createTheme() results (it runs in the studio's server). SCSS files can use their own imports."
-              placeholder="src/theme.ts"
-              value={path}
-              spellCheck={false}
-              onChange={(e) => setPath(e.currentTarget.value)}
-            />
-          </TabPanel>
+          {!hosted && (
+            <TabPanel value="project">
+              <TextField
+                label="Path"
+                description="Relative to where you ran npm. .json, .css or .scss, or a .ts/.js module that exports createTheme() results (it runs in the studio's server). SCSS files can use their own imports."
+                placeholder="src/theme.ts"
+                value={path}
+                spellCheck={false}
+                onChange={(e) => setPath(e.currentTarget.value)}
+              />
+            </TabPanel>
+          )}
         </Tabs>
 
         <div>

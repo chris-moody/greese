@@ -15,7 +15,7 @@ import {
   Text,
   type ColorScheme,
 } from '@greese-ui/react'
-import { api } from './api.ts'
+import { api, hosted } from './api.ts'
 import { PaletteOptions } from './fields.tsx'
 import { ImportDialog } from './ImportDialog.tsx'
 import { ThemeMenu } from './ThemeMenu.tsx'
@@ -257,13 +257,14 @@ export const App = (): JSX.Element => {
                 scss={compiled.scss}
                 css={compiled.css}
                 outputs={file?.outputs ?? []}
+                spec={hosted ? spec : undefined}
               />
             </TabPanel>
           </Tabs>
         </aside>
         <iframe
           ref={frame}
-          src="/preview.html"
+          src={`${import.meta.env.BASE_URL}preview.html`}
           title="Theme preview"
           className="studio-preview-frame"
         />
