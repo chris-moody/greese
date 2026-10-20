@@ -409,9 +409,11 @@ it as shown. A component that calls `useColorScheme` needs `'use client'`.
 
 ## Custom breakpoints
 
-Breakpoint values compile into media queries, so they're set at build time,
-not in a theme. Keep the keys (`xs`–`xl`) and change the values, in both SCSS
-and JS:
+Breakpoint values compile into media queries, so they're fixed when the
+stylesheet is built, not in a theme and not at runtime. You can change the
+values and **add keys**. The five built-in keys (`xs`–`xl`) stay, because
+components use them; list the keys smallest first, with `xs` at `0px`, and
+write each as one word (quote one that starts with a digit: `'2xl'`):
 
 ```scss
 // your-styles.scss, instead of importing styles.css
@@ -419,6 +421,7 @@ and JS:
   $breakpoints: (
     xs: 0px,
     sm: 480px,
+    tablet: 700px,
     md: 768px,
     lg: 1024px,
     xl: 1440px,
@@ -426,10 +429,24 @@ and JS:
 );
 ```
 
+Every key, added ones included, gets responsive classes
+(`greese-Stack--tablet-gap-3`, so `gap={{ tablet: 3 }}` works) and a custom
+property in the built CSS, **`--greese-breakpoint-tablet: 700px`**, which
+your own CSS and JavaScript can read, for example
+`max-inline-size: var(--greese-breakpoint-md)`. (A custom property can't go
+inside a `@media` condition; that's why the values are fixed at build time.)
+
 ```ts
 // Before the first render: hooks and Sidebar read these in JS.
 import { configureBreakpoints } from '@greese/react'
-configureBreakpoints({ sm: 480, md: 768, lg: 1024, xl: 1440 })
+configureBreakpoints({ sm: 480, tablet: 700, md: 768, lg: 1024, xl: 1440 })
+
+// For TypeScript, tell it about an added key (once, in any .d.ts):
+declare module '@greese/ui' {
+  interface BreakpointKeys {
+    tablet: true
+  }
+}
 ```
 
 Compile with Sass's `NodePackageImporter`, which resolves `pkg:` URLs. In Vite:

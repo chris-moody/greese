@@ -1,0 +1,16 @@
+// Built with your own breakpoints (changed values or extra keys): the tokens
+// declare the defaults' `--greese-breakpoint-*` custom properties, so
+// redeclare every one with the configured values. Nothing is emitted for the
+// defaults.
+@use 'config';
+@use '../../dist/maps' as defaults;
+
+@if config.$breakpoints != defaults.$breakpoints {
+  @layer greese.tokens {
+    :root {
+      @each $key, $min in config.$breakpoints {
+        --greese-breakpoint-#{$key}: #{$min};
+      }
+    }
+  }
+}

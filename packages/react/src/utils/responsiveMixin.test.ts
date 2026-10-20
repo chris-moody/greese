@@ -131,9 +131,14 @@ describe('configurable breakpoints', () => {
     expect(css).not.toContain('@media (width >= 900px)')
   })
 
-  it('rejects renamed or missing keys', () => {
+  it('rejects missing keys, and accepts added ones', () => {
     expect(() => load('$breakpoints: (xs: 0px, tablet: 700px)')).toThrow(
-      /must keep the keys/
+      /must keep the key/
     )
+    expect(
+      load(
+        '$breakpoints: (xs: 0px, sm: 600px, tablet: 700px, md: 900px, lg: 1200px, xl: 1536px)'
+      )
+    ).toContain('--tablet-gap')
   })
 })

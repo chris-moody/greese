@@ -1,16 +1,45 @@
-// The configurable part of GreeseUI's SCSS. Recompile with your own breakpoint
-// values (the keys stay xs/sm/md/lg/xl, which class names and the TS hooks use):
+// The configurable part of GreeseUI's SCSS: the breakpoints. They're fixed
+// when the stylesheet is built (media queries can't read variables), so you
+// change them by compiling with your own, smallest first. Values may change and
+// keys may be added, but xs/sm/md/lg/xl stay, because components use them:
 //   @use 'pkg:@greese/ui/scss' with (
-//     $breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px)
+//     $breakpoints: (xs: 0px, sm: 480px, tablet: 700px, md: 768px, lg: 1024px, xl: 1440px)
 //   );
-// Then call configureBreakpoints({ sm: 480, md: 768, lg: 1024, xl: 1440 }) so
-// useBreakpoint() and friends agree.
+// Every key gets responsive classes (`greese-Stack--tablet-gap-3`) and a custom
+// property, `--greese-breakpoint-tablet: 700px`. Then call
+// configureBreakpoints({ sm: 480, tablet: 700, … }) so useBreakpoint() and
+// friends agree, and for TypeScript add the key to `BreakpointKeys`.
 @use 'sass:map';
+@use 'sass:string';
 @use '../../dist/maps' as defaults;
 
 $breakpoints: defaults.$breakpoints !default;
 $space-keys: defaults.$space-keys;
 
-@if map.keys($breakpoints) != map.keys(defaults.$breakpoints) {
-  @error 'GreeseUI $breakpoints must keep the keys #{map.keys(defaults.$breakpoints)}; only the values can change. Got #{map.keys($breakpoints)}.';
+@each $key in map.keys(defaults.$breakpoints) {
+  @if not map.has-key($breakpoints, $key) {
+    @error 'GreeseUI $breakpoints must keep the key `#{$key}` (components use #{map.keys(defaults.$breakpoints)}); you can add keys and change values. Got #{map.keys($breakpoints)}.';
+  }
+}
+
+// 0 and 0px differ in Sass, and the unit is the point here.
+// stylelint-disable-next-line length-zero-no-unit
+@if map.get($breakpoints, xs) != 0px {
+  @error 'GreeseUI $breakpoints: `xs` must be 0, got #{map.get($breakpoints, xs)}.';
+}
+
+// Mobile-first rules are emitted in map order, so the map must run smallest
+// to largest, with no two keys sharing a value.
+$_previous: -1px;
+
+@each $key, $min in $breakpoints {
+  @if string.index('#{$key}', '-') {
+    @error 'GreeseUI $breakpoints: key `#{$key}` must be one word, without dashes, as it goes into class and variable names. Quote a key that starts with a digit (\'2xl\').';
+  }
+
+  @if $min <= $_previous {
+    @error 'GreeseUI $breakpoints must increase from the first key to the last, but `#{$key}` (#{$min}) does not exceed the one before it.';
+  }
+
+  $_previous: $min;
 }

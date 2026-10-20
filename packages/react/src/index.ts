@@ -1,6 +1,10 @@
 export * from './components/index.ts'
 export * from './hooks/index.ts'
-export { configureBreakpoints, getBreakpoints } from './utils/breakpoints.ts'
+export {
+  configureBreakpoints,
+  getBreakpointKeys,
+  getBreakpoints,
+} from './utils/breakpoints.ts'
 export { cx } from './utils/cx.ts'
 export {
   cssEase,

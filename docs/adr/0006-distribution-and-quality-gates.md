@@ -29,7 +29,7 @@ ChoiceGroup, and Text's size scale moved to a `_type` partial.
 Mixins now read Sass values from `@greese/ui/scss/maps`, which emits no
 CSS, so compiling one component never drags the token stylesheet in with it.
 
-### 2. Custom breakpoints: values yes, keys no
+### 2. Custom breakpoints: fixed at build time, values and added keys
 
 Breakpoint values are compile-time constants (media queries can't read
 variables). The published SCSS entry forwards a `$breakpoints !default`:
@@ -47,11 +47,24 @@ variables). The published SCSS entry forwards a `$breakpoints !default`:
 ```
 
 `configureBreakpoints()` gives the hooks and Sidebar the same values in JS.
-**The keys stay `xs`–`xl`**, and the SCSS fails the build if they change. Keys
-are baked into every generated class name, every `Responsive<T>` type and
-`resolveResponsive`. Custom keys would need TypeScript module augmentation _and_
-a matching runtime list _and_ a recompile, all of which would have to stay in
-sync, and changing values covers almost every real need.
+**Keys can be added (2026-10-20).** `xs`–`xl` must stay, because component
+SCSS uses them, but a build may add keys (`tablet: 700px`), smallest first
+and one word each. The SCSS mixins already loop over the map, so every key
+gets its responsive classes. Three things follow, and stay in sync by
+convention and test:
+
+- **A custom property per key**, `--greese-breakpoint-<key>`, in the token
+  layer (the defaults in `tokens.css`; a build with its own breakpoints
+  redeclares them all). They're for reading in CSS and JavaScript; media
+  queries can't use them. They're not themable, because the media queries
+  they describe can't change after the build.
+- **JavaScript**: `configureBreakpoints({ tablet: 700 })` registers the key
+  (ordered by value) for `useBreakpoint`, `resolveResponsive` and Sidebar.
+- **TypeScript**: a key is added to the `BreakpointKeys` interface of
+  `@greese/ui` by module augmentation, which `Responsive<T>` follows.
+
+Editing breakpoints stays a build-time act (so Theme Studio shows them but
+doesn't change them): once the CSS is built, it's a done deal.
 
 ### 3. Quality gates
 

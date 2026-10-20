@@ -2,7 +2,13 @@ import { act, render, renderHook, screen } from '@testing-library/react'
 import { renderToString } from 'react-dom/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { setMedia } from '../test/matchMedia.ts'
-import { configureBreakpoints, getBreakpoints } from '../utils/breakpoints.ts'
+import {
+  configureBreakpoints,
+  getBreakpointKeys,
+  getBreakpoints,
+  resetBreakpoints,
+} from '../utils/breakpoints.ts'
+import { isSpaceToken, resolveResponsive } from '../utils/responsive.ts'
 import { resolveAt, useBreakpoint, useBreakpointValue } from './useBreakpoint.ts'
 import { useColorScheme } from './useColorScheme.ts'
 import { useControllableState } from './useControllableState.ts'
@@ -158,7 +164,7 @@ describe('useColorScheme', () => {
 })
 
 describe('configureBreakpoints', () => {
-  afterEach(() => configureBreakpoints({ sm: 600, md: 900, lg: 1200, xl: 1536 }))
+  afterEach(resetBreakpoints)
 
   it('moves the boundaries the hooks use', () => {
     configureBreakpoints({ sm: 480, md: 768 })
@@ -166,6 +172,33 @@ describe('configureBreakpoints', () => {
     setMedia({ width: 800 })
     const { result } = renderHook(() => useBreakpoint())
     expect(result.current).toBe('md')
+  })
+
+  it('takes new keys, ordered by value, in the hooks and in responsive classes', () => {
+    configureBreakpoints({ tablet: 700 })
+    expect(getBreakpointKeys()).toEqual(['xs', 'sm', 'tablet', 'md', 'lg', 'xl'])
+    setMedia({ width: 750 })
+    const { result } = renderHook(() => useBreakpoint())
+    expect(result.current).toBe('tablet')
+    const value = { xs: 'a', tablet: 'b' } as never
+    expect(resolveAt(value, 'md' as never)).toBe('b')
+    expect(resolveAt(value, 'sm' as never)).toBe('a')
+    const { className } = resolveResponsive(
+      [
+        [
+          { tablet: 2 } as never,
+          { block: 'greese-Stack', prop: 'gap', isToken: isSpaceToken },
+        ],
+      ],
+      {}
+    )
+    expect(className).toBe('greese-Stack--tablet-gap-2')
+  })
+
+  it('rejects a new key that shares a value, or sits out of order', () => {
+    expect(() => configureBreakpoints({ tablet: 900 })).toThrow(/its own value/)
+    expect(() => configureBreakpoints({ tablet: 0 })).toThrow(/its own value/)
+    expect(getBreakpointKeys()).toEqual(['xs', 'sm', 'md', 'lg', 'xl'])
   })
 
   it('rejects values that do not increase', () => {

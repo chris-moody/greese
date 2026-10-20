@@ -163,9 +163,35 @@ export type ScalarGroup = keyof typeof scalarTokens
  * Media queries cannot read custom properties, so these are compile-time
  * constants in the CSS; changing them means recompiling the SCSS.
  */
-export const breakpoints = { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 } as const
+export const breakpoints: Readonly<Record<Breakpoint, number>> = {
+  xs: 0,
+  sm: 600,
+  md: 900,
+  lg: 1200,
+  xl: 1536,
+}
 
-export type Breakpoint = keyof typeof breakpoints
+/**
+ * The breakpoint names. Open for more: a build that adds keys to the SCSS
+ * `$breakpoints` (`tablet: 700px`) tells TypeScript with
+ *
+ * ```ts
+ * declare module '@greese/ui' {
+ *   interface BreakpointKeys { tablet: true }
+ * }
+ * ```
+ *
+ * so `Responsive<T>` accepts `{ tablet: … }` too.
+ */
+export interface BreakpointKeys {
+  xs: true
+  sm: true
+  md: true
+  lg: true
+  xl: true
+}
 
-/** Breakpoint keys, smallest first. */
+export type Breakpoint = keyof BreakpointKeys
+
+/** The built-in breakpoint keys, smallest first. */
 export const breakpointKeys = Object.keys(breakpoints) as Breakpoint[]

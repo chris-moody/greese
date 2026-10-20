@@ -10,6 +10,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from 'react'
+import type { Breakpoint } from '@greese/ui'
 import { getBreakpoints } from '../../utils/breakpoints.ts'
 import { cx } from '../../utils/cx.ts'
 import { MenuGlyph } from '../../utils/glyphs.tsx'
@@ -18,7 +19,7 @@ import { composeRefs } from '../Slot/Slot.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 /** Breakpoints at which the sidebar can become persistent. */
-export type SidebarBreakpoint = 'sm' | 'md' | 'lg' | 'xl'
+export type SidebarBreakpoint = Exclude<Breakpoint, 'xs'>
 
 interface SidebarContextValue {
   id: string

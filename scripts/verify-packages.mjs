@@ -154,12 +154,13 @@ export const App = () => <Dialog title="T" trigger={<Button>{String(dir)}</Butto
   writeFileSync(
     join(work, 'custom.mjs'),
     `import { compileString, NodePackageImporter } from 'sass-embedded'
-const { css } = compileString("@use 'pkg:@greese/ui/scss' with ($breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px));", { importers: [new NodePackageImporter()], url: new URL(import.meta.url) })
+const { css } = compileString("@use 'pkg:@greese/ui/scss' with ($breakpoints: (xs: 0px, sm: 480px, tablet: 700px, md: 768px, lg: 1024px, xl: 1440px));", { importers: [new NodePackageImporter()], url: new URL(import.meta.url) })
 if (!css.includes('(width >= 768px)') || css.includes('(width >= 900px)')) throw new Error('breakpoints not applied')
+if (!css.includes('--greese-breakpoint-tablet: 700px') || !css.includes('.greese-Stack--tablet-gap-3')) throw new Error('added breakpoint key not applied')
 `
   )
   run('node', ['custom.mjs'], work)
-  ok('pkg:@greese/ui/scss recompiles with custom breakpoints')
+  ok('pkg:@greese/ui/scss recompiles with custom breakpoints and an added key')
 
   // 4b. The SCSS kit and the style manifest, as published.
   writeFileSync(

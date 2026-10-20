@@ -5,6 +5,7 @@
 // lets `@use … with ($breakpoints: …)` reconfigure every component.
 @forward 'config';
 @use '../../dist/tokens';
+@use 'breakpoint-vars';
 @use '../components/ThemeProvider/ThemeProvider';
 @use '../components/VisuallyHidden/VisuallyHidden';
 @use '../components/Box/Box';

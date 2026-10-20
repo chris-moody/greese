@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
-import { Accordion, AccordionItem, Stack, TextField } from '@greese/react'
-import { scalarTokens } from '@greese/ui'
+import { Accordion, AccordionItem, Stack, Text, TextField } from '@greese/react'
+import { breakpoints, scalarTokens } from '@greese/ui'
 import { getIn, setIn } from '../edit.ts'
 import { ValueRow } from '../fields.tsx'
 import type { RenderedColors } from '../protocol.ts'
@@ -56,6 +56,24 @@ export const TokensPanel = ({ spec, onChange, rendered }: PanelProps): JSX.Eleme
           </Stack>
         </AccordionItem>
       ))}
+      <AccordionItem title="breakpoint">
+        <Stack gap={2}>
+          <Text size="sm" tone="muted">
+            Fixed when the stylesheet is built, so a theme can&apos;t change them: media
+            queries can&apos;t read variables. Set them (and add keys) by compiling with
+            your own <code className="studio-mono">$breakpoints</code>; each key also
+            becomes a custom property you can read in CSS.
+          </Text>
+          {Object.entries(breakpoints).map(([key, value]) => (
+            <div className="studio-row" key={key}>
+              <Text size="sm" className="studio-row-label">
+                breakpoint-{key}
+              </Text>
+              <code className="studio-mono">{value}px</code>
+            </div>
+          ))}
+        </Stack>
+      </AccordionItem>
     </Accordion>
   </Stack>
 )

@@ -1,7 +1,11 @@
 'use client'
 import { useSyncExternalStore } from 'react'
-import { breakpointKeys, type Breakpoint } from '@greese/ui'
-import { getBreakpoints, onBreakpointsChange } from '../utils/breakpoints.ts'
+import type { Breakpoint } from '@greese/ui'
+import {
+  getBreakpointKeys,
+  getBreakpoints,
+  onBreakpointsChange,
+} from '../utils/breakpoints.ts'
 import type { Responsive } from '../utils/responsive.ts'
 
 /** Same queries as the SCSS `up()` mixin, so JS and CSS agree on boundaries. */
@@ -12,7 +16,7 @@ onBreakpointsChange(() => {
   lists = undefined
 })
 const getLists = (): Array<[Breakpoint, MediaQueryList]> =>
-  (lists ??= breakpointKeys
+  (lists ??= getBreakpointKeys()
     .filter((bp) => getBreakpoints()[bp] > 0)
     .map((bp) => [bp, window.matchMedia(query(bp))]))
 
@@ -63,8 +67,9 @@ export const useBreakpointValue = <T>(
 export const resolveAt = <T>(value: Responsive<T>, bp: Breakpoint): T | undefined => {
   if (typeof value !== 'object' || value === null) return value
   const perBp = value as Partial<Record<Breakpoint, T>>
-  for (let i = breakpointKeys.indexOf(bp); i >= 0; i--) {
-    const v = perBp[breakpointKeys[i]!]
+  const keys = getBreakpointKeys()
+  for (let i = keys.indexOf(bp); i >= 0; i--) {
+    const v = perBp[keys[i]!]
     if (v !== undefined) return v
   }
   return undefined
