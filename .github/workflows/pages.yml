@@ -1,6 +1,11 @@
-# The greese homepage on GitHub Pages: apps/site at the root, Storybook at
-# /storybook/ (the site's "docs" links point there).
+# GreeseUI on GitHub Pages, at https://chris-moody.github.io/greese/:
 #
+#   /            the homepage (apps/site)
+#   /storybook/  the docs (apps/docs), where the site's "docs" links point
+#   /studio/     Theme Studio (apps/theme-studio), hosted: it compiles in the
+#                browser and keeps the theme there (src/hosted.ts)
+#
+# Every app builds with relative asset paths, so none needs the repo name.
 # One-time setup: Settings → Pages → Source: "GitHub Actions".
 name: Pages
 
@@ -10,6 +15,7 @@ on:
     paths:
       - 'apps/site/**'
       - 'apps/docs/**'
+      - 'apps/theme-studio/**'
       - 'packages/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
@@ -34,13 +40,14 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
       - run: npm ci --no-audit --no-fund
-      # Builds the packages first (turbo), then the site and Storybook.
-      - run: npx turbo run build --filter=site --filter=docs
+      # Builds the packages first (turbo), then the three apps.
+      - run: npx turbo run build --filter=site --filter=docs --filter=theme-studio
       - name: Assemble the site
         run: |
           mkdir -p _site
           cp -r apps/site/dist/. _site/
           cp -r apps/docs/storybook-static _site/storybook
+          cp -r apps/theme-studio/dist _site/studio
           # Serve files as they are, including Storybook's _-prefixed ones.
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
