@@ -1,6 +1,15 @@
 {
   "name": "greese-ui",
   "private": true,
+  "homepage": "https://chris-moody.github.io/greese/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chris-moody/greese.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chris-moody/greese/issues"
+  },
+  "license": "MIT",
   "workspaces": [
     "packages/*",
     "apps/*"

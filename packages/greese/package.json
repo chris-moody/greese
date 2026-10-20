@@ -13,6 +13,15 @@
   ],
   "author": "Chris Moody",
   "license": "MIT",
+  "homepage": "https://chris-moody.github.io/greese/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chris-moody/greese.git",
+    "directory": "packages/greese"
+  },
+  "bugs": {
+    "url": "https://github.com/chris-moody/greese/issues"
+  },
   "type": "module",
   "sideEffects": false,
   "files": [
