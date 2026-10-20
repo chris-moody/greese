@@ -244,7 +244,7 @@ describe('SCSS kit: tokens() and theme()', () => {
         accent: { light: '#7c3aed', dark: '#c4b5fd' },
         accentContent: '#fff',
         primary: { light: '#fde047', dark: '#1e3a8a' },
-        secondary: '#7c3aed',
+        secondary: '#7e5bd0',
       },
       radius: { md: '12px' },
     })

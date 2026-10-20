@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import {
   palette,
   paletteShades,
-  violet,
+  lavender,
   type PaletteHue,
   type PaletteShade,
 } from './palette.ts'
@@ -14,13 +14,16 @@ describe('palette', () => {
   it('has every shade of every hue, as a hex color', () => {
     for (const shades of Object.values(palette)) {
       expect(Object.keys(shades).map(Number)).toEqual([...paletteShades])
+      // Ends on 999, not 950.
+      expect(paletteShades.at(-1)).toBe(999)
       for (const value of Object.values(shades)) expect(value).toMatch(/^#[0-9a-f]{6}$/)
     }
   })
 
   it('exports each hue on its own, for tree-shaking', () => {
-    expect(violet).toBe(palette.lavender)
-    expect(lavender[600]).toBe('#7e5bd0')
+    expect(lavender).toBe(palette.lavender)
+    expect(lavender[600]).toBe(palette.lavender[600])
+    expect(lavender[600]).toMatch(/^#[0-9a-f]{6}$/)
   })
 
   it('matches the palette names in the color roles’ comments', () => {

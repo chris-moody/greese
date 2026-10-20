@@ -158,7 +158,7 @@ $color: ${colorMap};
 // Scheme-independent groups: (font-size: (lg: '1.125rem'), ...).
 $scalars: ${scalarMap};
 
-// The palette: (violet: (600: #7c3aed, ...), ...), for the kit's palette().
+// The palette: (lavender: (600: #805dd3, ...), ...), for the kit's palette().
 $palette: ${scssMap(
   Object.entries(palette).map(([name, shades]) => [
     name,
