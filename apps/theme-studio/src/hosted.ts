@@ -19,10 +19,10 @@ const files = new Map(Object.entries(kit))
 
 /** The package entry points the kit and themes `@use`. */
 const entries: Record<string, string> = {
-  'pkg:@greese/react/scss/kit': '/react/_kit.scss',
-  'pkg:@greese/ui/scss': '/tokens/_tokens.scss',
-  'pkg:@greese/ui/scss/layers': '/tokens/_layers.scss',
-  'pkg:@greese/ui/scss/maps': '/tokens/_maps.scss',
+  'pkg:@greese/ui/scss/kit': '/src/styles/_kit.scss',
+  'pkg:@greese/ui/scss/tokens': '/dist/_tokens.scss',
+  'pkg:@greese/ui/scss/layers': '/dist/_layers.scss',
+  'pkg:@greese/ui/scss/maps': '/dist/_maps.scss',
 }
 
 /** Resolves `pkg:` entries, and the kit's relative `@use`s between its partials. */

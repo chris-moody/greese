@@ -197,7 +197,7 @@ describe('detectFormat', () => {
   it('goes by the extension, then the content', () => {
     expect(detectFormat('', 'theme.scss')).toBe('scss')
     expect(detectFormat('{"tokens":{}}')).toBe('json')
-    expect(detectFormat("@use 'pkg:@greese/react/scss/kit' as greese;")).toBe('scss')
+    expect(detectFormat("@use 'pkg:@greese/ui/scss/kit' as greese;")).toBe('scss')
     expect(detectFormat('$x: 1px;')).toBe('scss')
     expect(detectFormat(':root { --x: 1 }')).toBe('css')
   })
@@ -242,7 +242,7 @@ export const brand = createTheme({ name: 'brand', radius: { md: '3px' } })\n`
     writeFileSync(
       join(root, 'styles', 'theme.scss'),
       `@use 'vars';
-@use 'pkg:@greese/react/scss/kit' as greese;
+@use 'pkg:@greese/ui/scss/kit' as greese;
 @include greese.tokens((radius: (md: vars.$r)));
 @include greese.component(Card) { padding: 0; }\n`
     )
@@ -274,7 +274,7 @@ export const brand = createTheme({ name: 'brand', radius: { md: '3px' } })\n`
   it('compiles pasted kit SCSS', async () => {
     const result = await importTheme(
       {
-        text: `@use 'pkg:@greese/react/scss/kit' as greese;
+        text: `@use 'pkg:@greese/ui/scss/kit' as greese;
 @include greese.component(Card) { @include greese.motion((enter: pop)); }`,
       },
       root

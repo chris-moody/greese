@@ -1,9 +1,9 @@
 // @vitest-environment node
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { compileString, NodePackageImporter } from 'sass-embedded'
+import { compile as compileFile, compileString, NodePackageImporter } from 'sass-embedded'
 import { describe, expect, it } from 'vitest'
-import { createTheme, LAYER_ORDER } from '@greese/ui'
+import { createTheme, LAYER_ORDER } from '../index.ts'
 
 const STYLES = fileURLToPath(new URL('.', import.meta.url))
 
@@ -307,26 +307,16 @@ describe('SCSS kit: tokens() and theme()', () => {
 })
 
 describe('style manifest', () => {
-  it('is current: rebuild with `npm run build:css` after changing a stylesheet', async () => {
+  it('is current: rebuild with `npm run build` after changing a stylesheet', async () => {
     const { manifestScss, styleManifest } = await import('../../scripts/styleManifest.ts')
-    const { readComponents } = await import('../../scripts/cssGraph.ts')
     const components = fileURLToPath(new URL('../components', import.meta.url))
-    const importers = [new NodePackageImporter()]
     const compiled = new Map(
-      readComponents(components)
-        .filter((c) => c.hasScss)
-        .map((c) => [
-          c.name,
-          compileString(readFileSync(`${components}/${c.name}/${c.name}.scss`, 'utf8'), {
-            importers,
-            url: new URL(`file://${components}/${c.name}/${c.name}.scss`),
-          }).css,
-        ])
+      readdirSync(components).map((name) => [
+        name,
+        compileFile(`${components}/${name}/${name}.scss`).css,
+      ])
     )
-    const tokensCss = readFileSync(
-      fileURLToPath(import.meta.resolve('@greese/ui/tokens.css')),
-      'utf8'
-    )
+    const tokensCss = readFileSync(`${STYLES}/../../dist/tokens.css`, 'utf8')
     const tokenVars = new Set(tokensCss.match(/--greese-[a-z0-9-]+(?=:)/g))
     expect(readFileSync(`${STYLES}/_manifest.scss`, 'utf8')).toBe(
       manifestScss(styleManifest(compiled, tokenVars))

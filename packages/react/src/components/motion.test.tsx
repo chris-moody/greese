@@ -403,8 +403,8 @@ describe('one source of truth for effect names', () => {
 
   it('keeps the presets, their CSS and their classes in step', () => {
     expect(covered && complete).toBe(true)
-    // Vitest runs from the package root.
-    const scss = readFileSync('src/components/Motion/Motion.scss', 'utf8')
+    // Vitest runs from the package root; the styles are @greese/ui's.
+    const scss = readFileSync('../ui/src/components/Motion/Motion.scss', 'utf8')
     const list = /\$presets: \(([^)]*)\)/.exec(scss)![1]!
     const inScss = [...list.matchAll(/'([a-z-]+)'/g)].map((m) => m[1])
     const kebab = (n: string) => n.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)

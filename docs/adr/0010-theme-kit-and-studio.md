@@ -28,7 +28,7 @@ records every block's parts, modifiers (and modifiers of parts), responsive
 props, state attributes and custom properties (tokens and per-breakpoint
 variables excluded). `build:css` writes it two ways:
 
-- `dist/style-manifest.json`, exported as `@greese/react/style-manifest.json`,
+- `dist/style-manifest.json`, exported as `@greese/ui/style-manifest.json`,
   for the docs and Theme Studio;
 - `src/styles/_manifest.scss`, committed, a Sass map for the kit's name
   checks. A unit test fails if it's stale.
@@ -62,7 +62,7 @@ repeats it, so adding a name is safe. A sheet built before this change that
 loads first leaves `greese.overrides` last, above utilities. Only kit output
 uses the layer, so that needs an old sheet and a new kit in the same page.
 
-### 3. The SCSS kit: `pkg:@greese/react/scss/kit`
+### 3. The SCSS kit: `pkg:@greese/ui/scss/kit`
 
 A Sass module that emits nothing until called:
 

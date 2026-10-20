@@ -1,13 +1,14 @@
 /**
  * The Styling section of every component's docs page, and the reference in
  * Guides/Styling components. Everything comes from the library's style
- * manifest (packages/react/scripts/styleManifest.ts), so it can't drift:
+ * manifests (@greese/ui's style manifest and @greese/react's component styles), so it can't drift:
  * the blocks a component renders itself, its items' blocks, the blocks of the
  * components it's built on, and override examples written for it.
  */
 import type { JSX } from 'react'
 import { Source, Subheading } from '@storybook/addon-docs/blocks'
-import manifest from '@greese/react/style-manifest.json' with { type: 'json' }
+import manifest from '@greese/ui/style-manifest.json' with { type: 'json' }
+import componentStyles from '@greese/react/component-styles.json' with { type: 'json' }
 
 interface BlockStyles {
   name: string
@@ -28,7 +29,7 @@ interface ComponentUse {
 }
 
 const blocks = manifest.blocks as Record<string, BlockStyles>
-const components = manifest.components as Record<string, ComponentUse>
+const components = componentStyles.components as Record<string, ComponentUse>
 
 /**
  * Components that render no class of their own: what to target instead,
@@ -149,7 +150,7 @@ const examples = (name: string, own: BlockStyles[], builtOn: BlockStyles[]) => {
   if (!target) return undefined
   const c = target.className
   const css: string[] = [`.${c} {\n  /* every ${name} */\n}`]
-  const kit: string[] = [`@use 'pkg:@greese/react/scss/kit' as greese;`, '']
+  const kit: string[] = [`@use 'pkg:@greese/ui/scss/kit' as greese;`, '']
   const variable = knob(target)
   const base = own.length ? builtOn.find((b) => b.parts.length) : undefined
 

@@ -1,7 +1,7 @@
 {
   "name": "@greese/react",
   "version": "1.0.0",
-  "description": "Mobile-first, TypeScript-first React components with zero-runtime, CSS-variable theming.",
+  "description": "Mobile-first, TypeScript-first React components, styled by @greese/ui: zero-runtime, CSS-variable theming.",
   "keywords": [
     "react",
     "react19",
@@ -32,9 +32,7 @@
   ],
   "files": [
     "LICENSE",
-    "dist",
-    "src/styles",
-    "src/components/**/*.scss"
+    "dist"
   ],
   "exports": {
     ".": {
@@ -45,17 +43,11 @@
       "types": "./dist/greese.d.ts",
       "default": "./dist/greese.js"
     },
-    "./styles.css": "./dist/greese-ui.css",
+    "./styles.css": "./dist/styles.css",
     "./base.css": "./dist/base.css",
     "./css/*": "./dist/css/*",
-    "./scss": {
-      "sass": "./src/styles/index.scss"
-    },
-    "./scss/kit": {
-      "sass": "./src/styles/_kit.scss"
-    },
-    "./style-manifest.json": "./dist/style-manifest.json",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./component-styles.json": "./dist/component-styles.json"
   },
   "publishConfig": {
     "access": "public"
@@ -66,7 +58,7 @@
     "build:js": "tsc -p tsconfig.build.json",
     "build:css": "node scripts/build-css.ts",
     "check-types": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
-    "lint": "eslint src --max-warnings 0 && stylelint \"src/**/*.scss\" --max-warnings 0",
+    "lint": "eslint src --max-warnings 0",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "size": "size-limit"
@@ -95,10 +87,7 @@
     "jsdom": "^30.1.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "sass-embedded": "^1.105.2",
     "size-limit": "^14.2.0",
-    "stylelint": "^17.16.0",
-    "stylelint-config-standard-scss": "^17.0.0",
     "typescript": "~6.0.3",
     "vitest": "^5.0.5"
   }

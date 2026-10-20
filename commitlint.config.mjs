@@ -33,9 +33,9 @@ export default {
       2,
       'always',
       [
+        'ui',
         'react',
-        'tokens',
-        'greese',
+        'js',
         'icons',
         'docs',
         'playground',

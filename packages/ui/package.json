@@ -1,13 +1,19 @@
 {
   "name": "@greese/ui",
   "version": "1.0.0",
-  "description": "Design tokens for GreeseUI as CSS custom properties, Sass maps, and TypeScript constants.",
+  "description": "GreeseUI's CSS and design tokens: a framework-free stylesheet, per-component CSS, custom properties, Sass kit and TypeScript constants. Works in plain HTML, or under any framework.",
   "keywords": [
+    "css",
+    "design-system",
     "design-tokens",
     "css-variables",
     "theme",
     "dark-mode",
-    "sass"
+    "sass",
+    "scss",
+    "web-components",
+    "framework-agnostic",
+    "mobile-first"
   ],
   "author": "Chris Moody",
   "license": "MIT",
@@ -26,18 +32,30 @@
   ],
   "files": [
     "LICENSE",
-    "dist"
+    "dist",
+    "src/styles",
+    "src/components/**/*.scss"
   ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./styles.css": "./dist/greese.css",
+    "./base.css": "./dist/base.css",
+    "./css/*": "./dist/css/*",
     "./tokens.css": "./dist/tokens.css",
     "./palette.css": "./dist/palette.css",
-    "./scss": "./dist/_tokens.scss",
+    "./scss": {
+      "sass": "./src/styles/index.scss"
+    },
+    "./scss/kit": {
+      "sass": "./src/styles/_kit.scss"
+    },
+    "./scss/tokens": "./dist/_tokens.scss",
     "./scss/layers": "./dist/_layers.scss",
     "./scss/maps": "./dist/_maps.scss",
+    "./style-manifest.json": "./dist/style-manifest.json",
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -45,17 +63,23 @@
   },
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
-    "build": "npm run clean && tsc -p tsconfig.build.json && node scripts/build-css.ts",
+    "build": "npm run clean && tsc -p tsconfig.build.json && node scripts/build-tokens.ts && node scripts/build-styles.ts",
     "check-types": "tsc --noEmit",
-    "lint": "eslint src scripts --max-warnings 0",
-    "test": "vitest run"
+    "lint": "eslint src scripts --max-warnings 0 && stylelint \"src/**/*.scss\" --max-warnings 0",
+    "test": "vitest run",
+    "size": "size-limit"
   },
   "devDependencies": {
     "@greese/eslint-config": "*",
     "@greese/typescript-config": "*",
+    "@size-limit/preset-small-lib": "^14.2.0",
     "@types/node": "^24.0.0",
     "eslint": "^9.39.0",
     "jsdom": "^30.1.3",
+    "sass-embedded": "^1.105.2",
+    "size-limit": "^14.2.0",
+    "stylelint": "^17.16.0",
+    "stylelint-config-standard-scss": "^17.0.0",
     "typescript": "~6.0.3",
     "vitest": "^5.0.5"
   }

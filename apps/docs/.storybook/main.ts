@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm'
 import { NodePackageImporter } from 'sass-embedded'
 
 const reactSrc = fileURLToPath(new URL('../../../packages/react/src', import.meta.url))
+const uiSrc = fileURLToPath(new URL('../../../packages/ui/src', import.meta.url))
 const iconsSrc = fileURLToPath(new URL('../../../packages/icons/src', import.meta.url))
 
 const config: StorybookConfig = {
@@ -40,8 +41,9 @@ const config: StorybookConfig = {
     },
   },
   /**
-   * Point @greese/react at its source (TS + SCSS) instead of dist/, so edits
-   * hot-reload with no rebuild. apps/playground covers the built package.
+   * Point @greese/react (TS) and @greese/ui's stylesheet (SCSS) at their
+   * source instead of dist/, so edits hot-reload with no rebuild.
+   * apps/playground covers the built packages.
    */
   viteFinal: (vite) => ({
     ...vite,
@@ -50,11 +52,11 @@ const config: StorybookConfig = {
       alias: [
         {
           find: /^@greese\/react\/styles\.css$/,
-          replacement: `${reactSrc}/styles/index.scss`,
+          replacement: `${uiSrc}/styles/index.scss`,
         },
         {
           find: /^@greese\/react\/base\.css$/,
-          replacement: `${reactSrc}/styles/base.scss`,
+          replacement: `${uiSrc}/styles/base.scss`,
         },
         { find: /^@greese\/react$/, replacement: `${reactSrc}/index.ts` },
         // The icons from source too, so their props tables read their TSDoc.

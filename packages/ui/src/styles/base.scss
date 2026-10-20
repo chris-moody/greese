@@ -3,7 +3,7 @@
 // Usage:
 //   import '@greese/react/base.css'
 //   import '@greese/react/styles.css'
-@use 'pkg:@greese/ui/scss/layers';
+@use '../../dist/layers';
 
 @layer greese.reset {
   *,

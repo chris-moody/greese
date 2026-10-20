@@ -16,7 +16,7 @@ describe('the hosted studio', () => {
 
   it('imports SCSS that uses the kit', async () => {
     const result = await hostedApi.import({
-      text: "@use 'pkg:@greese/react/scss/kit' as greese;\n@include greese.tokens((color: (primary: #0e7490)));",
+      text: "@use 'pkg:@greese/ui/scss/kit' as greese;\n@include greese.tokens((color: (primary: #0e7490)));",
       format: 'scss',
     })
     expect(result).not.toHaveProperty('errors')

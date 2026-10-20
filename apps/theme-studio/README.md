@@ -22,7 +22,7 @@ JSON here to carry on. Importing from project files needs `npm run studio`.
 | File                | Written by          | Use                                                                     |
 | ------------------- | ------------------- | ----------------------------------------------------------------------- |
 | `greese-theme.json` | You and the studio  | The theme. Commit it                                                    |
-| `greese-theme.scss` | The studio, on save | Kit calls (`pkg:@greese/react/scss/kit`), for apps that compile Sass |
+| `greese-theme.scss` | The studio, on save | Kit calls (`pkg:@greese/ui/scss/kit`), for apps that compile Sass |
 | `greese-theme.css`  | The studio, on save | The same, compiled, for apps that don't                                 |
 
 The SCSS and CSS are generated: edit the JSON or use the studio, and keep
@@ -96,7 +96,7 @@ include a round trip: a theme the studio writes reads back unchanged.
   computed variables.
 
 Component data (parts, modifiers, variables) comes from
-`@greese/react/style-manifest.json`, so build the library first
+`@greese/ui/style-manifest.json`, so build the library first
 (`npm run build`) after changing its styles.
 
 Design and trade-offs: [ADR 0010](../../docs/adr/0010-theme-kit-and-studio.md).

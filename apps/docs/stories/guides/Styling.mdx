@@ -128,7 +128,7 @@ Then, in a stylesheet imported **after** GreeseUI's styles:
 
 ```scss
 // theme.scss
-@use 'pkg:@greese/react/scss/kit' as greese;
+@use 'pkg:@greese/ui/scss/kit' as greese;
 ```
 
 Using the module emits nothing. Its mixins emit the CSS, plus the layer order
@@ -261,7 +261,7 @@ Error: GreeseUI kit: `Button` has no part `icn`. Parts: icon.
 ```
 
 To target a class this version doesn't know (a part from a newer release, say),
-turn the check off: `@use 'pkg:@greese/react/scss/kit' as greese with ($strict: false);`.
+turn the check off: `@use 'pkg:@greese/ui/scss/kit' as greese with ($strict: false);`.
 
 ## Theme-wide motion
 
@@ -413,6 +413,6 @@ comes with the rest of the release work.
 
 Generated from the library's stylesheets, as is the Styling section on each
 component's page. The same data ships as
-`@greese/react/style-manifest.json`.
+`@greese/ui/style-manifest.json`.
 
 <AllComponentStyles />

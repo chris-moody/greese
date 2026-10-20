@@ -80,7 +80,7 @@ motion in your build. You write component, part and modifier names; it adds
 the `greese-` prefix, and stops the build on names the library doesn't have:
 
 ```scss
-@use 'pkg:@greese/react/scss/kit' as greese;
+@use 'pkg:@greese/ui/scss/kit' as greese;
 
 @include greese.tokens(
   (
@@ -119,7 +119,7 @@ style props and the `greese` prop still beat them per instance. Compile with
 Sass's `NodePackageImporter`. A named `greese.theme(brand) { … }` works with
 `<ThemeProvider theme="brand">`.
 
-`@greese/react/style-manifest.json` lists every component's classes,
+`@greese/ui/style-manifest.json` lists every component's classes,
 parts, modifiers, states and variables. Theme Studio (`npm run studio` in
 this repository) edits a theme visually and writes the SCSS and CSS. See
 **Guides/Styling components** in the docs.
@@ -270,7 +270,7 @@ To use your own breakpoint values, recompile the SCSS and tell the hooks. The
 keys stay `xs`–`xl`:
 
 ```scss
-@use 'pkg:@greese/react/scss' with (
+@use 'pkg:@greese/ui/scss' with (
   $breakpoints: (
     xs: 0px,
     sm: 480px,

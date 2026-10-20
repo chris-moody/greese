@@ -1,6 +1,6 @@
 // GreeseUI's SCSS kit for themes and component overrides, compiled in your
 // build (docs/adr/0010-theme-kit-and-studio.md). For example:
-//   @use 'pkg:@greese/react/scss/kit' as greese;
+//   @use 'pkg:@greese/ui/scss/kit' as greese;
 //   @include greese.tokens((color: (primary: (light: lavender-600, dark: lavender-300))));
 //   @include greese.component(Button) {
 //     font-weight: 700;
@@ -22,7 +22,7 @@
 @use 'sass:math';
 @use 'sass:meta';
 @use 'sass:string';
-@use 'pkg:@greese/ui/scss/maps' as defaults;
+@use '../../dist/maps' as defaults;
 @use 'manifest';
 @forward 'mixins' show up, down, hover, focus-ring, touch-target, motion-safe;
 

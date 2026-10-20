@@ -2,11 +2,14 @@
 import { fileURLToPath } from 'node:url'
 import { compileString, NodePackageImporter } from 'sass-embedded'
 import { describe, expect, it } from 'vitest'
-import { resolveResponsive, responsiveVar, isSpaceToken } from '../utils/responsive.ts'
+import { resolveResponsive, responsiveVar, isSpaceToken } from './responsive.ts'
+
+/** The SCSS mixin lives in @greese/ui; this checks it against the resolver here. */
+const STYLES = fileURLToPath(new URL('../../../ui/src/styles/', import.meta.url))
 
 const compile = (scss: string): string =>
   compileString(`@use 'mixins';\n${scss}`, {
-    loadPaths: [fileURLToPath(new URL('.', import.meta.url))],
+    loadPaths: [STYLES],
     importers: [new NodePackageImporter()],
   }).css
 
@@ -116,7 +119,7 @@ describe('up mixin', () => {
 describe('configurable breakpoints', () => {
   const load = (config: string) =>
     compileString(`@use 'index' with (${config});`, {
-      loadPaths: [fileURLToPath(new URL('.', import.meta.url))],
+      loadPaths: [STYLES],
       importers: [new NodePackageImporter()],
     }).css
 

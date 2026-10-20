@@ -243,7 +243,7 @@ visually. Pass the name to the provider; it stamps the attributes and
 injects nothing:
 
 ```scss
-@use 'pkg:@greese/react/scss/kit' as greese;
+@use 'pkg:@greese/ui/scss/kit' as greese;
 
 @include greese.theme(brand) {
   @include greese.tokens(
@@ -415,7 +415,7 @@ and JS:
 
 ```scss
 // your-styles.scss, instead of importing styles.css
-@use 'pkg:@greese/react/scss' with (
+@use 'pkg:@greese/ui/scss' with (
   $breakpoints: (
     xs: 0px,
     sm: 480px,

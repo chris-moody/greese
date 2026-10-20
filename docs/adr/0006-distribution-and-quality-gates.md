@@ -35,7 +35,7 @@ Breakpoint values are compile-time constants (media queries can't read
 variables). The published SCSS entry forwards a `$breakpoints !default`:
 
 ```scss
-@use 'pkg:@greese/react/scss' with (
+@use 'pkg:@greese/ui/scss' with (
   $breakpoints: (
     xs: 0px,
     sm: 480px,

@@ -154,12 +154,12 @@ export const App = () => <Dialog title="T" trigger={<Button>{String(dir)}</Butto
   writeFileSync(
     join(work, 'custom.mjs'),
     `import { compileString, NodePackageImporter } from 'sass-embedded'
-const { css } = compileString("@use 'pkg:@greese/react/scss' with ($breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px));", { importers: [new NodePackageImporter()], url: new URL(import.meta.url) })
+const { css } = compileString("@use 'pkg:@greese/ui/scss' with ($breakpoints: (xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px));", { importers: [new NodePackageImporter()], url: new URL(import.meta.url) })
 if (!css.includes('(width >= 768px)') || css.includes('(width >= 900px)')) throw new Error('breakpoints not applied')
 `
   )
   run('node', ['custom.mjs'], work)
-  ok('pkg:@greese/react/scss recompiles with custom breakpoints')
+  ok('pkg:@greese/ui/scss recompiles with custom breakpoints')
 
   // 4b. The SCSS kit and the style manifest, as published.
   writeFileSync(
@@ -167,19 +167,19 @@ if (!css.includes('(width >= 768px)') || css.includes('(width >= 900px)')) throw
     `import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { compileString, NodePackageImporter } from 'sass-embedded'
-const compile = (scss) => compileString("@use 'pkg:@greese/react/scss/kit' as greese;\\n" + scss, { importers: [new NodePackageImporter()], url: new URL(import.meta.url) }).css
+const compile = (scss) => compileString("@use 'pkg:@greese/ui/scss/kit' as greese;\\n" + scss, { importers: [new NodePackageImporter()], url: new URL(import.meta.url) }).css
 const css = compile('@include greese.component(Button) { @include greese.part(icon) { opacity: 0.5; } }')
 if (!css.includes('.greese-Button .greese-Button-icon') || !css.includes('greese.overrides, greese.utilities;')) throw new Error('kit output wrong: ' + css)
 let failed = false
 try { compile('@include greese.component(Buton) {}') } catch { failed = true }
 if (!failed) throw new Error('kit accepted an unknown component')
-const manifest = JSON.parse(readFileSync(createRequire(import.meta.url).resolve('@greese/react/style-manifest.json'), 'utf8'))
+const manifest = JSON.parse(readFileSync(createRequire(import.meta.url).resolve('@greese/ui/style-manifest.json'), 'utf8'))
 if (!manifest.blocks.Button?.variables.includes('--greese-button-tone')) throw new Error('style manifest incomplete')
 `
   )
   run('node', ['kit.mjs'], work)
   ok(
-    'pkg:@greese/react/scss/kit compiles and checks names; style-manifest.json resolves'
+    'pkg:@greese/ui/scss/kit compiles and checks names; style-manifest.json resolves'
   )
 
   // 4c. The icons, separate from the library: they render on the server and
@@ -200,17 +200,35 @@ if (react.dependencies?.['@greese/icons']) throw new Error('@greese/react must n
   run('node', ['icons.mjs'], work)
   ok('@greese/icons renders on the server, and @greese/react does not depend on it')
 
-  // 5. Every per-component @import points at a shipped file.
+  // 5. Every per-component @import points at a shipped file: React's
+  // stylesheets import @greese/ui's, which import core.
+  const uiCss = join(work, 'node_modules/@greese/ui/dist/css')
   const cssDir = join(work, 'node_modules/@greese/react/dist/css')
-  for (const file of readdirSync(cssDir)) {
-    for (const [, target] of readFileSync(join(cssDir, file), 'utf8').matchAll(
-      /@import '\.\/([\w-]+\.css)'/g
-    )) {
-      if (!existsSync(join(cssDir, target)))
-        throw new Error(`${file} imports missing ${target}`)
+  for (const [dir, pattern, base] of [
+    [cssDir, /@import '@greese\/ui\/css\/([\w-]+\.css)'/g, uiCss],
+    [uiCss, /@import '\.\/([\w-]+\.css)'/g, uiCss],
+  ]) {
+    for (const file of readdirSync(dir)) {
+      for (const [, target] of readFileSync(join(dir, file), 'utf8').matchAll(pattern)) {
+        if (!existsSync(join(base, target))) throw new Error(`${file} imports missing ${target}`)
+      }
     }
   }
-  ok(`${readdirSync(cssDir).length} per-component stylesheets, all imports resolve`)
+  ok(
+    `${readdirSync(cssDir).length} React and ${readdirSync(uiCss).length} @greese/ui stylesheets, all imports resolve`
+  )
+
+  // 5b. @greese/ui is framework-free: it needs no other package, and plain
+  // HTML can use its stylesheet.
+  const ui = JSON.parse(readFileSync(join(work, 'node_modules/@greese/ui/package.json'), 'utf8'))
+  if (ui.dependencies || ui.peerDependencies)
+    throw new Error('@greese/ui must not depend on any package')
+  const react = JSON.parse(readFileSync(join(work, 'node_modules/@greese/react/package.json'), 'utf8'))
+  if (!react.dependencies?.['@greese/ui'] || !react.dependencies?.['@greese/js'])
+    throw new Error('@greese/react must depend on @greese/ui and @greese/js')
+  if (!readFileSync(join(work, 'node_modules/@greese/ui/dist/greese.css'), 'utf8').includes('.greese-Button'))
+    throw new Error('greese.css has no Button styles')
+  ok('@greese/ui needs no other package; @greese/react depends on @greese/ui and @greese/js')
 
   // 6. A bundler follows (and de-duplicates) the per-component import chain.
   writeFileSync(
@@ -219,7 +237,7 @@ if (react.dependencies?.['@greese/icons']) throw new Error('@greese/react must n
   )
   writeFileSync(
     join(work, 'main.js'),
-    `import '@greese/react/css/Dialog.css'\nimport '@greese/react/css/Button.css'\n`
+    `import '@greese/react/css/Dialog.css'\nimport '@greese/react/css/Button.css'\nimport '@greese/ui/css/Button.css'\n`
   )
   run('npx', ['vite', 'build', '--logLevel', 'error'], work)
   const assets = join(work, 'dist/assets')

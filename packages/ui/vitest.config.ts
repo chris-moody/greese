@@ -5,6 +5,6 @@ export default defineConfig({
   cacheDir: 'node_modules/.vitest',
   test: {
     environment: 'jsdom',
-    include: ['src/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'scripts/**/*.test.ts'],
   },
 })

@@ -47,9 +47,9 @@ how you get there without tripping either.
 
 | Scope                                | Path                                                                     |
 | ------------------------------------ | ------------------------------------------------------------------------ |
+| `ui`                                 | `packages/ui` (CSS, Sass kit, tokens)                                    |
 | `react`                              | `packages/react`                                                         |
-| `tokens`                             | `packages/tokens`                                                        |
-| `greese`                             | `packages/greese` (greese.js)                                            |
+| `js`                                 | `packages/js` (greese.js)                                                |
 | `icons`                              | `packages/icons`                                                         |
 | `docs`                               | `apps/docs` (Storybook) and `docs/`                                      |
 | `playground`                         | `apps/playground`                                                        |
@@ -67,7 +67,7 @@ two packages, prefer two commits.
 
 ```
 feat(react): add Stack with responsive direction and gap props
-fix(tokens): keep nested data-greese-scheme from inheriting root colours
+fix(ui): keep nested data-greese-scheme from inheriting root colours
 perf(react): skip style object copy when no inline variables are needed
 test(playground): cover nested theme and scheme resolution in Chromium
 docs(docs): record colour-scheme theming decisions in ADR 0002

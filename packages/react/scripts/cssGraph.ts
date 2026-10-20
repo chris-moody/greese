@@ -3,7 +3,7 @@
  * source: the `greese-*` classes its TSX renders and the components it imports.
  * Used by build-css.ts; pure apart from reading files, and unit-tested.
  */
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 /** `greese-Button--solid` → `greese-Button`; `greese-Dialog-title` stays. */
@@ -17,7 +17,11 @@ export interface ComponentSource {
   hasScss: boolean
 }
 
-export const readComponents = (componentsDir: string): ComponentSource[] =>
+/** @param styled  names of the components that have a stylesheet of their own */
+export const readComponents = (
+  componentsDir: string,
+  styled: Set<string>
+): ComponentSource[] =>
   readdirSync(componentsDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map(({ name }) => {
@@ -26,7 +30,7 @@ export const readComponents = (componentsDir: string): ComponentSource[] =>
         .filter((file) => /\.tsx?$/.test(file) && !/\.test\./.test(file))
         .map((file) => readFileSync(join(dir, file), 'utf8'))
         .join('\n')
-      return { name, tsx, hasScss: existsSync(join(dir, `${name}.scss`)) }
+      return { name, tsx, hasScss: styled.has(name) }
     })
 
 /**
