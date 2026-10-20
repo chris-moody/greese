@@ -1,13 +1,13 @@
-import { useId, useState, type JSX } from 'react'
+import { useState, type JSX } from 'react'
 import { Badge, Stack, Text } from '@greese/react'
 import { AA, color, contentColor, contrastRatio, type ColorRole } from '@greese/ui'
-import { derivedContent, derivedStrong } from '../derived.ts'
-import { getIn, setIn } from '../edit.ts'
-import { resolveColor, SchemeInput } from '../fields.tsx'
+import { getIn } from '../edit.ts'
+import { resolveColor } from '../resolve.ts'
 import type { RenderedColors } from '../protocol.ts'
 import type { SchemeValue, ThemeSpec } from '../spec.ts'
+import { ColorDialog } from './ColorDialog.tsx'
 
-const kebab = (value: string): string =>
+export const kebab = (value: string): string =>
   value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 
 type Scheme = 'light' | 'dark'
@@ -43,7 +43,7 @@ const NO_TEXT = new Set<ColorRole>(['border', 'borderStrong', 'scrim'])
 const minimumFor = (role: ColorRole) => (role === 'focusRing' ? 3 : AA)
 
 /** Roles drawn on, and so given a content color the chip previews. */
-const hasContent = (role: ColorRole): boolean => `${role}Content` in color
+export const hasContent = (role: ColorRole): boolean => `${role}Content` in color
 
 interface PanelProps {
   spec: ThemeSpec
@@ -52,16 +52,16 @@ interface PanelProps {
   rendered?: RenderedColors
 }
 
-const pathOf = (role: string) => ['tokens', 'color', kebab(role)]
+export const pathOf = (role: string) => ['tokens', 'color', kebab(role)]
 
 /** A role's value in one scheme: the theme's, else the default. */
-const valueIn = (spec: ThemeSpec, role: ColorRole, scheme: Scheme): string => {
+export const valueIn = (spec: ThemeSpec, role: ColorRole, scheme: Scheme): string => {
   const own = getIn(spec, pathOf(role)) as SchemeValue | undefined
   if (own !== undefined) return typeof own === 'string' ? own : own[scheme]
   return color[role][scheme]
 }
 
-const isSet = (spec: ThemeSpec, role: string) => getIn(spec, pathOf(role)) !== undefined
+export const isSet = (spec: ThemeSpec, role: string) => getIn(spec, pathOf(role)) !== undefined
 
 /** `#rrggbbaa` laid over an opaque `#rrggbb`, as the eye sees it. */
 export const over = (top: string, bottom: string): string => {
@@ -81,7 +81,7 @@ export const over = (top: string, bottom: string): string => {
  * Before the preview reports, an estimate from the theme's values: palette
  * names and hex resolve; the content color the kit derives is predicted.
  */
-const estimate = (
+export const estimate = (
   spec: ThemeSpec,
   role: ColorRole,
   scheme: Scheme
@@ -131,16 +131,12 @@ const Chip = ({
   spec,
   rendered,
   role,
-  open,
-  controls,
-  onToggle,
+  onOpen,
 }: {
   spec: ThemeSpec
   rendered?: RenderedColors
   role: ColorRole
-  open: boolean
-  controls: string
-  onToggle: () => void
+  onOpen: () => void
 }) => {
   const halves = (['light', 'dark'] as const).map((scheme) => ({
     scheme,
@@ -152,11 +148,10 @@ const Chip = ({
     <button
       type="button"
       className="studio-chip"
-      aria-expanded={open}
-      aria-controls={controls}
+      aria-haspopup="dialog"
       data-set={isSet(spec, role) || undefined}
       aria-label={`${kebab(role)}: light ${halves[0]!.code ?? 'unknown'}, dark ${halves[1]!.code ?? 'unknown'}${worst ? `, contrast ${worst.toFixed(1)} to 1` : ''}`}
-      onClick={onToggle}
+      onClick={onOpen}
     >
       <span className="studio-chip-swatches">
         {halves.map((h) => (
@@ -183,50 +178,21 @@ const Chip = ({
 }
 
 /**
- * The color editor: a grid of chips, and under it the fields for the one
- * you open. For a brand color that includes its strong and content colors,
- * which stay automatic until you set them. Chips and swatches show what the
- * preview renders, measured there, so they always match it.
+ * The color editor: a grid of chips. Opening one shows its dialog, with the
+ * whole palette, each swatch marked with the roles that use it, and the
+ * color picker for custom values. Chips show what the preview renders,
+ * measured there, so they always match it.
  */
 export const ColorsSection = ({ spec, onChange, rendered }: PanelProps): JSX.Element => {
   const [open, setOpen] = useState<ColorRole>()
-  const id = useId()
-  const field = (role: ColorRole, auto?: { light: string; dark: string }) => (
-    <SchemeInput
-      key={role}
-      label={kebab(role)}
-      color
-      value={getIn(spec, pathOf(role)) as SchemeValue | undefined}
-      fallback={auto ?? color[role]}
-      rendered={rendered && { light: rendered.light[role]!, dark: rendered.dark[role]! }}
-      onChange={(v) => onChange(setIn(spec, pathOf(role), v))}
-    />
-  )
-  /** What the kit derives from a brand color the theme set, per scheme, as placeholders. */
-  const derived = (
-    role: ColorRole,
-    make: (hex: string, scheme: Scheme) => string | undefined
-  ) => {
-    if (!isSet(spec, role)) return undefined
-    const out = { light: '', dark: '' }
-    for (const scheme of ['light', 'dark'] as const) {
-      const hex =
-        rendered?.[scheme][role]?.slice(0, 7) ??
-        resolveColor(valueIn(spec, role, scheme), scheme)
-      const value = hex && make(hex, scheme)
-      if (!value) return undefined
-      out[scheme] = value
-    }
-    return out
-  }
   return (
     <Stack gap={4}>
       <Text variant="p3" tone="muted">
         Each chip shows the color as the preview renders it, light and dark, with its full
         code (eight digits when it has transparency, shown over a checkerboard) and text
-        in its content color. The badge is the weaker contrast of the two. Set a brand
-        color and its content and strong colors follow, readable (WCAG AA) in both
-        schemes.
+        in its content color. The badge is the weaker contrast of the two. Open a chip to
+        choose from the palette or make your own. Set a brand color and its content and
+        strong colors follow, readable (WCAG AA) in both schemes.
       </Text>
       {GROUPS.map(([title, roles]) => (
         <Stack gap={2} key={title}>
@@ -240,28 +206,19 @@ export const ColorsSection = ({ spec, onChange, rendered }: PanelProps): JSX.Ele
                 spec={spec}
                 rendered={rendered}
                 role={role}
-                open={open === role}
-                controls={id}
-                onToggle={() => setOpen(open === role ? undefined : role)}
+                onOpen={() => setOpen(role)}
               />
             ))}
           </div>
-          {open && roles.includes(open) && (
-            <div id={id} className="studio-chip-editor">
-              {field(open)}
-              {`${open}Strong` in color &&
-                field(`${open}Strong` as ColorRole, derived(open, derivedStrong))}
-              {hasContent(open) &&
-                field(`${open}Content` as ColorRole, derived(open, derivedContent))}
-              {isSet(spec, open) && (
-                <Text variant="caption" tone="muted">
-                  Strong and content are derived from {kebab(open)} until you set them.
-                </Text>
-              )}
-            </div>
-          )}
         </Stack>
       ))}
+      <ColorDialog
+        spec={spec}
+        onChange={onChange}
+        rendered={rendered}
+        role={open}
+        onClose={() => setOpen(undefined)}
+      />
     </Stack>
   )
 }
