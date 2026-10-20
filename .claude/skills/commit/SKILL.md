@@ -53,8 +53,8 @@ how you get there without tripping either.
 | `icons`                              | `packages/icons`                                                         |
 | `docs`                               | `apps/docs` (Storybook) and `docs/`                                      |
 | `playground`                         | `apps/playground`                                                        |
-| `site`                               | `apps/site` (the GitHub Pages homepage)                                  |
-| `studio`                             | `apps/theme-studio`                                                      |
+| `site`                               | `apps/site` (the web app: homepage and routing)                          |
+| `studio`                             | `apps/site/src/studio` and `apps/site/server` (Theme Studio)             |
 | `eslint-config`, `typescript-config` | the matching `packages/*`                                                |
 | `repo`                               | root config and tooling (turbo, prettier, commitlint, husky, `.claude/`) |
 | `deps`                               | dependency bumps only                                                    |

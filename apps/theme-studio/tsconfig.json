@@ -1,9 +1,0 @@
-{
-  "extends": "@greese/typescript-config/react-library.json",
-  "compilerOptions": {
-    "noEmit": true,
-    "resolveJsonModule": true,
-    "types": ["node", "vite/client"]
-  },
-  "include": ["src", "server", "vite.config.ts", "vitest.config.ts"]
-}

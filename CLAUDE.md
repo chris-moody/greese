@@ -6,16 +6,15 @@ animation library, greese.js (`@greese/js`), and framework packages such as
 `@greese/react` (React 19) that render the same markup. More frameworks
 (Svelte, Vue, Angular) are planned (ADR 0014).
 
-| Package                         | Path                |
-| ------------------------------- | ------------------- |
-| `@greese/ui` (CSS, tokens, kit) | `packages/ui`       |
-| `@greese/react`                 | `packages/react`    |
-| `@greese/js` (greese.js)        | `packages/js`       |
-| `@greese/icons` (optional)      | `packages/icons`    |
-| Storybook docs                  | `apps/docs`         |
-| e2e, visual, Lighthouse         | `apps/playground`   |
-| Theme Studio (`npm run studio`) | `apps/theme-studio` |
-| Homepage (GitHub Pages)         | `apps/site`         |
+| Package                                       | Path              |
+| --------------------------------------------- | ----------------- |
+| `@greese/ui` (CSS, tokens, kit)               | `packages/ui`     |
+| `@greese/react`                               | `packages/react`  |
+| `@greese/js` (greese.js)                      | `packages/js`     |
+| `@greese/icons` (optional)                    | `packages/icons`  |
+| Storybook docs                                | `apps/docs`       |
+| e2e, visual, Lighthouse                       | `apps/playground` |
+| Web app: homepage `/`, Theme Studio `/studio` | `apps/site`       |
 
 ## Before changing anything
 

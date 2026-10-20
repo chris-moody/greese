@@ -2,10 +2,11 @@
 #
 #   /            the homepage (apps/site)
 #   /storybook/  the docs (apps/docs), where the site's "docs" links point
-#   /studio/     Theme Studio (apps/theme-studio), hosted: it compiles in the
-#                browser and keeps the theme there (src/hosted.ts)
+#   /studio      Theme Studio, a route of the same app (apps/site): hosted, it
+#                compiles in the browser and keeps the theme there
 #
-# Every app builds with relative asset paths, so none needs the repo name.
+# The app is built for /<repository>/ (GREESE_BASE) and routes by path; its
+# build writes studio/index.html and 404.html so a direct visit works.
 # One-time setup: Settings → Pages → Source: "GitHub Actions".
 name: Pages
 
@@ -15,7 +16,6 @@ on:
     paths:
       - 'apps/site/**'
       - 'apps/docs/**'
-      - 'apps/theme-studio/**'
       - 'packages/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
@@ -41,13 +41,14 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       # Builds the packages first (turbo), then the three apps.
-      - run: npx turbo run build --filter=site --filter=docs --filter=theme-studio
+      - run: npx turbo run build --filter=site --filter=docs
+        env:
+          GREESE_BASE: /${{ github.event.repository.name }}/
       - name: Assemble the site
         run: |
           mkdir -p _site
           cp -r apps/site/dist/. _site/
           cp -r apps/docs/storybook-static _site/storybook
-          cp -r apps/theme-studio/dist _site/studio
           # Serve files as they are, including Storybook's _-prefixed ones.
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5

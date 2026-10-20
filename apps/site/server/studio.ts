@@ -24,8 +24,8 @@ import {
   importJson,
   importThemeOptions,
   type ImportResult,
-} from '../src/importer.ts'
-import type { ImportSource } from '../src/api.ts'
+} from '../src/studio/importer.ts'
+import type { ImportSource } from '../src/studio/api.ts'
 import {
   customBreakpoints,
   emptySpec,
@@ -33,7 +33,7 @@ import {
   stylesheetScss,
   validateSpec,
   type ThemeSpec,
-} from '../src/spec.ts'
+} from '../src/studio/spec.ts'
 
 export type { ImportSource }
 

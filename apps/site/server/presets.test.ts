@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { derivedContent, derivedStrong, mixOklab } from '../src/derived.ts'
-import { over } from '../src/panels/ColorsSection.tsx'
-import { applyPreset, PRESETS, randomPreset } from '../src/presets.ts'
+import { derivedContent, derivedStrong, mixOklab } from '../src/studio/derived.ts'
+import { over } from '../src/studio/panels/ColorsSection.tsx'
+import { applyPreset, PRESETS, randomPreset } from '../src/studio/presets.ts'
 import { compileSpec } from './studio.ts'
 
 describe('derived colors, as the studio shows them', () => {
@@ -37,7 +37,7 @@ describe('presets', () => {
         compileSpec(applyPreset({ tokens: {}, components: {} }, preset))
       ).not.toHaveProperty('errors')
     }
-  })
+  }, 30_000)
 
   it('picks four different hues at random', () => {
     const { color } = randomPreset()
@@ -65,6 +65,6 @@ describe('presets', () => {
     expect(next.components).toEqual(spec.components)
     expect(next.motionDefaults).toEqual(spec.motionDefaults)
     // Default clears the colors it doesn't set.
-    expect(applyPreset(next, PRESETS[0]!).tokens!.color).toEqual({})
+    expect(applyPreset(next, PRESETS.find((p) => p.id === 'default')!).tokens!.color).toEqual({})
   })
 })

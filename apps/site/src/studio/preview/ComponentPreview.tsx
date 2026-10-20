@@ -56,7 +56,7 @@ export const ComponentPreview = ({ block }: { block: string }): JSX.Element => {
             {loaded.stories.map(([name, Story]) => (
               <Card key={name} padding={4}>
                 <Stack gap={3}>
-                  <Text variant="caption" weight="semibold" tone="muted">
+                  <Text variant="h3" weight="semibold" tone="muted">
                     {name}
                   </Text>
                   {/* A block root, as Storybook's #storybook-root is: a story

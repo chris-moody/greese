@@ -52,9 +52,8 @@ import {
 // motion() settings make move.
 
 /** Columns a tile takes: the whole row on narrow screens, then two or three to a row. */
-const TILE = { xs: 12, md: 6, xl: 4 } as const
-/** The first two tiles share one row from md up, and are alone in theirs below it. */
-const PAIR = { xs: 12, md: 6 } as const
+const TILE = { xs: 12, md: 6, lg: 4 } as const
+const SOLO = { xs: 12 } as const
 
 const Group = ({
   title,
@@ -68,7 +67,7 @@ const Group = ({
   <AutoLayoutItem size={size}>
     <Card padding={5} style={{ blockSize: '100%' }}>
       <Stack gap={4}>
-        <Text variant="p3" weight="semibold" tone="muted">
+        <Text variant="h3" weight="semibold" tone="muted">
           {title}
         </Text>
         <Stack gap={3}>{children}</Stack>
@@ -82,7 +81,7 @@ const LEADINGS = ['tight', 'snug', 'normal'] as const
 
 /** The font, weight and line-height tokens at work, each sample set by its own variable. (Sizes belong to the type variants, in the next tile.) */
 const Typography = (): JSX.Element => (
-  <Group title="Typography" size={PAIR}>
+  <Group title="Typography" size={TILE}>
     <Stack gap={1}>
       <Text variant="p3" tone="muted">
         font-body
@@ -141,7 +140,7 @@ const VARIANTS = [
 
 /** The type variants as they set themselves: resize the preview to watch them change. */
 const TypeVariants = (): JSX.Element => (
-  <Group title="Type variants" size={PAIR}>
+  <Group title="Type variants" size={SOLO}>
     <Stack gap={2}>
       {VARIANTS.map((variant) => (
         <Stack key={variant} direction="row" gap={3} align="baseline">
@@ -211,8 +210,8 @@ export const Gallery = (): JSX.Element => (
       </Text>
     </Stack>
     <AutoLayout gap={4}>
-      <Typography />
       <TypeVariants />
+      <Typography />
       <ScopeTile />
       <Group title="Buttons">
         <Stack direction="row" gap={2} wrap="wrap">

@@ -1,6 +1,7 @@
 import type { JSX } from 'react'
 import { Container, Divider, Link, Stack, Text } from '@greese/react'
-import { DOCS_URL, REPO_URL, STUDIO_URL } from '../config.ts'
+import { DOCS_URL, REPO_URL } from '../config.ts'
+import { RouteLink } from '../router.tsx'
 import { facts } from '../data/index.ts'
 
 export const Footer = (): JSX.Element => (
@@ -22,8 +23,8 @@ export const Footer = (): JSX.Element => (
             <Link href={DOCS_URL} tone="neutral" greese={{ hover: 'float' }}>
               Docs
             </Link>
-            <Link href={STUDIO_URL} tone="neutral" greese={{ hover: 'float' }}>
-              Theme Studio
+            <Link asChild tone="neutral" greese={{ hover: 'float' }}>
+              <RouteLink to="studio">Theme Studio</RouteLink>
             </Link>
             <Link href={REPO_URL} tone="neutral" greese={{ hover: 'float' }}>
               GitHub

@@ -18,37 +18,38 @@ the ADR wins: fix this file in the same change.
 
 **Read the ADR for the area you touch before changing it:**
 
-| ADR                                 | Governs                                                                |
-| ----------------------------------- | ---------------------------------------------------------------------- |
-| 0001 styling model                  | SCSS + CSS variables, cascade layers, responsive props, class naming   |
-| 0002 color scheme and theming       | tokens, `data-greese-scheme`, `createTheme`, ThemeProvider             |
-| 0003 native form controls           | native inputs, Field wiring, `onValueChange`                           |
-| 0004 content and disclosure         | `<details>`, media, text components                                    |
-| 0005 overlays and positioning       | `<dialog>`, Popover API, anchor positioning, focus return              |
-| 0006 distribution and quality gates | per-component CSS, budgets, visual/e2e/Lighthouse gates                |
-| 0007 component gaps                 | Combobox, NumberField, DateField, Table, SegmentedControl              |
-| 0008 greese.js                      | the animation package (`packages/js`)                                  |
-| 0009 the `greese` prop              | motion on every component: CSS presets, lazy runtime, coverage check   |
-| 0010 SCSS kit and Theme Studio      | style manifest, `greese.overrides` layer, kit API, `apps/theme-studio` |
-| 0011 component gap review           | ScrollCarousel, Rating, Diff, OtpField…: native bases, what was skipped      |
-| 0012 icons package and docs rules   | `@greese/icons`, prop descriptions, docs page layout                   |
-| 0013 project scope and phases       | goals, non-goals, the phase table, React/browser/licence decisions     |
-| 0015 extensible tokens              | `$extend` / `createTheme({ extend })`; added tokens in Theme Studio    |
-| 0016 typography system              | type variants, `--greese-type-*`, `greese-Type--*`, `typography()`     |
-| 0017 motion scopes                  | `greese={{ scope }}`: ordered entrances across depth, lazy chunk       |
-| 0014 framework-agnostic packages    | `@greese/ui` owns the CSS; framework packages render its markup        |
+| ADR                                 | Governs                                                                   |
+| ----------------------------------- | ------------------------------------------------------------------------- |
+| 0001 styling model                  | SCSS + CSS variables, cascade layers, responsive props, class naming      |
+| 0002 color scheme and theming       | tokens, `data-greese-scheme`, `createTheme`, ThemeProvider                |
+| 0003 native form controls           | native inputs, Field wiring, `onValueChange`                              |
+| 0004 content and disclosure         | `<details>`, media, text components                                       |
+| 0005 overlays and positioning       | `<dialog>`, Popover API, anchor positioning, focus return                 |
+| 0006 distribution and quality gates | per-component CSS, budgets, visual/e2e/Lighthouse gates                   |
+| 0007 component gaps                 | Combobox, NumberField, DateField, Table, SegmentedControl                 |
+| 0008 greese.js                      | the animation package (`packages/js`)                                     |
+| 0009 the `greese` prop              | motion on every component: CSS presets, lazy runtime, coverage check      |
+| 0010 SCSS kit and Theme Studio      | style manifest, `greese.overrides` layer, kit API, `apps/site/src/studio` |
+| 0011 component gap review           | ScrollCarousel, Rating, Diff, OtpField…: native bases, what was skipped         |
+| 0012 icons package and docs rules   | `@greese/icons`, prop descriptions, docs page layout                      |
+| 0013 project scope and phases       | goals, non-goals, the phase table, React/browser/licence decisions        |
+| 0015 extensible tokens              | `$extend` / `createTheme({ extend })`; added tokens in Theme Studio       |
+| 0016 typography system              | type variants, `--greese-type-*`, `greese-Type--*`, `typography()`        |
+| 0017 motion scopes                  | `greese={{ scope }}`: ordered entrances across depth, lazy chunk          |
+| 0018 one web app                    | the homepage and Theme Studio: one app, two routes, one header            |
+| 0014 framework-agnostic packages    | `@greese/ui` owns the CSS; framework packages render its markup           |
 
 ## Workspace
 
-| Path                | What                                                                                                                                                                                      |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/ui`       | `@greese/ui`, framework-free: tokens in `src/tokens.ts`, `createTheme`, the scheme script, every component's SCSS (`src/components/<Name>/<Name>.scss`), the Sass kit, the style manifest |
-| `packages/react`    | `@greese/react`: components in `src/components/<Name>/<Name>.tsx`; styled by `@greese/ui`                                                                                                 |
-| `packages/js`       | `@greese/js` (greese.js): animation; no dependencies, no React                                                                                                                            |
-| `packages/icons`    | `@greese/icons`: optional line icons (`createIcon`); the library never imports it                                                                                                         |
-| `apps/docs`         | Storybook: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`                                                                                                      |
-| `apps/playground`   | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                                                                                                                     |
-| `apps/theme-studio` | Theme Studio (`npm run studio`): edits a theme JSON, generates kit SCSS + CSS                                                                                                             |
+| Path              | What                                                                                                                                                                                      |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/ui`     | `@greese/ui`, framework-free: tokens in `src/tokens.ts`, `createTheme`, the scheme script, every component's SCSS (`src/components/<Name>/<Name>.scss`), the Sass kit, the style manifest |
+| `packages/react`  | `@greese/react`: components in `src/components/<Name>/<Name>.tsx`; styled by `@greese/ui`                                                                                                 |
+| `packages/js`     | `@greese/js` (greese.js): animation; no dependencies, no React                                                                                                                            |
+| `packages/icons`  | `@greese/icons`: optional line icons (`createIcon`); the library never imports it                                                                                                         |
+| `apps/docs`       | Storybook: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`                                                                                                      |
+| `apps/playground` | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                                                                                                                     |
+| `apps/site`       | The web app: the homepage at `/` and Theme Studio at `/studio` (`npm run studio`: edits a theme JSON, generates kit SCSS + CSS)                                                           |
 
 Use npm, never yarn. Node ≥ 24.
 

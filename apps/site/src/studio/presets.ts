@@ -21,6 +21,8 @@ const pair = (hue: string, light = 600, dark = 400): SchemeValue => ({
 })
 
 export const PRESETS: Preset[] = [
+  // The site's own: GreeseUI with a warm orange primary (theme.ts).
+  { id: 'greese', label: 'Greese', color: { primary: pair('orange', 700, 400) } },
   { id: 'default', label: 'Default', color: {} },
   {
     id: 'ocean',

@@ -27,8 +27,7 @@ Scope, phases and standing decisions: [ADR 0013](docs/adr/0013-project-scope-and
 | `packages/eslint-config`, `packages/typescript-config` | Internal shared config |
 | `apps/docs` | Storybook. Uses the library **source**, so edits hot-reload |
 | `apps/playground` | Vite app that uses the **built** `dist/`, the same way a real consumer does. Playwright e2e and perf benchmarks run against it |
-| `apps/site` | The greese homepage (GitHub Pages), built with GreeseUI from the **built** `dist/`. Its numbers come from `npm run stats -w site` and the benchmark |
-| `apps/theme-studio` | Theme Studio: `npm run studio` edits a theme file; built, it's the hosted studio on GitHub Pages |
+| `apps/site` | The web app, built with GreeseUI from the **built** `dist/`: the homepage at `/` and Theme Studio at `/studio` (`npm run studio`; edits a theme file). Its numbers come from `npm run stats -w site` and the benchmark |
 
 ## Setup
 
@@ -95,11 +94,12 @@ hand):
 | Path | App |
 |---|---|
 | `/` | The homepage, `apps/site` |
+| `/studio` | Theme Studio, a route of the same app: it compiles in the browser and keeps the theme there |
 | `/storybook/` | The docs, `apps/docs` |
-| `/studio/` | Theme Studio, `apps/theme-studio`, hosted: it compiles in the browser and keeps the theme there |
 
-Each builds with relative asset paths, so the repository name lives only in
-links. Enable Pages once under Settings → Pages → Source: GitHub Actions.
+The app builds for `/<repository>/` (the workflow sets `GREESE_BASE`) and routes by path;
+the build also writes `studio/index.html` and `404.html`, so a direct visit to `/studio` works
+on Pages. Enable Pages once under Settings → Pages → Source: GitHub Actions.
 
 To refresh the homepage's numbers, rebuild, run `npm run stats -w site`, and
 re-run the benchmark with `node bench/run.ts --json ../site/src/data/bench.json`

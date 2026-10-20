@@ -17,7 +17,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "studio": "npm run dev -w theme-studio",
+    "studio": "npm run dev -w site",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
     "test": "turbo run test",

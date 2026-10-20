@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { compileSpec as compileInBrowser, FILE, hostedApi } from '../src/hosted.ts'
-import type { ThemeSpec } from '../src/spec.ts'
+import { compileSpec as compileInBrowser, FILE, hostedApi } from '../src/studio/hosted.ts'
+import type { ThemeSpec } from '../src/studio/spec.ts'
 import { compileSpec, exampleFile } from './studio.ts'
 
 const example = JSON.parse(readFileSync(exampleFile, 'utf8')) as ThemeSpec

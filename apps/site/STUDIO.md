@@ -1,6 +1,7 @@
 # Theme Studio
 
-A local web app for building a GreeseUI theme: tokens, component overrides
+The `/studio` route of the web app in `apps/site` (ADR 0018), which
+also holds the homepage. It's a local web app for building a GreeseUI theme: tokens, component overrides
 and theme-wide motion, previewed live on real components and saved to your
 project as files.
 
@@ -10,7 +11,7 @@ GREESE_THEME=src/styles/greese-theme.json npm run studio   # your own
 ```
 
 `GREESE_THEME` is resolved from the directory you ran npm in. It opens on
-<http://localhost:5180>.
+<http://localhost:5180/studio>.
 
 A hosted copy runs at <https://chris-moody.github.io/greese/studio/>. It
 compiles in your browser and keeps the theme there: save, then download

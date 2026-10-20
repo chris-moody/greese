@@ -126,7 +126,7 @@ A theme compiled with the kit is already in the app's CSS. Its scope still
 needs ThemeProvider's attribute stamping (ADR 0002 §4). So `theme` now also
 takes a string: the provider stamps the attributes and injects no `<style>`.
 
-### 6. Theme Studio: `apps/theme-studio`
+### 6. Theme Studio: `apps/site/src/studio`
 
 A Vite app, run with `npm run studio`, with three parts:
 
@@ -177,7 +177,7 @@ Choices:
     freshness.
   - **The manifest parser** (`scripts/styleManifest.test.ts`).
   - **The studio's generator and compile path**
-    (`apps/theme-studio/server/studio.test.ts`).
+    (`apps/site/server/studio.test.ts`).
 - **Known limits:**
   - Component overrides in a named theme are descendant selectors, so they
     add up with a nested theme's overrides. Tokens still replace.

@@ -7,8 +7,9 @@
  */
 import type { Importer } from 'sass'
 import kit from 'virtual:greese-kit'
-import example from '../example/greese-theme.json'
+import example from '../../example/greese-theme.json'
 import type { Compiled, ImportSource, Loaded } from './api.ts'
+import { KEY, stored } from './storage.ts'
 import { detectFormat, importCss, importJson, type ImportResult } from './importer.ts'
 import {
   customBreakpoints,
@@ -18,7 +19,6 @@ import {
   type ThemeSpec,
 } from './spec.ts'
 
-const KEY = 'greese-theme-studio'
 export const FILE = 'greese-theme.json'
 
 const files = new Map(Object.entries(kit))
@@ -86,15 +86,6 @@ export const compileSpec = async (spec: ThemeSpec): Promise<Compiled> => {
     return { scss, css: `${stylesheets.get(key)}\n${theme}`, full: true }
   } catch (error) {
     return { errors: [firstPart(error)] }
-  }
-}
-
-const stored = (): ThemeSpec | undefined => {
-  try {
-    const text = localStorage.getItem(KEY)
-    return text ? (JSON.parse(text) as ThemeSpec) : undefined
-  } catch {
-    return undefined
   }
 }
 

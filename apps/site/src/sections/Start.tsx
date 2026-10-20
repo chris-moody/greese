@@ -1,6 +1,7 @@
 import type { JSX } from 'react'
 import { Badge, Button, Card, Code, Grid, Heading, Stack, Text } from '@greese/react'
-import { DOCS_URL, INSTALL, STUDIO_URL } from '../config.ts'
+import { DOCS_URL, INSTALL } from '../config.ts'
+import { RouteLink } from '../router.tsx'
 import { Section } from '../Section.tsx'
 
 const steps = [
@@ -67,7 +68,7 @@ export const Start = (): JSX.Element => (
         tone="neutral"
         greese={{ hover: 'lift', press: 'squish' }}
       >
-        <a href={STUDIO_URL}>Make a theme</a>
+        <RouteLink to="studio">Make a theme</RouteLink>
       </Button>
       <Text tone="muted" className="site-start-note">
         Using only a few components? Import their stylesheets instead, such as{' '}

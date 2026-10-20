@@ -10,10 +10,10 @@ import { storyNameFromExport } from 'storybook/internal/csf'
 
 type StoryModule = Parameters<typeof composeStories>[0]
 
-const files = import.meta.glob<StoryModule>('../../../docs/stories/**/*.stories.tsx')
+const files = import.meta.glob<StoryModule>('../../../../docs/stories/**/*.stories.tsx')
 // The same files as text, for their export order: a module namespace lists
 // exports alphabetically, and the docs show them in source order.
-const sources = import.meta.glob<string>('../../../docs/stories/**/*.stories.tsx', {
+const sources = import.meta.glob<string>('../../../../docs/stories/**/*.stories.tsx', {
   query: '?raw',
   import: 'default',
 })

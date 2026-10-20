@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { specToScss, validateSpec, type ThemeSpec } from '../src/spec.ts'
-import { importCss } from '../src/importer.ts'
+import { specToScss, validateSpec, type ThemeSpec } from '../src/studio/spec.ts'
+import { importCss } from '../src/studio/importer.ts'
 import { compileSpec, exampleFile, themeFiles } from './studio.ts'
 
 const spec: ThemeSpec = {

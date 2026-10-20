@@ -1,61 +1,91 @@
-import { lazy, startTransition, Suspense, useEffect, useState, type JSX } from 'react'
-import { ThemeProvider, Toaster } from '@greese/react'
-import { Hero } from './sections/Hero.tsx'
+import { lazy, Suspense, useEffect, useMemo, useState, type JSX } from 'react'
+import { ThemeProvider, Toaster, type Theme } from '@greese/react'
+import { Home } from './pages/Home.tsx'
 import { Nav } from './sections/Nav.tsx'
-import { Stats } from './sections/Stats.tsx'
-import { brand } from './theme.ts'
+import { RouteContext, ScrollOnRoute, useRoute } from './router.tsx'
+import { ShellContext, type Shell, type StudioActions } from './shell.ts'
+import { stored } from './studio/storage.ts'
+import type { RenderedColors } from './studio/protocol.ts'
+import type { ThemeSpec } from './studio/spec.ts'
+import { brand, SITE_SPEC } from './theme.ts'
 
-type Below = typeof import('./below.ts')
+// The studio is its own chunk: the homepage never loads its editor, the
+// compiler or the importer.
+const StudioPage = lazy(() =>
+  import('./studio/StudioPage.tsx').then((m) => ({ default: m.StudioPage }))
+)
 
-/** A section from the below-the-fold chunk, fetched the first time one renders. */
-const fromBelow = (name: keyof Below) =>
-  lazy(() => import('./below.ts').then((m) => ({ default: m[name] })))
-
-/** Below the hero, in page order. */
-const sections = (
-  ['Why', 'Size', 'Speed', 'Optimizations', 'MotionLab', 'Gallery', 'Start'] as const
-).map(fromBelow)
-const Footer = fromBelow('Footer')
+const SITE_JSON = JSON.stringify(SITE_SPEC)
 
 /**
- * How many of `sections` are mounted. They mount one per task after the
- * first paint: rendering and committing the whole page at once was one long
- * main-thread task (hundreds of ms on a mid-range phone), and each section
- * alone stays short. They're off screen, so nothing visibly shifts.
+ * The theme the homepage wears: the site's own until a visitor picks or edits
+ * another, which is built from the spec when it's first needed.
  */
-const useProgressive = (total: number): number => {
-  const [mounted, setMounted] = useState(0)
+const useHomeTheme = (spec: ThemeSpec): Theme => {
+  const [built, setBuilt] = useState<Theme>()
   useEffect(() => {
-    if (mounted >= total) return
-    const timer = setTimeout(() => startTransition(() => setMounted((n) => n + 1)))
-    return () => clearTimeout(timer)
-  }, [mounted, total])
-  return mounted
+    if (JSON.stringify(spec) === SITE_JSON) return setBuilt(undefined)
+    let live = true
+    void import('./theme/specTheme.ts').then((m) => live && setBuilt(m.specToTheme(spec)))
+    return () => {
+      live = false
+    }
+  }, [spec])
+  return built ?? brand
 }
 
+/**
+ * The web app: the homepage at `/` and Theme Studio at `/studio`, under one
+ * header. The page wears the theme being chosen; the studio's editor and
+ * header stay on GreeseUI's defaults, so editing a theme restyles only its
+ * preview.
+ */
 export const App = (): JSX.Element => {
-  // One more step than sections: the footer comes last.
-  const mounted = useProgressive(sections.length + 1)
+  const route = useRoute()
+  const [spec, setSpec] = useState<ThemeSpec>(() => stored() ?? SITE_SPEC)
+  const [rendered, setRendered] = useState<RenderedColors>()
+  const [replay, setReplay] = useState(0)
+  const [inspect, setInspect] = useState(false)
+  const [studio, setStudio] = useState<StudioActions | null>(null)
+  const theme = useHomeTheme(spec)
+
+  const shell = useMemo<Shell>(
+    () => ({
+      spec,
+      setSpec,
+      rendered,
+      setRendered,
+      replay,
+      replayMotion: () => setReplay((n) => n + 1),
+      inspect,
+      setInspect,
+      studio,
+      setStudio,
+    }),
+    [spec, rendered, replay, inspect, studio]
+  )
+
   return (
-    <ThemeProvider theme={brand} asChild>
-      <div className="site">
-        <a href="#main" className="site-skip">
-          Skip to content
-        </a>
-        <Nav />
-        <Hero />
-        <main id="main">
-          <Stats />
-          <Suspense>
-            {sections.slice(0, mounted).map((Section, i) => (
-              // A fixed list in a fixed order, so the index is a stable key.
-              <Section key={i} />
-            ))}
-          </Suspense>
-        </main>
-        <Suspense>{mounted > sections.length && <Footer />}</Suspense>
-        <Toaster />
-      </div>
-    </ThemeProvider>
+    <ShellContext value={shell}>
+      <RouteContext value={route}>
+        <ThemeProvider theme={route === 'home' ? theme : undefined} asChild>
+          <div className={`site site--${route}`}>
+            <a href="#main" className="site-skip">
+              Skip to content
+            </a>
+            <ScrollOnRoute />
+            <Nav />
+            {route === 'home' ? (
+              <Home />
+            ) : (
+              <Suspense>
+                <StudioPage />
+              </Suspense>
+            )}
+            <Toaster />
+          </div>
+        </ThemeProvider>
+      </RouteContext>
+    </ShellContext>
   )
 }

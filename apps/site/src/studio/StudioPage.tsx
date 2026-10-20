@@ -1,31 +1,25 @@
 import { useCallback, useEffect, useRef, useState, type JSX } from 'react'
 import {
   Alert,
-  Badge,
   Button,
-  Heading,
-  Segment,
-  SegmentedControl,
   Stack,
-  Switch,
   Tab,
   TabList,
   TabPanel,
   Tabs,
   Text,
-  VisuallyHidden,
-  type ColorScheme,
+  useColorScheme,
 } from '@greese/react'
+import { useShell } from '../shell.ts'
 import { api, hosted } from './api.ts'
 import { PaletteOptions } from './fields.tsx'
-import { ImportDialog } from './ImportDialog.tsx'
-import { ThemeMenu } from './ThemeMenu.tsx'
 import { CodePanel } from './panels/CodePanel.tsx'
 import { ComponentsPanel } from './panels/ComponentsPanel.tsx'
 import { MotionPanel } from './panels/MotionPanel.tsx'
 import { TokensPanel } from './panels/TokensPanel.tsx'
-import type { FromPreview, Picked, RenderedColors, ToPreview } from './protocol.ts'
-import { customBreakpoints, emptySpec, type ThemeSpec } from './spec.ts'
+import type { FromPreview, Picked, ToPreview } from './protocol.ts'
+import { customBreakpoints } from './spec.ts'
+import './studio.css'
 
 interface FileState {
   file: string
@@ -34,8 +28,15 @@ interface FileState {
   saved: string
 }
 
-export const App = (): JSX.Element => {
-  const [spec, setSpec] = useState<ThemeSpec>(emptySpec)
+/**
+ * The studio page: the editor and the preview it themes. The theme itself
+ * (the spec) lives in the shell, shared with the homepage's theme menu; what's
+ * here is the studio's own state, and its Save and Import controls, which the
+ * shared header shows.
+ */
+export const StudioPage = (): JSX.Element => {
+  const { spec, setSpec, rendered, setRendered, replay, inspect, setStudio } = useShell()
+  const { scheme } = useColorScheme()
   const [file, setFile] = useState<FileState>()
   const [loadError, setLoadError] = useState<string>()
   const [compiled, setCompiled] = useState({ scss: '', css: '', full: false })
@@ -49,10 +50,7 @@ export const App = (): JSX.Element => {
   const [changedOnDisk, setChangedOnDisk] = useState(false)
   const [tab, setTab] = useState('tokens')
   const [component, setComponent] = useState('Button')
-  const [scheme, setScheme] = useState<ColorScheme>('system')
-  const [inspect, setInspect] = useState(false)
   const [picked, setPicked] = useState<Picked>()
-  const [rendered, setRendered] = useState<RenderedColors>()
   const frame = useRef<HTMLIFrameElement>(null)
 
   const dirty = !!file && JSON.stringify(spec) !== file.saved
@@ -80,7 +78,15 @@ export const App = (): JSX.Element => {
     }
   }, [])
 
-  useEffect(() => void load(), [load])
+  // The dev server reads the theme file; the hosted studio works on the
+  // theme the shell holds (what was chosen in the header, or last saved).
+  useEffect(() => {
+    if (hosted) {
+      setFile({ file: 'Kept in this browser', outputs: [], saved: JSON.stringify(spec) })
+      return
+    }
+    void load()
+  }, [])
 
   // Someone edited the theme file outside the studio.
   useEffect(() => {
@@ -124,6 +130,12 @@ export const App = (): JSX.Element => {
     () => post({ type: 'scope', theme: spec.name || undefined, scheme }),
     [spec.name, scheme, post]
   )
+  // "Replay motion" in the header remounts the preview's gallery.
+  const replayed = useRef(replay)
+  useEffect(() => {
+    if (replay !== replayed.current) post({ type: 'replay' })
+    replayed.current = replay
+  }, [replay, post])
   useEffect(() => post({ type: 'inspect', on: inspect }), [inspect, post])
   useEffect(() => post({ type: 'feature', block: component }), [component, post])
   useEffect(
@@ -172,6 +184,22 @@ export const App = (): JSX.Element => {
     setWritten(result.written)
   }
 
+  // What the header shows for the studio: Save, and whether there's anything to save.
+  const saveRef = useRef(save)
+  saveRef.current = save
+  useEffect(() => {
+    setStudio({
+      dirty,
+      saving,
+      canSave: dirty && errors.length === 0,
+      savedNote,
+      save: () => void saveRef.current(),
+    })
+  }, [dirty, saving, errors.length, savedNote, setStudio])
+  useEffect(() => () => setStudio(null), [setStudio])
+  // Inspect and the rendered colors belong to this page's preview.
+  useEffect(() => () => setRendered(undefined), [setRendered])
+
   const showComponent = (name: string) => {
     setComponent(name)
     setTab('components')
@@ -179,59 +207,14 @@ export const App = (): JSX.Element => {
 
   return (
     <div className="studio">
-      <header className="studio-bar">
-        <Stack direction="row" gap={3} align="center" wrap="wrap">
-          <Heading level={1} variant="h5">
-            Theme Studio
-          </Heading>
+      <div className="studio-body">
+        <PaletteOptions />
+        <aside className="studio-editor">
           {file && (
             <Text variant="p3" tone="muted" className="studio-file">
               {file.file}
             </Text>
           )}
-          {savedNote && (
-            <Badge tone="positive" variant="solid" title={savedNote}>
-              Saved
-            </Badge>
-          )}
-        </Stack>
-        <Stack direction="row" gap={3} align="center" wrap="wrap">
-          <SegmentedControl
-            label="Preview scheme"
-            size="sm"
-            value={scheme}
-            onValueChange={(v) => setScheme(v as ColorScheme)}
-          >
-            <Segment value="system">System</Segment>
-            <Segment value="light">Light</Segment>
-            <Segment value="dark">Dark</Segment>
-          </SegmentedControl>
-          {file && <ThemeMenu spec={spec} onChange={setSpec} rendered={rendered} />}
-          <Switch label="Inspect" checked={inspect} onCheckedChange={setInspect} />
-          {file && <ImportDialog spec={spec} onImport={setSpec} />}
-          <Button
-            size="sm"
-            variant="soft"
-            tone="neutral"
-            onClick={() => post({ type: 'replay' })}
-          >
-            Replay motion
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => void save()}
-            loading={saving}
-            disabled={!dirty || errors.length > 0}
-          >
-            Save
-          </Button>
-          <VisuallyHidden role="status">{savedNote ?? ''}</VisuallyHidden>
-        </Stack>
-      </header>
-
-      <div className="studio-body">
-        <PaletteOptions />
-        <aside className="studio-editor">
           {loadError && (
             <Alert tone="negative" title="Read-only">
               {loadError}

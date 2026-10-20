@@ -9,8 +9,8 @@ import {
   importJson,
   mergeSpecs,
   parseCss,
-} from '../src/importer.ts'
-import type { ThemeSpec } from '../src/spec.ts'
+} from '../src/studio/importer.ts'
+import type { ThemeSpec } from '../src/studio/spec.ts'
 import { compileSpec, importTheme } from './studio.ts'
 
 const css = (spec: ThemeSpec) => {
