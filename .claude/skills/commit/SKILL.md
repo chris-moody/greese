@@ -50,8 +50,11 @@ how you get there without tripping either.
 | `react`                              | `packages/react`                                                         |
 | `tokens`                             | `packages/tokens`                                                        |
 | `greese`                             | `packages/greese` (greese.js)                                            |
+| `icons`                              | `packages/icons`                                                         |
 | `docs`                               | `apps/docs` (Storybook) and `docs/`                                      |
 | `playground`                         | `apps/playground`                                                        |
+| `site`                               | `apps/site` (the GitHub Pages homepage)                                  |
+| `studio`                             | `apps/theme-studio`                                                      |
 | `eslint-config`, `typescript-config` | the matching `packages/*`                                                |
 | `repo`                               | root config and tooling (turbo, prettier, commitlint, husky, `.claude/`) |
 | `deps`                               | dependency bumps only                                                    |
