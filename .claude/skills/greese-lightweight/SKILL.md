@@ -25,15 +25,15 @@ budgets and ADR 0008 covers greese.js.
 
 ## Budgets (brotli)
 
-| What                                                    | Budget                   | Where                              |
-| ------------------------------------------------------- | ------------------------ | ---------------------------------- |
-| All components (greese.js excluded)                     | 22 kB                    | `packages/react/.size-limit.cjs`   |
-| All components + greese.js                              | 26 kB                    | same                               |
-| Each listed component, tree-shaken                      | 0.3–4.75 kB              | same                               |
-| `greese` prop runtime (lazy chunk)                      | 7 kB                     | same                               |
-| `greese-ui.css`                                         | 18 kB                    | same                               |
-| `base.css`                                              | 1 kB                     | same                               |
-| greese.js: everything / `animate` / `ease` / `<script>` | 6.5 / 5.25 / 1 / 6.75 kB | `packages/greese/.size-limit.json` |
+| What                                                    | Budget                   | Where                            |
+| ------------------------------------------------------- | ------------------------ | -------------------------------- |
+| All components (greese.js excluded)                     | 22 kB                    | `packages/react/.size-limit.cjs` |
+| All components + greese.js                              | 26 kB                    | same                             |
+| Each listed component, tree-shaken                      | 0.3–4.75 kB              | same                             |
+| `greese` prop runtime (lazy chunk)                      | 7 kB                     | same                             |
+| `greese.css` (`@greese/ui`)                             | 20 kB                    | `packages/ui/.size-limit.cjs`    |
+| `base.css` (`@greese/ui`)                               | 1 kB                     | same                             |
+| greese.js: everything / `animate` / `ease` / `<script>` | 6.5 / 5.25 / 1 / 6.75 kB | `packages/js/.size-limit.json`   |
 
 Every component entry includes the `greese` prop's shared static part (about
 0.75 kB: resolver + island). The runtime is a lazy chunk, behind a dynamic
@@ -54,7 +54,7 @@ npm run build -w @greese/react && npm run size -w @greese/react
 npm run build -w @greese/js && npm run size -w @greese/js
 
 # Per module, to find what is heavy (minified, then brotli):
-for f in packages/greese/dist/*.js; do
+for f in packages/js/dist/*.js; do
   printf "%-40s %s\n" "$f" "$(npx esbuild "$f" --minify --format=esm --log-level=error | brotli -c | wc -c)"
 done
 

@@ -1,11 +1,12 @@
 ---
 name: greese-styles
-description: How to write and change GreeseUI SCSS - cascade layers, tokens, responsive-prop mixin, logical properties, states, touch, motion, RTL, theming variables and stylelint rules. Use for any edit to *.scss in packages/react or packages/tokens, new tokens, theming changes, or visual bugs.
+description: How to write and change GreeseUI SCSS - cascade layers, tokens, responsive-prop mixin, logical properties, states, touch, motion, RTL, theming variables and stylelint rules. Use for any edit to *.scss in packages/react or packages/ui, new tokens, theming changes, or visual bugs.
 ---
 
 # Styling GreeseUI
 
-Load `greese-conventions` first. ADR 0001 (the styling model) and ADR 0002
+Load `greese-conventions` first. The SCSS lives in `packages/ui` (`@greese/ui`),
+not in the framework packages: paths below are relative to it. ADR 0001 (the styling model) and ADR 0002
 (theming) are the source of truth.
 
 ## Structure
@@ -130,7 +131,7 @@ whose rules browsers that pass the test never match.
 - **Component knobs:** expose them as `--greese-<name>-<thing>` set on the
   root, so users can override them per instance. Add new ones to the table in
   `apps/docs/stories/guides/Theming.mdx`.
-- **New tokens:** add them to `packages/tokens/src/tokens.ts` (both schemes
+- **New tokens:** add them to `packages/ui/src/tokens.ts` (both schemes
   for colours). The CSS, the Sass maps and `createTheme` keys all follow.
   Update the token reference table in the Theming guide.
 - **Contrast:** check dark mode. A colour that relies on a black overlay
@@ -140,10 +141,11 @@ whose rules browsers that pass the test never match.
 ## Checks
 
 ```bash
-cd packages/react
+cd packages/ui
 npx stylelint "src/**/*.scss" --fix && npm run lint
-npm run build            # catches unbundled stylesheets and unknown classes
-npm run size             # CSS budgets: greese-ui.css ≤ 18 kB brotli
+npm run build            # catches unbundled stylesheets
+npm run size             # CSS budgets: greese.css ≤ 20 kB brotli
+npm run build -w @greese/react   # catches classes React renders that have no stylesheet
 ```
 
 Then re-record and look at the visual baselines for affected stories, in

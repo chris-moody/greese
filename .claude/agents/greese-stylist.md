@@ -35,6 +35,7 @@ You own the look of GreeseUI: its SCSS, design tokens and theming.
 **Verify:**
 
 - `npx stylelint "src/**/*.scss"`, `npm run build` and `npm run size` in
+  `packages/ui` (where the SCSS lives), then `npm run build` in
   `packages/react`;
 - re-record visual baselines for the affected stories and look at them in
   light and dark, phone and desktop;

@@ -9,7 +9,7 @@ You keep GreeseUI lightweight. Being light is a product requirement.
 1. Load `greese-lightweight` and `greese-conventions`.
 2. Measure before you touch anything:
    - rebuild (`npm run build`), then run `npm run size` in `packages/react`
-     and `packages/greese`;
+     and `packages/js`;
    - per-module brotli sizes for greese.js, and per-component CSS sizes
      (commands in the skill);
    - compare against the previous commit (`git stash`, or a worktree) when

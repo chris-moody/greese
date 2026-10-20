@@ -71,7 +71,7 @@ fix(ui): keep nested data-greese-scheme from inheriting root colours
 perf(react): skip style object copy when no inline variables are needed
 test(playground): cover nested theme and scheme resolution in Chromium
 docs(docs): record colour-scheme theming decisions in ADR 0002
-build(react): emit base.css alongside greese-ui.css
+build(ui): emit base.css alongside greese.css
 ci: run commitlint on pull request commit ranges
 chore(repo): adopt conventional commits with commitlint and husky
 ```

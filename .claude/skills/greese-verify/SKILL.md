@@ -12,7 +12,7 @@ or was skipped, say so.
 ## Fast loop (while working)
 
 ```bash
-npx tsc --noEmit -p packages/react          # or packages/greese, apps/docs
+npx tsc --noEmit -p packages/react          # or packages/js, apps/docs
 cd packages/react && npx vitest run src/components/<area>.test.tsx
 npx playwright test e2e/<area>.spec.ts      # in apps/playground, after building
 ```
@@ -28,11 +28,11 @@ VERIFY_TMP=<scratch dir> npm run verify:packages
 
 | Gate              | Proves                                                                                                                                      | Typical failure                                                                                             |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `build`           | TS compiles; CSS compiles; every rendered class has a stylesheet; every stylesheet is in `greese-ui.css`; Storybook builds                  | "Classes with no stylesheet", "Stylesheets missing from styles/index.scss"                                  |
+| `build`           | TS compiles; CSS compiles; every rendered class has a stylesheet; every stylesheet is in `greese.css`; Storybook builds                     | "Classes with no stylesheet", "Stylesheets missing from styles/index.scss"                                  |
 | `check-types`     | Types across packages, scripts and stories                                                                                                  | A prop renamed without updating stories                                                                     |
 | `lint`            | ESLint (zero warnings), stylelint, docs **story coverage**                                                                                  | Raw colours, `--_vars`, irregular whitespace, a component without a story                                   |
 | `test`            | Unit + axe; coverage gate on `resolveResponsive`                                                                                            |                                                                                                             |
-| `size`            | Budgets (`packages/react/.size-limit.cjs`, `packages/greese/.size-limit.json`)                                                              | See `greese-lightweight`                                                                                    |
+| `size`            | Budgets (`packages/react/.size-limit.cjs`, `packages/ui/.size-limit.cjs`, `packages/js/.size-limit.json`)                                   | See `greese-lightweight`                                                                                    |
 | `test:e2e`        | Real layout, focus, top layer, touch, in 5 projects                                                                                         | If many unrelated tests hang for the same minutes at once, it was the machine (sleep), not the code; re-run |
 | `test:visual`     | Every story × light/dark × phone/desktop, against baselines                                                                                 | A story changed: re-record and _look_                                                                       |
 | Lighthouse        | Perf/a11y/best practices ≥ 0.95, LCP < 2 s, TBT < 100 ms, CLS < 0.05 on every playground page                                               | New playground pages must be added to `lighthouserc.cjs`                                                    |

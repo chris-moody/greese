@@ -1,6 +1,6 @@
 ---
 name: greese-conventions
-description: The canonical rule set for GreeseUI code, styles, tests, docs and size. Load it before writing, changing or reviewing anything in packages/react, packages/tokens, packages/greese, apps/docs or apps/playground. The other greese-* skills and agents build on it.
+description: The canonical rule set for GreeseUI code, styles, tests, docs and size. Load it before writing, changing or reviewing anything in packages/react, packages/ui, packages/js, apps/docs or apps/playground. The other greese-* skills and agents build on it.
 ---
 
 # GreeseUI conventions
@@ -27,33 +27,37 @@ the ADR wins: fix this file in the same change.
 | 0005 overlays and positioning       | `<dialog>`, Popover API, anchor positioning, focus return              |
 | 0006 distribution and quality gates | per-component CSS, budgets, visual/e2e/Lighthouse gates                |
 | 0007 component gaps                 | Combobox, NumberField, DateField, Table, SegmentedControl              |
-| 0008 greese.js                      | the animation package (`packages/greese`)                              |
+| 0008 greese.js                      | the animation package (`packages/js`)                                  |
 | 0009 the `greese` prop              | motion on every component: CSS presets, lazy runtime, coverage check   |
 | 0010 SCSS kit and Theme Studio      | style manifest, `greese.overrides` layer, kit API, `apps/theme-studio` |
 | 0011 component gap review           | ScrollCarousel, Rating, Diff, OtpField…: native bases, what was skipped      |
-| 0012 icons package and docs rules   | `@greese/icons`, prop descriptions, docs page layout                |
+| 0012 icons package and docs rules   | `@greese/icons`, prop descriptions, docs page layout                   |
 | 0013 project scope and phases       | goals, non-goals, the phase table, React/browser/licence decisions     |
+| 0014 framework-agnostic packages    | `@greese/ui` owns the CSS; framework packages render its markup        |
 
 ## Workspace
 
-| Path                | What                                                                                          |
-| ------------------- | --------------------------------------------------------------------------------------------- |
-| `packages/tokens`   | `@greese/ui`: tokens in `src/tokens.ts`, `createTheme`, scheme script                  |
-| `packages/react`    | `@greese/react`: components in `src/components/<Name>/<Name>.tsx` + `<Name>.scss`          |
-| `packages/greese`   | `@greese/js` (greese.js): animation; no dependencies, no React                         |
-| `packages/icons`    | `@greese/icons`: optional line icons (`createIcon`); the library never imports it          |
-| `apps/docs`         | Storybook: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`          |
-| `apps/playground`   | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                         |
-| `apps/theme-studio` | Theme Studio (`npm run studio`): edits a theme JSON, generates kit SCSS + CSS                 |
+| Path                | What                                                                                                                                                                                      |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/ui`       | `@greese/ui`, framework-free: tokens in `src/tokens.ts`, `createTheme`, the scheme script, every component's SCSS (`src/components/<Name>/<Name>.scss`), the Sass kit, the style manifest |
+| `packages/react`    | `@greese/react`: components in `src/components/<Name>/<Name>.tsx`; styled by `@greese/ui`                                                                                                 |
+| `packages/js`       | `@greese/js` (greese.js): animation; no dependencies, no React                                                                                                                            |
+| `packages/icons`    | `@greese/icons`: optional line icons (`createIcon`); the library never imports it                                                                                                         |
+| `apps/docs`         | Storybook: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`                                                                                                      |
+| `apps/playground`   | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                                                                                                                     |
+| `apps/theme-studio` | Theme Studio (`npm run studio`): edits a theme JSON, generates kit SCSS + CSS                                                                                                             |
 
 Use npm, never yarn. Node ≥ 24.
 
 ## Component code (TSX)
 
-- **One folder per component:** `<Name>/<Name>.tsx` (+ `<Name>.scss` if it
-  has styles). Export it from `src/components/index.ts`, alphabetically.
-  Register its stylesheet in `src/styles/index.scss`; the build fails if you
-  don't.
+- **One folder per component:** `<Name>/<Name>.tsx`. Export it from
+  `src/components/index.ts`, alphabetically. Its styles are `@greese/ui`'s:
+  `packages/ui/src/components/<Name>/<Name>.scss`, registered in
+  `packages/ui/src/styles/index.scss` (the build fails if you don't). The
+  classes, parts, modifiers and `data-*`/`aria-*` attributes the component
+  renders are a public contract that every framework package and plain HTML
+  share (ADR 0014): change them like an API.
 - **The `greese` prop:** every component that draws something extends
   `GreeseProps`, destructures `greese`, and returns
   `withGreese(<root …/>, greese)` from `utils/greese.ts`. Box-based
@@ -128,9 +132,9 @@ See the `greese-styles` skill for detail. In short:
 - use logical properties;
 - per-instance variables are named `--greese-<name>-<thing>`;
 - stylelint enforces most of this;
-- after changing a stylesheet, `npm run build:css -w @greese/react`
-  refreshes `src/styles/_manifest.scss` (the SCSS kit's name list); commit it.
-  A unit test fails while it's stale.
+- after changing a stylesheet, `npm run build -w @greese/ui` refreshes
+  `src/styles/_manifest.scss` (the SCSS kit's name list); commit it. A unit
+  test fails while it's stale.
 
 ## Tests
 

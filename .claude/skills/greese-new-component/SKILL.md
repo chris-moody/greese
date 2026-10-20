@@ -39,14 +39,16 @@ has a check.
 1. Create `src/components/<Name>/<Name>.tsx`. Mirror a similar existing
    component: Chip for small interactive pieces, Input for field controls,
    Grid for responsive layout, Dialog for overlays.
-2. Create `src/components/<Name>/<Name>.scss` per the `greese-styles` skill,
-   or none if it only composes others.
+2. Create `packages/ui/src/components/<Name>/<Name>.scss` (in `@greese/ui`,
+   so every framework shares it) per the `greese-styles` skill, or none if it
+   only composes others.
    - Every `greese-<Name>*` class you render must exist in a stylesheet; the
      CSS build fails otherwise.
    - A class block with no styles of its own needs at least a
      sensible rule, or drop the class.
 3. Export it from `src/components/index.ts`, in alphabetical order.
-4. Add `@use '../components/<Name>/<Name>';` to `src/styles/index.scss`,
+4. Add `@use '../components/<Name>/<Name>';` to
+   `packages/ui/src/styles/index.scss`,
    after the components it builds on. The build fails if a stylesheet is
    missing.
 5. Pure helpers (formatters, maths, parsers) go in the component file,

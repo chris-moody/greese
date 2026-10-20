@@ -1,15 +1,17 @@
 # GreeseUI
 
-A mobile-first, TypeScript-first React 19 component library with
-zero-runtime CSS (SCSS + CSS custom properties) and few dependencies. It
-also contains greese.js, a small animation library.
+A mobile-first, framework-agnostic component system: zero-runtime CSS (SCSS +
+CSS custom properties) in `@greese/ui` that works in plain HTML, a small
+animation library, greese.js (`@greese/js`), and framework packages such as
+`@greese/react` (React 19) that render the same markup. More frameworks
+(Svelte, Vue, Angular) are planned (ADR 0014).
 
 | Package                         | Path                |
 | ------------------------------- | ------------------- |
-| `@greese/react`              | `packages/react`    |
-| `@greese/ui`             | `packages/tokens`   |
-| `@greese/js` (greese.js) | `packages/greese`   |
-| `@greese/icons` (optional)   | `packages/icons`    |
+| `@greese/ui` (CSS, tokens, kit) | `packages/ui`       |
+| `@greese/react`                 | `packages/react`    |
+| `@greese/js` (greese.js)        | `packages/js`       |
+| `@greese/icons` (optional)      | `packages/icons`    |
 | Storybook docs                  | `apps/docs`         |
 | e2e, visual, Lighthouse         | `apps/playground`   |
 | Theme Studio (`npm run studio`) | `apps/theme-studio` |
