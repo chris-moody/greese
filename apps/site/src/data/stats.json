@@ -1,0 +1,172 @@
+{
+  "date": "2026-10-20",
+  "components": 115,
+  "dependencies": [
+    "@greese-ui/greese",
+    "@greese-ui/tokens"
+  ],
+  "react": [
+    {
+      "name": "JS: whole library (components)",
+      "size": 25838,
+      "sizeLimit": 26000
+    },
+    {
+      "name": "JS: whole library, with greese.js",
+      "size": 30720,
+      "sizeLimit": 31000
+    },
+    {
+      "name": "JS: tree-shaken { VisuallyHidden }",
+      "size": 132,
+      "sizeLimit": 300
+    },
+    {
+      "name": "JS: tree-shaken { Stack }",
+      "size": 2173,
+      "sizeLimit": 2250
+    },
+    {
+      "name": "JS: tree-shaken { Button }",
+      "size": 2073,
+      "sizeLimit": 2250
+    },
+    {
+      "name": "JS: tree-shaken { TextField }",
+      "size": 2157,
+      "sizeLimit": 2250
+    },
+    {
+      "name": "JS: tree-shaken { Tabs, TabList, Tab, TabPanel }",
+      "size": 2310,
+      "sizeLimit": 2500
+    },
+    {
+      "name": "JS: tree-shaken { Dialog }",
+      "size": 3058,
+      "sizeLimit": 3250
+    },
+    {
+      "name": "JS: tree-shaken { Menu, MenuItem }",
+      "size": 2927,
+      "sizeLimit": 3250
+    },
+    {
+      "name": "JS: tree-shaken { toast, Toaster }",
+      "size": 3128,
+      "sizeLimit": 3250
+    },
+    {
+      "name": "JS: tree-shaken { Combobox }",
+      "size": 4308,
+      "sizeLimit": 4750
+    },
+    {
+      "name": "JS: tree-shaken { NumberField }",
+      "size": 3156,
+      "sizeLimit": 3250
+    },
+    {
+      "name": "JS: tree-shaken { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell }",
+      "size": 2180,
+      "sizeLimit": 2250
+    },
+    {
+      "name": "JS: tree-shaken { ThemeProvider }",
+      "size": 735,
+      "sizeLimit": 1000
+    },
+    {
+      "name": "JS: tree-shaken { ThemeProvider, createTheme } (includes default tokens)",
+      "size": 2554,
+      "sizeLimit": 2750
+    },
+    {
+      "name": "ColorPicker",
+      "size": 3967,
+      "sizeLimit": 4250
+    },
+    {
+      "name": "MaskedInput",
+      "size": 2600,
+      "sizeLimit": 2750
+    },
+    {
+      "name": "JS: tree-shaken { ScrollCarousel, ScrollCarouselSlide }",
+      "size": 3339,
+      "sizeLimit": 3500
+    },
+    {
+      "name": "JS: tree-shaken { Rating }",
+      "size": 2582,
+      "sizeLimit": 2750
+    },
+    {
+      "name": "JS: tree-shaken { OtpField }",
+      "size": 2342,
+      "sizeLimit": 2500
+    },
+    {
+      "name": "JS: tree-shaken { Diff }",
+      "size": 1926,
+      "sizeLimit": 2250
+    },
+    {
+      "name": "JS: tree-shaken { Countdown }",
+      "size": 2005,
+      "sizeLimit": 2250
+    },
+    {
+      "name": "JS: tree-shaken { SpeedDial, SpeedDialAction }",
+      "size": 2863,
+      "sizeLimit": 3000
+    },
+    {
+      "name": "JS: tree-shaken { Swap }",
+      "size": 1833,
+      "sizeLimit": 2000
+    },
+    {
+      "name": "JS: tree-shaken { useGreese } (with greese.js)",
+      "size": 5535,
+      "sizeLimit": 6000
+    },
+    {
+      "name": "JS: greese prop runtime (lazy chunk, with greese.js)",
+      "size": 7178,
+      "sizeLimit": 7250
+    },
+    {
+      "name": "CSS: greese-ui.css",
+      "size": 19917,
+      "sizeLimit": 20000
+    },
+    {
+      "name": "CSS: base.css",
+      "size": 425,
+      "sizeLimit": 1000
+    }
+  ],
+  "greese": [
+    {
+      "name": "greese.js: everything",
+      "size": 6104,
+      "sizeLimit": 6500
+    },
+    {
+      "name": "greese.js: animate",
+      "size": 5182,
+      "sizeLimit": 5250
+    },
+    {
+      "name": "greese.js: ease",
+      "size": 847,
+      "sizeLimit": 1000
+    },
+    {
+      "name": "greese.js: <script> build (window.greese)",
+      "size": 6482,
+      "sizeLimit": 6750
+    }
+  ]
+}

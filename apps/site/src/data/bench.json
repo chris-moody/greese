@@ -1,0 +1,96 @@
+{
+  "runs": 9,
+  "cpu": 4,
+  "stacks": 2000,
+  "date": "2026-10-19",
+  "metrics": [
+    {
+      "label": "First paint from navigation",
+      "key": "navToPaint",
+      "unit": "ms",
+      "greese": 612.1999998092651,
+      "greeseCss": 611.4000005722046,
+      "mui": 736
+    },
+    {
+      "label": "Render to first paint",
+      "key": "renderToPaint",
+      "unit": "ms",
+      "greese": 386.30000019073486,
+      "greeseCss": 393,
+      "mui": 510.4000005722046
+    },
+    {
+      "label": "Main-thread script (load)",
+      "key": "scriptMs",
+      "unit": "ms",
+      "greese": 224.017,
+      "greeseCss": 222.87199999999999,
+      "mui": 499.627
+    },
+    {
+      "label": "Style recalculation (load)",
+      "key": "styleMs",
+      "unit": "ms",
+      "greese": 34.842999999999996,
+      "greeseCss": 29.481,
+      "mui": 25.257
+    },
+    {
+      "label": "Layout (load)",
+      "key": "layoutMs",
+      "unit": "ms",
+      "greese": 95.393,
+      "greeseCss": 97.46100000000001,
+      "mui": 95.697
+    },
+    {
+      "label": "Update: click to paint",
+      "key": "update",
+      "unit": "ms",
+      "greese": 112.85000038146973,
+      "greeseCss": 113.0499997138977,
+      "mui": 285.40000009536743
+    },
+    {
+      "label": "Update: script per toggle",
+      "key": "updateScriptMs",
+      "unit": "ms",
+      "greese": 59.820249999999994,
+      "greeseCss": 60.117250000000006,
+      "mui": 232.37425000000002
+    },
+    {
+      "label": "Update: style recalc per toggle",
+      "key": "updateStyleMs",
+      "unit": "ms",
+      "greese": 18.079,
+      "greeseCss": 17.52675,
+      "mui": 15.905250000000002
+    },
+    {
+      "label": "Longest interaction (INP basis)",
+      "key": "inp",
+      "unit": "ms",
+      "greese": 216,
+      "greeseCss": 216,
+      "mui": 384
+    },
+    {
+      "label": "JavaScript executed (uncompressed)",
+      "key": "jsKb",
+      "unit": "kB",
+      "greese": 227.8505859375,
+      "greeseCss": 227.822265625,
+      "mui": 295.1416015625
+    },
+    {
+      "label": "<style> elements in the document",
+      "key": "styleElements",
+      "unit": "",
+      "greese": 0,
+      "greeseCss": 0,
+      "mui": 1
+    }
+  ]
+}

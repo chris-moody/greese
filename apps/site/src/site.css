@@ -1,0 +1,270 @@
+/*
+ * The site's own layout and decoration, on GreeseUI tokens. Unlayered, so it
+ * wins over the library's @layer greese.* rules without !important.
+ */
+
+:root {
+  /* MUI's series colour (see theme.ts). GreeseUI's is the primary colour,
+     read on the bar itself: a var() declared here would resolve against
+     :root's default primary, outside the site's theme. */
+  --site-mui: #2563eb;
+  --site-glow: rgb(194 65 12 / 0.16);
+  scroll-padding-block-start: 5rem;
+}
+
+:root[data-greese-scheme='dark'] {
+  --site-mui: #3b82f6;
+  --site-glow: rgb(251 146 60 / 0.14);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-greese-scheme='light']) {
+    --site-mui: #3b82f6;
+    --site-glow: rgb(251 146 60 / 0.14);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    scroll-behavior: smooth;
+  }
+}
+
+.site {
+  overflow-x: clip;
+}
+
+.site-skip {
+  position: absolute;
+  inset-inline-start: var(--greese-space-3);
+  inset-block-start: -4rem;
+  z-index: 10;
+  padding: var(--greese-space-2) var(--greese-space-3);
+  border-radius: var(--greese-radius-md);
+  background: var(--greese-color-primary);
+  color: var(--greese-color-primary-content);
+}
+
+.site-skip:focus {
+  inset-block-start: var(--greese-space-3);
+}
+
+.site-nav {
+  min-block-size: 3.5rem;
+}
+
+.site-wordmark {
+  letter-spacing: -0.02em;
+}
+
+.site-measure {
+  max-inline-size: 42rem;
+}
+
+/* Hero: a soft warm glow behind the type, no images to load. */
+.site-hero {
+  position: relative;
+  padding-block: clamp(3rem, 9vw, 7rem) clamp(2rem, 6vw, 4rem);
+  isolation: isolate;
+}
+
+.site-hero::before {
+  content: '';
+  position: absolute;
+  inset: -20% -10% auto auto;
+  inline-size: min(60rem, 120vw);
+  aspect-ratio: 1;
+  background: radial-gradient(closest-side, var(--site-glow), transparent);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.site-hero-title {
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.site-preview {
+  max-inline-size: 26rem;
+  justify-self: center;
+  inline-size: 100%;
+}
+
+.site-install {
+  flex-wrap: wrap;
+}
+
+.site-stats {
+  padding-block-end: var(--greese-space-6);
+}
+
+.site-stat-value {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.site-section {
+  padding-block: clamp(3.5rem, 8vw, 6rem);
+}
+
+.site-section--tinted {
+  background: var(--greese-color-surface);
+}
+
+.site-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.site-why-icon {
+  color: var(--greese-color-primary);
+}
+
+.site-panel {
+  padding-block-start: var(--greese-space-5);
+}
+
+/* Anything that grows with the growX effect grows from its start edge. */
+.site-grow {
+  transform-origin: left center;
+}
+
+[dir='rtl'] .site-grow {
+  transform-origin: right center;
+}
+
+.site-budget {
+  min-inline-size: 6rem;
+}
+
+/* Comparison chart: thin bars, rounded data ends, 2px gaps, values in text ink. */
+.site-legend {
+  align-items: center;
+}
+
+.site-key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--greese-space-2);
+  font-size: var(--greese-font-size-sm);
+  font-weight: 600;
+}
+
+.site-key::before {
+  content: '';
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  border-radius: 2px;
+  background: var(--site-key);
+}
+
+.site-key--greese {
+  --site-key: var(--greese-color-primary);
+}
+
+.site-key--mui {
+  --site-key: var(--site-mui);
+}
+
+.site-metric {
+  display: grid;
+  gap: 2px;
+  padding: var(--greese-space-2);
+  margin-inline: calc(-1 * var(--greese-space-2));
+  border-radius: var(--greese-radius-md);
+  outline-offset: 2px;
+}
+
+.site-metric:hover,
+.site-metric:focus-visible {
+  background: var(--greese-color-surface);
+}
+
+.site-metric > :first-child {
+  margin-block-end: var(--greese-space-1);
+}
+
+.site-bar-row {
+  display: grid;
+  grid-template-columns: 1fr 5.5rem;
+  align-items: center;
+  gap: var(--greese-space-3);
+}
+
+.site-bar {
+  display: block;
+  block-size: 0.625rem;
+  inline-size: var(--site-bar);
+  min-inline-size: 2px;
+  border-start-end-radius: 4px;
+  border-end-end-radius: 4px;
+  background: var(--site-bar-color);
+}
+
+.site-bar--greese {
+  --site-bar-color: var(--greese-color-primary);
+}
+
+.site-bar--mui {
+  --site-bar-color: var(--site-mui);
+}
+
+.site-bar-value {
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+/* Motion lab. */
+.site-stage {
+  display: grid;
+}
+
+.site-stage-inner {
+  min-block-size: 16rem;
+}
+
+.site-stage-target {
+  min-inline-size: 9rem;
+  text-align: center;
+}
+
+.site-stage-code {
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+}
+
+.site-track {
+  position: relative;
+  block-size: 2.5rem;
+  border-radius: var(--greese-radius-pill);
+  background: var(--greese-color-surface);
+  border: 1px solid var(--greese-color-border);
+}
+
+.site-puck {
+  position: absolute;
+  inset-block: 0.25rem;
+  inset-inline-start: 0.25rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--greese-color-primary);
+}
+
+.site-demo-title {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: var(--greese-font-size-xs);
+}
+
+.site-gallery-note {
+  text-align: center;
+}
+
+.site-start-note {
+  align-self: center;
+}
+
+.site-footer {
+  padding-block: var(--greese-space-6) var(--greese-space-7);
+}
