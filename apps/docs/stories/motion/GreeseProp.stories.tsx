@@ -170,6 +170,46 @@ export const Stagger: Story = {
   ),
 }
 
+/**
+ * A `scope` orders the entrances inside it, at any depth: each member starts
+ * `stagger` seconds after the one before it in the page, and a scope inside a
+ * scope takes one place in the outer one.
+ */
+export const Scope: Story = {
+  render: () => (
+    <Replay>
+      <Stack gap={3} greese={{ scope: { stagger: 0.12, delay: 0.1 } }}>
+        <Heading level={2} greese={{ enter: 'fadeUp' }}>
+          A section that plays in order
+        </Heading>
+        <Text greese={{ enter: 'fadeUp' }}>
+          Each piece declares only its own entrance; the section decides when it starts.
+        </Text>
+        <Grid
+          container
+          columns={{ xs: 1, md: 3 }}
+          gap={3}
+          greese={{ scope: { stagger: 0.06 } }}
+        >
+          {['One', 'Two', 'Three'].map((n) => (
+            <Card key={n} greese={{ enter: 'scaleIn' }}>
+              <Stack gap={1}>
+                <Heading level={3} size="md" greese={{ enter: 'fadeIn' }}>
+                  Card {n}
+                </Heading>
+                <Text size="sm" tone="muted" greese={{ enter: 'fadeIn' }}>
+                  Starts after the card above it.
+                </Text>
+              </Stack>
+            </Card>
+          ))}
+        </Grid>
+        <Button greese={{ enter: 'pop' }}>Get started</Button>
+      </Stack>
+    </Replay>
+  ),
+}
+
 /** `inView` waits until each card scrolls into view. Scroll down. */
 export const ScrollReveal: Story = {
   render: () => (

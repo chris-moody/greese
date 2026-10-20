@@ -54,7 +54,44 @@ Toaster; a type check in the build enforces it.
 | `ease`                    | Any greese.js ease. `linear`, `in`, `out`, `inOut`, the CSS keywords and bézier arrays stay CSS-only; others (`elastic.out`…) switch the entrance to JavaScript |                               |
 | `distance`                | How far `fadeUp`/`Down`/`Start`/`End` and `fadeOutUp`/`Down` travel (default `'1rem'`)                                                                          |                               |
 | `stagger`                 | Seconds between children: animates the children instead of the element                                                                                          |                               |
+| `scope`                   | `true` or `{ stagger, delay, inView }`: orders every `enter` inside this element, at any depth (see Scopes)                                                      | No (a small lazy chunk)       |
 | `timeline`                | `(tl, el) => void`: fill a greese.js timeline yourself. It plays on enter, or on reveal with `inView`                                                           | Yes                           |
+
+### Scopes: ordering the entrances inside a parent
+
+`stagger` animates a parent's direct children. A **scope** orders every entrance
+inside it, however deep, as one sequence:
+
+```tsx
+<Stack greese={{ scope: { stagger: 0.1, delay: 0.2 } }}>
+  <Heading greese={{ enter: 'fadeUp' }}>Title</Heading>
+  <Text greese={{ enter: 'fadeUp' }}>Intro</Text>
+  <Grid greese={{ scope: { stagger: 0.05 } }}>
+    {cards.map((c) => <Card greese={{ enter: 'scaleIn' }}>…</Card>)}
+  </Grid>
+</Stack>
+```
+
+Each member declares only its own entrance; the scope gives it a start time:
+`delay + position × stagger`, in document order. A scope inside a scope takes
+one position in the outer one and its members start from there, so a section's
+contents play as a block in the page's sequence. `inView: true` holds the whole
+scope until it scrolls into view. Members still use their own `duration`,
+`ease` and `delay` (which adds to the start time).
+
+It's opt-in on purpose. A scope is a client component that loads a small lazy
+chunk (under 1 kB), and nothing else changes: components without one pay
+nothing, and the entrances are the same CSS animations, so reduced motion and
+server components behave as before. Things to know:
+
+- Members are the entrances present when the page renders; children added
+  later play as they appear, unordered.
+- With server rendering, entrances begin at first paint, before the page is
+  interactive; a scope sets their start times when it hydrates. Use `inView`
+  for sections below the fold, or the `@greese/react/greese` import so start
+  times are set before the first frame.
+- Scroll reveals (`inView` on a member) keep their own trigger and aren't
+  ordered by a scope.
 
 ### Effects
 
