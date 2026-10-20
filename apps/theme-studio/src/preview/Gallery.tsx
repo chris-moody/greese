@@ -1,6 +1,8 @@
 import type { JSX, ReactNode } from 'react'
 import {
   Accordion,
+  AutoLayout,
+  AutoLayoutItem,
   AccordionItem,
   Alert,
   Avatar,
@@ -14,7 +16,6 @@ import {
   Chip,
   Dialog,
   Field,
-  Grid,
   Heading,
   Menu,
   MenuItem,
@@ -44,26 +45,36 @@ import {
   Text,
   TextField,
   Tooltip,
+  type Responsive,
 } from '@greese/react'
 
 // No `greese` props here on purpose: what moves is what the theme's
 // motion() settings make move.
 
+/** Columns a tile takes: the whole row on narrow screens, then two or three to a row. */
+const TILE = { xs: 12, md: 6, xl: 4 } as const
+/** The first two tiles share one row from md up, and are alone in theirs below it. */
+const PAIR = { xs: 12, md: 6 } as const
+
 const Group = ({
   title,
   children,
+  size = TILE,
 }: {
   title: string
   children: ReactNode
+  size?: Responsive<number>
 }): JSX.Element => (
-  <Card padding={5}>
-    <Stack gap={4}>
-      <Text variant="p3" weight="semibold" tone="muted">
-        {title}
-      </Text>
-      <Stack gap={3}>{children}</Stack>
-    </Stack>
-  </Card>
+  <AutoLayoutItem size={size}>
+    <Card padding={5} style={{ blockSize: '100%' }}>
+      <Stack gap={4}>
+        <Text variant="p3" weight="semibold" tone="muted">
+          {title}
+        </Text>
+        <Stack gap={3}>{children}</Stack>
+      </Stack>
+    </Card>
+  </AutoLayoutItem>
 )
 
 const WEIGHTS = ['regular', 'medium', 'semibold', 'bold'] as const
@@ -71,7 +82,7 @@ const LEADINGS = ['tight', 'snug', 'normal'] as const
 
 /** The font, weight and line-height tokens at work, each sample set by its own variable. (Sizes belong to the type variants, in the next tile.) */
 const Typography = (): JSX.Element => (
-  <Group title="Typography">
+  <Group title="Typography" size={PAIR}>
     <Stack gap={1}>
       <Text variant="p3" tone="muted">
         font-body
@@ -130,7 +141,7 @@ const VARIANTS = [
 
 /** The type variants as they set themselves: resize the preview to watch them change. */
 const TypeVariants = (): JSX.Element => (
-  <Group title="Type variants">
+  <Group title="Type variants" size={PAIR}>
     <Stack gap={2}>
       {VARIANTS.map((variant) => (
         <Stack key={variant} direction="row" gap={3} align="baseline">
@@ -199,7 +210,7 @@ export const Gallery = (): JSX.Element => (
         Every component here uses your theme. Turn on Inspect to pick one.
       </Text>
     </Stack>
-    <Grid container minChildWidth="17rem" gap={4}>
+    <AutoLayout gap={4}>
       <Typography />
       <TypeVariants />
       <ScopeTile />
@@ -357,6 +368,6 @@ export const Gallery = (): JSX.Element => (
           </AccordionItem>
         </Accordion>
       </Group>
-    </Grid>
+    </AutoLayout>
   </Stack>
 )
