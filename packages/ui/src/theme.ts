@@ -11,6 +11,13 @@ import {
 } from './css.ts'
 import { contentColor } from './contrast.ts'
 import {
+  mergeTypography,
+  typography as defaultTypography,
+  typographyByBreakpoint,
+  type TypeSpec,
+  type TypeVariant,
+} from './typography.ts'
+import {
   color,
   scalarTokens,
   type ColorRole,
@@ -40,6 +47,14 @@ export type ThemeOptions = {
    * token through its group above.
    */
   extend?: ExtendTokens
+  /**
+   * Type system values by variant, then `base` or a breakpoint, then property
+   * (`{ h1: { base: { size: '2rem' }, lg: { size: '4rem' } } }`). What you set
+   * replaces the default at that point and the rest stays. The breakpoints are
+   * the defaults' widths; a build with its own uses the SCSS kit's
+   * `typography()` instead.
+   */
+  typography?: Partial<Record<TypeVariant, TypeSpec>>
 } & {
   [G in ScalarGroup]?: Partial<Record<keyof (typeof scalarTokens)[G], string>>
 }
@@ -130,7 +145,13 @@ export const deriveColors = (
  * Call it at module scope, not during render: the result is meant to be static.
  */
 export const createTheme = (options: ThemeOptions): Theme => {
-  const { name, color: colorOverrides = {}, extend = {}, ...scalarOverrides } = options
+  const {
+    name,
+    color: colorOverrides = {},
+    extend = {},
+    typography: typeChanges,
+    ...scalarOverrides
+  } = options
   if (!NAME.test(name)) {
     throw new Error(`createTheme: name must match ${NAME}, got ${JSON.stringify(name)}`)
   }
@@ -158,7 +179,22 @@ export const createTheme = (options: ThemeOptions): Theme => {
 
   addExtended(extend, base, light, dark)
 
-  return { name, css: themeCss(name, base, light, dark) }
+  // Complete like the rest: every variant, the smallest screen's values with
+  // the theme's tokens and the changes in media queries.
+  const steps = typographyByBreakpoint(mergeTypography(defaultTypography, typeChanges))
+  for (const [, list] of steps) for (const [prop, value] of list) check(prop, value)
+  base.push(...steps.filter(([min]) => min === 0).flatMap(([, list]) => list))
+
+  return {
+    name,
+    css: themeCss(
+      name,
+      base,
+      light,
+      dark,
+      steps.filter(([min]) => min > 0)
+    ),
+  }
 }
 
 const TOKEN_KEY = /^[a-z0-9][a-z0-9-]*$/
@@ -206,7 +242,8 @@ const themeCss = (
   name: string,
   base: Declarations,
   light: Declarations,
-  dark: Declarations
+  dark: Declarations,
+  media: Array<[number, Declarations]>
 ): string => {
   const T = `[${THEME_ATTR}='${name}']`
   const S = (scheme: string): string => `[${SCHEME_ATTR}='${scheme}']`
@@ -236,6 +273,16 @@ ${decls(light, '    ')}
 ${decls(reducedMotionDecls(allDurationKeys), '      ')}
     }
   }
+${media
+  .map(
+    ([min, list]) => `
+  @media (width >= ${min}px) {
+    ${T} {
+${decls(list, '      ')}
+    }
+  }`
+  )
+  .join('\n')}
 }
 `
 }

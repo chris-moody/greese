@@ -32,7 +32,10 @@ describe('createTheme', () => {
     const tokenCount =
       Object.keys(color).length +
       Object.values(scalarTokens).reduce((n, group) => n + Object.keys(group).length, 0)
-    expect(base.match(/^\s*--greese-[\w-]+:/gm)).toHaveLength(tokenCount)
+    // …and the type system's smallest-screen values (the rest are media queries).
+    const typeCount = (base.match(/^\s*--greese-type-/gm) ?? []).length
+    expect(typeCount).toBeGreaterThan(40)
+    expect(base.match(/^\s*--greese-[\w-]+:/gm)).toHaveLength(tokenCount + typeCount)
   })
 
   it('derives a readable content color and a strong shade from a brand color', () => {
@@ -183,5 +186,26 @@ describe('createTheme: extend', () => {
     expect(() => createTheme({ name: 'a', extend: { shadow: { x: 'red; }' } } })).toThrow(
       /invalid value/
     )
+  })
+})
+
+describe('createTheme: typography', () => {
+  it('declares every variant, with the changes at their breakpoints', () => {
+    const { css } = createTheme({
+      name: 'type',
+      typography: { h1: { base: { size: '2rem' }, lg: { size: '4rem' } } },
+    })
+    expect(css).toContain('--greese-type-p2-size: 1rem;')
+    expect(css).toMatch(/--greese-type-h1-size: 2rem;/)
+    expect(css).toMatch(
+      /@media \(width >= 900px\) \{\s+\[data-greese-theme='type'\] \{[^}]*--greese-type-h1-size: 2\.75rem;/
+    )
+    expect(css).toMatch(/@media \(width >= 1200px\)[^@]*--greese-type-h1-size: 4rem;/)
+  })
+
+  it('refuses values that could break out of the style element', () => {
+    expect(() =>
+      createTheme({ name: 'a', typography: { h1: { base: { family: 'x; }' } } } })
+    ).toThrow(/invalid value/)
   })
 })

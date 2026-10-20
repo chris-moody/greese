@@ -4,7 +4,7 @@
 // Also the public SCSS entry (`pkg:@greese/ui/scss`): forwarding config
 // lets `@use … with ($breakpoints: …)` reconfigure every component.
 @forward 'config';
-@use '../../dist/tokens';
+@use 'core';
 @use 'breakpoint-vars';
 @use '../components/ThemeProvider/ThemeProvider';
 @use '../components/VisuallyHidden/VisuallyHidden';
@@ -36,6 +36,7 @@
 @use '../components/FileInput/FileInput';
 @use '../components/Text/Text';
 @use '../components/Heading/Heading';
+@use '../components/Type/Type';
 @use '../components/Link/Link';
 @use '../components/Code/Code';
 @use '../components/Card/Card';

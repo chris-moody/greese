@@ -35,7 +35,7 @@ $defaults: (
     margin: 0;
     font-weight: var(--greese-font-weight-bold);
     line-height: var(--greese-line-height-tight);
-    text-wrap: balance;
+    text-wrap: balance; // a `variant` takes this from its own `wrap`
   }
 
   @each $level, $sizes in $defaults {

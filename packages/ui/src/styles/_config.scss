@@ -5,6 +5,8 @@
 //   @use 'pkg:@greese/ui/scss' with (
 //     $breakpoints: (xs: 0px, sm: 480px, tablet: 700px, md: 768px, lg: 1024px, xl: 1440px)
 //   );
+// The type system's values can be set the same way (`$typography`, shaped like
+// the defaults: variant -> base | breakpoint -> prop: value; see Typography).
 // Every key gets responsive classes (`greese-Stack--tablet-gap-3`) and a custom
 // property, `--greese-breakpoint-tablet: 700px`. Then call
 // configureBreakpoints({ sm: 480, tablet: 700, … }) so useBreakpoint() and
@@ -14,6 +16,7 @@
 @use '../../dist/maps' as defaults;
 
 $breakpoints: defaults.$breakpoints !default;
+$typography: defaults.$typography !default;
 $space-keys: defaults.$space-keys;
 
 @each $key in map.keys(defaults.$breakpoints) {

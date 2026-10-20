@@ -48,6 +48,8 @@ describe('breakpoints, fixed when the stylesheet is built', () => {
     const css = build('(xs: 0px, sm: 480px, md: 768px, lg: 1024px, xl: 1440px)')
     expect(css).toContain('@media (width >= 768px)')
     expect(css).not.toContain('@media (width >= 900px)')
+    // The type system follows the build's breakpoints.
+    expect(css).toMatch(/@media \(width >= 768px\)[^@]*--greese-type-h1-size: 2\.75rem/)
     expect(css).toContain('--greese-breakpoint-md: 768px;')
   })
 

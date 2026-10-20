@@ -59,6 +59,7 @@ export {
   createTheme,
   getSchemeScript,
   type Breakpoint,
+  type TypeVariant,
   type ColorRole,
   type ColorScheme,
   type ColorValue,

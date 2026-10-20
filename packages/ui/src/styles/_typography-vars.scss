@@ -1,0 +1,8 @@
+// The type system's custom properties, from this build's typography and
+// breakpoints (the defaults unless you configured them), in the token layer.
+@use 'config';
+@use 'type-emit';
+
+@layer greese.tokens {
+  @include type-emit.emit(config.$typography);
+}

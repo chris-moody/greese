@@ -24,6 +24,8 @@
 @use 'sass:string';
 @use '../../dist/maps' as defaults;
 @use 'manifest';
+@use 'config';
+@use 'type-emit';
 @forward 'mixins' show up, down, hover, focus-ring, touch-target, motion-safe;
 
 /// Stop the build on unknown components, parts, modifiers, variables and
@@ -780,6 +782,7 @@ $_derived: (primary, secondary, tertiary, accent, negative);
   $light: ();
   $dark: ();
   $durations: ();
+  $type-base: ();
 
   @each $group, $values in $overrides {
     $group: _kebab($group);
@@ -835,6 +838,14 @@ $_derived: (primary, secondary, tertiary, accent, negative);
       $pair: $value;
       $light: map.set($light, --greese-color-#{$role}, _css(map.get($pair, light)));
       $dark: map.set($dark, --greese-color-#{$role}, _css(map.get($pair, dark)));
+    }
+  }
+
+  // A complete theme declares the type system too: its smallest-screen
+  // values with the tokens, the changes in media queries (see `tokens()`).
+  @if $complete {
+    @each $property, $v in type-emit.base(config.$typography) {
+      $type-base: map.set($type-base, $property, type-emit.value($v));
     }
   }
 
@@ -898,7 +909,7 @@ $_derived: (primary, secondary, tertiary, accent, negative);
     }
   }
 
-  @return (base: $base, light: $light, dark: $dark, durations: $durations);
+  @return (base: map.merge($base, $type-base), light: $light, dark: $dark, durations: $durations);
 }
 
 @mixin _declare($map) {
@@ -962,6 +973,8 @@ $_derived: (primary, secondary, tertiary, accent, negative);
         @include _declare($dark);
       }
 
+      @include type-emit.emit-media(config.$typography, $t);
+
       :root#{_scheme(light)} #{$t}:not(#{$s}) {
         @include _declare($light);
       }
@@ -1007,6 +1020,75 @@ $_derived: (primary, secondary, tertiary, accent, negative);
       }
     }
   }
+}
+
+/// The type system's values, for the page or (inside `theme(name)`) for that
+/// theme. Name a variant, then `base` or a breakpoint, then properties; what
+/// you set replaces the default at that point, and the rest stays:
+///
+///   @include greese.typography((
+///     h1: (base: (size: 2rem), lg: (size: 4rem, tracking: -0.03em)),
+///     caption: (base: (transform: uppercase)),
+///   ));
+///
+/// Properties: size, weight, tracking, leading, and family, style, transform,
+/// features, variation, stretch, wrap, spacing, numeric. Variants: p1-p3,
+/// h1-h6, s1, s2, caption, button. Names that don't exist stop the build.
+@mixin typography($changes) {
+  $merged: ();
+
+  @each $variant, $spec in $changes {
+    $variant: '#{$variant}';
+    $current: map.get(config.$typography, $variant);
+    $checked: _check(
+      $current != null,
+      'no type variant `#{$variant}`. Variants: #{_join(map.keys(config.$typography))}.'
+    );
+
+    @each $point, $style in $spec {
+      $point: '#{$point}';
+      $checked: _check(
+        $point == base or map.has-key(config.$breakpoints, $point),
+        'no breakpoint `#{$point}` for `#{$variant}`. Use base or #{_join(map.keys(config.$breakpoints))}.'
+      );
+
+      @each $prop, $unused in $style {
+        $checked: _check(
+          map.has-key(defaults.$type-props, '#{$prop}'),
+          'no type property `#{$prop}`. Properties: #{_join(map.keys(defaults.$type-props))}.'
+        );
+      }
+    }
+
+    // Everything this variant has, so its breakpoints stay in step: a theme
+    // layer rule at one point would otherwise beat the defaults above it.
+    $merged: map.set($merged, $variant, map.deep-merge($current, _normal($spec)));
+  }
+
+  @include _layer-order;
+
+  @layer greese.theme {
+    @if $_theme {
+      @include type-emit.emit($merged, "[#{$_theme-attr}='#{$_theme}']");
+    } @else {
+      @include type-emit.emit($merged);
+    }
+  }
+}
+
+/// Keys as strings, so they match the defaults' whatever way they're written.
+@function _normal($map) {
+  $out: ();
+
+  @each $key, $value in $map {
+    @if meta.type-of($value) == map {
+      $value: _normal($value);
+    }
+
+    $out: map.set($out, '#{$key}', $value);
+  }
+
+  @return $out;
 }
 
 /// A named theme: `tokens()` inside declares it for

@@ -370,3 +370,45 @@ describe('style manifest', () => {
     )
   }, 30_000)
 })
+
+describe('SCSS kit: typography()', () => {
+  it('writes a variant complete, so its other breakpoints stay in step', () => {
+    const css = compile(`@include greese.typography((
+      h1: (base: (size: 2rem), lg: (size: 4rem, tracking: -0.03em)),
+    ));`)
+    expect(css).toContain('@layer greese.theme')
+    // base: the default h1's other values too, with the new size
+    expect(css).toMatch(
+      /--greese-type-h1-size: 2rem;[\s\S]*--greese-type-h1-weight: 700;/
+    )
+    // the default md step is kept, since the variant is written whole
+    expect(css).toMatch(
+      /@media \(width >= 900px\)[\s\S]*--greese-type-h1-size: 2\.75rem;/
+    )
+    expect(css).toMatch(/@media \(width >= 1200px\)[\s\S]*--greese-type-h1-size: 4rem;/)
+    expect(css).toContain('--greese-type-h1-tracking: -0.03em;')
+    // other variants are left alone
+    expect(css).not.toContain('--greese-type-h2-')
+  })
+
+  it('takes other properties, and scopes to a theme', () => {
+    const css = compile(`@include greese.theme(brand) {
+      @include greese.typography((caption: (base: (transform: uppercase, family: ('Inter', sans-serif)))));
+    }`)
+    expect(css).toContain('[data-greese-theme=brand]')
+    expect(css).toContain('--greese-type-caption-transform: uppercase;')
+    expect(css).toContain('--greese-type-caption-family: "Inter", sans-serif;')
+  })
+
+  it('stops the build on unknown variants, breakpoints and properties', () => {
+    expect(() =>
+      compile('@include greese.typography((h9: (base: (size: 1rem))));')
+    ).toThrow(/no type variant `h9`/)
+    expect(() =>
+      compile('@include greese.typography((h1: (huge: (size: 1rem))));')
+    ).toThrow(/no breakpoint `huge`/)
+    expect(() =>
+      compile('@include greese.typography((h1: (base: (colour: red))));')
+    ).toThrow(/no type property `colour`/)
+  })
+})

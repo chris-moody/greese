@@ -1,0 +1,76 @@
+// Writes the type system's custom properties from a typography map, in the
+// build's breakpoints: the smallest screen's values at the selector, then one
+// media query per breakpoint that changes any, smallest first.
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:string';
+@use 'config';
+@use 'mixins';
+
+@function value($value) {
+  @if meta.type-of($value) == string {
+    @return string.unquote($value);
+  }
+
+  @if meta.type-of($value) == list {
+    @return string.unquote(meta.inspect($value));
+  }
+
+  @return $value;
+}
+
+/// One point's values as a map of `--greese-type-<variant>-<prop>: value`.
+/// `base` also takes `xs`, which is the same point.
+@function _point($typography, $point) {
+  $out: ();
+
+  @each $variant, $spec in $typography {
+    $style: map.get($spec, $point) or ();
+
+    @if $point == base {
+      $style: map.merge($style, map.get($spec, xs) or ());
+    }
+
+    @each $prop, $v in $style {
+      $out: map.set($out, '--greese-type-#{$variant}-#{$prop}', $v);
+    }
+  }
+
+  @return $out;
+}
+
+@mixin _declare($declarations, $selector) {
+  @if list.length($declarations) > 0 {
+    #{$selector} {
+      @each $property, $v in $declarations {
+        #{$property}: #{value($v)};
+      }
+    }
+  }
+}
+
+/// The smallest screen's values, for a rule that already declares tokens.
+@function base($typography) {
+  @return _point($typography, base);
+}
+
+@mixin emit($typography, $selector: ':root') {
+  @include _declare(base($typography), $selector);
+  @include emit-media($typography, $selector);
+}
+
+/// The changes at each breakpoint above the smallest.
+@mixin emit-media($typography, $selector: ':root') {
+  @each $bp, $min in config.$breakpoints {
+    @if $bp != xs {
+      $declarations: _point($typography, $bp);
+
+      @if list.length($declarations) > 0 {
+        @include mixins.up($bp) {
+          @include _declare($declarations, $selector);
+        }
+      }
+    }
+  }
+}

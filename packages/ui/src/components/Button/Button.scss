@@ -19,9 +19,14 @@
     justify-content: center;
     min-block-size: var(--greese-button-height);
     padding-inline: var(--greese-button-padding);
-    font-family: inherit;
-    font-weight: var(--greese-font-weight-semibold);
-    line-height: var(--greese-line-height-tight);
+
+    // The `button` type variant, but for its size (the `size` prop sets that).
+    font-family: var(--greese-type-button-family, inherit);
+    font-style: var(--greese-type-button-style, normal);
+    font-weight: var(--greese-type-button-weight);
+    line-height: var(--greese-type-button-leading);
+    text-transform: var(--greese-type-button-transform, none);
+    letter-spacing: var(--greese-type-button-tracking);
     color: var(--greese-button-fg);
     text-align: center;
     text-decoration: none;

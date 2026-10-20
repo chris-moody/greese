@@ -33,7 +33,7 @@ writeFileSync(join(DIST, 'base.css'), sass(join(SRC, 'styles/base.scss')))
 const CSS = join(DIST, 'css')
 rmSync(CSS, { recursive: true, force: true })
 mkdirSync(CSS)
-const core = sass(join(DIST, '_tokens.scss'))
+const core = sass(join(SRC, 'styles/_core.scss'))
 writeFileSync(join(CSS, 'core.css'), core)
 
 const names = readdirSync(join(SRC, 'components'), { withFileTypes: true })

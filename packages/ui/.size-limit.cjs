@@ -10,7 +10,9 @@ module.exports = [
     // 18 → 20 kB (2026-10-19): the ADR 0011 components' styles, about 2.9 kB
     // after cutting TextRotate to 6 items and ScrollCarousel's responsive gap.
     // Per-component CSS (css/<Name>.css) only ships what's imported.
-    limit: '20 kB',
+    // 20 → 21 kB (2026-10-20): the type system (ADR 0016): the default
+    // variants' custom properties at four breakpoints, and a class per variant.
+    limit: '21 kB',
   },
   {
     name: 'CSS: base.css',

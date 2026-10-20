@@ -28,7 +28,10 @@ module.exports = [
     // (contrast maths, about 0.4 kB), as on the ThemeProvider entry.
     // 26 → 26.25 kB (2026-10-20): createTheme's `extend` for new tokens
     // (ADR 0015) and breakpoints with added keys (ADR 0006), about 0.25 kB.
-    limit: '26.25 kB',
+    // 26.25 → 27 kB (2026-10-20): the type system's defaults, which createTheme
+    // writes into every theme (ADR 0016), and Text/Heading `variant`, about
+    // 0.5 kB.
+    limit: '27 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -38,7 +41,8 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 26 → 30.5 kB (2026-10-19): the ADR 0011 components, as above;
     // 30.5 → 31 kB the same day for createTheme's derived content colors.
-    limit: '31 kB',
+    // 31 → 31.75 kB (2026-10-20): the type system's defaults, as above.
+    limit: '31.75 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -145,7 +149,9 @@ module.exports = [
     // 2.25 → 2.75 kB (2026-10-19): createTheme derives each brand color's
     // WCAG-safe content color and strong shade (contrast maths, about
     // 0.4 kB), so setting `primary` alone gives a readable theme (ADR 0002).
-    limit: '2.75 kB',
+    // 2.75 → 3.4 kB (2026-10-20): createTheme carries the type system's
+    // defaults to write complete themes (ADR 0016).
+    limit: '3.4 kB',
     modifyRolldownConfig: external,
   },
   {
