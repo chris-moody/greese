@@ -31,13 +31,13 @@ const meta = {
     fill: {
       control: 'color',
       description:
-        'Fills the shapes. `none` by default; any colour, `currentColor`, or `url(#gradient)`.',
+        'Fills the shapes. `none` by default; any color, `currentColor`, or `url(#gradient)`.',
       table: { type: { summary: 'string' }, defaultValue: { summary: "'none'" } },
     },
     stroke: {
       control: 'color',
       description:
-        'The line colour. `currentColor` by default, so it follows the text; any colour or `url(#gradient)`.',
+        'The line color. `currentColor` by default, so it follows the text; any color or `url(#gradient)`.',
       table: { type: { summary: 'string' }, defaultValue: { summary: "'currentColor'" } },
     },
   },
@@ -46,7 +46,7 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** Try the controls: size, stroke width, fill and stroke colours. */
+/** Try the controls: size, stroke width, fill and stroke colors. */
 export const Playground: Story = {}
 
 /** `size` sets width and height: a number of pixels or any CSS length. The default, `1em`, follows the text. */
@@ -63,7 +63,7 @@ export const Size: Story = {
   ),
 }
 
-/** Icons draw in `currentColor`, so they take the colour of the text around them. */
+/** Icons draw in `currentColor`, so they take the color of the text around them. */
 export const Color: Story = {
   render: () => (
     <Stack direction="row" gap={4}>
@@ -78,7 +78,7 @@ export const Color: Story = {
   ),
 }
 
-/** `stroke` recolours the lines; `strokeWidth` thickens or thins them. */
+/** `stroke` recolors the lines; `strokeWidth` thickens or thins them. */
 export const Stroke: Story = {
   render: () => (
     <Stack direction="row" gap={4}>

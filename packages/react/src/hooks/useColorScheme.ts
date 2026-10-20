@@ -38,7 +38,7 @@ export interface UseColorSchemeResult {
 }
 
 /**
- * The page-wide colour scheme, set on `<html>` and persisted to localStorage.
+ * The page-wide color scheme, set on `<html>` and persisted to localStorage.
  * Pair with `getSchemeScript()` in `<head>` so a saved choice applies before
  * first paint. For a section of the page, use `<ThemeProvider scheme>`.
  */

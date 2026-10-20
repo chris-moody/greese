@@ -4,7 +4,7 @@
  */
 
 :root {
-  /* MUI's series colour (see theme.ts). GreeseUI's is the primary colour,
+  /* MUI's series color (see theme.ts). GreeseUI's is the primary color,
      read on the bar itself: a var() declared here would resolve against
      :root's default primary, outside the site's theme. */
   --site-mui: #2563eb;

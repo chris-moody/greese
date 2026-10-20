@@ -13,7 +13,7 @@ import { withGreese } from '../../utils/greese.ts'
 
 export interface CardProps extends BoxProps {
   /**
-   * `outline` (a border), `elevated` (a shadow) or `filled` (a surface colour,
+   * `outline` (a border), `elevated` (a shadow) or `filled` (a surface color,
    * no border).
    * @default 'outline'
    */

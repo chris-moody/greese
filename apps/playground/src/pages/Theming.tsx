@@ -17,7 +17,7 @@ const rounded = createTheme({ name: 'rounded', radius: { md: '2px' } })
 
 /**
  * Exposes the resolved tokens at this point in the tree for e2e assertions.
- * A decorative swatch, not text: the fixture themes mix colours on purpose,
+ * A decorative swatch, not text: the fixture themes mix colors on purpose,
  * and the tests read computed styles.
  */
 const Probe = ({ id, children }: { id: string; children?: ReactNode }) => (

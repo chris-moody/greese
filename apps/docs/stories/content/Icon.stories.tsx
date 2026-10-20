@@ -11,7 +11,7 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** Decorative by default (aria-hidden); inherits colour and scales with text. */
+/** Decorative by default (aria-hidden); inherits color and scales with text. */
 export const Playground: Story = {}
 
 export const Labelled: Story = {

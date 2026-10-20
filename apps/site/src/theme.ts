@@ -3,8 +3,8 @@ import { createTheme } from '@greese/react'
 /**
  * The site's brand, made the way an app would make one: a theme built once
  * at module scope. GreeseUI's default primary is blue; the site's is warm
- * orange, so the page itself demonstrates theming. Only the primary colour
- * is set: createTheme derives its readable content colour (WCAG AA) and its
+ * orange, so the page itself demonstrates theming. Only the primary color
+ * is set: createTheme derives its readable content color (WCAG AA) and its
  * strong shade, and the focus ring follows it.
  */
 export const brand = createTheme({

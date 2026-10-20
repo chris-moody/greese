@@ -21,17 +21,17 @@ import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface ColorPickerProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'div'>, 'defaultValue' | 'onChange'> {
-  /** Hex colour (`#rrggbb`, or `#rrggbbaa` with transparency), controlled. */
+  /** Hex color (`#rrggbb`, or `#rrggbbaa` with transparency), controlled. */
   value?: string
-  /** Hex colour, uncontrolled. @default '#3b82f6' */
+  /** Hex color, uncontrolled. @default '#3b82f6' */
   defaultValue?: string
-  /** Called on every change with the hex colour and its channels. */
+  /** Called on every change with the hex color and its channels. */
   onValueChange?: (hex: string, color: RgbColor) => void
   /** Show the opacity slider; values gain an alpha pair when below 100%. */
   alpha?: boolean
-  /** Preset colours offered as one-tap swatches. */
+  /** Preset colors offered as one-tap swatches. */
   swatches?: readonly string[]
-  /** Name for the whole picker. @default 'Colour' */
+  /** Name for the whole picker. @default 'Color' */
   label?: string
   /** Disables every part of the picker. */
   disabled?: boolean
@@ -45,7 +45,7 @@ const pct = (n: number): string => `${Math.round(n * 100)}%`
 const clamp01 = (n: number): number => Math.min(Math.max(n, 0), 1)
 
 /**
- * Picks a colour: a saturation/brightness area, a hue slider, an optional
+ * Picks a color: a saturation/brightness area, a hue slider, an optional
  * opacity slider, a hex field and preset swatches. Drag works with mouse, pen
  * and touch; every part works from the keyboard.
  *
@@ -62,14 +62,14 @@ export const ColorPicker = ({
   onValueChange,
   alpha = false,
   swatches,
-  label = 'Colour',
+  label = 'Color',
   disabled,
   className,
   style,
   ...props
 }: ColorPickerProps): JSX.Element => {
   const [hsv, setHsv] = useState(() => fromHex(value ?? defaultValue))
-  // Follow a controlled value, unless it is the colour we just reported (so
+  // Follow a controlled value, unless it is the color we just reported (so
   // the hue survives a round trip through a grey).
   const [seen, setSeen] = useState(value)
   if (value !== seen) {
@@ -197,7 +197,7 @@ export const ColorPicker = ({
       <MaskedInput
         className="greese-ColorPicker-hex"
         size="sm"
-        aria-label="Hex colour"
+        aria-label="Hex color"
         mask="hhhhhh"
         maskChar=" "
         spellCheck={false}

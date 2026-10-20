@@ -14,11 +14,11 @@ export const kebab = (value: string): string =>
 interface PanelProps {
   spec: ThemeSpec
   onChange: (spec: ThemeSpec) => void
-  /** Each colour as the preview renders it, once it has reported. */
+  /** Each color as the preview renders it, once it has reported. */
   rendered?: RenderedColors
 }
 
-/** Token groups past colour and radius, collapsed: they change less often. */
+/** Token groups past color and radius, collapsed: they change less often. */
 const MORE = Object.entries(scalarTokens).filter(([group]) => group !== 'radius')
 
 export const TokensPanel = ({ spec, onChange, rendered }: PanelProps): JSX.Element => (

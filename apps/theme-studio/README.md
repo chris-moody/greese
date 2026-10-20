@@ -40,27 +40,27 @@ applied. A story added to the docs appears here with no extra work. Each
 story renders in a block root, as in Storybook, and honours its `layout`
 parameter (`centered`, or `fullscreen` in a short scrolling frame).
 
-## Themes, colours and radius
+## Themes, colors and radius
 
 The **Theme** menu in the header offers starting points (Ocean, Sunset,
-Forest…) and **Random**: each replaces the theme's colours and radii and
-keeps your component and motion edits. Colours show as chips, light and
-dark, each with its full code and "Aa" in its content colour, and the weaker
+Forest…) and **Random**: each replaces the theme's colors and radii and
+keeps your component and motion edits. Colors show as chips, light and
+dark, each with its full code and "Aa" in its content color, and the weaker
 contrast ratio of the two. Chips and swatches show what the preview actually
 renders, measured there per scheme, so `color-mix()`, `rgb()` and `var()`
-values match exactly; a translucent colour shows eight hex digits over a
+values match exactly; a translucent color shows eight hex digits over a
 checkerboard. Open a chip to edit it, along with its strong and content
-colours. Radius tokens
+colors. Radius tokens
 are picked as corner shapes, or typed. The other token groups are under
 **More tokens**.
 
-## Colours
+## Colors
 
-Colour fields take any CSS colour, or a palette name such as `lavender-600`
-(suggested as you type). The kit compiles a palette name to its colour, so
+Color fields take any CSS color, or a palette name such as `lavender-600`
+(suggested as you type). The kit compiles a palette name to its color, so
 the saved SCSS reads `lavender-600` and the CSS has the hex. Setting `primary`
 rebrands every component, and its content (readable text on it, WCAG AA)
-and strong colours follow unless you set them too.
+and strong colors follow unless you set them too.
 
 ## Importing an existing theme
 

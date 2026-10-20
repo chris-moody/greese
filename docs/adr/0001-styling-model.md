@@ -123,7 +123,7 @@ first.
 ### Global styles are opt-in
 
 `styles.css` only styles `.greese-*` classes and the token variables.
-`base.css` contains the reset, `body` colours and the focus ring, and is
+`base.css` contains the reset, `body` colors and the focus ring, and is
 imported only when GreeseUI owns the page.
 
 ## Consequences

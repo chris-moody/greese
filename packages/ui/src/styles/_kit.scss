@@ -110,7 +110,7 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 }
 
 /// A value as CSS text: quoted strings unquote, lists keep inner quotes, and
-/// a palette name (`lavender-600`) becomes its colour.
+/// a palette name (`lavender-600`) becomes its color.
 @function _css($value) {
   @if meta.type-of($value) == string {
     @return _palette-name($value) or string.unquote($value);
@@ -226,7 +226,7 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
   @return string.unquote('.#{$selector}');
 }
 
-/// A palette colour: `palette(lavender, 600)` is `#7e5bd0`. As a token or
+/// A palette color: `palette(lavender, 600)` is `#7e5bd0`. As a token or
 /// variable value, `lavender-600` does the same.
 @function palette($hue, $shade) {
   $shades: map.get(defaults.$palette, '#{$hue}');
@@ -283,7 +283,7 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
   @if $group == color {
     $checked: _check(
       map.has-key(defaults.$color, $key),
-      'no colour token `#{$key}`. Colours: #{_join(map.keys(defaults.$color))}.'
+      'no color token `#{$key}`. Colors: #{_join(map.keys(defaults.$color))}.'
     );
   } @else {
     $values: map.get(defaults.$scalars, $group);
@@ -425,7 +425,7 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 
 /// Custom properties, prefix added: `vars((tone: red, radius-md: 2px))`.
 /// A `(light: …, dark: …)` value becomes `light-dark()`, which follows the
-/// nearest colour scheme. Duration tokens stay out of reduced motion.
+/// nearest color scheme. Duration tokens stay out of reduced motion.
 @mixin vars($values) {
   $calm: ();
 
@@ -580,15 +580,15 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 // --- tokens and themes -----------------------------------------------------
 
 /// Declarations for the token overrides, split by scheme.
-// --- derived brand colours (createTheme's deriveColors, in Sass) -------------
+// --- derived brand colors (createTheme's deriveColors, in Sass) -------------
 
 $_derived: (primary, secondary, tertiary, accent, negative);
 
 // The WCAG formula's constants need their full precision, and the inks are
-// literal colours by definition (the same ones @greese/ui uses).
+// literal colors by definition (the same ones @greese/ui uses).
 // stylelint-disable number-max-precision, color-no-hex, color-hex-length
 
-/// WCAG relative luminance of a colour.
+/// WCAG relative luminance of a color.
 @function _luminance($c) {
   $sum: 0;
 
@@ -613,8 +613,8 @@ $_derived: (primary, secondary, tertiary, accent, negative);
   @return math.div(math.max($la, $lb) + 0.05, math.min($la, $lb) + 0.05);
 }
 
-/// A colour from a hex string (`"#c2410c"`, `"#fff"`), as Theme Studio and
-/// JSON-driven themes write them; colours pass through. Null otherwise.
+/// A color from a hex string (`"#c2410c"`, `"#fff"`), as Theme Studio and
+/// JSON-driven themes write them; colors pass through. Null otherwise.
 @function _hex-color($value) {
   @if meta.type-of($value) == color {
     @return $value;
@@ -664,7 +664,7 @@ $_derived: (primary, secondary, tertiary, accent, negative);
 
 /// Text for content on `$c`: as `contentColor()` in @greese/ui, the
 /// more readable of white and near-black if it reaches AA, else black. Null
-/// for anything that isn't a colour (a `var()`), which keeps the default.
+/// for anything that isn't a color (a `var()`), which keeps the default.
 @function _content($c) {
   @if meta.type-of($c) != color {
     @return null;
@@ -689,7 +689,7 @@ $_derived: (primary, secondary, tertiary, accent, negative);
 
 // stylelint-enable number-max-precision, color-no-hex, color-hex-length
 
-/// Fills in `-content` and `-strong` for brand colours the overrides set,
+/// Fills in `-content` and `-strong` for brand colors the overrides set,
 /// unless they set those too.
 @function _derive($colors) {
   @each $role in $_derived {
@@ -825,7 +825,7 @@ $_derived: (primary, secondary, tertiary, accent, negative);
 }
 
 /// Token overrides, compiled: the build-time `createTheme()`. Takes the same
-/// groups as `createTheme` in kebab-case, and a colour takes one value or a
+/// groups as `createTheme` in kebab-case, and a color takes one value or a
 /// `(light: …, dark: …)` pair:
 ///
 ///   @include greese.tokens((

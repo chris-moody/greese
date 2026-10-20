@@ -10,7 +10,7 @@ const FORMATS: Record<Format, (hue: string, shade: number) => string> = {
   ts: (hue, shade) => `palette.${hue}[${shade}]`,
 }
 
-/** WCAG relative luminance of a `#rrggbb` colour. */
+/** WCAG relative luminance of a `#rrggbb` color. */
 const luminance = (hex: string): number => {
   const [r, g, b] = [1, 3, 5].map((i) => {
     const c = parseInt(hex.slice(i, i + 2), 16) / 255
@@ -19,12 +19,12 @@ const luminance = (hex: string): number => {
   return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
 }
 
-/** Black or white, whichever reads better on the colour. */
+/** Black or white, whichever reads better on the color. */
 const inkOn = (hex: string): string =>
   (luminance(hex) + 0.05) / 0.05 > 1.05 / (luminance(hex) + 0.05) ? '#000' : '#fff'
 
 /**
- * Every palette colour, a table per hue as on MUI's colour page. Clicking a
+ * Every palette color, a table per hue as on MUI's color page. Clicking a
  * shade copies its reference in the chosen format.
  */
 export const PaletteTables = (): JSX.Element => {

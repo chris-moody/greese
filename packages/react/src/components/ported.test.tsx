@@ -136,7 +136,7 @@ describe('MaskedInput', () => {
   })
 })
 
-describe('colour math', () => {
+describe('color math', () => {
   it('parses and formats hex', () => {
     expect(parseHex('#f80')).toEqual({ r: 255, g: 136, b: 0, a: 1 })
     expect(parseHex('3b82f680')).toMatchObject({ r: 59, g: 130, b: 246 })
@@ -186,7 +186,7 @@ describe('ColorPicker', () => {
     })
     expect(onValueChange).toHaveBeenLastCalledWith('#0000ff', expect.anything())
 
-    const hex = screen.getByLabelText('Hex colour') as HTMLInputElement
+    const hex = screen.getByLabelText('Hex color') as HTMLInputElement
     await userEvent.clear(hex)
     await userEvent.type(hex, '123abc')
     expect(onValueChange).toHaveBeenLastCalledWith('#123abc', expect.anything())

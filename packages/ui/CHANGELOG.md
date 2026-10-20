@@ -8,12 +8,12 @@
 
 ### Minor Changes
 
-- 29a566a: Foundations: design tokens (colour, space, radius, typography, shadow, z-index,
-  motion, breakpoints) as CSS variables, Sass maps and TS constants; colour
+- 29a566a: Foundations: design tokens (color, space, radius, typography, shadow, z-index,
+  motion, breakpoints) as CSS variables, Sass maps and TS constants; color
   schemes via `useColorScheme` and `getSchemeScript`; scoped themes via
   `createTheme` and `ThemeProvider`; responsive-prop resolution; `Slot`,
   `useMediaQuery`, `useBreakpoint`, `useBreakpointValue`, `useControllableState`,
   `VisuallyHidden`; opt-in `base.css`.
-- fcad516: Add the `onNegative` colour token, for content on negative (destructive) surfaces.
-- 85f75c1: Add the `scrim` colour token, which dims the page behind modal dialogs and drawers.
+- fcad516: Add the `onNegative` color token, for content on negative (destructive) surfaces.
+- 85f75c1: Add the `scrim` color token, which dims the page behind modal dialogs and drawers.
 - 7b2526f: Add the CSS-free Sass module `@greese/ui/scss/maps`.

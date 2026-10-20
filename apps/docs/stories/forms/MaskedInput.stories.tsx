@@ -33,7 +33,7 @@ export const Patterns: Story = {
       <Field label="Licence plate">
         <MaskedInput mask="AA-9999" defaultValue="AB12" />
       </Field>
-      <Field label="Colour">
+      <Field label="Color">
         <MaskedInput mask="#hhhhhh" defaultValue="3b82f6" />
       </Field>
     </Grid>

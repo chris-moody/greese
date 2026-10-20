@@ -30,7 +30,7 @@ export interface ImageProps
    */
   fit?: 'cover' | 'contain'
   /**
-   * Shown behind the image until it paints: a colour, or a tiny blurred
+   * Shown behind the image until it paints: a color, or a tiny blurred
    * data URL for a blur-up effect. Pure CSS, so it works before hydration.
    */
   placeholder?: string
@@ -129,5 +129,5 @@ export const Image = ({
   )
 }
 
-/** Exported for tests: whether a placeholder is a colour rather than a URL. */
+/** Exported for tests: whether a placeholder is a color rather than a URL. */
 export const isPlaceholderColor = isColor

@@ -15,7 +15,7 @@ export interface ChatBubbleProps extends GreeseProps, ComponentPropsWithRef<'div
   /** Below the bubble: "Delivered", "Seen". */
   footer?: ReactNode
   /**
-   * The bubble's colour: neutral, accent, a brand colour (primary, secondary,
+   * The bubble's color: neutral, accent, a brand color (primary, secondary,
    * tertiary), positive, negative, warning or info. Defaults to `neutral` on
    * the start side and `accent` on the end side.
    */

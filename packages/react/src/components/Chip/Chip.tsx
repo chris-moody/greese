@@ -31,7 +31,7 @@ export interface ChipProps
   /** Called with the new state when a `selectable` chip is toggled. */
   onSelectedChange?: (selected: boolean) => void
   /**
-   * The chip's colour: neutral, accent, a brand colour (primary, secondary,
+   * The chip's color: neutral, accent, a brand color (primary, secondary,
    * tertiary), positive, negative, warning or info. A plain chip is tinted
    * in it; a `selectable` one shows it when selected. Without it, chips are
    * plain and selected ones use `accent`.

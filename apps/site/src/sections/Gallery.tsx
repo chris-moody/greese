@@ -160,7 +160,7 @@ const Forms = (): JSX.Element => (
         <OtpField length={4} size="sm" greese={{ focus: 'glow' }} />
       </Field>
     </Demo>
-    <Demo title="Dates and colours">
+    <Demo title="Dates and colors">
       <DateField
         label="Launch day"
         defaultValue="2026-11-03"
@@ -168,7 +168,7 @@ const Forms = (): JSX.Element => (
       />
       <ColorPicker
         defaultValue="#c2410c"
-        aria-label="Brand colour"
+        aria-label="Brand color"
         greese={{ enter: 'scaleIn' }}
       />
     </Demo>

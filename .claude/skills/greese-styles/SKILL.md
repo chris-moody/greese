@@ -44,15 +44,15 @@ greese.base, greese.components, greese.overrides, greese.utilities`.
 
 ## Values
 
-| Use                                                                              | Not                                                                                |
-| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `var(--greese-color-fg)`, `-surface`, `-primary`, `-border`, `-focus-ring`…      | Hex, `rgb()`, named colours (stylelint `color-no-hex`, `function-disallowed-list`) |
-| `color-mix(in oklab, var(--greese-color-primary) 14%, transparent)` for tints    | New colour tokens for every tint                                                   |
-| `var(--greese-space-N)`, `var(--greese-radius-md)`, `var(--greese-font-size-sm)` | Magic numbers, except for genuinely component-specific sizes                       |
-| `var(--greese-duration-fast)` + `var(--greese-easing-standard)`                  | Literal durations: the tokens collapse under reduced motion                        |
-| `inline-size`, `margin-inline-start`, `inset-inline-end`, `:dir(rtl)`            | `width` (for writing-mode-sensitive sizes), `left`, `margin-left`                  |
+| Use                                                                              | Not                                                                               |
+| -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `var(--greese-color-fg)`, `-surface`, `-primary`, `-border`, `-focus-ring`…      | Hex, `rgb()`, named colors (stylelint `color-no-hex`, `function-disallowed-list`) |
+| `color-mix(in oklab, var(--greese-color-primary) 14%, transparent)` for tints    | New color tokens for every tint                                                   |
+| `var(--greese-space-N)`, `var(--greese-radius-md)`, `var(--greese-font-size-sm)` | Magic numbers, except for genuinely component-specific sizes                      |
+| `var(--greese-duration-fast)` + `var(--greese-easing-standard)`                  | Literal durations: the tokens collapse under reduced motion                       |
+| `inline-size`, `margin-inline-start`, `inset-inline-end`, `:dir(rtl)`            | `width` (for writing-mode-sensitive sizes), `left`, `margin-left`                 |
 
-If a component genuinely needs literal colours (ColorPicker's spectrum and
+If a component genuinely needs literal colors (ColorPicker's spectrum and
 checkerboard), disable the rule _for that file_ with a comment saying why.
 
 Custom properties must match `--greese-kebab-case`. A private helper variable
@@ -121,9 +121,9 @@ whose rules browsers that pass the test never match.
 
 ## Theming hooks
 
-- **Brand colours:** components use `--greese-color-primary` for emphasis,
-  never `accent` (a brand colour like secondary and tertiary). Text or icons
-  drawn on a brand colour use its `-content` colour
+- **Brand colors:** components use `--greese-color-primary` for emphasis,
+  never `accent` (a brand color like secondary and tertiary). Text or icons
+  drawn on a brand color use its `-content` color
   (`--greese-color-primary-content`), which is WCAG AA-safe; for a `tone`
   prop, use `styles/_tones.scss`, whose list runs primary, secondary,
   tertiary, accent.
@@ -132,9 +132,9 @@ whose rules browsers that pass the test never match.
   root, so users can override them per instance. Add new ones to the table in
   `apps/docs/stories/guides/Theming.mdx`.
 - **New tokens:** add them to `packages/ui/src/tokens.ts` (both schemes
-  for colours). The CSS, the Sass maps and `createTheme` keys all follow.
+  for colors). The CSS, the Sass maps and `createTheme` keys all follow.
   Update the token reference table in the Theming guide.
-- **Contrast:** check dark mode. A colour that relies on a black overlay
+- **Contrast:** check dark mode. A color that relies on a black overlay
   (`rgb(0 0 0 / x)`) vanishes on dark surfaces; use
   `var(--greese-color-border-strong)` or a `color-mix` with a token instead.
 

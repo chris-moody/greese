@@ -73,7 +73,7 @@
   }
 
   // Variants. color-mix() derives hover/soft states from the tone, toward the
-  // on-tone colour, so they work in light and dark without extra tokens.
+  // on-tone color, so they work in light and dark without extra tokens.
   .greese-Button--solid {
     --greese-button-fg: var(--greese-button-on-tone);
     --greese-button-bg: var(--greese-button-tone);

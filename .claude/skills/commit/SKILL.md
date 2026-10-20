@@ -67,10 +67,10 @@ two packages, prefer two commits.
 
 ```
 feat(react): add Stack with responsive direction and gap props
-fix(ui): keep nested data-greese-scheme from inheriting root colours
+fix(ui): keep nested data-greese-scheme from inheriting root colors
 perf(react): skip style object copy when no inline variables are needed
 test(playground): cover nested theme and scheme resolution in Chromium
-docs(docs): record colour-scheme theming decisions in ADR 0002
+docs(docs): record color-scheme theming decisions in ADR 0002
 build(ui): emit base.css alongside greese.css
 ci: run commitlint on pull request commit ranges
 chore(repo): adopt conventional commits with commitlint and husky

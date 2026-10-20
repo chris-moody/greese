@@ -8,7 +8,7 @@ export type BadgeTone =
 
 export interface BadgeProps extends GreeseProps, ComponentPropsWithRef<'span'> {
   /**
-   * The colour and meaning: neutral, accent, a brand colour (primary,
+   * The color and meaning: neutral, accent, a brand color (primary,
    * secondary, tertiary), positive, negative, warning or info.
    * @default 'neutral'
    */

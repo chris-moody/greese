@@ -11,9 +11,9 @@ export interface StatProps extends GreeseProps, ComponentPropsWithRef<'dl'> {
   /** Context below it: "+12% on last month". */
   description?: ReactNode
   /**
-   * Colours the description, for a change worth noticing (`positive`,
-   * `negative`) or in a brand colour (primary, secondary, tertiary). Say the
-   * direction in its text too ("up 12%"): colour alone isn't enough.
+   * Colors the description, for a change worth noticing (`positive`,
+   * `negative`) or in a brand color (primary, secondary, tertiary). Say the
+   * direction in its text too ("up 12%"): color alone isn't enough.
    * @default 'muted'
    */
   tone?: 'muted' | BrandTone | 'positive' | 'negative'

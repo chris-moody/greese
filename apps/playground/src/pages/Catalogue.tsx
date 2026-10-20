@@ -37,7 +37,7 @@ export const Catalogue = (): JSX.Element => {
   return (
     <main style={{ padding: '1rem', maxInlineSize: '40rem' }}>
       <Stack gap={6}>
-        <ScrollCarousel label="Colours" onIndexChange={setSlide} data-testid="carousel">
+        <ScrollCarousel label="Colors" onIndexChange={setSlide} data-testid="carousel">
           {[0, 90, 180, 270].map((hue) => (
             <ScrollCarouselSlide key={hue}>
               <div style={tile(hue)} />

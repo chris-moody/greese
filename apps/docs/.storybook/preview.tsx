@@ -153,7 +153,7 @@ const preview: Preview = {
   },
   globalTypes: {
     scheme: {
-      description: 'Colour scheme',
+      description: 'Color scheme',
       toolbar: {
         title: 'Scheme',
         icon: 'mirror',

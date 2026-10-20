@@ -72,7 +72,7 @@ describe('mix', () => {
     expect(mix('0', '50%')(0.5)).toBe('25%')
   })
 
-  it('mixes colours in OKLab and keeps the ends exact', () => {
+  it('mixes colors in OKLab and keeps the ends exact', () => {
     expect(mix('#ff0000', 'rgb(0, 0, 255)')(0)).toBe('rgb(255 0 0 / 1)')
     expect(mix('#ff0000', 'rgb(0, 0, 255)')(1)).toBe('rgb(0 0 255 / 1)')
     expect(mix('#000', '#fff')(0.5)).toMatch(/^rgb\((\d+) \1 \1 \/ 1\)$/)

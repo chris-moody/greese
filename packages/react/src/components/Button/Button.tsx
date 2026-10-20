@@ -24,7 +24,7 @@ export interface ButtonProps extends GreeseProps, ComponentPropsWithoutRef<'butt
    */
   variant?: ButtonVariant
   /**
-   * Colour role: `accent`, a brand colour (primary, secondary, tertiary),
+   * Color role: `accent`, a brand color (primary, secondary, tertiary),
    * `neutral`, or `negative` for destructive actions.
    * @default 'primary'
    */

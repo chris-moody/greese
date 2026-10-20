@@ -40,7 +40,7 @@ stylesheet wins without `!important`.
 Two attributes drive everything, and they work on any element, `<html>`
 included:
 
-- `data-greese-scheme="light" | "dark" | "system"` forces a colour scheme for
+- `data-greese-scheme="light" | "dark" | "system"` forces a color scheme for
   that subtree. With no attribute anywhere, the page follows the OS.
 - `data-greese-theme="<name>"` applies a theme from `createTheme`.
 
@@ -71,14 +71,14 @@ import '@greese/react/css/Dialog.css'
 ```
 
 Optionally, also load the reset and page defaults (box-sizing, body font and
-colours, `canvas` background):
+colors, `canvas` background):
 
 ```ts
 import '@greese/react/base.css'
 ```
 
 Without `base.css`, components are still fully styled. Your page background
-just won't switch with the colour scheme unless you set it yourself, for
+just won't switch with the color scheme unless you set it yourself, for
 example with `body { background: var(--greese-color-canvas); color: var(--greese-color-fg) }`.
 
 At this point everything follows the OS light/dark setting. **No provider is
@@ -149,7 +149,7 @@ the root:
 
 ## Light and dark
 
-Every colour token has a light and a dark value. Which one applies is decided
+Every color token has a light and a dark value. Which one applies is decided
 per element:
 
 | Situation                                                         | Result                                  |
@@ -188,7 +188,7 @@ export const brand = createTheme({
     primary: { light: palette.lavender[600], dark: palette.lavender[300] },
     // primaryContent and primaryStrong follow: readable ink (WCAG AA) and a
     // hover shade, derived for you. Set them to choose your own, in any CSS
-    // colour, one value or a pair.
+    // color, one value or a pair.
     secondary: '#0f766e',
   },
   radius: { sm: '6px', md: '12px', lg: '20px' },
@@ -200,7 +200,7 @@ export const brand = createTheme({
 
 What to know:
 
-- **Any token can be overridden.** Colours take a string or a
+- **Any token can be overridden.** Colors take a string or a
   `{ light, dark }` pair. Every other group (`space`, `radius`, `font`,
   `fontSize`, `fontWeight`, `lineHeight`, `shadow`, `zIndex`, `duration`,
   `easing`) takes strings. Values can be any CSS: `oklch(…)`, `var(--x)`,
@@ -212,20 +212,20 @@ What to know:
   options: `createTheme({ ...brandOptions, name: 'brand-compact', space: { … } })`.
 - **Theme and scheme are independent.** A scheme-only provider inside a theme
   keeps the theme, and vice versa.
-- **Four brand colours, in order: `primary`, `secondary`, `tertiary`,
+- **Four brand colors, in order: `primary`, `secondary`, `tertiary`,
   `accent`.** Components use `primary` for interactive emphasis (solid
   buttons, links, focus, selection), and every `tone` prop takes all four.
   Set `primary` to rebrand; the focus ring follows it.
 - **Derived states follow.** Hover, active, soft and outline variants are
   computed from the tone with `color-mix()`. Change `primary`, and every
   button, link, focus ring and selected state updates, in both schemes.
-- **Content colours are derived and WCAG-safe.** Each brand colour (and
-  `negative`) has a `…Content` colour for text and icons on it
-  (`--greese-color-primary-content`). When you set the main colour,
+- **Content colors are derived and WCAG-safe.** Each brand color (and
+  `negative`) has a `…Content` color for text and icons on it
+  (`--greese-color-primary-content`). When you set the main color,
   `createTheme` picks the more readable of white and near-black, at least
   4.5:1, separately for light and dark, and mixes a `…Strong` shade from it.
-  Anything you set yourself wins. Colours it can't measure (`var()`,
-  `oklch()`) keep the default content colour, so check those. The SCSS kit's
+  Anything you set yourself wins. Colors it can't measure (`var()`,
+  `oklch()`) keep the default content color, so check those. The SCSS kit's
   `tokens()` does the same at build time.
 - **No cost per render.** `ThemeProvider` renders a `<style href precedence>`
   that React 19 hoists into `<head>` and de-duplicates, plus two attributes.
@@ -289,7 +289,7 @@ Scheme-independent tokens are simple:
 }
 ```
 
-**Colours need care.** The default dark values are declared on
+**Colors need care.** The default dark values are declared on
 `[data-greese-scheme]` elements and under `prefers-color-scheme: dark`. A plain
 `:root { --greese-color-primary: … }` would therefore apply in dark mode too,
 and be ignored inside any `<ThemeProvider scheme>`. Mirror the library's
@@ -314,7 +314,7 @@ selectors:
 }
 ```
 
-`createTheme` generates exactly this for you, so prefer it for colours.
+`createTheme` generates exactly this for you, so prefer it for colors.
 
 Also note that a `ThemeProvider` theme declares every token on its own
 element, so `:root` overrides don't reach inside one. Put the override in the
@@ -467,12 +467,12 @@ non-React code that should match.
 ## Token reference
 
 The live values, with swatches, are under **Foundations/Tokens**, and the
-colour roles and palette under **Foundations/Color**. The property name is
+color roles and palette under **Foundations/Color**. The property name is
 `--greese-<group>-<key>`, with camelCase keys in kebab case.
 
 | Group       | `createTheme` key    | Keys                                                                                                                                                                                                                                                    |
 | ----------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Colour      | `color`              | `canvas`, `surface`, `surfaceOverlay`, `fg`, `fgMuted`, `border`, `borderStrong`, `primary`, `secondary`, `tertiary`, `accent` (each with `…Strong` and `…Content`), `focusRing`, `positive`, `negative`, `negativeContent`, `warning`, `info`, `scrim` |
+| Color      | `color`              | `canvas`, `surface`, `surfaceOverlay`, `fg`, `fgMuted`, `border`, `borderStrong`, `primary`, `secondary`, `tertiary`, `accent` (each with `…Strong` and `…Content`), `focusRing`, `positive`, `negative`, `negativeContent`, `warning`, `info`, `scrim` |
 | Spacing     | `space`              | `0`–`8` (`0`, `0.25rem`, `0.5rem`, `0.75rem`, `1rem`, `1.5rem`, `2rem`, `3rem`, `4rem`)                                                                                                                                                                 |
 | Radius      | `radius`             | `none`, `sm`, `md`, `lg`, `pill`                                                                                                                                                                                                                        |
 | Font family | `font`               | `body`, `mono`                                                                                                                                                                                                                                          |
@@ -499,7 +499,7 @@ with its own hues and values rather than Material's.
 | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | Dark-mode users see a white flash on load                                 | Add `getSchemeScript()` to `<head>`, before stylesheets                                   |
 | Hydration warning about `data-greese-scheme`                              | Add `suppressHydrationWarning` to `<html>`                                                |
-| My `:root` colour override is ignored in dark mode or in a scheme section | Use `createTheme`, or mirror the scheme selectors ([plain CSS](#overriding-in-plain-css)) |
+| My `:root` color override is ignored in dark mode or in a scheme section | Use `createTheme`, or mirror the scheme selectors ([plain CSS](#overriding-in-plain-css)) |
 | My `:root` override is ignored inside a `ThemeProvider`                   | Themes declare every token; put the override in the theme                                 |
 | A nested theme lost the outer theme's overrides                           | Themes replace, not stack; spread the outer theme's options into the inner one            |
 | The page background doesn't change with the scheme                        | Import `base.css`, or set `background: var(--greese-color-canvas)` yourself               |

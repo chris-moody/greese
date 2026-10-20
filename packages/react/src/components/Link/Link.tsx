@@ -9,7 +9,7 @@ export interface LinkProps extends GreeseProps, ComponentPropsWithoutRef<'a'> {
   ref?: Ref<HTMLAnchorElement>
   /**
    * `accent` for links in text; `neutral` for links that shouldn't stand out
-   * (footers, lists); or a brand colour (primary, secondary, tertiary).
+   * (footers, lists); or a brand color (primary, secondary, tertiary).
    * @default 'primary'
    */
   tone?: BrandTone | 'neutral'
@@ -23,7 +23,7 @@ export interface LinkProps extends GreeseProps, ComponentPropsWithoutRef<'a'> {
   asChild?: boolean
 }
 
-/** An inline text link. Underlined by default: colour alone is not enough to spot a link. */
+/** An inline text link. Underlined by default: color alone is not enough to spot a link. */
 export const Link = ({
   greese,
   tone = 'primary',

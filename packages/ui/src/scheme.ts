@@ -11,7 +11,7 @@ export interface SchemeScriptOptions {
 }
 
 /**
- * A tiny inline script that applies the user's saved colour scheme before first
+ * A tiny inline script that applies the user's saved color scheme before first
  * paint, so a dark-mode user never sees a flash of light. Put it in `<head>`:
  *
  * ```tsx

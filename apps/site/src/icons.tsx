@@ -1,7 +1,7 @@
 import type { JSX, ReactNode } from 'react'
 
 // GreeseUI ships no icons, so the site draws its own: 24px line icons that
-// take the text colour, wrapped in <Icon> where they're used.
+// take the text color, wrapped in <Icon> where they're used.
 const Svg = ({ children }: { children: ReactNode }): JSX.Element => (
   <svg
     viewBox="0 0 24 24"

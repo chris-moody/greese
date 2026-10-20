@@ -16,7 +16,7 @@ You own the look of GreeseUI: its SCSS, design tokens and theming.
 
 - **Layers:** every library rule is inside `@layer greese.*`. Never
   `!important`, never unlayered library CSS.
-- **Tokens only:** no raw colours. Tints use `color-mix(in oklab, var(--greese-…) N%, transparent)`.
+- **Tokens only:** no raw colors. Tints use `color-mix(in oklab, var(--greese-…) N%, transparent)`.
   Custom properties match `--greese-kebab-case`.
 - **Logical properties and RTL:** logical properties throughout, and
   `:dir(rtl)` where direction matters.

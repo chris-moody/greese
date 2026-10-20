@@ -42,13 +42,13 @@ const NO_TEXT = new Set<ColorRole>(['border', 'borderStrong', 'scrim'])
 /** WCAG's minimum: 4.5:1 for text, 3:1 for a focus indicator (a UI component). */
 const minimumFor = (role: ColorRole) => (role === 'focusRing' ? 3 : AA)
 
-/** Roles drawn on, and so given a content colour the chip previews. */
+/** Roles drawn on, and so given a content color the chip previews. */
 const hasContent = (role: ColorRole): boolean => `${role}Content` in color
 
 interface PanelProps {
   spec: ThemeSpec
   onChange: (spec: ThemeSpec) => void
-  /** Each colour as the preview renders it (`#rrggbb[aa]`), once it has reported. */
+  /** Each color as the preview renders it (`#rrggbb[aa]`), once it has reported. */
   rendered?: RenderedColors
 }
 
@@ -79,7 +79,7 @@ export const over = (top: string, bottom: string): string => {
 
 /**
  * Before the preview reports, an estimate from the theme's values: palette
- * names and hex resolve; the content colour the kit derives is predicted.
+ * names and hex resolve; the content color the kit derives is predicted.
  */
 const estimate = (
   spec: ThemeSpec,
@@ -126,7 +126,7 @@ const grade = (ratio: number, min: number) =>
         ? 'AA'
         : 'Low'
 
-/** One role as a chip: light and dark halves, "Aa" in the ink, each full colour code. */
+/** One role as a chip: light and dark halves, "Aa" in the ink, each full color code. */
 const Chip = ({
   spec,
   rendered,
@@ -183,8 +183,8 @@ const Chip = ({
 }
 
 /**
- * The colour editor: a grid of chips, and under it the fields for the one
- * you open. For a brand colour that includes its strong and content colours,
+ * The color editor: a grid of chips, and under it the fields for the one
+ * you open. For a brand color that includes its strong and content colors,
  * which stay automatic until you set them. Chips and swatches show what the
  * preview renders, measured there, so they always match it.
  */
@@ -202,7 +202,7 @@ export const ColorsSection = ({ spec, onChange, rendered }: PanelProps): JSX.Ele
       onChange={(v) => onChange(setIn(spec, pathOf(role), v))}
     />
   )
-  /** What the kit derives from a brand colour the theme set, per scheme, as placeholders. */
+  /** What the kit derives from a brand color the theme set, per scheme, as placeholders. */
   const derived = (
     role: ColorRole,
     make: (hex: string, scheme: Scheme) => string | undefined
@@ -223,14 +223,14 @@ export const ColorsSection = ({ spec, onChange, rendered }: PanelProps): JSX.Ele
     <Stack gap={4}>
       <Stack gap={1}>
         <Heading level={3} size="md">
-          Colours
+          Colors
         </Heading>
         <Text size="sm" tone="muted">
-          Each chip shows the colour as the preview renders it, light and dark, with its
+          Each chip shows the color as the preview renders it, light and dark, with its
           full code (eight digits when it has transparency, shown over a checkerboard) and
-          text in its content colour. The badge is the weaker contrast of the two. Set a
-          brand colour and its content and strong colours follow, readable (WCAG AA) in
-          both schemes.
+          text in its content color. The badge is the weaker contrast of the two. Set a
+          brand color and its content and strong colors follow, readable (WCAG AA) in both
+          schemes.
         </Text>
       </Stack>
       {GROUPS.map(([title, roles]) => (

@@ -1,7 +1,7 @@
 /**
- * What the kit derives for a brand colour, as hex, so the studio can show it:
- * the content colour (as `contentColor()`), and the strong shade the browser
- * computes from `color-mix(in oklab, <colour> 80%, #000)` in light and
+ * What the kit derives for a brand color, as hex, so the studio can show it:
+ * the content color (as `contentColor()`), and the strong shade the browser
+ * computes from `color-mix(in oklab, <color> 80%, #000)` in light and
  * `… 70%, #fff` in dark.
  */
 import { contentColor } from '@greese/ui'
@@ -44,7 +44,7 @@ const oklabToHex = ([L, A, B]: Lab): string => {
     .join('')}`
 }
 
-/** `color-mix(in oklab, a p%, b)` for two `#rrggbb` colours. */
+/** `color-mix(in oklab, a p%, b)` for two `#rrggbb` colors. */
 export const mixOklab = (a: string, b: string, p: number): string => {
   const x = hexToOklab(a)
   const y = hexToOklab(b)

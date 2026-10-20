@@ -43,7 +43,7 @@ Many were already covered under other names:
 | `Countdown`                                                           | `role="timer"`                     | Ticks against an end time, so it doesn't drift; its label is the spoken duration, so it isn't announced every second |
 | `ChatBubble`                                                          | —                                  | Put messages in a `role="log"` so new ones are announced                                                             |
 | `List` + `ListItem`                                                   | `<ul>`                             | `start`, `title`, `description`, `end` slots                                                                         |
-| `Stat` + `StatGroup`                                                  | `<dl>`                             | The trend's direction must be in the text, not only the colour                                                       |
+| `Stat` + `StatGroup`                                                  | `<dl>`                             | The trend's direction must be in the text, not only the color                                                       |
 | `Status`                                                              | —                                  | Decorative unless it has a `label` (then `role="img"`)                                                               |
 | `Indicator`                                                           | —                                  | Logical placements, centred on the corner                                                                            |
 | `Key`                                                                 | `<kbd>`                            | Nested for shortcuts                                                                                                 |
@@ -226,7 +226,7 @@ That only matters if an app imports both by name in one file, and an alias
   shape, 0.75 of one looks nearly full.
 
 **ChatBubble has a tail.** A wedge at the lower corner on the author's side,
-in the bubble's colour, mirrored for right-to-left text. The corner it joins
+in the bubble's color, mirrored for right-to-left text. The corner it joins
 is square. Bubbles reserve room for it (a wider gap beside an avatar,
 padding without one), so it's never cut off at a container's edge.
 

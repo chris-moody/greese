@@ -1,7 +1,7 @@
 {
   "name": "@greese/icons",
   "version": "0.0.0",
-  "description": "A small set of line icons as React components, sized to text and coloured by currentColor. Optional: GreeseUI takes any icons.",
+  "description": "A small set of line icons as React components, sized to text and colored by currentColor. Optional: GreeseUI takes any icons.",
   "keywords": [
     "icons",
     "react",

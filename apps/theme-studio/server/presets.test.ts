@@ -4,7 +4,7 @@ import { over } from '../src/panels/ColorsSection.tsx'
 import { applyPreset, PRESETS, randomPreset } from '../src/presets.ts'
 import { compileSpec } from './studio.ts'
 
-describe('derived colours, as the studio shows them', () => {
+describe('derived colors, as the studio shows them', () => {
   it('mixes in OKLab like the browser', () => {
     expect(mixOklab('#2563eb', '#2563eb', 0.5)).toBe('#2563eb')
     expect(mixOklab('#ffffff', '#000000', 1)).toBe('#ffffff')
@@ -20,7 +20,7 @@ describe('derived colours, as the studio shows them', () => {
   })
 })
 
-describe('contrast of translucent colours', () => {
+describe('contrast of translucent colors', () => {
   it('composites alpha over what is behind, as the eye sees it', () => {
     expect(over('#00000080', '#ffffff')).toBe('#7f7f7f')
     expect(over('#ff000000', '#123456')).toBe('#123456')
@@ -47,7 +47,7 @@ describe('presets', () => {
     expect(new Set(hues).size).toBe(4)
   })
 
-  it('replaces colours and radii, and keeps components and motion', () => {
+  it('replaces colors and radii, and keeps components and motion', () => {
     const spec = {
       tokens: {
         color: { canvas: '#000' },
@@ -64,7 +64,7 @@ describe('presets', () => {
     expect(next.tokens!.space).toEqual({ 4: '1.1rem' })
     expect(next.components).toEqual(spec.components)
     expect(next.motionDefaults).toEqual(spec.motionDefaults)
-    // Default clears the colours it doesn't set.
+    // Default clears the colors it doesn't set.
     expect(applyPreset(next, PRESETS[0]!).tokens!.color).toEqual({})
   })
 })

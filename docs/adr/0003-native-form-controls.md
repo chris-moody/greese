@@ -30,7 +30,7 @@ aims to ship little JavaScript.
 Checkboxes, radios and switches use `appearance: none`, and the box or track is
 drawn on the **input itself**, so focus, the focus ring, clicks and
 `:checked`/`:indeterminate` are all native. The check and dash marks are a
-sibling SVG coloured with `currentColor`, so they follow the theme. We don't
+sibling SVG colored with `currentColor`, so they follow the theme. We don't
 use the pseudo-element approach because Firefox doesn't render pseudo-elements
 on inputs.
 
@@ -84,7 +84,7 @@ submits a form by accident.
 A button's tone sets `--greese-button-tone` and `--greese-button-on-tone` on the
 component. These are overridable per instance, and declared on the component
 as ADR 0002 requires. Variants derive their hover, active and soft
-backgrounds with `color-mix()`, mixing toward the on-tone colour or into
+backgrounds with `color-mix()`, mixing toward the on-tone color or into
 transparency. That works in light and dark without a token per state. Only
 one new token was needed: `onNegative`.
 

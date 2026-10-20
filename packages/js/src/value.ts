@@ -117,7 +117,7 @@ export const mixText = (from: Value, to: Value): Mixer => {
  * - different units, per number: `16px` → `2rem`, `0px` → `50%`,
  *   `100px` → `50vw`, `200ms` → `1s`, blended with `calc()` so the browser
  *   converts them exactly where the value is used (no measuring);
- * - colours, mixed in OKLab;
+ * - colors, mixed in OKLab;
  * - anything else switches halfway, except that `none`/`hidden` give way to
  *   the shown value for the whole tween (as CSS does for `display`).
  */

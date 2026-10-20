@@ -16,19 +16,19 @@
     "color-no-hex": [
       true,
       {
-        "message": "Use a --greese-color-* token, not a raw colour"
+        "message": "Use a --greese-color-* token, not a raw color"
       }
     ],
     "color-named": [
       "never",
       {
-        "message": "Use a --greese-color-* token, not a raw colour"
+        "message": "Use a --greese-color-* token, not a raw color"
       }
     ],
     "function-disallowed-list": [
       ["rgb", "rgba", "hsl", "hsla", "hwb", "lab", "lch", "oklab", "oklch", "color"],
       {
-        "message": "Use a --greese-color-* token, not a raw colour"
+        "message": "Use a --greese-color-* token, not a raw color"
       }
     ],
     "property-no-vendor-prefix": [

@@ -38,7 +38,7 @@ export interface RadioProps
   label?: ReactNode
   /** A muted line under the label, announced with it. */
   description?: ReactNode
-  /** Marks it invalid and colours it as an error. The group's `error` sets it too. */
+  /** Marks it invalid and colors it as an error. The group's `error` sets it too. */
   invalid?: boolean
 }
 

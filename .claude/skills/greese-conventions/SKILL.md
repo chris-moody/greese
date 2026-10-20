@@ -21,7 +21,7 @@ the ADR wins: fix this file in the same change.
 | ADR                                 | Governs                                                                |
 | ----------------------------------- | ---------------------------------------------------------------------- |
 | 0001 styling model                  | SCSS + CSS variables, cascade layers, responsive props, class naming   |
-| 0002 colour scheme and theming      | tokens, `data-greese-scheme`, `createTheme`, ThemeProvider             |
+| 0002 color scheme and theming       | tokens, `data-greese-scheme`, `createTheme`, ThemeProvider             |
 | 0003 native form controls           | native inputs, Field wiring, `onValueChange`                           |
 | 0004 content and disclosure         | `<details>`, media, text components                                    |
 | 0005 overlays and positioning       | `<dialog>`, Popover API, anchor positioning, focus return              |
@@ -128,7 +128,7 @@ See the `greese-styles` skill for detail. In short:
   overrides that must beat component `display`;
 - classes are `greese-<Name>`, `greese-<Name>-<part>` and
   `greese-<Name>--<modifier>`;
-- values come from tokens (`var(--greese-…)`), with no raw colours;
+- values come from tokens (`var(--greese-…)`), with no raw colors;
 - use logical properties;
 - per-instance variables are named `--greese-<name>-<thing>`;
 - stylelint enforces most of this;

@@ -17,7 +17,7 @@ import {
   type TokenPair,
 } from './tokens.ts'
 
-/** A colour override: one value for both schemes, or a light/dark pair. */
+/** A color override: one value for both schemes, or a light/dark pair. */
 export type ColorValue = string | TokenPair
 
 export type ThemeOptions = {
@@ -52,18 +52,18 @@ const check = (property: string, value: string): string => {
   return value
 }
 
-/** Colours whose `Content` (and, where it exists, `Strong`) follow them. */
+/** Colors whose `Content` (and, where it exists, `Strong`) follow them. */
 const DERIVED = ['primary', 'secondary', 'tertiary', 'accent', 'negative'] as const
 
 const toPair = (value: ColorValue): TokenPair =>
   typeof value === 'string' ? { light: value, dark: value } : value
 
 /**
- * Fills in what follows a brand colour the theme set: its `Content` colour,
+ * Fills in what follows a brand color the theme set: its `Content` color,
  * the more readable of white and near-black (WCAG AA), measured per scheme,
- * and its `Strong` shade, mixed by the browser from the colour itself
+ * and its `Strong` shade, mixed by the browser from the color itself
  * (darker in light, lighter in dark). Anything the theme sets wins, and a
- * colour that can't be measured (not a hex) keeps the default content.
+ * color that can't be measured (not a hex) keeps the default content.
  */
 export const deriveColors = (
   overrides: Partial<Record<ColorRole, ColorValue>>
@@ -95,8 +95,8 @@ export const deriveColors = (
 
 /**
  * Builds a theme: the default tokens with your overrides applied. Setting a
- * brand colour (`primary`, `secondary`, `tertiary`, `accent`, `negative`)
- * also sets its `Content` and `Strong` colours unless you set them: see
+ * brand color (`primary`, `secondary`, `tertiary`, `accent`, `negative`)
+ * also sets its `Content` and `Strong` colors unless you set them: see
  * {@link deriveColors}.
  *
  * ```ts

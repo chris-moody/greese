@@ -27,13 +27,13 @@ export const Playground: Story = {}
 
 export const WithOpacity: Story = { args: { alpha: true, defaultValue: '#8b5cf6b3' } }
 
-/** A compact colour field: a swatch button opening the picker in a Popover. */
+/** A compact color field: a swatch button opening the picker in a Popover. */
 export const InPopover: Story = {
   render: function Render() {
     const [color, setColor] = useState('#e11d48')
     return (
       <Popover
-        label="Accent colour"
+        label="Accent color"
         trigger={
           <Button variant="outline" tone="neutral">
             <span

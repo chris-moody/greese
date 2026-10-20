@@ -139,7 +139,7 @@ code.studio-row-label {
   border: 0;
 }
 
-/* Behind colours that may be translucent, so their alpha shows. */
+/* Behind colors that may be translucent, so their alpha shows. */
 .studio-checker {
   background-color: var(--greese-color-canvas);
   background-image: conic-gradient(
@@ -168,7 +168,7 @@ code.studio-row-label {
   font-size: var(--greese-font-size-sm);
 }
 
-/* A preset's brand colours, in the theme menu. */
+/* A preset's brand colors, in the theme menu. */
 .studio-theme-dots {
   display: flex;
   gap: 3px;
@@ -180,7 +180,7 @@ code.studio-row-label {
   border-radius: 50%;
 }
 
-/* Colour chips: light and dark halves with "Aa" in the content colour. */
+/* Color chips: light and dark halves with "Aa" in the content color. */
 .studio-chips-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));

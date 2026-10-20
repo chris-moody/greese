@@ -18,7 +18,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
   fullyParallel: true,
-  // threshold is the per-pixel colour tolerance (0–1). Playwright's default
+  // threshold is the per-pixel color tolerance (0–1). Playwright's default
   // (0.2) treats pale tints as unchanged: a badge background stretching
   // across a card passed. Rendering here is deterministic, so be strict.
   expect: {

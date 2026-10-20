@@ -15,7 +15,7 @@ import { PaletteTables } from './PaletteTables.tsx'
 
 const kebab = (s: string) => s.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 
-/** The roles, grouped as the Color page explains them, brand colours in order. */
+/** The roles, grouped as the Color page explains them, brand colors in order. */
 const GROUPS: Array<[title: string, roles: ColorRole[]]> = [
   [
     'Brand',
@@ -51,14 +51,14 @@ const GROUPS: Array<[title: string, roles: ColorRole[]]> = [
   ['Status', ['positive', 'negative', 'negativeContent', 'warning', 'info']],
 ]
 
-/** A `…Content` role's colour: `primaryContent` sits on `primary`. */
+/** A `…Content` role's color: `primaryContent` sits on `primary`. */
 const contentOf = (role: ColorRole): ColorRole | undefined =>
   role.endsWith('Content') ? (role.slice(0, -'Content'.length) as ColorRole) : undefined
 
 /**
- * One scheme's colour: a square swatch, resolved inside that scheme so roles
+ * One scheme's color: a square swatch, resolved inside that scheme so roles
  * that point at others (`focusRing`) show what they resolve to, with the
- * token's value under it, and, for content colours, their WCAG contrast.
+ * token's value under it, and, for content colors, their WCAG contrast.
  */
 const Swatch = ({ role, scheme }: { role: ColorRole; scheme: 'light' | 'dark' }) => {
   const on = contentOf(role)
@@ -87,7 +87,7 @@ const RoleTable = ({
   title: string
   roles: ColorRole[]
 }): JSX.Element => (
-  <Table caption={`${title} colours`} stackBelow="sm">
+  <Table caption={`${title} colors`} stackBelow="sm">
     <TableHead>
       <TableRow>
         <TableHeaderCell>Var</TableHeaderCell>
@@ -135,7 +135,7 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** Every colour role, a table per group: its variable, then its light and dark colours. */
+/** Every color role, a table per group: its variable, then its light and dark colors. */
 export const RoleTokens: Story = {
   name: 'Roles',
   render: () => <Roles />,

@@ -76,7 +76,7 @@ describe('compileSpec', () => {
     expect(result.css).toContain('animation: greese-fade-up')
   })
 
-  it('compiles palette names to their colours', () => {
+  it('compiles palette names to their colors', () => {
     const result = compileSpec({
       tokens: { color: { primary: { light: 'lavender-600', dark: 'lavender-300' } } },
       components: { Badge: { vars: { tone: 'ruby-500' } } },

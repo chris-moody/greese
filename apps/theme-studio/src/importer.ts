@@ -436,8 +436,8 @@ const camel = (kebab: string) =>
   kebab.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase())
 
 /**
- * Leaves out content and strong colours that are exactly what the kit and
- * `createTheme` derive from the brand colour beside them, so a theme that
+ * Leaves out content and strong colors that are exactly what the kit and
+ * `createTheme` derive from the brand color beside them, so a theme that
  * only set `primary` imports as just `primary`.
  */
 const dropDerived = (colors: Record<string, SchemeValue>): void => {

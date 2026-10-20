@@ -1,12 +1,12 @@
 /**
- * What the preview actually renders for every colour role, in both schemes,
+ * What the preview actually renders for every color role, in both schemes,
  * so the editor shows the truth rather than its own guess: `color-mix()`,
  * `rgb()`, `oklch()`, alpha and `var()` references all resolve here, as the
  * browser resolves them for the components.
  */
 import { color } from '@greese/ui'
 
-/** `#rrggbb`, or `#rrggbbaa` when the colour isn't opaque. */
+/** `#rrggbb`, or `#rrggbbaa` when the color isn't opaque. */
 export type Measured = Record<string, string>
 
 const kebab = (value: string): string =>
@@ -14,7 +14,7 @@ const kebab = (value: string): string =>
 
 const hex2 = (n: number) => n.toString(16).padStart(2, '0')
 
-/** Any computed CSS colour as hex, through a canvas: one pixel, read back. */
+/** Any computed CSS color as hex, through a canvas: one pixel, read back. */
 export const toHex = (css: string, ctx: CanvasRenderingContext2D): string => {
   ctx.clearRect(0, 0, 1, 1)
   ctx.fillStyle = '#000'
@@ -26,9 +26,9 @@ export const toHex = (css: string, ctx: CanvasRenderingContext2D): string => {
 }
 
 /**
- * Every colour role as the preview renders it, inside the theme being edited
+ * Every color role as the preview renders it, inside the theme being edited
  * (`data-greese-theme`, when it has a name) and each scheme. A probe per
- * role takes the role as its text colour; its computed colour is the answer.
+ * role takes the role as its text color; its computed color is the answer.
  */
 export const measureColors = (
   doc: Document,

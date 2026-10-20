@@ -24,7 +24,7 @@ export const Selectable: Story = {
 }
 
 /**
- * `tone` tints a plain chip, and colours a selectable one when it's selected.
+ * `tone` tints a plain chip, and colors a selectable one when it's selected.
  * Without a tone, chips are plain and select to primary.
  */
 export const Tones: Story = {

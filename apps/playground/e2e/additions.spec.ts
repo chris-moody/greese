@@ -86,7 +86,7 @@ test('ColorPicker: drag or tap the area, keyboard, and swatches', async ({
 
   await page.getByRole('button', { name: '#00ff00' }).click()
   await expect(page.getByTestId('color')).toHaveText('#00ff00')
-  await expect(page.getByLabel('Hex colour')).toHaveValue('00ff00')
+  await expect(page.getByLabel('Hex color')).toHaveValue('00ff00')
 })
 
 test('ActionSelect: button and select joined into one control', async ({ page }) => {

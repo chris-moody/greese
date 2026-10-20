@@ -137,7 +137,7 @@ once, so the order holds whichever stylesheet loads first.
 ### Tokens
 
 `tokens()` is the build-time `createTheme`. Groups and keys are kebab-case (or
-camelCase); a colour takes one value or a light/dark pair:
+camelCase); a color takes one value or a light/dark pair:
 
 ```scss
 @include greese.tokens(
@@ -212,7 +212,7 @@ overrides still collapse under reduced motion.
 Call the mixins at the top level of a stylesheet (or inside `theme()`), not
 inside your own selectors.
 
-`light-dark()` follows the nearest colour scheme natively. If your build
+`light-dark()` follows the nearest color scheme natively. If your build
 targets browsers without it, Lightning CSS and others polyfill it in a way
 that breaks nested schemes (ADR 0002); use a token there instead.
 
@@ -356,7 +356,7 @@ overrides in a stylesheet of your own beside them.
 
 In the studio:
 
-- **Tokens:** every token, with light and dark colours. Name the theme to
+- **Tokens:** every token, with light and dark colors. Name the theme to
   scope it to `data-greese-theme`.
 - **Component preview:** above the gallery, the component you've picked,
   shown through every story from its docs page, live as you edit it.

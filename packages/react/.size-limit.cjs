@@ -24,7 +24,7 @@ module.exports = [
     // 22 → 25.5 kB (2026-10-19): 19 components from ADR 0011 (ScrollCarousel,
     // Rating, OtpField…), about 210 B each. Tree-shaking keeps them out of
     // apps that don't import them; per-component budgets are below.
-    // 25.5 → 26 kB (2026-10-19): createTheme's derived content colours
+    // 25.5 → 26 kB (2026-10-19): createTheme's derived content colors
     // (contrast maths, about 0.4 kB), as on the ThemeProvider entry.
     limit: '26 kB',
     modifyRolldownConfig: external,
@@ -35,7 +35,7 @@ module.exports = [
     import: '*',
     ignore: ['react', 'react-dom'],
     // 26 → 30.5 kB (2026-10-19): the ADR 0011 components, as above;
-    // 30.5 → 31 kB the same day for createTheme's derived content colours.
+    // 30.5 → 31 kB the same day for createTheme's derived content colors.
     limit: '31 kB',
     modifyRolldownConfig: external,
   },
@@ -140,8 +140,8 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ ThemeProvider, createTheme }',
     ignore: ['react', 'react-dom'],
-    // 2.25 → 2.75 kB (2026-10-19): createTheme derives each brand colour's
-    // WCAG-safe content colour and strong shade (contrast maths, about
+    // 2.25 → 2.75 kB (2026-10-19): createTheme derives each brand color's
+    // WCAG-safe content color and strong shade (contrast maths, about
     // 0.4 kB), so setting `primary` alone gives a readable theme (ADR 0002).
     limit: '2.75 kB',
     modifyRolldownConfig: external,

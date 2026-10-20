@@ -4,7 +4,7 @@ import { Box, type BoxProps } from '../Box/Box.tsx'
 
 export interface TileProps extends BoxProps {
   /**
-   * `filled` (a surface colour with a hairline), `outline` (a border only) or
+   * `filled` (a surface color with a hairline), `outline` (a border only) or
    * `dashed` (a dashed border, for empty slots and drop zones).
    * @default 'filled'
    */

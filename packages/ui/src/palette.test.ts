@@ -11,7 +11,7 @@ import {
 import { color } from './tokens.ts'
 
 describe('palette', () => {
-  it('has every shade of every hue, as a hex colour', () => {
+  it('has every shade of every hue, as a hex color', () => {
     for (const shades of Object.values(palette)) {
       expect(Object.keys(shades).map(Number)).toEqual([...paletteShades])
       for (const value of Object.values(shades)) expect(value).toMatch(/^#[0-9a-f]{6}$/)
@@ -23,7 +23,7 @@ describe('palette', () => {
     expect(lavender[600]).toBe('#7e5bd0')
   })
 
-  it('matches the palette names in the colour roles’ comments', () => {
+  it('matches the palette names in the color roles’ comments', () => {
     const source = readFileSync(join(process.cwd(), 'src/tokens.ts'), 'utf8')
     const lines = source.split('\n').filter((line) => /^\s+\w+: \{ light: '#/.test(line))
     let checked = 0

@@ -21,7 +21,7 @@ export interface SliderProps
   /** Called with the new value as it moves. */
   onValueChange?: (value: number) => void
   /**
-   * Marks it invalid and colours it as an error. A surrounding Field's `error`
+   * Marks it invalid and colors it as an error. A surrounding Field's `error`
    * sets it too.
    */
   invalid?: boolean

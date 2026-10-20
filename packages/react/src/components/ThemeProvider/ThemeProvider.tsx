@@ -37,7 +37,7 @@ export interface ThemeProviderProps extends ComponentPropsWithoutRef<'div'> {
 }
 
 /**
- * Scopes a theme and/or colour scheme to its subtree.
+ * Scopes a theme and/or color scheme to its subtree.
  *
  * Costs nothing per render: the theme's CSS is static (built once by
  * `createTheme`) and React hoists and de-duplicates it into `<head>`; the

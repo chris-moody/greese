@@ -28,7 +28,7 @@ export interface TextProps extends ComponentPropsWithoutRef<'p'>, GreeseProps {
   /** Font weight: regular, medium, semibold or bold. */
   weight?: FontWeight
   /**
-   * Text colour: neutral, muted, accent, a brand colour (primary, secondary,
+   * Text color: neutral, muted, accent, a brand color (primary, secondary,
    * tertiary), positive, negative, warning or info.
    * @default 'neutral'
    */

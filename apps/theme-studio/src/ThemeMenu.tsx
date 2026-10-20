@@ -11,7 +11,7 @@ const BRAND = ['primary', 'secondary', 'tertiary', 'accent'] as const
 const dot = (value: SchemeValue | undefined, fallback: string) =>
   resolveColor(typeof value === 'object' ? value.light : (value ?? fallback)) ?? fallback
 
-/** Which preset the theme's colours and radii are, if any. */
+/** Which preset the theme's colors and radii are, if any. */
 const matching = (spec: ThemeSpec): Preset | undefined =>
   PRESETS.find(
     (p) =>
@@ -33,7 +33,7 @@ const Dots = ({ preset }: { preset: Preset }) => (
 )
 
 /**
- * The starting themes, in a header menu: each replaces the theme's colours
+ * The starting themes, in a header menu: each replaces the theme's colors
  * and radii and keeps component and motion edits. Random picks four
  * different hues.
  */

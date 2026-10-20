@@ -9,7 +9,7 @@ export type StatusTone =
 export interface StatusProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'span'>, 'children'> {
   /**
-   * The dot's colour: neutral, accent, a brand colour (primary, secondary,
+   * The dot's color: neutral, accent, a brand color (primary, secondary,
    * tertiary), positive, negative, warning or info.
    * @default 'neutral'
    */
@@ -26,7 +26,7 @@ export interface StatusProps
 }
 
 /**
- * A small dot showing a state: online, error, building. Colour alone isn't
+ * A small dot showing a state: online, error, building. Color alone isn't
  * enough, so give it a `label` or put the state in text beside it.
  *
  * ```tsx

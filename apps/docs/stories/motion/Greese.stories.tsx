@@ -55,7 +55,7 @@ export const Sequence: Story = {
   ),
 }
 
-/** Keyframes with offsets and per-frame eases; colours mix in OKLab. */
+/** Keyframes with offsets and per-frame eases; colors mix in OKLab. */
 export const Keyframes: Story = {
   render: () => (
     <Player
@@ -147,7 +147,7 @@ export const Text_: Story = {
 
 /**
  * Tokens drive components, so animating a token restyles everything that
- * reads it: here the primary colour, which the badge and card border follow.
+ * reads it: here the primary color, which the badge and card border follow.
  */
 export const AnimatingTokens: Story = {
   render: () => (
@@ -170,7 +170,7 @@ export const AnimatingTokens: Story = {
             <Badge tone="primary" variant="solid">
               New
             </Badge>
-            <Text>The primary colour and radius are animating.</Text>
+            <Text>The primary color and radius are animating.</Text>
           </Stack>
         </Card>
       </div>

@@ -1,9 +1,9 @@
 /**
- * Starting points for a theme: the brand colours (and a radius scale) as
- * palette names, which the kit compiles to their colours. Applying one
- * replaces the theme's colours and radii and keeps everything else
- * (components, motion, other tokens). Content and strong colours are left
- * out on purpose: the kit derives readable ones (WCAG AA) from each colour.
+ * Starting points for a theme: the brand colors (and a radius scale) as
+ * palette names, which the kit compiles to their colors. Applying one
+ * replaces the theme's colors and radii and keeps everything else
+ * (components, motion, other tokens). Content and strong colors are left
+ * out on purpose: the kit derives readable ones (WCAG AA) from each color.
  */
 import { setIn } from './edit.ts'
 import type { SchemeValue, ThemeSpec } from './spec.ts'
@@ -89,7 +89,7 @@ export const PRESETS: Preset[] = [
   },
 ]
 
-/** Hues with enough colour to carry a brand. */
+/** Hues with enough color to carry a brand. */
 const HUES = [
   'red',
   'orange',
@@ -134,7 +134,7 @@ export const randomPreset = (random: () => number = Math.random): Preset => {
   }
 }
 
-/** A preset's colours and radii, replacing the theme's; everything else stays. */
+/** A preset's colors and radii, replacing the theme's; everything else stays. */
 export const applyPreset = (spec: ThemeSpec, preset: Preset): ThemeSpec => {
   const withColor = setIn(spec, ['tokens', 'color'], structuredClone(preset.color))
   return setIn(withColor, ['tokens', 'radius'], preset.radius && { ...preset.radius })

@@ -17,7 +17,7 @@ from, uses two systems:
   per-layer keyframes on named numeric channels, tweens between adjacent keys,
   and `sampleTweenedRecord(timeline, frame)` returning every channel's value
   at any frame. Spans nest one timeline inside another through clamp, scale
-  and loop. Colours mix in OKLCH. A single rAF clock drives the playhead.
+  and loop. Colors mix in OKLCH. A single rAF clock drives the playhead.
 
 The Pixels model is the useful intersection. Because sampling is a pure
 function of time, seeking, reversing, time scaling and nesting are all just
@@ -84,7 +84,7 @@ long-running decorative loops.
     the right context. There's no measuring or reflow, and it's exact at
     both ends. (Added after the animating-tokens demo snapped from `16px`
     to `2rem` halfway.)
-  - colours mix in OKLab (Pixels uses OKLCH; OKLab is cheaper and has no hue
+  - colors mix in OKLab (Pixels uses OKLCH; OKLab is cheaper and has no hue
     wrap-around);
   - anything else switches at the midpoint, except `none`/`hidden`, which
     yield to the shown value as CSS does for `display`.
@@ -132,7 +132,7 @@ readers read words, not letters.
     addendum below);
   - `animate`: 5 kB, with a 5.25 kB budget;
   - `ease` alone: 0.85 kB.
-  - The timeline core is about 2.5 kB, value mixing (colours, units, text)
+  - The timeline core is about 2.5 kB, value mixing (colors, units, text)
     1.3 kB, easing 0.9 kB and targets 0.9 kB.
 - **GreeseUI's whole-library budget** is split in two: components only
   (20 kB, greese.js excluded) and with greese.js (26 kB). The cost stays
@@ -142,7 +142,7 @@ readers read words, not letters.
     stagger, from-tweens, repeat/yoyo, nesting, kill, the real-clock ticker
     under fake timers, reduced motion, element writes and `splitText`.
   - The e2e suite (`e2e/motion.spec.ts`) checks computed-style reads,
-    transform, colour and token writes, a component following an animated
+    transform, color and token writes, a component following an animated
     token, playback with reverse and time scale, and `splitText`
     accessibility in Chromium, Firefox, WebKit, Pixel 7 and iPhone.
   - Package verification proves greese.js imports and runs in Node without a

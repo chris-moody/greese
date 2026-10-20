@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 
-/** greese.js in real engines: computed-style reads, transforms, colours, playback. */
+/** greese.js in real engines: computed-style reads, transforms, colors, playback. */
 test.beforeEach(async ({ page }) => {
   await page.goto('/?page=motion')
   await page.waitForFunction(() => window.motion !== undefined)
@@ -12,7 +12,7 @@ const styleOf = (page: Page, id: string, ...props: string[]) =>
     return Object.fromEntries(names.map((n) => [n, s.getPropertyValue(n).trim()]))
   }, props)
 
-test('seeks: reads computed starting values and writes transforms, colours and variables', async ({
+test('seeks: reads computed starting values and writes transforms, colors and variables', async ({
   page,
 }) => {
   await page.evaluate(() => {
@@ -36,7 +36,7 @@ test('seeks: reads computed starting values and writes transforms, colours and v
   expect(end['background-color']).toBe('rgb(0, 0, 255)')
   expect(end['--greese-color-primary']).toMatch(/^rgb\(0 255 0 \/ 1\)$/)
   // Components read the animated token: the button's tone follows it (after
-  // the button's own colour transition).
+  // the button's own color transition).
   const button = page.getByRole('button', { name: 'Primary' })
   await expect
     .poll(() => button.evaluate((el) => getComputedStyle(el).backgroundColor))

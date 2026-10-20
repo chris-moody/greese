@@ -15,7 +15,7 @@ export interface DateFieldProps extends GreeseProps, Omit<TextFieldProps, 'type'
  * A labelled native date or time input: the platform's own picker (wheels on
  * iOS, a calendar on Android and desktop), keyboard entry, locale-aware
  * display, and an ISO value (`2026-10-18`) in forms. `min`, `max` and `step`
- * work natively. The picker follows the colour scheme.
+ * work natively. The picker follows the color scheme.
  *
  * ```tsx
  * <DateField label="Start date" name="start" min="2026-01-01" required />

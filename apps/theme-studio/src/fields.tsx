@@ -9,13 +9,13 @@ const HEX = /^#([0-9a-f]{3}){1,2}$/i
 const expand = (hex: string) =>
   hex.length === 4 ? `#${[...hex.slice(1)].map((c) => c + c).join('')}` : hex
 
-/** Every palette name, `lavender-600`, which the kit compiles to its colour. */
+/** Every palette name, `lavender-600`, which the kit compiles to its color. */
 const PALETTE_NAMES = Object.entries(palette).flatMap(([hue, shades]) =>
   Object.keys(shades).map((shade) => `${hue}-${shade}`)
 )
 
 /**
- * The hex a value shows as: itself, a palette name's colour, or a colour
+ * The hex a value shows as: itself, a palette name's color, or a color
  * role's default in `scheme` (`var(--greese-color-primary)`). Undefined for
  * what can't be resolved here (`color-mix()`, `oklch()`).
  */
@@ -35,7 +35,7 @@ export const resolveColor = (
   return undefined
 }
 
-/** Suggestions for every colour field: the palette's names. Render once. */
+/** Suggestions for every color field: the palette's names. Render once. */
 export const PaletteOptions = (): JSX.Element => (
   <datalist id="studio-palette">
     {PALETTE_NAMES.map((name) => (
@@ -45,8 +45,8 @@ export const PaletteOptions = (): JSX.Element => (
 )
 
 /**
- * A colour swatch plus free text, so palette names (`lavender-600`), `rgb()`,
- * `var()` and `color-mix()` work too. The swatch shows `rendered`, the colour
+ * A color swatch plus free text, so palette names (`lavender-600`), `rgb()`,
+ * `var()` and `color-mix()` work too. The swatch shows `rendered`, the color
  * as the preview draws it (alpha over a checkerboard), when it's known; the
  * picker behind it sets a hex.
  */
@@ -61,7 +61,7 @@ export const ColorInput = ({
   label: string
   value: string
   placeholder: string
-  /** The colour as the preview renders it: `#rrggbb[aa]`. */
+  /** The color as the preview renders it: `#rrggbb[aa]`. */
   rendered?: string
   scheme?: 'light' | 'dark'
   onChange: (value: string) => void
@@ -106,7 +106,7 @@ export const SchemeInput = ({
   value: SchemeValue | undefined
   fallback: { light: string; dark: string } | string
   color?: boolean
-  /** Each scheme's colour as the preview renders it, for the swatches. */
+  /** Each scheme's color as the preview renders it, for the swatches. */
   rendered?: { light: string; dark: string }
   onChange: (value: SchemeValue | undefined) => void
 }): JSX.Element => {
@@ -138,7 +138,7 @@ export const SchemeInput = ({
       />
     )
   return (
-    // Colours stack: the label above, light and dark each wide enough for a
+    // Colors stack: the label above, light and dark each wide enough for a
     // full value (`color-mix(…)`, `#rrggbbaa`).
     <div className={color ? 'studio-row studio-row--stack' : 'studio-row'}>
       <Text size="sm" className="studio-row-label">

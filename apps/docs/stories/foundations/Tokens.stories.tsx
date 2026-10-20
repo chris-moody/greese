@@ -24,10 +24,10 @@ const Section = ({ title, children }: { title: string; children: ReactNode }) =>
 const meta = { title: 'Foundations/Tokens' } satisfies Meta
 export default meta
 
-/** Semantic colour roles. Switch the toolbar scheme to see the dark values. */
+/** Semantic color roles. Switch the toolbar scheme to see the dark values. */
 export const Colors: StoryObj = {
   render: () => (
-    <Section title="Colour">
+    <Section title="Color">
       <div style={grid}>
         {Object.keys(color).map((role) => {
           const v = `--greese-color-${kebab(role)}`

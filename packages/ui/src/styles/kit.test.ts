@@ -48,7 +48,7 @@ describe('SCSS kit: names', () => {
       /no modifier `big`.*solid/
     )
     expect(() => compile('a { b: greese.token(color, acent); }')).toThrow(
-      /no colour token `acent`/
+      /no color token `acent`/
     )
   })
 
@@ -237,7 +237,7 @@ describe('SCSS kit: tokens() and theme()', () => {
     const css = compile(`@include greese.theme(brand) {
       @include greese.tokens((color: (accent: (light: #7c3aed, dark: #c4b5fd), accentContent: #fff, primary: (light: #fde047, dark: #1e3a8a), secondary: lavender-600), radius: (md: 12px)));
     }`)
-    // Derived colours included: primary's and secondary's content and strong.
+    // Derived colors included: primary's and secondary's content and strong.
     const theme = createTheme({
       name: 'brand',
       color: {
@@ -264,7 +264,7 @@ describe('SCSS kit: tokens() and theme()', () => {
     )
   })
 
-  it('derives content colours from hex strings, as Theme Studio writes them', () => {
+  it('derives content colors from hex strings, as Theme Studio writes them', () => {
     const css = compile(`@include greese.theme(brand) {
       @include greese.tokens((color: (negative: (light: "#00ff00", dark: "#1e3a8a"), positive: "#fff", info: "#0369A1")));
     }`)
@@ -297,8 +297,8 @@ describe('SCSS kit: tokens() and theme()', () => {
   })
 
   it('rejects unknown token groups and keys', () => {
-    expect(() => compile('@include greese.tokens((colour: (accent: red)));')).toThrow(
-      /no token group `colour`/
+    expect(() => compile('@include greese.tokens((color: (accent: red)));')).toThrow(
+      /no token group `color`/
     )
     expect(() => compile('@include greese.tokens((radius: (huge: 1px)));')).toThrow(
       /no `radius` token `huge`. Keys: none, sm, md, lg, pill/

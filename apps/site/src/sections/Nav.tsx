@@ -71,7 +71,7 @@ export const Nav = (): JSX.Element => {
           </Hide>
           <Stack direction="row" align="center" gap={2}>
             <SegmentedControl
-              label="Colour scheme"
+              label="Color scheme"
               hideLabel
               size="sm"
               value={scheme}

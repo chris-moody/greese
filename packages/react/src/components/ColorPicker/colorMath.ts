@@ -54,7 +54,7 @@ export const hsvToRgb = ({ h, s, v, a }: HsvColor): RgbColor => {
 }
 
 /**
- * `hue` is kept when the colour has none (greys): dragging to the grey edge
+ * `hue` is kept when the color has none (greys): dragging to the grey edge
  * of the picker must not send the hue slider back to red.
  */
 export const rgbToHsv = ({ r, g, b, a }: RgbColor, hue = 0): HsvColor => {

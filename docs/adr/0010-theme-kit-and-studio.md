@@ -92,7 +92,7 @@ Other rules:
   `prefers-reduced-motion: no-preference`. A rescoped duration would
   otherwise escape the reduced-motion collapse that `tokens.css` applies at
   `:root`.
-- **Colour pairs in `vars()`** compile to `light-dark()`. It resolves against
+- **Color pairs in `vars()`** compile to `light-dark()`. It resolves against
   the inherited `color-scheme`, which the scheme attributes already set, so
   nesting works natively. Polyfills break it (ADR 0002 §1); the guide says
   so. Tokens keep the redeclaration approach.

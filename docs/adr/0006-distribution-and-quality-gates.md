@@ -88,7 +88,7 @@ Storybook with `@storybook/addon-docs`:
   `scripts/check-story-coverage.mjs`, part of the docs `lint` task, fails if
   an exported component appears in no story meta. (Since 2026-10-19, parts
   need a page of their own too: see ADR 0010.)
-- **Colour scheme:** the toolbar's scheme is applied from the globals channel,
+- **Color scheme:** the toolbar's scheme is applied from the globals channel,
   so it reaches docs pages too, and the docs container uses a Storybook theme
   built from GreeseUI's tokens for the resolved scheme. Storybook's default
   docs theme is static light, which left dark-mode text on a white page.

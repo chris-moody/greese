@@ -37,7 +37,7 @@ Baseline 2024, which is within our browser baseline.
 
 ### 3. Image placeholders sit behind the image, in CSS
 
-The `placeholder` (a colour, or a tiny data URL for blur-up) is the frame's
+The `placeholder` (a color, or a tiny data URL for blur-up) is the frame's
 background, and the `<img>` paints over it once loaded. There's no JS fade, so
 an image that finishes loading before hydration can never stay invisible,
 which is a common bug with opacity fade-ins. `priority` switches from
@@ -67,7 +67,7 @@ and checkbox marks.
 `Heading level` sets the document outline (`<h1>`–`<h6>`). `size` sets the
 look and can vary by breakpoint. Default sizes are mobile-first and step up
 at `md`; for example, level 1 is `3xl` on phones and `4xl` from `md`.
-Headings use `text-wrap: balance`. Links are underlined by default, so colour
+Headings use `text-wrap: balance`. Links are underlined by default, so color
 isn't the only cue that something is a link.
 
 ## Consequences

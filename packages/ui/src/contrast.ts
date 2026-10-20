@@ -1,10 +1,10 @@
 /**
- * WCAG 2 contrast, for picking text colours that stay readable on a theme's
- * brand colours. Hex colours only (`#rgb`, `#rrggbb`): anything else (a
+ * WCAG 2 contrast, for picking text colors that stay readable on a theme's
+ * brand colors. Hex colors only (`#rgb`, `#rrggbb`): anything else (a
  * `var()`, `oklch()`) can't be measured here, so callers keep their default.
  */
 
-/** Light and dark ink for content on a colour: white, or GreeseUI's near-black canvas. */
+/** Light and dark ink for content on a color: white, or GreeseUI's near-black canvas. */
 export const CONTENT_LIGHT = '#ffffff'
 export const CONTENT_DARK = '#0b0d10'
 
@@ -22,7 +22,7 @@ export const luminance = (color: string): number | undefined => {
   }, 0)
 }
 
-/** The WCAG contrast ratio of two hex colours (1–21), or undefined. */
+/** The WCAG contrast ratio of two hex colors (1–21), or undefined. */
 export const contrastRatio = (a: string, b: string): number | undefined => {
   const la = luminance(a)
   const lb = luminance(b)
@@ -31,7 +31,7 @@ export const contrastRatio = (a: string, b: string): number | undefined => {
 }
 
 /**
- * The text colour for content on `color`: white or near-black, whichever
+ * The text color for content on `color`: white or near-black, whichever
  * contrasts more, as long as it reaches AA. Where neither does (a mid-tone
  * near the crossover), pure black: when white fails, black always passes.
  */

@@ -25,7 +25,7 @@ export interface ToastOptions {
   /** A second, muted line. */
   description?: ReactNode
   /**
-   * Colour and meaning: neutral, a brand colour (primary, secondary,
+   * Color and meaning: neutral, a brand color (primary, secondary,
    * tertiary), info, positive, warning or negative.
    * @default 'neutral'
    */

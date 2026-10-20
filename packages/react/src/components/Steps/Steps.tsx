@@ -127,8 +127,8 @@ export interface StepProps
    */
   prefixBefore?: boolean
   /**
-   * The colour of this step's marker, and of the line on to the next step
-   * once it's complete: neutral, accent, a brand colour (primary, secondary,
+   * The color of this step's marker, and of the line on to the next step
+   * once it's complete: neutral, accent, a brand color (primary, secondary,
    * tertiary), positive, negative, warning or info.
    * @default 'primary'
    */

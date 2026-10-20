@@ -51,7 +51,7 @@ const Preview = (): JSX.Element => {
     document.documentElement.dataset.greeseScheme = scope.scheme
   }, [scope.scheme])
 
-  // After every theme change, report what each colour role really renders as,
+  // After every theme change, report what each color role really renders as,
   // so the studio's chips and swatches show the truth.
   const [css, setCss] = useState(0)
   useEffect(() => {

@@ -300,7 +300,7 @@ through its own `repeat`, `yoyo` and `timeScale`.
   becomes `calc(16px * 0.75 + 2rem * 0.25)` mid-way, which the browser
   resolves where the value is used, so percentages and viewport units are
   right for that element, with no measuring. The ends are written plainly.
-- **Colours** mix in OKLab, so midpoints stay vivid, not muddy.
+- **Colors** mix in OKLab, so midpoints stay vivid, not muddy.
 - **Anything else** switches halfway, except `none`/`hidden`, which give way
   to the shown value for the whole animation, as CSS does for `display`.
 
@@ -414,4 +414,4 @@ triggers, path motion and morphing aren't included.
 
 The model follows GLOP's Pixels timeline: per-property keyframe tracks
 sampled purely by time, nested timelines mapped through repeat and time scale
-(Pixels' spans), and OKLab colour mixing (Pixels mixes in OKLCH).
+(Pixels' spans), and OKLab color mixing (Pixels mixes in OKLCH).

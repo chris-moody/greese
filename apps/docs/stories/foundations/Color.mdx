@@ -5,26 +5,26 @@ import * as ColorStories from './Color.stories.tsx'
 
 # Color
 
-GreeseUI's colours come in two layers:
+GreeseUI's colors come in two layers:
 
 - **Roles**, such as `primary`, `surface` and `negative`. Components use
-  these, they change with the colour scheme, and a theme sets them.
+  these, they change with the color scheme, and a theme sets them.
 - **The palette**: 22 hues in 11 shades each, from `50` (lightest) to `999`
   (darkest), like MUI's `colors`. The roles are built from it, and you can use
-  it anywhere a colour goes, instead of a hex literal.
+  it anywhere a color goes, instead of a hex literal.
 
 ## Roles
 
-The brand colours come in order: `primary`, `secondary`, `tertiary` and
+The brand colors come in order: `primary`, `secondary`, `tertiary` and
 `accent`. Each has a `-strong` shade (hover, pressed) and a `-content`
-colour for text and icons drawn on it, which meets WCAG AA (at least 4.5:1)
+color for text and icons drawn on it, which meets WCAG AA (at least 4.5:1)
 against it in both schemes; the tables show each ratio.
 
-`primary` is the colour components use for interactive emphasis: solid
+`primary` is the color components use for interactive emphasis: solid
 buttons, links, selection, and the focus ring, which follows it. Setting
-`primary` rebrands every component. When a theme sets a brand colour,
+`primary` rebrands every component. When a theme sets a brand color,
 `createTheme()` (and the SCSS kit's `tokens()`) derive its `-content` and
-`-strong` colours unless you set them too.
+`-strong` colors unless you set them too.
 
 Each role is a custom property, `var(--greese-color-<role>)`, and
 `token(color, <role>)` in the SCSS kit.
@@ -46,7 +46,7 @@ and Stat.
 
 ## Using the palette
 
-The same colour in each place you'd write one:
+The same color in each place you'd write one:
 
 | Where                          | Write                                          |
 | ------------------------------ | ---------------------------------------------- |
@@ -85,18 +85,18 @@ export const brand = createTheme({
 );
 ```
 
-**Costs.** In TypeScript and SCSS a palette colour costs nothing extra. The
+**Costs.** In TypeScript and SCSS a palette color costs nothing extra. The
 TypeScript palette exports each hue separately, so a bundle keeps only the
-hues it imports. The SCSS kit writes the colour itself into your CSS. The CSS
-variables are a separate, opt-in stylesheet of 242 colours (about 2 kB
+hues it imports. The SCSS kit writes the color itself into your CSS. The CSS
+variables are a separate, opt-in stylesheet of 242 colors (about 2 kB
 compressed), so `tokens.css` doesn't carry them:
 
 ```ts
 import '@greese/ui/palette.css'
 ```
 
-The palette doesn't change with the colour scheme: `lavender-600` is the same
-colour in light and dark. For colours that should adapt, use a role, or give
+The palette doesn't change with the color scheme: `lavender-600` is the same
+color in light and dark. For colors that should adapt, use a role, or give
 a light/dark pair as above.
 
 ## Palette

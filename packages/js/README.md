@@ -86,7 +86,7 @@ plain JavaScript examples.
 | Extras | `splitText(el, { by })`, `fromPixels(animation, targets)`, `ease(name)`, `mix(a, b)`, `batch(fn)` (start many animations: all read, then all write) |
 
 Times are seconds. Transforms use the individual CSS `translate`, `rotate` and
-`scale` properties, so they never fight your CSS `transform`. Colours mix in
+`scale` properties, so they never fight your CSS `transform`. Colors mix in
 OKLab.
 
 ## Sizes (brotli)

@@ -62,7 +62,7 @@ docs' Styling sections generate from it.
 ### Plain HTML
 
 `@greese/ui` is enough for a static page: a `<link>` to `styles.css`, the
-documented classes, and the scheme script for the colour scheme. Native
+documented classes, and the scheme script for the color scheme. Native
 elements need nothing more (`<dialog>`, `<details>`, form controls,
 `popover`). Widgets that need keyboard logic (Tabs, Combobox, Menu,
 ScrollCarousel…) need behaviour on top of the CSS: 42 of the React components run

@@ -12,7 +12,7 @@ export default defineConfig({
   plugins: [
     react(),
     {
-      // The saved colour scheme applies before first paint.
+      // The saved color scheme applies before first paint.
       name: 'greese-scheme-script',
       transformIndexHtml: () => [
         { tag: 'script', children: getSchemeScript(), injectTo: 'head-prepend' },

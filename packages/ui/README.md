@@ -41,15 +41,15 @@ the framework packages provide.
 
 It has no dependencies.
 
-Colours follow the OS colour scheme. `data-greese-scheme="light"` or `"dark"` on
+Colors follow the OS color scheme. `data-greese-scheme="light"` or `"dark"` on
 any element forces a mode for that subtree, and modes can be nested. `createTheme()` builds a scoped theme as a static CSS string, which you can serve however you like and apply with `data-greese-theme="<name>"`.
 
-## Colour roles and the palette
+## Color roles and the palette
 
-`color` holds the semantic roles components use. The brand colours, in order,
+`color` holds the semantic roles components use. The brand colors, in order,
 are `primary` (what components use for interactive emphasis), `secondary`,
 `tertiary` and `accent`, each with `…Strong` and a WCAG-safe `…Content`
-colour that `createTheme` derives when you set only the main colour.
+color that `createTheme` derives when you set only the main color.
 
 `palette` is 22 hues × 11 shades (`50`–`999`), like
 MUI's `colors`. Use it instead of hex literals: `palette.lavender[600]` or

@@ -31,7 +31,7 @@ export interface CheckboxProps
   /** The "some selected" state, e.g. for a select-all checkbox. */
   indeterminate?: boolean
   /**
-   * Marks it invalid (`aria-invalid`) and colours it as an error. A surrounding
+   * Marks it invalid (`aria-invalid`) and colors it as an error. A surrounding
    * group's `error` sets it too.
    */
   invalid?: boolean

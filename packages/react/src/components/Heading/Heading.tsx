@@ -21,7 +21,7 @@ export interface HeadingProps extends ComponentPropsWithoutRef<'h2'>, GreeseProp
    * are smaller on phones (level 1: 3xl → 4xl).
    */
   size?: Responsive<FontSize>
-  /** Text colour: neutral, muted, accent, positive, negative, warning or info. */
+  /** Text color: neutral, muted, accent, positive, negative, warning or info. */
   tone?: TextTone
   /** Render your own element (e.g. a heading inside a `<summary>`) with heading styles. */
   asChild?: boolean

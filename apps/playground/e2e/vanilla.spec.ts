@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 /**
  * @greese/ui on its own (docs/adr/0014): a page of plain HTML, using the
  * classes the React components render, with no framework loaded. The
- * stylesheet themes it, and the colour scheme switches through the same
+ * stylesheet themes it, and the color scheme switches through the same
  * attribute.
  */
 test.describe('plain HTML with @greese/ui', () => {
@@ -18,7 +18,7 @@ test.describe('plain HTML with @greese/ui', () => {
     expect(await primary.evaluate((el) => getComputedStyle(el).borderRadius)).toBe('8px')
 
     await page.evaluate(() => (document.documentElement.dataset.greeseScheme = 'dark'))
-    // The button transitions its colours, so wait for them to settle.
+    // The button transitions its colors, so wait for them to settle.
     await expect.poll(background).toBe('rgb(96, 165, 250)')
   })
 

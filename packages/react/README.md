@@ -28,7 +28,7 @@ import '@greese/react/css/Button.css'
 import '@greese/react/css/Dialog.css' // + IconButton, Button, VisuallyHidden
 ```
 
-## Colour scheme
+## Color scheme
 
 The scheme follows the OS by default. To let users choose:
 

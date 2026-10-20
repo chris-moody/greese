@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 /** ADR 0011's components in real engines: scrolling, dragging, the top layer. */
 test.beforeEach(async ({ page }) => {
   await page.goto('/?page=catalogue')
-  await page.getByRole('region', { name: 'Colours' }).waitFor()
+  await page.getByRole('region', { name: 'Colors' }).waitFor()
 })
 
 const touch = () => !!test.info().project.use.hasTouch

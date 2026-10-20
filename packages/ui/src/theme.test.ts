@@ -35,7 +35,7 @@ describe('createTheme', () => {
     expect(base.match(/^\s*--greese-[\w-]+:/gm)).toHaveLength(tokenCount)
   })
 
-  it('derives a readable content colour and a strong shade from a brand colour', () => {
+  it('derives a readable content color and a strong shade from a brand color', () => {
     const { css } = createTheme({
       name: 'brand',
       color: { primary: { light: '#fde047', dark: '#1e3a8a' } },
@@ -51,11 +51,11 @@ describe('createTheme', () => {
     expect(dark).toContain(
       '--greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 70%, #fff);'
     )
-    // The accent is a colour of its own now: setting primary leaves it be.
+    // The accent is a color of its own now: setting primary leaves it be.
     expect(light).toContain(`--greese-color-accent: ${color.accent.light};`)
   })
 
-  it('keeps what the theme sets, and defaults for colours it cannot measure', () => {
+  it('keeps what the theme sets, and defaults for colors it cannot measure', () => {
     const own = deriveColors({ accent: '#0f766e', accentContent: '#ffff00' })
     expect(own.accentContent).toBe('#ffff00')
     const unmeasured = deriveColors({ secondary: 'oklch(60% 0.2 300)' })
@@ -66,7 +66,7 @@ describe('createTheme', () => {
     })
   })
 
-  it('meets WCAG AA for every default content colour, and any derived one', () => {
+  it('meets WCAG AA for every default content color, and any derived one', () => {
     for (const role of [
       'primary',
       'secondary',
@@ -114,7 +114,7 @@ describe('createTheme', () => {
     )
   })
 
-  it('uses a single colour value for both schemes', () => {
+  it('uses a single color value for both schemes', () => {
     const { css } = createTheme({ name: 'brand', color: { surface: '#fef3c7' } })
     expect(rule(css, `  ${T} {`)).toContain('--greese-color-surface: #fef3c7;')
     expect(rule(css, `${T}[data-greese-scheme='dark']`)).toContain(

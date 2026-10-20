@@ -21,7 +21,7 @@ export interface Picked {
   variables: Record<string, string>
 }
 
-/** Every colour role as the preview renders it, per scheme, as hex (`#rrggbb[aa]`). */
+/** Every color role as the preview renders it, per scheme, as hex (`#rrggbb[aa]`). */
 export interface RenderedColors {
   light: Record<string, string>
   dark: Record<string, string>

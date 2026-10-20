@@ -17,17 +17,17 @@ export interface TokenPair {
 }
 
 /**
- * Semantic colour roles, light and dark. Hues are palette colours, named in
+ * Semantic color roles, light and dark. Hues are palette colors, named in
  * the comments (palette.test.ts checks they match); written out rather than
  * read from palette.ts, so `createTheme` and anything else that imports
  * `color` doesn't carry the palette. The greys are GreeseUI's own.
  *
- * The brand colours, in order: `primary` (what components use for
+ * The brand colors, in order: `primary` (what components use for
  * interactive emphasis: solid buttons, links, focus, selection),
  * `secondary`, `tertiary` and `accent`. Each has a `Strong` shade (hover,
- * text on the canvas) and a `Content` colour for text and icons drawn on it,
+ * text on the canvas) and a `Content` color for text and icons drawn on it,
  * which meets WCAG AA (4.5:1) against it in both schemes (tokens.test.ts).
- * `createTheme` derives both when a theme sets only the main colour.
+ * `createTheme` derives both when a theme sets only the main color.
  */
 export const color = {
   canvas: { light: '#ffffff', dark: '#0b0d10' },

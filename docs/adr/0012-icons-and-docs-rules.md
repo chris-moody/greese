@@ -108,7 +108,7 @@ icon went from 305 to 351 B (budget 400 B).
 
 **The Icons page** (`Foundations/Icons`) has:
 
-- examples of each styling route: size, colour (`currentColor`), stroke,
+- examples of each styling route: size, color (`currentColor`), stroke,
   fill, and a gradient through `url(#id)`;
 - a gallery that copies an icon's import or name, and collects icons with
   **+** to copy as a name list or as one import line.

@@ -13,8 +13,8 @@ export interface IconProps extends GreeseProps, ComponentPropsWithRef<'span'> {
 }
 
 /**
- * Sizes and colours any icon (SVG from any set) consistently: it inherits the
- * text colour and scales with font size.
+ * Sizes and colors any icon (SVG from any set) consistently: it inherits the
+ * text color and scales with font size.
  *
  * ```tsx
  * <Icon><HeartSvg /></Icon>

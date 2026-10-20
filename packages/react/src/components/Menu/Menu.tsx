@@ -153,7 +153,7 @@ export interface MenuItemProps
   /** Called when chosen by click, Enter or Space; the menu then closes. */
   onSelect?: () => void
   /**
-   * The item's colour: `negative` for destructive actions, or a brand colour
+   * The item's color: `negative` for destructive actions, or a brand color
    * (primary, secondary, tertiary) to set one apart.
    * @default 'neutral'
    */

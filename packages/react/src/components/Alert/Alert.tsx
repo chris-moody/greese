@@ -11,8 +11,8 @@ export type FeedbackTone =
 export interface AlertProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'div'>, 'title'> {
   /**
-   * What kind of message it is, which sets its colour: info, positive,
-   * warning, negative, neutral, or a brand colour (primary, secondary,
+   * What kind of message it is, which sets its color: info, positive,
+   * warning, negative, neutral, or a brand color (primary, secondary,
    * tertiary) for announcements.
    * @default 'info'
    */

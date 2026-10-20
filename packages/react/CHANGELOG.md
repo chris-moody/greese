@@ -16,8 +16,8 @@
   `Field` (+ `useFieldControl`), `Input`, `TextField`, `Textarea`, `Select`,
   `Checkbox`, `CheckboxGroup`, `Radio`, `RadioGroup`, `Switch`, `Slider` and
   `FileInput`, all native elements restyled.
-- 29a566a: Foundations: design tokens (colour, space, radius, typography, shadow, z-index,
-  motion, breakpoints) as CSS variables, Sass maps and TS constants; colour
+- 29a566a: Foundations: design tokens (color, space, radius, typography, shadow, z-index,
+  motion, breakpoints) as CSS variables, Sass maps and TS constants; color
   schemes via `useColorScheme` and `getSchemeScript`; scoped themes via
   `createTheme` and `ThemeProvider`; responsive-prop resolution; `Slot`,
   `useMediaQuery`, `useBreakpoint`, `useBreakpointValue`, `useControllableState`,

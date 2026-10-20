@@ -92,7 +92,7 @@ Selected and focused styles use `:has(:checked)` and `:has(:focus-visible)`.
 ### 7. Stricter visual regression
 
 While adding [Phase 7](0013-project-scope-and-phases.md#phases) baselines, a stretched-badge bug went **undetected**.
-Playwright's default per-pixel colour `threshold` (0.2) counted a pale 14%
+Playwright's default per-pixel color `threshold` (0.2) counted a pale 14%
 badge tint as identical to white. The visual config now uses
 `threshold: 0.02` and `maxDiffPixelRatio: 0.001`. We confirmed it: restoring
 the wrong baseline makes the test fail with 17,979 differing pixels, and the
@@ -131,9 +131,9 @@ follows GreeseUI's conventions (SCSS tokens, native elements, pointer events,
 
 | GLOP                             | Why                                                         | Instead                                                       |
 | -------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------- |
-| `span`                           | `<span>` already inherits font and colour                   | `<span>` or `<Text asChild>`                                  |
+| `span`                           | `<span>` already inherits font and color                    | `<span>` or `<Text asChild>`                                  |
 | `chart`                          | Needs Recharts, against the few-dependencies goal           | A separate package, or Recharts with GreeseUI tokens          |
-| `console`                        | GLOP's console colour schemes: app-specific                 | `createTheme` in the app                                      |
+| `console`                        | GLOP's console color schemes: app-specific                  | `createTheme` in the app                                      |
 | `documentPickerDialog`, `form`   | Tied to GLOP's Firestore types and validator                | `Dialog` + `Table`; `Field` for errors                        |
 | `editableField` (and its inputs) | An app-level switchboard over controls GreeseUI already has | An app-level `EditableField` over GreeseUI controls           |
 | `KnobInput`, `gradientEditor`    | Niche (design tools) or tied to GLOP's `GradientFill` type  | Candidates for later, on ColorPicker's pointer model          |

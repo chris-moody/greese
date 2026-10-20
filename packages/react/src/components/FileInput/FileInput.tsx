@@ -10,7 +10,7 @@ export interface FileInputProps
   /** Height and text size: `sm`, `md` or `lg`. @default 'md' */
   size?: ControlSize
   /**
-   * Marks it invalid (`aria-invalid`) and colours it as an error. A surrounding
+   * Marks it invalid (`aria-invalid`) and colors it as an error. A surrounding
    * Field's `error` sets it too.
    */
   invalid?: boolean
