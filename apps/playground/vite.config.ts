@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { getSchemeScript } from '@greese/ui'
@@ -8,6 +9,15 @@ import { getSchemeScript } from '@greese/ui'
  * first (turbo does this for you).
  */
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        // Plain HTML on @greese/ui alone: proves the CSS needs no framework.
+        vanilla: fileURLToPath(new URL('./vanilla.html', import.meta.url)),
+      },
+    },
+  },
   plugins: [
     react(),
     {

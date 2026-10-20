@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GreeseUI without a framework</title>
+    <!-- Only @greese/ui: no React, no JavaScript of GreeseUI's. The module
+         script is the bundler's way to include the CSS; a plain page would
+         use <link rel="stylesheet" href="node_modules/@greese/ui/dist/greese.css">. -->
+    <script type="module">
+      import '@greese/ui/base.css'
+      import '@greese/ui/styles.css'
+    </script>
+  </head>
+  <body>
+    <main
+      class="greese-Box greese-Stack greese-Stack--xs-gap-4"
+      style="padding: 1.5rem; max-inline-size: 32rem"
+    >
+      <h1 data-testid="title">GreeseUI, plain HTML</h1>
+
+      <div
+        class="greese-Box greese-Stack greese-Stack--xs-direction-row greese-Stack--xs-gap-3"
+      >
+        <button
+          class="greese-Button greese-Button--solid greese-Button--primary greese-Button--size-md"
+          type="button"
+          data-testid="primary"
+        >
+          Save changes
+        </button>
+        <button
+          class="greese-Button greese-Button--outline greese-Button--negative greese-Button--size-md"
+          type="button"
+        >
+          Delete
+        </button>
+        <span class="greese-Badge greese-Badge--positive greese-Badge--soft">New</span>
+      </div>
+
+      <div class="greese-Alert greese-Alert--info greese-Alert--soft" role="status">
+        <div class="greese-Alert-body">
+          <p class="greese-Alert-title">Heads up</p>
+          <div class="greese-Alert-message">
+            These are the classes the React components render.
+          </div>
+        </div>
+      </div>
+
+      <div class="greese-Box greese-Card greese-Card--outline" data-testid="card">
+        Card body
+      </div>
+
+      <progress
+        class="greese-Progress greese-Progress--md"
+        max="100"
+        value="40"
+        aria-label="Upload"
+      ></progress>
+    </main>
+  </body>
+</html>
