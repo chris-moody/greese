@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["docs", "playground", "theme-studio"]
+  "ignore": ["docs", "playground", "site", "theme-studio"]
 }
