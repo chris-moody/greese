@@ -12,7 +12,7 @@ const steps = [
   },
   {
     title: 'Build, and add motion',
-    code: `import { Button, Card } from '@greese/react'\n\n<Card greese={{ inView: 'fadeUp' }}>\n  <Button greese={{ hover: 'lift' }}>Ship it</Button>\n</Card>`,
+    code: `import { Button, Card } from '@greese/react'\n\n<Card greese={{ inView: 'fadeUp' }}>\n  <Button greese={{ hover: 'rise' }}>Ship it</Button>\n</Card>`,
   },
 ]
 
@@ -30,7 +30,7 @@ export const Start = (): JSX.Element => (
       greese={{ inView: 'fadeUp', stagger: 0.1 }}
     >
       {steps.map((step, i) => (
-        <Card key={step.title} padding={5} greese={{ hover: 'lift' }}>
+        <Card key={step.title} padding={5} greese={{ hover: 'rise' }}>
           <Stack gap={3}>
             <div>
               <Badge
@@ -58,7 +58,7 @@ export const Start = (): JSX.Element => (
       justify="center"
       greese={{ inView: 'fadeUp' }}
     >
-      <Button asChild size="lg" greese={{ hover: 'lift', press: 'squish' }}>
+      <Button asChild size="lg" greese={{ hover: 'rise', press: 'squish' }}>
         <a href={DOCS_URL}>Read the docs</a>
       </Button>
       <Button
@@ -66,7 +66,7 @@ export const Start = (): JSX.Element => (
         size="lg"
         variant="outline"
         tone="neutral"
-        greese={{ hover: 'lift', press: 'squish' }}
+        greese={{ hover: 'rise', press: 'squish' }}
       >
         <RouteLink to="studio">Make a theme</RouteLink>
       </Button>

@@ -5,6 +5,7 @@
  * (components, motion, other tokens). Content and strong colors are left
  * out on purpose: the kit derives readable ones (WCAG AA) from each color.
  */
+import { GREESE_SPEC } from '../theme.ts'
 import { setIn } from './edit.ts'
 import type { SchemeValue, ThemeSpec } from './spec.ts'
 
@@ -21,8 +22,8 @@ const pair = (hue: string, light = 600, dark = 400): SchemeValue => ({
 })
 
 export const PRESETS: Preset[] = [
-  // The site's own: GreeseUI with a warm orange primary (theme.ts).
-  { id: 'greese', label: 'Greese', color: { primary: pair('orange', 700, 400) } },
+  // The official theme (theme.ts): GreeseUI with a warm orange primary.
+  { id: 'greese', label: 'Greese', color: GREESE_SPEC.tokens!.color! },
   { id: 'default', label: 'Default', color: {} },
   {
     id: 'ocean',

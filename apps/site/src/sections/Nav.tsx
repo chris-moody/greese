@@ -110,7 +110,7 @@ export const Nav = (): JSX.Element => {
                       asChild
                       tone="neutral"
                       underline="hover"
-                      greese={{ hover: 'float' }}
+                      greese={{ hover: 'rise' }}
                     >
                       <RouteLink to="home" hash={`#${id}`}>
                         {label}
@@ -121,7 +121,7 @@ export const Nav = (): JSX.Element => {
                     asChild
                     tone="neutral"
                     underline="hover"
-                    greese={{ hover: 'float' }}
+                    greese={{ hover: 'rise' }}
                   >
                     <RouteLink
                       to="studio"
@@ -180,7 +180,7 @@ export const Nav = (): JSX.Element => {
               variant="ghost"
               tone="neutral"
               startIcon={<Icon>{icons.github}</Icon>}
-              greese={{ enter: 'fadeIn', delay: 0.25, hover: 'lift' }}
+              greese={{ enter: 'fadeIn', delay: 0.25, hover: 'rise' }}
             >
               <a href={REPO_URL}>GitHub</a>
             </Button>

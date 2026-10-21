@@ -24,23 +24,32 @@ const EFFECTS = [
   'scaleIn',
   'blurIn',
   'slideUp',
+  'slideDown',
+  'slideRight',
+  'slideLeft',
   'pop',
+  'popIn',
   'fadeOut',
   'fadeOutUp',
   'fadeOutDown',
   'scaleOut',
   'blurOut',
-  'lift',
+  'rise',
   'squish',
   'tilt',
   'glow',
   'wobble',
-  'rise',
-  'float',
 ]
 
 /** Effects that hide the element: valid in a typed sequence, never offered in one tap. */
-const LEAVING = new Set(['fadeOut', 'fadeOutUp', 'fadeOutDown', 'scaleOut', 'blurOut'])
+const LEAVING = new Set([
+  'fadeOut',
+  'fadeOutUp',
+  'fadeOutDown',
+  'scaleOut',
+  'blurOut',
+  'popOut',
+])
 
 /**
  * The examples reveal, then only add emphasis: nothing hides the card right
@@ -48,8 +57,8 @@ const LEAVING = new Set(['fadeOut', 'fadeOutUp', 'fadeOutDown', 'scaleOut', 'blu
  */
 const EXAMPLES = [
   'fadeIn+scaleIn,+1,wobble',
-  'fadeStart+blurIn,pop',
-  'rise,+0.4,lift+glow',
+  'fadeStart+blurIn,popIn',
+  'slideUp,-0.2,popIn,+0.4,rise+glow',
 ]
 
 /** Names in a sequence that aren't effects (numbers are pauses). */
@@ -57,7 +66,7 @@ const unknown = (sequence: string): string[] =>
   sequence
     .split(/[,+]/)
     .map((s) => s.trim())
-    .filter((s) => s && !/^\d*\.?\d+$/.test(s) && !EFFECTS.includes(s))
+    .filter((s) => s && !/^[+-]?\d*\.?\d+$/.test(s) && !EFFECTS.includes(s))
 
 const Lab = (): JSX.Element => {
   const [sequence, setSequence] = useState(EXAMPLES[0]!)
@@ -75,8 +84,9 @@ const Lab = (): JSX.Element => {
             Compose a sequence
           </Heading>
           <Text tone="muted">
-            <Code>+</Code> plays effects together, <Code>,</Code> starts the next group,
-            and a number pauses, in seconds.
+            <Code>+</Code> plays effects together, <Code>,</Code> starts the next group, a
+            number pauses, in seconds, and a negative one (<Code>-0.2</Code>) overlaps the
+            next effect with the last.
           </Text>
           <form
             onSubmit={(e) => {
@@ -98,7 +108,7 @@ const Lab = (): JSX.Element => {
                 <Button
                   type="submit"
                   disabled={bad.length > 0}
-                  greese={{ hover: 'lift', press: 'squish' }}
+                  greese={{ hover: 'rise', press: 'squish' }}
                 >
                   Play
                 </Button>
@@ -108,7 +118,7 @@ const Lab = (): JSX.Element => {
                     variant="soft"
                     tone="neutral"
                     onClick={() => play(ex)}
-                    greese={{ hover: 'lift', press: 'squish' }}
+                    greese={{ hover: 'rise', press: 'squish' }}
                   >
                     {ex}
                   </Button>
@@ -131,7 +141,7 @@ const Lab = (): JSX.Element => {
                 variant="soft"
                 tone="neutral"
                 onClick={() => play(name)}
-                greese={{ hover: 'float', press: 'squish' }}
+                greese={{ hover: 'rise', press: 'squish' }}
               >
                 {name}
               </Button>
@@ -173,11 +183,11 @@ const Interactions = (): JSX.Element => (
         Interruptible: they play forward and reverse from wherever they are.
       </Text>
       <Stack direction="row" gap={2} wrap="wrap">
-        <Button greese={{ hover: 'lift', press: 'squish' }}>lift + squish</Button>
+        <Button greese={{ hover: 'rise', press: 'squish' }}>rise + squish</Button>
         <Button variant="outline" greese={{ hover: 'tilt' }}>
           tilt
         </Button>
-        <Button variant="soft" greese={{ hover: 'glow', focus: 'lift' }}>
+        <Button variant="soft" greese={{ hover: 'glow', focus: 'rise' }}>
           glow
         </Button>
         <Button variant="ghost" greese={{ hover: 'wobble', duration: 0.4 }}>
@@ -286,17 +296,18 @@ const Scopes = (): JSX.Element => {
             <Button
               variant="soft"
               onClick={() => setRun((n) => n + 1)}
-              greese={{ hover: 'lift', press: 'squish' }}
+              greese={{ hover: 'rise', press: 'squish' }}
             >
               Replay
             </Button>
           </div>
         </Stack>
         <Stack
-          key={`${run}-${stagger}`}
           gap={3}
           className="site-scope-demo"
-          greese={{ scope: { stagger, delay: 0.05, inView: true } }}
+          greese={{
+            scope: { stagger, delay: 0.05, inView: true, replay: `${run}-${stagger}` },
+          }}
         >
           <Heading level={4} variant="h5" greese={{ enter: 'fadeUp' }}>
             Launch week

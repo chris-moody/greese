@@ -33,7 +33,7 @@ export const Stats = (): JSX.Element => (
       greese={{ enter: 'fadeUp', stagger: 0.07, delay: 0.5 }}
     >
       {stats.map((s) => (
-        <Card key={s.label} variant="filled" padding={4} greese={{ hover: 'lift' }}>
+        <Card key={s.label} variant="filled" padding={4} greese={{ hover: 'rise' }}>
           <Stack gap={1}>
             <Text
               variant="h3"

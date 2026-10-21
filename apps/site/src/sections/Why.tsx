@@ -51,7 +51,7 @@ export const Why = (): JSX.Element => (
       greese={{ inView: 'fadeUp', stagger: 0.08, distance: '1.5rem' }}
     >
       {reasons.map((r) => (
-        <Card key={r.title} padding={5} greese={{ hover: 'lift' }}>
+        <Card key={r.title} padding={5} greese={{ hover: 'rise' }}>
           <Stack gap={3}>
             <Icon
               size="1.75rem"

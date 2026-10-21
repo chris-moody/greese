@@ -1,4 +1,4 @@
-import { useState, type JSX, type ReactNode } from 'react'
+import { Children, useState, type JSX, type ReactNode } from 'react'
 import {
   Accordion,
   AccordionItem,
@@ -22,6 +22,7 @@ import {
   Grid,
   Heading,
   Menu,
+  Motion,
   MenuItem,
   MenuSeparator,
   NumberField,
@@ -61,7 +62,11 @@ import {
 } from '@greese/react'
 import { Section } from '../Section.tsx'
 
-/** One labelled demo tile; its contents reveal one after another. */
+/**
+ * One labelled demo tile. The tile is a scope: its title and each piece of
+ * its content enter one after another, and the tile itself takes one place
+ * in the grid's scope, so the whole tab plays as a single sequence.
+ */
 const Demo = ({
   title,
   children,
@@ -69,13 +74,30 @@ const Demo = ({
   title: string
   children: ReactNode
 }): JSX.Element => (
-  <Card padding={5} greese={{ inView: 'fadeUp', hover: 'lift' }}>
+  <Card
+    padding={5}
+    greese={{
+      enter: 'fadeUp',
+      hover: 'rise',
+      scope: { stagger: 0.05, delay: 0.05 },
+    }}
+  >
     <Stack gap={4}>
-      <Text variant="p3" weight="semibold" tone="muted" className="site-demo-title">
+      <Text
+        variant="p3"
+        weight="semibold"
+        tone="muted"
+        className="site-demo-title"
+        greese={{ enter: 'fadeUp' }}
+      >
         {title}
       </Text>
-      <Stack gap={3} greese={{ inView: 'rise', stagger: 0.05, delay: 0.1 }}>
-        {children}
+      <Stack gap={3}>
+        {Children.toArray(children).map((child, i) => (
+          <Motion key={i} greese={{ enter: 'fadeUp' }}>
+            {child}
+          </Motion>
+        ))}
       </Stack>
     </Stack>
   </Card>
@@ -84,7 +106,12 @@ const Demo = ({
 const frameworks = ['Astro', 'Next.js', 'Remix', 'Vite', 'React Router', 'TanStack Start']
 
 const Forms = (): JSX.Element => (
-  <Grid container minChildWidth="17rem" gap={4}>
+  <Grid
+    container
+    minChildWidth="17rem"
+    gap={4}
+    greese={{ scope: { stagger: 0.07, inView: true } }}
+  >
     <Demo title="Text fields">
       <TextField
         label="Email"
@@ -96,11 +123,10 @@ const Forms = (): JSX.Element => (
         label="Username"
         defaultValue="grease monkey"
         error="Usernames can’t contain spaces"
-        greese={{ enter: 'fadeIn' }}
       />
     </Demo>
     <Demo title="Select, combobox, number">
-      <Field label="Plan" greese={{ enter: 'fadeIn' }}>
+      <Field label="Plan">
         <Select defaultValue="pro" greese={{ focus: 'glow' }}>
           <option value="free">Free</option>
           <option value="pro">Pro</option>
@@ -122,15 +148,11 @@ const Forms = (): JSX.Element => (
       />
     </Demo>
     <Demo title="Choices">
-      <CheckboxGroup
-        label="Notify me"
-        defaultValue={['email']}
-        greese={{ enter: 'fadeIn' }}
-      >
+      <CheckboxGroup label="Notify me" defaultValue={['email']}>
         <Checkbox value="email" label="Email" greese={{ press: 'squish' }} />
         <Checkbox value="sms" label="Text message" greese={{ press: 'squish' }} />
       </CheckboxGroup>
-      <RadioGroup label="Billing" defaultValue="yearly" greese={{ enter: 'fadeIn' }}>
+      <RadioGroup label="Billing" defaultValue="yearly">
         <Radio value="monthly" label="Monthly" greese={{ press: 'squish' }} />
         <Radio
           value="yearly"
@@ -143,12 +165,7 @@ const Forms = (): JSX.Element => (
     <Demo title="Toggles and ranges">
       <Switch label="Beta features" defaultChecked greese={{ press: 'squish' }} />
       <Slider aria-label="Volume" defaultValue={60} greese={{ focus: 'glow' }} />
-      <SegmentedControl
-        label="View"
-        defaultValue="grid"
-        size="sm"
-        greese={{ enter: 'fadeIn' }}
-      >
+      <SegmentedControl label="View" defaultValue="grid" size="sm">
         <Segment value="list">List</Segment>
         <Segment value="grid">Grid</Segment>
         <Segment value="board">Board</Segment>
@@ -156,7 +173,7 @@ const Forms = (): JSX.Element => (
     </Demo>
     <Demo title="Ratings and codes">
       <Rating label="Rate greese" defaultValue={4} greese={{ press: 'squish' }} />
-      <Field label="Verification code" greese={{ enter: 'fadeIn' }}>
+      <Field label="Verification code">
         <OtpField length={4} size="sm" greese={{ focus: 'glow' }} />
       </Field>
     </Demo>
@@ -166,19 +183,20 @@ const Forms = (): JSX.Element => (
         defaultValue="2026-11-03"
         greese={{ focus: 'glow' }}
       />
-      <ColorPicker
-        defaultValue="#c2410c"
-        aria-label="Brand color"
-        greese={{ enter: 'scaleIn' }}
-      />
+      <ColorPicker defaultValue="#c2410c" aria-label="Brand color" />
     </Demo>
   </Grid>
 )
 
 const Feedback = (): JSX.Element => (
-  <Grid container minChildWidth="17rem" gap={4}>
+  <Grid
+    container
+    minChildWidth="17rem"
+    gap={4}
+    greese={{ scope: { stagger: 0.07, inView: true } }}
+  >
     <Demo title="Alerts">
-      <Alert tone="positive" title="Deployed" greese={{ inView: 'fadeStart' }}>
+      <Alert tone="positive" title="Deployed">
         Version 1.0 is live.
       </Alert>
       <Alert
@@ -190,12 +208,7 @@ const Feedback = (): JSX.Element => (
       </Alert>
     </Demo>
     <Demo title="Badges and chips">
-      <Stack
-        direction="row"
-        gap={2}
-        wrap="wrap"
-        greese={{ inView: 'pop', stagger: 0.05 }}
-      >
+      <Stack direction="row" gap={2} wrap="wrap" greese={{ enter: 'pop', stagger: 0.05 }}>
         <Badge tone="primary">New</Badge>
         <Badge tone="positive" variant="solid">
           Passing
@@ -208,7 +221,7 @@ const Feedback = (): JSX.Element => (
         direction="row"
         gap={2}
         wrap="wrap"
-        greese={{ inView: 'fadeIn', stagger: 0.05 }}
+        greese={{ enter: 'fadeIn', stagger: 0.05 }}
       >
         <Chip selectable defaultSelected greese={{ press: 'squish' }}>
           React
@@ -218,42 +231,32 @@ const Feedback = (): JSX.Element => (
         </Chip>
         <Chip
           onRemove={() => toast({ title: 'Removed “SCSS”' })}
-          greese={{ hover: 'float' }}
+          greese={{ hover: 'rise' }}
         >
           SCSS
         </Chip>
       </Stack>
     </Demo>
     <Demo title="Progress and loading">
-      <Progress
-        value={64}
-        aria-label="Upload"
-        className="site-grow"
-        greese={{ inView: 'growX' }}
-      />
+      <Progress value={64} aria-label="Upload" className="site-grow" />
       <Stack direction="row" gap={3} align="center">
-        <Spinner label="Loading" greese={{ inView: 'scaleIn' }} />
-        <Skeleton lines={2} greese={{ inView: 'fadeIn' }} />
+        <Spinner label="Loading" />
+        <Skeleton lines={2} />
       </Stack>
     </Demo>
     <Demo title="Rings and stats">
       <Stack direction="row" gap={4} align="center" wrap="wrap">
-        <RadialProgress
-          value={72}
-          aria-label="Storage used"
-          greese={{ inView: 'scaleIn' }}
-        />
+        <RadialProgress value={72} aria-label="Storage used" />
         <Stat
           label="Bundle"
           value="Under budget"
           description="every entry, every build"
           tone="positive"
-          greese={{ inView: 'fadeStart' }}
         />
       </Stack>
     </Demo>
     <Demo title="People">
-      <AvatarGroup max={4} greese={{ inView: 'fadeEnd', stagger: 0.06 }}>
+      <AvatarGroup max={4} greese={{ enter: 'fadeEnd', stagger: 0.06 }}>
         <Avatar name="Ada Lovelace" />
         <Avatar name="Grace Hopper" />
         <Avatar name="Katherine Johnson" />
@@ -263,7 +266,7 @@ const Feedback = (): JSX.Element => (
       <Button
         variant="soft"
         onClick={() => toast({ title: 'Invite sent', tone: 'positive' })}
-        greese={{ hover: 'lift', press: 'squish' }}
+        greese={{ hover: 'rise', press: 'squish' }}
       >
         Invite (toast)
       </Button>
@@ -272,10 +275,15 @@ const Feedback = (): JSX.Element => (
 )
 
 const Overlays = (): JSX.Element => (
-  <Grid container minChildWidth="17rem" gap={4}>
+  <Grid
+    container
+    minChildWidth="17rem"
+    gap={4}
+    greese={{ scope: { stagger: 0.07, inView: true } }}
+  >
     <Demo title="Dialog and drawer">
       <Dialog
-        trigger={<Button greese={{ hover: 'lift', press: 'squish' }}>Open dialog</Button>}
+        trigger={<Button greese={{ hover: 'rise', press: 'squish' }}>Open dialog</Button>}
         title="Pop in, scale out"
         description="A native <dialog>: focus is trapped and returned."
         greese={{ enter: 'pop', exit: 'scaleOut' }}
@@ -284,13 +292,12 @@ const Overlays = (): JSX.Element => (
       </Dialog>
       <Drawer
         trigger={
-          <Button variant="outline" greese={{ hover: 'lift', press: 'squish' }}>
+          <Button variant="outline" greese={{ hover: 'rise', press: 'squish' }}>
             Open drawer
           </Button>
         }
         title="A bottom sheet on phones"
         placement={{ xs: 'bottom', md: 'end' }}
-        greese={{ enter: 'fadeIn' }}
       >
         <Text>A side panel on desktop. Swipe it away on touch.</Text>
       </Drawer>
@@ -298,7 +305,7 @@ const Overlays = (): JSX.Element => (
     <Demo title="Menu and popover">
       <Menu
         trigger={
-          <Button variant="soft" greese={{ hover: 'lift', press: 'squish' }}>
+          <Button variant="soft" greese={{ hover: 'rise', press: 'squish' }}>
             Actions
           </Button>
         }
@@ -319,7 +326,7 @@ const Overlays = (): JSX.Element => (
           <Button
             variant="outline"
             tone="neutral"
-            greese={{ hover: 'lift', press: 'squish' }}
+            greese={{ hover: 'rise', press: 'squish' }}
           >
             Popover
           </Button>
@@ -357,15 +364,14 @@ const Data = (): JSX.Element => {
     desc ? b.commits - a.commits : a.commits - b.commits
   )
   return (
-    <Grid container minChildWidth="20rem" gap={4}>
+    <Grid
+      container
+      minChildWidth="20rem"
+      gap={4}
+      greese={{ scope: { stagger: 0.07, inView: true } }}
+    >
       <Demo title="Table (stacks into cards on phones)">
-        <Table
-          caption="Contributors"
-          hideCaption
-          hoverable
-          stackBelow="sm"
-          greese={{ inView: 'fadeIn' }}
-        >
+        <Table caption="Contributors" hideCaption hoverable stackBelow="sm">
           <TableHead>
             <TableRow>
               <TableHeaderCell>Name</TableHeaderCell>
@@ -396,7 +402,7 @@ const Data = (): JSX.Element => {
         <Steps
           current={1}
           aria-label="Checkout"
-          greese={{ inView: 'fadeStart', stagger: 0.06 }}
+          greese={{ enter: 'fadeStart', stagger: 0.06 }}
         >
           <Step>Cart</Step>
           <Step>Shipping</Step>
@@ -405,15 +411,15 @@ const Data = (): JSX.Element => {
         </Steps>
       </Demo>
       <Demo title="Navigation">
-        <Breadcrumbs greese={{ inView: 'fadeStart' }}>
+        <Breadcrumbs>
           <BreadcrumbItem href="#components">Components</BreadcrumbItem>
           <BreadcrumbItem href="#components">Navigation</BreadcrumbItem>
           <BreadcrumbItem>Breadcrumbs</BreadcrumbItem>
         </Breadcrumbs>
-        <Pagination count={12} defaultPage={4} greese={{ inView: 'fadeIn' }} />
+        <Pagination count={12} defaultPage={4} />
       </Demo>
       <Demo title="Disclosure">
-        <Accordion exclusive greese={{ inView: 'fadeUp', stagger: 0.05 }}>
+        <Accordion exclusive greese={{ enter: 'fadeUp', stagger: 0.05 }}>
           <AccordionItem title="Native <details>" defaultOpen>
             <Text variant="p3">Opens and closes with no JavaScript.</Text>
           </AccordionItem>

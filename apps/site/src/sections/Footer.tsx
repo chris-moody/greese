@@ -20,16 +20,16 @@ export const Footer = (): JSX.Element => (
             measured from the repository on {facts.date}.
           </Text>
           <Stack direction="row" gap={4}>
-            <Link href={DOCS_URL} tone="neutral" greese={{ hover: 'float' }}>
+            <Link href={DOCS_URL} tone="neutral" greese={{ hover: 'rise' }}>
               Docs
             </Link>
-            <Link asChild tone="neutral" greese={{ hover: 'float' }}>
+            <Link asChild tone="neutral" greese={{ hover: 'rise' }}>
               <RouteLink to="studio">Theme Studio</RouteLink>
             </Link>
-            <Link href={REPO_URL} tone="neutral" greese={{ hover: 'float' }}>
+            <Link href={REPO_URL} tone="neutral" greese={{ hover: 'rise' }}>
               GitHub
             </Link>
-            <Link href="#top" tone="neutral" greese={{ hover: 'float' }}>
+            <Link href="#top" tone="neutral" greese={{ hover: 'rise' }}>
               Back to top
             </Link>
           </Stack>

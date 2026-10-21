@@ -6,8 +6,6 @@ declare module '@greese/react' {
   interface GreeseEffectRegistry {
     wobble: true
     growX: true
-    float: true
-    rise: true
   }
 }
 
@@ -22,10 +20,3 @@ defineGreeseEffect('growX', {
   duration: 0.8,
   ease: 'power3.out',
 })
-
-defineGreeseEffect('float', { keyframes: { y: [0, -6] }, duration: 0.3 })
-
-defineGreeseEffect('rise', ({ distance }) => ({
-  opacity: [0, 1],
-  y: [`calc(${distance} * 2)`, '0px'],
-}))

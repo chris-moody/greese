@@ -68,7 +68,7 @@ const Preview = (): JSX.Element => (
           <Avatar name="Alan Turing" />
           <Avatar name="Edsger Dijkstra" />
         </AvatarGroup>
-        <Button size="sm" greese={{ hover: 'lift', press: 'squish' }}>
+        <Button size="sm" greese={{ hover: 'rise', press: 'squish' }}>
           Review
         </Button>
       </Stack>
@@ -112,7 +112,7 @@ export const Hero = (): JSX.Element => (
             wrap="wrap"
             greese={{ enter: 'fadeUp', stagger: 0.08, delay: 0.45 }}
           >
-            <Button asChild size="lg" greese={{ hover: 'lift', press: 'squish' }}>
+            <Button asChild size="lg" greese={{ hover: 'rise', press: 'squish' }}>
               <a href="#start">Get started</a>
             </Button>
             <Button
@@ -120,7 +120,7 @@ export const Hero = (): JSX.Element => (
               size="lg"
               variant="outline"
               tone="neutral"
-              greese={{ hover: 'lift', press: 'squish' }}
+              greese={{ hover: 'rise', press: 'squish' }}
             >
               <a href={DOCS_URL}>Browse the docs</a>
             </Button>
@@ -138,7 +138,7 @@ export const Hero = (): JSX.Element => (
               variant="ghost"
               size="sm"
               onClick={() => void copy(INSTALL)}
-              greese={{ press: 'squish', hover: 'float' }}
+              greese={{ press: 'squish', hover: 'rise' }}
             >
               <Icon>{icons.copy}</Icon>
             </IconButton>

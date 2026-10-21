@@ -14,12 +14,18 @@ import {
   TabPanel,
   Tabs,
   Text,
+  VisuallyHidden,
 } from '@greese/react'
 import { facts, kB, sizeTables, type Row } from '../data/index.ts'
 import { Section } from '../Section.tsx'
 
 const panels: Array<{ value: keyof typeof sizeTables; label: string; caption: string }> =
   [
+    {
+      value: 'bundles',
+      label: 'Bundles',
+      caption: 'The whole library and the stylesheets',
+    },
     {
       value: 'components',
       label: 'Components',
@@ -30,16 +36,12 @@ const panels: Array<{ value: keyof typeof sizeTables; label: string; caption: st
       label: 'Motion',
       caption: 'greese.js and the greese prop’s lazy runtime',
     },
-    {
-      value: 'bundles',
-      label: 'Bundles',
-      caption: 'The whole library and the stylesheets',
-    },
   ]
 
 const SizeTable = ({ rows, caption }: { rows: Row[]; caption: string }): JSX.Element => {
   // Bars are relative to one another: the largest entry fills the track.
-  const largest = Math.max(...rows.map((r) => r.size))
+  const sorted = [...rows].sort((a, b) => b.size - a.size)
+  const largest = sorted[0]?.size ?? 1
   return (
     <Table
       caption={caption}
@@ -52,11 +54,13 @@ const SizeTable = ({ rows, caption }: { rows: Row[]; caption: string }): JSX.Ele
         <TableRow>
           <TableHeaderCell>Entry</TableHeaderCell>
           <TableHeaderCell align="end">Size</TableHeaderCell>
-          <TableHeaderCell>Relative to the largest</TableHeaderCell>
+          <TableHeaderCell>
+            <VisuallyHidden>Size relative to the largest</VisuallyHidden>
+          </TableHeaderCell>
         </TableRow>
       </TableHead>
       <TableBody greese={{ inView: 'fadeStart', stagger: 0.03, distance: '0.75rem' }}>
-        {rows.map((r) => (
+        {sorted.map((r) => (
           <TableRow key={r.label}>
             <TableCell label="Entry">
               <Code>{r.label}</Code>
@@ -95,7 +99,7 @@ export const Size = (): JSX.Element => (
     }
     tinted
   >
-    <Tabs defaultValue="components" greese={{ inView: 'fadeUp' }}>
+    <Tabs defaultValue="bundles" greese={{ inView: 'fadeUp' }}>
       <TabList aria-label="Size tables">
         {panels.map((p) => (
           <Tab key={p.value} value={p.value} greese={{ press: 'squish' }}>

@@ -7,7 +7,7 @@ import { ShellContext, type Shell, type StudioActions } from './shell.ts'
 import { stored } from './studio/storage.ts'
 import type { RenderedColors } from './studio/protocol.ts'
 import type { ThemeSpec } from './studio/spec.ts'
-import { brand, SITE_SPEC } from './theme.ts'
+import { brand, GREESE_SPEC } from './theme.ts'
 
 // The studio is its own chunk: the homepage never loads its editor, the
 // compiler or the importer.
@@ -15,7 +15,7 @@ const StudioPage = lazy(() =>
   import('./studio/StudioPage.tsx').then((m) => ({ default: m.StudioPage }))
 )
 
-const SITE_JSON = JSON.stringify(SITE_SPEC)
+const GREESE_JSON = JSON.stringify(GREESE_SPEC)
 
 /**
  * The theme the homepage wears: the site's own until a visitor picks or edits
@@ -24,7 +24,7 @@ const SITE_JSON = JSON.stringify(SITE_SPEC)
 const useHomeTheme = (spec: ThemeSpec): Theme => {
   const [built, setBuilt] = useState<Theme>()
   useEffect(() => {
-    if (JSON.stringify(spec) === SITE_JSON) return setBuilt(undefined)
+    if (JSON.stringify(spec) === GREESE_JSON) return setBuilt(undefined)
     let live = true
     void import('./theme/specTheme.ts').then((m) => live && setBuilt(m.specToTheme(spec)))
     return () => {
@@ -42,7 +42,7 @@ const useHomeTheme = (spec: ThemeSpec): Theme => {
  */
 export const App = (): JSX.Element => {
   const route = useRoute()
-  const [spec, setSpec] = useState<ThemeSpec>(() => stored() ?? SITE_SPEC)
+  const [spec, setSpec] = useState<ThemeSpec>(() => stored() ?? GREESE_SPEC)
   const [rendered, setRendered] = useState<RenderedColors>()
   const [replay, setReplay] = useState(0)
   const [inspect, setInspect] = useState(false)
