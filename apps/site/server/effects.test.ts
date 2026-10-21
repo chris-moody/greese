@@ -42,6 +42,20 @@ describe('keyframes as CSS', () => {
   })
 })
 
+describe('retuning every built-in', () => {
+  it('compiles and validates with each effect as the Greese tab shows it', async () => {
+    const frames = await describeGreeseEffects()
+    const effects = Object.fromEntries(
+      Object.entries(frames).map(([name, keyframes]) => [name, { keyframes }])
+    )
+    expect(validateSpec({ effects })).toEqual([])
+    const result = compileSpec({ tokens: {}, components: {}, effects })
+    expect(result).not.toHaveProperty('errors')
+    const css = (result as { css: string }).css
+    for (const name of CSS_PRESETS) expect(css).toContain(`@keyframes greese-${kebab(name)}`)
+  }, 30_000)
+})
+
 describe('a theme with effects', () => {
   const spec: ThemeSpec = {
     tokens: {},

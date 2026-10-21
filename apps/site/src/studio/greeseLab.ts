@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Keyframes } from '@greese/js'
 import { describeGreeseEffects } from '@greese/react'
 import { formatKeyframes, parseKeyframes } from './effectCode.ts'
@@ -49,9 +49,9 @@ export interface GreeseLab {
   effects: Record<string, EffectSpec>
   /** Whether the theme retunes (or defines) this effect. */
   isSet: (name: string) => boolean
-  /** The code to show: what's being typed, else the theme's, else the original. */
+  /** The code to show: as typed, else the theme's, else the original. */
   codeOf: (name: string) => string
-  /** Each effect's parse error, while its code is being typed. */
+  /** Each effect's parse error; until it's fixed, the theme keeps the last valid code. */
   errors: Record<string, string>
   /** Code typed for an effect: valid code goes into the theme, invalid stays a draft. */
   edit: (name: string, code: string) => void
@@ -100,8 +100,17 @@ export const useGreeseLab = (
       ),
     [effects]
   )
+  /** The effects this tab last wrote: a different set arrived from outside (an import). */
+  const written = useRef(JSON.stringify(spec.effects ?? {}))
+  useEffect(() => {
+    if (JSON.stringify(spec.effects ?? {}) !== written.current) {
+      written.current = JSON.stringify(spec.effects ?? {})
+      setDrafts({})
+    }
+  }, [spec.effects])
   const setEffects = useCallback(
     (next: Record<string, EffectSpec>) => {
+      written.current = JSON.stringify(next)
       const { effects: _old, ...rest } = spec
       onChange(Object.keys(next).length ? { ...rest, effects: next } : rest)
     },
@@ -131,9 +140,11 @@ export const useGreeseLab = (
 
   const edit = useCallback(
     (name: string, code: string) => {
+      // What's typed is shown as typed (reformatting it under the cursor would
+      // make editing impossible); valid code also goes into the theme.
+      setDrafts((d) => ({ ...d, [name]: code }))
       const parsed = parseKeyframes(code)
-      if ('error' in parsed) return setDrafts((d) => ({ ...d, [name]: code }))
-      setDrafts((d) => without(d, name))
+      if ('error' in parsed) return
       const original = defaults?.[name]
       // Back to the library's own: nothing to keep.
       if (original && formatKeyframes(original) === formatKeyframes(parsed.frames))

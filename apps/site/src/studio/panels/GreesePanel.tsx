@@ -55,7 +55,13 @@ const Effect = ({
           </Button>
         </span>
       </Stack>
-      <Field label={`${name} keyframes`} hideLabel error={error}>
+      <Field
+        label={`${name} keyframes`}
+        hideLabel
+        error={
+          error && `${error} The theme keeps the last valid code until this is fixed.`
+        }
+      >
         <Textarea
           className="studio-effect-code"
           rows={Math.max(2, lab.codeOf(name).split('\n').length)}
@@ -72,7 +78,7 @@ const Effect = ({
           type="number"
           min={0.05}
           step={0.05}
-          value={lab.effects[name]?.duration ?? ''}
+          defaultValue={lab.effects[name]?.duration ?? ''}
           onChange={(e) => {
             const seconds = parseFloat(e.currentTarget.value)
             lab.setDuration(name, Number.isFinite(seconds) ? seconds : undefined)
