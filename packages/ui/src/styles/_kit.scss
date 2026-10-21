@@ -599,6 +599,32 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
   }
 }
 
+/// Replaces one of the `greese` prop's entrance keyframes, or adds a
+/// `@keyframes` of your own: `keyframes(greese-fade-up, (from: (opacity: 0,
+/// translate: 0 2rem), to: (opacity: 1, translate: 0 0)))`. Steps are `from`,
+/// `to` or percentages (quoted: `'60%'`). It sits in the utilities layer, after
+/// the library's own, so a preset's name is overridden by this one.
+@mixin keyframes($name, $steps) {
+  $checked: _check(
+    string.index('#{$name}', 'greese-') == 1,
+    'keyframes() names start with `greese-`: `greese-fade-up` overrides that preset.'
+  );
+
+  @include _layer-order;
+
+  @layer greese.utilities {
+    @keyframes #{$name} {
+      @each $at, $declarations in $steps {
+        #{$at} {
+          @each $property, $value in $declarations {
+            #{$property}: #{_css($value)};
+          }
+        }
+      }
+    }
+  }
+}
+
 // --- tokens and themes -----------------------------------------------------
 
 /// Declarations for the token overrides, split by scheme.

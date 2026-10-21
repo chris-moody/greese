@@ -412,3 +412,22 @@ describe('SCSS kit: typography()', () => {
     ).toThrow(/no type property `colour`/)
   })
 })
+
+describe('SCSS kit: keyframes()', () => {
+  it('writes keyframes in the utilities layer, from steps', () => {
+    const css = compile(`@include greese.keyframes(greese-fade-up, (
+      from: (opacity: 0, translate: '0 2rem'),
+      '60%': (opacity: 1),
+      to: (opacity: 1, translate: '0 0'),
+    ));`)
+    expect(css).toContain('@layer greese.utilities')
+    expect(css).toMatch(/@keyframes greese-fade-up\s*{\s*from\s*{\s*opacity:\s*0;\s*translate:\s*0 2rem;/)
+    expect(css).toMatch(/60%\s*{\s*opacity:\s*1;/)
+  })
+
+  it('only takes names that start with greese-', () => {
+    expect(() => compile(`@include greese.keyframes(wobble, (from: (opacity: 0)));`)).toThrow(
+      /start with `greese-`/
+    )
+  })
+})

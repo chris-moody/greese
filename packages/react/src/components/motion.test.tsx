@@ -430,6 +430,22 @@ describe('one source of truth for effect names', () => {
     expect(negate('var(--gap)')).toBe('calc(-1 * var(--gap))')
   })
 
+  it('lets a definition under a built-in name replace it', async () => {
+    const { timeline } = await import('@greese/js')
+    const { addMotion } = await import('./Motion/greeseRuntime.ts')
+    const run = () =>
+      addMotion(
+        timeline({ paused: true }),
+        [document.createElement('div')],
+        'fall',
+        { distance: '1rem', rtl: false },
+        { duration: 0.5, options: {} }
+      )
+    expect(run()).toBe(0.5)
+    defineGreeseEffect('fall', { keyframes: { y: [0, 9] }, duration: 2 })
+    expect(run()).toBe(2)
+  })
+
   it('never mistakes an Object prototype key for an effect', async () => {
     vi.useFakeTimers({
       toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],

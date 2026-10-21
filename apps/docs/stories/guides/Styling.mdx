@@ -240,6 +240,7 @@ overrides still collapse under reduced motion.
 | `token(group, key)`                                                | `var(--greese-<group>-<key>)`, checked                                                                                                                                       |
 | `variable(name)`                                                   | `var(--greese-<name>)` for a component variable, checked                                                                                                                     |
 | `tokens((…))`, `motion-defaults((…))`, `theme(name) { … }`         | Token overrides, entrance tuning, a named theme                                                                                                                              |
+| `keyframes(greese-fade-up, (from: (…), to: (…)))`                  | Replaces a preset's keyframes, or adds `@keyframes` of your own (utilities layer)                                                                                           |
 | `up`, `down`, `hover`, `focus-ring`, `touch-target`, `motion-safe` | The library's own mixins                                                                                                                                                     |
 
 Call the mixins at the top level of a stylesheet (or inside `theme()`), not

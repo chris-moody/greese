@@ -74,9 +74,14 @@ const BUILT_IN = {
 /** Every built-in effect name: the source the public name types are checked against. */
 export type BuiltInEffect = keyof typeof BUILT_IN
 
-/** A built-in effect, then a defined one. Own keys only, so `constructor` is no effect. */
+/**
+ * A defined effect, then a built-in one: `defineGreeseEffect()` under a
+ * built-in's name replaces it (a theme can retune `fadeUp`). Own keys only, so
+ * `constructor` is no effect.
+ */
 const lookup = (name: string): GreeseEffect | undefined =>
-  Object.hasOwn(BUILT_IN, name) ? BUILT_IN[name as BuiltInEffect] : definedEffect(name)
+  definedEffect(name) ??
+  (Object.hasOwn(BUILT_IN, name) ? BUILT_IN[name as BuiltInEffect] : undefined)
 
 /**
  * Every built-in effect as plain keyframes, for tools that show or edit them

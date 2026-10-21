@@ -181,7 +181,7 @@ name's keyframes at that distance.
 - **Keyframes** are greese.js keyframes: every property greese.js animates
   (individual transforms, CSS, custom properties, colors), arrays per
   property or a list of keyframe objects with `offset` and `ease`.
-- **Built-in names are reserved:** a defined `fadeUp` is ignored.
+- **A built-in's name redefines it** in sequences, interactions and timelines. A lone entrance preset is plain CSS, so retune it with the kit's `keyframes()` mixin too (Theme Studio's Greese tab writes both).
 - **Server Components** can use defined effects, because a name is just a
   string. The definition must run on the client before the element mounts:
   call `defineGreeseEffect()` from a module your client bundle imports at

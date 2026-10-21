@@ -27,6 +27,7 @@ export {
 } from './utils/greese.ts'
 export {
   defineGreeseEffect,
+  removeGreeseEffect,
   type GreeseEffect,
   type GreeseEffectContext,
   type GreeseEffectKeyframes,
