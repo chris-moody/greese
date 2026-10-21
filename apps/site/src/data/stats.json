@@ -1,10 +1,7 @@
 {
   "date": "2026-10-21",
   "components": 115,
-  "dependencies": [
-    "@greese/js",
-    "@greese/ui"
-  ],
+  "dependencies": ["@greese/js", "@greese/ui"],
   "react": [
     {
       "name": "JS: whole library (components)",

@@ -9,6 +9,8 @@ export type ImportSource =
 export interface Compiled {
   scss?: string
   css?: string
+  /** The theme's effects as a module for the app; absent while it has none. */
+  effects?: string
   /** `css` is the whole stylesheet, built for the theme's own breakpoints. */
   full?: boolean
   errors?: string[]

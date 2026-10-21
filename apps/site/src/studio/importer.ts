@@ -577,7 +577,7 @@ export const importJson = (data: unknown): ImportResult => {
   if (!data || typeof data !== 'object' || Array.isArray(data))
     throw new Error('Expected a JSON object: a studio theme or createTheme() options.')
   const o = data as Record<string, unknown>
-  if ('tokens' in o || 'components' in o || 'motionDefaults' in o) {
+  if ('tokens' in o || 'components' in o || 'motionDefaults' in o || 'effects' in o) {
     const spec = o as ThemeSpec
     return {
       spec: { tokens: {}, components: {}, ...spec },

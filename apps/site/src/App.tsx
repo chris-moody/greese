@@ -7,6 +7,7 @@ import { ShellContext, type Shell, type StudioActions } from './shell.ts'
 import { stored } from './studio/storage.ts'
 import type { RenderedColors } from './studio/protocol.ts'
 import type { ThemeSpec } from './studio/spec.ts'
+import { applyEffects } from './effects-runtime.ts'
 import { brand, GREESE_SPEC } from './theme.ts'
 
 // The studio is its own chunk: the homepage never loads its editor, the
@@ -48,6 +49,9 @@ export const App = (): JSX.Element => {
   const [inspect, setInspect] = useState(false)
   const [studio, setStudio] = useState<StudioActions | null>(null)
   const theme = useHomeTheme(spec)
+  // The theme's effects work on this page: the homepage, and the studio's stage.
+  const effectsKey = JSON.stringify(spec.effects ?? null)
+  useEffect(() => applyEffects(spec.effects), [effectsKey])
 
   const shell = useMemo<Shell>(
     () => ({

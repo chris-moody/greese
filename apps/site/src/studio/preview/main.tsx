@@ -10,6 +10,7 @@ import {
 } from '@greese/react'
 import '@greese/react/base.css'
 import baseStyles from '@greese/react/styles.css?inline'
+import { applyEffects } from '../../effects-runtime.ts'
 import type { FromPreview, ToPreview } from '../protocol.ts'
 import { ComponentPreview } from './ComponentPreview.tsx'
 import { Gallery } from './Gallery.tsx'
@@ -63,6 +64,7 @@ const Preview = (): JSX.Element => {
       if (message.type === 'scope')
         setScope({ theme: message.theme, scheme: message.scheme })
       if (message.type === 'inspect') setInspecting(message.on)
+      if (message.type === 'effects') applyEffects(message.effects, { css: false })
       if (message.type === 'replay') setRun((n) => n + 1)
       if (message.type === 'feature') setFeature(message.block)
       if (message.type === 'highlight')

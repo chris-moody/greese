@@ -69,7 +69,7 @@ export const GreeseStage = ({ lab }: { lab: GreeseLab }): JSX.Element => {
             padding={5}
             className="site-stage-target"
             // The sequence is checked against the effect names before it plays.
-            greese={lab.played.shown as GreeseProp}
+            greese={lab.played.sequence as GreeseProp}
           >
             <Text weight="semibold">greese</Text>
           </Card>

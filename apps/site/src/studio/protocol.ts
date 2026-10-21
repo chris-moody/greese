@@ -1,4 +1,5 @@
 import type { ColorScheme } from '@greese/react'
+import type { EffectSpec } from './spec.ts'
 
 /** Messages from the studio to the preview iframe. */
 export type ToPreview =
@@ -10,6 +11,8 @@ export type ToPreview =
   | { type: 'css'; css: string; full?: boolean; breakpoints?: Record<string, number> }
   | { type: 'scope'; theme?: string; scheme: ColorScheme }
   | { type: 'inspect'; on: boolean }
+  /** The theme's effects, defined for the preview's runtime (its CSS carries the keyframes). */
+  | { type: 'effects'; effects?: Record<string, EffectSpec> }
   /** Outline every instance of this component (`Button`), or none. */
   | { type: 'highlight'; block?: string }
   /** Remount the gallery so entrances play again. */

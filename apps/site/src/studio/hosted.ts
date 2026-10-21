@@ -13,6 +13,7 @@ import { KEY, stored } from './storage.ts'
 import { detectFormat, importCss, importJson, type ImportResult } from './importer.ts'
 import {
   customBreakpoints,
+  specToEffectsTs,
   specToScss,
   stylesheetScss,
   validateSpec,
@@ -72,9 +73,10 @@ export const compileSpec = async (spec: ThemeSpec): Promise<Compiled> => {
   const errors = validateSpec(spec)
   if (errors.length) return { errors }
   const scss = specToScss(spec, FILE)
+  const effects = specToEffectsTs(spec, FILE)
   try {
     const own = customBreakpoints(spec)
-    if (!own) return { scss, css: await compileScss(scss) }
+    if (!own) return { scss, css: await compileScss(scss), effects }
     // The stylesheet is built once per set of breakpoints; the theme alone
     // each edit.
     const key = JSON.stringify(own)
@@ -83,7 +85,7 @@ export const compileSpec = async (spec: ThemeSpec): Promise<Compiled> => {
       stylesheets.set(key, await compileScss(stylesheetScss(own)))
     }
     const theme = await compileScss(specToScss(spec, FILE, 'config'))
-    return { scss, css: `${stylesheets.get(key)}\n${theme}`, full: true }
+    return { scss, css: `${stylesheets.get(key)}\n${theme}`, effects, full: true }
   } catch (error) {
     return { errors: [firstPart(error)] }
   }

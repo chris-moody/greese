@@ -32,11 +32,27 @@ disk, the studio reloads it, or asks first when you have unsaved edits.
 
 ## Greese tab
 
-Every built-in effect with the keyframes it plays, as code. Edit it and press
-Play: the stage (in place of the preview while the tab is open) plays a
-sequence you type, with your version of any effect it names. Edits last for
-the session and apply only here; they are not saved to the theme. Replay
-motion in the header plays the stage again.
+The theme's effects. Every built-in effect is listed with the keyframes it
+plays, as code; edit it and the theme changes. Below the list, add an effect of
+your own with a name (camelCase) and its keyframes. A stage replaces the
+preview while the tab is open: type a sequence, play it, replay it.
+
+Effects are part of the theme (`effects` in `greese-theme.json`), so Save
+writes them through:
+
+- a retuned entrance preset (`fadeUp`, `popIn`…) is built into the CSS as its
+  `@keyframes`, with the kit's `keyframes()` mixin, so it's retuned even when
+  played alone as plain CSS;
+- every effect, retuned or new, goes into `greese-theme.effects.ts`: a module
+  of `defineGreeseEffect()` calls (and the new names in `GreeseEffectRegistry`,
+  so they type-check) to import once at the app's entry. A definition under a
+  built-in's name replaces it in sequences, interactions and timelines. The
+  file exists only while the theme has effects;
+- the preview and the pages (homepage, stage) apply them live. The hosted
+  studio keeps them in the browser; the Code tab downloads the files.
+
+Reset returns a built-in to the library's keyframes; Delete removes a new one.
+Replay motion in the header plays the stage again.
 
 ## Theme
 

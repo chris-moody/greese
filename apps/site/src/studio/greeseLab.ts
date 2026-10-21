@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Keyframes } from '@greese/js'
-import { defineGreeseEffect, describeGreeseEffects } from '@greese/react'
+import { describeGreeseEffects } from '@greese/react'
 import { formatKeyframes, parseKeyframes } from './effectCode.ts'
+import { BUILT_IN_EFFECTS, type EffectSpec, type ThemeSpec } from './spec.ts'
 
 /** Effects the site defines itself (src/effects.ts), playable here too. */
 const SITE_EFFECTS = ['wobble']
@@ -12,53 +13,76 @@ export const EXAMPLES = [
   'fadeStart+blurIn,popIn',
 ]
 
+const INTERACTIONS = new Set(['rise', 'fall', 'squish', 'tilt', 'glow'])
+
 /** Groups for the effect list, by what they're for. */
 export const GROUPS: Array<[title: string, match: (name: string) => boolean]> = [
   ['Entrances', (n) => !/Out$/.test(n) && !INTERACTIONS.has(n)],
   ['Leaving', (n) => /Out$/.test(n)],
   ['Interactions', (n) => INTERACTIONS.has(n)],
 ]
-const INTERACTIONS = new Set(['rise', 'fall', 'squish', 'tilt', 'glow'])
 
-/** The effects a sequence may name that aren't the built-ins edited here. */
-export const LEAVING = (name: string) => /Out$/.test(name)
+const without = <T>(record: Record<string, T>, name: string): Record<string, T> =>
+  Object.fromEntries(Object.entries(record).filter(([n]) => n !== name))
+
+/** A name for a new effect: camelCase, not a built-in, not already there. */
+export const effectNameError = (name: string, existing: string[]): string | undefined => {
+  if (!/^[a-z][A-Za-z0-9]*$/.test(name))
+    return 'Use camelCase letters and digits, starting with a lower-case letter.'
+  if (
+    (BUILT_IN_EFFECTS as readonly string[]).includes(name) ||
+    SITE_EFFECTS.includes(name)
+  )
+    return `${name} is a built-in effect: edit it in the list instead.`
+  if (existing.includes(name)) return `${name} is already one of the theme's effects.`
+  return undefined
+}
 
 export interface GreeseLab {
   /** The built-in effects' own keyframes, once loaded. */
   defaults: Record<string, Keyframes> | undefined
+  /** The built-in names. */
   names: string[]
-  /** The code as edited, by effect; absent when untouched. */
-  edits: Record<string, string>
-  /** Each edit's parse error, when it has one. */
-  errors: Record<string, string>
-  /** The code to show for an effect: the edit, else the original. */
+  /** The theme's own new effects. */
+  custom: string[]
+  /** The theme's effects, retuned built-ins and new ones: the spec's. */
+  effects: Record<string, EffectSpec>
+  /** Whether the theme retunes (or defines) this effect. */
+  isSet: (name: string) => boolean
+  /** The code to show: what's being typed, else the theme's, else the original. */
   codeOf: (name: string) => string
+  /** Each effect's parse error, while its code is being typed. */
+  errors: Record<string, string>
+  /** Code typed for an effect: valid code goes into the theme, invalid stays a draft. */
   edit: (name: string, code: string) => void
+  /** Back to the library's effect (built-in) or removed (new). */
   reset: (name: string) => void
+  setDuration: (name: string, seconds: number | undefined) => void
+  /** Adds a new effect; returns what's wrong, if anything. */
+  add: (name: string, code: string) => string | undefined
   sequence: string
   setSequence: (sequence: string) => void
   /** Names in the sequence that aren't effects. */
   unknown: string[]
-  /** What the stage plays, with edited effects swapped for their edits. */
-  played: { key: number; sequence: string; shown: string }
+  played: { key: number; sequence: string }
   play: (sequence?: string) => void
 }
 
 /**
- * The Greese tab's state: the effect list and its code, edits to it, and the
- * sequence the stage plays. Edited effects are defined under `studio:<name>`
- * (a built-in's own name can't be redefined) and swapped into the sequence
- * only when it plays.
+ * The Greese tab's state. The effects belong to the theme (`spec.effects`):
+ * editing one changes the spec, which the studio saves, compiles into the
+ * theme's CSS and effects module, and applies to the preview and the page.
+ * What's being typed that doesn't parse yet is kept as a draft.
  */
-export const useGreeseLab = (): GreeseLab => {
+export const useGreeseLab = (
+  spec: ThemeSpec,
+  onChange: (spec: ThemeSpec) => void
+): GreeseLab => {
   const [defaults, setDefaults] = useState<Record<string, Keyframes>>()
-  const [edits, setEdits] = useState<Record<string, string>>({})
+  const [drafts, setDrafts] = useState<Record<string, string>>({})
   const [sequence, setSequence] = useState(EXAMPLES[0]!)
-  const [played, setPlayed] = useState({
-    key: 0,
-    sequence: EXAMPLES[0]!,
-    shown: EXAMPLES[0]!,
-  })
+  const [played, setPlayed] = useState({ key: 0, sequence: EXAMPLES[0]! })
+  const effects = spec.effects ?? {}
 
   useEffect(() => {
     let live = true
@@ -69,42 +93,87 @@ export const useGreeseLab = (): GreeseLab => {
   }, [])
 
   const names = useMemo(() => Object.keys(defaults ?? {}), [defaults])
-  const parsed = useMemo(
+  const custom = useMemo(
     () =>
-      Object.fromEntries(
-        Object.entries(edits).map(([n, code]) => [n, parseKeyframes(code)])
+      Object.keys(effects).filter(
+        (n) => !(BUILT_IN_EFFECTS as readonly string[]).includes(n)
       ),
-    [edits]
+    [effects]
   )
-  const errors = useMemo(
-    () =>
-      Object.fromEntries(
-        Object.entries(parsed).flatMap(([n, r]) => ('error' in r ? [[n, r.error]] : []))
-      ),
-    [parsed]
+  const setEffects = useCallback(
+    (next: Record<string, EffectSpec>) => {
+      const { effects: _old, ...rest } = spec
+      onChange(Object.keys(next).length ? { ...rest, effects: next } : rest)
+    },
+    [spec, onChange]
   )
 
   const codeOf = useCallback(
     (name: string) =>
-      edits[name] ?? (defaults?.[name] ? formatKeyframes(defaults[name]!) : ''),
-    [edits, defaults]
+      drafts[name] ??
+      (effects[name]
+        ? formatKeyframes(effects[name]!.keyframes)
+        : defaults?.[name]
+          ? formatKeyframes(defaults[name]!)
+          : ''),
+    [drafts, effects, defaults]
   )
-  const edit = useCallback(
-    (name: string, code: string) =>
-      setEdits((e) =>
-        defaults?.[name] && code === formatKeyframes(defaults[name]!)
-          ? Object.fromEntries(Object.entries(e).filter(([n]) => n !== name))
-          : { ...e, [name]: code }
+  const errors = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(drafts).flatMap(([n, code]) => {
+          const r = parseKeyframes(code)
+          return 'error' in r ? [[n, r.error]] : []
+        })
       ),
-    [defaults]
-  )
-  const reset = useCallback(
-    (name: string) =>
-      setEdits((e) => Object.fromEntries(Object.entries(e).filter(([n]) => n !== name))),
-    []
+    [drafts]
   )
 
-  const known = useMemo(() => new Set([...names, ...SITE_EFFECTS]), [names])
+  const edit = useCallback(
+    (name: string, code: string) => {
+      const parsed = parseKeyframes(code)
+      if ('error' in parsed) return setDrafts((d) => ({ ...d, [name]: code }))
+      setDrafts((d) => without(d, name))
+      const original = defaults?.[name]
+      // Back to the library's own: nothing to keep.
+      if (original && formatKeyframes(original) === formatKeyframes(parsed.frames))
+        return setEffects(without(effects, name))
+      setEffects({ ...effects, [name]: { ...effects[name], keyframes: parsed.frames } })
+    },
+    [defaults, effects, setEffects]
+  )
+  const reset = useCallback(
+    (name: string) => {
+      setDrafts((d) => without(d, name))
+      setEffects(without(effects, name))
+    },
+    [effects, setEffects]
+  )
+  const setDuration = useCallback(
+    (name: string, seconds: number | undefined) => {
+      const effect = effects[name]
+      if (!effect) return
+      const { duration: _d, ...rest } = effect
+      setEffects({ ...effects, [name]: seconds ? { ...rest, duration: seconds } : rest })
+    },
+    [effects, setEffects]
+  )
+  const add = useCallback(
+    (name: string, code: string) => {
+      const problem = effectNameError(name, Object.keys(effects))
+      if (problem) return problem
+      const parsed = parseKeyframes(code)
+      if ('error' in parsed) return parsed.error
+      setEffects({ ...effects, [name]: { keyframes: parsed.frames } })
+      return undefined
+    },
+    [effects, setEffects]
+  )
+
+  const known = useMemo(
+    () => new Set([...names, ...SITE_EFFECTS, ...Object.keys(effects)]),
+    [names, effects]
+  )
   const unknown = sequence
     .split(/[,+]/)
     .map((s) => s.trim())
@@ -114,31 +183,23 @@ export const useGreeseLab = (): GreeseLab => {
     (next?: string) => {
       const text = next ?? sequence
       setSequence(text)
-      // Valid edits become `studio:<name>` effects, swapped in for the names.
-      const swapped = new Set<string>()
-      for (const [name, result] of Object.entries(parsed)) {
-        if ('frames' in result) {
-          defineGreeseEffect(`studio:${name}`, result.frames)
-          swapped.add(name)
-        }
-      }
-      const shown = text
-        .split(/([,+])/)
-        .map((part) => (swapped.has(part.trim()) ? `studio:${part.trim()}` : part))
-        .join('')
-      setPlayed((p) => ({ key: p.key + 1, sequence: text, shown }))
+      setPlayed((p) => ({ key: p.key + 1, sequence: text }))
     },
-    [sequence, parsed]
+    [sequence]
   )
 
   return {
     defaults,
     names,
-    edits,
-    errors,
+    custom,
+    effects,
+    isSet: (name) => name in effects,
     codeOf,
+    errors,
     edit,
     reset,
+    setDuration,
+    add,
     sequence,
     setSequence,
     unknown,

@@ -5,6 +5,8 @@
  *   greese-theme.json   the theme (source of truth; read and written here)
  *   greese-theme.scss   SCSS using the kit, for apps that compile Sass
  *   greese-theme.css    the same, compiled, for apps that don't
+ *   greese-theme.effects.ts  the theme's effects, for the app's `defineGreeseEffect`
+ *                       (only while the theme has some)
  *
  * Choose the file with GREESE_THEME (relative to where npm was run):
  *   GREESE_THEME=src/styles/greese-theme.json npm run studio
@@ -12,7 +14,14 @@
  * Dev-only by design: it writes to disk, so it never exists in a build, and
  * it only accepts requests from the dev server's own origin.
  */
-import { existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { basename, dirname, extname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -29,6 +38,7 @@ import type { ImportSource } from '../src/studio/api.ts'
 import {
   customBreakpoints,
   emptySpec,
+  specToEffectsTs,
   specToScss,
   stylesheetScss,
   validateSpec,
@@ -43,6 +53,7 @@ export interface ThemeFiles {
   json: string
   scss: string
   css: string
+  effects: string
 }
 
 /** The theme the studio starts from, and the hosted studio's (src/hosted.ts). */
@@ -56,7 +67,7 @@ export const themeFiles = (
   // saving never rewrites the example the hosted studio starts from.
   const json = setting ? resolve(cwd, setting) : join(APP, '.local/greese-theme.json')
   const base = json.replace(/\.json$/, '')
-  return { json, scss: `${base}.scss`, css: `${base}.css` }
+  return { json, scss: `${base}.scss`, css: `${base}.css`, effects: `${base}.effects.ts` }
 }
 
 /**
@@ -65,7 +76,7 @@ export const themeFiles = (
  * alone and the stylesheet part once per set of breakpoints.
  */
 export type Compiled =
-  { scss: string; css: string; full?: boolean } | { errors: string[] }
+  { scss: string; css: string; effects?: string; full?: boolean } | { errors: string[] }
 
 const stylesheets = new Map<string, string>()
 
@@ -74,6 +85,7 @@ export const compileSpec = (spec: ThemeSpec, source?: string): Compiled => {
   const errors = validateSpec(spec)
   if (errors.length) return { errors }
   const scss = specToScss(spec, source)
+  const effects = specToEffectsTs(spec, source)
   const build = (text: string) =>
     compileString(text, {
       importers: [new NodePackageImporter(APP)],
@@ -81,12 +93,13 @@ export const compileSpec = (spec: ThemeSpec, source?: string): Compiled => {
     }).css
   try {
     const own = customBreakpoints(spec)
-    if (!own) return { scss, css: build(scss) }
+    if (!own) return { scss, css: build(scss), effects }
     const key = JSON.stringify(own)
     if (!stylesheets.has(key)) stylesheets.set(key, build(stylesheetScss(own)))
     return {
       scss,
       css: `${stylesheets.get(key)}\n${build(specToScss(spec, source, 'config'))}`,
+      effects,
       full: true,
     }
   } catch (error) {
@@ -221,7 +234,7 @@ export const studio = (): Plugin => {
             const spec = readSpec(files.json)
             return send(res, 200, {
               file: shown(files.json),
-              outputs: [shown(files.scss), shown(files.css)],
+              outputs: [shown(files.scss), shown(files.css), shown(files.effects)],
               spec,
               ...compileSpec(spec, basename(files.json)),
             })
@@ -248,9 +261,17 @@ export const studio = (): Plugin => {
             writeFileSync(files.json, lastWrite)
             writeFileSync(files.scss, result.scss)
             writeFileSync(files.css, result.css)
+            // Only a theme with effects has the file; one that dropped them drops it.
+            if (result.effects) writeFileSync(files.effects, result.effects)
+            else rmSync(files.effects, { force: true })
             return send(res, 200, {
               ...result,
-              written: [files.json, files.scss, files.css].map(shown),
+              written: [
+                files.json,
+                files.scss,
+                files.css,
+                ...(result.effects ? [files.effects] : []),
+              ].map(shown),
             })
           }
         } catch (error) {

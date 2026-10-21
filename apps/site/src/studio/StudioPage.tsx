@@ -42,7 +42,12 @@ export const StudioPage = (): JSX.Element => {
   const { scheme } = useColorScheme()
   const [file, setFile] = useState<FileState>()
   const [loadError, setLoadError] = useState<string>()
-  const [compiled, setCompiled] = useState({ scss: '', css: '', full: false })
+  const [compiled, setCompiled] = useState({
+    scss: '',
+    css: '',
+    effects: undefined as string | undefined,
+    full: false,
+  })
   const [building, setBuilding] = useState(false)
   /** The latest compile, so a slow one (a whole stylesheet) never lands after a newer. */
   const latest = useRef(0)
@@ -55,7 +60,7 @@ export const StudioPage = (): JSX.Element => {
   const [component, setComponent] = useState('Button')
   const [picked, setPicked] = useState<Picked>()
   const frame = useRef<HTMLIFrameElement>(null)
-  const lab = useGreeseLab()
+  const lab = useGreeseLab(spec, setSpec)
 
   const dirty = !!file && JSON.stringify(spec) !== file.saved
   /** What the button says once the last save is all there is: the files it wrote. */
@@ -121,11 +126,17 @@ export const StudioPage = (): JSX.Element => {
       setBuilding(false)
       setErrors(result.errors ?? [])
       if (result.css !== undefined)
-        setCompiled({ scss: result.scss!, css: result.css, full: !!result.full })
+        setCompiled({
+          scss: result.scss!,
+          css: result.css,
+          effects: result.effects,
+          full: !!result.full,
+        })
     }, 150)
     return () => clearTimeout(timer)
   }, [spec, file])
 
+  const effectsKey = JSON.stringify(spec.effects ?? null)
   const custom = customBreakpoints(spec)
   const breakpointsKey = JSON.stringify(custom ?? null)
   const cssMessage = (): ToPreview => ({
@@ -149,6 +160,7 @@ export const StudioPage = (): JSX.Element => {
     replayed.current = replay
   }, [replay, post, lab.play])
   useEffect(() => post({ type: 'inspect', on: inspect }), [inspect, post])
+  useEffect(() => post({ type: 'effects', effects: spec.effects }), [effectsKey, post])
   useEffect(() => post({ type: 'feature', block: component }), [component, post])
   useEffect(
     () =>
@@ -165,6 +177,7 @@ export const StudioPage = (): JSX.Element => {
       if (event.data.type === 'ready') {
         post(cssMessage())
         post({ type: 'scope', theme: spec.name || undefined, scheme })
+        post({ type: 'effects', effects: spec.effects })
         post({ type: 'inspect', on: inspect })
         post({ type: 'feature', block: component })
       }
@@ -284,6 +297,7 @@ export const StudioPage = (): JSX.Element => {
               <CodePanel
                 scss={compiled.scss}
                 css={compiled.css}
+                effects={compiled.effects}
                 outputs={file?.outputs ?? []}
                 spec={hosted ? spec : undefined}
                 breakpoints={custom}

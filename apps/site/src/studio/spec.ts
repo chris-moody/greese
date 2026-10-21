@@ -5,7 +5,11 @@
  * like one written by hand. Pure: the server and the browser both use it.
  */
 
+import type { Keyframes } from '@greese/js'
+import type { GreesePreset } from '@greese/react'
 import { breakpoints as defaultBreakpoints, color, scalarTokens } from '@greese/ui'
+import { formatKeyframes } from './effectCode.ts'
+import { toCssSteps } from './effectCss.ts'
 
 /** One value for both schemes, or a light/dark pair. */
 export type SchemeValue = string | { light: string; dark: string }
@@ -42,6 +46,50 @@ export interface ComponentSpec {
   motion?: MotionSpec
 }
 
+/** An effect the theme defines: its keyframes (greese.js's), and how long it runs. */
+export interface EffectSpec {
+  keyframes: Keyframes
+  /** Seconds. Without one, the effect takes the instance's, else 0.5. */
+  duration?: number
+}
+
+/**
+ * The effects that are plain CSS when played alone: retuning one also
+ * overrides its `@keyframes` (the others are JavaScript only). Kept in step
+ * with Motion.scss by a test.
+ */
+export const CSS_PRESETS = [
+  'fadeIn',
+  'fadeUp',
+  'fadeDown',
+  'fadeStart',
+  'fadeEnd',
+  'scaleIn',
+  'blurIn',
+  'slideUp',
+  'slideDown',
+  'slideRight',
+  'slideLeft',
+  'pop',
+  'popIn',
+] as const satisfies readonly GreesePreset[]
+
+/** Every effect the library has: the presets, the leaving effects, the interactions. Kept in step by a test. */
+export const BUILT_IN_EFFECTS = [
+  ...CSS_PRESETS,
+  'fadeOut',
+  'fadeOutUp',
+  'fadeOutDown',
+  'scaleOut',
+  'blurOut',
+  'popOut',
+  'rise',
+  'fall',
+  'squish',
+  'tilt',
+  'glow',
+] as const
+
 export interface ThemeSpec {
   /**
    * Scope to `data-greese-theme="<name>"` (a complete theme, as
@@ -64,6 +112,12 @@ export interface ThemeSpec {
   typography?: Record<string, Record<string, Record<string, string>>>
   /** Tunes every `greese` prop entrance: duration, delay, ease, distance. */
   motionDefaults?: Record<string, string>
+  /**
+   * Effects by camelCase name. A built-in's name retunes it (a preset's
+   * `@keyframes` are overridden in the theme's CSS, and every effect is
+   * defined for the runtime); any other name adds a new effect.
+   */
+  effects?: Record<string, EffectSpec>
   /** Overrides by component name: `{ Button: { … } }`. */
   components?: Record<string, ComponentSpec>
 }
@@ -92,6 +146,7 @@ const breakpointMap = (list: Array<[string, number]>): string =>
 
 const NAME = /^[a-z][a-z0-9-]*$/
 const COMPONENT = /^[A-Z][A-Za-z]*$/
+const EFFECT_NAME = /^[a-z][A-Za-z0-9]*$/
 const PROPERTY = /^(--)?[a-z][a-z0-9-]*$/
 const KEY = /^[a-z0-9][a-z0-9-]*$/
 // Values become CSS text: nothing that could end a declaration or a rule.
@@ -157,6 +212,37 @@ export const validateSpec = (spec: ThemeSpec): string[] => {
   for (const [k, v] of Object.entries(spec.motionDefaults ?? {})) {
     key('motionDefaults', k)
     value(`motionDefaults.${k}`, v)
+  }
+  for (const [name, effect] of Object.entries(spec.effects ?? {})) {
+    if (!EFFECT_NAME.test(name))
+      errors.push(`effects: ${JSON.stringify(name)} must be camelCase letters and digits`)
+    const where = `effects.${name}`
+    const frames = effect?.keyframes
+    const list = Array.isArray(frames)
+      ? frames
+      : frames && typeof frames === 'object'
+        ? [frames]
+        : []
+    if (
+      !list.length ||
+      !list.every((f) => f && typeof f === 'object' && !Array.isArray(f))
+    )
+      errors.push(`${where}: keyframes are an object, or a list of objects`)
+    for (const frame of list) {
+      for (const [prop, v] of Object.entries(frame as Record<string, unknown>)) {
+        if (prop === 'offset' || prop === 'ease') continue
+        if (!/^(--)?[A-Za-z][A-Za-z0-9-]*$/.test(prop))
+          errors.push(`${where}: ${JSON.stringify(prop)} is not a property name`)
+        for (const x of Array.isArray(v) ? v : [v])
+          if (
+            !(typeof x === 'number' && Number.isFinite(x)) &&
+            (typeof x !== 'string' || UNSAFE.test(x))
+          )
+            errors.push(`${where} ${prop}: ${JSON.stringify(x)} is not a value`)
+      }
+    }
+    if (effect?.duration !== undefined && !(effect.duration > 0))
+      errors.push(`${where}: duration is a number of seconds above 0`)
   }
   for (const [name, c] of Object.entries(spec.components ?? {})) {
     key('components', name, COMPONENT)
@@ -375,8 +461,66 @@ export const specToScss = (
   const body = spec.name
     ? `@include greese.theme(${spec.name}) {\n${blocks.join('\n\n')}\n}`
     : blocks.join('\n\n')
+  // @keyframes are global, so a retuned preset sits outside the theme's scope.
+  const keyframes = (CSS_PRESETS as readonly string[])
+    .filter((name) => spec.effects?.[name])
+    .map((name) => {
+      const steps = toCssSteps(spec.effects![name]!.keyframes).map(
+        ([at, decls]) =>
+          `  ${/%$/.test(at) ? `'${at}'` : at}: ${map(
+            Object.entries(decls).map(([p, v]) => [p, str(v)]),
+            '  '
+          )},`
+      )
+      return `@include greese.keyframes(greese-${kebabOf(name)}, (\n${steps.join('\n')}\n));`
+    })
   return `// Generated by GreeseUI Theme Studio from ${source}. Edit it there, or in
 // the studio (npm run studio); changes made here are overwritten.
 ${useLines(spec, entry)}
-${body ? `\n${body}\n` : ''}`
+${body ? `\n${body}\n` : ''}${keyframes.length ? `\n${keyframes.join('\n\n')}\n` : ''}`
 }
+
+/**
+ * The effects as a TypeScript module for the app: `defineGreeseEffect` for
+ * each, and the names added to `GreeseEffectRegistry` so they type-check.
+ * Import it once, at the app's entry. Without effects there's nothing to
+ * generate (undefined).
+ */
+export const specToEffectsTs = (
+  spec: ThemeSpec,
+  source = 'greese-theme.json'
+): string | undefined => {
+  const entries = Object.entries(spec.effects ?? {}).sort(([a], [b]) =>
+    a.localeCompare(b)
+  )
+  if (!entries.length) return undefined
+  const added = entries.map(([name]) => name).filter((name) => !isBuiltInEffect(name))
+  const indent = (text: string, by: string) => text.replace(/\n/g, `\n${by}`)
+  return `// Generated by GreeseUI Theme Studio from ${source}. Edit it there, or in
+// the studio (npm run studio); changes made here are overwritten.
+// Import it once, at your app's entry, before anything renders.
+import { defineGreeseEffect } from '@greese/react'
+${
+  added.length
+    ? `
+declare module '@greese/react' {
+  interface GreeseEffectRegistry {
+${added.map((name) => `    ${name}: true`).join('\n')}
+  }
+}
+`
+    : ''
+}
+${entries
+  .map(
+    ([name, effect]) =>
+      `defineGreeseEffect('${name}', {\n  keyframes: ${indent(formatKeyframes(effect.keyframes), '  ')},${
+        effect.duration !== undefined ? `\n  duration: ${effect.duration},` : ''
+      }\n})`
+  )
+  .join('\n\n')}
+`
+}
+
+const isBuiltInEffect = (name: string): boolean =>
+  (BUILT_IN_EFFECTS as readonly string[]).includes(name)

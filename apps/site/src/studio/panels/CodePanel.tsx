@@ -39,12 +39,15 @@ const download = (name: string, text: string) => {
 export const CodePanel = ({
   scss,
   css,
+  effects,
   outputs,
   spec,
   breakpoints,
 }: {
   scss: string
   css: string
+  /** The theme's effects as a module, while it has any. */
+  effects?: string
   outputs: string[]
   /** Given in the hosted studio: the theme, offered as files to download. */
   spec?: ThemeSpec
@@ -95,11 +98,21 @@ export const CodePanel = ({
         </Code>
       </Stack>
     )}
+    {effects && (
+      <Text variant="p3" tone="muted">
+        The theme has effects. Import <code>greese-theme.effects.ts</code> once at your
+        app’s entry so the runtime knows them; the CSS above already carries any retuned
+        entrance preset’s keyframes.
+      </Text>
+    )}
     {(
       [
-        ['SCSS', scss, 'greese-theme.scss'],
-        ['Compiled CSS', css, 'greese-theme.css'],
-      ] as const
+        ['SCSS', scss, 'greese-theme.scss'] as const,
+        ['Compiled CSS', css, 'greese-theme.css'] as const,
+        ...(effects
+          ? [['Effects (TypeScript)', effects, 'greese-theme.effects.ts']]
+          : []),
+      ] as ReadonlyArray<readonly [title: string, text: string, name: string]>
     ).map(([title, text, name]) => (
       <Stack gap={2} key={title}>
         <Stack direction="row" justify="between" align="center" gap={2}>

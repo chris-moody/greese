@@ -100,11 +100,12 @@ describe('compileSpec', () => {
 })
 
 describe('themeFiles', () => {
-  it('writes the SCSS and CSS next to the JSON', () => {
+  it('writes the SCSS, CSS and effects next to the JSON', () => {
     expect(themeFiles('styles/brand.json', '/app')).toEqual({
       json: '/app/styles/brand.json',
       scss: '/app/styles/brand.scss',
       css: '/app/styles/brand.css',
+      effects: '/app/styles/brand.effects.ts',
     })
   })
 })
