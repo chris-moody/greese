@@ -305,36 +305,24 @@ code.studio-row-label {
   border-color: var(--greese-color-primary);
 }
 
-/* Color dialog: the palette as a grid of swatches, marked with the roles using them. */
+/* Color dialog: the palette as a grid of small swatches, one column per hue. */
 .studio-palette {
   display: grid;
-  gap: 0.25rem;
+  gap: 2px;
+  padding-block-start: 0.75rem;
   overflow-x: auto;
-}
-
-.studio-palette-row {
-  display: grid;
-  grid-template-columns: 5.5rem repeat(11, minmax(2rem, 1fr));
-  gap: 0.25rem;
-  align-items: center;
-}
-
-.studio-palette-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .studio-palette-swatch {
   display: grid;
   place-content: center;
   aspect-ratio: 1;
-  min-inline-size: 2rem;
+  min-inline-size: 1.5rem;
   padding: 0;
-  border: 1px solid color-mix(in oklab, currentcolor 18%, transparent);
-  border-radius: var(--greese-radius-sm);
+  border: 0;
+  border-radius: 3px;
   font: inherit;
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 700;
   line-height: 1;
   cursor: pointer;
@@ -342,16 +330,48 @@ code.studio-row-label {
 
 .studio-palette-swatch[data-current] {
   outline: 2px solid var(--greese-color-fg);
-  outline-offset: 2px;
+  outline-offset: 1px;
+  position: relative;
 }
 
 .studio-palette-swatch:focus-visible {
   outline: 2px solid var(--greese-color-focus-ring);
-  outline-offset: 2px;
+  outline-offset: 1px;
+  position: relative;
 }
 
 .studio-palette-more {
-  font-size: 0.5625rem;
+  font-size: 0.5rem;
   font-weight: 500;
   opacity: 0.8;
+}
+
+.studio-contrast-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  font-size: 0.8125rem;
+}
+
+.studio-contrast-row > :first-child {
+  min-inline-size: 12rem;
+  font-weight: 600;
+}
+
+.studio-contrast-cell {
+  display: inline-flex;
+  gap: 0.375rem;
+  align-items: center;
+}
+
+.studio-contrast-sample {
+  display: inline-grid;
+  place-content: center;
+  inline-size: 1.75rem;
+  block-size: 1.5rem;
+  border: 1px solid var(--greese-color-border);
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }

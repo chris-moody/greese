@@ -27,7 +27,7 @@ const GROUPS: Array<[title: string, roles: ColorRole[]]> = [
  * Roles used as text, icons or outlines on the canvas, rather than as a
  * background: their chips show them on the canvas and grade that contrast.
  */
-const ON_CANVAS = new Set<ColorRole>([
+export const ON_CANVAS = new Set<ColorRole>([
   'fg',
   'fgMuted',
   'positive',
@@ -37,10 +37,10 @@ const ON_CANVAS = new Set<ColorRole>([
 ])
 
 /** Roles with no text drawn on or in them. */
-const NO_TEXT = new Set<ColorRole>(['border', 'borderStrong', 'scrim'])
+export const NO_TEXT = new Set<ColorRole>(['border', 'borderStrong', 'scrim'])
 
 /** WCAG's minimum: 4.5:1 for text, 3:1 for a focus indicator (a UI component). */
-const minimumFor = (role: ColorRole) => (role === 'focusRing' ? 3 : AA)
+export const minimumFor = (role: ColorRole) => (role === 'focusRing' ? 3 : AA)
 
 /** Roles drawn on, and so given a content color the chip previews. */
 export const hasContent = (role: ColorRole): boolean => `${role}Content` in color
@@ -61,7 +61,8 @@ export const valueIn = (spec: ThemeSpec, role: ColorRole, scheme: Scheme): strin
   return color[role][scheme]
 }
 
-export const isSet = (spec: ThemeSpec, role: string) => getIn(spec, pathOf(role)) !== undefined
+export const isSet = (spec: ThemeSpec, role: string) =>
+  getIn(spec, pathOf(role)) !== undefined
 
 /** `#rrggbbaa` laid over an opaque `#rrggbb`, as the eye sees it. */
 export const over = (top: string, bottom: string): string => {
@@ -115,7 +116,7 @@ const sample = (
   return { background, text, code: self, ratio }
 }
 
-const grade = (ratio: number, min: number) =>
+export const grade = (ratio: number, min: number) =>
   min < AA
     ? ratio >= min
       ? 'UI'
