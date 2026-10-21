@@ -1,3 +1,4 @@
+import type { Keyframes } from '@greese/js'
 import type { GreeseOptions } from '../../utils/greese.ts'
 
 /** The client runtime behind the `greese` prop: see greeseRuntime.ts. */
@@ -6,6 +7,8 @@ export interface GreeseRuntime {
   attachAll(
     items: Array<{ el: HTMLElement; options: GreeseOptions; detach?: () => void }>
   ): void
+  /** The built-in effects as plain keyframes. */
+  effectFrames(distance?: string): Record<string, Keyframes>
 }
 
 /** The lazy half of the `scope` option: see scope.ts. */
@@ -37,3 +40,13 @@ export const loadGreeseScopes = (): Promise<GreeseScopes> =>
 
 export const loadGreeseRuntime = (): Promise<GreeseRuntime> =>
   (registered ??= import('./greeseRuntime.ts'))
+
+/**
+ * Every built-in effect as plain keyframes, by name, with `distance` resolved
+ * (default `'1rem'`) and left to right: for showing or editing effects in a
+ * tool. Loads the runtime chunk.
+ */
+export const describeGreeseEffects = (
+  distance?: string
+): Promise<Record<string, Keyframes>> =>
+  loadGreeseRuntime().then((runtime) => runtime.effectFrames(distance))

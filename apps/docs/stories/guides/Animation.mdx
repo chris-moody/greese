@@ -168,6 +168,10 @@ declare module '@greese/react' {
 }
 ```
 
+To read the built-in effects as plain keyframes (to list or edit them, as Theme
+Studio's Greese tab does), `describeGreeseEffects(distance?)` resolves to every
+name's keyframes at that distance.
+
 ```tsx
 <Card greese="fadeUp,wobble" />
 <Card greese={{ inView: 'drift', distance: '2rem' }} />

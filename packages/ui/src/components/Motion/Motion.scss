@@ -51,7 +51,7 @@ $presets: (
   }
 
   .greese-Motion--exit-scale-out {
-    --greese-motion-exit-scale: 0.95;
+    --greese-motion-exit-scale: 0.92;
   }
 
   // Stagger: each child's position, for the delay. Children past 24 share
@@ -161,7 +161,6 @@ $presets: (
 
     @keyframes greese-scale-in {
       from {
-        opacity: 0;
         scale: 0.92;
       }
     }

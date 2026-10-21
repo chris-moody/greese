@@ -42,7 +42,7 @@ const BUILT_IN = {
   fadeDown: ({ distance: d }) => ({ opacity: [0, 1], y: [negate(d), ZERO] }),
   fadeStart: (c) => ({ opacity: [0, 1], x: [fromStart(c), ZERO] }),
   fadeEnd: (c) => ({ opacity: [0, 1], x: [negate(fromStart(c)), ZERO] }),
-  scaleIn: { opacity: [0, 1], scale: [0.92, 1] },
+  scaleIn: { scale: [0.92, 1] },
   blurIn: { opacity: [0, 1], filter: ['blur(8px)', 'blur(0px)'] },
   slideUp: { y: ['100%', '0%'] },
   slideDown: { y: ['-100%', '0%'] },
@@ -62,7 +62,7 @@ const BUILT_IN = {
   fadeOut: { opacity: [1, 0] },
   fadeOutUp: ({ distance: d }) => ({ opacity: [1, 0], y: [ZERO, negate(d)] }),
   fadeOutDown: ({ distance: d }) => ({ opacity: [1, 0], y: [ZERO, d] }),
-  scaleOut: { opacity: [1, 0], scale: [1, 0.95] },
+  scaleOut: { scale: [1, 0.92] },
   blurOut: { opacity: [1, 0], filter: ['blur(0px)', 'blur(8px)'] },
   rise: { y: [0, -4], scale: [1, 1.02] },
   fall: { y: [0, 4], scale: [1, 0.98] },
@@ -77,6 +77,25 @@ export type BuiltInEffect = keyof typeof BUILT_IN
 /** A built-in effect, then a defined one. Own keys only, so `constructor` is no effect. */
 const lookup = (name: string): GreeseEffect | undefined =>
   Object.hasOwn(BUILT_IN, name) ? BUILT_IN[name as BuiltInEffect] : definedEffect(name)
+
+/**
+ * Every built-in effect as plain keyframes, for tools that show or edit them
+ * (Theme Studio): the functions resolved at one distance, left to right.
+ */
+export const effectFrames = (distance = '1rem'): Record<string, Keyframes> =>
+  Object.fromEntries(
+    Object.entries(BUILT_IN).map(([name, effect]) => {
+      const kf = (
+        typeof effect === 'object' && 'keyframes' in effect ? effect.keyframes : effect
+      ) as GreeseEffectKeyframes
+      return [
+        name,
+        typeof kf === 'function'
+          ? kf({ el: undefined as never, distance, rtl: false })
+          : kf,
+      ]
+    })
+  )
 
 /** One step of a sequence: effects that play together, or a pause in seconds. */
 export type GreeseStep = string[] | number

@@ -32,6 +32,7 @@ export {
   type GreeseEffectKeyframes,
   type GreeseEffectWithDefaults,
 } from './components/Motion/effects.ts'
+export { describeGreeseEffects } from './components/Motion/registry.ts'
 export {
   computeFallbackPosition,
   positionArea,
