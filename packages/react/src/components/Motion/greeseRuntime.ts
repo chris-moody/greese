@@ -267,7 +267,7 @@ const buildEntrance = ({ el, o, reduce, ctx, cleanups }: Setup): Timeline => {
 }
 
 /** Steps at which reveal readiness is re-checked as an element scrolls in. */
-const REVEAL_THRESHOLDS = [0, 0.25, 0.5, 0.75, 1]
+const REVEAL_THRESHOLDS = [0, 0.01, 0.02, 0.05, 0.1, 0.15, 0.25, 0.4, 0.5, 0.75, 1]
 
 /** Plays the entrance now, or, for `inView`, when the element scrolls into view. */
 const startEntrance = ({ el, o, reduce, cleanups }: Setup, entrance: Timeline) => {
@@ -295,11 +295,13 @@ const startEntrance = ({ el, o, reduce, cleanups }: Setup, entrance: Timeline) =
       if (!entry) return
       // Reveal once the element sits wholly in view, clear of the bottom edge
       // (the root margin), so it never animates in half cut off. One too tall
-      // to fit reveals once it fills half the viewport.
+      // for that reveals once a quarter of the viewport (at most) is showing,
+      // not after the reader has scrolled well past its start.
       if (
         entry.isIntersecting &&
         (entry.intersectionRatio > 0.99 ||
-          entry.intersectionRect.height >= innerHeight / 2)
+          (entry.boundingClientRect.height > innerHeight * 0.5 &&
+            entry.intersectionRect.height >= innerHeight * 0.2))
       )
         reveal()
       else if (!entry.isIntersecting && shown && o.once === false) {
