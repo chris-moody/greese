@@ -14,7 +14,7 @@ export interface MotionProps extends ComponentPropsWithRef<'div'>, GreeseProps {
  *
  * ```tsx
  * <Motion greese="fadeUp"><img src={hero} alt="" /></Motion>
- * <Motion asChild greese={{ hover: 'lift' }}><a href="/pricing">Pricing</a></Motion>
+ * <Motion asChild greese={{ hover: 'rise' }}><a href="/pricing">Pricing</a></Motion>
  * ```
  */
 export const Motion = ({

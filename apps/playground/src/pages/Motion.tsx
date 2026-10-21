@@ -176,7 +176,7 @@ export const Motion = (): JSX.Element => {
       >
         In together, wait, out
       </Card>
-      <Button data-testid="hover" greese={{ hover: 'lift', press: 'squish' }}>
+      <Button data-testid="hover" greese={{ hover: 'rise', press: 'squish' }}>
         Hover me
       </Button>
       <Dialog

@@ -70,7 +70,7 @@ const PlayOnClick = ({
 declare module '@greese/react' {
   interface GreeseEffectRegistry {
     wobble: true
-    rise: true
+    drift: true
     spin: true
   }
 }
@@ -79,7 +79,7 @@ defineGreeseEffect('wobble', {
   keyframes: { rotate: [0, -6, 6, -3, 0] },
   duration: 0.6,
 })
-defineGreeseEffect('rise', ({ distance }) => ({
+defineGreeseEffect('drift', ({ distance }) => ({
   y: [`calc(${distance} * 3)`, '0rem'],
   opacity: [0, 1],
 }))
@@ -108,7 +108,7 @@ const meta = {
         'pop',
         'fadeIn+scaleIn',
         'fadeUp,wobble',
-        'rise,+0.3,spin',
+        'drift,+0.3,spin',
       ],
     },
   },
@@ -330,7 +330,7 @@ export const LeavingEffects: Story = {
  * function of `{ el, distance, rtl }` returning keyframes, or
  * `{ keyframes, duration, ease }` with defaults the prop's options override.
  * Names are strings, so Server Components can use them too; define them in
- * client code. This file defines `wobble`, `rise` and `spin`.
+ * client code. This file defines `wobble`, `drift` and `spin`.
  */
 export const CustomEffects: Story = {
   render: () => (
@@ -341,13 +341,13 @@ export const CustomEffects: Story = {
         </Card>
       </Replay>
       <Replay>
-        <Card greese={{ enter: 'rise', distance: '1.5rem' }}>
-          <code>rise</code>
+        <Card greese={{ enter: 'drift', distance: '1.5rem' }}>
+          <code>drift</code>
         </Card>
       </Replay>
       <Replay>
-        <Card greese="rise,+0.3,spin">
-          <code>rise,+0.3,spin</code>
+        <Card greese="drift,+0.3,spin">
+          <code>drift,+0.3,spin</code>
         </Card>
       </Replay>
       <Button greese={{ hover: 'wobble', duration: 0.4 }}>Hover: wobble</Button>
@@ -359,11 +359,11 @@ export const CustomEffects: Story = {
 export const Interactions: Story = {
   render: () => (
     <Stack direction="row" gap={3} wrap="wrap" align="center">
-      <Button greese={{ hover: 'lift', press: 'squish' }}>Lift + squish</Button>
+      <Button greese={{ hover: 'rise', press: 'squish' }}>Lift + squish</Button>
       <Button variant="outline" greese={{ hover: 'tilt' }}>
         Tilt
       </Button>
-      <Button variant="soft" greese={{ hover: 'glow', focus: 'lift' }}>
+      <Button variant="soft" greese={{ hover: 'glow', focus: 'rise' }}>
         Glow (focus lifts)
       </Button>
       <Card

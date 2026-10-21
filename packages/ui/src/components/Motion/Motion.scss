@@ -13,7 +13,11 @@ $presets: (
   'scale-in',
   'blur-in',
   'slide-up',
-  'pop'
+  'slide-down',
+  'slide-right',
+  'slide-left',
+  'pop',
+  'pop-in'
 );
 
 @layer greese.utilities {
@@ -175,7 +179,37 @@ $presets: (
       }
     }
 
+    @keyframes greese-slide-down {
+      from {
+        translate: 0 -100%;
+      }
+    }
+
+    // Right and left are physical: the direction the element moves.
+    @keyframes greese-slide-right {
+      from {
+        translate: -100% 0;
+      }
+    }
+
+    @keyframes greese-slide-left {
+      from {
+        translate: 100% 0;
+      }
+    }
+
+    // A springy scale with no fade; `pop-in` adds one.
     @keyframes greese-pop {
+      0% {
+        scale: 0.8;
+      }
+
+      60% {
+        scale: 1.04;
+      }
+    }
+
+    @keyframes greese-pop-in {
       0% {
         opacity: 0;
         scale: 0.8;

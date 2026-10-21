@@ -114,7 +114,7 @@ describe('resolveGreese', () => {
     expect(elastic.runtime).toBe(true)
     expect(elastic.className).toBeUndefined()
     const cases: GreeseOptions[] = [
-      { hover: 'lift' },
+      { hover: 'rise' },
       { inView: 'fadeIn' },
       { text: 'type' },
       { enter: { opacity: [0, 1] } },
@@ -180,7 +180,7 @@ describe('the greese prop on components', () => {
 
 describe('the runtime', () => {
   it('plays an interaction while hovered and reverses on leave', async () => {
-    render(<Button greese={{ hover: 'lift' }}>Go</Button>)
+    render(<Button greese={{ hover: 'rise' }}>Go</Button>)
     await attached()
     vi.useFakeTimers({
       toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],
@@ -251,7 +251,7 @@ describe('the runtime', () => {
   it('does nothing interactive under reduced motion, and reveals at once', async () => {
     setMedia({ reducedMotion: true })
     render(
-      <Card data-testid="c" greese={{ hover: 'lift', inView: 'fadeIn' }}>
+      <Card data-testid="c" greese={{ hover: 'rise', inView: 'fadeIn' }}>
         Card
       </Card>
     )
@@ -292,6 +292,10 @@ describe('effects and sequences', () => {
       0.25,
       ['pop', 'glow'],
     ])
+  })
+
+  it('reads a negative number as an overlap', () => {
+    expect(parseSequence('slideUp,-0.2,popIn')).toEqual([['slideUp'], -0.2, ['popIn']])
   })
 
   it('sends sequences and defined effects to the runtime, keeping CSS for a lone preset', () => {
@@ -396,7 +400,11 @@ describe('one source of truth for effect names', () => {
     'scaleIn',
     'blurIn',
     'slideUp',
+    'slideDown',
+    'slideRight',
+    'slideLeft',
     'pop',
+    'popIn',
   ] as const satisfies readonly GreesePreset[]
   // …and this one if the list above misses a preset.
   const complete: [GreesePreset] extends [(typeof presets)[number]] ? true : never = true

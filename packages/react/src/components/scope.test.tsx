@@ -1,7 +1,12 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { resolveGreese } from '../utils/greese.ts'
-import { applyScopes, clearScope, holdUntilVisible } from './Motion/scope.ts'
+import {
+  applyScopes,
+  clearScope,
+  holdUntilVisible,
+  restartScope,
+} from './Motion/scope.ts'
 import { Stack } from './Stack/Stack.tsx'
 import { Text } from './Text/Text.tsx'
 
@@ -162,5 +167,23 @@ describe('the scope option', () => {
     )
     expect(screen.getByTestId('s').dataset.greeseScope).toBeUndefined()
     expect(at(screen.getByText('no entrance'))).toBe('')
+  })
+})
+
+describe('restarting a scope', () => {
+  it('leaves no inline animation behind, so the CSS one plays again', () => {
+    const root = html(
+      `<div id="s" class="${SCOPE}"><p id="a" class="${ENTER}"></p></div>`
+    )
+    restartScope(root.querySelector<HTMLElement>('#s')!)
+    expect(root.querySelector<HTMLElement>('#a')!.style.animation).toBe('')
+  })
+
+  it('releases a scope that is already in view instead of leaving it held', () => {
+    const root = html(`<div id="s" class="${SCOPE}"></div>`)
+    const el = root.querySelector<HTMLElement>('#s')!
+    el.dataset.greeseScope = 'pending'
+    holdUntilVisible(el, true)
+    expect(el.dataset.greeseScope).toBeUndefined()
   })
 })

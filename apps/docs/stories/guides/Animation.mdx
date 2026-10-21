@@ -10,7 +10,7 @@ GreeseUI animates on three levels, from least to most code:
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | **The `greese` prop**            | Presets and options on any component: entrances, scroll reveals, hover/press/focus, text effects, overlay exits | Presets: CSS only. Interactions and text: a small runtime, loaded on first use |
 | **`<Motion>` and `useGreese()`** | The prop for any element; greese.js tied to a component's lifetime                                              | The same, plus what you build                                                  |
-| **greese.js directly**           | Full timelines, re-exported from `@greese/react`                                                             | About 5 kB, only if imported                                                   |
+| **greese.js directly**           | Full timelines, re-exported from `@greese/react`                                                                | About 5 kB, only if imported                                                   |
 
 The live demos are under **Motion/greese prop** and **Motion/greese.js**.
 greese.js on its own, in every install form, is covered in
@@ -33,7 +33,7 @@ Toaster; a type check in the build enforces it.
 <Card greese="fadeUp" />                                     // enter preset
 <Card greese={{ inView: 'fadeUp' }} />                       // when scrolled into view
 <Stack greese={{ enter: 'fadeUp', stagger: 0.05 }}>…</Stack> // children in turn
-<Button greese={{ hover: 'lift', press: 'squish' }} />       // interaction feedback
+<Button greese={{ hover: 'rise', press: 'squish' }} />       // interaction feedback
 <Heading greese={{ text: 'split' }}>Served fast</Heading>    // text effects
 <Dialog greese={{ enter: 'pop', exit: 'scaleOut' }} … />     // overlay enter and exit
 <Card greese="fadeIn+scaleIn,+2,fadeOut" />                  // a sequence of effects
@@ -45,16 +45,16 @@ Toaster; a type check in the build enforces it.
 | Option                    | Values                                                                                                                                                          | Needs JavaScript?             |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
 | `enter`                   | An effect, a [sequence](#composing-effects), or greese.js keyframes                                                                                             | A preset alone: no. Else: yes |
-| `inView`                  | The same; plays once wholly in view, clear of the bottom 10% of the viewport (taller elements: half the viewport). Elements already in view stay as they are                                                                              | Yes (an IntersectionObserver) |
+| `inView`                  | The same; plays once wholly in view, clear of the bottom 10% of the viewport (taller elements: half the viewport). Elements already in view stay as they are    | Yes (an IntersectionObserver) |
 | `once`                    | `inView` plays only the first time (default `true`)                                                                                                             |                               |
 | `exit`                    | `'fadeOut'`, `'fadeOutDown'`, `'fadeOutUp'`, `'scaleOut'`: how an overlay (Dialog, Popover, Menu, Tooltip) leaves                                               | No                            |
-| `hover`, `press`, `focus` | Usually `'lift'`, `'squish'`, `'tilt'`, `'glow'`; any effect, sequence or keyframes. Plays and reverses; interruptible. Hover ignores touch                     | Yes                           |
+| `hover`, `press`, `focus` | Usually `'rise'`, `'squish'`, `'tilt'`, `'glow'`; any effect, sequence or keyframes. Plays and reverses; interruptible. Hover ignores touch                     | Yes                           |
 | `text`                    | `'type'`, `'count'`, `'split'`, for plain-text content                                                                                                          | Yes                           |
 | `duration`, `delay`       | Seconds. `duration` applies to each effect and overrides an effect's own. Defaults: 0.5 for entrances, 0.2 for interactions                                     |                               |
 | `ease`                    | Any greese.js ease. `linear`, `in`, `out`, `inOut`, the CSS keywords and bézier arrays stay CSS-only; others (`elastic.out`…) switch the entrance to JavaScript |                               |
 | `distance`                | How far `fadeUp`/`Down`/`Start`/`End` and `fadeOutUp`/`Down` travel (default `'1rem'`)                                                                          |                               |
 | `stagger`                 | Seconds between children: animates the children instead of the element                                                                                          |                               |
-| `scope`                   | `true` or `{ stagger, delay, inView }`: orders every `enter` inside this element, at any depth (see Scopes)                                                      | No (a small lazy chunk)       |
+| `scope`                   | `true` or `{ stagger, delay, inView, replay }`: orders every `enter` inside this element, at any depth (see Scopes)                                             | No (a small lazy chunk)       |
 | `timeline`                | `(tl, el) => void`: fill a greese.js timeline yourself. It plays on enter, or on reveal with `inView`                                                           | Yes                           |
 
 ### Scopes: ordering the entrances inside a parent
@@ -67,7 +67,9 @@ inside it, however deep, as one sequence:
   <Heading greese={{ enter: 'fadeUp' }}>Title</Heading>
   <Text greese={{ enter: 'fadeUp' }}>Intro</Text>
   <Grid greese={{ scope: { stagger: 0.05 } }}>
-    {cards.map((c) => <Card greese={{ enter: 'scaleIn' }}>…</Card>)}
+    {cards.map((c) => (
+      <Card greese={{ enter: 'scaleIn' }}>…</Card>
+    ))}
   </Grid>
 </Stack>
 ```
@@ -76,7 +78,7 @@ Each member declares only its own entrance; the scope gives it a start time:
 `delay + position × stagger`, in document order. A scope inside a scope takes
 one position in the outer one and its members start from there, so a section's
 contents play as a block in the page's sequence. `inView: true` holds the whole
-scope until it scrolls into view. Members still use their own `duration`,
+scope until it scrolls into view. `replay` plays the scope again in place, without remounting: change it (a counter a Replay button bumps) and every entrance restarts. Members still use their own `duration`,
 `ease` and `delay` (which adds to the start time).
 
 It's opt-in on purpose. A scope is a client component that loads a small lazy
@@ -97,12 +99,12 @@ server components behave as before. Things to know:
 
 Effect names are camelCase.
 
-| Kind        | Effects                                                                                                                                                               |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Entrances   | `fadeIn`, `fadeUp`, `fadeDown`, `fadeStart`, `fadeEnd` (these two follow the writing direction), `scaleIn`, `blurIn`, `slideUp`, `pop`. CSS presets when played alone |
-| Leaving     | `fadeOut`, `fadeOutUp`, `fadeOutDown`, `scaleOut`, `blurOut`. For sequences; overlays play the first four as `exit`                                                   |
-| Interaction | `lift`, `squish`, `tilt`, `glow`                                                                                                                                      |
-| Yours       | Anything defined with [`defineGreeseEffect()`](#custom-effects)                                                                                                       |
+| Kind        | Effects                                                                                                                                                                                                                                                                          |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Entrances   | `fadeIn`, `fadeUp`, `fadeDown`, `fadeStart`, `fadeEnd` (these two follow the writing direction), `scaleIn`, `blurIn`, `slideUp`, `slideDown`, `slideRight`, `slideLeft` (physical directions), `pop` (a springy scale), `popIn` (pop with a fade). CSS presets when played alone |
+| Leaving     | `fadeOut`, `fadeOutUp`, `fadeOutDown`, `scaleOut`, `blurOut`. For sequences; overlays play the first four as `exit`                                                                                                                                                              |
+| Interaction | `rise`, `fall`, `squish`, `tilt`, `glow`                                                                                                                                                                                                                                         |
+| Yours       | Anything defined with [`defineGreeseEffect()`](#custom-effects)                                                                                                                                                                                                                  |
 
 Any effect works in any slot (`enter`, `inView`, `hover`, `press`, `focus`):
 `hover: 'pop'` is allowed, if unusual. An effect that ends hidden (`fadeOut`)
@@ -114,13 +116,13 @@ A sequence is one string:
 
 - **`+`** plays effects at the same time;
 - **`,`** separates groups, and each group starts when the previous one ends;
-- **a number** (`2`, `+2`, `0.5`) is a pause, in seconds.
+- **a number** (`2`, `+2`, `0.5`) is a pause, in seconds; a **negative** one (`-0.2`) backs the next step up, so it overlaps the one before: `slideUp,-0.2,popIn`.
 
 ```tsx
 <Card greese="fadeIn+scaleIn,+2,fadeOut" />           // in together, wait 2 s, fade out
 <Card greese={{ enter: 'fadeUp,pop', duration: 0.3 }} /> // each effect 0.3 s
 <Stack greese={{ inView: 'fadeStart+blurIn', stagger: 0.05 }}>…</Stack>
-<Button greese={{ hover: 'lift+glow' }} />            // interactions compose too
+<Button greese={{ hover: 'rise+glow' }} />            // interactions compose too
 ```
 
 - Sequences run in greese.js, so they load the runtime. A preset on its own
@@ -144,7 +146,7 @@ import { defineGreeseEffect } from '@greese/react'
 defineGreeseEffect('wobble', { rotate: [0, -6, 6, -3, 0] })
 
 // A function of { el, distance, rtl }, for effects that adapt
-defineGreeseEffect('rise', ({ distance }) => ({
+defineGreeseEffect('drift', ({ distance }) => ({
   y: [`calc(${distance} * 3)`, '0rem'],
   opacity: [0, 1],
 }))
@@ -160,7 +162,7 @@ defineGreeseEffect('spin', {
 declare module '@greese/react' {
   interface GreeseEffectRegistry {
     wobble: true
-    rise: true
+    drift: true
     spin: true
   }
 }
@@ -168,7 +170,7 @@ declare module '@greese/react' {
 
 ```tsx
 <Card greese="fadeUp,wobble" />
-<Card greese={{ inView: 'rise', distance: '2rem' }} />
+<Card greese={{ inView: 'drift', distance: '2rem' }} />
 <Button greese={{ hover: 'wobble', duration: 0.4 }} />
 ```
 
@@ -279,7 +281,7 @@ A per-instance option (`greese={{ duration: 0.3 }}`) wins over these.
 import { Motion } from '@greese/react'
 
 <Motion greese="fadeUp"><img src={hero} alt="" /></Motion>       // wraps in a <div>
-<Motion asChild greese={{ hover: 'lift' }}><a href="/pricing">Pricing</a></Motion>
+<Motion asChild greese={{ hover: 'rise' }}><a href="/pricing">Pricing</a></Motion>
 ```
 
 ## `useGreese()`: greese.js in a component

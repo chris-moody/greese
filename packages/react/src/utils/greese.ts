@@ -14,13 +14,17 @@ export type GreesePreset =
   | 'scaleIn'
   | 'blurIn'
   | 'slideUp'
+  | 'slideDown'
+  | 'slideRight'
+  | 'slideLeft'
   | 'pop'
+  | 'popIn'
 
 /** Leaving effects. Overlays (Dialog, Popover, Menu, Tooltip) also play these as `exit`, in CSS. */
 export type GreeseExit = 'fadeOut' | 'fadeOutUp' | 'fadeOutDown' | 'scaleOut'
 
 /** Interaction presets for `hover`, `press` and `focus`. */
-export type GreeseInteraction = 'lift' | 'squish' | 'tilt' | 'glow'
+export type GreeseInteraction = 'rise' | 'fall' | 'squish' | 'tilt' | 'glow'
 
 /** Text effects, for elements whose content is plain text. */
 export type GreeseTextEffect = 'type' | 'count' | 'split'
@@ -42,8 +46,10 @@ export type GreeseEffectName = BuiltInEffect | Extract<keyof GreeseEffectRegistr
 
 /**
  * Effects composed in one string: `+` plays effects together, `,` separates
- * groups that play in turn, and a number is a pause in seconds.
- * `'fadeIn+scaleIn,+2,fadeOut'` fades and scales in, waits 2 s, fades out.
+ * groups that play in turn, and a number is a pause in seconds. A negative
+ * number pulls the next group back that many seconds, so it overlaps the one
+ * before. `'fadeIn+scaleIn,+2,fadeOut'` fades and scales in, waits 2 s, fades
+ * out; `'slideUp,-0.2,pop'` starts the pop 0.2 s before the slide ends.
  */
 export type GreeseSequence = `${string},${string}` | `${string}+${string}`
 
@@ -58,6 +64,11 @@ export interface GreeseScope {
   delay?: number
   /** Hold the members until the scope scrolls into view (they play at once when it already is). */
   inView?: boolean
+  /**
+   * Change it to play the scope's entrances again, in place and without
+   * remounting anything: a counter, say, that a Replay button bumps.
+   */
+  replay?: number | string
 }
 
 export interface GreeseOptions {
@@ -124,7 +135,8 @@ export interface GreeseProps {
 }
 
 /** Presets CSS plays alone; anything else named is a job for the runtime. */
-const CSS_PRESETS = /^(fade(In|Up|Down|Start|End)|scaleIn|blurIn|slideUp|pop)$/
+const CSS_PRESETS =
+  /^(fade(In|Up|Down|Start|End)|scaleIn|blurIn|slide(Up|Down|Right|Left)|pop|popIn)$/
 
 /** The class-name form of an effect name: `fadeUp` → `fade-up`. */
 const kebab = (name: string) => name.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)

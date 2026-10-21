@@ -69,11 +69,30 @@ export const clearScope = (el: HTMLElement): void => {
 }
 
 /**
+ * Plays a scope's entrances again from their first frame, without remounting
+ * anything: each animation is dropped, a reflow commits that, and it comes
+ * back, which restarts it.
+ */
+export const restartScope = (el: HTMLElement): void => {
+  const members = [...el.querySelectorAll<HTMLElement>(MEMBER)]
+  for (const node of members) node.style.animation = 'none'
+  void el.offsetWidth
+  for (const node of members) node.style.removeProperty('animation')
+}
+
+/** The `replay` each scope last played with, to tell a change from a first attach. */
+const replays = new WeakMap<HTMLElement, unknown>()
+
+/**
  * Holds a scope's members until it scrolls into view, then lets them play. A
- * scope already in view isn't held. Returns the way to stop.
+ * scope already in view isn't held: it's released at once. Returns the way to
+ * stop.
  */
 export const holdUntilVisible = (el: HTMLElement, inViewport: boolean): (() => void) => {
-  if (inViewport) return () => {}
+  if (inViewport) {
+    delete el.dataset.greeseScope
+    return () => {}
+  }
   el.dataset.greeseScope = 'pending'
   const observer = new IntersectionObserver(
     (entries) => {
@@ -109,7 +128,12 @@ export const attachScopes = (
   applyScopes(items.map(({ el, options }) => ({ el, scope: options.scope! })))
   for (const item of items) {
     const { el } = item
-    const wait = scopeOptions(item.options.scope!).inView
+    const { inView: wait, replay } = scopeOptions(item.options.scope!)
+    // A new `replay` value plays the entrances again, from the held first frame.
+    if (replay !== undefined) {
+      if (replays.has(el) && replays.get(el) !== replay) restartScope(el)
+      replays.set(el, replay)
+    }
     const stop = wait ? holdUntilVisible(el, inViewport(el)) : () => {}
     if (!wait) delete el.dataset.greeseScope
     const detach = item.detach

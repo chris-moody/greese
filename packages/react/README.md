@@ -235,7 +235,7 @@ Every component that draws something accepts `greese`:
 ```tsx
 <Card greese="fadeUp" />                                     // entrance preset: CSS only
 <Stack greese={{ inView: 'fadeUp', stagger: 0.05 }}>…</Stack> // reveal on scroll, children in turn
-<Button greese={{ hover: 'lift', press: 'squish' }} />       // interactions
+<Button greese={{ hover: 'rise', press: 'squish' }} />       // interactions
 <Heading greese={{ text: 'split' }}>Served fast</Heading>    // text effects
 <Dialog greese={{ enter: 'pop', exit: 'scaleOut' }} … />     // overlay enter and exit
 <Card greese="fadeIn+scaleIn,+2,fadeOut" />                  // sequence: + together, comma next, number pause

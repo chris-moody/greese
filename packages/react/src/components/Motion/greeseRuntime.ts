@@ -45,17 +45,27 @@ const BUILT_IN = {
   scaleIn: { opacity: [0, 1], scale: [0.92, 1] },
   blurIn: { opacity: [0, 1], filter: ['blur(8px)', 'blur(0px)'] },
   slideUp: { y: ['100%', '0%'] },
-  pop: [
+  slideDown: { y: ['-100%', '0%'] },
+  slideRight: { x: ['-100%', '0%'] },
+  slideLeft: { x: ['100%', '0%'] },
+  pop: [{ scale: 0.8 }, { scale: 1.04, offset: 0.6 }, { scale: 1 }],
+  popIn: [
     { opacity: 0, scale: 0.8 },
     { opacity: 1, scale: 1.04, offset: 0.6 },
     { scale: 1 },
+  ],
+  popOut: [
+    { opacity: 1, scale: 1 },
+    { opacity: 1, scale: 1.04, offset: 0.4 },
+    { opacity: 0, scale: 0.8 },
   ],
   fadeOut: { opacity: [1, 0] },
   fadeOutUp: ({ distance: d }) => ({ opacity: [1, 0], y: [ZERO, negate(d)] }),
   fadeOutDown: ({ distance: d }) => ({ opacity: [1, 0], y: [ZERO, d] }),
   scaleOut: { opacity: [1, 0], scale: [1, 0.95] },
   blurOut: { opacity: [1, 0], filter: ['blur(0px)', 'blur(8px)'] },
-  lift: { y: [0, -4], scale: [1, 1.02] },
+  rise: { y: [0, -4], scale: [1, 1.02] },
+  fall: { y: [0, 4], scale: [1, 0.98] },
   squish: { scale: [1, 0.96] },
   tilt: { rotate: [0, -2] },
   glow: { filter: ['brightness(1)', 'brightness(1.12)'] },
@@ -73,13 +83,14 @@ export type GreeseStep = string[] | number
 
 /**
  * Parses `'fadeIn+scaleIn,+2,fadeOut'`: commas separate steps that play in
- * turn, `+` joins effects that play together, and a number is a pause.
+ * turn, `+` joins effects that play together, and a number is a pause. A
+ * negative number (`-0.2`) backs the next step up, so it overlaps the last.
  */
 export const parseSequence = (sequence: string): GreeseStep[] => {
   const steps: GreeseStep[] = []
   for (const raw of sequence.split(',')) {
     const step = raw.trim()
-    if (/^\+?(\d+\.?\d*|\.\d+)$/.test(step)) steps.push(Number(step))
+    if (/^[+-]?(\d+\.?\d*|\.\d+)$/.test(step)) steps.push(Number(step))
     else if (step)
       steps.push(
         step
@@ -118,7 +129,7 @@ export const addMotion = (
   let held = !hold
   // A reduce, not reassigned locals: each step starts where the last ended.
   return steps.reduce<number>((cursor, step) => {
-    if (typeof step === 'number') return cursor + step
+    if (typeof step === 'number') return Math.max(at, cursor + step)
     // Keyframes given directly are a one-step sequence.
     const effects: GreeseEffect[] =
       typeof motion === 'string'

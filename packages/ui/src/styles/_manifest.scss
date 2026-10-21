@@ -339,7 +339,7 @@ $blocks: (
   ),
   'Motion': (
     parts: (),
-    modifiers: ('enter', 'enter-blur-in', 'enter-fade-down', 'enter-fade-end', 'enter-fade-in', 'enter-fade-start', 'enter-fade-up', 'enter-pop', 'enter-scale-in', 'enter-slide-up', 'exit-fade-out-down', 'exit-fade-out-up', 'exit-scale-out', 'scope', 'stagger', 'view', 'view-blur-in', 'view-fade-down', 'view-fade-end', 'view-fade-in', 'view-fade-start', 'view-fade-up', 'view-pop', 'view-scale-in', 'view-slide-up',),
+    modifiers: ('enter', 'enter-blur-in', 'enter-fade-down', 'enter-fade-end', 'enter-fade-in', 'enter-fade-start', 'enter-fade-up', 'enter-pop', 'enter-pop-in', 'enter-scale-in', 'enter-slide-down', 'enter-slide-left', 'enter-slide-right', 'enter-slide-up', 'exit-fade-out-down', 'exit-fade-out-up', 'exit-scale-out', 'scope', 'stagger', 'view', 'view-blur-in', 'view-fade-down', 'view-fade-end', 'view-fade-in', 'view-fade-start', 'view-fade-up', 'view-pop', 'view-pop-in', 'view-scale-in', 'view-slide-down', 'view-slide-left', 'view-slide-right', 'view-slide-up',),
     part-modifiers: (),
     variables: ('--greese-ease-ease', '--greese-ease-ease-in', '--greese-ease-ease-in-out', '--greese-ease-ease-out', '--greese-ease-in', '--greese-ease-in-out', '--greese-ease-linear', '--greese-ease-out', '--greese-motion-delay', '--greese-motion-dir', '--greese-motion-distance', '--greese-motion-duration', '--greese-motion-ease', '--greese-motion-exit-scale', '--greese-motion-exit-translate', '--greese-motion-index', '--greese-motion-name', '--greese-motion-offset', '--greese-motion-scope', '--greese-motion-stagger', '--greese-motion-wait',),
   ),
