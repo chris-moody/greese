@@ -60,7 +60,9 @@ import {
   toast,
   Tooltip,
 } from '@greese/react'
+import { facts, kB } from '../data/index.ts'
 import { Section } from '../Section.tsx'
+import { useCountUp } from '../useCountUp.ts'
 
 /**
  * One labelled demo tile. The tile is a scope: its title and each piece of
@@ -188,6 +190,33 @@ const Forms = (): JSX.Element => (
   </Grid>
 )
 
+/** A ring and a stat that count up to their values when they scroll into view. */
+const Counters = (): JSX.Element => {
+  const [ref, n] = useCountUp<HTMLDivElement>(72)
+  const [statRef, bytes] = useCountUp<HTMLDivElement>(facts.library.size)
+  return (
+    <Stack direction="row" gap={4} align="center" wrap="wrap">
+      <RadialProgress
+        ref={ref}
+        className="site-ring"
+        value={n}
+        aria-label="Storage used"
+        aria-valuetext="72%"
+      >
+        {Math.round(n)}%
+      </RadialProgress>
+      <div ref={statRef}>
+        <Stat
+          label="Whole library"
+          value={kB(Math.round(bytes))}
+          description="brotli, and it tree-shakes"
+          tone="positive"
+        />
+      </div>
+    </Stack>
+  )
+}
+
 const Feedback = (): JSX.Element => (
   <Grid
     container
@@ -245,15 +274,7 @@ const Feedback = (): JSX.Element => (
       </Stack>
     </Demo>
     <Demo title="Rings and stats">
-      <Stack direction="row" gap={4} align="center" wrap="wrap">
-        <RadialProgress value={72} aria-label="Storage used" />
-        <Stat
-          label="Bundle"
-          value="Under budget"
-          description="every entry, every build"
-          tone="positive"
-        />
-      </Stack>
+      <Counters />
     </Demo>
     <Demo title="People">
       <AvatarGroup max={4} greese={{ enter: 'fadeEnd', stagger: 0.06 }}>

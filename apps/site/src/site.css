@@ -255,3 +255,20 @@
 .site-footer {
   padding-block: var(--greese-space-6) var(--greese-space-7);
 }
+
+/* A preset's brand colors, in the theme menu, on every page (the menu is in the shared header). */
+.studio-theme-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.studio-theme-dots > span {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  border-radius: 50%;
+}
+
+/* The ring follows a counter that already eases, so its own transition would only lag. */
+.site-ring::before {
+  transition: none;
+}

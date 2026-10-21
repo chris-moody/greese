@@ -13,8 +13,11 @@ import {
 import { useShell } from '../shell.ts'
 import { api, hosted } from './api.ts'
 import { PaletteOptions } from './fields.tsx'
+import { GreeseStage } from './GreeseStage.tsx'
+import { useGreeseLab } from './greeseLab.ts'
 import { CodePanel } from './panels/CodePanel.tsx'
 import { ComponentsPanel } from './panels/ComponentsPanel.tsx'
+import { GreesePanel } from './panels/GreesePanel.tsx'
 import { MotionPanel } from './panels/MotionPanel.tsx'
 import { TokensPanel } from './panels/TokensPanel.tsx'
 import type { FromPreview, Picked, ToPreview } from './protocol.ts'
@@ -52,6 +55,7 @@ export const StudioPage = (): JSX.Element => {
   const [component, setComponent] = useState('Button')
   const [picked, setPicked] = useState<Picked>()
   const frame = useRef<HTMLIFrameElement>(null)
+  const lab = useGreeseLab()
 
   const dirty = !!file && JSON.stringify(spec) !== file.saved
   /** What the button says once the last save is all there is: the files it wrote. */
@@ -61,10 +65,15 @@ export const StudioPage = (): JSX.Element => {
     frame.current?.contentWindow?.postMessage(message, location.origin)
   }, [])
 
-  const load = useCallback(async () => {
+  /**
+   * Reads the theme file. Arriving at the studio keeps the theme you're
+   * wearing (it then shows as unsaved if it differs from the file); only an
+   * explicit reload takes the file's.
+   */
+  const load = useCallback(async (adopt = true) => {
     try {
       const loaded = await api.load()
-      setSpec(loaded.spec)
+      if (adopt) setSpec(loaded.spec)
       setFile({
         file: loaded.file,
         outputs: loaded.outputs,
@@ -85,7 +94,7 @@ export const StudioPage = (): JSX.Element => {
       setFile({ file: 'Kept in this browser', outputs: [], saved: JSON.stringify(spec) })
       return
     }
-    void load()
+    void load(false)
   }, [])
 
   // Someone edited the theme file outside the studio.
@@ -133,9 +142,12 @@ export const StudioPage = (): JSX.Element => {
   // "Replay motion" in the header remounts the preview's gallery.
   const replayed = useRef(replay)
   useEffect(() => {
-    if (replay !== replayed.current) post({ type: 'replay' })
+    if (replay !== replayed.current) {
+      post({ type: 'replay' })
+      lab.play()
+    }
     replayed.current = replay
-  }, [replay, post])
+  }, [replay, post, lab.play])
   useEffect(() => post({ type: 'inspect', on: inspect }), [inspect, post])
   useEffect(() => post({ type: 'feature', block: component }), [component, post])
   useEffect(
@@ -242,6 +254,7 @@ export const StudioPage = (): JSX.Element => {
               <Tab value="tokens">Tokens</Tab>
               <Tab value="components">Components</Tab>
               <Tab value="motion">Motion</Tab>
+              <Tab value="greese">Greese</Tab>
               <Tab value="code">Code</Tab>
             </TabList>
             <TabPanel value="tokens">
@@ -264,6 +277,9 @@ export const StudioPage = (): JSX.Element => {
             <TabPanel value="motion">
               <MotionPanel spec={spec} onChange={setSpec} onComponent={showComponent} />
             </TabPanel>
+            <TabPanel value="greese">
+              <GreesePanel lab={lab} />
+            </TabPanel>
             <TabPanel value="code">
               <CodePanel
                 scss={compiled.scss}
@@ -275,7 +291,9 @@ export const StudioPage = (): JSX.Element => {
             </TabPanel>
           </Tabs>
         </aside>
+        {tab === 'greese' && <GreeseStage lab={lab} />}
         <iframe
+          hidden={tab === 'greese'}
           ref={frame}
           src={`${import.meta.env.BASE_URL}preview.html`}
           title="Theme preview"

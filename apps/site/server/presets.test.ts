@@ -65,6 +65,11 @@ describe('presets', () => {
     expect(next.components).toEqual(spec.components)
     expect(next.motionDefaults).toEqual(spec.motionDefaults)
     // Default clears the colors it doesn't set.
-    expect(applyPreset(next, PRESETS.find((p) => p.id === 'default')!).tokens!.color).toEqual({})
+    expect(
+      applyPreset(
+        next,
+        PRESETS.find((p) => p.id === 'default')!
+      ).tokens!.color
+    ).toEqual({})
   })
 })

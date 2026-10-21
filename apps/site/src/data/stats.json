@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-20",
+  "date": "2026-10-21",
   "components": 115,
   "dependencies": [
     "@greese/js",
@@ -8,13 +8,13 @@
   "react": [
     {
       "name": "JS: whole library (components)",
-      "size": 25822,
-      "sizeLimit": 26000
+      "size": 26773,
+      "sizeLimit": 27000
     },
     {
       "name": "JS: whole library, with greese.js",
-      "size": 30720,
-      "sizeLimit": 31000
+      "size": 31688,
+      "sizeLimit": 32000
     },
     {
       "name": "JS: tree-shaken { VisuallyHidden }",
@@ -23,53 +23,53 @@
     },
     {
       "name": "JS: tree-shaken { Stack }",
-      "size": 2173,
-      "sizeLimit": 2250
+      "size": 2290,
+      "sizeLimit": 2300
     },
     {
       "name": "JS: tree-shaken { Button }",
-      "size": 2073,
+      "size": 2199,
       "sizeLimit": 2250
     },
     {
       "name": "JS: tree-shaken { TextField }",
-      "size": 2157,
-      "sizeLimit": 2250
+      "size": 2261,
+      "sizeLimit": 2300
     },
     {
       "name": "JS: tree-shaken { Tabs, TabList, Tab, TabPanel }",
-      "size": 2310,
+      "size": 2414,
       "sizeLimit": 2500
     },
     {
       "name": "JS: tree-shaken { Dialog }",
-      "size": 3058,
+      "size": 3187,
       "sizeLimit": 3250
     },
     {
       "name": "JS: tree-shaken { Menu, MenuItem }",
-      "size": 2927,
+      "size": 3031,
       "sizeLimit": 3250
     },
     {
       "name": "JS: tree-shaken { toast, Toaster }",
-      "size": 3128,
+      "size": 3250,
       "sizeLimit": 3250
     },
     {
       "name": "JS: tree-shaken { Combobox }",
-      "size": 4308,
+      "size": 4426,
       "sizeLimit": 4750
     },
     {
       "name": "JS: tree-shaken { NumberField }",
-      "size": 3156,
+      "size": 3248,
       "sizeLimit": 3250
     },
     {
       "name": "JS: tree-shaken { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell }",
-      "size": 2180,
-      "sizeLimit": 2250
+      "size": 2281,
+      "sizeLimit": 2300
     },
     {
       "name": "JS: tree-shaken { ThemeProvider }",
@@ -78,52 +78,52 @@
     },
     {
       "name": "JS: tree-shaken { ThemeProvider, createTheme } (includes default tokens)",
-      "size": 2554,
-      "sizeLimit": 2750
+      "size": 3373,
+      "sizeLimit": 3400
     },
     {
       "name": "ColorPicker",
-      "size": 3967,
+      "size": 4069,
       "sizeLimit": 4250
     },
     {
       "name": "MaskedInput",
-      "size": 2600,
+      "size": 2709,
       "sizeLimit": 2750
     },
     {
       "name": "JS: tree-shaken { ScrollCarousel, ScrollCarouselSlide }",
-      "size": 3339,
+      "size": 3451,
       "sizeLimit": 3500
     },
     {
       "name": "JS: tree-shaken { Rating }",
-      "size": 2582,
+      "size": 2690,
       "sizeLimit": 2750
     },
     {
       "name": "JS: tree-shaken { OtpField }",
-      "size": 2342,
+      "size": 2441,
       "sizeLimit": 2500
     },
     {
       "name": "JS: tree-shaken { Diff }",
-      "size": 1926,
+      "size": 2024,
       "sizeLimit": 2250
     },
     {
       "name": "JS: tree-shaken { Countdown }",
-      "size": 2005,
+      "size": 2099,
       "sizeLimit": 2250
     },
     {
       "name": "JS: tree-shaken { SpeedDial, SpeedDialAction }",
-      "size": 2863,
+      "size": 2970,
       "sizeLimit": 3000
     },
     {
       "name": "JS: tree-shaken { Swap }",
-      "size": 1833,
+      "size": 1937,
       "sizeLimit": 2000
     },
     {
@@ -132,20 +132,25 @@
       "sizeLimit": 6000
     },
     {
+      "name": "JS: scope option (lazy chunk)",
+      "size": 851,
+      "sizeLimit": 1000
+    },
+    {
       "name": "JS: greese prop runtime (lazy chunk, with greese.js)",
-      "size": 7258,
+      "size": 7391,
       "sizeLimit": 7500
     }
   ],
   "ui": [
     {
       "name": "CSS: greese.css",
-      "size": 19842,
-      "sizeLimit": 20000
+      "size": 20320,
+      "sizeLimit": 21000
     },
     {
       "name": "CSS: base.css",
-      "size": 424,
+      "size": 427,
       "sizeLimit": 1000
     }
   ],

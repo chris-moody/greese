@@ -30,6 +30,19 @@ The SCSS and CSS are generated: edit the JSON or use the studio, and keep
 hand-written overrides in a stylesheet of your own. If the JSON changes on
 disk, the studio reloads it, or asks first when you have unsaved edits.
 
+## Greese tab
+
+Every built-in effect with the keyframes it plays, as code. Edit it and press
+Play: the stage (in place of the preview while the tab is open) plays a
+sequence you type, with your version of any effect it names. Edits last for
+the session and apply only here; they are not saved to the theme. Replay
+motion in the header plays the stage again.
+
+## Theme
+
+Arriving from the homepage keeps the theme you were wearing; the studio
+shows it as unsaved when it differs from the theme file.
+
 ## Component preview
 
 Above the theme preview, the component chosen in the Components tab (Button

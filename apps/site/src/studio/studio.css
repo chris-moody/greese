@@ -53,6 +53,10 @@
   background: var(--greese-color-surface);
 }
 
+.studio-preview-frame[hidden] {
+  display: none;
+}
+
 .studio-preview-frame {
   display: block;
   inline-size: 100%;
@@ -180,18 +184,6 @@ code.studio-row-label {
 .studio-mono {
   font-family: var(--greese-font-mono);
   font-size: var(--greese-type-p3-size);
-}
-
-/* A preset's brand colors, in the theme menu. */
-.studio-theme-dots {
-  display: flex;
-  gap: 3px;
-}
-
-.studio-theme-dots > span {
-  inline-size: 0.75rem;
-  block-size: 0.75rem;
-  border-radius: 50%;
 }
 
 /* Color chips: light and dark halves with "Aa" in the content color. */
@@ -374,4 +366,30 @@ code.studio-row-label {
   border-radius: 3px;
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+/* The Greese tab: effect code in the editor, the sequence stage in the main area. */
+.studio-effect-actions {
+  display: inline-flex;
+  gap: var(--greese-space-1);
+  margin-inline-start: auto;
+}
+
+.studio-effect-code {
+  font-family: var(--greese-font-mono);
+  font-size: 0.8125rem;
+}
+
+.studio-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--greese-space-5);
+  min-inline-size: 0;
+  padding: var(--greese-space-5);
+  overflow: auto;
+}
+
+.studio-stage-card {
+  flex: 1;
+  min-block-size: 16rem;
 }
