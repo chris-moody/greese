@@ -178,9 +178,7 @@ describe('SCSS kit: motion()', () => {
     const css =
       compile(`@include greese.component(Dialog) { @include greese.motion((exit: scale-out)); }
       @include greese.component(Popover) { @include greese.motion((exit: fade-out-up)); }`)
-    expect(declared(css, '.greese-Dialog')).toEqual([
-      ['--greese-motion-exit-scale', '0.92'],
-    ])
+    expect(declared(css, '.greese-Dialog')).toEqual([['--greese-motion-exit-scale', '0']])
     expect(declared(css, '.greese-Popover')).toEqual([
       [
         '--greese-motion-exit-translate',

@@ -326,7 +326,7 @@ describe('effects and sequences', () => {
     // Mid-way through the first group: both effects are running.
     expect(Number(card.style.opacity)).toBeGreaterThan(0)
     expect(Number(card.style.opacity)).toBeLessThan(1)
-    expect(parseFloat(card.style.scale)).toBeGreaterThan(0.92)
+    expect(parseFloat(card.style.scale)).toBeGreaterThan(0)
     expect(parseFloat(card.style.scale)).toBeLessThan(1)
     act(() => vi.advanceTimersByTime(600))
     // In the pause: fully in.

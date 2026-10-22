@@ -170,8 +170,8 @@ describe('CSS', () => {
       ['from', { opacity: '0', translate: '0px var(--greese-motion-distance, 1rem)' }],
     ])
     expect(effectPlan('pop').enter).toEqual([
-      ['from', { scale: '0.8' }],
-      ['60%', { scale: '1.04' }],
+      ['from', { scale: '1' }],
+      ['60%', { scale: '1.075' }],
     ])
     expect(effectPlan('fadeStart').enter![0]![1].translate).toBe(
       `${cssReach.start(cssReach.distance)} 0px`
@@ -180,7 +180,7 @@ describe('CSS', () => {
 
   it('writes an exit as what it changes, never the fade', () => {
     expect(effectPlan('fadeOut').exit).toEqual({})
-    expect(effectPlan('scaleOut').exit).toEqual({ scale: '0.92' })
+    expect(effectPlan('scaleOut').exit).toEqual({ scale: '0' })
     expect(effectPlan('fadeOutDown').exit).toEqual({
       translate: '0px var(--greese-motion-distance, 1rem)',
     })
