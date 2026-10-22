@@ -25,6 +25,7 @@
 @use '../../dist/maps' as defaults;
 @use 'manifest';
 @use 'config';
+@use 'effect';
 @use 'type-emit';
 @forward 'mixins' show up, down, hover, focus-ring, touch-target, motion-safe;
 
@@ -42,30 +43,8 @@ $_part: null;
 $_scheme-attr: 'data-greese-scheme';
 $_theme-attr: 'data-greese-theme';
 
-// The `greese` prop's CSS presets (components/Motion/Motion.scss).
-$_presets: (
-  'fade-in',
-  'fade-up',
-  'fade-down',
-  'fade-start',
-  'fade-end',
-  'scale-in',
-  'blur-in',
-  'slide-up',
-  'pop'
-);
-$_exits: (
-  'fade-out': (),
-  'fade-out-up': (
-    translate: '0 calc(-1 * var(--greese-motion-distance, 1rem))',
-  ),
-  'fade-out-down': (
-    translate: '0 var(--greese-motion-distance, 1rem)',
-  ),
-  'scale-out': (
-    scale: '0.95',
-  ),
-);
+// Effects defined with `effect()`, by kebab-case name, over the built-in ones.
+$_defined: ();
 $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', 'in-out');
 
 // --- helpers ---------------------------------------------------------------
@@ -514,8 +493,8 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
   @if $enter {
     $enter: _kebab($enter);
     $checked: _check(
-      _in($_presets, $enter),
-      'no entrance `#{$enter}`. Presets: #{_join($_presets)}.'
+      _in(_effects-with(enter), $enter),
+      'no entrance `#{$enter}`. Effects that end at rest: #{_join(_effects-with(enter))}.'
     );
     $name: greese-#{$enter};
   }
@@ -529,13 +508,13 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
   @if $exit {
     $exit: _kebab($exit);
     $checked: _check(
-      map.has-key($_exits, $exit),
-      'no exit `#{$exit}`. Exits: #{_join(map.keys($_exits))}.'
+      _in(_effects-with(exit), $exit),
+      'no exit `#{$exit}`. Effects that end away from rest: #{_join(_effects-with(exit))}.'
     );
 
-    // As the `exit` classes in Motion.scss: only what the preset changes, so
+    // As the `exit` classes in Motion.scss: only what the effect changes, so
     // `fade-out` keeps the overlay's own exit.
-    @each $property, $value in map.get($_exits, $exit) or () {
+    @each $property, $value in map.get(map.get(_effects(), $exit), exit) {
       --greese-motion-exit-#{$property}: #{string.unquote($value)};
     }
   }
@@ -567,6 +546,26 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
         backwards;
     }
   }
+}
+
+/// Every effect by kebab-case name: the built-in ones, then those defined with
+/// `effect()` (which replace a built-in of the same name).
+@function _effects() {
+  @return map.merge(defaults.$effects, $_defined);
+}
+
+/// The names of the effects whose plan has `$key`: `enter` (ends at rest, plays
+/// as CSS) or `exit` (ends away from rest, an overlay can leave with it).
+@function _effects-with($key) {
+  $out: ();
+
+  @each $name, $plan in _effects() {
+    @if map.has-key($plan, $key) {
+      $out: list.append($out, $name, comma);
+    }
+  }
+
+  @return $out;
 }
 
 /// Tunes every `greese` prop entrance on the page (or in the theme):
@@ -621,6 +620,33 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
           }
         }
       }
+    }
+  }
+}
+
+/// Defines an effect as CSS, as the built-in ones are: `plan` is `(enter:
+/// (from: (opacity: 0), '60%': (opacity: 1)))` for an effect that ends at the
+/// element's resting state (its `@keyframes`, without the 100% step), or
+/// `(exit: (scale: 0.9))` for one that ends away from it (what an overlay's exit
+/// changes). Theme Studio writes these from its effects, with `cssPlan()` in
+/// @greese/ui, so a new effect works in `motion()` like a built-in, and a
+/// built-in's name is retuned. Names are kebab-case.
+@mixin effect($name, $plan) {
+  $name: _kebab($name);
+  $plan: _normal($plan);
+  $checked: _check(
+    map.has-key($plan, enter) or map.has-key($plan, exit),
+    'effect(#{$name}) needs a plan with `enter` or `exit`.'
+  );
+  $_defined: map.set($_defined, $name, $plan) !global;
+
+  @include _layer-order;
+
+  @layer greese.utilities {
+    @include effect.classes($name, $plan);
+
+    @media (prefers-reduced-motion: no-preference) {
+      @include effect.keyframes($name, $plan);
     }
   }
 }
@@ -940,7 +966,12 @@ $_dark-ink: #11171c;
     }
   }
 
-  @return (base: map.merge($base, $type-base), light: $light, dark: $dark, durations: $durations);
+  @return (
+    base: map.merge($base, $type-base),
+    light: $light,
+    dark: $dark,
+    durations: $durations
+  );
 }
 
 @mixin _declare($map) {
@@ -1058,12 +1089,14 @@ $_dark-ink: #11171c;
 /// you set replaces the default at that point, and the rest stays:
 ///
 ///   @include greese.typography((
-///     h1: (base: (size: 2rem), lg: (size: 4rem, tracking: -0.03em)),
-///     caption: (base: (transform: uppercase)),
+///     h1: (base: (font-size: 2rem), lg: (font-size: 4rem, letter-spacing: -0.03em)),
+///     caption: (base: (text-transform: uppercase)),
 ///   ));
 ///
-/// Properties: size, weight, tracking, leading, and family, style, transform,
-/// features, variation, stretch, wrap, spacing, numeric. Variants: p1-p3,
+/// Properties: the CSS names, font-size, font-weight, letter-spacing,
+/// line-height, and font-family, font-style, text-transform,
+/// font-feature-settings, font-variation-settings, font-stretch, text-wrap,
+/// word-spacing, font-variant-numeric, color. Variants: p1-p3,
 /// h1-h6, s1, s2, caption, button. Names that don't exist stop the build.
 @mixin typography($changes) {
   $merged: ();
@@ -1085,8 +1118,8 @@ $_dark-ink: #11171c;
 
       @each $prop, $unused in $style {
         $checked: _check(
-          map.has-key(defaults.$type-props, '#{$prop}'),
-          'no type property `#{$prop}`. Properties: #{_join(map.keys(defaults.$type-props))}.'
+          list.index(defaults.$type-props, '#{$prop}') != null,
+          'no type property `#{$prop}`. Properties: #{_join(defaults.$type-props)}.'
         );
       }
     }

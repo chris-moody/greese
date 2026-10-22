@@ -1,6 +1,7 @@
 export * from './tokens.ts'
 export * from './palette.ts'
 export * from './typography.ts'
+export * from './effects.ts'
 export { cssVar, LAYER_ORDER, SCHEME_ATTR, THEME_ATTR } from './css.ts'
 export {
   createTheme,
@@ -23,4 +24,4 @@ export {
   getSchemeScript,
   type ColorScheme,
   type SchemeScriptOptions,
-} from './scheme.ts'
+} from './colorScheme.ts'

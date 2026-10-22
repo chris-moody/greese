@@ -11,6 +11,18 @@ import {
   type Keyframes,
   type Timeline,
 } from '@greese/js'
+import {
+  cssPlan,
+  effectFrames,
+  effectNames,
+  isBuiltInEffect,
+  jsReach,
+  negate,
+  parseSequence,
+  splitTiming,
+  type EffectStep,
+  type Timing,
+} from '@greese/ui/effects'
 import type { GreeseMotion, GreeseOptions } from '../../utils/greese.ts'
 import type { GreeseRuntime } from './registry.ts'
 import {
@@ -21,109 +33,48 @@ import {
   type GreeseEffectWithDefaults,
 } from './effects.ts'
 
-// Distances are any CSS length. Plain ones (`1rem`, `-12px`) flip textually,
-// anything else (`calc(…)`, `var(…)`) through calc(). They end at `0px`:
-// greese.js blends mixed units, so `1rem` → `0px` is smooth.
-const PLAIN = /^-?[\d.]+[a-z%]*$/i
-const ZERO = '0px'
-export const negate = (d: string): string =>
-  PLAIN.test(d) ? (d.startsWith('-') ? d.slice(1) : `-${d}`) : `calc(-1 * ${d})`
-/** Where `fadeStart` comes from: the inline start, which flips in RTL. */
-const fromStart = ({ distance, rtl }: GreeseEffectContext) =>
-  rtl ? distance : negate(distance)
-
-/**
- * The built-in effects. The entrance presets mirror Motion.scss, for when
- * greese.js plays them (sequences, non-CSS eases, text, timelines).
- */
-const BUILT_IN = {
-  fadeIn: { opacity: [0, 1] },
-  fadeUp: ({ distance: d }) => ({ opacity: [0, 1], y: [d, ZERO] }),
-  fadeDown: ({ distance: d }) => ({ opacity: [0, 1], y: [negate(d), ZERO] }),
-  fadeStart: (c) => ({ opacity: [0, 1], x: [fromStart(c), ZERO] }),
-  fadeEnd: (c) => ({ opacity: [0, 1], x: [negate(fromStart(c)), ZERO] }),
-  scaleIn: { scale: [0.92, 1] },
-  blurIn: { opacity: [0, 1], filter: ['blur(8px)', 'blur(0px)'] },
-  slideUp: { y: ['100%', '0%'] },
-  slideDown: { y: ['-100%', '0%'] },
-  slideRight: { x: ['-100%', '0%'] },
-  slideLeft: { x: ['100%', '0%'] },
-  pop: [{ scale: 0.8 }, { scale: 1.04, offset: 0.6 }, { scale: 1 }],
-  popIn: [
-    { opacity: 0, scale: 0.8 },
-    { opacity: 1, scale: 1.04, offset: 0.6 },
-    { scale: 1 },
-  ],
-  popOut: [
-    { opacity: 1, scale: 1 },
-    { opacity: 1, scale: 1.04, offset: 0.4 },
-    { opacity: 0, scale: 0.8 },
-  ],
-  fadeOut: { opacity: [1, 0] },
-  fadeOutUp: ({ distance: d }) => ({ opacity: [1, 0], y: [ZERO, negate(d)] }),
-  fadeOutDown: ({ distance: d }) => ({ opacity: [1, 0], y: [ZERO, d] }),
-  scaleOut: { scale: [1, 0.92] },
-  blurOut: { opacity: [1, 0], filter: ['blur(0px)', 'blur(8px)'] },
-  rise: { y: [0, -4], scale: [1, 1.02] },
-  fall: { y: [0, 4], scale: [1, 0.98] },
-  squish: { scale: [1, 0.96] },
-  tilt: { rotate: [0, -2] },
-  glow: { filter: ['brightness(1)', 'brightness(1.12)'] },
-} satisfies Record<string, GreeseEffect>
-
-/** Every built-in effect name: the source the public name types are checked against. */
-export type BuiltInEffect = keyof typeof BUILT_IN
-
-/**
- * A defined effect, then a built-in one: `defineGreeseEffect()` under a
- * built-in's name replaces it (a theme can retune `fadeUp`). Own keys only, so
- * `constructor` is no effect.
- */
-const lookup = (name: string): GreeseEffect | undefined =>
-  definedEffect(name) ??
-  (Object.hasOwn(BUILT_IN, name) ? BUILT_IN[name as BuiltInEffect] : undefined)
-
 /**
  * Every built-in effect as plain keyframes, for tools that show or edit them
  * (Theme Studio): the functions resolved at one distance, left to right.
  */
-export const effectFrames = (distance = '1rem'): Record<string, Keyframes> =>
+export const describeEffects = (distance = '1rem'): Record<string, Keyframes> =>
   Object.fromEntries(
-    Object.entries(BUILT_IN).map(([name, effect]) => {
-      const kf = (
-        typeof effect === 'object' && 'keyframes' in effect ? effect.keyframes : effect
-      ) as GreeseEffectKeyframes
-      return [
-        name,
-        typeof kf === 'function'
-          ? kf({ el: undefined as never, distance, rtl: false })
-          : kf,
-      ]
-    })
+    effectNames.map((name) => [
+      name,
+      effectFrames(name, jsReach(distance, false)) as Keyframes,
+    ])
   )
 
-/** One step of a sequence: effects that play together, or a pause in seconds. */
-export type GreeseStep = string[] | number
+export { negate, parseSequence }
+
+/** What one call in a sequence plays: the effect, its timing keys, and its other arguments. */
+interface Play {
+  effect: GreeseEffect
+  timing: Timing
+  params: Record<string, string | number>
+}
 
 /**
- * Parses `'fadeIn+scaleIn,+2,fadeOut'`: commas separate steps that play in
- * turn, `+` joins effects that play together, and a number is a pause. A
- * negative number (`-0.2`) backs the next step up, so it overlaps the last.
+ * A defined effect, then a built-in one: `defineGreeseEffect()` under a
+ * built-in's name replaces it (a theme can retune `fadeUp`). The built-ins are
+ * `@greese/ui`'s (src/effects.ts), the same ones its CSS is written from, and
+ * take the call's arguments; a defined effect takes only the timing keys, plus
+ * the arguments it can read from its `args`.
  */
-export const parseSequence = (sequence: string): GreeseStep[] => {
-  const steps: GreeseStep[] = []
-  for (const raw of sequence.split(',')) {
-    const step = raw.trim()
-    if (/^[+-]?(\d+\.?\d*|\.\d+)$/.test(step)) steps.push(Number(step))
-    else if (step)
-      steps.push(
-        step
-          .split('+')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      )
+const lookup = (
+  name: string,
+  args: Record<string, string | number>
+): Play | undefined => {
+  const { timing, params } = splitTiming(args)
+  const defined = definedEffect(name)
+  if (defined) return { effect: defined, timing, params }
+  if (!isBuiltInEffect(name)) return undefined
+  return {
+    effect: ({ distance, rtl }: GreeseEffectContext) =>
+      effectFrames(name, jsReach(distance, rtl), params) as Keyframes,
+    timing,
+    params,
   }
-  return steps
 }
 
 interface Defaults {
@@ -144,42 +95,46 @@ export const addMotion = (
   tl: Timeline,
   targets: Element[],
   motion: GreeseMotion,
-  ctx: Omit<GreeseEffectContext, 'el'>,
+  ctx: Omit<GreeseEffectContext, 'el' | 'args'>,
   { duration, ease, options, instant }: Defaults,
   at = 0,
   hold = false
 ): number => {
-  const steps: GreeseStep[] = typeof motion === 'string' ? parseSequence(motion) : [[]]
+  const steps: EffectStep[] = typeof motion === 'string' ? parseSequence(motion) : [[]]
   let held = !hold
   // A reduce, not reassigned locals: each step starts where the last ended.
   return steps.reduce<number>((cursor, step) => {
     if (typeof step === 'number') return Math.max(at, cursor + step)
     // Keyframes given directly are a one-step sequence.
-    const effects: GreeseEffect[] =
+    const plays: Play[] =
       typeof motion === 'string'
-        ? step.flatMap((name) => {
-            const effect = lookup(name)
-            if (!effect) console.warn(`greese: no effect named "${name}"`)
-            return effect ? [effect] : []
+        ? step.flatMap(({ name, args }) => {
+            const play = lookup(name, args)
+            if (!play) console.warn(`greese: no effect named "${name}"`)
+            return play ? [play] : []
           })
-        : [motion]
-    const ends = effects.flatMap((effect) => {
+        : [{ effect: motion, timing: {}, params: {} }]
+    const ends = plays.flatMap(({ effect, timing, params }) => {
       const own =
         typeof effect === 'object' && 'keyframes' in effect
           ? (effect as GreeseEffectWithDefaults)
           : undefined
       const kf = own ? own.keyframes : (effect as GreeseEffectKeyframes)
-      const dur = instant ? 0 : (options.duration ?? own?.duration ?? duration)
+      // A call's own timing wins, then the instance's options, then the effect's.
+      const dur = instant
+        ? 0
+        : (timing.duration ?? options.duration ?? own?.duration ?? duration)
       return targets.map((el, n) => {
-        const frames = typeof kf === 'function' ? kf({ ...ctx, el }) : kf
+        const frames = typeof kf === 'function' ? kf({ ...ctx, el, args: params }) : kf
         // Each target gets its own keyframes (a function may read it), so
         // stagger is applied by offset rather than by greese.js.
-        const start = cursor + (instant ? 0 : n * (options.stagger ?? 0))
+        const start =
+          cursor + (instant ? 0 : (timing.offset ?? 0) + n * (options.stagger ?? 0))
         if (!held) tl.set(el, firstFrame(frames), 0)
         tl.animate(
           el,
           frames,
-          { duration: dur, ease: options.ease ?? own?.ease ?? ease },
+          { duration: dur, ease: timing.ease ?? options.ease ?? own?.ease ?? ease },
           start
         )
         return start + dur
@@ -263,7 +218,7 @@ interface Setup {
   el: HTMLElement
   o: GreeseOptions
   reduce: boolean
-  ctx: Omit<GreeseEffectContext, 'el'>
+  ctx: Omit<GreeseEffectContext, 'el' | 'args'>
   cleanups: Array<() => void>
 }
 
@@ -402,6 +357,27 @@ const attachInteractions = ({ el, o, ctx, cleanups }: Setup) => {
   interaction(o.focus, ['focusin'], ['focusout'])
 }
 
+/**
+ * An overlay's `exit` with an effect defined at run time has no CSS class to
+ * set what it changes, so set it here, from the same plan the build makes for
+ * the built-ins (`cssPlan()`): the `translate` and `scale` where it ends. The
+ * overlay's own exit transition reads them, as it does for a class.
+ */
+const attachExit = ({ el, o, ctx, cleanups }: Setup) => {
+  const defined = o.exit === undefined ? undefined : definedEffect(o.exit)
+  if (!defined) return
+  const own: GreeseEffectKeyframes =
+    typeof defined === 'object' && 'keyframes' in defined
+      ? (defined as GreeseEffectWithDefaults).keyframes
+      : (defined as GreeseEffectKeyframes)
+  const frames = typeof own === 'function' ? own({ ...ctx, el, args: {} }) : own
+  for (const [property, value] of Object.entries(cssPlan(frames).exit)) {
+    const name = `--greese-motion-exit-${property}`
+    el.style.setProperty(name, value)
+    cleanups.push(() => el.style.removeProperty(name))
+  }
+}
+
 /** Attaches every JavaScript-driven part of a `greese` prop; returns the cleanup. */
 export const attach = (el: HTMLElement, o: GreeseOptions): (() => void) => {
   const setup: Setup = {
@@ -421,6 +397,7 @@ export const attach = (el: HTMLElement, o: GreeseOptions): (() => void) => {
   if (o.inView !== undefined && el.dataset.greeseView !== 'pending')
     el.dataset.greeseView = 'in'
   else startEntrance(setup, buildEntrance(setup))
+  attachExit(setup)
   if (!setup.reduce) attachInteractions(setup)
   return () => {
     for (const cleanup of setup.cleanups.reverse()) cleanup()

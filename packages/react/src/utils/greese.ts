@@ -1,30 +1,9 @@
 import { cloneElement, createElement, type CSSProperties, type ReactElement } from 'react'
 import type { Ease, Keyframes, Timeline } from '@greese/js'
 import { GreeseIsland } from '../components/Motion/GreeseIsland.tsx'
-import type { BuiltInEffect } from '../components/Motion/greeseRuntime.ts'
+import { effectClass, entranceNames, exitNames } from '@greese/ui/effect-classes'
+import type { BuiltInEffect } from '@greese/ui/effects'
 import { cx } from './cx.ts'
-
-/** Entrance presets: pure CSS when played alone, no JavaScript. */
-export type GreesePreset =
-  | 'fadeIn'
-  | 'fadeUp'
-  | 'fadeDown'
-  | 'fadeStart'
-  | 'fadeEnd'
-  | 'scaleIn'
-  | 'blurIn'
-  | 'slideUp'
-  | 'slideDown'
-  | 'slideRight'
-  | 'slideLeft'
-  | 'pop'
-  | 'popIn'
-
-/** Leaving effects. Overlays (Dialog, Popover, Menu, Tooltip) also play these as `exit`, in CSS. */
-export type GreeseExit = 'fadeOut' | 'fadeOutUp' | 'fadeOutDown' | 'scaleOut'
-
-/** Interaction presets for `hover`, `press` and `focus`. */
-export type GreeseInteraction = 'rise' | 'fall' | 'squish' | 'tilt' | 'glow'
 
 /** Text effects, for elements whose content is plain text. */
 export type GreeseTextEffect = 'type' | 'count' | 'split'
@@ -50,8 +29,14 @@ export type GreeseEffectName = BuiltInEffect | Extract<keyof GreeseEffectRegistr
  * number pulls the next group back that many seconds, so it overlaps the one
  * before. `'fadeIn+scaleIn,+2,fadeOut'` fades and scales in, waits 2 s, fades
  * out; `'slideUp,-0.2,pop'` starts the pop 0.2 s before the slide ends.
+ *
+ * An effect takes arguments in parentheses: its own parameters (`start`, `end`
+ * for most, in order or by name) and the timing keys `duration`, `offset` and
+ * `ease`, so `'fadeIn(0.25, 0.8)'`, `'fadeIn({ end: 0.8, duration: 1 })'` and
+ * `'fadeUp(2rem)+scaleIn(offset: 0.2)'` only change what they name.
  */
-export type GreeseSequence = `${string},${string}` | `${string}+${string}`
+export type GreeseSequence =
+  `${string},${string}` | `${string}+${string}` | `${string}(${string})`
 
 /** What a motion option plays: an effect, a sequence of effects, or greese.js keyframes. */
 export type GreeseMotion = GreeseEffectName | GreeseSequence | Keyframes
@@ -81,8 +66,11 @@ export interface GreeseOptions {
   inView?: GreeseMotion
   /** `inView` only plays the first time. @default true */
   once?: boolean
-  /** How an overlay leaves (Dialog, Popover, Menu, Tooltip). Pure CSS. */
-  exit?: GreeseExit
+  /**
+   * How an overlay (Dialog, Popover, Menu, Tooltip) leaves: it fades, and
+   * moves and scales to where the effect ends (`fadeOutUp`, `scaleOut`…). Pure CSS.
+   */
+  exit?: GreeseEffectName
   /** Plays while hovered (fine pointers only), reverses on leave. */
   hover?: GreeseMotion
   /** Plays while pressed, reverses on release. */
@@ -134,17 +122,12 @@ export interface GreeseProps {
   greese?: GreeseProp
 }
 
-/** Presets CSS plays alone; anything else named is a job for the runtime. */
-const CSS_PRESETS =
-  /^(fade(In|Up|Down|Start|End)|scaleIn|blurIn|slide(Up|Down|Right|Left)|pop|popIn)$/
-
-/** The class-name form of an effect name: `fadeUp` → `fade-up`. */
-const kebab = (name: string) => name.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
-
 /** A CSS preset alone, under a CSS ease: its kebab-case name, else undefined. */
 const cssPreset = (motion: GreeseMotion | undefined, css: string | undefined) =>
-  css && typeof motion === 'string' && CSS_PRESETS.test(motion)
-    ? kebab(motion)
+  css &&
+  typeof motion === 'string' &&
+  (entranceNames as readonly string[]).includes(motion)
+    ? effectClass(motion)
     : undefined
 
 /** Eases CSS can play: named ones resolve to `--greese-ease-*` (Motion.scss). */
@@ -167,11 +150,14 @@ export const normalizeGreese = (prop: GreeseProp): GreeseOptions =>
 
 /**
  * Whether the prop needs the JavaScript runtime: anything beyond a CSS
- * entrance preset played alone, and overlay exits.
+ * entrance preset played alone. An overlay exit is CSS for the built-in
+ * effects; any other (one from `defineGreeseEffect()`) has the runtime set
+ * what it changes on the element.
  */
 export const needsRuntime = (o: GreeseOptions): boolean =>
   !!(o.inView || o.hover || o.press || o.focus || o.text || o.timeline) ||
-  (o.enter !== undefined && !cssPreset(o.enter, cssEase(o.ease)))
+  (o.enter !== undefined && !cssPreset(o.enter, cssEase(o.ease))) ||
+  (o.exit !== undefined && !(exitNames as readonly string[]).includes(o.exit))
 
 export interface ResolvedGreese {
   className?: string
@@ -205,7 +191,7 @@ export const resolveGreese = (prop: GreeseProp | undefined): ResolvedGreese => {
     o.scope && 'greese-Motion--scope',
     enter && `greese-Motion--enter greese-Motion--enter-${enter}`,
     view && `greese-Motion--view greese-Motion--view-${view}`,
-    o.exit && `greese-Motion--exit-${kebab(o.exit)}`,
+    o.exit && `greese-Motion--exit-${effectClass(o.exit)}`,
     o.stagger !== undefined && 'greese-Motion--stagger'
   )
   return {

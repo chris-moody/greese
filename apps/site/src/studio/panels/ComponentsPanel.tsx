@@ -4,20 +4,12 @@ import { getIn, setIn } from '../edit.ts'
 import { DeclarationsEditor, SchemeInput, ValueRow } from '../fields.tsx'
 import { blockNames, blocks } from '../manifest.ts'
 import type { Picked } from '../protocol.ts'
-import type { Declarations, SchemeValue, ThemeSpec } from '../spec.ts'
-
-export const PRESETS = [
-  'fade-in',
-  'fade-up',
-  'fade-down',
-  'fade-start',
-  'fade-end',
-  'scale-in',
-  'blur-in',
-  'slide-up',
-  'pop',
-]
-const EXITS = ['fade-out', 'fade-out-up', 'fade-out-down', 'scale-out']
+import {
+  motionChoices,
+  type Declarations,
+  type SchemeValue,
+  type ThemeSpec,
+} from '../spec.ts'
 
 const Chips = ({
   label,
@@ -70,6 +62,7 @@ export const ComponentsPanel = ({
   const declPath = kind === 'root' ? [...base, 'styles'] : [...base, `${kind}s`, name!]
   const set = (path: string[], value: unknown) => onChange(setIn(spec, path, value))
   const get = (path: string[]) => (getIn(spec, path) as string | undefined) ?? ''
+  const choices = motionChoices(spec)
   const prefix = '--greese-'
   const live = picked?.block === component ? picked : undefined
 
@@ -188,7 +181,7 @@ export const ComponentsPanel = ({
             onChange={(e) => set([...base, 'motion', 'enter'], e.currentTarget.value)}
           >
             <option value="">None</option>
-            {PRESETS.map((p) => (
+            {choices.enter.map((p) => (
               <option key={p}>{p}</option>
             ))}
           </Select>
@@ -204,7 +197,7 @@ export const ComponentsPanel = ({
             onChange={(e) => set([...base, 'motion', 'exit'], e.currentTarget.value)}
           >
             <option value="">Default</option>
-            {EXITS.map((p) => (
+            {choices.exit.map((p) => (
               <option key={p}>{p}</option>
             ))}
           </Select>

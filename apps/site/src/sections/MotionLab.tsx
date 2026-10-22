@@ -12,44 +12,14 @@ import {
   useGreese,
   type GreeseProp,
 } from '@greese/react'
+import { effectNames, endsHidden, parseSequence } from '@greese/ui'
 import { Section } from '../Section.tsx'
 
 /** Every effect a sequence can name here: the built-ins plus src/effects.ts. */
-const EFFECTS = [
-  'fadeIn',
-  'fadeUp',
-  'fadeDown',
-  'fadeStart',
-  'fadeEnd',
-  'scaleIn',
-  'blurIn',
-  'slideUp',
-  'slideDown',
-  'slideRight',
-  'slideLeft',
-  'pop',
-  'popIn',
-  'fadeOut',
-  'fadeOutUp',
-  'fadeOutDown',
-  'scaleOut',
-  'blurOut',
-  'rise',
-  'squish',
-  'tilt',
-  'glow',
-  'wobble',
-]
+const EFFECTS: string[] = [...effectNames, 'wobble']
 
 /** Effects that hide the element: valid in a typed sequence, never offered in one tap. */
-const LEAVING = new Set([
-  'fadeOut',
-  'fadeOutUp',
-  'fadeOutDown',
-  'scaleOut',
-  'blurOut',
-  'popOut',
-])
+const LEAVING = new Set<string>(effectNames.filter(endsHidden))
 
 /**
  * The examples reveal, then only add emphasis: nothing hides the card right
@@ -57,16 +27,15 @@ const LEAVING = new Set([
  */
 const EXAMPLES = [
   'fadeIn+scaleIn,+1,wobble',
-  'fadeStart+blurIn,popIn',
-  'slideUp,-0.2,popIn,+0.4,rise+glow',
+  'slideUp,-0.2,pop,rise+glow',
+  'fadeStart+blurIn,+0.4,pop',
 ]
 
 /** Names in a sequence that aren't effects (numbers are pauses). */
 const unknown = (sequence: string): string[] =>
-  sequence
-    .split(/[,+]/)
-    .map((s) => s.trim())
-    .filter((s) => s && !/^[+-]?\d*\.?\d+$/.test(s) && !EFFECTS.includes(s))
+  parseSequence(sequence)
+    .flatMap((step) => (typeof step === 'number' ? [] : step.map((call) => call.name)))
+    .filter((name) => !EFFECTS.includes(name))
 
 const Lab = (): JSX.Element => {
   const [sequence, setSequence] = useState(EXAMPLES[0]!)

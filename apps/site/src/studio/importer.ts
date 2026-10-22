@@ -5,7 +5,18 @@
  * can hold is imported; the rest is reported, with its CSS, never dropped
  * silently. Pure: the server and the tests use it.
  */
-import { breakpoints, color, deriveColors, scalarTokens, typography } from '@greese/ui'
+import {
+  breakpoints,
+  color,
+  deriveColors,
+  effectClass,
+  entranceNames,
+  effectPlan,
+  exitNames,
+  scalarTokens,
+  typePropName,
+  typography,
+} from '@greese/ui'
 import { blocks } from './manifest.ts'
 import type { ComponentSpec, Declarations, SchemeValue, ThemeSpec } from './spec.ts'
 
@@ -157,7 +168,7 @@ const tokenOf = (property: string): Token | undefined => {
   return key ? { group, key } : undefined
 }
 
-const TYPE_VAR = /^--greese-type-([a-z0-9]+)-([a-z]+)$/
+const TYPE_VAR = /^--greese-type-([a-z0-9]+)-([a-z-]+)$/
 /** `@media (width >= 900px)` → the default breakpoint with that width. */
 const typePoint = (context: string): string | undefined => {
   const px = /^@media \(width >= (\d+)px\)$/.exec(context.trim())?.[1]
@@ -168,22 +179,20 @@ const typePoint = (context: string): string | undefined => {
 
 const THEME = /\[data-greese-theme=['"]?([\w-]+)['"]?\]/
 const SCHEME = /\[data-greese-scheme=['"]?(light|dark|system)['"]?\]/
-const PRESETS = new Set([
-  'fade-in',
-  'fade-up',
-  'fade-down',
-  'fade-start',
-  'fade-end',
-  'scale-in',
-  'blur-in',
-  'slide-up',
-  'pop',
-])
-const EXITS: Record<string, [string, string]> = {
-  'translate:0 calc(-1 * var(--greese-motion-distance, 1rem))': ['exit', 'fade-out-up'],
-  'translate:0 var(--greese-motion-distance, 1rem)': ['exit', 'fade-out-down'],
-  'scale:0.95': ['exit', 'scale-out'],
-}
+// Read from src/effects.ts in @greese/ui, which the kit writes from, so
+// anything the kit writes reads back.
+const PRESETS = new Set(entranceNames().map(effectClass))
+const EXITS: Record<string, [string, string]> = Object.fromEntries(
+  exitNames().flatMap((name) =>
+    Object.entries(effectPlan(name).exit).map(
+      ([property, value]) =>
+        [`${property}:${norm(value)}`, ['exit', effectClass(name)]] as [
+          string,
+          [string, string],
+        ]
+    )
+  )
+)
 const MOTION_DEFAULTS = new Set(['duration', 'delay', 'ease', 'distance', 'stagger'])
 
 type Scheme = 'base' | 'light' | 'dark'
@@ -333,7 +342,7 @@ export const importCss = (css: string, prefer?: string): ImportResult => {
         const motion = /^--greese-motion-([\w-]+)$/.exec(property)?.[1]
         if (type) {
           const at = point ?? 'base'
-          ;((typed[type[1]!] ??= {})[at] ??= {})[type[2]!] = value
+          ;((typed[type[1]!] ??= {})[at] ??= {})[typePropName(type[2]!)] = value
         } else if (token) tokens[scheme].set(`${token.group}\u0000${token.key}`, value)
         else if (motion && MOTION_DEFAULTS.has(motion))
           motionDefaults[motion] = motion === 'ease' ? easeName(value) : value

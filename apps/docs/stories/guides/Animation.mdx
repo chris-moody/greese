@@ -42,20 +42,20 @@ Toaster; a type check in the build enforces it.
 
 ### Options
 
-| Option                    | Values                                                                                                                                                          | Needs JavaScript?             |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| `enter`                   | An effect, a [sequence](#composing-effects), or greese.js keyframes                                                                                             | A preset alone: no. Else: yes |
-| `inView`                  | The same; plays once wholly in view, clear of the bottom 10% of the viewport (taller elements: half the viewport). Elements already in view stay as they are    | Yes (an IntersectionObserver) |
-| `once`                    | `inView` plays only the first time (default `true`)                                                                                                             |                               |
-| `exit`                    | `'fadeOut'`, `'fadeOutDown'`, `'fadeOutUp'`, `'scaleOut'`: how an overlay (Dialog, Popover, Menu, Tooltip) leaves                                               | No                            |
-| `hover`, `press`, `focus` | Usually `'rise'`, `'squish'`, `'tilt'`, `'glow'`; any effect, sequence or keyframes. Plays and reverses; interruptible. Hover ignores touch                     | Yes                           |
-| `text`                    | `'type'`, `'count'`, `'split'`, for plain-text content                                                                                                          | Yes                           |
-| `duration`, `delay`       | Seconds. `duration` applies to each effect and overrides an effect's own. Defaults: 0.5 for entrances, 0.2 for interactions                                     |                               |
-| `ease`                    | Any greese.js ease. `linear`, `in`, `out`, `inOut`, the CSS keywords and bézier arrays stay CSS-only; others (`elastic.out`…) switch the entrance to JavaScript |                               |
-| `distance`                | How far `fadeUp`/`Down`/`Start`/`End` and `fadeOutUp`/`Down` travel (default `'1rem'`)                                                                          |                               |
-| `stagger`                 | Seconds between children: animates the children instead of the element                                                                                          |                               |
-| `scope`                   | `true` or `{ stagger, delay, inView, replay }`: orders every `enter` inside this element, at any depth (see Scopes)                                             | No (a small lazy chunk)       |
-| `timeline`                | `(tl, el) => void`: fill a greese.js timeline yourself. It plays on enter, or on reveal with `inView`                                                           | Yes                           |
+| Option                    | Values                                                                                                                                                                | Needs JavaScript?             |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `enter`                   | An effect, a [sequence](#composing-effects), or greese.js keyframes                                                                                                   | A preset alone: no. Else: yes |
+| `inView`                  | The same; plays once wholly in view, clear of the bottom 10% of the viewport (taller elements: half the viewport). Elements already in view stay as they are          | Yes (an IntersectionObserver) |
+| `once`                    | `inView` plays only the first time (default `true`)                                                                                                                   |                               |
+| `exit`                    | An effect: how an overlay (Dialog, Popover, Menu, Tooltip) leaves. It fades, and moves and scales to where the effect ends (`'fadeOutUp'`, `'scaleOut'`, `'rise'`…)   | No                            |
+| `hover`, `press`, `focus` | Usually `'rise'`, `'squish'`, `'tilt'`, `'glow'`; any effect, sequence or keyframes. Plays and reverses; interruptible. Hover ignores touch                           | Yes                           |
+| `text`                    | `'type'`, `'count'`, `'split'`, for plain-text content                                                                                                                | Yes                           |
+| `duration`, `delay`       | Seconds. `duration` applies to each effect and overrides an effect's own. Defaults: 0.5 for entrances, 0.2 for interactions                                           |                               |
+| `ease`                    | Any greese.js ease. `linear`, `in`, `out`, `inOut`, the CSS keywords and bézier arrays stay CSS-only; others (`elastic.out`…) switch the entrance to JavaScript       |                               |
+| `distance`                | How far the travelling effects go (`fadeUp`, `fadeDown`, `fadeStart`, `fadeEnd`, `fadeOutUp`, `fadeOutDown`; default `'1rem'`). A call's own `distance` argument wins |                               |
+| `stagger`                 | Seconds between children: animates the children instead of the element                                                                                                |                               |
+| `scope`                   | `true` or `{ stagger, delay, inView, replay }`: orders every `enter` inside this element, at any depth (see Scopes)                                                   | No (a small lazy chunk)       |
+| `timeline`                | `(tl, el) => void`: fill a greese.js timeline yourself. It plays on enter, or on reveal with `inView`                                                                 | Yes                           |
 
 ### Scopes: ordering the entrances inside a parent
 
@@ -97,14 +97,36 @@ server components behave as before. Things to know:
 
 ### Effects
 
-Effect names are camelCase.
+Effect names are camelCase. Every effect is defined once, in `@greese/ui`
+(`src/effects.ts`), in two groups:
 
-| Kind        | Effects                                                                                                                                                                                                                                                                          |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Entrances   | `fadeIn`, `fadeUp`, `fadeDown`, `fadeStart`, `fadeEnd` (these two follow the writing direction), `scaleIn`, `blurIn`, `slideUp`, `slideDown`, `slideRight`, `slideLeft` (physical directions), `pop` (a springy scale), `popIn` (pop with a fade). CSS presets when played alone |
-| Leaving     | `fadeOut`, `fadeOutUp`, `fadeOutDown`, `scaleOut`, `blurOut`. For sequences; overlays play the first four as `exit`                                                                                                                                                              |
-| Interaction | `rise`, `fall`, `squish`, `tilt`, `glow`                                                                                                                                                                                                                                         |
-| Yours       | Anything defined with [`defineGreeseEffect()`](#custom-effects)                                                                                                                                                                                                                  |
+- **Base effects** animate one property each, and take optional parameters. Every
+  parameter has a default, so you name only what you change.
+- **Combo effects** are made of base effects, each placed in time as a share of
+  the combo (`popIn` is `pop` plus a `fadeIn` over its first 60%).
+
+| Group | Effect                                                                             | Animates                                                                          | Parameters (defaults)                                                                 |
+| ----- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Base  | `fadeIn`, `fadeOut`                                                                | opacity                                                                           | `start`, `end` (`0`→`1`, `1`→`0`)                                                     |
+| Base  | `scaleIn`, `scaleOut`                                                              | scale                                                                             | `start`, `end` (`0.92`→`1`, `1`→`0.92`)                                               |
+| Base  | `blurIn`, `blurOut`                                                                | blur, in px                                                                       | `start`, `end` (`8`→`0`, `0`→`8`)                                                     |
+| Base  | `slideUp`, `slideDown`, `slideRight`, `slideLeft`                                  | translation (physical directions)                                                 | `start`, `end` (`'100%'`→`'0%'`, `'-100%'`→`'0%'`, `'-100%'`→`'0%'`, `'100%'`→`'0%'`) |
+| Base  | `pop`                                                                              | a springy scale                                                                   | `start` `0.8`, `end` `1`, `peak` `1.04`, `peakAt` `0.6`                               |
+| Base  | `squish`, `tilt`, `glow`                                                           | scale, rotation, brightness                                                       | `start`, `end` (`1`→`0.96`, `0`→`-2`, `1`→`1.12`)                                     |
+| Combo | `fadeUp`, `fadeDown`, `fadeStart`, `fadeEnd`                                       | fade + a slide of `distance` (`fadeStart`/`fadeEnd` follow the writing direction) | `distance` (`1rem`)                                                                   |
+| Combo | `fadeOutUp`, `fadeOutDown`                                                         | fade out + a slide of `distance`                                                  | `distance` (`1rem`)                                                                   |
+| Combo | `popIn`, `popOut`                                                                  | pop + a fade                                                                      | `start`/`end`, `peak`, `peakAt`                                                       |
+| Combo | `rise`, `fall`                                                                     | a lift or drop + a scale                                                          | `lift` `-4` / `drop` `4` (px), `scale` `1.02` / `0.98`                                |
+| Yours | Anything defined with [`defineGreeseEffect()`](#custom-effects) or in Theme Studio |                                                                                   | `duration`, `offset`, `ease`                                                          |
+
+There is no list of "entrance" or "leaving" effects, because the kind of an
+effect is where it ends:
+
+- an effect that ends at the element's resting state (opacity 1, no offset, no
+  scale) is a **CSS preset** when played alone: `greese="fadeUp"` is plain CSS;
+- one that ends away from it (`fadeOut`, `rise`, `scaleOut`…) runs in the
+  runtime, and an overlay can **leave** with it: `exit` takes the `translate`
+  and `scale` where the effect ends, and fades.
 
 Any effect works in any slot (`enter`, `inView`, `hover`, `press`, `focus`):
 `hover: 'pop'` is allowed, if unusual. An effect that ends hidden (`fadeOut`)
@@ -131,8 +153,37 @@ A sequence is one string:
   every group, and a group ends when its last child finishes.
 - The first group's first frames show during `delay`, so nothing flashes.
 - Sequences are typed: a single name must be a known effect (typos fail to
-  compile), and any string with `+` or `,` is accepted as a sequence. Unknown
-  names in a sequence are skipped with a console warning.
+  compile), and any string with `+`, `,` or parentheses is accepted as a
+  sequence. Unknown names in a sequence are skipped with a console warning.
+
+### Effect arguments
+
+An effect takes arguments in parentheses. Nothing is required: only what you
+write changes.
+
+```tsx
+<Card greese="fadeIn(0.25, 0.8)" />                 // by position: start, end
+<Card greese="fadeIn({ end: 0.8, duration: 1 })" /> // an object: only these keys
+<Card greese="fadeIn(end: 0.8)" />                  // or key: value, key=value
+<Card greese="fadeUp(2rem)+scaleIn(offset: 0.2)" /> // a combo's own parameter, a timing key
+<Card greese="slideUp(calc(1rem + 2px), 0)" />      // commas and + inside parentheses are fine
+```
+
+Positional arguments fill the effect's parameters in the order of the table,
+then the timing keys, so the signature is
+`someEffect(start, end, duration, offset, ease)`. Every effect, base, combo or
+yours, takes the timing keys:
+
+| Key        | What                                                                                                                             |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `duration` | Seconds this effect takes. Wins over the instance's `duration`, which wins over the effect's own default                         |
+| `offset`   | Seconds after its step starts. Inside a `+` group it staggers one effect from the others; a group ends when its last effect does |
+| `ease`     | A greese.js ease for this effect. Wins over the instance's `ease`                                                                |
+
+Arguments make the runtime play the effect, since CSS can't take them. Inside a
+combo the base effects have their own timing, as shares of the combo (a
+`popIn`'s fade covers its first 60%); the combo's `duration` and `offset` move
+all of it.
 
 ### Custom effects
 
@@ -145,7 +196,8 @@ import { defineGreeseEffect } from '@greese/react'
 // Keyframes
 defineGreeseEffect('wobble', { rotate: [0, -6, 6, -3, 0] })
 
-// A function of { el, distance, rtl }, for effects that adapt
+// A function of { el, distance, rtl, args }, for effects that adapt;
+// `args` holds what the call wrote by name: drift({ amount: '2rem' })
 defineGreeseEffect('drift', ({ distance }) => ({
   y: [`calc(${distance} * 3)`, '0rem'],
   opacity: [0, 1],
@@ -181,13 +233,18 @@ name's keyframes at that distance.
 - **Keyframes** are greese.js keyframes: every property greese.js animates
   (individual transforms, CSS, custom properties, colors), arrays per
   property or a list of keyframe objects with `offset` and `ease`.
-- **A built-in's name redefines it** in sequences, interactions and timelines. A lone entrance preset is plain CSS, so retune it with the kit's `keyframes()` mixin too (Theme Studio's Greese tab writes both).
+- **A built-in's name redefines it** in sequences, interactions and timelines, with those keyframes as they are (a retuned effect no longer reads its parameters; it keeps the timing keys). The kit's `effect()` mixin retunes its CSS too, for a preset played alone and for an overlay's `exit`: Theme Studio's Greese tab writes both, and a new effect it defines gets the same CSS, so the kit's `motion(enter:)` and `motion(exit:)` accept it.
 - **Server Components** can use defined effects, because a name is just a
   string. The definition must run on the client before the element mounts:
   call `defineGreeseEffect()` from a module your client bundle imports at
   start-up, not from a Server Component.
-- **Not for `exit`:** overlay exits are CSS transitions, so they take the
-  built-in names only.
+- **`exit` takes any effect**, yours too. A built-in's exit is CSS (a class sets
+  what it changes). For one from `defineGreeseEffect()` there is no class, so
+  the runtime sets the `translate` and `scale` where its keyframes end, on the
+  overlay, from the same plan the build makes for the built-ins; it loads the
+  runtime, like any effect of your own. Opacity is always faded.
+- **Positional arguments** of your own effect fill `duration`, `offset`, `ease`
+  (`wobble(0.6)` is a 0.6 s wobble); its other arguments are by name.
 
 ### How it stays light
 

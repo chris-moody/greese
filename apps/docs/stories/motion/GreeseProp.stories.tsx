@@ -12,7 +12,7 @@ import {
   Text,
   defineGreeseEffect,
   type GreeseProp,
-  type GreesePreset,
+  type GreeseEffectName,
 } from '@greese/react'
 import { art } from '../_shared/fixtures.tsx'
 
@@ -128,7 +128,7 @@ type Story = StoryObj<typeof meta>
 /** `<Motion>` gives any element the prop; every GreeseUI component has it already. */
 export const Playground: Story = {}
 
-const presets: GreesePreset[] = [
+const presets: GreeseEffectName[] = [
   'fadeIn',
   'fadeUp',
   'fadeDown',
@@ -301,25 +301,6 @@ export const InWaitOut: Story = {
             <code>fadeIn+scaleIn,+2,fadeOut</code>
           </Text>
         </Card>
-      )}
-    </PlayOnClick>
-  ),
-}
-
-/** The leaving effects, for sequences: `fadeOut`, `fadeOutUp`, `fadeOutDown`, `scaleOut`, `blurOut`. */
-export const LeavingEffects: Story = {
-  render: () => (
-    <PlayOnClick greese="fadeIn">
-      {(played) => (
-        <Grid container minChildWidth="10rem" gap={3}>
-          {(['fadeOut', 'fadeOutUp', 'fadeOutDown', 'scaleOut', 'blurOut'] as const).map(
-            (effect) => (
-              <Card key={effect} greese={played && `+0.3,${effect}`}>
-                <Text weight="semibold">{effect}</Text>
-              </Card>
-            )
-          )}
-        </Grid>
       )}
     </PlayOnClick>
   ),

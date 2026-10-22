@@ -2,24 +2,31 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Keyframes } from '@greese/js'
 import { describeGreeseEffects } from '@greese/react'
 import { formatKeyframes, parseKeyframes } from './effectCode.ts'
-import { BUILT_IN_EFFECTS, type EffectSpec, type ThemeSpec } from './spec.ts'
+import { effectPlan, endsHidden, isBuiltInEffect, parseSequence } from '@greese/ui'
+import type { EffectSpec, ThemeSpec } from './spec.ts'
 
 /** Effects the site defines itself (src/effects.ts), playable here too. */
 const SITE_EFFECTS = ['wobble']
 
 export const EXAMPLES = [
   'fadeIn+scaleIn,+1,wobble',
-  'slideUp,-0.2,popIn,+0.4,rise+glow',
-  'fadeStart+blurIn,popIn',
+  'slideUp,-0.2,pop,rise+glow',
+  'fadeStart+blurIn,+0.4,pop',
 ]
 
-const INTERACTIONS = new Set(['rise', 'fall', 'squish', 'tilt', 'glow'])
+/** What an effect does, from where it ends: at rest (it arrives), hidden (it leaves), or away (it adds emphasis). */
+const ends = (name: string): 'rest' | 'hidden' | 'away' =>
+  !isBuiltInEffect(name) || effectPlan(name).enter
+    ? 'rest'
+    : endsHidden(name)
+      ? 'hidden'
+      : 'away'
 
-/** Groups for the effect list, by what they're for. */
+/** Groups for the effect list, by where each ends. */
 export const GROUPS: Array<[title: string, match: (name: string) => boolean]> = [
-  ['Entrances', (n) => !/Out$/.test(n) && !INTERACTIONS.has(n)],
-  ['Leaving', (n) => /Out$/.test(n)],
-  ['Interactions', (n) => INTERACTIONS.has(n)],
+  ['Entrances', (n) => ends(n) === 'rest'],
+  ['Leaving', (n) => ends(n) === 'hidden'],
+  ['Interactions', (n) => ends(n) === 'away'],
 ]
 
 const without = <T>(record: Record<string, T>, name: string): Record<string, T> =>
@@ -29,10 +36,7 @@ const without = <T>(record: Record<string, T>, name: string): Record<string, T> 
 export const effectNameError = (name: string, existing: string[]): string | undefined => {
   if (!/^[a-z][A-Za-z0-9]*$/.test(name))
     return 'Use camelCase letters and digits, starting with a lower-case letter.'
-  if (
-    (BUILT_IN_EFFECTS as readonly string[]).includes(name) ||
-    SITE_EFFECTS.includes(name)
-  )
+  if (isBuiltInEffect(name) || SITE_EFFECTS.includes(name))
     return `${name} is a built-in effect: edit it in the list instead.`
   if (existing.includes(name)) return `${name} is already one of the theme's effects.`
   return undefined
@@ -94,10 +98,7 @@ export const useGreeseLab = (
 
   const names = useMemo(() => Object.keys(defaults ?? {}), [defaults])
   const custom = useMemo(
-    () =>
-      Object.keys(effects).filter(
-        (n) => !(BUILT_IN_EFFECTS as readonly string[]).includes(n)
-      ),
+    () => Object.keys(effects).filter((n) => !isBuiltInEffect(n)),
     [effects]
   )
   /** The effects this tab last wrote: a different set arrived from outside (an import). */
@@ -185,10 +186,9 @@ export const useGreeseLab = (
     () => new Set([...names, ...SITE_EFFECTS, ...Object.keys(effects)]),
     [names, effects]
   )
-  const unknown = sequence
-    .split(/[,+]/)
-    .map((s) => s.trim())
-    .filter((s) => s && !/^[+-]?\d*\.?\d+$/.test(s) && !known.has(s))
+  const unknown = parseSequence(sequence)
+    .flatMap((step) => (typeof step === 'number' ? [] : step.map((call) => call.name)))
+    .filter((name) => !known.has(name))
 
   const play = useCallback(
     (next?: string) => {

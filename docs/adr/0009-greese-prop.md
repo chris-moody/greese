@@ -18,15 +18,15 @@ Button, Card…), so the prop can't simply add a client hook everywhere.
 
 ### The plan
 
-| Phase | Scope                                                                                                  |
-| ----- | ------------------------------------------------------------------------------------------------------ |
-| 0     | Review of the plan and its open questions; this ADR                                                    |
-| 1     | CSS presets (`enter`, `inView`, `stagger`) on the layout and text components                           |
-| 2     | The prop on every component, with a check that none lacks it                                           |
+| Phase | Scope                                                                                               |
+| ----- | --------------------------------------------------------------------------------------------------- |
+| 0     | Review of the plan and its open questions; this ADR                                                 |
+| 1     | CSS presets (`enter`, `inView`, `stagger`) on the layout and text components                        |
+| 2     | The prop on every component, with a check that none lacks it                                        |
 | 3     | The runtime: registry, the `@greese/react/greese` opt-in, `hover`/`press`/`focus`, custom keyframes |
-| 4     | Text effects (`type`, `count`, `split`) on Text and Heading                                            |
-| 5     | Exits: `exit` on overlays; a decision on generic exit-on-unmount                                       |
-| 6     | `fromPixels` and JSON presets                                                                          |
+| 4     | Text effects (`type`, `count`, `split`) on Text and Heading                                         |
+| 5     | Exits: `exit` on overlays; a decision on generic exit-on-unmount                                    |
+| 6     | `fromPixels` and JSON presets                                                                       |
 
 Its open questions, answered in the decisions below:
 
@@ -191,6 +191,34 @@ or directly.
   parser, the leaving effects and the registry lookup. Each component's
   static part grew about 70 B (the preset check and the kebab conversion).
   No budget was raised.
+
+### 10a. One definition of every effect (2026-10-21)
+
+The built-in effects were once written out in the runtime, Motion.scss, the SCSS
+kit, the React name types and Theme Studio, kept in step by tests, and had
+drifted. They are defined once, in `packages/ui/src/effects.ts`, with no `kind`
+field:
+
+- **Base effects** animate one property and take optional parameters (`start`,
+  `end` and others, each defaulted). **Combo effects** are made of base effects,
+  by name (so a typo fails to compile), each placed as a share of the combo.
+- **Calls take arguments** in the sequence syntax: `fadeIn(0.25, 0.8)`,
+  `fadeIn({ end: 0.8, duration: 1 })`, `fadeIn(end: 0.8)`. Positional arguments
+  fill the effect's parameters, then `duration`, `offset` and `ease`, which
+  every effect takes; a call's timing beats the instance's options.
+- **CSS is derived, not declared.** `cssPlan()` reads the keyframes: ending at
+  the resting state makes a preset (`@keyframes`), ending away from it makes an
+  overlay exit (`translate` and `scale`). The build writes the built-ins' plans
+  into `dist/_maps.scss`; Motion.scss and the kit's `effect()` write them with
+  the same partial, so an effect Theme Studio defines gets the same CSS and
+  works in `motion()`. An overlay's `exit` takes any effect: a built-in's is a
+  class, one from `defineGreeseEffect()` is set inline by the runtime from the
+  same plan. `GreesePreset`, `GreeseExit` and `GreeseInteraction` are
+  gone: `exit` and the slots take any effect name.
+- The resolver reads a generated names-only module (`dist/effect-classes.js`)
+  so keyframes stay out of component bundles. Why TypeScript and not Sass as the
+  source: the runtime and Studio need keyframes as data, and effects that end
+  away from rest have no CSS preset.
 
 ### 11. `useGreese()`: greese.js in components
 

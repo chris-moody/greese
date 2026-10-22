@@ -3,7 +3,16 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { compile as compileFile, compileString, NodePackageImporter } from 'sass-embedded'
 import { describe, expect, it } from 'vitest'
-import { createTheme, LAYER_ORDER } from '../index.ts'
+import {
+  createTheme,
+  cssPlan,
+  effectClass,
+  effectCss,
+  effectNames,
+  effectPlan,
+  entranceNames,
+  LAYER_ORDER,
+} from '../index.ts'
 
 const STYLES = fileURLToPath(new URL('.', import.meta.url))
 
@@ -170,12 +179,12 @@ describe('SCSS kit: motion()', () => {
       compile(`@include greese.component(Dialog) { @include greese.motion((exit: scale-out)); }
       @include greese.component(Popover) { @include greese.motion((exit: fade-out-up)); }`)
     expect(declared(css, '.greese-Dialog')).toEqual([
-      ['--greese-motion-exit-scale', '0.95'],
+      ['--greese-motion-exit-scale', '0.92'],
     ])
     expect(declared(css, '.greese-Popover')).toEqual([
       [
         '--greese-motion-exit-translate',
-        '0 calc(-1 * var(--greese-motion-distance, 1rem))',
+        '0px calc(-1 * var(--greese-motion-distance, 1rem))',
       ],
     ])
   })
@@ -198,13 +207,93 @@ describe('SCSS kit: motion()', () => {
     ])
   })
 
+  it('accepts every entrance src/effects.ts defines, and the built CSS has its keyframes', () => {
+    const built = readFileSync(
+      new URL('../../dist/css/Motion.css', import.meta.url),
+      'utf8'
+    )
+    expect(entranceNames()).toHaveLength(13)
+    for (const effect of entranceNames()) {
+      const name = effectClass(effect)
+      expect(built, name).toContain(`@keyframes greese-${name} {`)
+      const css = compile(
+        `@include greese.component(Card) { @include greese.motion((enter: ${name})); }`
+      )
+      expect(css, name).toContain(`animation: greese-${name} `)
+    }
+  })
+
   it('rejects unknown presets and options', () => {
     const inCard = (options: string) =>
       compile(`@include greese.component(Card) { @include greese.motion(${options}); }`)
     expect(() => inCard('(enter: wobble)')).toThrow(
-      /no entrance `wobble`. Presets: fade-in/
+      /no entrance `wobble`. Effects that end at rest: fade-in/
     )
     expect(() => inCard('(speed: 2)')).toThrow(/motion\(\) has no option `speed`/)
+  })
+})
+
+describe('SCSS kit: effect()', () => {
+  const wobble = cssPlan({ rotate: [0, -6, 6, 0] })
+  const scss = (plan: string) =>
+    `@include greese.effect(wobble, ${plan});
+    @include greese.component(Card) { @include greese.motion((enter: wobble)); }`
+
+  it('makes an effect of your own work in motion(enter:) like a built-in', () => {
+    const css = compile(
+      scss(
+        `(enter: (from: (rotate: '0deg'), '33.33%': (rotate: '-6deg'), '66.67%': (rotate: '6deg')))`
+      )
+    )
+    expect(css).toMatch(
+      /\.greese-Motion--enter-wobble,\s+\.greese-Motion--view-wobble \{\s+--greese-motion-name: greese-wobble;/
+    )
+    expect(css).toMatch(/@keyframes greese-wobble \{\s+from \{\s+rotate: 0deg;/)
+    expect(css).toContain('animation: greese-wobble ')
+    expect(wobble.enter).toHaveLength(3)
+  })
+
+  it('retunes an overlay exit, and accepts a new one in motion(exit:)', () => {
+    const css = compile(
+      `@include greese.effect(scale-out, (exit: (scale: '0.5')));
+      @include greese.effect(sink, (exit: (translate: '0 2rem')));
+      @include greese.component(Dialog) { @include greese.motion((exit: sink)); }`
+    )
+    expect(css).toMatch(
+      /\.greese-Motion--exit-scale-out \{\s+--greese-motion-exit-scale: 0\.5;/
+    )
+    expect(declared(css, '.greese-Dialog')).toEqual([
+      ['--greese-motion-exit-translate', '0 2rem'],
+    ])
+  })
+
+  it('writes the CSS that effectCss() writes for a page without the compiled theme', () => {
+    const squash = (css: string) => css.replace(/\s+/g, ' ').trim()
+    const toScss = (plan: ReturnType<typeof cssPlan>) => {
+      const decl = (values: Record<string, string>) =>
+        `(${Object.entries(values)
+          .map(([p, v]) => `'${p}': '${v}'`)
+          .join(', ')})`
+      return plan.enter
+        ? `(enter: (${plan.enter.map(([at, d]) => `'${at}': ${decl(d)}`).join(', ')}))`
+        : `(exit: ${Object.keys(plan.exit).length ? decl(plan.exit) : '()'})`
+    }
+    for (const effect of effectNames) {
+      const plan = effectPlan(effect)
+      const name = effectClass(effect)
+      const css = squash(compile(`@include greese.effect(x-${name}, ${toScss(plan)});`))
+      // The kit's rules sit in the utilities layer; the text is the rules alone.
+      expect(css, effect).toContain(squash(effectCss(`x-${name}`, plan)))
+    }
+  })
+
+  it('still stops the build on a name nothing defines', () => {
+    expect(() =>
+      compile(
+        `@include greese.component(Card) { @include greese.motion((enter: wobble)); }`
+      )
+    ).toThrow(/no entrance `wobble`/)
+    expect(() => compile(`@include greese.effect(wobble, ());`)).toThrow(/needs a plan/)
   })
 })
 
@@ -374,38 +463,41 @@ describe('style manifest', () => {
 describe('SCSS kit: typography()', () => {
   it('writes a variant complete, so its other breakpoints stay in step', () => {
     const css = compile(`@include greese.typography((
-      h1: (base: (size: 2rem), lg: (size: 4rem, tracking: -0.03em)),
+      h1: (base: (font-size: 2rem), lg: (font-size: 4rem, letter-spacing: -0.03em)),
     ));`)
     expect(css).toContain('@layer greese.theme')
     // base: the default h1's other values too, with the new size
     expect(css).toMatch(
-      /--greese-type-h1-size: 2rem;[\s\S]*--greese-type-h1-weight: 700;/
+      /--greese-type-h1-font-size: 2rem;[\s\S]*--greese-type-h1-font-weight: 700;/
     )
     // the default md step is kept, since the variant is written whole
     expect(css).toMatch(
-      /@media \(width >= 900px\)[\s\S]*--greese-type-h1-size: 2\.75rem;/
+      /@media \(width >= 900px\)[\s\S]*--greese-type-h1-font-size: 2\.75rem;/
     )
-    expect(css).toMatch(/@media \(width >= 1200px\)[\s\S]*--greese-type-h1-size: 4rem;/)
-    expect(css).toContain('--greese-type-h1-tracking: -0.03em;')
+    expect(css).toMatch(
+      /@media \(width >= 1200px\)[\s\S]*--greese-type-h1-font-size: 4rem;/
+    )
+    expect(css).toContain('--greese-type-h1-letter-spacing: -0.03em;')
     // other variants are left alone
     expect(css).not.toContain('--greese-type-h2-')
   })
 
   it('takes other properties, and scopes to a theme', () => {
     const css = compile(`@include greese.theme(brand) {
-      @include greese.typography((caption: (base: (transform: uppercase, family: ('Inter', sans-serif)))));
+      @include greese.typography((caption: (base: (text-transform: uppercase, font-family: ('Inter', sans-serif), color: red))));
     }`)
     expect(css).toContain('[data-greese-theme=brand]')
-    expect(css).toContain('--greese-type-caption-transform: uppercase;')
-    expect(css).toContain('--greese-type-caption-family: "Inter", sans-serif;')
+    expect(css).toContain('--greese-type-caption-text-transform: uppercase;')
+    expect(css).toContain('--greese-type-caption-font-family: "Inter", sans-serif;')
+    expect(css).toContain('--greese-type-caption-color: red;')
   })
 
   it('stops the build on unknown variants, breakpoints and properties', () => {
     expect(() =>
-      compile('@include greese.typography((h9: (base: (size: 1rem))));')
+      compile('@include greese.typography((h9: (base: (font-size: 1rem))));')
     ).toThrow(/no type variant `h9`/)
     expect(() =>
-      compile('@include greese.typography((h1: (huge: (size: 1rem))));')
+      compile('@include greese.typography((h1: (huge: (font-size: 1rem))));')
     ).toThrow(/no breakpoint `huge`/)
     expect(() =>
       compile('@include greese.typography((h1: (base: (colour: red))));')
@@ -421,13 +513,15 @@ describe('SCSS kit: keyframes()', () => {
       to: (opacity: 1, translate: '0 0'),
     ));`)
     expect(css).toContain('@layer greese.utilities')
-    expect(css).toMatch(/@keyframes greese-fade-up\s*{\s*from\s*{\s*opacity:\s*0;\s*translate:\s*0 2rem;/)
+    expect(css).toMatch(
+      /@keyframes greese-fade-up\s*{\s*from\s*{\s*opacity:\s*0;\s*translate:\s*0 2rem;/
+    )
     expect(css).toMatch(/60%\s*{\s*opacity:\s*1;/)
   })
 
   it('only takes names that start with greese-', () => {
-    expect(() => compile(`@include greese.keyframes(wobble, (from: (opacity: 0)));`)).toThrow(
-      /start with `greese-`/
-    )
+    expect(() =>
+      compile(`@include greese.keyframes(wobble, (from: (opacity: 0)));`)
+    ).toThrow(/start with `greese-`/)
   })
 })

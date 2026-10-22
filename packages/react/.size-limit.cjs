@@ -31,7 +31,10 @@ module.exports = [
     // 26.25 → 27 kB (2026-10-20): the type system's defaults, which createTheme
     // writes into every theme (ADR 0016), and Text/Heading `variant`, about
     // 0.5 kB.
-    limit: '27 kB',
+    // 27 → 27.5 kB (2026-10-21): the default colors are read from the palette
+    // instead of written out as hex, so the nine hues they use travel with
+    // createTheme (about 0.4 kB), the price of one source of truth.
+    limit: '27.5 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -43,7 +46,8 @@ module.exports = [
     // 30.5 → 31 kB the same day for createTheme's derived content colors.
     // 31 → 31.75 kB (2026-10-20): the type system's defaults, as above.
     // 31.75 → 32 kB the same day for the `scope` option's static part (ADR 0017).
-    limit: '32 kB',
+    // 32 → 32.5 kB the same day, for the palette hues, as above.
+    limit: '32.5 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -60,7 +64,8 @@ module.exports = [
     import: '{ Stack }',
     ignore: ['react', 'react-dom'],
     // 2.25 → 2.3 kB (2026-10-20): the `scope` option's static part (ADR 0017)
-    limit: '2.3 kB',
+    // 2.3 kB → 2.4 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
+    limit: '2.4 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -68,7 +73,8 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ Button }',
     ignore: ['react', 'react-dom'],
-    limit: '2.25 kB',
+    // 2.25 kB → 2.3 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
+    limit: '2.3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -77,7 +83,8 @@ module.exports = [
     import: '{ TextField }',
     ignore: ['react', 'react-dom'],
     // 2.25 → 2.3 kB (2026-10-20): the `scope` option's static part (ADR 0017)
-    limit: '2.3 kB',
+    // 2.3 kB → 2.35 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
+    limit: '2.35 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -93,7 +100,8 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ Dialog }',
     ignore: ['react', 'react-dom'],
-    limit: '3.25 kB',
+    // 3.25 kB → 3.3 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
+    limit: '3.3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -109,7 +117,9 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ toast, Toaster }',
     ignore: ['react', 'react-dom'],
-    limit: '3.25 kB',
+    // 3.25 → 3.3 kB (2026-10-21): the resolver lists the CSS entrances from @greese/ui (generated from src/effects.ts) instead of keeping a regex of its own, about 15 B.
+    // 3.3 kB → 3.35 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
+    limit: '3.35 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -125,7 +135,9 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ NumberField }',
     ignore: ['react', 'react-dom'],
-    limit: '3.25 kB',
+    // 3.25 → 3.3 kB (2026-10-21): the resolver lists the CSS entrances from @greese/ui (generated from src/effects.ts) instead of keeping a regex of its own, about 15 B.
+    // 3.3 kB → 3.35 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
+    limit: '3.35 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -134,7 +146,8 @@ module.exports = [
     import: '{ Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell }',
     ignore: ['react', 'react-dom'],
     // 2.25 → 2.3 kB (2026-10-20): the `scope` option's static part (ADR 0017)
-    limit: '2.3 kB',
+    // 2.3 kB → 2.35 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
+    limit: '2.35 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -155,7 +168,9 @@ module.exports = [
     // 0.4 kB), so setting `primary` alone gives a readable theme (ADR 0002).
     // 2.75 → 3.4 kB (2026-10-20): createTheme carries the type system's
     // defaults to write complete themes (ADR 0016).
-    limit: '3.4 kB',
+    // 3.4 → 3.75 kB (2026-10-21): the default colors are read from the
+    // palette, so the nine hues they use come with createTheme (ADR 0002).
+    limit: '3.75 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -169,7 +184,8 @@ module.exports = [
     name: 'MaskedInput',
     path: 'dist/index.js',
     import: '{ MaskedInput }',
-    limit: '2.75 kB',
+    // 2.75 kB → 2.8 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
+    limit: '2.8 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -180,7 +196,8 @@ module.exports = [
     // 3.25 → 3.5 kB (2026-10-19): reaching the target slide reliably
     // (suspend snapping, check arrival, skip its own index echoes), about
     // 90 B; see the ADR 0011 ScrollCarousel addendum.
-    limit: '3.5 kB',
+    // 3.5 kB → 3.55 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
+    limit: '3.55 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -222,7 +239,8 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ SpeedDial, SpeedDialAction }',
     ignore: ['react', 'react-dom'],
-    limit: '3 kB',
+    // 3 kB → 3.05 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
+    limit: '3.05 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -259,6 +277,16 @@ module.exports = [
     // 7.25 → 7.5 kB (2026-10-19): scroll reveals wait until an element is
     // wholly in view and clear of the bottom edge, with a second observer for
     // elements the page can't scroll that far (near its end).
-    limit: '7.5 kB',
+    // 7.5 → 7.6 kB (2026-10-21): the built-in effects are @greese/ui's
+    // (src/effects.ts), the one source the CSS is also written from; the
+    // runtime keeps their kinds beside the keyframes, about 65 B.
+    // 7.6 → 8.6 kB (2026-10-21): effects take arguments (`fadeIn(0.25, 0.8)`),
+    // so the runtime carries the sequence parser's argument syntax and builds
+    // combo effects from their base effects, about 0.9 kB. Lazy: only a prop
+    // that needs JavaScript loads it.
+    // 8.6 → 9.1 kB (2026-10-21): an overlay can leave with an effect defined at
+    // run time, so the runtime sets its `translate` and `scale` from the same
+    // `cssPlan()` the build uses for the built-ins, about 0.5 kB.
+    limit: '9.1 kB',
   },
 ]

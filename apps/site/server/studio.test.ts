@@ -161,29 +161,34 @@ describe('typography', () => {
     tokens: {},
     components: {},
     typography: {
-      h1: { base: { size: '2rem' }, lg: { size: '4rem', tracking: '-0.03em' } },
-      caption: { base: { transform: 'uppercase' } },
+      h1: {
+        base: { fontSize: '2rem' },
+        lg: { fontSize: '4rem', letterSpacing: '-0.03em' },
+      },
+      caption: { base: { textTransform: 'uppercase' } },
     },
   }
 
   it('writes the kit call', () => {
     const scss = specToScss(spec)
     expect(scss).toContain('@include greese.typography(')
-    expect(scss).toMatch(/h1: \(\s+base: \(\s+size: "2rem"/)
-    expect(scss).toMatch(/lg: \(\s+size: "4rem",\s+tracking: "-0.03em"/)
+    expect(scss).toMatch(/h1: \(\s+base: \(\s+font-size: "2rem"/)
+    expect(scss).toMatch(/lg: \(\s+font-size: "4rem",\s+letter-spacing: "-0.03em"/)
   })
 
   it('compiles through the real kit', () => {
     const result = compileSpec(spec)
     expect(result).not.toHaveProperty('errors')
     const css = (result as { css: string }).css
-    expect(css).toContain('--greese-type-h1-size: 2rem;')
-    expect(css).toMatch(/@media \(width >= 1200px\)[^@]*--greese-type-h1-size: 4rem;/)
-    expect(css).toContain('--greese-type-caption-transform: uppercase;')
+    expect(css).toContain('--greese-type-h1-font-size: 2rem;')
+    expect(css).toMatch(
+      /@media \(width >= 1200px\)[^@]*--greese-type-h1-font-size: 4rem;/
+    )
+    expect(css).toContain('--greese-type-caption-text-transform: uppercase;')
   })
 
   it('reports unknown variants and properties from the kit', () => {
-    expect(compileSpec({ typography: { h9: { base: { size: '1rem' } } } })).toEqual({
+    expect(compileSpec({ typography: { h9: { base: { fontSize: '1rem' } } } })).toEqual({
       errors: [expect.stringMatching(/no type variant `h9`/)],
     })
     expect(compileSpec({ typography: { h1: { base: { colour: 'red' } } } })).toEqual({
@@ -195,9 +200,12 @@ describe('typography', () => {
     const css = (compileSpec({ ...spec, name: 'brand' }) as { css: string }).css
     const back = importCss(css)
     expect(back.skipped).toEqual([])
-    expect(back.spec.typography?.h1?.base).toEqual({ size: '2rem' })
-    expect(back.spec.typography?.h1?.lg).toEqual({ size: '4rem', tracking: '-0.03em' })
-    expect(back.spec.typography?.caption?.base).toEqual({ transform: 'uppercase' })
+    expect(back.spec.typography?.h1?.base).toEqual({ fontSize: '2rem' })
+    expect(back.spec.typography?.h1?.lg).toEqual({
+      fontSize: '4rem',
+      letterSpacing: '-0.03em',
+    })
+    expect(back.spec.typography?.caption?.base).toEqual({ textTransform: 'uppercase' })
     // Everything else in h1 and the other variants is the default.
     expect(back.spec.typography?.h2).toBeUndefined()
     expect(back.spec.typography?.h1?.md).toBeUndefined()
@@ -207,11 +215,11 @@ describe('typography', () => {
     const { createTheme } = await import('@greese/ui')
     const theme = createTheme({
       name: 'brand',
-      typography: { h3: { md: { size: '2.5rem' } } },
+      typography: { h3: { md: { fontSize: '2.5rem' } } },
     })
     const back = importCss(theme.css)
     expect(back.skipped).toEqual([])
-    expect(back.spec.typography).toEqual({ h3: { md: { size: '2.5rem' } } })
+    expect(back.spec.typography).toEqual({ h3: { md: { fontSize: '2.5rem' } } })
   })
 })
 
@@ -252,7 +260,9 @@ describe('breakpoints', () => {
     expect(css).not.toContain('@media (width >= 900px)')
     expect(css).toContain('--greese-radius-md: 2px;')
     // Typography follows them too.
-    expect(css).toMatch(/@media \(width >= 800px\)[^@]*--greese-type-h1-size: 2\.75rem/)
+    expect(css).toMatch(
+      /@media \(width >= 800px\)[^@]*--greese-type-h1-font-size: 2\.75rem/
+    )
   })
 
   it('rejects breakpoints that components or the cascade can’t use', () => {

@@ -1,0 +1,42 @@
+// One effect's CSS, from its plan: (enter: steps) for an effect that ends at
+// rest, (exit: declarations) for one that ends away from it. Used for the
+// built-in effects (components/Motion/Motion.scss, from the build's maps) and
+// for the effects a theme defines (the kit's `effect()`), so both come out the
+// same. The plans are made in src/effects.ts (`cssPlan()`).
+@use 'sass:map';
+@use 'sass:string';
+
+/// The classes that name the effect and set what an overlay's exit changes.
+@mixin classes($name, $plan) {
+  @if map.get($plan, enter) {
+    .greese-Motion--enter-#{$name},
+    .greese-Motion--view-#{$name} {
+      --greese-motion-name: greese-#{$name};
+    }
+  }
+
+  $exit: map.get($plan, exit);
+
+  @if $exit and map.keys($exit) != () {
+    .greese-Motion--exit-#{$name} {
+      @each $property, $value in $exit {
+        --greese-motion-exit-#{$property}: #{string.unquote($value)};
+      }
+    }
+  }
+}
+
+/// Its `@keyframes`, ending at the element's own styles.
+@mixin keyframes($name, $plan) {
+  @if map.get($plan, enter) {
+    @keyframes greese-#{$name} {
+      @each $at, $declarations in map.get($plan, enter) {
+        #{$at} {
+          @each $property, $value in $declarations {
+            #{$property}: #{string.unquote($value)};
+          }
+        }
+      }
+    }
+  }
+}

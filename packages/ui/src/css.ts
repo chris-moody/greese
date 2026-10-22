@@ -21,9 +21,8 @@ export const LAYER_ORDER =
 export const SCHEME_ATTR = 'data-greese-scheme'
 export const THEME_ATTR = 'data-greese-theme'
 
-/** `surfaceOverlay` -> `surface-overlay`, `2xl` -> `2xl`. */
-export const kebab = (value: string): string =>
-  value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
+import { kebab } from './kebab.ts'
+export { kebab }
 
 /** The custom property for a token: `cssVar('lineHeight', 'tight')` -> `--greese-line-height-tight`. */
 export const cssVar = (group: ScalarGroup | 'color', key: string | number): string =>

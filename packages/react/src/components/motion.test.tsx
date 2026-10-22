@@ -10,17 +10,16 @@ import {
   cssEase,
   needsRuntime,
   resolveGreese,
-  type GreeseExit,
-  type GreeseInteraction,
+  type GreeseMotion,
   type GreeseOptions,
-  type GreesePreset,
 } from '../utils/greese.ts'
 import { Button } from './Button/Button.tsx'
 import { Card } from './Card/Card.tsx'
 import { Dialog } from './Dialog/Dialog.tsx'
 import { Motion } from './Motion/Motion.tsx'
-import { defineGreeseEffect } from './Motion/effects.ts'
-import { negate, parseSequence, type BuiltInEffect } from './Motion/greeseRuntime.ts'
+import { defineGreeseEffect, removeGreeseEffect } from './Motion/effects.ts'
+import { effectClass } from '@greese/ui/effects'
+import { entranceNames } from '@greese/ui/effect-classes'
 import { loadGreeseRuntime } from './Motion/registry.ts'
 import { Stack } from './Stack/Stack.tsx'
 import { Text } from './Text/Text.tsx'
@@ -165,6 +164,25 @@ describe('the greese prop on components', () => {
     expect(screen.getByRole('dialog')).toHaveClass('greese-Motion--exit-scale-out')
   })
 
+  it('lets an overlay leave with an effect defined at run time', async () => {
+    // A built-in's exit is CSS: no runtime. One of your own has no class, so
+    // the runtime sets what it changes, from the same plan the build makes.
+    expect(resolveGreese({ exit: 'scaleOut' }).runtime).toBe(false)
+    expect(resolveGreese({ exit: 'sink' as never }).runtime).toBe(true)
+    defineGreeseEffect('sink', {
+      keyframes: { y: [0, '2rem'], scale: [1, 0.9], opacity: [1, 0] },
+    })
+    render(<Dialog title="Hi" open greese={{ exit: 'sink' as never }} />)
+    await attached()
+    const dialog = screen.getByRole('dialog')
+    expect(dialog.style.getPropertyValue('--greese-motion-exit-translate')).toBe(
+      '0px 2rem'
+    )
+    expect(dialog.style.getPropertyValue('--greese-motion-exit-scale')).toBe('0.9')
+    cleanup()
+    removeGreeseEffect('sink')
+  })
+
   it('wraps any element with Motion', () => {
     render(
       <Motion asChild greese="blurIn">
@@ -280,24 +298,6 @@ describe('effects and sequences', () => {
     })
   })
 
-  it('parses groups, simultaneous effects and pauses', () => {
-    expect(parseSequence('fadeIn+scaleIn,+2,fadeOut')).toEqual([
-      ['fadeIn', 'scaleIn'],
-      2,
-      ['fadeOut'],
-    ])
-    expect(parseSequence(' fadeUp , 0.5 , .25,pop + glow ,')).toEqual([
-      ['fadeUp'],
-      0.5,
-      0.25,
-      ['pop', 'glow'],
-    ])
-  })
-
-  it('reads a negative number as an overlap', () => {
-    expect(parseSequence('slideUp,-0.2,popIn')).toEqual([['slideUp'], -0.2, ['popIn']])
-  })
-
   it('sends sequences and defined effects to the runtime, keeping CSS for a lone preset', () => {
     expect(resolveGreese('fadeIn+scaleIn,+2,fadeOut')).toEqual({
       className: undefined,
@@ -386,48 +386,14 @@ describe('effects and sequences', () => {
 })
 
 describe('one source of truth for effect names', () => {
-  // Fails to compile if a public name has no built-in effect behind it.
-  const covered: [GreesePreset | GreeseExit | GreeseInteraction] extends [BuiltInEffect]
-    ? true
-    : never = true
-
-  const presets = [
-    'fadeIn',
-    'fadeUp',
-    'fadeDown',
-    'fadeStart',
-    'fadeEnd',
-    'scaleIn',
-    'blurIn',
-    'slideUp',
-    'slideDown',
-    'slideRight',
-    'slideLeft',
-    'pop',
-    'popIn',
-  ] as const satisfies readonly GreesePreset[]
-  // …and this one if the list above misses a preset.
-  const complete: [GreesePreset] extends [(typeof presets)[number]] ? true : never = true
-
-  it('keeps the presets, their CSS and their classes in step', () => {
-    expect(covered && complete).toBe(true)
+  it('plays every entrance as CSS, from keyframes @greese/ui builds', () => {
     // Vitest runs from the package root; the styles are @greese/ui's.
-    const scss = readFileSync('../ui/src/components/Motion/Motion.scss', 'utf8')
-    const list = /\$presets: \(([^)]*)\)/.exec(scss)![1]!
-    const inScss = [...list.matchAll(/'([a-z-]+)'/g)].map((m) => m[1])
-    const kebab = (n: string) => n.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
-    expect(inScss).toEqual(presets.map(kebab))
-    for (const preset of presets) {
-      expect(resolveGreese(preset).className).toContain(`--enter-${kebab(preset)}`)
-      expect(scss).toContain(`@keyframes greese-${kebab(preset)} {`)
+    const built = readFileSync('../ui/dist/css/Motion.css', 'utf8')
+    expect(entranceNames.length).toBeGreaterThan(0)
+    for (const preset of entranceNames) {
+      expect(resolveGreese(preset).className).toContain(`--enter-${effectClass(preset)}`)
+      expect(built).toContain(`@keyframes greese-${effectClass(preset)} {`)
     }
-  })
-
-  it('flips any CSS length', () => {
-    expect(negate('1rem')).toBe('-1rem')
-    expect(negate('-12px')).toBe('12px')
-    expect(negate('calc(1rem + 2px)')).toBe('calc(-1 * calc(1rem + 2px))')
-    expect(negate('var(--gap)')).toBe('calc(-1 * var(--gap))')
   })
 
   it('lets a definition under a built-in name replace it', async () => {
@@ -444,6 +410,26 @@ describe('one source of truth for effect names', () => {
     expect(run()).toBe(0.5)
     defineGreeseEffect('fall', { keyframes: { y: [0, 9] }, duration: 2 })
     expect(run()).toBe(2)
+  })
+
+  it('plays a call’s arguments: its own parameters and its timing', async () => {
+    const { timeline } = await import('@greese/js')
+    const { addMotion } = await import('./Motion/greeseRuntime.ts')
+    const at = (sequence: GreeseMotion, options = {}) =>
+      addMotion(
+        timeline({ paused: true }),
+        [document.createElement('div')],
+        sequence,
+        { distance: '1rem', rtl: false },
+        { duration: 0.5, options }
+      )
+    expect(at('fadeIn')).toBe(0.5)
+    // Its own duration, then its offset on top; the instance's duration yields.
+    expect(at('fadeIn(0.25, 0.8, 1)', { duration: 3 })).toBe(1)
+    expect(at('fadeIn(duration: 1, offset: 0.5)')).toBe(1.5)
+    expect(at('fadeUp(2rem)+fadeIn({ end: 0.5, offset: 0.25 })')).toBe(0.75)
+    // Steps still follow each other, and an offset shifts only its own effect.
+    expect(at('fadeIn(offset: 0.2),scaleIn')).toBe(1.2)
   })
 
   it('never mistakes an Object prototype key for an effect', async () => {

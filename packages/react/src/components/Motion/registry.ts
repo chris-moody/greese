@@ -8,7 +8,7 @@ export interface GreeseRuntime {
     items: Array<{ el: HTMLElement; options: GreeseOptions; detach?: () => void }>
   ): void
   /** The built-in effects as plain keyframes. */
-  effectFrames(distance?: string): Record<string, Keyframes>
+  describeEffects(distance?: string): Record<string, Keyframes>
 }
 
 /** The lazy half of the `scope` option: see scope.ts. */
@@ -49,4 +49,4 @@ export const loadGreeseRuntime = (): Promise<GreeseRuntime> =>
 export const describeGreeseEffects = (
   distance?: string
 ): Promise<Record<string, Keyframes>> =>
-  loadGreeseRuntime().then((runtime) => runtime.effectFrames(distance))
+  loadGreeseRuntime().then((runtime) => runtime.describeEffects(distance))

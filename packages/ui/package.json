@@ -41,6 +41,14 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./effects": {
+      "types": "./dist/effects.d.ts",
+      "default": "./dist/effects.js"
+    },
+    "./effect-classes": {
+      "types": "./dist/effect-classes.d.ts",
+      "default": "./dist/effect-classes.js"
+    },
     "./styles.css": "./dist/greese.css",
     "./base.css": "./dist/base.css",
     "./css/*": "./dist/css/*",

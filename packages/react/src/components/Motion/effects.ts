@@ -9,6 +9,11 @@ export interface GreeseEffectContext {
   distance: string
   /** Whether the element is laid out right to left. */
   rtl: boolean
+  /**
+   * The arguments the call wrote, apart from its timing keys: by name, so
+   * `drift(3rem)` gives nothing but `drift({ amount: '3rem' })` gives `amount`.
+   */
+  args: Record<string, string | number>
 }
 
 /** Keyframes, or a function returning them for the element in hand. */

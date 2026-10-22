@@ -1,10 +1,8 @@
-import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { describeGreeseEffects } from '@greese/react'
-import { toCssSteps } from '../src/studio/effectCss.ts'
+import { effectClass, effectNames, entranceNames } from '@greese/ui'
 import {
-  BUILT_IN_EFFECTS,
-  CSS_PRESETS,
+  motionChoices,
   specToEffectsTs,
   specToScss,
   validateSpec,
@@ -12,33 +10,11 @@ import {
 } from '../src/studio/spec.ts'
 import { compileSpec } from './studio.ts'
 
-const kebab = (n: string) => n.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
-
 describe('effect lists', () => {
-  it('keep in step with the library', async () => {
-    expect([...BUILT_IN_EFFECTS].sort()).toEqual(
-      Object.keys(await describeGreeseEffects()).sort()
+  it('are the library’s own, not a copy', async () => {
+    expect(Object.keys(await describeGreeseEffects()).sort()).toEqual(
+      [...effectNames].sort()
     )
-    const scss = readFileSync('../../packages/ui/src/components/Motion/Motion.scss', 'utf8')
-    const list = /\$presets: \(([^)]*)\)/.exec(scss)![1]!
-    expect([...list.matchAll(/'([a-z-]+)'/g)].map((m) => m[1])).toEqual(
-      CSS_PRESETS.map(kebab)
-    )
-  })
-})
-
-describe('keyframes as CSS', () => {
-  it('turns x, y, scale and rotate into the individual transform properties', () => {
-    expect(toCssSteps({ opacity: [0, 1], y: ['1rem', '0px'], scale: [0.9, 1] })).toEqual([
-      ['from', { translate: '0px 1rem', opacity: '0', scale: '0.9' }],
-      ['to', { translate: '0px 0px', opacity: '1', scale: '1' }],
-    ])
-    expect(toCssSteps({ rotate: [0, 90] })[1]).toEqual(['to', { rotate: '90deg' }])
-  })
-
-  it('places a list of frames at their offsets, or evenly', () => {
-    const steps = toCssSteps([{ scale: 0.8 }, { scale: 1.04, offset: 0.6 }, { scale: 1 }])
-    expect(steps.map(([at]) => at)).toEqual(['from', '60%', 'to'])
   })
 })
 
@@ -52,7 +28,8 @@ describe('retuning every built-in', () => {
     const result = compileSpec({ tokens: {}, components: {}, effects })
     expect(result).not.toHaveProperty('errors')
     const css = (result as { css: string }).css
-    for (const name of CSS_PRESETS) expect(css).toContain(`@keyframes greese-${kebab(name)}`)
+    for (const name of entranceNames())
+      expect(css).toContain(`@keyframes greese-${effectClass(name)}`)
   }, 30_000)
 })
 
@@ -66,15 +43,54 @@ describe('a theme with effects', () => {
     },
   }
 
-  it('builds a retuned preset into the CSS, through the real kit', () => {
-    const result = compileSpec(spec)
+  it('builds every effect into the CSS alike, through the real kit', () => {
+    const result = compileSpec({
+      ...spec,
+      effects: {
+        ...spec.effects,
+        // A retuned overlay exit, and a new one.
+        scaleOut: { keyframes: { scale: [1, 0.5], opacity: [1, 0] } },
+        sink: { keyframes: { y: [0, '2rem'], opacity: [1, 0] } },
+      },
+      components: {
+        Card: { motion: { enter: 'spin-in' } },
+        Dialog: { motion: { exit: 'sink' } },
+      },
+    })
     expect(result).not.toHaveProperty('errors')
     const { css, scss } = result as { css: string; scss: string }
-    expect(scss).toContain('@include greese.keyframes(greese-fade-up')
+    expect(scss).toContain('@include greese.effect(fade-up,')
+    expect(scss).toContain('@include greese.effect(spin-in,')
     expect(css).toMatch(/@keyframes greese-fade-up/)
     expect(css).toMatch(/translate:\s*0px 2rem/)
-    // A new effect has no CSS: it's for the runtime.
-    expect(css).not.toMatch(/spin-in/)
+    // A new effect gets the same CSS a built-in has, and motion() accepts it.
+    expect(css).toMatch(/@keyframes greese-spin-in \{\s+from \{\s+rotate: -90deg/)
+    expect(css).toMatch(/\.greese-Card \{[^}]*animation: greese-spin-in /)
+    // Exits: retuned and new.
+    expect(css).toMatch(
+      /\.greese-Motion--exit-scale-out \{\s+--greese-motion-exit-scale: 0\.5;/
+    )
+    expect(css).toMatch(
+      /\.greese-Motion--exit-sink \{\s+--greese-motion-exit-translate: 0px 2rem;/
+    )
+    expect(css).toMatch(
+      /\.greese-Dialog \{[^}]*--greese-motion-exit-translate: 0px 2rem;/
+    )
+  })
+
+  it('offers its own effects in the Motion section', () => {
+    const { enter, exit } = motionChoices({
+      ...spec,
+      effects: {
+        ...spec.effects,
+        sink: { keyframes: { y: [0, '2rem'], opacity: [1, 0] } },
+      },
+    })
+    expect(enter).toContain('fade-up')
+    expect(enter).toContain('spin-in')
+    expect(exit).toContain('sink')
+    expect(exit).toContain('fade-out')
+    expect(enter).not.toContain('fade-out')
   })
 
   it('generates the module that defines every effect, and types the new names', () => {
@@ -85,7 +101,7 @@ describe('a theme with effects', () => {
     expect(ts).toMatch(/GreeseEffectRegistry {\n\s+spinIn: true\n/)
     expect(ts).not.toMatch(/fadeUp: true/)
     expect(specToEffectsTs({ tokens: {} })).toBeUndefined()
-    expect(specToScss({ tokens: {} })).not.toContain('keyframes')
+    expect(specToScss({ tokens: {} })).not.toContain('effect(')
   })
 
   it('refuses names and values that would write bad CSS or code', () => {

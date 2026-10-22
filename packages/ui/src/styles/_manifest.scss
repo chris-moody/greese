@@ -51,13 +51,13 @@ $blocks: (
   ),
   'Avatar': (
     parts: ('fallback',),
-    modifiers: ('count', 'lg', 'md', 'sm', 'square', 'xl',),
+    modifiers: ('count', 'lg', 'md', 'sm', 'square', 'xl', 'xs',),
     part-modifiers: (),
     variables: ('--greese-avatar-size',),
   ),
   'AvatarGroup': (
     parts: ('item',),
-    modifiers: ('lg', 'md', 'sm', 'xl',),
+    modifiers: ('lg', 'md', 'sm', 'xl', 'xs',),
     part-modifiers: (),
     variables: (),
   ),
@@ -87,9 +87,9 @@ $blocks: (
   ),
   'Button': (
     parts: ('icon',),
-    modifiers: ('accent', 'ghost', 'negative', 'neutral', 'outline', 'primary', 'secondary', 'size-lg', 'size-md', 'size-sm', 'soft', 'solid', 'tertiary', 'text',),
+    modifiers: ('accent', 'ghost', 'negative', 'neutral', 'outline', 'primary', 'secondary', 'size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs', 'soft', 'solid', 'tertiary', 'text',),
     part-modifiers: (),
-    variables: ('--greese-button-bg', '--greese-button-bg-active', '--greese-button-bg-hover', '--greese-button-border', '--greese-button-fg', '--greese-button-height', '--greese-button-on-tone', '--greese-button-padding', '--greese-button-tone', '--greese-type-button-family', '--greese-type-button-style', '--greese-type-button-transform',),
+    variables: ('--greese-button-bg', '--greese-button-bg-active', '--greese-button-bg-hover', '--greese-button-border', '--greese-button-fg', '--greese-button-height', '--greese-button-on-tone', '--greese-button-padding', '--greese-button-tone', '--greese-type-button-font-family', '--greese-type-button-font-style', '--greese-type-button-text-transform',),
   ),
   'ButtonGroup': (
     parts: (),
@@ -195,7 +195,7 @@ $blocks: (
   ),
   'Dialog': (
     parts: ('body', 'close', 'description', 'footer', 'header', 'title',),
-    modifiers: ('size-full', 'size-lg', 'size-md', 'size-sm',),
+    modifiers: ('size-full', 'size-lg', 'size-md', 'size-sm', 'size-xl',),
     part-modifiers: (),
     variables: ('--greese-dialog-width', '--greese-motion-exit-scale', '--greese-motion-exit-translate', '--greese-scrollbar-gap',),
   ),
@@ -249,7 +249,7 @@ $blocks: (
   ),
   'FileInput': (
     parts: (),
-    modifiers: ('size-lg', 'size-md', 'size-sm',),
+    modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
     variables: ('--greese-file-height', '--greese-file-padding',),
   ),
@@ -291,13 +291,13 @@ $blocks: (
   ),
   'Input': (
     parts: ('adornment', 'control',),
-    modifiers: ('size-lg', 'size-md', 'size-sm',),
+    modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
     variables: ('--greese-input-height', '--greese-input-padding',),
   ),
   'Key': (
     parts: (),
-    modifiers: ('lg', 'sm',),
+    modifiers: ('lg', 'md', 'sm', 'xl', 'xs',),
     part-modifiers: (),
     variables: (),
   ),
@@ -339,7 +339,7 @@ $blocks: (
   ),
   'Motion': (
     parts: (),
-    modifiers: ('enter', 'enter-blur-in', 'enter-fade-down', 'enter-fade-end', 'enter-fade-in', 'enter-fade-start', 'enter-fade-up', 'enter-pop', 'enter-pop-in', 'enter-scale-in', 'enter-slide-down', 'enter-slide-left', 'enter-slide-right', 'enter-slide-up', 'exit-fade-out-down', 'exit-fade-out-up', 'exit-scale-out', 'scope', 'stagger', 'view', 'view-blur-in', 'view-fade-down', 'view-fade-end', 'view-fade-in', 'view-fade-start', 'view-fade-up', 'view-pop', 'view-pop-in', 'view-scale-in', 'view-slide-down', 'view-slide-left', 'view-slide-right', 'view-slide-up',),
+    modifiers: ('enter', 'enter-blur-in', 'enter-fade-down', 'enter-fade-end', 'enter-fade-in', 'enter-fade-start', 'enter-fade-up', 'enter-pop', 'enter-pop-in', 'enter-scale-in', 'enter-slide-down', 'enter-slide-left', 'enter-slide-right', 'enter-slide-up', 'exit-fade-out-down', 'exit-fade-out-up', 'exit-fall', 'exit-pop-out', 'exit-rise', 'exit-scale-out', 'exit-squish', 'scope', 'stagger', 'view', 'view-blur-in', 'view-fade-down', 'view-fade-end', 'view-fade-in', 'view-fade-start', 'view-fade-up', 'view-pop', 'view-pop-in', 'view-scale-in', 'view-slide-down', 'view-slide-left', 'view-slide-right', 'view-slide-up',),
     part-modifiers: (),
     variables: ('--greese-ease-ease', '--greese-ease-ease-in', '--greese-ease-ease-in-out', '--greese-ease-ease-out', '--greese-ease-in', '--greese-ease-in-out', '--greese-ease-linear', '--greese-ease-out', '--greese-motion-delay', '--greese-motion-dir', '--greese-motion-distance', '--greese-motion-duration', '--greese-motion-ease', '--greese-motion-exit-scale', '--greese-motion-exit-translate', '--greese-motion-index', '--greese-motion-name', '--greese-motion-offset', '--greese-motion-scope', '--greese-motion-stagger', '--greese-motion-wait',),
   ),
@@ -351,7 +351,7 @@ $blocks: (
   ),
   'OtpField': (
     parts: ('input', 'slot',),
-    modifiers: ('size-lg', 'size-md', 'size-sm',),
+    modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: ('slot': ('active',)),
     variables: ('--greese-otp-size',),
   ),
@@ -369,7 +369,7 @@ $blocks: (
   ),
   'Progress': (
     parts: (),
-    modifiers: ('md', 'sm',),
+    modifiers: ('lg', 'md', 'sm', 'xl', 'xs',),
     part-modifiers: (),
     variables: ('--greese-progress-height',),
   ),
@@ -387,7 +387,7 @@ $blocks: (
   ),
   'Rating': (
     parts: ('choice', 'choices', 'empty', 'filled', 'icon', 'input', 'items', 'stars',),
-    modifiers: ('lg', 'sm',),
+    modifiers: ('lg', 'md', 'sm', 'xl', 'xs',),
     part-modifiers: (),
     variables: ('--greese-rating-fill', '--greese-rating-off', '--greese-rating-on', '--greese-rating-size',),
   ),
@@ -399,13 +399,13 @@ $blocks: (
   ),
   'SegmentedControl': (
     parts: ('track',),
-    modifiers: ('full', 'size-md', 'size-sm',),
+    modifiers: ('full', 'size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
-    variables: (),
+    variables: ('--greese-button-height', '--greese-button-padding',),
   ),
   'Select': (
     parts: ('chevron', 'control',),
-    modifiers: ('size-lg', 'size-md', 'size-sm',),
+    modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
     variables: ('--greese-select-height', '--greese-select-padding',),
   ),
@@ -465,7 +465,7 @@ $blocks: (
   ),
   'Spinner': (
     parts: (),
-    modifiers: ('lg', 'md', 'sm',),
+    modifiers: ('lg', 'md', 'sm', 'xl', 'xs',),
     part-modifiers: (),
     variables: ('--greese-spinner-size',),
   ),
@@ -489,7 +489,7 @@ $blocks: (
   ),
   'Status': (
     parts: (),
-    modifiers: ('accent', 'info', 'lg', 'negative', 'neutral', 'positive', 'primary', 'pulse', 'secondary', 'sm', 'tertiary', 'warning',),
+    modifiers: ('accent', 'info', 'lg', 'md', 'negative', 'neutral', 'positive', 'primary', 'pulse', 'secondary', 'sm', 'tertiary', 'warning', 'xl', 'xs',),
     part-modifiers: (),
     variables: ('--greese-status-size', '--greese-status-tone', '--greese-status-tone-on',),
   ),
@@ -579,7 +579,7 @@ $blocks: (
   ),
   'Textarea': (
     parts: (),
-    modifiers: ('autosize', 'size-lg', 'size-md', 'size-sm',),
+    modifiers: ('autosize', 'size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
     variables: ('--greese-textarea-max-rows', '--greese-textarea-padding', '--greese-textarea-rows',),
   ),
@@ -623,7 +623,7 @@ $blocks: (
     parts: (),
     modifiers: ('button', 'caption', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p1', 'p2', 'p3', 's1', 's2',),
     part-modifiers: (),
-    variables: ('--greese-type-button-family', '--greese-type-button-features', '--greese-type-button-numeric', '--greese-type-button-spacing', '--greese-type-button-stretch', '--greese-type-button-style', '--greese-type-button-transform', '--greese-type-button-variation', '--greese-type-button-wrap', '--greese-type-caption-family', '--greese-type-caption-features', '--greese-type-caption-numeric', '--greese-type-caption-spacing', '--greese-type-caption-stretch', '--greese-type-caption-style', '--greese-type-caption-transform', '--greese-type-caption-variation', '--greese-type-caption-wrap', '--greese-type-h1-family', '--greese-type-h1-features', '--greese-type-h1-numeric', '--greese-type-h1-spacing', '--greese-type-h1-stretch', '--greese-type-h1-style', '--greese-type-h1-transform', '--greese-type-h1-variation', '--greese-type-h2-family', '--greese-type-h2-features', '--greese-type-h2-numeric', '--greese-type-h2-spacing', '--greese-type-h2-stretch', '--greese-type-h2-style', '--greese-type-h2-transform', '--greese-type-h2-variation', '--greese-type-h3-family', '--greese-type-h3-features', '--greese-type-h3-numeric', '--greese-type-h3-spacing', '--greese-type-h3-stretch', '--greese-type-h3-style', '--greese-type-h3-transform', '--greese-type-h3-variation', '--greese-type-h4-family', '--greese-type-h4-features', '--greese-type-h4-numeric', '--greese-type-h4-spacing', '--greese-type-h4-stretch', '--greese-type-h4-style', '--greese-type-h4-transform', '--greese-type-h4-variation', '--greese-type-h5-family', '--greese-type-h5-features', '--greese-type-h5-numeric', '--greese-type-h5-spacing', '--greese-type-h5-stretch', '--greese-type-h5-style', '--greese-type-h5-transform', '--greese-type-h5-variation', '--greese-type-h6-family', '--greese-type-h6-features', '--greese-type-h6-numeric', '--greese-type-h6-spacing', '--greese-type-h6-stretch', '--greese-type-h6-style', '--greese-type-h6-transform', '--greese-type-h6-variation', '--greese-type-p1-family', '--greese-type-p1-features', '--greese-type-p1-numeric', '--greese-type-p1-spacing', '--greese-type-p1-stretch', '--greese-type-p1-style', '--greese-type-p1-transform', '--greese-type-p1-variation', '--greese-type-p1-wrap', '--greese-type-p2-family', '--greese-type-p2-features', '--greese-type-p2-numeric', '--greese-type-p2-spacing', '--greese-type-p2-stretch', '--greese-type-p2-style', '--greese-type-p2-transform', '--greese-type-p2-variation', '--greese-type-p2-wrap', '--greese-type-p3-family', '--greese-type-p3-features', '--greese-type-p3-numeric', '--greese-type-p3-spacing', '--greese-type-p3-stretch', '--greese-type-p3-style', '--greese-type-p3-transform', '--greese-type-p3-variation', '--greese-type-p3-wrap', '--greese-type-s1-family', '--greese-type-s1-features', '--greese-type-s1-numeric', '--greese-type-s1-spacing', '--greese-type-s1-stretch', '--greese-type-s1-style', '--greese-type-s1-transform', '--greese-type-s1-variation', '--greese-type-s1-wrap', '--greese-type-s2-family', '--greese-type-s2-features', '--greese-type-s2-numeric', '--greese-type-s2-spacing', '--greese-type-s2-stretch', '--greese-type-s2-style', '--greese-type-s2-transform', '--greese-type-s2-variation', '--greese-type-s2-wrap',),
+    variables: ('--greese-type-button-color', '--greese-type-button-font-family', '--greese-type-button-font-feature-settings', '--greese-type-button-font-stretch', '--greese-type-button-font-style', '--greese-type-button-font-variant-numeric', '--greese-type-button-font-variation-settings', '--greese-type-button-text-transform', '--greese-type-button-text-wrap', '--greese-type-button-word-spacing', '--greese-type-caption-color', '--greese-type-caption-font-family', '--greese-type-caption-font-feature-settings', '--greese-type-caption-font-stretch', '--greese-type-caption-font-style', '--greese-type-caption-font-variant-numeric', '--greese-type-caption-font-variation-settings', '--greese-type-caption-text-transform', '--greese-type-caption-text-wrap', '--greese-type-caption-word-spacing', '--greese-type-h1-color', '--greese-type-h1-font-family', '--greese-type-h1-font-feature-settings', '--greese-type-h1-font-stretch', '--greese-type-h1-font-style', '--greese-type-h1-font-variant-numeric', '--greese-type-h1-font-variation-settings', '--greese-type-h1-text-transform', '--greese-type-h1-word-spacing', '--greese-type-h2-color', '--greese-type-h2-font-family', '--greese-type-h2-font-feature-settings', '--greese-type-h2-font-stretch', '--greese-type-h2-font-style', '--greese-type-h2-font-variant-numeric', '--greese-type-h2-font-variation-settings', '--greese-type-h2-text-transform', '--greese-type-h2-word-spacing', '--greese-type-h3-color', '--greese-type-h3-font-family', '--greese-type-h3-font-feature-settings', '--greese-type-h3-font-stretch', '--greese-type-h3-font-style', '--greese-type-h3-font-variant-numeric', '--greese-type-h3-font-variation-settings', '--greese-type-h3-text-transform', '--greese-type-h3-word-spacing', '--greese-type-h4-color', '--greese-type-h4-font-family', '--greese-type-h4-font-feature-settings', '--greese-type-h4-font-stretch', '--greese-type-h4-font-style', '--greese-type-h4-font-variant-numeric', '--greese-type-h4-font-variation-settings', '--greese-type-h4-text-transform', '--greese-type-h4-word-spacing', '--greese-type-h5-color', '--greese-type-h5-font-family', '--greese-type-h5-font-feature-settings', '--greese-type-h5-font-stretch', '--greese-type-h5-font-style', '--greese-type-h5-font-variant-numeric', '--greese-type-h5-font-variation-settings', '--greese-type-h5-text-transform', '--greese-type-h5-word-spacing', '--greese-type-h6-color', '--greese-type-h6-font-family', '--greese-type-h6-font-feature-settings', '--greese-type-h6-font-stretch', '--greese-type-h6-font-style', '--greese-type-h6-font-variant-numeric', '--greese-type-h6-font-variation-settings', '--greese-type-h6-text-transform', '--greese-type-h6-word-spacing', '--greese-type-p1-color', '--greese-type-p1-font-family', '--greese-type-p1-font-feature-settings', '--greese-type-p1-font-stretch', '--greese-type-p1-font-style', '--greese-type-p1-font-variant-numeric', '--greese-type-p1-font-variation-settings', '--greese-type-p1-text-transform', '--greese-type-p1-text-wrap', '--greese-type-p1-word-spacing', '--greese-type-p2-color', '--greese-type-p2-font-family', '--greese-type-p2-font-feature-settings', '--greese-type-p2-font-stretch', '--greese-type-p2-font-style', '--greese-type-p2-font-variant-numeric', '--greese-type-p2-font-variation-settings', '--greese-type-p2-text-transform', '--greese-type-p2-text-wrap', '--greese-type-p2-word-spacing', '--greese-type-p3-color', '--greese-type-p3-font-family', '--greese-type-p3-font-feature-settings', '--greese-type-p3-font-stretch', '--greese-type-p3-font-style', '--greese-type-p3-font-variant-numeric', '--greese-type-p3-font-variation-settings', '--greese-type-p3-text-transform', '--greese-type-p3-text-wrap', '--greese-type-p3-word-spacing', '--greese-type-s1-color', '--greese-type-s1-font-family', '--greese-type-s1-font-feature-settings', '--greese-type-s1-font-stretch', '--greese-type-s1-font-style', '--greese-type-s1-font-variant-numeric', '--greese-type-s1-font-variation-settings', '--greese-type-s1-text-transform', '--greese-type-s1-text-wrap', '--greese-type-s1-word-spacing', '--greese-type-s2-color', '--greese-type-s2-font-family', '--greese-type-s2-font-feature-settings', '--greese-type-s2-font-stretch', '--greese-type-s2-font-style', '--greese-type-s2-font-variant-numeric', '--greese-type-s2-font-variation-settings', '--greese-type-s2-text-transform', '--greese-type-s2-text-wrap', '--greese-type-s2-word-spacing',),
   ),
   'Video': (
     parts: (),

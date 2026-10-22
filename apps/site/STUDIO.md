@@ -54,6 +54,69 @@ writes them through:
 Reset returns a built-in to the library's keyframes; Delete removes a new one.
 Replay motion in the header plays the stage again.
 
+### Where effects are defined
+
+One file defines them: [`packages/ui/src/effects.ts`](../../packages/ui/src/effects.ts).
+**Base effects** (`baseEffects`) animate one property and take optional
+parameters; **combo effects** (`comboEffects`) are made of base effects by name,
+each placed in time as a share of the combo; `builtInEffects` is both. There is
+no "kind" to declare. CSS decides from the keyframes: an effect that ends at the
+element's resting state is a CSS preset (`@keyframes`), one that ends away from
+it is an overlay exit (the `translate` and `scale` it ends at). `cssPlan()` makes
+that decision, for the built-ins at build time and for yours.
+
+| Who needs them                | How it gets them from `effects.ts`                                                                                             |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| The runtime (`@greese/react`) | imports `@greese/ui/effects`, plays the keyframes and reads a call's arguments (`fadeIn(0.25, 0.8)`)                           |
+| The CSS (`Motion.scss`)       | `build-tokens.ts` writes `dist/_maps.scss` (`$effects`, a plan per effect); Motion.scss writes each with `styles/_effect.scss` |
+| The SCSS kit                  | `motion(enter:)` and `motion(exit:)` read the same plans, plus any defined with `effect()`                                     |
+| The React resolver            | `dist/effect-classes.js`, generated: the names that end at rest, so no keyframes land in component bundles                     |
+| Theme Studio                  | lists, groups (by where each ends), edits and re-imports them from the same exports; the Motion section offers them by plan    |
+
+Why JavaScript at all: CSS plays an effect alone only when it ends at rest.
+Sequences, arguments, hover and press, text effects, timelines and non-CSS
+eases need the keyframes as data. So the data is TypeScript and the CSS is
+generated from it.
+
+**To add or change a built-in effect, edit `effects.ts`** and rebuild
+`@greese/ui`. It gets its CSS, kit name, types and Studio entry with no other
+change.
+
+### How an edited effect reaches the built theme
+
+Built-in effects and the ones you add go the same way.
+
+1. **Edit.** The Greese tab parses the code as you type. Valid code is written
+   to `spec.effects[name]` (`{ keyframes, duration? }`) in `greese-theme.json`;
+   code that doesn't parse stays a draft and the theme keeps the last valid
+   version. Reset deletes the entry.
+2. **Compile** (`compileSpec` in `server/studio.ts`, or `hosted.ts` in the
+   browser) produces three things from the spec:
+   - `greese-theme.scss`: for each effect in the spec, a
+     `@include greese.effect(name, (enter: …))` or `(exit: …)`, from
+     `cssPlan(keyframes)`. They come before the components, so a component's
+     `motion(enter: …)` or `motion(exit: …)` can name them. The mixin writes the
+     same classes and `@keyframes` as the built-ins, in `@layer greese.utilities`
+     after the library's own, so a built-in's name is retuned;
+   - `greese-theme.css`: that SCSS compiled;
+   - `greese-theme.effects.ts` (`specToEffectsTs`): one
+     `defineGreeseEffect('name', { keyframes, duration })` per effect in the
+     spec, plus `GreeseEffectRegistry` entries for new names.
+3. **Use.** The CSS alone plays a lone effect that ends at rest
+   (`greese="fadeUp"`), sets what an overlay's `exit` changes, and serves the
+   kit's `motion()`. The app imports the `.effects.ts` once at its entry; that
+   is what plays the same effect inside a sequence, `hover`, `press`, `focus`, a
+   timeline, with arguments, and plays a new effect named in a `greese` prop.
+4. **On the homepage**, which loads no compiled theme, `effects-runtime.ts`
+   writes the same rules with `effectCss()` (a test keeps it equal to the
+   kit's output).
+
+An overlay's `exit` with an effect that only the effects module defines (not in
+the compiled CSS) works too: the runtime sets what it changes on the overlay.
+
+A retuned effect is fixed keyframes: it no longer reads its parameters, but
+keeps the timing keys (`duration`, `offset`, `ease`).
+
 ## Theme
 
 Arriving from the homepage keeps the theme you were wearing; the studio
@@ -103,8 +166,8 @@ gets responsive classes and `--greese-breakpoint-<key>`.
 
 The **typography** section edits the type system (ADR 0016): pick a variant
 (`p1`–`p3`, `h1`–`h6`, `s1`, `s2`, `caption`, `button`) and a breakpoint, and
-set its size, weight, tracking and leading there, or add other properties
-such as `transform`. An empty field keeps what it inherits (the placeholder
+set its font size, font weight, letter spacing and line height there, or add
+other properties such as `text-transform`. An empty field keeps what it inherits (the placeholder
 says what), and **Reset** returns the variant to its defaults. The theme file
 holds `typography`; the SCSS writes `greese.typography(…)`.
 

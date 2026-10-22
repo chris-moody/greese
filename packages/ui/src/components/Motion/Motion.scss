@@ -1,24 +1,11 @@
-// The `greese` prop's CSS presets (utils/greese.ts): entrances and scroll
+// The `greese` prop's CSS presets (defined in src/effects.ts): entrances and scroll
 // reveals with no JavaScript. Every rule sits behind
 // `prefers-reduced-motion: no-preference`, so reduced motion means no motion.
 // Configuration arrives as inline custom properties on the element. Effect
 // names are camelCase in the API (`fadeUp`) and kebab-case here (`fade-up`).
 
-$presets: (
-  'fade-in',
-  'fade-up',
-  'fade-down',
-  'fade-start',
-  'fade-end',
-  'scale-in',
-  'blur-in',
-  'slide-up',
-  'slide-down',
-  'slide-right',
-  'slide-left',
-  'pop',
-  'pop-in'
-);
+@use '../../../dist/maps' as defaults;
+@use '../../styles/effect';
 
 @layer greese.utilities {
   // Named eases the `greese` prop can use without JavaScript (power2 for the
@@ -41,17 +28,10 @@ $presets: (
     --greese-motion-dir: -1;
   }
 
-  // Exit presets for overlays: read by the floating enter-exit mixin.
-  .greese-Motion--exit-fade-out-down {
-    --greese-motion-exit-translate: 0 var(--greese-motion-distance, 1rem);
-  }
-
-  .greese-Motion--exit-fade-out-up {
-    --greese-motion-exit-translate: 0 calc(-1 * var(--greese-motion-distance, 1rem));
-  }
-
-  .greese-Motion--exit-scale-out {
-    --greese-motion-exit-scale: 0.92;
+  // Each effect's name classes, and what an overlay's exit changes: read by
+  // the floating enter-exit mixin.
+  @each $name, $plan in defaults.$effects {
+    @include effect.classes($name, $plan);
   }
 
   // Stagger: each child's position, for the delay. Children past 24 share
@@ -73,16 +53,6 @@ $presets: (
 
     .greese-Motion--stagger > :nth-child(n + 25) {
       --greese-motion-index: 24;
-    }
-  }
-
-  // Each preset only names its keyframes (inherited by staggered children);
-  // the shared rules below animate. One rule set for every preset keeps the
-  // child selectors, which the browser tries on every element, few.
-  @each $preset in $presets {
-    .greese-Motion--enter-#{$preset},
-    .greese-Motion--view-#{$preset} {
-      --greese-motion-name: greese-#{$preset};
     }
   }
 
@@ -121,103 +91,9 @@ $presets: (
       opacity: 0;
     }
 
-    @keyframes greese-fade-in {
-      from {
-        opacity: 0;
-      }
-    }
-
-    @keyframes greese-fade-up {
-      from {
-        opacity: 0;
-        translate: 0 var(--greese-motion-distance, 1rem);
-      }
-    }
-
-    @keyframes greese-fade-down {
-      from {
-        opacity: 0;
-        translate: 0 calc(-1 * var(--greese-motion-distance, 1rem));
-      }
-    }
-
-    @keyframes greese-fade-start {
-      from {
-        opacity: 0;
-        translate: calc(
-            -1 * var(--greese-motion-dir, 1) * var(--greese-motion-distance, 1rem)
-          )
-          0;
-      }
-    }
-
-    @keyframes greese-fade-end {
-      from {
-        opacity: 0;
-        translate: calc(var(--greese-motion-dir, 1) * var(--greese-motion-distance, 1rem))
-          0;
-      }
-    }
-
-    @keyframes greese-scale-in {
-      from {
-        scale: 0.92;
-      }
-    }
-
-    @keyframes greese-blur-in {
-      from {
-        opacity: 0;
-        filter: blur(8px);
-      }
-    }
-
-    @keyframes greese-slide-up {
-      from {
-        translate: 0 100%;
-      }
-    }
-
-    @keyframes greese-slide-down {
-      from {
-        translate: 0 -100%;
-      }
-    }
-
-    // Right and left are physical: the direction the element moves.
-    @keyframes greese-slide-right {
-      from {
-        translate: -100% 0;
-      }
-    }
-
-    @keyframes greese-slide-left {
-      from {
-        translate: 100% 0;
-      }
-    }
-
-    // A springy scale with no fade; `pop-in` adds one.
-    @keyframes greese-pop {
-      0% {
-        scale: 0.8;
-      }
-
-      60% {
-        scale: 1.04;
-      }
-    }
-
-    @keyframes greese-pop-in {
-      0% {
-        opacity: 0;
-        scale: 0.8;
-      }
-
-      60% {
-        opacity: 1;
-        scale: 1.04;
-      }
+    // The keyframes come from src/effects.ts, through the build's maps.
+    @each $name, $plan in defaults.$effects {
+      @include effect.keyframes($name, $plan);
     }
   }
 }

@@ -41,12 +41,16 @@ const names = readdirSync(join(SRC, 'components'), { withFileTypes: true })
   .map((entry) => entry.name)
   .sort()
 const compiled = new Map(
-  names.map((name) => [name, sass(join(SRC, 'components', name, `${name}.scss`))] as const)
+  names.map(
+    (name) => [name, sass(join(SRC, 'components', name, `${name}.scss`))] as const
+  )
 )
 // styles/index.scss lists components by hand (cascade order matters); one
 // left out would ship per-component CSS but be missing from greese.css.
 const bundle = readFileSync(join(SRC, 'styles/index.scss'), 'utf8')
-const unbundled = names.filter((name) => !bundle.includes(`'../components/${name}/${name}'`))
+const unbundled = names.filter(
+  (name) => !bundle.includes(`'../components/${name}/${name}'`)
+)
 if (unbundled.length) {
   throw new Error(`Stylesheets missing from styles/index.scss: ${unbundled.join(', ')}`)
 }
@@ -60,7 +64,8 @@ const scss = manifestScss(manifest)
 if (readFileSync(manifestFile, { encoding: 'utf8', flag: 'a+' }) !== scss)
   writeFileSync(manifestFile, scss)
 
-for (const [name, css] of compiled) writeFileSync(join(CSS, `${name}.css`), `@import './core.css';\n${css}\n`)
+for (const [name, css] of compiled)
+  writeFileSync(join(CSS, `${name}.css`), `@import './core.css';\n${css}\n`)
 console.log(
   `wrote dist/greese.css, dist/base.css, dist/css/core.css, dist/style-manifest.json and ${compiled.size} component stylesheets`
 )
