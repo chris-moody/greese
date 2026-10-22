@@ -1,3 +1,5 @@
+@use 'pkg:@greese/ui/scss/kit' as greese;
+
 /* The editor's own layout. It uses GreeseUI's defaults: the theme being
    edited only reaches the preview iframe. */
 
@@ -64,7 +66,7 @@
   border: 0;
 }
 
-@media (width >= 900px) {
+@include greese.up(md) {
   .site--studio {
     block-size: 100dvh;
   }
@@ -92,7 +94,7 @@
 
 .studio-row-label {
   overflow-wrap: anywhere;
-  font-size: var(--greese-type-p3-size);
+  font-size: var(--greese-type-p3-font-size);
 }
 
 code.studio-row-label {
@@ -177,13 +179,13 @@ code.studio-row-label {
 
 .studio-errors {
   margin: 0;
-  font: var(--greese-type-p3-size) / 1.4 var(--greese-font-mono);
+  font: var(--greese-type-p3-font-size) / 1.4 var(--greese-font-mono);
   white-space: pre-wrap;
 }
 
 .studio-mono {
   font-family: var(--greese-font-mono);
-  font-size: var(--greese-type-p3-size);
+  font-size: var(--greese-type-p3-font-size);
 }
 
 /* Color chips: light and dark halves with "Aa" in the content color. */
@@ -237,7 +239,7 @@ code.studio-row-label {
 
 .studio-chip-code {
   padding: 2px var(--greese-space-1);
-  font: var(--greese-type-caption-size) / 1.4 var(--greese-font-mono);
+  font: var(--greese-type-caption-font-size) / 1.4 var(--greese-font-mono);
   color: var(--greese-color-fg);
   overflow-wrap: anywhere;
   background: var(--greese-color-surface);
@@ -250,7 +252,7 @@ code.studio-row-label {
   align-items: center;
   justify-content: space-between;
   padding-inline: var(--greese-space-1);
-  font-size: var(--greese-type-caption-size);
+  font-size: var(--greese-type-caption-font-size);
 }
 
 .studio-chip[data-set] .studio-chip-label > :first-child {
@@ -297,12 +299,26 @@ code.studio-row-label {
   border-color: var(--greese-color-primary);
 }
 
-/* Color dialog: the palette as a grid of small swatches, one column per hue. */
+/*
+ * Color dialog: the palette as a grid of small swatches. The markup is one
+ * group of swatches after another (a hue's shades, lightest first). From md up
+ * each hue is a column; below it, a row of its shades, with white and black
+ * together in the last.
+ */
 .studio-palette {
   display: grid;
   gap: 2px;
   padding-block-start: 0.75rem;
   overflow-x: auto;
+  grid-template-columns: repeat(var(--studio-palette-shades), minmax(0, 1fr));
+}
+
+@include greese.up(sm) {
+  .studio-palette {
+    grid-auto-flow: column;
+    grid-template-columns: repeat(var(--studio-palette-groups), minmax(0, 1fr));
+    grid-template-rows: repeat(var(--studio-palette-shades), auto);
+  }
 }
 
 .studio-palette-swatch {

@@ -17,7 +17,7 @@ import { Gallery } from './Gallery.tsx'
 import { inspector } from './inspect.ts'
 import { color } from '@greese/ui'
 import { measureColors } from './measure.ts'
-import './preview.css'
+import './preview.scss'
 
 const post = (message: FromPreview) => window.parent.postMessage(message, location.origin)
 const themeStyle = document.getElementById('theme')!

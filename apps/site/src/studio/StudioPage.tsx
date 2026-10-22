@@ -22,7 +22,7 @@ import { MotionPanel } from './panels/MotionPanel.tsx'
 import { TokensPanel } from './panels/TokensPanel.tsx'
 import type { FromPreview, Picked, ToPreview } from './protocol.ts'
 import { customBreakpoints } from './spec.ts'
-import './studio.css'
+import './studio.scss'
 
 interface FileState {
   file: string

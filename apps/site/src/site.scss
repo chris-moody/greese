@@ -1,3 +1,5 @@
+@use 'pkg:@greese/ui/scss/kit' as greese;
+
 /*
  * The site's own layout and decoration, on GreeseUI tokens. Unlayered, so it
  * wins over the library's @layer greese.* rules without !important.
@@ -11,7 +13,7 @@
    (theme.ts), so they follow its scheme like any token. GreeseUI's series is
    the primary color, read on the bar itself. */
 
-@media (prefers-reduced-motion: no-preference) {
+@include greese.motion-safe {
   :root {
     scroll-behavior: smooth;
   }
@@ -134,7 +136,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--greese-space-2);
-  font-size: var(--greese-type-p3-size);
+  font-size: var(--greese-type-p3-font-size);
   font-weight: 600;
 }
 
@@ -241,7 +243,7 @@
 .site-demo-title {
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: var(--greese-type-caption-size);
+  font-size: var(--greese-type-caption-font-size);
 }
 
 .site-gallery-note {

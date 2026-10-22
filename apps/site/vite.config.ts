@@ -1,6 +1,7 @@
 import { mkdirSync, copyFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { NodePackageImporter } from 'sass-embedded'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import { getSchemeScript } from '@greese/ui'
@@ -36,6 +37,13 @@ const fallbackPages = (): Plugin => ({
 
 export default defineConfig({
   base: process.env.GREESE_BASE ?? '/',
+  css: {
+    preprocessorOptions: {
+      // `pkg:@greese/ui/scss/kit` in the site's own styles: the breakpoints
+      // (`greese.up(md)`) come from the library, not from numbers written here.
+      scss: { importers: [new NodePackageImporter()] },
+    },
+  },
   plugins: [
     react(),
     studio(),

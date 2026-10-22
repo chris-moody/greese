@@ -1,4 +1,4 @@
-import { useMemo, useState, type JSX } from 'react'
+import { useMemo, useState, type CSSProperties, type JSX } from 'react'
 import {
   Badge,
   Button,
@@ -29,6 +29,7 @@ import { resolveColor } from '../resolve.ts'
 import type { RenderedColors } from '../protocol.ts'
 import type { SchemeValue, ThemeSpec } from '../spec.ts'
 import {
+  colorName,
   estimate,
   grade,
   isSet,
@@ -91,8 +92,10 @@ const familyOf = (role: ColorRole): ColorRole[] => {
 const NEUTRALS = new Set(['steel', 'gray', 'silver', 'ash', 'taupe'])
 
 /**
- * One column per hue: the spectrum in order, then the neutrals, then a column
- * of white and black. Shades run down the rows, so the spectrum fills the width.
+ * One group per hue: the spectrum in order, then the neutrals, then white and
+ * black together. From md up each group is a column, so the spectrum fills the
+ * width; below it each is a row of its shades, lightest first, one under the
+ * next (studio.scss lays them out; the order here serves both).
  */
 const COLUMNS: Array<[name: string, shades: Array<[shade: string, hex: string]>]> = [
   ...Object.entries(palette)
@@ -115,7 +118,7 @@ const COLUMNS: Array<[name: string, shades: Array<[shade: string, hex: string]>]
     ],
   ],
 ]
-const SHADE_ROWS = Object.keys(Object.values(palette)[0]!)
+const SHADE_COUNT = Object.keys(Object.values(palette)[0]!).length
 
 /** `#rrggbb` of a rendered value, which may carry alpha. */
 const opaque = (hex: string | undefined) => hex?.slice(0, 7).toLowerCase()
@@ -212,57 +215,64 @@ export const ColorDialog = ({
         return [...labelled].map(([label, results]) => ({ label, results }))
       })()
     : []
+  const controls = (
+    <Stack direction="row" gap={3} align="center" wrap="wrap">
+      {target ? `Color: ${colorName(target)}` : 'Color'}
+      {target && (
+        <>
+          {family.length > 1 && (
+            <SegmentedControl
+              label="Role"
+              size="xs"
+              value={target}
+              onValueChange={(v) => setPicked(v as ColorRole)}
+            >
+              {family.map((r) => (
+                <Segment key={r} value={r}>
+                  {r.endsWith('Strong')
+                    ? 'Strong'
+                    : r.endsWith('Content')
+                      ? 'Content'
+                      : 'Main'}
+                </Segment>
+              ))}
+            </SegmentedControl>
+          )}
+          <SegmentedControl
+            label="Scheme"
+            size="xs"
+            value={scheme}
+            onValueChange={(v) => setScheme(v as Scheme)}
+          >
+            <Segment value="light">Light</Segment>
+            <Segment value="dark">Dark</Segment>
+          </SegmentedControl>
+          
+          {isSet(spec, target) && (
+            <Button
+              size="sm"
+              variant="ghost"
+              tone="neutral"
+              onClick={() => onChange(setIn(spec, pathOf(target), undefined))}
+            >
+              Reset
+            </Button>
+          )}
+        </>
+      )}
+    </Stack>
+  )
 
   return (
     <Dialog
+    className="p0"
       open={!!role}
       onOpenChange={(open) => !open && onClose()}
-      size="lg"
-      title={target ? `Color: ${kebab(target)}` : 'Color'}
-      description="Pick a palette color, or make your own. Each mark is a role using that swatch in the scheme shown."
+      size="xl"
+      title={controls}
     >
       {target && (
         <Stack gap={4}>
-          <Stack direction="row" gap={3} align="center" wrap="wrap">
-            <SegmentedControl
-              label="Scheme"
-              size="sm"
-              value={scheme}
-              onValueChange={(v) => setScheme(v as Scheme)}
-            >
-              <Segment value="light">Light</Segment>
-              <Segment value="dark">Dark</Segment>
-            </SegmentedControl>
-            {family.length > 1 && (
-              <SegmentedControl
-                label="Role"
-                size="sm"
-                value={target}
-                onValueChange={(v) => setPicked(v as ColorRole)}
-              >
-                {family.map((r) => (
-                  <Segment key={r} value={r}>
-                    {r.endsWith('Strong')
-                      ? 'Strong'
-                      : r.endsWith('Content')
-                        ? 'Content'
-                        : 'Main'}
-                  </Segment>
-                ))}
-              </SegmentedControl>
-            )}
-            {isSet(spec, target) && (
-              <Button
-                size="sm"
-                variant="ghost"
-                tone="neutral"
-                onClick={() => onChange(setIn(spec, pathOf(target), undefined))}
-              >
-                Reset to default
-              </Button>
-            )}
-          </Stack>
-
           <Tabs defaultValue="palette">
             <TabList aria-label="Color source">
               <Tab value="palette">Palette</Tab>
@@ -273,17 +283,16 @@ export const ColorDialog = ({
                 className="studio-palette"
                 role="group"
                 aria-label="Palette"
-                style={{
-                  gridTemplateColumns: `repeat(${COLUMNS.length}, minmax(0, 1fr))`,
-                }}
+                style={
+                  {
+                    '--studio-palette-groups': COLUMNS.length,
+                    '--studio-palette-shades': SHADE_COUNT,
+                  } as CSSProperties
+                }
               >
-                {SHADE_ROWS.flatMap((shade, row) =>
-                  COLUMNS.map(([name, shades]) => {
-                    const cell =
-                      name === 'ends' ? shades[row] : shades.find(([s]) => s === shade)
-                    if (!cell) return <span key={`${name}-${shade}`} />
-                    const hex = cell[1]
-                    const label = name === 'ends' ? cell[0] : `${name}-${shade}`
+                {COLUMNS.flatMap(([name, shades]) =>
+                  shades.map(([shade, hex]) => {
+                    const label = name === 'ends' ? shade : `${name}-${shade}`
                     const all = hexes.get(hex) ?? []
                     // The role being edited leads, so its mark is the one shown.
                     const roles = all.includes(target)

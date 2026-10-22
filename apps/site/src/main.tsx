@@ -7,7 +7,7 @@ import '@greese/react/styles.css'
 // Loading it up front forced the page's first style calculation into a
 // JavaScript task and blocked the main thread.
 import './effects.ts'
-import './site.css'
+import './site.scss'
 import { App } from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
