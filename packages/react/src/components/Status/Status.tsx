@@ -22,6 +22,7 @@ export interface StatusProps
   label?: string
   /** A ring that pulses outward, for live states. Still under reduced motion. */
   pulse?: boolean
+  /** Dot diameter, from the shared control sizes. @default 'md' */
   size?: ControlSize
 }
 

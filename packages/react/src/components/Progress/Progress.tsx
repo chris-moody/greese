@@ -9,6 +9,7 @@ export interface ProgressProps
   value?: number
   /** The value that means complete. @default 100 */
   max?: number
+  /** Bar thickness, from the shared control sizes. @default 'md' */
   size?: ControlSize
 }
 
