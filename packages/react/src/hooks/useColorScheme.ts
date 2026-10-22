@@ -1,10 +1,6 @@
 'use client'
 import { useCallback, useSyncExternalStore } from 'react'
-import {
-  DEFAULT_SCHEME_STORAGE_KEY,
-  SCHEME_ATTR,
-  type ColorScheme,
-} from '@greese/ui'
+import { DEFAULT_SCHEME_STORAGE_KEY, SCHEME_ATTR, type ColorScheme } from '@greese/ui'
 import { useMediaQuery } from './useMediaQuery.ts'
 
 // The source of truth is the attribute on <html>: the pre-paint script, this

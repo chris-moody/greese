@@ -23,6 +23,7 @@ import {
 import { IconButton } from '../IconButton/IconButton.tsx'
 import { composeRefs, Slot } from '../Slot/Slot.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
+import type { ControlSize } from '../Button/Button.tsx'
 
 interface ModalBaseProps extends Omit<ComponentPropsWithRef<'dialog'>, 'title' | 'open'> {
   /** Controlled open state. */
@@ -187,7 +188,7 @@ const ModalBase = ({
 
 export interface DialogProps extends GreeseProps, ModalBaseProps {
   /** Maximum width. `full` fills the viewport on every screen. @default 'md' */
-  size?: 'sm' | 'md' | 'lg' | 'full'
+  size?: ControlSize | 'full'
 }
 
 /**

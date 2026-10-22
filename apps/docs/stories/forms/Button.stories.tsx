@@ -7,7 +7,10 @@ const meta = {
   component: Button,
   args: { children: 'Save changes' },
   argTypes: {
-    variant: { control: 'inline-radio', options: ['solid', 'soft', 'outline', 'ghost', 'text'] },
+    variant: {
+      control: 'inline-radio',
+      options: ['solid', 'soft', 'outline', 'ghost', 'text'],
+    },
     tone: {
       control: 'inline-radio',
       options: ['primary', 'secondary', 'tertiary', 'accent', 'neutral', 'negative'],

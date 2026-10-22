@@ -523,11 +523,11 @@ color roles and palette under **Foundations/Color**. The property name is
 
 | Group       | `createTheme` key    | Keys                                                                                                                                                                                                                                                    |
 | ----------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Color      | `color`              | `canvas`, `surface`, `surfaceOverlay`, `fg`, `fgMuted`, `border`, `borderStrong`, `primary`, `secondary`, `tertiary`, `accent` (each with `…Strong` and `…Content`), `focusRing`, `positive`, `negative`, `negativeContent`, `warning`, `info`, `scrim` |
+| Color       | `color`              | `canvas`, `surface`, `surfaceOverlay`, `fg`, `fgMuted`, `border`, `borderStrong`, `primary`, `secondary`, `tertiary`, `accent` (each with `…Strong` and `…Content`), `focusRing`, `positive`, `negative`, `negativeContent`, `warning`, `info`, `scrim` |
 | Spacing     | `space`              | `0`–`8` (`0`, `0.25rem`, `0.5rem`, `0.75rem`, `1rem`, `1.5rem`, `2rem`, `3rem`, `4rem`)                                                                                                                                                                 |
 | Radius      | `radius`             | `none`, `sm`, `md`, `lg`, `pill`                                                                                                                                                                                                                        |
 | Font family | `font`               | `body`, `mono`                                                                                                                                                                                                                                          |
-| Type system | `typography`         | variants `p1`–`p3`, `h1`–`h6`, `s1`, `s2`, `caption`, `button`: size, weight, tracking, leading (see Typography) |
+| Type system | `typography`         | variants `p1`–`p3`, `h1`–`h6`, `s1`, `s2`, `caption`, `button`: font size, weight, letter spacing, line height (see Typography)                                                                                                                         |
 | Font weight | `fontWeight`         | `regular`, `medium`, `semibold`, `bold`                                                                                                                                                                                                                 |
 | Line height | `lineHeight`         | `tight`, `snug`, `normal`                                                                                                                                                                                                                               |
 | Shadow      | `shadow`             | `sm`, `md`, `lg`                                                                                                                                                                                                                                        |
@@ -546,13 +546,13 @@ with its own hues and values rather than Material's.
 
 ## Troubleshooting
 
-| Symptom                                                                   | Cause and fix                                                                             |
-| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Dark-mode users see a white flash on load                                 | Add `getSchemeScript()` to `<head>`, before stylesheets                                   |
-| Hydration warning about `data-greese-scheme`                              | Add `suppressHydrationWarning` to `<html>`                                                |
+| Symptom                                                                  | Cause and fix                                                                             |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Dark-mode users see a white flash on load                                | Add `getSchemeScript()` to `<head>`, before stylesheets                                   |
+| Hydration warning about `data-greese-scheme`                             | Add `suppressHydrationWarning` to `<html>`                                                |
 | My `:root` color override is ignored in dark mode or in a scheme section | Use `createTheme`, or mirror the scheme selectors ([plain CSS](#overriding-in-plain-css)) |
-| My `:root` override is ignored inside a `ThemeProvider`                   | Themes declare every token; put the override in the theme                                 |
-| A nested theme lost the outer theme's overrides                           | Themes replace, not stack; spread the outer theme's options into the inner one            |
-| The page background doesn't change with the scheme                        | Import `base.css`, or set `background: var(--greese-color-canvas)` yourself               |
-| The saved choice isn't restored                                           | `useColorScheme` and `getSchemeScript` must use the same `storageKey`                     |
-| Breakpoint changes have no effect on components                           | Recompile the SCSS with `$breakpoints`; `configureBreakpoints` only affects JS            |
+| My `:root` override is ignored inside a `ThemeProvider`                  | Themes declare every token; put the override in the theme                                 |
+| A nested theme lost the outer theme's overrides                          | Themes replace, not stack; spread the outer theme's options into the inner one            |
+| The page background doesn't change with the scheme                       | Import `base.css`, or set `background: var(--greese-color-canvas)` yourself               |
+| The saved choice isn't restored                                          | `useColorScheme` and `getSchemeScript` must use the same `storageKey`                     |
+| Breakpoint changes have no effect on components                          | Recompile the SCSS with `$breakpoints`; `configureBreakpoints` only affects JS            |

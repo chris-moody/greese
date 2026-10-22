@@ -121,7 +121,7 @@ const Roles = (): JSX.Element => (
     <style>{`
       .color-cell { display: inline-grid; justify-items: start; gap: var(--greese-space-1); padding: var(--greese-space-2); border-radius: var(--greese-radius-md); color: var(--greese-color-fg); background: var(--greese-color-canvas); }
       .color-swatch { inline-size: 2.75rem; aspect-ratio: 1; border: 1px solid var(--greese-color-border); border-radius: var(--greese-radius-sm); }
-      .color-code, .color-var { font: var(--greese-type-caption-size) / 1.3 var(--greese-font-mono); overflow-wrap: anywhere; }
+      .color-code, .color-var { font: var(--greese-type-caption-font-size) / 1.3 var(--greese-font-mono); overflow-wrap: anywhere; }
     `}</style>
   </Stack>
 )

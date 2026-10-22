@@ -7,6 +7,7 @@ $widths: (
   sm: 24rem,
   md: 32rem,
   lg: 48rem,
+  xl: 74rem,
 );
 
 @layer greese.components {
@@ -85,7 +86,7 @@ $widths: (
 
   .greese-Dialog-title {
     margin: 0;
-    font-size: var(--greese-type-s2-size);
+    font-size: var(--greese-type-s2-font-size);
     font-weight: var(--greese-font-weight-semibold);
     line-height: var(--greese-line-height-snug);
   }
@@ -98,7 +99,7 @@ $widths: (
   .greese-Dialog-description {
     flex-shrink: 0;
     margin: 0;
-    font-size: var(--greese-type-p3-size);
+    font-size: var(--greese-type-p3-font-size);
     color: var(--greese-color-fg-muted);
   }
 

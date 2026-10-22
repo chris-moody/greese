@@ -88,14 +88,14 @@ export const PaletteTables = (): JSX.Element => {
         ))}
       </Grid>
       <style>{`
-        .palette-status { margin: 0; min-block-size: 1lh; font-size: var(--greese-type-p3-size); color: var(--greese-color-fg-muted); }
+        .palette-status { margin: 0; min-block-size: 1lh; font-size: var(--greese-type-p3-font-size); color: var(--greese-color-fg-muted); }
         .palette-hue { overflow: hidden; border: 1px solid var(--greese-color-border); border-radius: var(--greese-radius-md); }
         .palette-name { margin: 0; padding: var(--greese-space-2) var(--greese-space-3); text-transform: capitalize; }
         .palette-hue ul { margin: 0; padding: 0; list-style: none; }
         .palette-hue button {
           display: flex; justify-content: space-between; inline-size: 100%;
           padding: var(--greese-space-2) var(--greese-space-3); border: 0; cursor: copy;
-          font: var(--greese-type-caption-size) / 1.25 var(--greese-font-mono);
+          font: var(--greese-type-caption-font-size) / 1.25 var(--greese-font-mono);
         }
         .palette-hue button:focus-visible { outline: 2px solid var(--greese-color-focus-ring); outline-offset: -4px; }
       `}</style>

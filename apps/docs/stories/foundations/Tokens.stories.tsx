@@ -11,7 +11,7 @@ const grid: CSSProperties = {
 }
 const label: CSSProperties = {
   fontFamily: 'var(--greese-font-mono)',
-  fontSize: 'var(--greese-type-caption-size)',
+  fontSize: 'var(--greese-type-caption-font-size)',
 }
 
 const Section = ({ title, children }: { title: string; children: ReactNode }) => (
@@ -113,7 +113,7 @@ export const Typography: StoryObj = {
     <Section title="Type variants (font size, weight, spacing and line height)">
       {typeVariants.map((variant) => (
         <p key={variant} className={`greese-Type--${variant}`} style={{ margin: 0 }}>
-          <code style={label}>--greese-type-{variant}-size</code> The quick brown fox
+          <code style={label}>--greese-type-{variant}-font-size</code> The quick brown fox
         </p>
       ))}
     </Section>

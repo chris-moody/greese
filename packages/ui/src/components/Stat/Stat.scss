@@ -29,13 +29,13 @@
 
   .greese-Stat-label {
     grid-column: 1;
-    font-size: var(--greese-type-p3-size);
+    font-size: var(--greese-type-p3-font-size);
     color: var(--greese-color-fg-muted);
   }
 
   .greese-Stat-value {
     grid-column: 1;
-    font-size: var(--greese-type-h2-size);
+    font-size: var(--greese-type-h2-font-size);
     font-weight: var(--greese-font-weight-bold);
     font-variant-numeric: tabular-nums;
     line-height: var(--greese-line-height-tight);
@@ -44,7 +44,7 @@
 
   .greese-Stat-description {
     grid-column: 1;
-    font-size: var(--greese-type-p3-size);
+    font-size: var(--greese-type-p3-font-size);
   }
 
   .greese-Stat-description--muted {

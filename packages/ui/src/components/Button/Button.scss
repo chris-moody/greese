@@ -21,12 +21,12 @@
     padding-inline: var(--greese-button-padding);
 
     // The `button` type variant, but for its size (the `size` prop sets that).
-    font-family: var(--greese-type-button-family, inherit);
-    font-style: var(--greese-type-button-style, normal);
-    font-weight: var(--greese-type-button-weight);
-    line-height: var(--greese-type-button-leading);
-    text-transform: var(--greese-type-button-transform, none);
-    letter-spacing: var(--greese-type-button-tracking);
+    font-family: var(--greese-type-button-font-family, inherit);
+    font-style: var(--greese-type-button-font-style, normal);
+    font-weight: var(--greese-type-button-font-weight);
+    line-height: var(--greese-type-button-line-height);
+    text-transform: var(--greese-type-button-text-transform, none);
+    letter-spacing: var(--greese-type-button-letter-spacing);
     color: var(--greese-button-fg);
     text-align: center;
     text-decoration: none;

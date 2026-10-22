@@ -1,6 +1,14 @@
 @use '../../styles/mixins';
 @use '../../styles/tones';
 
+$sizes: (
+  xs: .25rem,
+  sm: .5rem,
+  md: .75rem,
+  lg: 1rem,
+  xl: 1.25rem,
+);
+
 @layer greese.components {
   @include tones.classes(
     'greese-Status',
@@ -25,12 +33,10 @@
     --greese-status-tone: var(--greese-color-fg-muted);
   }
 
-  .greese-Status--sm {
-    --greese-status-size: 0.5rem;
-  }
-
-  .greese-Status--lg {
-    --greese-status-size: 0.875rem;
+  @each $size, $value in $sizes {
+    .greese-Status--#{$size} {
+      --greese-status-size: #{$value};
+    }
   }
 
   .greese-Status--pulse::after {

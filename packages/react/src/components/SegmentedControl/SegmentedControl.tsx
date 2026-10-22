@@ -11,6 +11,7 @@ import {
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
+import type { ControlSize } from '../Button/Button.tsx'
 
 interface SegmentedContextValue {
   name: string
@@ -37,7 +38,7 @@ export interface SegmentedControlProps
   /** Called with the newly chosen segment's value. */
   onValueChange?: (value: string) => void
   /** Height and text size: `sm` or `md`. @default 'md' */
-  size?: 'sm' | 'md'
+  size?: ControlSize
   /** Stretch to the container's width, segments sharing it equally. */
   fullWidth?: boolean
 }

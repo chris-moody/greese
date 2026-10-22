@@ -1,13 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  Card,
-  ScrollCarousel,
-  ScrollCarouselSlide,
-  Heading,
-  Image,
-  Stack,
-  Text,
-} from '@greese/react'
+import { Card, ScrollCarousel, ScrollCarouselSlide, Heading, Image, Stack, Text } from '@greese/react'
 import { art } from '../_shared/fixtures.tsx'
 
 const places = ['Harbour', 'Ridge', 'Meadow', 'Coast', 'Forest', 'Valley']

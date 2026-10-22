@@ -1,5 +1,13 @@
 @use '../../styles/mixins';
 
+$sizes: (
+  xs: .75rem,
+  sm: 1.125rem,
+  md: 1.625rem,
+  lg: 2rem,
+  xl: 3rem,
+);
+
 @layer greese.components {
   .greese-Rating {
     @include mixins.component-root;
@@ -17,12 +25,10 @@
     border: 0;
   }
 
-  .greese-Rating--sm {
-    --greese-rating-size: 1.125rem;
-  }
-
-  .greese-Rating--lg {
-    --greese-rating-size: 2rem;
+  @each $size, $value in $sizes {
+    .greese-Rating--#{$size} {
+      --greese-rating-size: #{$value};
+    }
   }
 
   // The stars: an empty row with a filled row over it, clipped to the value

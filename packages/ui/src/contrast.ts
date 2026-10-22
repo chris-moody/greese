@@ -3,10 +3,11 @@
  * brand colors. Hex colors only (`#rgb`, `#rrggbb`): anything else (a
  * `var()`, `oklch()`) can't be measured here, so callers keep their default.
  */
+import { black, steel, white } from './palette.ts'
 
 /** Light and dark ink for content on a color: white, or GreeseUI's near-black canvas. */
-export const CONTENT_LIGHT = '#ffffff'
-export const CONTENT_DARK = '#11171c' // steel-999
+export const CONTENT_LIGHT = white
+export const CONTENT_DARK = steel[999]
 
 /** The WCAG AA minimum for normal text. */
 export const AA = 4.5
@@ -39,9 +40,5 @@ export const contentColor = (color: string): string | undefined => {
   if (luminance(color) === undefined) return undefined
   const light = contrastRatio(color, CONTENT_LIGHT)!
   const dark = contrastRatio(color, CONTENT_DARK)!
-  return Math.max(light, dark) < AA
-    ? '#000000'
-    : light >= dark
-      ? CONTENT_LIGHT
-      : CONTENT_DARK
+  return Math.max(light, dark) < AA ? black : light >= dark ? CONTENT_LIGHT : CONTENT_DARK
 }

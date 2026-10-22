@@ -193,19 +193,21 @@ describe('createTheme: typography', () => {
   it('declares every variant, with the changes at their breakpoints', () => {
     const { css } = createTheme({
       name: 'type',
-      typography: { h1: { base: { size: '2rem' }, lg: { size: '4rem' } } },
+      typography: { h1: { base: { fontSize: '2rem' }, lg: { fontSize: '4rem' } } },
     })
-    expect(css).toContain('--greese-type-p2-size: 1rem;')
-    expect(css).toMatch(/--greese-type-h1-size: 2rem;/)
+    expect(css).toContain('--greese-type-p2-font-size: 1rem;')
+    expect(css).toMatch(/--greese-type-h1-font-size: 2rem;/)
     expect(css).toMatch(
-      /@media \(width >= 900px\) \{\s+\[data-greese-theme='type'\] \{[^}]*--greese-type-h1-size: 2\.75rem;/
+      /@media \(width >= 900px\) \{\s+\[data-greese-theme='type'\] \{[^}]*--greese-type-h1-font-size: 2\.75rem;/
     )
-    expect(css).toMatch(/@media \(width >= 1200px\)[^@]*--greese-type-h1-size: 4rem;/)
+    expect(css).toMatch(
+      /@media \(width >= 1200px\)[^@]*--greese-type-h1-font-size: 4rem;/
+    )
   })
 
   it('refuses values that could break out of the style element', () => {
     expect(() =>
-      createTheme({ name: 'a', typography: { h1: { base: { family: 'x; }' } } } })
+      createTheme({ name: 'a', typography: { h1: { base: { fontFamily: 'x; }' } } } })
     ).toThrow(/invalid value/)
   })
 })

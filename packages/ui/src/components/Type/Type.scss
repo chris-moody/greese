@@ -1,5 +1,5 @@
 // The type variants as classes, for any element: `greese-Type--h2`. Each
-// reads its own custom properties (`--greese-type-h2-size`…), which change
+// reads its own custom properties (`--greese-type-h2-font-size`…), which change
 // across breakpoints (src/typography.ts), so the class never does. After
 // Text and Heading, so a variant replaces their weight and line height.
 @use 'sass:map';
@@ -8,14 +8,27 @@
 @layer greese.components {
   @each $variant in map.keys(defaults.$typography) {
     .greese-Type--#{$variant} {
-      font-size: var(--greese-type-#{$variant}-size);
-      font-weight: var(--greese-type-#{$variant}-weight);
-      letter-spacing: var(--greese-type-#{$variant}-tracking);
-      line-height: var(--greese-type-#{$variant}-leading);
+      font-size: var(--greese-type-#{$variant}-font-size);
+      font-weight: var(--greese-type-#{$variant}-font-weight);
+      letter-spacing: var(--greese-type-#{$variant}-letter-spacing);
+      line-height: var(--greese-type-#{$variant}-line-height);
 
       // Inherited unless the variant sets them.
-      @each $prop in (family, style, transform, features, variation, stretch, wrap, spacing, numeric) {
-        #{map.get(defaults.$type-props, $prop)}: var(--greese-type-#{$variant}-#{$prop}, inherit);
+      @each $prop
+        in (
+          color,
+          font-family,
+          font-style,
+          text-transform,
+          font-feature-settings,
+          font-variation-settings,
+          font-stretch,
+          text-wrap,
+          word-spacing,
+          font-variant-numeric
+        )
+      {
+        #{$prop}: var(--greese-type-#{$variant}-#{$prop}, inherit);
       }
     }
   }

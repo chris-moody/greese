@@ -15,14 +15,32 @@ text transform.
 
 **Variants:** `p1 p2 p3`, `h1`–`h6`, `s1 s2`, `caption` and `button`.
 
-Each has, on every screen, a **size**, **weight**, **tracking** (letter
-spacing) and **leading** (line height), and may set `family`, `style`,
-`transform`, `features`, `variation`, `stretch`, `wrap`, `spacing` and
-`numeric` (the CSS properties of those names). Unset extras inherit.
+Each has, on every screen, a `fontSize`, `fontWeight`, `letterSpacing` and
+`lineHeight`, and may set `fontFamily`, `fontStyle`, `textTransform`,
+`fontFeatureSettings`, `fontVariationSettings`, `fontStretch`, `textWrap`,
+`wordSpacing`, `fontVariantNumeric` and `color`. Unset extras inherit.
+
+### Property names are the CSS properties
+
+A type property is named for the CSS property it sets, in its JavaScript form:
+`font-size` becomes `fontSize`, `text-wrap` becomes `textWrap`, as in React's
+`style`. The first version used short names of its own (`size`, `tracking`,
+`leading`, `wrap`), which were a second vocabulary to learn and did not match
+what the property does (`wrap` is not `text-wrap`). Rules:
+
+- **TypeScript** (`typography`, `createTheme({ typography })`, the Studio's
+  theme JSON): camelCase, `fontSize`. `typeCoreProps`, `typeExtraProps` and
+  `typeProps` list the names; `cssProperty()` turns one into the CSS name and
+  `typePropName()` goes back.
+- **CSS and SCSS** (custom properties, `greese.typography(…)`, `$typography`):
+  the CSS name, `font-size`, so `--greese-type-h1-font-size`.
+- A new type property is named by its CSS property, in both forms, with no
+  alias. The two forms differ only by case, so one is always derivable from
+  the other.
 
 ### Custom properties, set mobile-first
 
-Every value is `--greese-type-<variant>-<prop>`, declared in the token layer:
+Every value is `--greese-type-<variant>-<css-property>`, declared in the token layer:
 the smallest screen's values on `:root`, then a media query per breakpoint
 that changes any. A value at a breakpoint applies from there up until a larger
 one sets another, so only changes are written (the defaults are about 0.8 kB
@@ -38,7 +56,7 @@ interface for plain HTML, and what `Text` and `Heading` render when given
 `variant`; with a variant, `size` and `weight` are ignored, since a variant
 owns them (the alternative, letting props override variables, would make a
 component's look depend on prop order). `Button` reads the `button` variant's
-weight, tracking, leading and extras; its size still comes from `size`,
+weight, letter spacing, line height and extras; its size still comes from `size`,
 because height and touch target depend on it.
 
 ### Changing it
@@ -47,7 +65,7 @@ because height and touch target depend on it.
   default at that exact point; the rest, other breakpoints included, stays.
   A theme declares every variant, as it declares every token, so it never
   depends on its ancestors. It uses the defaults' breakpoint widths.
-- **SCSS kit:** `greese.typography((h1: (base: (size: 2rem), lg: (…))))`, using
+- **SCSS kit:** `greese.typography((h1: (base: (font-size: 2rem), lg: (…))))`, using
   the build's breakpoints. Names that don't exist stop the build. It writes a
   touched variant whole, because a value at one point in the theme layer would
   otherwise beat the defaults' other points in the layer below it.

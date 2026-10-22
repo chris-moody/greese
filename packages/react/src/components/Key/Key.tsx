@@ -1,10 +1,11 @@
 import type { ComponentPropsWithRef, JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
+import type { ControlSize } from '../Button/Button.tsx'
 
 export interface KeyProps extends GreeseProps, ComponentPropsWithRef<'kbd'> {
   /** Text size of the key: `sm`, `md` or `lg`. @default 'md' */
-  size?: 'sm' | 'md' | 'lg'
+  size?: ControlSize
 }
 
 /**

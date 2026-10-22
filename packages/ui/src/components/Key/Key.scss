@@ -7,7 +7,7 @@
     min-inline-size: 1.75em;
     padding: 0.1em 0.45em;
     font-family: var(--greese-font-mono);
-    font-size: var(--greese-type-p3-size);
+    font-size: var(--greese-type-p3-font-size);
     line-height: var(--greese-line-height-snug);
     color: var(--greese-color-fg);
     white-space: nowrap;
@@ -26,11 +26,24 @@
     }
   }
 
+  
+  .greese-Key--xs {
+    font-size: var(--greese-type-caption-font-size);
+  }
+  
   .greese-Key--sm {
-    font-size: var(--greese-type-caption-size);
+    font-size: var(--greese-type-p3-font-size);
+  }
+  
+  .greese-Key--md {
+    font-size: var(--greese-type-p1-font-size);
   }
 
   .greese-Key--lg {
-    font-size: var(--greese-type-p2-size);
+    font-size: var(--greese-type-h3-font-size);
+  }
+
+  .greese-Key--xl {
+    font-size: var(--greese-type-h1-font-size);
   }
 }

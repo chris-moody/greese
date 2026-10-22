@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { getSchemeScript } from './scheme.ts'
+import { getSchemeScript } from './colorScheme.ts'
 
 const run = (script: string) => new Function(script)()
 

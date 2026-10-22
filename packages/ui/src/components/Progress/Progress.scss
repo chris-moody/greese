@@ -1,5 +1,13 @@
 @use '../../styles/mixins';
 
+$sizes: (
+  xs: .125rem,
+  sm: .25rem,
+  md: .5rem,
+  lg: .75rem,
+  xl: 1rem,
+);
+
 /* stylelint-disable selector-no-vendor-prefix */
 
 @layer greese.components {
@@ -56,12 +64,10 @@
     }
   }
 
-  .greese-Progress--sm {
-    --greese-progress-height: 0.25rem;
-  }
-
-  .greese-Progress--md {
-    --greese-progress-height: 0.5rem;
+  @each $size, $value in $sizes {
+    .greese-Progress--#{$size} {
+      --greese-progress-height: #{$value};
+    }
   }
 
   @keyframes greese-progress-sweep {

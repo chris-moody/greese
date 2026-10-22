@@ -59,7 +59,7 @@
     gap: var(--greese-space-2);
     align-items: baseline;
     margin-block-end: var(--greese-space-1);
-    font-size: var(--greese-type-caption-size);
+    font-size: var(--greese-type-caption-font-size);
   }
 
   .greese-ChatBubble-author {
@@ -69,7 +69,7 @@
 
   .greese-ChatBubble-time,
   .greese-ChatBubble-footer {
-    font-size: var(--greese-type-caption-size);
+    font-size: var(--greese-type-caption-font-size);
     color: var(--greese-color-fg-muted);
   }
 

@@ -10,6 +10,9 @@ import { ColorDialog } from './ColorDialog.tsx'
 export const kebab = (value: string): string =>
   value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 
+export const colorName = (value: string): string =>
+  value.replace(/[A-Z][a-z]*/g, () => '')
+
 type Scheme = 'light' | 'dark'
 
 /** The groups, brand first, in order. */

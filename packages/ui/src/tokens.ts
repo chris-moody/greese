@@ -7,9 +7,23 @@
  * Semantic names (canvas, surface, fg, primary) rather than palette names
  * (blue-500) so light/dark and future rebrands change one layer, not markup.
  *
- * Keep this file free of runtime imports: the build script runs it directly
- * under Node's type stripping.
+ * Imports only the palette, and only the hues it uses: the build script runs
+ * this directly under Node's type stripping, so imports name their `.ts` file.
  */
+import {
+  azure,
+  black,
+  blue,
+  gold,
+  green,
+  lavender,
+  pink,
+  red,
+  steel,
+  turquoise,
+  white,
+} from './palette.ts'
+
 /** Light and dark values for one semantic role. */
 export interface TokenPair {
   light: string
@@ -17,11 +31,12 @@ export interface TokenPair {
 }
 
 /**
- * Semantic color roles, light and dark. Every value is a palette color,
- * named in the comments (palette.test.ts checks they match); written out
- * rather than read from palette.ts, so `createTheme` and anything else that
- * imports `color` doesn't carry the palette. `white` and `black` are the ends
- * of every ramp.
+ * Semantic color roles, light and dark. Every value is a palette color, read
+ * from palette.ts so a change there reaches every role. The palette is one
+ * export per hue, so a bundle carries only the hues named here, and only if
+ * it uses `color` at all: the pure annotation tells bundlers that reading the
+ * palette has no side effects, so an unused `color` drops its hues with it.
+ * `white` and `black` are the ends of every ramp.
  *
  * The brand colors, in order: `primary` (what components use for
  * interactive emphasis: solid buttons, links, focus, selection),
@@ -30,44 +45,45 @@ export interface TokenPair {
  * which meets WCAG AA (4.5:1) against it in both schemes (tokens.test.ts).
  * `createTheme` derives both when a theme sets only the main color.
  */
-export const color = {
-  canvas: { light: '#ffffff', dark: '#11171c' }, // white, steel-999
-  surface: { light: '#f5f7f9', dark: '#2a333c' }, // steel-50, steel-900
-  surfaceOverlay: { light: '#ffffff', dark: '#3c4854' }, // white, steel-800
-  fg: { light: '#11171c', dark: '#e9edf2' }, // steel-999, steel-100
-  fgMuted: { light: '#505e6d', dark: '#a3b3c4' }, // steel-700, steel-400
-  border: { light: '#d7dfe7', dark: '#3c4854' }, // steel-200, steel-800
-  borderStrong: { light: '#a3b3c4', dark: '#505e6d' }, // steel-400, steel-700
-  primary: { light: '#2771e0', dark: '#81b2ff' }, // blue-600, blue-400
-  primaryStrong: { light: '#1356b8', dark: '#aaccff' }, // blue-700, blue-300
-  primaryContent: { light: '#ffffff', dark: '#11171c' }, // white, steel-999
-  secondary: { light: '#7e5bd0', dark: '#b69fff' }, // lavender-600, lavender-400
-  secondaryStrong: { light: '#6443ab', dark: '#cdbfff' }, // lavender-700, lavender-300
-  secondaryContent: { light: '#ffffff', dark: '#11171c' }, // white, steel-999
-  tertiary: { light: '#007069', dark: '#5dcec5' }, // turquoise-700, turquoise-400
-  tertiaryStrong: { light: '#00544f', dark: '#94e1da' }, // turquoise-800, turquoise-300
-  tertiaryContent: { light: '#ffffff', dark: '#11171c' }, // white, steel-999
-  accent: { light: '#c13b7b', dark: '#ff81b6' }, // pink-600, pink-400
-  accentStrong: { light: '#9c2661', dark: '#ffaecd' }, // pink-700, pink-300
-  accentContent: { light: '#ffffff', dark: '#11171c' }, // white, steel-999
-  focusRing: {
-    light: 'var(--greese-color-primary)',
-    dark: 'var(--greese-color-primary-strong)',
-  },
-  positive: { light: '#007231', dark: '#61cf7e' }, // green-700, green-400
-  negative: { light: '#ae0914', dark: '#ff8b7f' }, // red-700, red-400
-  negativeContent: { light: '#ffffff', dark: '#11171c' }, // white, steel-999
-  warning: { light: '#8a5f00', dark: '#feb93d' }, // gold-700, gold-400
-  info: { light: '#00668f', dark: '#5ac0f7' }, // azure-700, azure-400
-  /** The ends of every ramp, the same in both schemes: ink and paper for anything drawn on a color. */
-  white: { light: '#ffffff', dark: '#ffffff' }, // white, white
-  black: { light: '#000000', dark: '#000000' }, // black, black
-  /** Dims the page behind modal dialogs and drawers. */
-  scrim: {
-    light: 'color-mix(in srgb, var(--greese-color-black) 45%, transparent)',
-    dark: 'color-mix(in srgb, var(--greese-color-black) 60%, transparent)',
-  },
-} as const satisfies Record<string, TokenPair>
+export const color = /* @__PURE__ */ (() =>
+  ({
+    canvas: { light: white, dark: steel[999] },
+    surface: { light: steel[50], dark: steel[900] },
+    surfaceOverlay: { light: white, dark: steel[800] },
+    fg: { light: steel[999], dark: steel[100] },
+    fgMuted: { light: steel[700], dark: steel[400] },
+    border: { light: steel[200], dark: steel[800] },
+    borderStrong: { light: steel[400], dark: steel[700] },
+    primary: { light: blue[600], dark: blue[400] },
+    primaryStrong: { light: blue[700], dark: blue[300] },
+    primaryContent: { light: white, dark: steel[999] },
+    secondary: { light: lavender[600], dark: lavender[400] },
+    secondaryStrong: { light: lavender[700], dark: lavender[300] },
+    secondaryContent: { light: white, dark: steel[999] },
+    tertiary: { light: turquoise[700], dark: turquoise[400] },
+    tertiaryStrong: { light: turquoise[800], dark: turquoise[300] },
+    tertiaryContent: { light: white, dark: steel[999] },
+    accent: { light: pink[600], dark: pink[400] },
+    accentStrong: { light: pink[700], dark: pink[300] },
+    accentContent: { light: white, dark: steel[999] },
+    focusRing: {
+      light: 'var(--greese-color-primary)',
+      dark: 'var(--greese-color-primary-strong)',
+    },
+    positive: { light: green[700], dark: green[400] },
+    negative: { light: red[700], dark: red[400] },
+    negativeContent: { light: white, dark: steel[999] },
+    warning: { light: gold[700], dark: gold[400] },
+    info: { light: azure[700], dark: azure[400] },
+    /** The ends of every ramp, the same in both schemes: ink and paper for anything drawn on a color. */
+    white: { light: white, dark: white },
+    black: { light: black, dark: black },
+    /** Dims the page behind modal dialogs and drawers. */
+    scrim: {
+      light: 'color-mix(in srgb, var(--greese-color-black) 45%, transparent)',
+      dark: 'color-mix(in srgb, var(--greese-color-black) 60%, transparent)',
+    },
+  }) as const satisfies Record<string, TokenPair>)()
 
 export type ColorRole = keyof typeof color
 

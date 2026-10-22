@@ -13,6 +13,7 @@ import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
 import { StarGlyph } from '../../utils/glyphs.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
+import type { ControlSize } from '../Button/Button.tsx'
 
 export interface RatingProps
   extends
@@ -45,7 +46,7 @@ export interface RatingProps
   /** A rating must be chosen before the form submits. */
   required?: boolean
   /** Star size: `sm`, `md` or `lg`. On touch screens the row is at least 44px tall. @default 'md' */
-  size?: 'sm' | 'md' | 'lg'
+  size?: ControlSize
   /** Replaces the star. Filled with `currentColor`. */
   icon?: ReactNode
   /** How each choice is read: `(n, max) => "3.5 stars"`. */

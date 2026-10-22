@@ -9,8 +9,7 @@ import {
 } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
-
-export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl'
+import type { ControlSize } from '../Button/Button.tsx'
 
 export interface AvatarProps
   extends Omit<ComponentPropsWithRef<'span'>, 'children'>, GreeseProps {
@@ -22,7 +21,7 @@ export interface AvatarProps
    */
   src?: string
   /** Diameter: `xs` to `xl`, from 1.5rem to 4rem. @default 'md' */
-  size?: AvatarSize
+  size?: ControlSize
   /**
    * `circle`, or `square` with rounded corners (for organisations and things).
    * @default 'circle'
@@ -92,7 +91,7 @@ export interface AvatarGroupProps extends ComponentPropsWithRef<'div'>, GreesePr
   /** Show at most this many, then a "+N" count. */
   max?: number
   /** Size of every avatar in the group, overriding their own. @default 'md' */
-  size?: AvatarSize
+  size?: ControlSize
   /** The Avatars, overlapping in order. */
   children: ReactNode
 }

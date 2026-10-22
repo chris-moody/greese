@@ -4,20 +4,30 @@
 
 /// Control size scale: block size, inline padding, font size.
 $sizes: (
+  xs: (
+    height: 1rem,
+    padding: var(--greese-space-1),
+    font: var(--greese-type-p3-font-size),
+  ),
   sm: (
     height: 2rem,
     padding: var(--greese-space-3),
-    font: var(--greese-type-p3-size),
+    font: var(--greese-type-p3-font-size),
   ),
   md: (
     height: 2.5rem,
     padding: var(--greese-space-3),
-    font: var(--greese-type-p2-size),
+    font: var(--greese-type-p2-font-size),
   ),
   lg: (
     height: 3rem,
     padding: var(--greese-space-4),
-    font: var(--greese-type-p2-size),
+    font: var(--greese-type-p2-font-size),
+  ),
+  xl: (
+    height: 4rem,
+    padding: var(--greese-space-4),
+    font: var(--greese-type-p1-font-size),
   ),
 );
 

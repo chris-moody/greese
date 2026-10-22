@@ -1,6 +1,7 @@
 import type { ComponentPropsWithRef, JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
+import type { ControlSize } from '../Button/Button.tsx'
 
 export interface ProgressProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'progress'>, 'value'> {
@@ -8,8 +9,7 @@ export interface ProgressProps
   value?: number
   /** The value that means complete. @default 100 */
   max?: number
-  /** Bar thickness: `sm` (4px) or `md` (8px). @default 'md' */
-  size?: 'sm' | 'md'
+  size?: ControlSize
 }
 
 /**

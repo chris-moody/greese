@@ -12,7 +12,7 @@ import type { BrandTone } from '../../utils/tone.ts'
 
 export type ButtonVariant = 'solid' | 'soft' | 'outline' | 'ghost' | 'text'
 export type ButtonTone = BrandTone | 'neutral' | 'negative'
-export type ControlSize = 'sm' | 'md' | 'lg'
+export type ControlSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
 export interface ButtonProps extends GreeseProps, ComponentPropsWithoutRef<'button'> {
   /** The rendered `<button>` (or your element, with `asChild`). */
@@ -31,7 +31,7 @@ export interface ButtonProps extends GreeseProps, ComponentPropsWithoutRef<'butt
    */
   tone?: ButtonTone
   /**
-   * Height, padding and text size: `sm`, `md` or `lg`. Touch targets stay at
+   * Height, padding and text size: `xs`, `sm`, `md`, `lg` or `xl`. Touch targets stay at
    * least 44px.
    * @default 'md'
    */

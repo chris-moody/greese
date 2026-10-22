@@ -1,6 +1,7 @@
 import { useState, type JSX } from 'react'
 import { Button, Segment, SegmentedControl, Select, Stack, Text } from '@greese/react'
 import {
+  cssProperty,
   typeCoreProps,
   typeExtraProps,
   typeVariants,
@@ -64,7 +65,7 @@ export const TypographySection = ({
   const [extra, setExtra] = useState('')
   const path = (prop: string) => ['typography', variant, point, prop]
   const own = ((spec.typography?.[variant] ?? {}) as Styles)[point] ?? {}
-  const unsetExtras = Object.keys(typeExtraProps).filter((p) => !(p in own))
+  const unsetExtras = typeExtraProps.filter((p) => !(p in own))
   const edited = !!spec.typography?.[variant]
 
   return (
@@ -111,21 +112,21 @@ export const TypographySection = ({
           </Segment>
         ))}
       </SegmentedControl>
-      {Object.keys(typeCoreProps).map((prop) => (
+      {typeCoreProps.map((prop) => (
         <ValueRow
           key={`${variant}-${point}-${prop}`}
-          label={`${variant}-${prop}`}
+          label={`${variant}-${cssProperty(prop)}`}
           value={own[prop] ?? ''}
           placeholder={fallback(spec, variant, point, prop) ?? ''}
           onChange={(v) => onChange(setIn(spec, path(prop), v))}
         />
       ))}
       {Object.keys(own)
-        .filter((prop) => prop in typeExtraProps)
+        .filter((prop) => (typeExtraProps as readonly string[]).includes(prop))
         .map((prop) => (
           <Stack key={`${variant}-${point}-${prop}`} gap={1}>
             <ValueRow
-              label={`${variant}-${prop}`}
+              label={`${variant}-${cssProperty(prop)}`}
               value={own[prop] ?? ''}
               onChange={(v) => onChange(setIn(spec, path(prop), v))}
             />
@@ -134,7 +135,7 @@ export const TypographySection = ({
                 size="sm"
                 variant="ghost"
                 tone="neutral"
-                aria-label={`Remove ${variant}-${prop}`}
+                aria-label={`Remove ${variant}-${cssProperty(prop)}`}
                 onClick={() => onChange(setIn(spec, path(prop), undefined))}
               >
                 Remove
@@ -161,7 +162,7 @@ export const TypographySection = ({
             <option value="">Add a property…</option>
             {unsetExtras.map((p) => (
               <option key={p} value={p}>
-                {p} ({typeExtraProps[p as keyof typeof typeExtraProps]})
+                {cssProperty(p)}
               </option>
             ))}
           </Select>

@@ -183,7 +183,7 @@ that doesn't, still stops the build:
     ),
     shadow: (
       glow: 0 0 12px rgb(124 58 237 / 0.4),
-    ),
+    )
   )
 );
 
@@ -240,7 +240,7 @@ overrides still collapse under reduced motion.
 | `token(group, key)`                                                | `var(--greese-<group>-<key>)`, checked                                                                                                                                       |
 | `variable(name)`                                                   | `var(--greese-<name>)` for a component variable, checked                                                                                                                     |
 | `tokens((…))`, `motion-defaults((…))`, `theme(name) { … }`         | Token overrides, entrance tuning, a named theme                                                                                                                              |
-| `keyframes(greese-fade-up, (from: (…), to: (…)))`                  | Replaces a preset's keyframes, or adds `@keyframes` of your own (utilities layer)                                                                                           |
+| `keyframes(greese-fade-up, (from: (…), to: (…)))`                  | Replaces a preset's keyframes, or adds `@keyframes` of your own (utilities layer)                                                                                            |
 | `up`, `down`, `hover`, `focus-ring`, `touch-target`, `motion-safe` | The library's own mixins                                                                                                                                                     |
 
 Call the mixins at the top level of a stylesheet (or inside `theme()`), not
@@ -383,7 +383,7 @@ writes two files next to it on save:
 | File                | Use it if                                                  |
 | ------------------- | ---------------------------------------------------------- |
 | `greese-theme.scss` | Your app compiles Sass: `@use` it after the library styles |
-| `greese-theme.css`  | It doesn't: import it after `@greese/react/styles.css`  |
+| `greese-theme.css`  | It doesn't: import it after `@greese/react/styles.css`     |
 
 Both are generated; edit the JSON, or use the studio. Put hand-written
 overrides in a stylesheet of your own beside them.

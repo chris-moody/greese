@@ -1,4 +1,6 @@
+@use 'sass:map';
 @use '../../styles/mixins';
+@use '../../styles/controls';
 
 @layer greese.components {
   .greese-SegmentedControl {
@@ -29,16 +31,14 @@
     border-radius: var(--greese-radius-md);
   }
 
-  .greese-SegmentedControl--size-sm {
-    --greese-segment-height: 1.75rem;
+  // Sizes
+  @each $size, $spec in controls.$sizes {
+    .greese-SegmentedControl--size-#{$size} {
+      --greese-button-height: #{map.get($spec, height)};
+      --greese-button-padding: #{map.get($spec, padding)};
 
-    font-size: var(--greese-type-p3-size);
-  }
-
-  .greese-SegmentedControl--size-md {
-    --greese-segment-height: 2.25rem;
-
-    font-size: var(--greese-type-p3-size);
+      font-size: map.get($spec, font);
+    }
   }
 
   .greese-Segment {

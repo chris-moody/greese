@@ -79,10 +79,10 @@ export const LiveCode = (): JSX.Element | null => {
       <style>{`
         .live-code { overflow: hidden; border: 1px solid var(--greese-color-border); border-radius: var(--greese-radius-md); }
         .live-code-preview { padding: var(--greese-space-5); background: var(--greese-color-canvas); color: var(--greese-color-fg); }
-        .live-code-editor { position: relative; font: var(--greese-type-p3-size) / 1.6 var(--greese-font-mono); background: #1e1e1e; }
+        .live-code-editor { position: relative; font: var(--greese-type-p3-font-size) / 1.6 var(--greese-font-mono); background: #1e1e1e; }
         .live-code-editor pre { margin: 0; padding: var(--greese-space-4) !important; min-block-size: 4rem; font-family: var(--greese-font-mono) !important; }
         .live-code-reset { position: absolute; inset-block-start: var(--greese-space-2); inset-inline-end: var(--greese-space-2); }
-        .live-code-error { margin: 0; padding: var(--greese-space-3) var(--greese-space-4); white-space: pre-wrap; font: var(--greese-type-p3-size) / 1.5 var(--greese-font-mono); color: var(--greese-color-negative); background: color-mix(in oklab, var(--greese-color-negative) 10%, var(--greese-color-canvas)); }
+        .live-code-error { margin: 0; padding: var(--greese-space-3) var(--greese-space-4); white-space: pre-wrap; font: var(--greese-type-p3-font-size) / 1.5 var(--greese-font-mono); color: var(--greese-color-negative); background: color-mix(in oklab, var(--greese-color-negative) 10%, var(--greese-color-canvas)); }
       `}</style>
     </>
   )

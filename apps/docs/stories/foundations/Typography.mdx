@@ -8,18 +8,20 @@ import * as TypographyStories from './Typography.stories.tsx'
 The type system is a set of named text styles, **variants**, that change across
 breakpoints: `p1`, `p2`, `p3`, `h1`–`h6`, `s1`, `s2`, `caption` and `button`.
 
-Each variant has four values on every screen: **size**, **weight**, **tracking**
-(letter spacing) and **leading** (line height). It may also set `family`,
-`style`, `transform`, `features`, `variation`, `stretch`, `wrap`, `spacing` and
-`numeric`, which map to the CSS properties of those names (`transform` is
-`text-transform`; `leading` is `line-height`).
+Each variant has four values on every screen: `fontSize`, `fontWeight`,
+`letterSpacing` and `lineHeight`. It may also set `fontFamily`, `fontStyle`,
+`textTransform`, `fontFeatureSettings`, `fontVariationSettings`, `fontStretch`,
+`textWrap`, `wordSpacing`, `fontVariantNumeric` and `color`. The names are the CSS
+properties in their JavaScript form, as in React's `style` (`font-size` is
+`fontSize`); in SCSS and CSS they are the CSS names, and the custom properties
+are `--greese-type-<variant>-<css-property>`.
 
 <Canvas of={TypographyStories.Variants} />
 
 ## How it's built
 
 Every value is a custom property, `--greese-type-<variant>-<prop>`, for
-example `--greese-type-h1-size`. They're set mobile-first in the token layer:
+example `--greese-type-h1-font-size`. They're set mobile-first in the token layer:
 the smallest screen's values on `:root`, then a media query at each breakpoint
 that changes any. A value set at a breakpoint applies from there up until a
 larger breakpoint sets another, so only changes are written.
@@ -55,8 +57,11 @@ In a theme (static CSS):
 createTheme({
   name: 'brand',
   typography: {
-    h1: { base: { size: '2rem' }, lg: { size: '4rem', tracking: '-0.03em' } },
-    caption: { base: { transform: 'uppercase' } },
+    h1: {
+      base: { fontSize: '2rem' },
+      lg: { fontSize: '4rem', letterSpacing: '-0.03em' },
+    },
+    caption: { base: { textTransform: 'uppercase' } },
   },
 })
 ```
@@ -68,11 +73,11 @@ In the SCSS kit, which uses your build's breakpoints:
   (
     h1: (
       base: (
-        size: 2rem,
+        font-size: 2rem,
       ),
       lg: (
-        size: 4rem,
-        tracking: -0.03em,
+        font-size: 4rem,
+        letter-spacing: -0.03em,
       ),
     ),
   )
@@ -82,8 +87,8 @@ In the SCSS kit, which uses your build's breakpoints:
 What you set replaces the default at that exact point, and everything else, the
 other breakpoints included, stays. Unknown variants, breakpoints and properties
 stop the SCSS build. To change one element, set its custom properties:
-`style={{ '--greese-type-h1-size': '5rem' }}`.
+`style={{ '--greese-type-h1-font-size': '5rem' }}`.
 
 A whole build can change the defaults with
-`@use 'pkg:@greese/ui/scss' with ($typography: …)`, shaped like the table above;
+`@use 'pkg:@greese/ui/scss' with ($typography: …)`, shaped like the `typography()` map above, with CSS property names;
 Theme Studio edits all of this in its Typography section.

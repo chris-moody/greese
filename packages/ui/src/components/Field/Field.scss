@@ -11,7 +11,7 @@
   }
 
   .greese-Field-label {
-    font-size: var(--greese-type-p3-size);
+    font-size: var(--greese-type-p3-font-size);
     font-weight: var(--greese-font-weight-medium);
     color: var(--greese-color-fg);
   }
@@ -24,7 +24,7 @@
   .greese-Field-description,
   .greese-Field-error {
     margin: 0;
-    font-size: var(--greese-type-p3-size);
+    font-size: var(--greese-type-p3-font-size);
     line-height: var(--greese-line-height-snug);
   }
 

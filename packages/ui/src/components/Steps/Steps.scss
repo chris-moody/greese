@@ -37,7 +37,7 @@
     place-items: center;
     inline-size: var(--greese-steps-marker);
     block-size: var(--greese-steps-marker);
-    font-size: var(--greese-type-p3-size);
+    font-size: var(--greese-type-p3-font-size);
     font-weight: var(--greese-font-weight-semibold);
     color: var(--greese-color-fg-muted);
     background-color: var(--greese-color-canvas);
@@ -81,7 +81,7 @@
   }
 
   .greese-Step-title {
-    font-size: var(--greese-type-p3-size);
+    font-size: var(--greese-type-p3-font-size);
     font-weight: var(--greese-font-weight-medium);
   }
 
@@ -92,12 +92,12 @@
   }
 
   .greese-Step-prefix {
-    font-size: var(--greese-type-caption-size);
+    font-size: var(--greese-type-caption-font-size);
     color: var(--greese-color-fg-muted);
   }
 
   .greese-Step-description {
-    font-size: var(--greese-type-p3-size);
+    font-size: var(--greese-type-p3-font-size);
     color: var(--greese-color-fg-muted);
   }
 
@@ -141,7 +141,7 @@
     &:has(> .greese-Step--prefix-before)
       > .greese-Step:not(.greese-Step--prefix-before)::before {
       block-size: 1lh;
-      font-size: var(--greese-type-caption-size);
+      font-size: var(--greese-type-caption-font-size);
       content: '';
     }
 

@@ -2,6 +2,7 @@ import type { ComponentPropsWithRef, JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 import type { BrandTone } from '../../utils/tone.ts'
+import type { ControlSize } from '../Button/Button.tsx'
 
 export type StatusTone =
   'neutral' | BrandTone | 'positive' | 'negative' | 'warning' | 'info'
@@ -21,8 +22,7 @@ export interface StatusProps
   label?: string
   /** A ring that pulses outward, for live states. Still under reduced motion. */
   pulse?: boolean
-  /** Dot diameter: `sm`, `md` or `lg`. @default 'md' */
-  size?: 'sm' | 'md' | 'lg'
+  size?: ControlSize
 }
 
 /**

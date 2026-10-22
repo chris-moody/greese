@@ -28,7 +28,7 @@
     display: inline-flex;
     gap: var(--greese-space-2);
     align-items: flex-start;
-    font-size: var(--greese-type-p2-size);
+    font-size: var(--greese-type-p2-font-size);
     line-height: var(--greese-line-height-snug);
     color: var(--greese-color-fg);
 
@@ -53,7 +53,7 @@
   }
 
   .greese-Checkbox-description {
-    font-size: var(--greese-type-p3-size);
+    font-size: var(--greese-type-p3-font-size);
     color: var(--greese-color-fg-muted);
   }
 
