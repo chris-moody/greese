@@ -15,6 +15,14 @@ module.exports = [
     limit: '21 kB',
   },
   {
+    name: 'CSS: utilities.css (the whole set)',
+    path: 'dist/utilities.css',
+    rolldown: false,
+    // Opt-in, and rarely shipped whole: a project writes only the classes it
+    // uses (`greese-utilities`, ADR 0019).
+    limit: '7.5 kB',
+  },
+  {
     name: 'CSS: base.css',
     path: 'dist/base.css',
     rolldown: false,

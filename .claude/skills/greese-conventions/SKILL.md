@@ -38,6 +38,7 @@ the ADR wins: fix this file in the same change.
 | 0017 motion scopes                  | `greese={{ scope }}`: ordered entrances across depth, lazy chunk          |
 | 0018 one web app                    | the homepage and Theme Studio: one app, two routes, one header            |
 | 0014 framework-agnostic packages    | `@greese/ui` owns the CSS; framework packages render its markup           |
+| 0019 utility classes                | utility classes from `src/utilities.ts`, naming rules, purging              |
 
 ## Workspace
 

@@ -30,8 +30,12 @@
   "sideEffects": [
     "*.css"
   ],
+  "bin": {
+    "greese-utilities": "./bin/greese-utilities.mjs"
+  },
   "files": [
     "LICENSE",
+    "bin",
     "dist",
     "src/styles",
     "src/components/**/*.scss"
@@ -49,6 +53,19 @@
       "types": "./dist/effect-classes.d.ts",
       "default": "./dist/effect-classes.js"
     },
+    "./utilities": {
+      "types": "./dist/utilities.d.ts",
+      "default": "./dist/utilities.js"
+    },
+    "./utilities-files": {
+      "types": "./dist/utilitiesFiles.d.ts",
+      "default": "./dist/utilitiesFiles.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "default": "./dist/vite.js"
+    },
+    "./utilities.css": "./dist/utilities.css",
     "./styles.css": "./dist/greese.css",
     "./base.css": "./dist/base.css",
     "./css/*": "./dist/css/*",
@@ -74,7 +91,7 @@
   },
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
-    "build": "npm run clean && tsc -p tsconfig.build.json && node scripts/build-tokens.ts && node scripts/build-styles.ts",
+    "build": "npm run clean && tsc -p tsconfig.build.json && node scripts/build-tokens.ts && node scripts/build-utilities.ts && node scripts/build-styles.ts",
     "check-types": "tsc --noEmit",
     "lint": "eslint src scripts --max-warnings 0 && stylelint \"src/**/*.scss\" --max-warnings 0",
     "test": "vitest run",

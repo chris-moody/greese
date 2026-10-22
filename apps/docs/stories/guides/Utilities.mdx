@@ -1,0 +1,68 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { UtilityClasses } from '../_shared/UtilityClasses.tsx'
+
+<Meta title="Guides/Utility classes" />
+
+# Utility classes
+
+Low-level, single-purpose classes for markup and for anything a GreeseUI
+component doesn't render: `<div class="display-flex justify-content-between p-4">`.
+They sit in `@layer greese.utilities`, so they beat a component's own styles
+without `!important`, and every value comes from the tokens, so themes and dark
+mode apply to them.
+
+## Names
+
+A class is named for the **property and the value**: `display-flex`,
+`text-align-center`, `flex-direction-column`, `overflow-hidden`. The
+names are the CSS's own, with no prefix; set `prefix` to add one. Component
+classes are all `greese-*`, so they can't collide.
+
+| Pattern                      | Examples                                                                    |
+| ---------------------------- | --------------------------------------------------------------------------- |
+| Spacing, with a side         | `p-4`, `pt-3`, `mx-auto`, `ms-2`, `gap-x-4`                                 |
+| Tokens, by name              | `background-primary`, `color-fg-muted`, `radius-md`, `shadow-lg`, `z-modal` |
+| A breakpoint, then the class | `md-display-flex`, `lg-p-6`: from that breakpoint up, mobile first          |
+| `hover`, then the class      | `hover-opacity-75`, `hover-background-primary`: only where hover exists     |
+
+Spacing sides: `t b l r` are physical; `x` and `y` are the inline and block
+axes; `s` and `e` are inline **s**tart and **e**nd, which follow the writing
+direction (`ms-2` is the margin on the left in English and the right in
+Arabic). The few abbreviations are `m` margin, `p` padding, `w` width, `h`
+height, `z` z-index, and `background` for background-color.
+
+## Ship only what you use
+
+The whole set is about 2,300 classes (7 kB brotli): `@greese/ui/utilities.css`.
+Most projects want only the classes their source spells out, and get them in
+one of three ways, all the same code:
+
+```bash
+# A command: scan the files, write the CSS
+npx greese-utilities --content "index.html" --content "src/**/*.{ts,tsx}" --out public/utilities.css
+```
+
+```ts
+// Vite: served as a virtual module, refreshed when a scanned file changes
+import { greeseUtilities } from '@greese/ui/vite'
+export default {
+  plugins: [greeseUtilities({ content: ['index.html', 'src/**/*.{ts,tsx}'] })],
+}
+// main.tsx: import 'virtual:greese-utilities.css'
+```
+
+```ts
+// The API
+import { purgeUtilities } from '@greese/ui/utilities'
+const css = purgeUtilities({ content: [html, source], safelist: [/^p-[0-3]$/] })
+```
+
+A class counts as used when its name appears anywhere in the content as a whole
+word: in markup, a component, a data file. A class **built from pieces**
+(`` `p-${n}` ``) can't be seen: name it, or add it to `safelist` (strings or
+patterns). Options: `groups` (only these groups), `prefix`, `breakpoints` (the
+build's, when it adds keys).
+
+## All the classes
+
+<UtilityClasses />
