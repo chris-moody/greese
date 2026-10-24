@@ -55,24 +55,37 @@
 
     // Hovered, the card rises 2px: its hit area reaches the 2px below it, so
     // a pointer resting on its lower edge stays over it, instead of the card
-    // rising away, settling back under the pointer and rising again.
+    // rising away, settling back under the pointer and rising again. That
+    // strip is outside the box, so this card doesn't clip its overflow (which
+    // would clip the strip too); CardMedia rounds its own corners instead.
+    overflow: visible;
+
+    // It's measured from the padding box, inside any border, so it reaches
+    // 4px: the 2px rise, with room for an outline's border.
     &::before {
       position: absolute;
-      inset-block: 100% -2px;
+      inset-block: 100% -4px;
       inset-inline: 0;
       content: '';
     }
   }
 
+  // Media clips itself to the card's corners where it bleeds to an edge, so
+  // it fits a card that doesn't clip (an interactive one) as well.
   .greese-CardMedia {
     margin-inline: calc(-1 * var(--greese-card-padding));
+    overflow: hidden;
 
     &:first-child {
       margin-block-start: calc(-1 * var(--greese-card-padding));
+      border-start-start-radius: inherit;
+      border-start-end-radius: inherit;
     }
 
     &:last-child {
       margin-block-end: calc(-1 * var(--greese-card-padding));
+      border-end-start-radius: inherit;
+      border-end-end-radius: inherit;
     }
 
     > :is(img, video, picture) {

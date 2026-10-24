@@ -62,6 +62,14 @@ export const Content = (): JSX.Element => (
         </CardMedia>
         <Text>Card body</Text>
       </Card>
+      <Card asChild interactive data-testid="card-link" style={{ inlineSize: '20rem' }}>
+        <a href="#card">
+          <CardMedia data-testid="card-link-media">
+            <Image alt="" src={pixel} ratio={2} placeholder="#ddd" />
+          </CardMedia>
+          <Text>A card that is a link</Text>
+        </a>
+      </Card>
 
       <Image data-testid="hero" alt="Hero" src={pixel} priority />
       <Skeleton data-testid="skeleton" />

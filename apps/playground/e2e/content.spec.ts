@@ -62,6 +62,33 @@ test('card media bleeds through the padding to the inside of the border', async 
   expect(media.y).toBeCloseTo(card.y + border, 0)
 })
 
+test('an interactive card stays risen under a pointer on its lower edge; media keeps its corners', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'hover is for fine pointers')
+  const card = page.getByTestId('card-link')
+  await card.scrollIntoViewIfNeeded()
+  const box = (await card.boundingBox())!
+  // The bottom 1px: once the card has risen 2px, the pointer is below its box.
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height - 1)
+  await expect.poll(() => style(card, 'translate')).toBe('0px -2px')
+  await page.waitForTimeout(400)
+  // Risen, the pointer is below the card's box: the strip under the card must
+  // still be what's there, or a browser that re-checks hover would let the
+  // card settle back under the pointer, rise again, and so on.
+  const hit = await page.evaluate(
+    ([x, y]) => !!document.elementFromPoint(x!, y!)?.closest('[data-testid="card-link"]'),
+    [box.x + box.width / 2, box.y + box.height - 1]
+  )
+  expect(hit).toBe(true)
+  const media = page.getByTestId('card-link-media')
+  expect(await style(media, 'border-top-left-radius')).toBe(
+    await style(card, 'border-top-left-radius')
+  )
+  expect(await style(media, 'overflow')).toBe('hidden')
+})
+
 test('priority images load eagerly at high priority', async ({ page }) => {
   const img = page.getByRole('img', { name: 'Hero' })
   await expect(img).toHaveAttribute('loading', 'eager')
