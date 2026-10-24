@@ -39,6 +39,28 @@ describe('icons', () => {
     expect(svg.getAttribute('fill')).toBe('currentColor')
   })
 
+  it('can be drawn on another grid, or solid', () => {
+    const { container } = render(
+      <>
+        <icons.GithubIcon />
+        <icons.StarFilledIcon />
+      </>
+    )
+    const [line, solid] = [...container.querySelectorAll('svg')]
+    expect(line!.getAttribute('viewBox')).toBe('0 0 24 24')
+    expect(line!.getAttribute('stroke-width')).toBe('1.8')
+    expect(solid!.getAttribute('fill')).toBe('currentColor')
+    expect(solid!.getAttribute('stroke')).toBe('none')
+    expect(solid!.getAttribute('stroke-width')).toBeNull()
+  })
+
+  it('keep the paths of a two-part icon in order, for CSS that lights one', () => {
+    const { container } = render(<icons.SortIcon />)
+    expect(
+      [...container.querySelectorAll('path')].map((p) => p.getAttribute('d'))
+    ).toEqual(['M5 6.5L8 3.5l3 3', 'M5 9.5l3 3 3-3'])
+  })
+
   it('have readable names, for devtools', () => {
     expect(createIcon('Kite', 'M0 0').displayName).toBe('KiteIcon')
     for (const [name, value] of Object.entries(icons))

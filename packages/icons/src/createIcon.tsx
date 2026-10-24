@@ -8,37 +8,53 @@ export interface IconProps extends Omit<SVGProps<SVGSVGElement>, 'children'> {
   title?: string
   /** Width and height: any CSS length, or a number of pixels. @default '1em' */
   size?: number | string
-  /** Line width, in units of the 16 × 16 drawing. @default 1.75 */
+  /** Line width, in units of the drawing (16 × 16 unless it says otherwise). @default 1.75 */
   strokeWidth?: number | string
+}
+
+export interface IconOptions {
+  /** The drawing's width and height in its own units. @default 16 */
+  viewBox?: number
+  /** The line width the icon is drawn for, in those units. @default 1.75 */
+  strokeWidth?: number
+  /** A solid shape, filled with `currentColor`, not a line drawing. */
+  filled?: boolean
 }
 
 export type IconComponent = ((props: IconProps) => JSX.Element) & { displayName: string }
 
 /**
- * Makes an icon component from 16 × 16 line art: one path's `d`, or several
- * separated by `|`. The icon is stroked in `currentColor` and sized to the
- * text around it (1em), so it fits buttons and text with no extra CSS.
+ * Makes an icon component from line art: one path's `d`, or several separated
+ * by `|`, drawn on a 16 × 16 grid (`options.viewBox` for another). The icon is
+ * stroked in `currentColor` and sized to the text around it (1em), so it fits
+ * buttons and text with no extra CSS. Rectangles and circles are paths too:
+ * write them as arcs. When an icon's paths are styled apart (a sort arrow
+ * lights one of two), they are its `path` elements in order.
  *
  * ```tsx
  * export const KiteIcon = createIcon('Kite', 'M8 1l5 6-5 8-5-8z')
  * ```
  */
-export const createIcon = (name: string, d: string): IconComponent => {
+export const createIcon = (
+  name: string,
+  d: string,
+  { viewBox = 16, strokeWidth: drawn = 1.75, filled = false }: IconOptions = {}
+): IconComponent => {
   const paths = d.split('|')
   const Icon = ({
     title,
     size = '1em',
-    strokeWidth = 1.75,
+    strokeWidth = drawn,
     style,
     ...props
   }: IconProps) => (
     <svg
-      viewBox="0 0 16 16"
+      viewBox={`0 0 ${viewBox} ${viewBox}`}
       width={size}
       height={size}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
+      fill={filled ? 'currentColor' : 'none'}
+      stroke={filled ? 'none' : 'currentColor'}
+      strokeWidth={filled ? undefined : strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
       focusable="false"
