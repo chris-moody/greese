@@ -265,6 +265,62 @@ describe('Collapsible and Accordion', () => {
     expect(two.open).toBe(true)
     expect(screen.getByText('Free').closest('details')).not.toHaveAttribute('name')
   })
+
+  it('turns one icon by default, the library chevron unless given another', () => {
+    const { container } = render(
+      <>
+        <Collapsible title="Default">x</Collapsible>
+        <Collapsible title="Own" icon={<i data-testid="plus" />}>
+          x
+        </Collapsible>
+        <Collapsible title="None" icon={null}>
+          x
+        </Collapsible>
+      </>
+    )
+    const icons = container.querySelectorAll('.greese-Collapsible-icon')
+    expect(icons).toHaveLength(2)
+    expect(icons[0]).toHaveClass('greese-Collapsible-icon--rotate')
+    expect(icons[0]!.querySelector('.greese-Collapsible-chevron')).not.toBeNull()
+    expect(icons[1]).toContainElement(screen.getByTestId('plus'))
+    expect(icons[0]).toHaveAttribute('aria-hidden', 'true')
+  })
+
+  it('swaps an icon per state, crossfading unless told how', () => {
+    const { container } = render(
+      <>
+        <Collapsible title="A" icon="+" openIcon="−">
+          x
+        </Collapsible>
+        <Collapsible title="B" icon="+" openIcon="−" iconTransition="none">
+          x
+        </Collapsible>
+      </>
+    )
+    const [fade, none] = container.querySelectorAll('.greese-Collapsible-icon')
+    expect(fade).toHaveClass('greese-Collapsible-icon--fade')
+    expect(fade!.querySelector('.greese-Collapsible-closedIcon')).toHaveTextContent('+')
+    expect(fade!.querySelector('.greese-Collapsible-openIcon')).toHaveTextContent('−')
+    expect(none).toHaveClass('greese-Collapsible-icon--none')
+  })
+
+  it('gives every item of an accordion its icons, and lets an item keep its own', () => {
+    const { container } = render(
+      <Accordion icon="+" openIcon="−">
+        <AccordionItem title="One">1</AccordionItem>
+        <AccordionItem title="Two" icon="▸" openIcon={null} iconTransition="rotate">
+          2
+        </AccordionItem>
+      </Accordion>
+    )
+    const [one, two] = container.querySelectorAll('.greese-Collapsible-icon')
+    expect(one).toHaveClass('greese-Collapsible-icon--fade')
+    expect(one).toHaveTextContent('+−')
+    // An item's own `null` is no open icon: one icon, turning.
+    expect(two).toHaveClass('greese-Collapsible-icon--rotate')
+    expect(two!.querySelector('.greese-Collapsible-closedIcon')).toHaveTextContent('▸')
+    expect(two!.querySelector('.greese-Collapsible-openIcon')).toBeNull()
+  })
 })
 
 describe('Tabs', () => {

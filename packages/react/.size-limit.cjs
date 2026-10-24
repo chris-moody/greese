@@ -44,7 +44,8 @@ module.exports = [
     // more entrance names CSS can play (28352 B).
     // 28.4 kB → 28.45 kB (2026-10-24): the three-dimensional effects (ADR 0025
     // addendum): ten more names of what CSS plays (28.41 kB after a fresh build).
-    limit: '28.45 kB',
+    // 28.45 kB → 28.8 kB (2026-10-24): Header, Footer and FooterSection, and Accordion and Collapsible icons per state (28.76 kB).
+    limit: '28.8 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -62,7 +63,8 @@ module.exports = [
     // kB).
     // 33.25 kB → 33.3 kB (2026-10-23): irises in eight directions, as above (33.26 kB).
     // 33.3 kB → 33.35 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (33309 B).
-    limit: '33.35 kB',
+    // 33.35 kB → 33.8 kB (2026-10-24): the same, with greese.js (33.79 kB).
+    limit: '33.8 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -428,6 +430,7 @@ module.exports = [
     // page scrolls, since a shape's clip-path keeps IntersectionObserver's ratio
     // under 1 (ADR 0025; 9.86 kB).
     // 9.9 kB → 10.25 kB (2026-10-24): the 16 three-dimensional effects (ADR 0025 addendum, 2026-10-24): their definitions (10237 B).
-    limit: '10.25 kB',
+    // 10.25 kB → 10.35 kB (2026-10-24): a hover lasts while the pointer is over where the element rests, so a lift doesn't bounce under a still pointer (10.33 kB).
+    limit: '10.35 kB',
   },
 ]

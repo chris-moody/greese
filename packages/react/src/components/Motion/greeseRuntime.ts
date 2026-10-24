@@ -331,35 +331,68 @@ const startEntrance = ({ el, o, reduce, cleanups }: Setup, entrance: Timeline) =
 
 /** Hover, press and focus: a short paused timeline each, played and reversed. */
 const attachInteractions = ({ el, o, ctx, cleanups }: Setup) => {
-  const interaction = (
-    value: GreeseMotion | undefined,
-    on: string[],
-    off: string[],
-    accept: (e: Event) => boolean = () => true
-  ) => {
-    if (!value) return
+  /** A short paused timeline of `value` on the element itself, never staggered children. */
+  const build = (value: GreeseMotion) => {
     const tl = timeline({ paused: true })
-    // Interactions move the element itself, never staggered children.
     addMotion(tl, [el], value, ctx, {
       duration: 0.2,
       ease: 'out',
       options: { ...o, stagger: undefined },
     })
+    cleanups.push(() => tl.kill())
+    return tl
+  }
+  const interaction = (value: GreeseMotion | undefined, on: string[], off: string[]) => {
+    if (!value) return
+    const tl = build(value)
     cleanups.push(
-      listen(el, on, (e) => {
-        if (accept(e)) tl.play()
-      }),
-      listen(el, off, () => tl.reverse()),
-      () => tl.kill()
+      listen(el, on, () => tl.play()),
+      listen(el, off, () => tl.reverse())
     )
   }
-  // Hover is for fine pointers: a tap would leave it stuck on touch screens.
-  interaction(
-    o.hover,
-    ['pointerenter'],
-    ['pointerleave'],
-    (e) => (e as PointerEvent).pointerType !== 'touch'
-  )
+  if (o.hover) {
+    // Hover is for fine pointers: a tap would leave it stuck on touch screens.
+    // An effect that moves the element (`rise`, `tilt`) can move it out from
+    // under a still pointer, which would leave, settle back under it and enter
+    // again, over and over. So hover lasts while the pointer is over where the
+    // element rests, not where it has moved to.
+    const tl = build(o.hover)
+    let rest: DOMRect | undefined
+    // A box with no area (nothing laid out) has nothing under the pointer.
+    const over = (e: PointerEvent) =>
+      !!rest &&
+      rest.width * rest.height > 0 &&
+      e.clientX >= rest.left &&
+      e.clientX <= rest.right &&
+      e.clientY >= rest.top &&
+      e.clientY <= rest.bottom
+    const watch = (on: boolean) => {
+      ;(on ? addEventListener : removeEventListener)('pointermove', onMove)
+      ;(on ? addEventListener : removeEventListener)('scroll', leave, true)
+    }
+    const leave = () => {
+      watch(false)
+      rest = undefined
+      tl.reverse()
+    }
+    const onMove = (e: PointerEvent) => {
+      if (!over(e)) leave()
+    }
+    cleanups.push(
+      listen(el, ['pointerenter'], (e) => {
+        if ((e as PointerEvent).pointerType === 'touch') return
+        watch(false)
+        // Measured at rest: mid-way back, the last resting box still holds.
+        if (tl.progress() === 0 || !rest) rest = el.getBoundingClientRect()
+        tl.play()
+      }),
+      listen(el, ['pointerleave'], (e) => {
+        if (over(e as PointerEvent)) watch(true)
+        else leave()
+      }),
+      () => watch(false)
+    )
+  }
   interaction(o.press, ['pointerdown'], ['pointerup', 'pointercancel', 'pointerleave'])
   interaction(o.focus, ['focusin'], ['focusout'])
 }

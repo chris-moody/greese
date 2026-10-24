@@ -1,10 +1,28 @@
 'use client'
-import { createContext, use, useId, type ComponentPropsWithRef, type JSX } from 'react'
+import {
+  createContext,
+  use,
+  useId,
+  type ComponentPropsWithRef,
+  type JSX,
+  type ReactNode,
+} from 'react'
 import { cx } from '../../utils/cx.ts'
-import { Collapsible, type CollapsibleProps } from '../Collapsible/Collapsible.tsx'
+import {
+  Collapsible,
+  type CollapsibleIconTransition,
+  type CollapsibleProps,
+} from '../Collapsible/Collapsible.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-const AccordionContext = createContext<string | undefined>(undefined)
+interface AccordionDefaults {
+  name?: string
+  icon?: ReactNode
+  openIcon?: ReactNode
+  iconTransition?: CollapsibleIconTransition
+}
+
+const AccordionContext = createContext<AccordionDefaults>({})
 
 export interface AccordionProps extends GreeseProps, ComponentPropsWithRef<'div'> {
   /**
@@ -12,6 +30,12 @@ export interface AccordionProps extends GreeseProps, ComponentPropsWithRef<'div'
    * so the browser closes the others. No JS involved. @default false
    */
   exclusive?: boolean
+  /** Every item's icon, closed (or both states without `openIcon`); an item's own wins. @default a downward chevron */
+  icon?: ReactNode
+  /** Every item's open-state icon; an item's own wins. */
+  openIcon?: ReactNode
+  /** How every item's icon changes state; an item's own wins. @default 'rotate', or 'fade' with an `openIcon` */
+  iconTransition?: CollapsibleIconTransition
 }
 
 /**
@@ -19,7 +43,7 @@ export interface AccordionProps extends GreeseProps, ComponentPropsWithRef<'div'
  * `<details>`, so keyboard, screen-reader and find-in-page support is built in.
  *
  * ```tsx
- * <Accordion exclusive>
+ * <Accordion exclusive icon={<PlusIcon />} openIcon={<MinusIcon />}>
  *   <AccordionItem title="Shipping">…</AccordionItem>
  *   <AccordionItem title="Returns">…</AccordionItem>
  * </Accordion>
@@ -28,12 +52,15 @@ export interface AccordionProps extends GreeseProps, ComponentPropsWithRef<'div'
 export const Accordion = ({
   greese,
   exclusive,
+  icon,
+  openIcon,
+  iconTransition,
   className,
   ...props
 }: AccordionProps): JSX.Element => {
   const name = useId()
   return withGreese(
-    <AccordionContext value={exclusive ? name : undefined}>
+    <AccordionContext value={{ name: exclusive ? name : undefined, icon, openIcon, iconTransition }}>
       <div {...props} className={cx('greese-Accordion', className)} />
     </AccordionContext>,
     greese
@@ -47,13 +74,19 @@ export const AccordionItem = ({
   greese,
   className,
   name,
+  icon,
+  openIcon,
+  iconTransition,
   ...props
 }: AccordionItemProps): JSX.Element => {
-  const groupName = use(AccordionContext)
+  const group = use(AccordionContext)
   return withGreese(
     <Collapsible
       {...props}
-      name={name ?? groupName}
+      name={name ?? group.name}
+      icon={icon !== undefined ? icon : group.icon}
+      openIcon={openIcon !== undefined ? openIcon : group.openIcon}
+      iconTransition={iconTransition ?? group.iconTransition}
       className={cx('greese-AccordionItem', className)}
     />,
     greese

@@ -19,12 +19,59 @@ export interface CollapsibleProps
    * a time (native, no JS). Accordion sets it for you.
    */
   name?: string
+  /**
+   * The icon beside the title: the closed state's, or both states' when there
+   * is no `openIcon`. `null` shows none. @default a downward chevron
+   */
+  icon?: ReactNode
+  /** The open state's icon. With one, the two icons swap as it opens and closes. */
+  openIcon?: ReactNode
+  /**
+   * How the icon changes state: `rotate` turns it (by
+   * `--greese-collapsible-icon-turn`, 180deg), `fade` crossfades the closed
+   * and open icons, `none` switches at once. Under reduced motion every one
+   * switches at once.
+   * @default 'rotate' with one icon, 'fade' with an `openIcon`
+   */
+  iconTransition?: CollapsibleIconTransition
+}
+
+export type CollapsibleIconTransition = 'rotate' | 'fade' | 'none'
+
+/** The icon in a summary: one that turns, or a closed and an open one stacked. */
+const CollapsibleIcon = ({
+  icon,
+  openIcon,
+  transition,
+}: {
+  icon?: ReactNode
+  openIcon?: ReactNode
+  transition?: CollapsibleIconTransition
+}): JSX.Element | null => {
+  const closed =
+    icon === undefined ? <ChevronDownIcon className="greese-Collapsible-chevron" /> : icon
+  if (closed === null && openIcon == null) return null
+  const mode = transition ?? (openIcon == null ? 'rotate' : 'fade')
+  return (
+    <span
+      className={cx('greese-Collapsible-icon', `greese-Collapsible-icon--${mode}`)}
+      aria-hidden="true"
+    >
+      <span className="greese-Collapsible-closedIcon">{closed}</span>
+      {openIcon != null && <span className="greese-Collapsible-openIcon">{openIcon}</span>}
+    </span>
+  )
 }
 
 /**
  * Show/hide content behind a summary, on native `<details>`/`<summary>`:
  * keyboard, screen readers and find-in-page work without JavaScript, and the
- * content animates open where the browser supports it.
+ * content animates open where the browser supports it. The icon is yours to
+ * change: one that turns, or one per state that crossfades.
+ *
+ * ```tsx
+ * <Collapsible title="Details" icon={<PlusIcon />} openIcon={<MinusIcon />}>…</Collapsible>
+ * ```
  */
 export const Collapsible = ({
   greese,
@@ -32,6 +79,9 @@ export const Collapsible = ({
   defaultOpen,
   open,
   onOpenChange,
+  icon,
+  openIcon,
+  iconTransition,
   className,
   children,
   ...props
@@ -48,7 +98,7 @@ export const Collapsible = ({
     >
       <summary className="greese-Collapsible-trigger">
         <span className="greese-Collapsible-title">{title}</span>
-        <ChevronDownIcon className="greese-Collapsible-chevron" />
+        <CollapsibleIcon icon={icon} openIcon={openIcon} transition={iconTransition} />
       </summary>
       <div className="greese-Collapsible-content">{children}</div>
     </details>,
