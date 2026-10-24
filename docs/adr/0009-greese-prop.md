@@ -195,7 +195,7 @@ or directly.
 
 The built-in effects were once written out in the runtime, Motion.scss, the SCSS
 kit, the React name types and Theme Studio, kept in step by tests, and had
-drifted. They are defined once, in `packages/ui/src/effects.ts`, with no `kind`
+drifted. They are defined once, in `packages/ui/src/effects/definitions.ts` (one module of `effects.ts`), with no `kind`
 field:
 
 - **Base effects** animate one property and take optional parameters (`start`,

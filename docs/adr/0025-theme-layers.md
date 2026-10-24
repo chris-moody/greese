@@ -134,7 +134,7 @@ reassign"). Bevel and Ridge also turn knobs, thumbs and radios a quarter, to
 diamonds, and give avatars and status dots a diamond shape. Spinners, radial
 progress and the loading ring stay round, because they turn or draw arcs.
 
-**Wipes and pockets are built-in effects** (ADR 0008's set, `src/effects.ts`):
+**Wipes and pockets are built-in effects** (ADR 0008's set, `src/effects/definitions.ts`):
 
 - `wipeRight`, `wipeLeft`, `wipeUp` and `wipeDown`;
 - `wipeOpenX` and `wipeOpenY`, from the middle;
