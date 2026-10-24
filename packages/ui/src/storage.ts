@@ -135,6 +135,8 @@ export const createStoredValue = <T>(
       listeners.set(id, set)
       // Another tab's write (the event never fires in the tab that wrote).
       const onStorage = (event: StorageEvent) => {
+        // The other area's writes (session vs local) aren't this value's.
+        if (event.storageArea && event.storageArea !== storageOf(area)) return
         if (event.key === key || event.key === null) listener()
       }
       globalThis.addEventListener?.('storage', onStorage)

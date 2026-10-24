@@ -53,9 +53,18 @@ describe('createStoredValue', () => {
     expect(b.get()).toBe(5)
     window.dispatchEvent(new StorageEvent('storage', { key: 't-shared' }))
     expect(heard).toHaveBeenCalledTimes(2)
+    // The same key in the other area is another value.
+    window.dispatchEvent(
+      new StorageEvent('storage', { key: 't-shared', storageArea: sessionStorage })
+    )
+    expect(heard).toHaveBeenCalledTimes(2)
+    window.dispatchEvent(
+      new StorageEvent('storage', { key: 't-shared', storageArea: localStorage })
+    )
+    expect(heard).toHaveBeenCalledTimes(3)
     stop()
     a.set(6)
-    expect(heard).toHaveBeenCalledTimes(2)
+    expect(heard).toHaveBeenCalledTimes(3)
   })
 
   it('keeps working in memory when storage refuses', () => {
