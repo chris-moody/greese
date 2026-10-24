@@ -9,6 +9,10 @@
  * Every component entry includes the `greese` prop's static part (resolver
  * and client island, about 0.75 kB, shared once by all components): budgets
  * rose by that much in ADR 0009.
+ *
+ * Sizes noted below before 2026-10-24's last entries were measured while the
+ * lazy chunks' external paths were in the bundle (see `external`): they
+ * include about 30 B of path that depended on the machine.
  */
 const { dirname, resolve } = require('node:path')
 
