@@ -10,6 +10,7 @@ import {
 } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
+import { listTarget } from '../../utils/listTarget.ts'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 interface TabsContextValue {
@@ -130,12 +131,8 @@ export const TabList = ({
           ? ['ArrowRight', 'ArrowLeft']
           : ['ArrowLeft', 'ArrowRight']
 
-    let target: number
-    if (event.key === next) target = (current + 1) % tabs.length
-    else if (event.key === prev) target = (current - 1 + tabs.length) % tabs.length
-    else if (event.key === 'Home') target = 0
-    else if (event.key === 'End') target = tabs.length - 1
-    else return
+    const target = listTarget(event.key, current, tabs.length, { prev, next })
+    if (target === undefined) return
 
     event.preventDefault()
     const tab = tabs[target]!

@@ -15,6 +15,7 @@ import {
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { useAnchoredPopover, type Placement } from '../../utils/anchor.ts'
 import { cx } from '../../utils/cx.ts'
+import { listTarget } from '../../utils/listTarget.ts'
 import { ChevronLeftIcon } from '@greese/icons'
 import { Field } from '../Field/Field.tsx'
 import { Input, type InputProps } from '../Input/Input.tsx'
@@ -184,18 +185,12 @@ export const Combobox = ({
     setOpen(false)
   }
 
-  const move = (direction: 1 | -1) => {
-    if (!enabledIndexes.length) return
-    const at = enabledIndexes.indexOf(active)
-    const next =
-      at === -1
-        ? direction === 1
-          ? enabledIndexes[0]!
-          : enabledIndexes.at(-1)!
-        : enabledIndexes[
-            (at + direction + enabledIndexes.length) % enabledIndexes.length
-          ]!
-    setActive(next)
+  // Through the options that can be chosen; Home and End stay the field's.
+  const move = (key: string) => {
+    const at = listTarget(key, enabledIndexes.indexOf(active), enabledIndexes.length, {
+      edges: false,
+    })
+    if (at !== undefined) setActive(enabledIndexes[at]!)
   }
 
   const selectedIndex = options.findIndex((o) => o.value === value)
@@ -246,12 +241,12 @@ export const Combobox = ({
                   event.altKey ? -1 : Math.max(selectedIndex, enabledIndexes[0] ?? -1),
                   false
                 )
-              else move(1)
+              else move(event.key)
               break
             case 'ArrowUp':
               event.preventDefault()
               if (!open) openWith(enabledIndexes.at(-1) ?? -1, false)
-              else move(-1)
+              else move(event.key)
               break
             case 'Enter':
               if (open && active >= 0 && visible[active]) {

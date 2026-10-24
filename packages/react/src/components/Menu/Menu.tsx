@@ -15,6 +15,7 @@ import {
 } from 'react'
 import { useAnchoredPopover, type Placement } from '../../utils/anchor.ts'
 import { cx } from '../../utils/cx.ts'
+import { listTarget } from '../../utils/listTarget.ts'
 import { composeRefs, Slot } from '../Slot/Slot.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 import type { BrandTone } from '../../utils/tone.ts'
@@ -85,12 +86,9 @@ export const Menu = ({
     if (event.defaultPrevented) return
     const list = items(event.currentTarget)
     const at = list.indexOf(document.activeElement as HTMLElement)
-    const focus = (i: number) => list[(i + list.length) % list.length]?.focus()
+    const target = listTarget(event.key, at, list.length)
 
-    if (event.key === 'ArrowDown') focus(at + 1)
-    else if (event.key === 'ArrowUp') focus(at - 1)
-    else if (event.key === 'Home') focus(0)
-    else if (event.key === 'End') focus(list.length - 1)
+    if (target !== undefined) list[target]?.focus()
     else if (event.key === 'Tab') return close()
     else if (event.key.length === 1 && /\S/.test(event.key)) {
       // Type-ahead: next item starting with the typed character.
