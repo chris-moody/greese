@@ -38,7 +38,6 @@ export type GreeseEffectName = BuiltInEffect | Extract<keyof GreeseEffectRegistr
 export type GreeseSequence =
   `${string},${string}` | `${string}+${string}` | `${string}(${string})`
 
-/** What a motion option plays: an effect, a sequence of effects, or greese.js keyframes. */
 /**
  * An effect, a sequence, keyframes, or `'theme'`: whatever entrance the theme
  * assigns (`--greese-motion-theme`; `fadeUp` in the base theme). A named
