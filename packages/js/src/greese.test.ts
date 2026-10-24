@@ -412,6 +412,16 @@ describe('repeats, labels and restoring', () => {
     expect(el.style.color).toBe('red')
   })
 
+  it('two timelines on one element, killed newest first, leave it as it was', () => {
+    const el = document.createElement('div')
+    document.body.append(el)
+    const first = timeline({ paused: true }).to(el, { opacity: 0.5, duration: 1 }).seek(1)
+    const second = timeline({ paused: true }).to(el, { opacity: 0, duration: 1 }).seek(1)
+    second.kill()
+    first.kill()
+    expect(el.style.opacity).toBe('')
+  })
+
   it('invalidate() reads transforms set since, instead of writing old ones back', () => {
     const el = document.createElement('div')
     document.body.append(el)

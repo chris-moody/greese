@@ -97,7 +97,8 @@ const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
   }
   const rememberStyle = (property: string) =>
     keep(property, () => el.style.getPropertyValue(property))
-  const rememberAttribute = (name: string) => keep(`@${name}`, () => el.getAttribute(name))
+  const rememberAttribute = (name: string) =>
+    keep(`@${name}`, () => el.getAttribute(name))
 
   const transformParts = (property: string): string[] => {
     if (!parts[property]) {
@@ -176,19 +177,21 @@ const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
     },
     restore(prop, base) {
       const t = TRANSFORM[prop]
-      const style = t ? t[0] : prop.startsWith('--') ? prop : kebab(prop)
       const attribute = `@${prop}`
-      if (before.has(style)) {
-        styles.set(style, before.get(style)!)
-        dirty.delete(style)
-        delete parts[style]
-        before.delete(style)
-      } else if (before.has(attribute)) {
+      if (before.has(attribute)) {
         const value = before.get(attribute)
         if (value == null) el.removeAttribute(prop)
         else el.setAttribute(prop, value)
         before.delete(attribute)
-      } else this.set(prop, base) // text, and an element's own number properties
+      } else if (t || prop.startsWith('--') || prop in el.style) {
+        const style = t ? t[0] : prop.startsWith('--') ? prop : kebab(prop)
+        // Nothing kept: another timeline on this element restored it first.
+        if (!before.has(style)) return
+        styles.set(style, before.get(style)!)
+        dirty.delete(style)
+        delete parts[style]
+        before.delete(style)
+      } else if (!isAttr(prop)) this.set(prop, base) // text, or a number property
     },
     refresh() {
       for (const property in parts) delete parts[property]

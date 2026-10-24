@@ -564,9 +564,9 @@ describe('useGreese', () => {
     const li = list.querySelector('li')!
     expect(parseFloat(li.style.scale)).toBe(1.5)
     unmount()
-    // greese.js restores the computed originals, not the empty inline styles.
-    expect(parseFloat(li.style.scale)).toBe(1)
-    expect(li.style.opacity).toBe('1')
+    // The inline styles it added are gone, so the list's own CSS applies.
+    expect(li.style.scale).toBe('')
+    expect(li.style.opacity).toBe('')
   })
 
   it('re-runs on dependency changes, pausing or reverting the last build', async () => {
