@@ -1,3 +1,4 @@
+'use client'
 import type { ComponentPropsWithoutRef, JSX, MouseEvent, ReactNode, Ref } from 'react'
 import { cx } from '../../utils/cx.ts'
 import {
