@@ -2,21 +2,9 @@ import { createContext, use } from 'react'
 import type { RenderedColors } from './studio/protocol.ts'
 import type { ThemeSpec } from './studio/spec.ts'
 
-/** What the studio page offers the header, which shows its Save and Import controls. */
-export interface StudioActions {
-  dirty: boolean
-  saving: boolean
-  /** Save is possible: there are changes and the theme compiles. */
-  canSave: boolean
-  /** `Saved <files>`, once the last save is all there is. */
-  savedNote?: string
-  save: () => void
-}
-
 /**
  * State the header and both pages share: the theme being chosen (the
- * homepage wears it, the studio edits it), the motion replay counter, and, on
- * the studio page, what its header controls need.
+ * homepage wears it, the studio edits it) and the motion replay counter.
  */
 export interface Shell {
   spec: ThemeSpec
@@ -27,10 +15,6 @@ export interface Shell {
   /** Bumped by "Replay motion": pages remount their animated content. */
   replay: number
   replayMotion: () => void
-  inspect: boolean
-  setInspect: (on: boolean) => void
-  studio: StudioActions | null
-  setStudio: (actions: StudioActions | null) => void
 }
 
 export const ShellContext = createContext<Shell | null>(null)

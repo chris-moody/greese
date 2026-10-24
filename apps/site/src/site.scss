@@ -5,10 +5,6 @@
  * wins over the library's @layer greese.* rules without !important.
  */
 
-:root {
-  scroll-padding-block-start: 5rem;
-}
-
 /* 320px is the narrowest width WCAG reflow (1.4.10) asks pages to work at;
    below it the page scrolls sideways instead of squeezing further. */
 body {
@@ -44,8 +40,238 @@ body {
   inset-block-start: var(--greese-space-3);
 }
 
-.site-nav {
-  min-block-size: 3.5rem;
+/* The phones' menu: the whole screen, each page a header (a link) over its
+   sections, larger than the links under it. */
+.site-menu.greese-Drawer {
+  inline-size: 100vw;
+  max-inline-size: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.site-menu-nav .greese-Collapsible-title {
+  font-size: var(--greese-type-h5-font-size);
+
+  > a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  > a[aria-current] {
+    color: var(--greese-color-primary);
+  }
+}
+
+/* On phones the navigation slot holds nothing visible (the menu has the
+   links), so its gaps are the controls' gap, and the Studio's bar fits 320px. */
+@media (width < 900px) {
+  .site-nav > .greese-Header-inner {
+    column-gap: var(--greese-space-1);
+  }
+}
+
+/* From md: the wordmark, a link home, and its arrow, which opens the
+   homepage's sections. */
+.site-home {
+  display: inline-flex;
+  gap: var(--greese-space-1);
+  align-items: center;
+}
+
+.site-home-menu {
+  min-inline-size: 12rem;
+  padding: var(--greese-space-2);
+}
+
+.site-home-menu .site-menu-links > a {
+  font-size: var(--greese-type-p2-font-size);
+}
+
+/* The scheme select on phones: an icon button's size, the select's own text
+   and chevron hidden under the scheme's icon. Colored as the wide header's
+   segmented control: its track, and the chosen segment's fill and edge
+   around the icon. */
+.site-scheme-select {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+
+  .greese-Select {
+    inline-size: 2rem;
+    background-color: var(--greese-color-surface);
+    border-color: var(--greese-color-border);
+    border-radius: var(--greese-corner-control);
+  }
+
+  .greese-Select-control {
+    padding: 0;
+    color: transparent;
+    cursor: pointer;
+  }
+
+  .greese-Select-chevron {
+    display: none;
+  }
+
+  > .greese-Icon {
+    position: absolute;
+    inset: 3px;
+    display: grid;
+    place-items: center;
+    color: var(--greese-color-fg);
+    pointer-events: none;
+    background-color: var(
+      --greese-segment-current-bg,
+      var(--greese-color-surface-overlay)
+    );
+    border-radius: calc(var(--greese-corner-control) - 3px);
+    box-shadow: var(--greese-segment-current-edge, var(--greese-shadow-sm));
+  }
+}
+
+/* Search from md: a button dressed as a short field. */
+.site-search-box {
+  display: inline-flex;
+  gap: var(--greese-space-2);
+  align-items: center;
+  min-inline-size: 7rem;
+  min-block-size: 2rem;
+  padding-inline: var(--greese-space-2) var(--greese-space-1);
+  font: inherit;
+  font-size: var(--greese-type-p2-font-size);
+  color: var(--greese-color-fg-muted);
+  cursor: pointer;
+  background-color: var(--greese-color-canvas);
+  border: 1px solid var(--greese-color-border-strong);
+  border-radius: var(--greese-corner-field);
+  transition: border-color var(--greese-duration-fast) var(--greese-easing-standard);
+
+  &:hover {
+    border-color: var(--greese-color-fg-muted);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--greese-color-focus-ring);
+    outline-offset: 1px;
+  }
+
+  .site-search-box-text {
+    flex: 1;
+    text-align: start;
+  }
+
+  // The shortcut once the header has room for it beside the homepage's links.
+  .greese-Key {
+    display: none;
+
+    @include greese.up(xl) {
+      display: inline-flex;
+    }
+  }
+
+  @include greese.up(xl) {
+    min-inline-size: 11rem;
+  }
+}
+
+/* The search dialog: the field stays put over results that scroll. Phones
+   get the whole screen, room for the keyboard and a long list. */
+.site-search.greese-Dialog {
+  --greese-dialog-width: 40rem;
+
+  block-size: min(36rem, 100dvh - 2 * var(--greese-space-4));
+  padding: var(--greese-space-4);
+
+  .greese-Dialog-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--greese-space-2);
+    overflow: hidden;
+  }
+
+  @include greese.down(md) {
+    inline-size: 100vw;
+    block-size: 100dvh;
+    max-block-size: none;
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+.site-search-results {
+  flex: 1;
+  min-block-size: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.site-search-group {
+  padding: var(--greese-space-3) var(--greese-space-2) var(--greese-space-1);
+}
+
+.site-search-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-block-size: 44px;
+  justify-content: center;
+  padding: var(--greese-space-2) var(--greese-space-3);
+  color: var(--greese-color-fg);
+  text-decoration: none;
+  border-radius: var(--greese-corner-panel);
+  scroll-margin-block: var(--greese-space-6) var(--greese-space-2);
+
+  mark {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.15em;
+    background: none;
+  }
+
+  &[aria-selected='true'] {
+    color: var(--greese-color-primary-content);
+    background-color: var(--greese-color-primary);
+
+    .site-search-option-hint {
+      color: inherit;
+    }
+  }
+}
+
+.site-search-option-title {
+  font-weight: var(--greese-font-weight-medium);
+}
+
+.site-search-option-hint {
+  overflow: hidden;
+  font-size: var(--greese-type-p3-font-size);
+  color: var(--greese-color-fg-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.site-search-empty:empty {
+  display: none;
+}
+
+.site-search-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--greese-space-4);
+  font-size: var(--greese-type-p3-font-size);
+  color: var(--greese-color-fg-muted);
+
+  > span {
+    display: inline-flex;
+    gap: var(--greese-space-1);
+    align-items: center;
+  }
+
+  // Phones have no arrow keys to show.
+  @media (pointer: coarse) {
+    display: none;
+  }
 }
 
 /* The header's links are pills: tinted when hovered, and the section the
@@ -74,6 +300,13 @@ body {
   }
 }
 
+/* The homepage's sections in the row from lg; below, the wordmark's menu. */
+.site-nav-section {
+  @include greese.down(lg) {
+    display: none;
+  }
+}
+
 .site-nav-links,
 .site-menu-links {
   [aria-current] {
@@ -89,9 +322,14 @@ body {
   display: block;
   padding: var(--greese-space-3) var(--greese-space-2);
   margin-inline: calc(-1 * var(--greese-space-2));
+  color: var(--greese-color-fg);
   text-decoration: none;
   border-radius: var(--greese-corner-panel);
   font-size: var(--greese-type-p1-font-size);
+
+  &:hover {
+    background-color: color-mix(in oklab, var(--greese-color-fg) 7%, transparent);
+  }
 }
 
 .site-wordmark {
@@ -163,7 +401,11 @@ body {
   box-sizing: content-box;
   padding: var(--greese-space-2);
   color: var(--site-tone-strong, var(--greese-color-primary));
-  background: color-mix(in oklab, var(--site-tone, var(--greese-color-primary)) 14%, transparent);
+  background: color-mix(
+    in oklab,
+    var(--site-tone, var(--greese-color-primary)) 14%,
+    transparent
+  );
   border-radius: var(--greese-corner-control);
 }
 
@@ -311,10 +553,6 @@ body {
   align-self: center;
 }
 
-.site-footer {
-  padding-block: var(--greese-space-6) var(--greese-space-7);
-}
-
 /* The theme picker (in the shared header): colors as a diamond, primary at
    the top then clockwise, beside a shape and a motion icon. */
 .studio-theme-trigger,
@@ -326,7 +564,7 @@ body {
 
 /* The narrowest phones: the button shows the colors only, so the header's
    other buttons fit. Its label still names all three layers. */
-@media (width < 22.5rem) {
+@media (width < 25rem) {
   .studio-theme-trigger > :not(.studio-theme-canvas) {
     /* Icons set their display inline (createIcon), which only this beats. */
     display: none !important;

@@ -13,3 +13,9 @@ declare module 'virtual:greese-kit' {
 declare module 'virtual:greese-utilities.css' {
   /** The utility classes this app's source uses (@greese/ui/vite). */
 }
+
+declare module 'virtual:greese-docs' {
+  /** Every Storybook docs page, by title and id (server/docsIndex.ts). */
+  const pages: { title: string; id: string }[]
+  export default pages
+}

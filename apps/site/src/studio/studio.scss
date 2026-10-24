@@ -28,6 +28,11 @@
   border-block-end: 1px solid var(--greese-color-border);
 }
 
+/* The editor's head: Inspect, then Import and Save at the far end. */
+.studio-toolbar-end {
+  margin-inline-start: auto;
+}
+
 .studio-file {
   font-family: var(--greese-font-mono);
 }

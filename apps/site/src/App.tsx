@@ -3,7 +3,7 @@ import { ThemeProvider, Toaster, useStoredState, type Theme } from '@greese/reac
 import { Home } from './pages/Home.tsx'
 import { Nav } from './sections/Nav.tsx'
 import { RouteContext, ScrollOnRoute, useRoute } from './router.tsx'
-import { ShellContext, type Shell, type StudioActions } from './shell.ts'
+import { ShellContext, type Shell } from './shell.ts'
 import { isSpec, stored, WORN } from './studio/storage.ts'
 import { migrateSpec } from './studio/migrate.ts'
 import type { RenderedColors } from './studio/protocol.ts'
@@ -113,8 +113,6 @@ export const App = (): JSX.Element => {
   })
   const [rendered, setRendered] = useState<RenderedColors>()
   const [replay, setReplay] = useState(0)
-  const [inspect, setInspect] = useState(false)
-  const [studio, setStudio] = useState<StudioActions | null>(null)
   const theme = useSiteTheme(spec)
   useLayerCss(spec)
   // The theme's effects work on this page: the homepage, and the studio's stage.
@@ -129,12 +127,8 @@ export const App = (): JSX.Element => {
       setRendered,
       replay,
       replayMotion: () => setReplay((n) => n + 1),
-      inspect,
-      setInspect,
-      studio,
-      setStudio,
     }),
-    [spec, rendered, replay, inspect, studio]
+    [spec, rendered, replay]
   )
 
   return (

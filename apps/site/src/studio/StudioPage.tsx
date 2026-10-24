@@ -17,6 +17,7 @@ import { icons } from '../icons.tsx'
 import { useShell } from '../shell.ts'
 import { api, hosted } from './api.ts'
 import { PaletteOptions } from './fields.tsx'
+import { StudioToolbar } from './StudioControls.tsx'
 import { GreeseStage } from './GreeseStage.tsx'
 import { useGreeseLab } from './greeseLab.ts'
 import { CodePanel } from './panels/CodePanel.tsx'
@@ -48,14 +49,15 @@ interface FileState {
 /**
  * The studio page: the editor and the preview it themes. The theme itself
  * (the spec) lives in the shell, shared with the homepage's theme menu; what's
- * here is the studio's own state, and its Save and Import controls, which the
- * shared header shows.
+ * here is the studio's own state; Inspect, Import and Save head its editor.
  */
 export const StudioPage = (): JSX.Element => {
-  const { spec, setSpec, rendered, setRendered, replay, inspect, setStudio } = useShell()
+  const { spec, setSpec, rendered, setRendered, replay } = useShell()
   const { scheme } = useColorScheme()
   // Below md the editor is a drawer over the preview; from md it's a column.
   const [drawer, setDrawer] = useState(false)
+  // Inspect: a click in the preview picks the component to edit.
+  const [inspect, setInspect] = useState(false)
   const [file, setFile] = useState<FileState>()
   const [loadError, setLoadError] = useState<string>()
   const [compiled, setCompiled] = useState({
@@ -242,20 +244,7 @@ export const StudioPage = (): JSX.Element => {
     setWritten(result.written)
   }
 
-  // What the header shows for the studio: Save, and whether there's anything to save.
-  const saveRef = useRef(save)
-  saveRef.current = save
-  useEffect(() => {
-    setStudio({
-      dirty,
-      saving,
-      canSave: dirty && errors.length === 0,
-      savedNote,
-      save: () => void saveRef.current(),
-    })
-  }, [dirty, saving, errors.length, savedNote, setStudio])
-  useEffect(() => () => setStudio(null), [setStudio])
-  // Inspect and the rendered colors belong to this page's preview.
+  // The rendered colors belong to this page's preview.
   useEffect(() => () => setRendered(undefined), [setRendered])
 
   return (
@@ -269,6 +258,14 @@ export const StudioPage = (): JSX.Element => {
           data-open={drawer || undefined}
           onKeyDown={(e) => e.key === 'Escape' && setDrawer(false)}
         >
+          <StudioToolbar
+            inspect={inspect}
+            onInspect={setInspect}
+            saving={saving}
+            canSave={dirty && errors.length === 0}
+            savedNote={savedNote}
+            onSave={() => void save()}
+          />
           {file && (
             <Text variant="p3" tone="muted" className="studio-file">
               {file.file}

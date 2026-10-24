@@ -6,6 +6,7 @@ import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import { getSchemeScript } from '@greese/ui'
 import { greeseUtilities } from '@greese/ui/vite'
+import { docsIndex } from './server/docsIndex.ts'
 import { kitSources } from './server/kitSources.ts'
 import { studio } from './server/studio.ts'
 
@@ -59,6 +60,7 @@ export default defineConfig({
     react(),
     studio(),
     kitSources(),
+    docsIndex(),
     // Only the utility classes the app's source uses (ADR 0019).
     greeseUtilities({
       content: ['index.html', 'preview.html', 'src/**/*.{ts,tsx}'],

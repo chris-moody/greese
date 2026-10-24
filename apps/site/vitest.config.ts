@@ -1,8 +1,9 @@
 import { defineConfig } from 'vitest/config'
+import { docsIndex } from './server/docsIndex.ts'
 import { kitSources } from './server/kitSources.ts'
 
 export default defineConfig({
-  plugins: [kitSources()],
+  plugins: [kitSources(), docsIndex()],
   cacheDir: 'node_modules/.vitest',
   test: {
     environment: 'node',
