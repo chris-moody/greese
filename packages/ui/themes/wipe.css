@@ -1,0 +1,136 @@
+/**
+ * Wipe: things are revealed in place rather than moved. Reveals wipe up, panels and toasts open from the middle, table rows wipe across, menus wipe down from their trigger and back up, tooltips open and close from the middle, and dialogs open and close as a circle.
+ *
+ * A GreeseUI motion theme (ADR 0025): it assigns the motion roles (which
+ * built-in effect plays where, and which duration and easing it takes) and
+ * paces every entrance. It redefines no effect and no token, and sets no
+ * colors and no shapes, so it goes with any of those.
+ * Load it after GreeseUI's styles:
+ *
+ *   import '@greese/ui/themes/wipe.css'
+ *
+ * Generated from apps/site/src/studio/motions.ts (npm run themes -w site).
+ */
+@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities;
+@layer greese.overrides {
+  :root {
+    --greese-motion-duration: 0.6s;
+    --greese-motion-distance: 0.75rem;
+    --greese-motion-stagger: 0.06s;
+    --greese-motion-theme: greese-wipe-up;
+    --greese-motion-content: greese-wipe-open-x;
+    --greese-motion-rows: greese-wipe-right;
+    --greese-motion-toast: greese-wipe-open-x;
+    --greese-motion-dialog: greese-iris-in;
+    --greese-motion-dialog-exit-translate: 0px 0px;
+    --greese-motion-dialog-exit-scale: 1;
+    --greese-motion-dialog-exit-opacity: 1;
+    --greese-motion-dialog-exit-mask-image: radial-gradient(closest-side, black 98%, transparent);
+    --greese-motion-dialog-exit-mask-size: 0% 0%;
+    --greese-motion-dialog-exit-mask-repeat: no-repeat;
+    --greese-motion-dialog-exit-mask-position: 50% 50%;
+    --greese-motion-dialog-exit-transform: none;
+    --greese-motion-dialog-exit-mask-from: 142% 142%;
+    --greese-motion-popover: greese-wipe-down;
+    --greese-motion-popover-exit-translate: 0px 0px;
+    --greese-motion-popover-exit-scale: 1;
+    --greese-motion-popover-exit-opacity: 1;
+    --greese-motion-popover-exit-mask-image: linear-gradient(black, black);
+    --greese-motion-popover-exit-mask-size: 100% 0%;
+    --greese-motion-popover-exit-mask-repeat: no-repeat;
+    --greese-motion-popover-exit-mask-position: 50% 0%;
+    --greese-motion-popover-exit-transform: none;
+    --greese-motion-popover-exit-mask-from: 100% 100%;
+    --greese-motion-tooltip: greese-wipe-open-x;
+    --greese-motion-tooltip-exit-translate: 0px 0px;
+    --greese-motion-tooltip-exit-scale: 1;
+    --greese-motion-tooltip-exit-opacity: 1;
+    --greese-motion-tooltip-exit-mask-image: linear-gradient(black, black);
+    --greese-motion-tooltip-exit-mask-size: 0% 100%;
+    --greese-motion-tooltip-exit-mask-repeat: no-repeat;
+    --greese-motion-tooltip-exit-mask-position: 50% 50%;
+    --greese-motion-tooltip-exit-transform: none;
+    --greese-motion-tooltip-exit-mask-from: 100% 100%;
+    --greese-motion-content-duration: var(--greese-duration-normal);
+    --greese-motion-rows-duration: var(--greese-duration-slow);
+    --greese-motion-overlay-duration: var(--greese-duration-normal);
+    --greese-motion-toast-duration: var(--greese-duration-normal);
+    --greese-motion-exit-duration: var(--greese-duration-normal);
+    --greese-motion-enter-ease: cubic-bezier(0.65, 0, 0.35, 1);
+    --greese-motion-exit-ease: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+}
+@layer greese.utilities {
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes greese-wipe-up {
+      from {
+        mask-size: 100% 0%;
+        mask-image: linear-gradient(black, black);
+        mask-repeat: no-repeat;
+        mask-position: 50% 100%;
+      }
+      to {
+        mask-size: 100% 100%;
+        mask-image: linear-gradient(black, black);
+        mask-repeat: no-repeat;
+        mask-position: 50% 100%;
+      }
+    }
+    @keyframes greese-wipe-open-x {
+      from {
+        mask-size: 0% 100%;
+        mask-image: linear-gradient(black, black);
+        mask-repeat: no-repeat;
+        mask-position: 50% 50%;
+      }
+      to {
+        mask-size: 100% 100%;
+        mask-image: linear-gradient(black, black);
+        mask-repeat: no-repeat;
+        mask-position: 50% 50%;
+      }
+    }
+    @keyframes greese-wipe-right {
+      from {
+        mask-size: 0% 100%;
+        mask-image: linear-gradient(black, black);
+        mask-repeat: no-repeat;
+        mask-position: 0% 50%;
+      }
+      to {
+        mask-size: 100% 100%;
+        mask-image: linear-gradient(black, black);
+        mask-repeat: no-repeat;
+        mask-position: 0% 50%;
+      }
+    }
+    @keyframes greese-iris-in {
+      from {
+        mask-size: 0% 0%;
+        mask-image: radial-gradient(closest-side, black 98%, transparent);
+        mask-repeat: no-repeat;
+        mask-position: 50% 50%;
+      }
+      to {
+        mask-size: 142% 142%;
+        mask-image: radial-gradient(closest-side, black 98%, transparent);
+        mask-repeat: no-repeat;
+        mask-position: 50% 50%;
+      }
+    }
+    @keyframes greese-wipe-down {
+      from {
+        mask-size: 100% 0%;
+        mask-image: linear-gradient(black, black);
+        mask-repeat: no-repeat;
+        mask-position: 50% 0%;
+      }
+      to {
+        mask-size: 100% 100%;
+        mask-image: linear-gradient(black, black);
+        mask-repeat: no-repeat;
+        mask-position: 50% 0%;
+      }
+    }
+  }
+}

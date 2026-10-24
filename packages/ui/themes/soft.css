@@ -1,0 +1,44 @@
+/**
+ * Soft: every corner rounded, a step rounder than the library. Controls and fields take the large radius, containers the extra-large one, accordion items are rounded panels and the off-canvas sidebar rounds its inner edge.
+ *
+ * A GreeseUI shape theme (ADR 0025): radii, and components outlined with one
+ * clip and one border ring each (ADR 0024), in @layer greese.overrides. It
+ * sets no colors and no motion, so it goes with any color or motion theme.
+ * Load it after GreeseUI's styles:
+ *
+ *   import '@greese/ui/themes/soft.css'
+ *
+ * Generated from apps/site/src/studio/shapes.ts (npm run themes -w site).
+ */
+@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities;
+@layer greese.theme {
+  :root {
+    --greese-corner-control: var(--greese-radius-lg);
+    --greese-corner-field: var(--greese-radius-lg);
+    --greese-corner-surface: var(--greese-radius-xl);
+    --greese-corner-panel: var(--greese-radius-lg);
+    --greese-corner-inset: var(--greese-radius-md);
+    --greese-corner-pill: var(--greese-radius-pill);
+    --greese-corner-round: var(--greese-radius-round);
+  }
+}
+@layer greese.overrides {
+  .greese-Accordion {
+    display: grid;
+    gap: var(--greese-space-2);
+    border-block-start: 0;
+  }
+}
+@layer greese.overrides {
+  .greese-AccordionItem {
+    padding-inline: var(--greese-space-4);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-corner-panel);
+  }
+}
+@layer greese.overrides {
+  .greese-Sidebar {
+    border-start-end-radius: var(--greese-corner-surface);
+    border-end-end-radius: var(--greese-corner-surface);
+  }
+}

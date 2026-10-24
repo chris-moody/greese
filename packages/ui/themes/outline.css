@@ -1,0 +1,124 @@
+/**
+ * Outline: drawn rather than filled. Solid and soft buttons and badges, soft alerts, filled and elevated cards and tiles, avatars, the current tab and segment, toasts and tooltips are outlined in their color, with text to match over a faint or neutral fill; what was outlined is filled instead.
+ *
+ * A GreeseUI color variant (ADR 0025): how any color theme's colors are worn,
+ * reassigned per component variant in @layer greese.overrides. It sets no
+ * color tokens, shapes or motion, so it goes with any color, shape or motion
+ * theme.
+ * Load it after GreeseUI's styles:
+ *
+ *   import '@greese/ui/themes/outline.css'
+ *
+ * Generated from apps/site/src/studio/variants.ts (npm run themes -w site).
+ */
+@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities;
+@layer greese.overrides {
+  .greese-Alert.greese-Alert--soft {
+    background-color: var(--greese-color-canvas);
+    border-color: var(--greese-alert-tone);
+  }
+  .greese-Alert.greese-Alert--outline {
+    background-color: color-mix(in oklab, var(--greese-alert-tone) 14%, transparent);
+    border-color: transparent;
+  }
+}
+@layer greese.overrides {
+  .greese-Avatar {
+    background-color: transparent;
+    outline: 1.5px solid color-mix(in oklab, currentcolor 70%, transparent);
+    outline-offset: -1.5px;
+  }
+}
+@layer greese.overrides {
+  .greese-Badge.greese-Badge--solid {
+    color: var(--greese-badge-tone);
+    background-color: color-mix(in oklab, var(--greese-badge-tone) 8%, transparent);
+    border-color: var(--greese-badge-tone);
+  }
+  .greese-Badge.greese-Badge--soft {
+    background-color: transparent;
+    border-color: color-mix(in oklab, var(--greese-badge-tone) 55%, transparent);
+  }
+  .greese-Badge.greese-Badge--outline {
+    color: var(--greese-badge-tone-on);
+    background-color: var(--greese-badge-tone);
+    border-color: var(--greese-badge-tone);
+  }
+}
+@layer greese.overrides {
+  .greese-Button.greese-Button--solid {
+    --greese-button-fg: var(--greese-button-tone);
+    --greese-button-bg: color-mix(in oklab, var(--greese-button-tone) 6%, transparent);
+    --greese-button-border: var(--greese-button-tone);
+    --greese-button-bg-hover: color-mix(in oklab, var(--greese-button-tone) 14%, transparent);
+    --greese-button-bg-active: color-mix(in oklab, var(--greese-button-tone) 22%, transparent);
+  }
+  .greese-Button.greese-Button--soft {
+    --greese-button-fg: var(--greese-button-tone);
+    --greese-button-bg: transparent;
+    --greese-button-border: color-mix(in oklab, var(--greese-button-tone) 45%, transparent);
+    --greese-button-bg-hover: color-mix(in oklab, var(--greese-button-tone) 14%, transparent);
+    --greese-button-bg-active: color-mix(in oklab, var(--greese-button-tone) 22%, transparent);
+  }
+  .greese-Button.greese-Button--outline {
+    --greese-button-fg: var(--greese-button-on-tone);
+    --greese-button-bg: var(--greese-button-tone);
+    --greese-button-border: transparent;
+    --greese-button-bg-hover: color-mix(in oklab, var(--greese-button-tone), var(--greese-button-on-tone) 14%);
+    --greese-button-bg-active: color-mix(in oklab, var(--greese-button-tone), var(--greese-button-on-tone) 24%);
+  }
+}
+@layer greese.overrides {
+  .greese-Card.greese-Card--filled {
+    background-color: transparent;
+    border: 1px solid var(--greese-color-border-strong);
+    --greese-shape-ring: var(--greese-color-border-strong);
+  }
+  .greese-Card.greese-Card--elevated {
+    background-color: var(--greese-color-canvas);
+    border: 1px solid var(--greese-color-border-strong);
+    box-shadow: none;
+    --greese-shape-ring: var(--greese-color-border-strong);
+  }
+  .greese-Card.greese-Card--outline {
+    background-color: color-mix(in oklab, var(--greese-color-border) 65%, var(--greese-color-surface));
+    border-color: transparent;
+    --greese-shape-ring: transparent;
+  }
+}
+@layer greese.overrides {
+  .greese-Segment {
+    --greese-segment-current-bg: transparent;
+    --greese-segment-current-edge: inset 0 0 0 1.5px var(--greese-color-primary);
+  }
+}
+@layer greese.overrides {
+  .greese-Tab {
+    --greese-tab-current-bg: transparent;
+    --greese-tab-current-edge: inset 0 0 0 1.5px var(--greese-color-primary);
+  }
+}
+@layer greese.overrides {
+  .greese-Tile {
+    background-color: color-mix(in oklab, var(--greese-color-border) 65%, var(--greese-color-surface));
+    border-color: transparent;
+  }
+  .greese-Tile.greese-Tile--filled {
+    background-color: transparent;
+    border-color: var(--greese-color-border-strong);
+  }
+}
+@layer greese.overrides {
+  .greese-Toast {
+    background-color: var(--greese-color-canvas);
+    border: 1px solid var(--greese-toast-tone);
+    border-inline-start-width: 3px;
+  }
+}
+@layer greese.overrides {
+  .greese-Tooltip {
+    color: var(--greese-color-fg);
+    background-color: var(--greese-color-surface-overlay);
+    border: 1px solid var(--greese-color-fg);
+  }
+}

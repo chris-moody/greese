@@ -1,0 +1,43 @@
+/**
+ * Pebble: as round as things get. Every control, field, tab, badge and tooltip is a pill, so square ones (icon buttons, checkboxes, avatars) are circles; containers take the extra-large radius, and a multi-line field the same, not a pill.
+ *
+ * A GreeseUI shape theme (ADR 0025): radii, and components outlined with one
+ * clip and one border ring each (ADR 0024), in @layer greese.overrides. It
+ * sets no colors and no motion, so it goes with any color or motion theme.
+ * Load it after GreeseUI's styles:
+ *
+ *   import '@greese/ui/themes/pebble.css'
+ *
+ * Generated from apps/site/src/studio/shapes.ts (npm run themes -w site).
+ */
+@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities;
+@layer greese.theme {
+  :root {
+    --greese-corner-control: var(--greese-radius-pill);
+    --greese-corner-field: var(--greese-radius-pill);
+    --greese-corner-surface: var(--greese-radius-xl);
+    --greese-corner-panel: var(--greese-radius-xl);
+    --greese-corner-inset: var(--greese-radius-pill);
+    --greese-corner-pill: var(--greese-radius-pill);
+    --greese-corner-round: var(--greese-radius-round);
+  }
+}
+@layer greese.overrides {
+  .greese-Accordion {
+    display: grid;
+    gap: var(--greese-space-2);
+    border-block-start: 0;
+  }
+}
+@layer greese.overrides {
+  .greese-AccordionItem {
+    padding-inline: var(--greese-space-4);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-corner-surface);
+  }
+}
+@layer greese.overrides {
+  .greese-Textarea {
+    border-radius: var(--greese-radius-xl);
+  }
+}

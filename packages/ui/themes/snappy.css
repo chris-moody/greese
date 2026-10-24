@@ -1,0 +1,63 @@
+/**
+ * Snappy: quick and decisive. Short durations, a sharp curve, a tight stagger; things pop in from a short distance, and overlays scale in and away.
+ *
+ * A GreeseUI motion theme (ADR 0025): it assigns the motion roles (which
+ * built-in effect plays where, and which duration and easing it takes) and
+ * paces every entrance. It redefines no effect and no token, and sets no
+ * colors and no shapes, so it goes with any of those.
+ * Load it after GreeseUI's styles:
+ *
+ *   import '@greese/ui/themes/snappy.css'
+ *
+ * Generated from apps/site/src/studio/motions.ts (npm run themes -w site).
+ */
+@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities;
+@layer greese.overrides {
+  :root {
+    --greese-motion-duration: 0.25s;
+    --greese-motion-distance: 0.5rem;
+    --greese-motion-stagger: 0.03s;
+    --greese-motion-theme: greese-pop-in;
+    --greese-motion-content: greese-fade-up;
+    --greese-motion-rows: greese-fade-up;
+    --greese-motion-toast: greese-pop-in;
+    --greese-motion-overlay: greese-scale-in;
+    --greese-motion-overlay-exit-translate: 0px 0px;
+    --greese-motion-overlay-exit-scale: 0;
+    --greese-motion-overlay-exit-opacity: 0;
+    --greese-motion-overlay-exit-mask-image: none;
+    --greese-motion-overlay-exit-transform: none;
+    --greese-motion-content-duration: var(--greese-duration-fast);
+    --greese-motion-rows-duration: var(--greese-duration-fast);
+    --greese-motion-overlay-duration: var(--greese-duration-fast);
+    --greese-motion-toast-duration: var(--greese-duration-fast);
+    --greese-motion-exit-duration: var(--greese-duration-fast);
+    --greese-motion-enter-ease: cubic-bezier(0, 0, 0, 1);
+    --greese-motion-exit-ease: var(--greese-easing-exit);
+  }
+}
+@layer greese.utilities {
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes greese-pop-in {
+      from {
+        scale: 0.8;
+        opacity: 0;
+      }
+      60% {
+        scale: 1.04;
+        opacity: 1;
+      }
+    }
+    @keyframes greese-fade-up {
+      from {
+        translate: 0px var(--greese-motion-distance, 1rem);
+        opacity: 0;
+      }
+    }
+    @keyframes greese-scale-in {
+      from {
+        scale: 0;
+      }
+    }
+  }
+}
