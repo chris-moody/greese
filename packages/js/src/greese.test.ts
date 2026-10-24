@@ -367,6 +367,63 @@ describe('elements', () => {
   })
 })
 
+describe('repeats, labels and restoring', () => {
+  const passes = (options: Parameters<typeof timeline>[0], until: number) => {
+    const calls: number[] = []
+    const tl = timeline({ paused: true, ...options })
+      .to({ x: 0 }, { x: 1, duration: 1, ease: 'linear' })
+      .call(() => calls.push(tl.time()), 0.5)
+    for (let t = 0; t <= until + 1e-9; t += 0.1) tl.render(t)
+    return calls.length
+  }
+
+  it('calls a callback once per play-through, however many repeat', () => {
+    expect(passes({ repeat: 2 }, 3)).toBe(3)
+    // A frame that skips a whole repeat still passes its callback.
+    const tl = timeline({ paused: true, repeat: 3 }).to({ x: 0 }, { x: 1, duration: 1 })
+    let calls = 0
+    tl.call(() => calls++, 0.5)
+    tl.render(0.2)
+    tl.render(2.9)
+    expect(calls).toBe(3)
+  })
+
+  it('with yoyo, passes it on the way there and on the way back', () => {
+    expect(passes({ repeat: 1, yoyo: true }, 2)).toBe(2)
+  })
+
+  it('seeks only to labels it has', () => {
+    const tl = timeline({ paused: true }).to({ x: 0 }, { x: 1 }).label('mid', 0.25)
+    expect(tl.seek('mid').time()).toBe(0.25)
+    expect(() => tl.seek('mdi')).toThrow('no label "mdi"')
+  })
+
+  it('kill() takes off the inline styles it added and keeps ones that were there', () => {
+    const el = document.createElement('div')
+    el.style.color = 'red'
+    document.body.append(el)
+    const tl = timeline({ paused: true })
+      .to(el, { opacity: 0, x: 20, color: 'rgb(0, 0, 255)', duration: 1 })
+      .seek(1)
+    expect(el.style.opacity).toBe('0')
+    tl.kill()
+    expect(el.style.opacity).toBe('')
+    expect(el.style.translate).toBe('')
+    expect(el.style.color).toBe('red')
+  })
+
+  it('invalidate() reads transforms set since, instead of writing old ones back', () => {
+    const el = document.createElement('div')
+    document.body.append(el)
+    const tl = timeline({ paused: true }).to(el, { x: 10, duration: 1 }).seek(1)
+    expect(el.style.translate).toBe('10px')
+    tl.kill()
+    el.style.translate = '0px 30px'
+    timeline({ paused: true }).to(el, { x: 5, duration: 1 }).invalidate().seek(1)
+    expect(el.style.translate).toBe('5px 30px')
+  })
+})
+
 describe('splitText', () => {
   it('splits into characters per word and keeps one accessible copy', () => {
     const p = document.createElement('p')

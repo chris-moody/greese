@@ -263,7 +263,9 @@ export class Timeline implements PromiseLike<void> {
   #labels: Record<string, number> = {}
   #previous = { start: 0, end: 0 }
   #time_ = 0
-  #local = 0
+  /** The play-through the playhead is in, and its time there before yoyo. */
+  #iteration = 0
+  #raw = 0
   #scale: number
   #direction: 1 | -1 = 1
   #playing = false
@@ -446,9 +448,15 @@ export class Timeline implements PromiseLike<void> {
     return this.time(value * finite)
   }
 
-  /** Moves the playhead to a time or label, without firing callbacks. */
+  /**
+   * Moves the playhead to a time or label, without firing callbacks. Unlike a
+   * position passed to `to()` or `add()`, a label here must exist already:
+   * seeking to a misspelt one throws rather than adding it at the end.
+   */
   seek(position: Position): this {
-    return this.time(typeof position === 'number' ? position : this.#resolve(position))
+    return this.time(
+      typeof position === 'number' ? position : this.#resolve(position, false)
+    )
   }
 
   // --- playback ---------------------------------------------------------
@@ -490,12 +498,15 @@ export class Timeline implements PromiseLike<void> {
     return this.#playing
   }
 
-  /** Stops, and restores every animated property to its original value. */
+  /**
+   * Stops, and puts every animated property back as it was: inline styles and
+   * attributes it added are removed, so the element's CSS applies again.
+   */
   kill(): this {
     this.pause()
     for (const props of this.#tracks.values()) {
       for (const track of props.values()) {
-        if (track.base !== undefined) track.adapter.set(track.prop, track.base)
+        if (track.base !== undefined) track.adapter.restore(track.prop, track.base)
         track.invalidate()
       }
     }
@@ -507,7 +518,10 @@ export class Timeline implements PromiseLike<void> {
   /** Re-reads original and current values on the next render. */
   invalidate(): this {
     for (const props of this.#tracks.values())
-      for (const track of props.values()) track.invalidate()
+      for (const track of props.values()) {
+        track.adapter.refresh()
+        track.invalidate()
+      }
     for (const c of this.#children) c.timeline?.invalidate()
     return this
   }
@@ -583,11 +597,13 @@ export class Timeline implements PromiseLike<void> {
     const period = length + repeatDelay
     let iteration = period > 0 ? Math.floor(time / period) : 0
     if (repeat >= 0) iteration = Math.min(iteration, repeat)
-    let local = Math.min(length, time - iteration * period)
-    if (yoyo && iteration % 2 === 1) local = length - local
-    const before = this.#local
+    const raw = Math.min(length, time - iteration * period)
+    const mapped = (t: number, i: number) => (yoyo && i % 2 === 1 ? length - t : t)
+    const local = mapped(raw, iteration)
+    const from = { iteration: this.#iteration, raw: this.#raw }
     this.#time_ = time
-    this.#local = local
+    this.#iteration = iteration
+    this.#raw = raw
 
     for (const props of this.#tracks.values()) {
       for (const track of props.values()) {
@@ -597,15 +613,30 @@ export class Timeline implements PromiseLike<void> {
     }
     this.#flush()
 
+    // The stretches of one play-through the playhead covered: the rest of
+    // the one it left, any it skipped whole, and the start of the one it's
+    // in. A repeat starting over isn't a step back, so each is checked alone.
+    const spans: Array<[number, number]> = []
+    if (!seeking) {
+      const step = iteration >= from.iteration ? 1 : -1
+      for (let i = from.iteration; ; i += step) {
+        const start = i === from.iteration ? from.raw : step > 0 ? 0 : length
+        const end = i === iteration ? raw : step > 0 ? length : 0
+        spans.push([mapped(start, i), mapped(end, i)])
+        if (i === iteration) break
+      }
+    }
+
     for (const child of this.#children) {
       if (child.timeline) {
         const t = child.timeline
         t.render(Math.max(0, (local - child.start) * t.#scale), seeking)
-      } else if (!seeking) {
-        const crossed =
-          (before < child.start && local >= child.start) ||
-          (before > child.start && local <= child.start)
-        if (crossed) child.call!()
+      } else {
+        for (const [a, b] of spans) {
+          const crossed =
+            (a < child.start && b >= child.start) || (a > child.start && b <= child.start)
+          if (crossed) child.call!()
+        }
       }
     }
     this.#options.onUpdate?.(this)
@@ -628,7 +659,7 @@ export class Timeline implements PromiseLike<void> {
     this.#previous = { start, end }
   }
 
-  #resolve(position: Position | undefined): number {
+  #resolve(position: Position | undefined, create = true): number {
     const end = this.duration()
     if (position === undefined) return end
     if (typeof position === 'number') return position
@@ -641,7 +672,10 @@ export class Timeline implements PromiseLike<void> {
     const m = /^([^+-]*)(?:([+-])=(\d*\.?\d+))?$/.exec(s)
     if (!m) throw new Error(`greese: bad position "${position}"`)
     const offset = m[3] ? Number(m[3]) * (m[2] === '-' ? -1 : 1) : 0
-    return (m[1] ? (this.#labels[m[1]] ??= end) : end) + offset
+    const name = m[1]
+    if (name && !create && !(name in this.#labels))
+      throw new Error(`greese: no label "${name}"`)
+    return (name ? (this.#labels[name] ??= end) : end) + offset
   }
 }
 

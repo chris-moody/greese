@@ -13,6 +13,15 @@ export interface Adapter {
   /** Commits batched writes (transforms are composed into one write each). */
   flush(): void
   mixer(prop: string, from: Value, to: Value): Mixer
+  /**
+   * Puts a property back as it was before anything animated it: an inline
+   * style or attribute that wasn't set is removed again, so the element's
+   * own CSS applies, rather than its computed value pinned inline. `base`
+   * is the value read before the first write, for what isn't a style.
+   */
+  restore(prop: string, base: Value): void
+  /** Forgets cached readings (transform parts), so the next read is fresh. */
+  refresh(): void
 }
 
 /** Resolves targets; selector strings match inside `scope` (the document by default). */
@@ -79,6 +88,16 @@ const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
   // starting value before it writes anything. Written at once, each write
   // made the next computed-style read recalculate styles.
   const styles = new Map<string, string>()
+  // Inline styles (by property) and attributes (by `@name`) as they were
+  // before the first write, for restore(): '' is no inline style, null no
+  // attribute.
+  const before = new Map<string, string | null>()
+  const keep = (key: string, read: () => string | null) => {
+    if (!before.has(key)) before.set(key, read())
+  }
+  const rememberStyle = (property: string) =>
+    keep(property, () => el.style.getPropertyValue(property))
+  const rememberAttribute = (name: string) => keep(`@${name}`, () => el.getAttribute(name))
 
   const transformParts = (property: string): string[] => {
     if (!parts[property]) {
@@ -120,6 +139,7 @@ const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
       if (t) {
         const p = transformParts(t[0])
         const v = String(withUnit('', value, t[2]))
+        rememberStyle(t[0])
         if (t[1] < 0) p.splice(0, 2, v, v)
         else {
           // Fill skipped axes so `y` alone still lands in the second slot.
@@ -129,18 +149,49 @@ const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
         }
         dirty.add(t[0])
       } else if (prop === 'text') el.textContent = String(value)
-      else if (isAttr(prop)) el.setAttribute(prop, String(value))
-      else if (prop.startsWith('--')) styles.set(prop, String(value))
-      else if (prop in el.style) styles.set(kebab(prop), String(withUnit(prop, value)))
-      else if (typeof (el as unknown as Record<string, unknown>)[prop] === 'number') {
+      else if (isAttr(prop)) {
+        rememberAttribute(prop)
+        el.setAttribute(prop, String(value))
+      } else if (prop.startsWith('--')) {
+        rememberStyle(prop)
+        styles.set(prop, String(value))
+      } else if (prop in el.style) {
+        rememberStyle(kebab(prop))
+        styles.set(kebab(prop), String(withUnit(prop, value)))
+      } else if (typeof (el as unknown as Record<string, unknown>)[prop] === 'number') {
         ;(el as unknown as Record<string, unknown>)[prop] = Number(value)
-      } else el.setAttribute(prop, String(value))
+      } else {
+        rememberAttribute(prop)
+        el.setAttribute(prop, String(value))
+      }
     },
     flush() {
       for (const property of dirty) styles.set(property, parts[property]!.join(' '))
-      for (const [property, value] of styles) el.style.setProperty(property, value)
+      // An empty value removes the inline style (restore(), or an unset value).
+      for (const [property, value] of styles)
+        if (value === '') el.style.removeProperty(property)
+        else el.style.setProperty(property, value)
       dirty.clear()
       styles.clear()
+    },
+    restore(prop, base) {
+      const t = TRANSFORM[prop]
+      const style = t ? t[0] : prop.startsWith('--') ? prop : kebab(prop)
+      const attribute = `@${prop}`
+      if (before.has(style)) {
+        styles.set(style, before.get(style)!)
+        dirty.delete(style)
+        delete parts[style]
+        before.delete(style)
+      } else if (before.has(attribute)) {
+        const value = before.get(attribute)
+        if (value == null) el.removeAttribute(prop)
+        else el.setAttribute(prop, value)
+        before.delete(attribute)
+      } else this.set(prop, base) // text, and an element's own number properties
+    },
+    refresh() {
+      for (const property in parts) delete parts[property]
     },
     mixer(prop, from, to) {
       if (prop === 'text') return mixText(from, to)
@@ -159,6 +210,10 @@ const objectAdapter = (obj: Record<string, unknown>): Adapter => ({
   },
   flush() {},
   mixer: (prop, from, to) => (prop === 'text' ? mixText(from, to) : mix(from, to)),
+  restore(prop, base) {
+    this.set(prop, base)
+  },
+  refresh() {},
 })
 
 const adapters = new WeakMap<object, Adapter>()

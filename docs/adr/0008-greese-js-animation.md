@@ -194,6 +194,15 @@ so every later computed-style read forced a style recalculation.
 - **Cost:** greese.js "everything" went from 6.04 to 6.1 kB (budget 6.5 kB).
   The `greese` prop's lazy runtime went from 6.98 to 7.08 kB, over its 7 kB
   budget, which was raised to 7.25 kB for this change.
+- **Amended 2026-10-24: restoring and repeating correctly.** `kill()` wrote
+  each property's computed value back inline, which then beat the element's
+  own CSS (a `:hover` rule, a class); adapters now remember the inline style
+  or attribute from before their first write and put exactly that back,
+  removing what wasn't there. Callbacks fired twice per repeat, since a
+  play-through starting over read as a step back; they're now checked per
+  play-through. `seek()` to a label that doesn't exist throws. Cost:
+  `animate` 5.18 → 5.47 kB and the `<script>` build 6.48 → 6.77 kB, over
+  their budgets, raised to 5.5 and 6.85 kB for this change.
 - **Measured gain, honestly:** on the homepage's first screen, these changes
   cut layouts during load from 194 to 94 and style recalculations from 338
   to 160. The time inside the forced first style calculation fell by about
