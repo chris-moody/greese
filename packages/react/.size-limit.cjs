@@ -67,7 +67,8 @@ module.exports = [
     // 33.35 kB → 33.8 kB (2026-10-24): the same, with greese.js (33.79 kB).
     // 33.8 kB → 34.1 kB (2026-10-24): greese.js's kill() puts back the inline styles it found instead of pinning computed values, and callbacks fire once per repeat (ADR 0008 amendment); a hover keeps its resting box and ends when the pointer leaves the window (34.05 kB).
     // 34.1 kB → 34.15 kB (2026-10-24): the same Footer and AccordionItem fixes (34.12 kB).
-    limit: '34.15 kB',
+    // 34.15 kB → 34.25 kB (2026-10-24): greese.js reads the colors browsers compute for color-mix() and the newer spaces (oklab(), oklch(), color(srgb)), which it switched halfway instead of blending (34.24 kB).
+    limit: '34.25 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -437,6 +438,7 @@ module.exports = [
     // 10.25 kB → 10.35 kB (2026-10-24): a hover lasts while the pointer is over where the element rests, so a lift doesn't bounce under a still pointer (10.33 kB).
     // 10.35 kB → 10.55 kB (2026-10-24): greese.js's kill() restores inline styles and callbacks fire once per repeat (ADR 0008 amendment; 10.53 kB).
     // 10.55 kB → 10.75 kB (2026-10-24): the 10.53 kB above was measured against a stale greese.js build; rebuilt, the kill() fix measures 10.65 kB. A hover also keeps its resting box while it settles back, and ends when the pointer leaves the window or the page loses focus (10.74 kB).
-    limit: '10.75 kB',
+    // 10.75 kB → 10.85 kB (2026-10-24): greese.js reads oklab(), oklch() and color(srgb) colors, as above (10.84 kB).
+    limit: '10.85 kB',
   },
 ]
