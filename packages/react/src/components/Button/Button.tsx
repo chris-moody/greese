@@ -1,4 +1,3 @@
-'use client'
 import type { ComponentPropsWithoutRef, JSX, MouseEvent, ReactNode, Ref } from 'react'
 import { cx } from '../../utils/cx.ts'
 import {
@@ -41,7 +40,8 @@ export interface ButtonProps extends GreeseProps, ComponentPropsWithoutRef<'butt
   fullWidth?: Responsive<boolean>
   /**
    * Shows a spinner and ignores clicks, but stays focusable (`aria-disabled`,
-   * not `disabled`) so keyboard focus is not lost mid-action.
+   * not `disabled`) so keyboard focus is not lost mid-action. A submit button
+   * doesn't submit while it's loading.
    */
   loading?: boolean
   /** Decorative icon before the label. */
@@ -56,7 +56,9 @@ const FULL_WIDTH: ResponsiveConfig = { block: 'greese-Button', prop: 'width' }
 
 /**
  * A button. `type` defaults to `"button"`, so it never submits a form by
- * accident; pass `type="submit"` when it should.
+ * accident; pass `type="submit"` when it should. Server-component safe: it
+ * blocks a loading or disabled press without script of its own, so it adds a
+ * handler only around an `onClick` you pass (which only a client component can).
  *
  * ```tsx
  * <Button startIcon={<PlusIcon />}>Add item</Button>
@@ -97,6 +99,17 @@ export const Button = ({
   )
   const inert = loading || (asChild && disabled)
   const Root = (asChild ? Slot : 'button') as typeof Slot
+  // A press is blocked with HTML and CSS, so a Server Component can render
+  // this (it can't hand an element a function): a loading button is
+  // `type="button"`, so it can't submit or reset its form, and a disabled
+  // link or other `asChild` element leaves the tab order and the pointer
+  // (Button.scss). Your `onClick` alone is wrapped, to skip it while inert.
+  const handleClick =
+    onClick &&
+    ((event: MouseEvent<HTMLButtonElement>) => {
+      if (inert) event.preventDefault()
+      else onClick(event)
+    })
 
   return withGreese(
     <Root
@@ -105,17 +118,15 @@ export const Button = ({
       className={resolved.className}
       style={resolved.style}
       // Native `disabled` only on real buttons and never while loading.
-      {...(!asChild && { type: type ?? 'button', disabled: disabled && !loading })}
+      {...(!asChild && {
+        type: loading ? 'button' : (type ?? 'button'),
+        disabled: disabled && !loading,
+      })}
+      {...(asChild && disabled && { tabIndex: -1 })}
       aria-disabled={inert || undefined}
       aria-busy={loading || undefined}
       data-loading={loading || undefined}
-      onClick={(event: MouseEvent<HTMLButtonElement>) => {
-        if (inert) {
-          event.preventDefault()
-          return
-        }
-        onClick?.(event)
-      }}
+      onClick={handleClick}
     >
       {startIcon && (
         <span className="greese-Button-icon" aria-hidden="true">

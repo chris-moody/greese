@@ -1,9 +1,11 @@
-import { createRef, useState } from 'react'
+import { createRef, useState, type FormEvent } from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { expectNoAxeViolations } from '../test/axe.ts'
+import { functionProps } from '../test/serverProps.ts'
 import { Button } from './Button/Button.tsx'
+import { Slot, Slottable } from './Slot/Slot.tsx'
 import { ButtonGroup } from './ButtonGroup/ButtonGroup.tsx'
 import { Checkbox, CheckboxGroup } from './Checkbox/Checkbox.tsx'
 import { Field } from './Field/Field.tsx'
@@ -36,6 +38,53 @@ describe('Button', () => {
     await userEvent.keyboard('{Enter}')
     await userEvent.keyboard(' ')
     expect(onClick).toHaveBeenCalledTimes(2)
+  })
+
+  it('hands no function to the DOM, so a Server Component can render it', () => {
+    const server = [Button, Slot, Slottable] as unknown as Parameters<
+      typeof functionProps
+    >[1]
+    expect(functionProps(<Button type="submit">Save</Button>, server)).toEqual([])
+    expect(functionProps(<Button loading>Save</Button>, server)).toEqual([])
+    expect(
+      functionProps(
+        <Button asChild disabled>
+          <a href="/docs">Docs</a>
+        </Button>,
+        server
+      )
+    ).toEqual([])
+  })
+
+  it('does not submit its form while loading, with no script of its own', async () => {
+    const onSubmit = vi.fn((event: FormEvent) => event.preventDefault())
+    const { rerender } = render(
+      <form onSubmit={onSubmit}>
+        <Button type="submit" loading>
+          Save
+        </Button>
+      </form>
+    )
+    const button = screen.getByRole('button', { name: 'Save' })
+    expect(button).toHaveAttribute('type', 'button')
+    await userEvent.click(button)
+    expect(onSubmit).not.toHaveBeenCalled()
+    rerender(
+      <form onSubmit={onSubmit}>
+        <Button type="submit">Save</Button>
+      </form>
+    )
+    await userEvent.click(button)
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+  })
+
+  it('takes a disabled asChild link out of the tab order', () => {
+    render(
+      <Button asChild disabled>
+        <a href="/docs">Docs</a>
+      </Button>
+    )
+    expect(screen.getByRole('link', { name: 'Docs' })).toHaveAttribute('tabindex', '-1')
   })
 
   it('stays focusable but inert while loading', async () => {
