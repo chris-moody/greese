@@ -15,7 +15,7 @@ import {
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { useAnchoredPopover, type Placement } from '../../utils/anchor.ts'
 import { cx } from '../../utils/cx.ts'
-import { ChevronGlyph } from '../../utils/glyphs.tsx'
+import { ChevronLeftIcon } from '@greese/icons'
 import { Field } from '../Field/Field.tsx'
 import { Input, type InputProps } from '../Input/Input.tsx'
 import { composeRefs } from '../Slot/Slot.tsx'
@@ -302,7 +302,7 @@ export const Combobox = ({
               input.current?.focus()
             }}
           >
-            <ChevronGlyph />
+            <ChevronLeftIcon />
           </button>
         }
       />

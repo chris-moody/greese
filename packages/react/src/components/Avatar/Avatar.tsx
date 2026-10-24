@@ -88,7 +88,11 @@ export const Avatar = ({
 }
 
 export interface AvatarGroupProps extends ComponentPropsWithRef<'div'>, GreeseProps {
-  /** Show at most this many, then a "+N" count. */
+  /**
+   * Show at most this many, then a "+N" count for the rest. A count of one
+   * would take the place an avatar could have, so with only one left over
+   * every avatar shows instead.
+   */
   max?: number
   /** Size of every avatar in the group, overriding their own. @default 'md' */
   size?: ControlSize
@@ -109,7 +113,8 @@ export const AvatarGroup = ({
   ...props
 }: AvatarGroupProps): JSX.Element => {
   const items = Children.toArray(children)
-  const shown = max !== undefined ? items.slice(0, max) : items
+  // "+1" takes the space of the one avatar it stands for: show it instead.
+  const shown = max !== undefined && items.length - max >= 2 ? items.slice(0, max) : items
   const hidden = items.length - shown.length
   const total = shown.length + (hidden > 0 ? 1 : 0)
   // Earlier avatars stack on top, so each one's face (or initials) stays

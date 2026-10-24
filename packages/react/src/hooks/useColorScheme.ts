@@ -1,6 +1,11 @@
 'use client'
 import { useCallback, useSyncExternalStore } from 'react'
-import { DEFAULT_SCHEME_STORAGE_KEY, SCHEME_ATTR, type ColorScheme } from '@greese/ui'
+import {
+  createStoredValue,
+  DEFAULT_SCHEME_STORAGE_KEY,
+  SCHEME_ATTR,
+  type ColorScheme,
+} from '@greese/ui'
 import { useMediaQuery } from './useMediaQuery.ts'
 
 // The source of truth is the attribute on <html>: the pre-paint script, this
@@ -49,13 +54,14 @@ export const useColorScheme = ({
       const root = document.documentElement
       if (next === 'system') root.removeAttribute(SCHEME_ATTR)
       else root.setAttribute(SCHEME_ATTR, next)
-      try {
-        if (next === 'system') localStorage.removeItem(storageKey)
-        else localStorage.setItem(storageKey, next)
-      } catch {
-        // Storage can be unavailable (private mode, blocked site data). The
-        // choice still applies for this page view.
-      }
+      // Plain text, not JSON: getSchemeScript() reads it before first paint.
+      // Where storage is unavailable, the choice still applies for the page view.
+      const stored = createStoredValue<ColorScheme>(storageKey, 'system', {
+        serialize: String,
+        parse: (text) => text,
+      })
+      if (next === 'system') stored.remove()
+      else stored.set(next)
     },
     [storageKey]
   )

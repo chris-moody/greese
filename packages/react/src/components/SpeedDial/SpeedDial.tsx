@@ -14,7 +14,7 @@ import {
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { useAnchoredPopover } from '../../utils/anchor.ts'
 import { cx } from '../../utils/cx.ts'
-import { PlusGlyph } from '../../utils/glyphs.tsx'
+import { PlusIcon } from '@greese/icons'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 import { composeRefs } from '../Slot/Slot.tsx'
 
@@ -59,7 +59,7 @@ export interface SpeedDialProps
 export const SpeedDial = ({
   greese,
   label,
-  icon = <PlusGlyph />,
+  icon = <PlusIcon />,
   open: openProp,
   defaultOpen = false,
   onOpenChange,

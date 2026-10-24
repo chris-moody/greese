@@ -11,7 +11,7 @@ import {
 } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
-import { StarGlyph } from '../../utils/glyphs.tsx'
+import { StarFilledIcon } from '@greese/icons'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 import type { ControlSize } from '../Button/Button.tsx'
 
@@ -88,7 +88,7 @@ export const Rating = ({
   allowClear,
   required,
   size = 'md',
-  icon = <StarGlyph />,
+  icon = <StarFilledIcon />,
   getItemLabel = itemLabel,
   className,
   style,

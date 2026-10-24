@@ -10,7 +10,7 @@ import {
 } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
-import { MinusGlyph, PlusGlyph } from '../../utils/glyphs.tsx'
+import { MinusIcon, PlusIcon } from '@greese/icons'
 import { composeRefs } from '../Slot/Slot.tsx'
 import { TextField, type TextFieldProps } from '../TextField/TextField.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
@@ -194,8 +194,8 @@ export const NumberField = ({
       }}
       endAdornment={
         <span className="greese-NumberField-steppers">
-          {stepper(-step, decrementLabel, atMin, <MinusGlyph />)}
-          {stepper(step, incrementLabel, atMax, <PlusGlyph />)}
+          {stepper(-step, decrementLabel, atMin, <MinusIcon />)}
+          {stepper(step, incrementLabel, atMax, <PlusIcon />)}
         </span>
       }
     />,

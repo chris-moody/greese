@@ -2,7 +2,7 @@
 import type { ComponentPropsWithRef, JSX, MouseEvent, ReactNode } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
-import { CloseGlyph } from '../../utils/glyphs.tsx'
+import { CloseIcon } from '@greese/icons'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 import type { BrandTone } from '../../utils/tone.ts'
 
@@ -113,7 +113,7 @@ export const Chip = ({
             onRemove()
           }}
         >
-          <CloseGlyph />
+          <CloseIcon />
         </button>
       )}
     </span>,

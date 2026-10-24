@@ -13,7 +13,7 @@ import {
 import type { Breakpoint } from '@greese/ui'
 import { getBreakpoints } from '../../utils/breakpoints.ts'
 import { cx } from '../../utils/cx.ts'
-import { MenuGlyph } from '../../utils/glyphs.tsx'
+import { MenuIcon } from '@greese/icons'
 import { IconButton, type IconButtonProps } from '../IconButton/IconButton.tsx'
 import { composeRefs } from '../Slot/Slot.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
@@ -148,7 +148,7 @@ export const SidebarTrigger = ({
         className
       )}
     >
-      {children ?? <MenuGlyph />}
+      {children ?? <MenuIcon />}
     </IconButton>,
     greese
   )

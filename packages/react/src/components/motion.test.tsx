@@ -73,6 +73,15 @@ afterEach(() => {
 })
 
 describe('resolveGreese', () => {
+  it("plays the theme's entrance, in CSS, for 'theme'", () => {
+    expect(resolveGreese({ enter: 'theme' })).toEqual({
+      className: 'greese-Motion greese-Motion--enter greese-Motion--enter-theme',
+      style: undefined,
+      runtime: false,
+    })
+    expect(resolveGreese({ inView: 'theme' }).className).toMatch(/greese-Motion--view-theme/)
+  })
+
   it('turns presets into classes and options into variables, with no runtime', () => {
     expect(resolveGreese('fadeUp')).toEqual({
       className: 'greese-Motion greese-Motion--enter greese-Motion--enter-fade-up',
@@ -225,10 +234,19 @@ describe('the runtime', () => {
     expect(card.dataset.greeseView).toBe('pending')
     expect(card).toHaveClass('greese-Motion--view-fade-up')
     await attached()
+    // Readiness is read from the element's box, as the page scrolls.
+    const box = { top: innerHeight - 40, bottom: innerHeight + 60, height: 100, left: 0, right: 100 }
+    vi.spyOn(card, 'getBoundingClientRect').mockImplementation(() => box as DOMRect)
     // Partly in view (its bottom still under the fold): not yet.
     scrollIntoView(true, 0.4)
     expect(card.dataset.greeseView).toBe('pending')
-    scrollIntoView(true)
+    // Wholly in view, though a shape's clip-path keeps the observer's ratio
+    // under 1: revealed on the next scroll frame.
+    Object.assign(box, { top: 100, bottom: 200 })
+    await act(async () => {
+      dispatchEvent(new Event('scroll'))
+      await new Promise((r) => requestAnimationFrame(r))
+    })
     expect(card.dataset.greeseView).toBe('in')
     expect(observers.every((o) => o.disconnected)).toBe(true) // once
   })
@@ -396,7 +414,7 @@ describe('one source of truth for effect names', () => {
     }
   })
 
-  it('lets a definition under a built-in name replace it', async () => {
+  it('keeps a built-in: a definition under its name never replaces it', async () => {
     const { timeline } = await import('@greese/js')
     const { addMotion } = await import('./Motion/greeseRuntime.ts')
     const run = () =>
@@ -409,7 +427,8 @@ describe('one source of truth for effect names', () => {
       )
     expect(run()).toBe(0.5)
     defineGreeseEffect('fall', { keyframes: { y: [0, 9] }, duration: 2 })
-    expect(run()).toBe(2)
+    expect(run()).toBe(0.5)
+    removeGreeseEffect('fall')
   })
 
   it('plays a call’s arguments: its own parameters and its timing', async () => {

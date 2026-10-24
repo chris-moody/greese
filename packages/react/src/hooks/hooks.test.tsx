@@ -10,6 +10,7 @@ import {
 } from '../utils/breakpoints.ts'
 import { isSpaceToken, resolveResponsive } from '../utils/responsive.ts'
 import { resolveAt, useBreakpoint, useBreakpointValue } from './useBreakpoint.ts'
+import { useStoredState } from './useStoredState.ts'
 import { useColorScheme } from './useColorScheme.ts'
 import { useControllableState } from './useControllableState.ts'
 import { useMediaQuery } from './useMediaQuery.ts'
@@ -204,5 +205,34 @@ describe('configureBreakpoints', () => {
   it('rejects values that do not increase', () => {
     expect(() => configureBreakpoints({ md: 500 })).toThrow(/must increase/)
     expect(getBreakpoints().md).toBe(900)
+  })
+})
+
+describe('useStoredState', () => {
+  afterEach(() => localStorage.clear())
+
+  it('keeps state in localStorage, shared by every reader of the key', () => {
+    const a = renderHook(() => useStoredState('t-hook', 'grid'))
+    const b = renderHook(() => useStoredState('t-hook', 'grid'))
+    expect(a.result.current[0]).toBe('grid')
+    act(() => a.result.current[1]('list'))
+    expect(localStorage.getItem('t-hook')).toBe('"list"')
+    expect(b.result.current[0]).toBe('list')
+    act(() => b.result.current[2]())
+    expect(a.result.current[0]).toBe('grid')
+  })
+
+  it('follows another tab', () => {
+    const { result } = renderHook(() => useStoredState('t-tab', 0))
+    act(() => {
+      localStorage.setItem('t-tab', '7')
+      window.dispatchEvent(new StorageEvent('storage', { key: 't-tab' }))
+    })
+    expect(result.current[0]).toBe(7)
+  })
+
+  it('renders the fallback on the server', () => {
+    const Show = () => <span>{useStoredState('t-ssr', 'fallback')[0]}</span>
+    expect(renderToString(<Show />)).toContain('fallback')
   })
 })

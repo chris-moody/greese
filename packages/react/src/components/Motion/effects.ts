@@ -38,9 +38,9 @@ const effects = new Map<string, GreeseEffect>()
  * Names an effect for the `greese` prop. It can then be played anywhere an
  * effect can (`enter`, `inView`, `hover`, `press`, `focus`) and composed in
  * sequences. Call it in client code that runs before the element mounts,
- * such as your app's entry. Under a built-in's name it replaces that effect
- * in sequences, interactions and timelines; a lone entrance preset is plain
- * CSS, so retune it with `@keyframes` too (the kit's `keyframes()` mixin).
+ * such as your app's entry. A built-in's name stays the built-in's: an effect
+ * defined under it is never played, so `fadeUp` always fades up. To change
+ * what plays somewhere, give the new effect its own name and assign it there.
  *
  * ```ts
  * defineGreeseEffect('wobble', {
@@ -58,8 +58,8 @@ export const defineGreeseEffect = (
 }
 
 /**
- * Forgets an effect defined with `defineGreeseEffect()`: a built-in goes back
- * to its own, any other name is no effect again. For tools that edit effects
+ * Forgets an effect defined with `defineGreeseEffect()`: its name is no effect
+ * again. For tools that edit effects
  * live (Theme Studio); an app rarely needs it.
  */
 export const removeGreeseEffect = (name: string): void => {

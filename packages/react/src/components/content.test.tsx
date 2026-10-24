@@ -213,6 +213,19 @@ describe('Avatar', () => {
     expect(group.querySelectorAll('.greese-Avatar')).toHaveLength(3)
     expect(screen.getByRole('img', { name: '2 more' })).toHaveTextContent('+2')
   })
+
+  it('shows the one left over instead of a "+1"', () => {
+    render(
+      <AvatarGroup aria-label="Team" max={2}>
+        <Avatar name="A B" />
+        <Avatar name="C D" />
+        <Avatar name="E F" />
+      </AvatarGroup>
+    )
+    const group = screen.getByRole('group', { name: 'Team' })
+    expect(group.querySelectorAll('.greese-Avatar')).toHaveLength(3)
+    expect(group.querySelector('.greese-Avatar--count')).toBeNull()
+  })
 })
 
 describe('Collapsible and Accordion', () => {

@@ -17,7 +17,7 @@ export interface IconButtonProps
 }
 
 /**
- * A square, icon-only button. GreeseUI ships no icons, so bring any set.
+ * A square, icon-only button. Bring any icon, from any set; `@greese/icons` has some.
  *
  * ```tsx
  * <IconButton label="Close dialog"><XIcon /></IconButton>

@@ -14,7 +14,7 @@ import {
 } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
-import { CloseGlyph } from '../../utils/glyphs.tsx'
+import { CloseIcon } from '@greese/icons'
 import {
   resolveResponsive,
   type Responsive,
@@ -171,7 +171,7 @@ const ModalBase = ({
             className="greese-Dialog-close"
             onClick={() => setOpen(false)}
           >
-            <CloseGlyph />
+            <CloseIcon />
           </IconButton>
         </div>
         {description && (

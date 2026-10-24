@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from 'react'
 import { cx } from '../../utils/cx.ts'
-import { SortGlyph } from '../../utils/glyphs.tsx'
+import { SortIcon } from '@greese/icons'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 /** Below this breakpoint, rows stack into cards. */
@@ -183,7 +183,7 @@ export const TableHeaderCell = ({
           onClick={onSort}
         >
           {children}
-          <SortGlyph />
+          <SortIcon strokeWidth={1.5} />
         </button>
       ) : (
         children

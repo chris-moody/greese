@@ -64,6 +64,7 @@
     "size": "size-limit"
   },
   "dependencies": {
+    "@greese/icons": "0.0.0",
     "@greese/js": "0.0.0",
     "@greese/ui": "1.0.0"
   },

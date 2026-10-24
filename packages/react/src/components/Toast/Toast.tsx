@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from 'react'
 import { cx } from '../../utils/cx.ts'
-import { CloseGlyph } from '../../utils/glyphs.tsx'
+import { CloseIcon } from '@greese/icons'
 import { Button } from '../Button/Button.tsx'
 import { IconButton } from '../IconButton/IconButton.tsx'
 import type { BrandTone } from '../../utils/tone.ts'
@@ -247,7 +247,7 @@ const ToastItem = ({
         </Button>
       )}
       <IconButton label={dismissLabel} size="sm" onClick={() => toast.dismiss(record.id)}>
-        <CloseGlyph />
+        <CloseIcon />
       </IconButton>
     </li>
   )

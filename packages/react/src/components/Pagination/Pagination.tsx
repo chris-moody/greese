@@ -2,7 +2,7 @@
 import type { ComponentPropsWithRef, JSX } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
-import { ChevronGlyph } from '../../utils/glyphs.tsx'
+import { ChevronLeftIcon } from '@greese/icons'
 import { Button } from '../Button/Button.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
@@ -122,7 +122,7 @@ export const Pagination = ({
     <nav {...props} aria-label={label} className={cx('greese-Pagination', className)}>
       <ul className="greese-Pagination-list">
         <li>
-          {control(page - 1, <ChevronGlyph />, {
+          {control(page - 1, <ChevronLeftIcon />, {
             'aria-label': labels?.previous ?? 'Previous page',
             className: 'greese-Pagination-step',
           })}
@@ -150,7 +150,7 @@ export const Pagination = ({
           )
         )}
         <li>
-          {control(page + 1, <ChevronGlyph />, {
+          {control(page + 1, <ChevronLeftIcon />, {
             'aria-label': labels?.next ?? 'Next page',
             className: 'greese-Pagination-step greese-Pagination-step--next',
           })}

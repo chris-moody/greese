@@ -8,7 +8,7 @@ import {
 } from 'react'
 import { flattenChildren } from '../../utils/children.ts'
 import { cx } from '../../utils/cx.ts'
-import { CheckGlyph } from '../../utils/glyphs.tsx'
+import { CheckIcon } from '@greese/icons'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 import type { BrandTone } from '../../utils/tone.ts'
 
@@ -165,7 +165,11 @@ export const Step = ({
     >
       {prefixBefore && prefixed}
       <span className="greese-Step-marker" aria-hidden="true">
-        {status === 'complete' && typeof marker === 'number' ? <CheckGlyph /> : marker}
+        {status === 'complete' && typeof marker === 'number' ? (
+          <CheckIcon strokeWidth={2} />
+        ) : (
+          marker
+        )}
       </span>
       <div className="greese-Step-body">
         {!prefixBefore && prefixed}

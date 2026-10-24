@@ -1,6 +1,6 @@
 import type { ComponentPropsWithRef, JSX, ReactNode } from 'react'
 import { cx } from '../../utils/cx.ts'
-import { CloseGlyph } from '../../utils/glyphs.tsx'
+import { CloseIcon } from '@greese/icons'
 import { IconButton } from '../IconButton/IconButton.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 import type { BrandTone } from '../../utils/tone.ts'
@@ -90,7 +90,7 @@ export const Alert = ({
           onClick={onDismiss}
           className="greese-Alert-dismiss"
         >
-          <CloseGlyph />
+          <CloseIcon />
         </IconButton>
       )}
     </div>,

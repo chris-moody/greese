@@ -1,4 +1,5 @@
 'use client'
+import { CheckDashIcon } from '@greese/icons'
 import {
   createContext,
   use,
@@ -116,10 +117,7 @@ export const Checkbox = ({
             if (inGroup) group.toggle(String(props.value), event.target.checked)
           }}
         />
-        <svg className="greese-Checkbox-icon" viewBox="0 0 16 16" aria-hidden="true">
-          <path className="greese-Checkbox-check" d="M3.5 8.5l3 3 6-7" />
-          <path className="greese-Checkbox-dash" d="M4 8h8" />
-        </svg>
+        <CheckDashIcon className="greese-Checkbox-icon" />
       </span>
       <ChoiceText
         htmlFor={control.id}

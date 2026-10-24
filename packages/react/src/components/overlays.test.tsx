@@ -10,6 +10,7 @@ import { Dialog, Drawer } from './Dialog/Dialog.tsx'
 import { Menu, MenuItem, MenuSeparator } from './Menu/Menu.tsx'
 import { Pagination, paginationRange } from './Pagination/Pagination.tsx'
 import { Popover } from './Popover/Popover.tsx'
+import { currentSection, ScrollSpy } from './ScrollSpy/ScrollSpy.tsx'
 import { Sidebar, SidebarLayout, SidebarTrigger } from './Sidebar/Sidebar.tsx'
 import { toast, Toaster } from './Toast/Toast.tsx'
 import { Tooltip } from './Tooltip/Tooltip.tsx'
@@ -456,5 +457,55 @@ describe('Phase 5 accessibility', () => {
       </SidebarLayout>
     )
     await expectNoAxeViolations(container)
+  })
+})
+
+describe('ScrollSpy', () => {
+  it('picks the last section above the line, and the last at the end of the page', () => {
+    const sections = [
+      { id: 'b', top: 300 },
+      { id: 'a', top: -500 },
+      { id: 'c', top: 900 },
+    ]
+    expect(currentSection(sections, 100)).toBe('a')
+    expect(currentSection(sections, 300)).toBe('b')
+    expect(currentSection([{ id: 'a', top: 200 }], 100)).toBeUndefined()
+    expect(currentSection(sections, 100, true)).toBe('c')
+    expect(currentSection([], 100, true)).toBeUndefined()
+  })
+
+  it('marks the link to the current section, and only same-page links', async () => {
+    const onActiveChange = vi.fn()
+    const place = (id: string, top: number) => {
+      const el = document.createElement('section')
+      el.id = id
+      el.getBoundingClientRect = () => ({ top }) as DOMRect
+      document.body.append(el)
+      return el
+    }
+    const placed = [place('install', -200), place('usage', 600)]
+    const { container, unmount } = render(
+      <ScrollSpy asChild offset={80} onActiveChange={onActiveChange}>
+        <nav aria-label="Sections">
+          <a href="#install">Install</a>
+          <a href="#usage">Usage</a>
+          <a href="/elsewhere#install">Elsewhere</a>
+        </nav>
+      </ScrollSpy>
+    )
+    const nav = screen.getByRole('navigation')
+    expect(nav).toHaveClass('greese-ScrollSpy')
+    expect(screen.getByRole('link', { name: 'Install' })).toHaveAttribute(
+      'aria-current',
+      'location'
+    )
+    expect(screen.getByRole('link', { name: 'Usage' })).not.toHaveAttribute('aria-current')
+    expect(screen.getByRole('link', { name: 'Elsewhere' })).not.toHaveAttribute(
+      'aria-current'
+    )
+    expect(onActiveChange).toHaveBeenLastCalledWith('install')
+    await expectNoAxeViolations(container)
+    unmount()
+    placed.forEach((el) => el.remove())
   })
 })

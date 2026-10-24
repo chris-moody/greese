@@ -55,8 +55,9 @@ interface Play {
 }
 
 /**
- * A defined effect, then a built-in one: `defineGreeseEffect()` under a
- * built-in's name replaces it (a theme can retune `fadeUp`). The built-ins are
+ * A built-in effect, then a defined one. A built-in always does what its name
+ * says: `defineGreeseEffect()` can't replace it, so a theme reassigns which
+ * effect plays where (ADR 0025) and never rewrites one. The built-ins are
  * `@greese/ui`'s (src/effects.ts), the same ones its CSS is written from, and
  * take the call's arguments; a defined effect takes only the timing keys, plus
  * the arguments it can read from its `args`.
@@ -66,9 +67,10 @@ const lookup = (
   args: Record<string, string | number>
 ): Play | undefined => {
   const { timing, params } = splitTiming(args)
-  const defined = definedEffect(name)
-  if (defined) return { effect: defined, timing, params }
-  if (!isBuiltInEffect(name)) return undefined
+  if (!isBuiltInEffect(name)) {
+    const defined = definedEffect(name)
+    return defined && { effect: defined, timing, params }
+  }
   return {
     effect: ({ distance, rtl }: GreeseEffectContext) =>
       effectFrames(name, jsReach(distance, rtl), params) as Keyframes,
@@ -256,8 +258,22 @@ const buildEntrance = ({ el, o, reduce, ctx, cleanups }: Setup): Timeline => {
   return entrance
 }
 
-/** Steps at which reveal readiness is re-checked as an element scrolls in. */
-const REVEAL_THRESHOLDS = [0, 0.01, 0.02, 0.05, 0.1, 0.15, 0.25, 0.4, 0.5, 0.75, 1]
+/**
+ * Whether an element is ready to be revealed, from its box alone: wholly in
+ * view and clear of the bottom 10% of the viewport, so it never animates in
+ * half cut off; one too tall for that once a fifth of the viewport shows it;
+ * and near the end of the page, where it can't scroll clear of that edge,
+ * once wholly in view. Not from IntersectionObserver's ratio, which an
+ * element's or an ancestor's clip-path (a shape, ADR 0024) lowers for good.
+ */
+const ready = (el: Element): boolean => {
+  const { top, bottom, height } = el.getBoundingClientRect()
+  const edge = innerHeight * 0.9
+  if (top >= 0 && bottom <= edge) return true
+  if (height > innerHeight * 0.5) return Math.min(bottom, innerHeight) - Math.max(top, 0) >= innerHeight * 0.2
+  const left = document.documentElement.scrollHeight - scrollY - innerHeight
+  return top >= 0 && bottom <= innerHeight && bottom - edge > left
+}
 
 /** Plays the entrance now, or, for `inView`, when the element scrolls into view. */
 const startEntrance = ({ el, o, reduce, cleanups }: Setup, entrance: Timeline) => {
@@ -273,6 +289,7 @@ const startEntrance = ({ el, o, reduce, cleanups }: Setup, entrance: Timeline) =
   }
   if (has) entrance.seek(0)
   let shown = false
+  let frame = 0
   const reveal = () => {
     if (shown) return
     shown = true
@@ -280,44 +297,34 @@ const startEntrance = ({ el, o, reduce, cleanups }: Setup, entrance: Timeline) =
     play()
     if (o.once !== false) stop()
   }
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (!entry) return
-      // Reveal once the element sits wholly in view, clear of the bottom edge
-      // (the root margin), so it never animates in half cut off. One too tall
-      // for that reveals once a quarter of the viewport (at most) is showing,
-      // not after the reader has scrolled well past its start.
-      if (
-        entry.isIntersecting &&
-        (entry.intersectionRatio > 0.99 ||
-          (entry.boundingClientRect.height > innerHeight * 0.5 &&
-            entry.intersectionRect.height >= innerHeight * 0.2))
-      )
-        reveal()
-      else if (!entry.isIntersecting && shown && o.once === false) {
-        shown = false
-        el.dataset.greeseView = 'pending'
-        entrance.pause().seek(0)
-      }
-    },
-    { threshold: REVEAL_THRESHOLDS, rootMargin: '0px 0px -10% 0px' }
-  )
-  // Near the end of the page, the page may not scroll far enough to lift the
-  // element clear of that margin (10% of the viewport): then it reveals once
-  // wholly in view.
-  const atEnd = new IntersectionObserver(
-    ([entry]) => {
-      if (!entry?.isIntersecting || entry.intersectionRatio < 0.99) return
-      const left = document.documentElement.scrollHeight - scrollY - innerHeight
-      if (entry.boundingClientRect.bottom - innerHeight * 0.9 > left) reveal()
-    },
-    { threshold: 1 }
-  )
+  // While any of it is in view, its box is checked as the page scrolls (once
+  // a frame at most); out of view, nothing runs.
+  const check = () => {
+    frame = 0
+    if (ready(el)) reveal()
+  }
+  const onScroll = () => {
+    frame ||= requestAnimationFrame(check)
+  }
+  const watch = (on: boolean) => {
+    for (const type of ['scroll', 'resize'])
+      (on ? addEventListener : removeEventListener)(type, onScroll, { passive: true } as never)
+  }
+  const observer = new IntersectionObserver(([entry]) => {
+    if (!entry) return
+    watch(entry.isIntersecting)
+    if (entry.isIntersecting) check()
+    else if (shown && o.once === false) {
+      shown = false
+      el.dataset.greeseView = 'pending'
+      entrance.pause().seek(0)
+    }
+  })
   const stop = () => {
     observer.disconnect()
-    atEnd.disconnect()
+    watch(false)
+    cancelAnimationFrame(frame)
   }
-  atEnd.observe(el)
   observer.observe(el)
   cleanups.push(stop)
 }

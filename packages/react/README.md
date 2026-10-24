@@ -45,6 +45,8 @@ setScheme('dark') // 'light' | 'dark' | 'system'
 
 ## Themes
 
+No provider is needed to use GreeseUI: the styles load once and every component works. `ThemeProvider` is optional. Reach for it only to apply a `createTheme()` theme, or to force a color scheme, on all or part of the page.
+
 ```tsx
 import { createTheme, ThemeProvider } from '@greese/react'
 
@@ -144,8 +146,7 @@ import { SearchIcon } from '@greese/icons'
 
 ## Layout
 
-`Box`, `Stack`, `Grid` (`container` for a grid, `size` for a cell, as in
-MUI), `Tile`, `AutoLayout` + `AutoLayoutItem` (items
+`Box`, `Stack`, `Grid` (`container` for a grid, `size` for a cell), `Tile`, `AutoLayout` + `AutoLayoutItem` (items
 sized in columns that grow into spare room), `Container`, `Center`, `Spacer`,
 `Divider`, `Show`/`Hide` and `AspectRatio`. They're all server-component safe
 and accept `asChild`.
@@ -219,7 +220,7 @@ are at least 44px.
 | **Modal**      | `Dialog`, `Drawer` (responsive `placement`: a bottom sheet on phones, a side panel on desktop). Native `<dialog>`: focus trapped and returned, page inert, scroll locked with CSS                                                                                              |
 | **Anchored**   | `Popover`, `Menu` + `MenuItem`, `Tooltip`. Popover API plus CSS anchor positioning; no positioning library                                                                                                                                                                     |
 | **Feedback**   | `toast()` + `<Toaster />`: announced, pausable, and usable above open dialogs                                                                                                                                                                                                  |
-| **Navigation** | `SidebarLayout` + `Sidebar` + `SidebarTrigger` (off-canvas below a breakpoint, persistent above), `AppBar`, `Breadcrumbs`, `Pagination`, `Steps` + `Step` (processes, and timelines: `direction`, `markers`, a step's `prefix`), `Dock` + `DockItem` (a bottom bar for phones) |
+| **Navigation** | `SidebarLayout` + `Sidebar` + `SidebarTrigger` (off-canvas below a breakpoint, persistent above), `AppBar`, `Breadcrumbs`, `Pagination`, `ScrollSpy` (marks the link to the section the page is on), `Steps` + `Step` (processes, and timelines: `direction`, `markers`, a step's `prefix`), `Dock` + `DockItem` (a bottom bar for phones) |
 | **Actions**    | `SpeedDial` + `SpeedDialAction` (a floating action button with a popover of actions)                                                                                                                                                                                           |
 
 ```tsx
@@ -246,7 +247,7 @@ and use them by name, alone or in sequences.
 
 - **Entrance presets are pure CSS:** they render in Server Components and
   cost no JavaScript.
-- **Everything else loads a small runtime plus greese.js** (about 6.9 kB,
+- **Everything else loads a small runtime plus greese.js** (about 9.8 kB,
   brotli) as a lazy chunk, the first time a prop needs it. Add
   `import '@greese/react/greese'` at your entry to load it up front.
 - **Reduced motion is respected throughout.**
@@ -261,7 +262,7 @@ and use them by name, alone or in sequences.
 ## Responsive values
 
 Every responsive prop takes one value, or a value per breakpoint,
-mobile-first, the same way MUI does:
+mobile-first:
 
 | Breakpoint | `xs` | `sm`  | `md`  | `lg`   | `xl`   |
 | ---------- | ---- | ----- | ----- | ------ | ------ |
@@ -269,6 +270,9 @@ mobile-first, the same way MUI does:
 
 Prefer CSS-driven responsive props. When the rendered tree itself must change,
 use `useBreakpoint()`, `useBreakpointValue()` or `useMediaQuery()`.
+To keep state in localStorage, safely (on the server, with storage blocked or
+full) and in step across components and tabs, use `useStoredState()`; outside
+React, `createStoredValue()` from `@greese/ui`.
 
 To use your own breakpoint values, recompile the SCSS and tell the hooks. The
 keys stay `xs`–`xl`:

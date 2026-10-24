@@ -34,7 +34,17 @@ module.exports = [
     // 27 → 27.5 kB (2026-10-21): the default colors are read from the palette
     // instead of written out as hex, so the nine hues they use travel with
     // createTheme (about 0.4 kB), the price of one source of truth.
-    limit: '27.5 kB',
+    // 27.5 → 28 kB (2026-10-23): ScrollSpy, about 0.49 kB (27.33 kB without it).
+    // 28 kB → 28.25 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025) and
+    // useStoredState with createStoredValue, about 0.15 kB together (28.15 kB).
+    // 28.25 kB → 28.35 kB (2026-10-23): wipes and pockets in every direction, arriving
+    // and leaving (27 more effects, generated from one table of directions; ADR 0025
+    // addendum): six more entrance names (28.32 kB).
+    // 28.35 kB → 28.4 kB (2026-10-23): irises in eight directions (ADR 0025): eight
+    // more entrance names CSS can play (28352 B).
+    // 28.4 kB → 28.45 kB (2026-10-24): the three-dimensional effects (ADR 0025
+    // addendum): ten more names of what CSS plays (28.41 kB after a fresh build).
+    limit: '28.45 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -47,7 +57,12 @@ module.exports = [
     // 31 → 31.75 kB (2026-10-20): the type system's defaults, as above.
     // 31.75 → 32 kB the same day for the `scope` option's static part (ADR 0017).
     // 32 → 32.5 kB the same day, for the palette hues, as above.
-    limit: '32.5 kB',
+    // 32.5 → 33 kB (2026-10-23): ScrollSpy, about 0.42 kB (32.27 kB without it).
+    // 33 kB → 33.25 kB (2026-10-23): the same wipes, pockets and stored state (33.16
+    // kB).
+    // 33.25 kB → 33.3 kB (2026-10-23): irises in eight directions, as above (33.26 kB).
+    // 33.3 kB → 33.35 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (33309 B).
+    limit: '33.35 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -65,7 +80,13 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 2.25 → 2.3 kB (2026-10-20): the `scope` option's static part (ADR 0017)
     // 2.3 kB → 2.4 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    limit: '2.4 kB',
+    // 2.4 kB → 2.45 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 2.45 kB → 2.5 kB (2026-10-23): overlays leave with wipes and pockets too (ADR
+    // 0025 addendum): the overlay exits' names every component carries, the 32 that
+    // follow a direction written as prefixes times directions (2469 B).
+    limit: '2.5 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -74,7 +95,14 @@ module.exports = [
     import: '{ Button }',
     ignore: ['react', 'react-dom'],
     // 2.25 kB → 2.3 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    limit: '2.3 kB',
+    // 2.3 kB → 2.35 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 2.35 kB → 2.4 kB (2026-10-23): overlays leave with wipes and pockets too (ADR
+    // 0025 addendum): the overlay exits' names every component carries, the 32 that
+    // follow a direction written as prefixes times directions (2376 B).
+    // 2.4 kB → 2.45 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (2407 B).
+    limit: '2.45 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -84,7 +112,14 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 2.25 → 2.3 kB (2026-10-20): the `scope` option's static part (ADR 0017)
     // 2.3 kB → 2.35 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    limit: '2.35 kB',
+    // 2.35 kB → 2.4 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 2.4 kB → 2.45 kB (2026-10-23): overlays leave with wipes and pockets too (ADR
+    // 0025 addendum): the overlay exits' names every component carries, the 32 that
+    // follow a direction written as prefixes times directions (2416 B).
+    // 2.45 kB → 2.5 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (2462 B).
+    limit: '2.5 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -92,7 +127,12 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ Tabs, TabList, Tab, TabPanel }',
     ignore: ['react', 'react-dom'],
-    limit: '2.5 kB',
+    // 2.5 kB → 2.6 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 2.6 kB → 2.65 kB (2026-10-23): irises in eight directions (ADR 0025): eight more
+    // of those names (2604 B).
+    limit: '2.65 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -101,7 +141,12 @@ module.exports = [
     import: '{ Dialog }',
     ignore: ['react', 'react-dom'],
     // 3.25 kB → 3.3 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    limit: '3.3 kB',
+    // 3.3 kB → 3.45 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 3.45 kB → 3.55 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 3.55 kB → 3.6 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (3585 B).
+    limit: '3.6 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -119,7 +164,12 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 3.25 → 3.3 kB (2026-10-21): the resolver lists the CSS entrances from @greese/ui (generated from src/effects.ts) instead of keeping a regex of its own, about 15 B.
     // 3.3 kB → 3.35 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    limit: '3.35 kB',
+    // 3.35 kB → 3.5 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 3.5 kB → 3.6 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 3.6 kB → 3.65 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (3632 B).
+    limit: '3.65 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -127,7 +177,8 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ Combobox }',
     ignore: ['react', 'react-dom'],
-    limit: '4.75 kB',
+    // 4.75 kB → 4.8 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (4785 B).
+    limit: '4.8 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -137,7 +188,12 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 3.25 → 3.3 kB (2026-10-21): the resolver lists the CSS entrances from @greese/ui (generated from src/effects.ts) instead of keeping a regex of its own, about 15 B.
     // 3.3 kB → 3.35 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    limit: '3.35 kB',
+    // 3.35 kB → 3.5 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 3.5 kB → 3.6 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 3.6 kB → 3.65 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (3641 B).
+    limit: '3.65 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -147,7 +203,13 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 2.25 → 2.3 kB (2026-10-20): the `scope` option's static part (ADR 0017)
     // 2.3 kB → 2.35 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    limit: '2.35 kB',
+    // 2.35 kB → 2.55 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 2.55 kB → 2.6 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 2.6 kB → 2.65 kB (2026-10-23): irises in eight directions (ADR 0025): eight more
+    // of those names (2604 B).
+    limit: '2.65 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -170,14 +232,19 @@ module.exports = [
     // defaults to write complete themes (ADR 0016).
     // 3.4 → 3.75 kB (2026-10-21): the default colors are read from the
     // palette, so the nine hues they use come with createTheme (ADR 0002).
-    limit: '3.75 kB',
+    // 3.75 kB → 3.8 kB (2026-10-23): the `radius.round` token every theme now declares
+    // (3.77 kB).
+    // 3.8 kB → 3.85 kB (2026-10-24): the `track` color and the radius roles
+    // (`corner`) among the default tokens createTheme carries (ADR 0025; 3.81 kB).
+    limit: '3.85 kB',
     modifyRolldownConfig: external,
   },
   {
     name: 'ColorPicker',
     path: 'dist/index.js',
     import: '{ ColorPicker }',
-    limit: '4.25 kB',
+    // 4.25 kB → 4.3 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (4265 B).
+    limit: '4.3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -185,7 +252,11 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ MaskedInput }',
     // 2.75 kB → 2.8 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    limit: '2.8 kB',
+    // 2.8 kB → 2.9 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 2.9 kB → 2.95 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (2919 B).
+    limit: '2.95 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -197,7 +268,12 @@ module.exports = [
     // (suspend snapping, check arrival, skip its own index echoes), about
     // 90 B; see the ADR 0011 ScrollCarousel addendum.
     // 3.5 kB → 3.55 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    limit: '3.55 kB',
+    // 3.55 kB → 3.7 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 3.7 kB → 3.8 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 3.8 kB → 3.85 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (3828 B).
+    limit: '3.85 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -207,7 +283,15 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 2.5 → 2.75 kB (2026-10-19): half and quarter stars (`step`), with
     // pointer preview and drag-to-scrub, about 280 B (ADR 0011 addendum).
-    limit: '2.75 kB',
+    // 2.75 kB → 3 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 3 kB → 3.05 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 3.05 kB → 3.1 kB (2026-10-23): overlays leave with wipes and pockets too (ADR
+    // 0025 addendum): the overlay exits' names every component carries, the 32 that
+    // follow a direction written as prefixes times directions (3073 B).
+    // 3.1 kB → 3.15 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (3117 B).
+    limit: '3.15 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -215,7 +299,13 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ OtpField }',
     ignore: ['react', 'react-dom'],
-    limit: '2.5 kB',
+    // 2.5 kB → 2.6 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 2.6 kB → 2.65 kB (2026-10-23): overlays leave with wipes and pockets too (ADR
+    // 0025 addendum): the overlay exits' names every component carries, the 32 that
+    // follow a direction written as prefixes times directions (2606 B).
+    limit: '2.65 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -231,7 +321,10 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ Countdown }',
     ignore: ['react', 'react-dom'],
-    limit: '2.25 kB',
+    // 2.25 kB → 2.3 kB (2026-10-23): overlays leave with wipes and pockets too (ADR
+    // 0025 addendum): the overlay exits' names every component carries, the 32 that
+    // follow a direction written as prefixes times directions (2257 B).
+    limit: '2.3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -240,7 +333,36 @@ module.exports = [
     import: '{ SpeedDial, SpeedDialAction }',
     ignore: ['react', 'react-dom'],
     // 3 kB → 3.05 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    limit: '3.05 kB',
+    // 3.05 kB → 3.25 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 3.25 kB → 3.3 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 3.3 kB → 3.35 kB (2026-10-23): overlays leave with wipes and pockets too (ADR
+    // 0025 addendum): the overlay exits' names every component carries, the 32 that
+    // follow a direction written as prefixes times directions (3313 B).
+    // 3.35 kB → 3.4 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (3354 B).
+    limit: '3.4 kB',
+    modifyRolldownConfig: external,
+  },
+  {
+    name: 'JS: tree-shaken { ScrollSpy }',
+    path: 'dist/index.js',
+    import: '{ ScrollSpy }',
+    ignore: ['react', 'react-dom'],
+    // Mostly what every component shares: Slot and the greese prop's static part.
+    // 2.25 kB → 2.3 kB (2026-10-23): wipes and pockets in every direction, arriving and
+    // leaving (27 more effects, generated from one table of directions; ADR 0025
+    // addendum): the entrance names the static part carries (2.25 kB).
+    // 2.3 kB → 2.35 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (2310 B).
+    limit: '2.35 kB',
+    modifyRolldownConfig: external,
+  },
+  {
+    name: 'JS: tree-shaken { useStoredState }',
+    path: 'dist/index.js',
+    import: '{ useStoredState }',
+    ignore: ['react', 'react-dom'],
+    limit: '0.6 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -248,7 +370,11 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ Swap }',
     ignore: ['react', 'react-dom'],
-    limit: '2 kB',
+    // 2 kB → 2.1 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
+    // names of the entrances CSS can play, which every component's static part carries
+    // to know when the runtime is needed, about 40 B.
+    // 2.1 kB → 2.15 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (2135 B).
+    limit: '2.15 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -287,6 +413,21 @@ module.exports = [
     // 8.6 → 9.1 kB (2026-10-21): an overlay can leave with an effect defined at
     // run time, so the runtime sets its `translate` and `scale` from the same
     // `cssPlan()` the build uses for the built-ins, about 0.5 kB.
-    limit: '9.1 kB',
+    // 9.1 → 9.15 kB (2026-10-23): `cssPlan()` lets an effect reveal with a mask
+    // (wipes and pockets, which compose with a shape's clip-path; ADR 0025),
+    // about 30 B.
+    // 9.15 kB → 9.5 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025):
+    // their definitions, about 0.3 kB.
+    // 9.5 kB → 9.8 kB (2026-10-23): wipes and pockets in every direction, arriving and
+    // leaving (27 more effects, generated from one table of directions; ADR 0025
+    // addendum): their definitions (9.78 kB).
+    // 9.8 kB → 9.85 kB (2026-10-23): irises in eight directions (ADR 0025), and a
+    // built-in is never replaced by a defined effect: the lookup tries the built-ins
+    // first (9.81 kB).
+    // 9.85 kB → 9.9 kB (2026-10-24): a scroll reveal reads the element's box as the
+    // page scrolls, since a shape's clip-path keeps IntersectionObserver's ratio
+    // under 1 (ADR 0025; 9.86 kB).
+    // 9.9 kB → 10.25 kB (2026-10-24): the 16 three-dimensional effects (ADR 0025 addendum, 2026-10-24): their definitions (10237 B).
+    limit: '10.25 kB',
   },
 ]

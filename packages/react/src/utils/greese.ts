@@ -39,7 +39,12 @@ export type GreeseSequence =
   `${string},${string}` | `${string}+${string}` | `${string}(${string})`
 
 /** What a motion option plays: an effect, a sequence of effects, or greese.js keyframes. */
-export type GreeseMotion = GreeseEffectName | GreeseSequence | Keyframes
+/**
+ * An effect, a sequence, keyframes, or `'theme'`: whatever entrance the theme
+ * assigns (`--greese-motion-theme`; `fadeUp` in the base theme). A named
+ * effect is that effect in every theme; `'theme'` follows the theme.
+ */
+export type GreeseMotion = GreeseEffectName | 'theme' | GreeseSequence | Keyframes
 
 /** How a parent sets when the entrances inside it start. */
 export interface GreeseScope {
@@ -126,7 +131,7 @@ export interface GreeseProps {
 const cssPreset = (motion: GreeseMotion | undefined, css: string | undefined) =>
   css &&
   typeof motion === 'string' &&
-  (entranceNames as readonly string[]).includes(motion)
+  (motion === 'theme' || (entranceNames as readonly string[]).includes(motion))
     ? effectClass(motion)
     : undefined
 

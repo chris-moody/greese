@@ -15,7 +15,7 @@ import {
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { flattenChildren } from '../../utils/children.ts'
 import { cx } from '../../utils/cx.ts'
-import { ChevronGlyph } from '../../utils/glyphs.tsx'
+import { ChevronLeftIcon } from '@greese/icons'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 import {
   neverToken,
@@ -285,7 +285,7 @@ export const ScrollCarousel = ({
             disabled={!loop && edges.start}
             onClick={() => go(index - 1)}
           >
-            <ChevronGlyph />
+            <ChevronLeftIcon />
           </button>
           <button
             type="button"
@@ -295,7 +295,7 @@ export const ScrollCarousel = ({
             disabled={!loop && edges.end}
             onClick={() => go(edges.end && loop ? 0 : index + 1)}
           >
-            <ChevronGlyph />
+            <ChevronLeftIcon />
           </button>
         </>
       )}
