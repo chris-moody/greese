@@ -321,6 +321,27 @@ describe('Collapsible and Accordion', () => {
     expect(two!.querySelector('.greese-Collapsible-closedIcon')).toHaveTextContent('▸')
     expect(two!.querySelector('.greese-Collapsible-openIcon')).toBeNull()
   })
+
+  it("never mixes an item's icon with the group's, or the group's transition with it", () => {
+    const { container } = render(
+      <Accordion icon="+" openIcon="−" iconTransition="fade">
+        <AccordionItem title="One" icon="▸">
+          1
+        </AccordionItem>
+        <AccordionItem title="Two" openIcon={null}>
+          2
+        </AccordionItem>
+      </Accordion>
+    )
+    const [one, two] = container.querySelectorAll('.greese-Collapsible-icon')
+    // Its own icon alone: no group minus to fade to, so it turns.
+    expect(one).toHaveClass('greese-Collapsible-icon--rotate')
+    expect(one).toHaveTextContent('▸')
+    expect(one!.querySelector('.greese-Collapsible-openIcon')).toBeNull()
+    // Its own set (no open icon): the default chevron, turning.
+    expect(two).toHaveClass('greese-Collapsible-icon--rotate')
+    expect(two!.querySelector('.greese-Collapsible-chevron')).not.toBeNull()
+  })
 })
 
 describe('Tabs', () => {

@@ -45,7 +45,8 @@ module.exports = [
     // 28.4 kB → 28.45 kB (2026-10-24): the three-dimensional effects (ADR 0025
     // addendum): ten more names of what CSS plays (28.41 kB after a fresh build).
     // 28.45 kB → 28.8 kB (2026-10-24): Header, Footer and FooterSection, and Accordion and Collapsible icons per state (28.76 kB).
-    limit: '28.8 kB',
+    // 28.8 kB → 28.85 kB (2026-10-24): Footer leaves out a brand, sections or legal row that render nothing (a condition that came out false) and an AccordionItem's own icons replace the group's as a set (28.84 kB).
+    limit: '28.85 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -65,7 +66,8 @@ module.exports = [
     // 33.3 kB → 33.35 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (33309 B).
     // 33.35 kB → 33.8 kB (2026-10-24): the same, with greese.js (33.79 kB).
     // 33.8 kB → 34.1 kB (2026-10-24): greese.js's kill() puts back the inline styles it found instead of pinning computed values, and callbacks fire once per repeat (ADR 0008 amendment); a hover keeps its resting box and ends when the pointer leaves the window (34.05 kB).
-    limit: '34.1 kB',
+    // 34.1 kB → 34.15 kB (2026-10-24): the same Footer and AccordionItem fixes (34.12 kB).
+    limit: '34.15 kB',
     modifyRolldownConfig: external,
   },
   {

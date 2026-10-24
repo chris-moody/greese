@@ -8,14 +8,21 @@ import { Header } from './Header/Header.tsx'
 describe('Header', () => {
   it('is the banner, with brand, navigation and actions in its row', async () => {
     const { container } = render(
-      <Header brand={<a href="/">Acme</a>} actions={<button type="button">Sign in</button>}>
+      <Header
+        brand={<a href="/">Acme</a>}
+        actions={<button type="button">Sign in</button>}
+      >
         <nav aria-label="Main">
           <a href="/docs">Docs</a>
         </nav>
       </Header>
     )
     const header = screen.getByRole('banner')
-    expect(header).toHaveClass('greese-Header', 'greese-Header--sticky', 'greese-Header--size-lg')
+    expect(header).toHaveClass(
+      'greese-Header',
+      'greese-Header--sticky',
+      'greese-Header--size-lg'
+    )
     expect(header.querySelector('.greese-Header-brand')).toHaveTextContent('Acme')
     expect(header.querySelector('.greese-Header-nav')).toContainElement(
       screen.getByRole('navigation', { name: 'Main' })
@@ -39,6 +46,31 @@ describe('Header', () => {
 })
 
 describe('Footer', () => {
+  it('leaves out parts that render nothing, conditional children included', () => {
+    const show = false
+    const { container } = render(
+      <Footer brand={null} legal="© 2026 Acme">
+        {show && <FooterSection title="Product">x</FooterSection>}
+        {null}
+      </Footer>
+    )
+    expect(container.querySelector('.greese-Footer-main')).toBeNull()
+    expect(container.querySelector('.greese-Footer-legal')).toHaveTextContent(
+      '© 2026 Acme'
+    )
+    render(
+      <FooterSection title="Company">
+        <a href="/about">About</a>
+        {false}
+        {true}
+        {null}
+      </FooterSection>
+    )
+    expect(
+      screen.getByRole('navigation', { name: 'Company' }).querySelectorAll('li')
+    ).toHaveLength(1)
+  })
+
   it('is the contentinfo, with named sections of listed links and a legal row', async () => {
     const { container } = render(
       <Footer brand="Acme" legal="© 2026 Acme">
@@ -56,7 +88,9 @@ describe('Footer', () => {
     const product = screen.getByRole('navigation', { name: 'Product' })
     expect(product.querySelectorAll('li')).toHaveLength(2)
     expect(screen.getByRole('navigation', { name: 'Company' })).toBeInTheDocument()
-    expect(container.querySelector('.greese-Footer-legal')).toHaveTextContent('© 2026 Acme')
+    expect(container.querySelector('.greese-Footer-legal')).toHaveTextContent(
+      '© 2026 Acme'
+    )
     await expectNoAxeViolations(container)
   })
 

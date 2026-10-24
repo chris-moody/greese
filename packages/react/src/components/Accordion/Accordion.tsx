@@ -30,11 +30,18 @@ export interface AccordionProps extends GreeseProps, ComponentPropsWithRef<'div'
    * so the browser closes the others. No JS involved. @default false
    */
   exclusive?: boolean
-  /** Every item's icon, closed (or both states without `openIcon`); an item's own wins. @default a downward chevron */
+  /**
+   * Every item's icon, closed (or both states without `openIcon`). An item
+   * that sets `icon` or `openIcon` uses its own pair instead, never half of
+   * each. @default a downward chevron
+   */
   icon?: ReactNode
-  /** Every item's open-state icon; an item's own wins. */
+  /** Every item's open-state icon, unless the item sets its own icons. */
   openIcon?: ReactNode
-  /** How every item's icon changes state; an item's own wins. @default 'rotate', or 'fade' with an `openIcon` */
+  /**
+   * How every item's icon changes state, unless the item sets its own icons
+   * or transition. @default 'rotate', or 'fade' with an `openIcon`
+   */
   iconTransition?: CollapsibleIconTransition
 }
 
@@ -60,7 +67,9 @@ export const Accordion = ({
 }: AccordionProps): JSX.Element => {
   const name = useId()
   return withGreese(
-    <AccordionContext value={{ name: exclusive ? name : undefined, icon, openIcon, iconTransition }}>
+    <AccordionContext
+      value={{ name: exclusive ? name : undefined, icon, openIcon, iconTransition }}
+    >
       <div {...props} className={cx('greese-Accordion', className)} />
     </AccordionContext>,
     greese
@@ -80,13 +89,16 @@ export const AccordionItem = ({
   ...props
 }: AccordionItemProps): JSX.Element => {
   const group = use(AccordionContext)
+  // The item's icons are a set: setting either replaces the group's pair and
+  // its transition, which was chosen for the group's icons.
+  const own = icon !== undefined || openIcon !== undefined
   return withGreese(
     <Collapsible
       {...props}
       name={name ?? group.name}
-      icon={icon !== undefined ? icon : group.icon}
-      openIcon={openIcon !== undefined ? openIcon : group.openIcon}
-      iconTransition={iconTransition ?? group.iconTransition}
+      icon={own ? icon : group.icon}
+      openIcon={own ? openIcon : group.openIcon}
+      iconTransition={iconTransition ?? (own ? undefined : group.iconTransition)}
       className={cx('greese-AccordionItem', className)}
     />,
     greese

@@ -3,6 +3,9 @@ import { cx } from '../../utils/cx.ts'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 import type { ContainerSize } from '../Container/Container.tsx'
 
+/** Whether a node renders anything: `null`, `undefined` and booleans don't (conditional parts). */
+const rendersSomething = (node: ReactNode): boolean => Children.toArray(node).length > 0
+
 export interface FooterProps extends GreeseProps, ComponentPropsWithRef<'footer'> {
   /** The wordmark, logo or a line about the site, beside the sections. */
   brand?: ReactNode
@@ -32,23 +35,30 @@ export const Footer = ({
   className,
   children,
   ...props
-}: FooterProps): JSX.Element =>
-  withGreese(
-    <footer {...props} className={cx('greese-Footer', `greese-Footer--size-${size}`, className)}>
+}: FooterProps): JSX.Element => {
+  const hasBrand = rendersSomething(brand)
+  const hasSections = rendersSomething(children)
+  return withGreese(
+    <footer
+      {...props}
+      className={cx('greese-Footer', `greese-Footer--size-${size}`, className)}
+    >
       <div className="greese-Footer-inner">
-        {(brand !== undefined || Children.count(children) > 0) && (
+        {(hasBrand || hasSections) && (
           <div className="greese-Footer-main">
-            {brand !== undefined && <div className="greese-Footer-brand">{brand}</div>}
-            {Children.count(children) > 0 && <div className="greese-Footer-sections">{children}</div>}
+            {hasBrand && <div className="greese-Footer-brand">{brand}</div>}
+            {hasSections && <div className="greese-Footer-sections">{children}</div>}
           </div>
         )}
-        {legal !== undefined && <div className="greese-Footer-legal">{legal}</div>}
+        {rendersSomething(legal) && <div className="greese-Footer-legal">{legal}</div>}
       </div>
     </footer>,
     greese
   )
+}
 
-export interface FooterSectionProps extends GreeseProps, Omit<ComponentPropsWithRef<'nav'>, 'title'> {
+export interface FooterSectionProps
+  extends GreeseProps, Omit<ComponentPropsWithRef<'nav'>, 'title'> {
   /** The column's heading. */
   title: ReactNode
   /**
@@ -85,7 +95,9 @@ export const FooterSection = ({
     >
       <p className="greese-FooterSection-title">{title}</p>
       <ul className="greese-FooterSection-links">
-        {Children.map(children, (child) => (child == null || child === false ? null : <li>{child}</li>))}
+        {Children.map(children, (child) =>
+          child == null || child === false ? null : <li>{child}</li>
+        )}
       </ul>
     </nav>,
     greese
