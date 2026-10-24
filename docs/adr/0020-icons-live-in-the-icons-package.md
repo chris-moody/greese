@@ -65,6 +65,15 @@ glyphs are the icons that already existed.
   the stylesheets size them as before. The plus is the icons package's, slightly
   larger than the old glyph's, so the NumberField and SpeedDial visual baselines
   change.
+- **Overriding the display (2026-10-24 audit).** The inline style is what keeps
+  an icon inline under resets that make every `<svg>` a block: Tailwind's
+  preflight is unlayered, so it beats any rule GreeseUI ships in its layers,
+  and only an inline style (or `!important`) wins over it. The cost is the
+  other side of that: a stylesheet can't change an icon's `display` either.
+  Hide or re-display one with its `style` prop, which is applied last, or on an
+  element around it (the site hides its theme trigger's marks as one wrapper).
+  The audit kept the inline style; nothing CSS-only both survives the resets and
+  yields to stylesheets.
 - **Stylesheets.** `Checkbox` and `Table` select the icon's paths by position, and
   `greese-Checkbox-check`, `-dash` and `greese-SortGlyph-*` are gone from the
   style manifest.
