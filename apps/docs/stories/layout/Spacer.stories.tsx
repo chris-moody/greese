@@ -6,6 +6,17 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
+/** A row with the spacer between: try a `size` to fix its length. */
+export const Playground: Story = {
+  render: (args) => (
+    <Stack direction="row" align="center">
+      <Tile>Logo</Tile>
+      <Spacer {...args} />
+      <Tile>Sign in</Tile>
+    </Stack>
+  ),
+}
+
 /** Without `size`, it grows and pushes its neighbours apart. */
 export const Flexible: Story = {
   render: () => (

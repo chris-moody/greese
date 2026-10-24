@@ -41,6 +41,30 @@ const tone = { Paid: 'positive', Overdue: 'negative', Draft: 'neutral' } as cons
 const money = (n: number) =>
   n.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' })
 
+/** A captioned table: try `density`, `striped` and `hoverable`. */
+export const Playground: Story = {
+  render: (args) => (
+    <Table {...args}>
+      <TableHead>
+        <TableRow>
+          <TableHeaderCell>Number</TableHeaderCell>
+          <TableHeaderCell>Client</TableHeaderCell>
+          <TableHeaderCell>Total</TableHeaderCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {invoices.slice(0, 3).map((row) => (
+          <TableRow key={row.id}>
+            <TableCell>{row.id}</TableCell>
+            <TableCell>{row.client}</TableCell>
+            <TableCell>{money(row.total)}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+}
+
 /** Sortable columns (`aria-sort`); rows stack into cards below sm. Resize to see. */
 export const SortableAndResponsive: Story = {
   render: function Render() {

@@ -32,10 +32,20 @@ const meta = {
   title: 'Utilities/Slot',
   component: Slot,
   subcomponents: { Slottable },
+  args: { title: 'Merged onto the link', style: { fontWeight: 600 } },
 } satisfies Meta<typeof Slot>
 export default meta
 
 type Story = StoryObj<typeof meta>
+
+/** Its props land on its one child: here the link gets the title and style. */
+export const Playground: Story = {
+  render: (args) => (
+    <Slot {...args}>
+      <a href="#somewhere">A link</a>
+    </Slot>
+  ),
+}
 
 /**
  * Slot merges its props (className, style, handlers, ref) onto its one child.
