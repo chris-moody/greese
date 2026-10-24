@@ -244,7 +244,28 @@ export const validateSpec = (spec: ThemeSpec): string[] => {
       errors.push(`${where}: keyframes are an object, or a list of objects`)
     for (const frame of list) {
       for (const [prop, v] of Object.entries(frame as Record<string, unknown>)) {
-        if (prop === 'offset' || prop === 'ease') continue
+        if (prop === 'offset') {
+          if (!(typeof v === 'number' && v >= 0 && v <= 1))
+            errors.push(
+              `${where}: offset ${JSON.stringify(v)} is not a number from 0 to 1`
+            )
+          continue
+        }
+        if (prop === 'ease') {
+          // An ease's name, with numbers if it takes them (`steps(4)`,
+          // `elastic.out(1, 0.3)`), or a cubic Bézier's four numbers.
+          const named =
+            typeof v === 'string' && /^[A-Za-z][\w.-]*(\([\d., ]*\))?$/.test(v)
+          const bezier =
+            Array.isArray(v) &&
+            v.length === 4 &&
+            v.every((n) => typeof n === 'number' && Number.isFinite(n))
+          if (!named && !bezier)
+            errors.push(
+              `${where}: ease ${JSON.stringify(v)} is not an ease name or four numbers`
+            )
+          continue
+        }
         if (!/^(--)?[A-Za-z][A-Za-z0-9-]*$/.test(prop))
           errors.push(`${where}: ${JSON.stringify(prop)} is not a property name`)
         for (const x of Array.isArray(v) ? v : [v])
@@ -280,11 +301,15 @@ export const validateSpec = (spec: ThemeSpec): string[] => {
   }
   for (const [name, shape] of Object.entries(spec.shapes ?? {})) {
     const where = `shapes.${name}`
-    if (!SHAPE_NAME.test(name)) errors.push(`shapes: ${JSON.stringify(name)} is not a kebab-case name`)
+    if (!SHAPE_NAME.test(name))
+      errors.push(`shapes: ${JSON.stringify(name)} is not a kebab-case name`)
     if (!Array.isArray(shape.points) || shape.points.length < 3)
       errors.push(`${where}: a shape needs at least 3 points`)
     for (const [i, p] of (shape.points ?? []).entries())
-      for (const [axis, l] of [['x', p?.x], ['y', p?.y]] as const) {
+      for (const [axis, l] of [
+        ['x', p?.x],
+        ['y', p?.y],
+      ] as const) {
         if (!l || typeof l !== 'object') {
           errors.push(`${where} point ${i + 1}: no ${axis}`)
           continue
@@ -293,19 +318,26 @@ export const validateSpec = (spec: ThemeSpec): string[] => {
           if (l[k] !== undefined && !Number.isFinite(l[k]))
             errors.push(`${where} point ${i + 1} ${axis}.${k}: not a number`)
         if (l.param !== undefined && !PARAM.test(l.param))
-          errors.push(`${where} point ${i + 1} ${axis}.param: ${JSON.stringify(l.param)} is not a parameter name`)
+          errors.push(
+            `${where} point ${i + 1} ${axis}.param: ${JSON.stringify(l.param)} is not a parameter name`
+          )
       }
     for (const state of ['params', 'hover', 'active'] as const)
       for (const [k, v] of Object.entries(shape[state] ?? {})) {
-        if (!PARAM.test(k)) errors.push(`${where}.${state}: ${JSON.stringify(k)} is not a parameter name`)
+        if (!PARAM.test(k))
+          errors.push(`${where}.${state}: ${JSON.stringify(k)} is not a parameter name`)
         if (!Number.isFinite(v)) errors.push(`${where}.${state}.${k}: not a number of px`)
       }
     if (shape.border?.color && UNSAFE.test(shape.border.color))
-      errors.push(`${where}.border.color: ${JSON.stringify(shape.border.color)} is not a value`)
+      errors.push(
+        `${where}.border.color: ${JSON.stringify(shape.border.color)} is not a value`
+      )
   }
   for (const [name, c] of Object.entries(spec.components ?? {}))
     if (c.shape && !spec.shapes?.[c.shape])
-      errors.push(`${name} shape: the theme has no shape named ${JSON.stringify(c.shape)}`)
+      errors.push(
+        `${name} shape: the theme has no shape named ${JSON.stringify(c.shape)}`
+      )
   errors.push(...mergedUses(spec, 'stylesheet').problems)
   errors.push(
     ...declarationProblems(
@@ -637,7 +669,11 @@ export const shapesScss = (spec: ThemeSpec): string => {
   for (const name of Object.keys(spec.components ?? {}).sort()) {
     const shape = spec.components![name]!.shape
     if (shape && shapes[shape])
-      uses.push({ ...shapeTarget(name), shape, selector: `${scope}${shapeSelector(name)}` })
+      uses.push({
+        ...shapeTarget(name),
+        shape,
+        selector: `${scope}${shapeSelector(name)}`,
+      })
   }
   const params = new Set(Object.values(shapes).flatMap((def) => shapeParams(def)))
   const css = shapesCss(shapes, uses)
