@@ -62,7 +62,10 @@ module.exports = [
     // addendum): ten more names of what CSS plays (28.41 kB after a fresh build).
     // 28.45 kB → 28.8 kB (2026-10-24): Header, Footer and FooterSection, and Accordion and Collapsible icons per state (28.76 kB).
     // 28.8 kB → 28.85 kB (2026-10-24): Footer leaves out a brand, sections or legal row that render nothing (a condition that came out false) and an AccordionItem's own icons replace the group's as a set (28.84 kB).
-    limit: '28.85 kB',
+    // 28.85 kB → 28.9 kB (2026-10-24): Button and Collapsible are Server
+    // Components: they block a loading or disabled press, and listen for a
+    // toggle, without handlers of their own (28.88 kB).
+    limit: '28.9 kB',
     modifyRolldownConfig: external,
   },
   {
