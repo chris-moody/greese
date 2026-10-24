@@ -90,6 +90,30 @@ test('search opens a dialog: typing filters, the arrows move, Enter opens', asyn
   await expect(dialog.getByRole('group', { name: 'Recent' })).toContainText('Finance')
 })
 
+test('a link to a studio tab opens that tab, from the studio itself too', async ({
+  page,
+}) => {
+  await page.goto('/studio')
+  await expect(page.getByRole('tab', { name: 'Tokens' })).toHaveAttribute(
+    'aria-selected',
+    'true'
+  )
+  await page.getByRole('button', { name: 'Search' }).click()
+  const field = page.getByRole('combobox', { name: 'Search' })
+  await field.fill('compiled')
+  await field.press('Enter')
+  await expect(page).toHaveURL(/\/studio\?tab=code$/)
+  await expect(page.getByRole('tab', { name: 'Code' })).toHaveAttribute(
+    'aria-selected',
+    'true'
+  )
+  await page.goBack()
+  await expect(page.getByRole('tab', { name: 'Tokens' })).toHaveAttribute(
+    'aria-selected',
+    'true'
+  )
+})
+
 test('the studio editor is headed by Inspect, Import and Save', async ({ page }) => {
   await page.goto('/studio')
   const editor = page.getByRole('complementary', { name: 'Theme editor' })
@@ -124,7 +148,8 @@ test.describe('on a phone', () => {
     // The whole screen, once it has slid in.
     await expect.poll(async () => Math.round((await menu.boundingBox())!.width)).toBe(375)
     await expect(menu.getByRole('link', { name: 'GitHub' })).toHaveCount(0)
-    // The page on screen is open; another opens by its row, and its title is a link.
+    // The page on screen is open; another opens by its row, and lists its own
+    // link first (the row only opens and closes it).
     await expect(menu.getByRole('link', { name: 'Code' })).toBeVisible()
     await expect(menu.getByRole('link', { name: 'Finance' })).toBeHidden()
     await menu
@@ -132,7 +157,8 @@ test.describe('on a phone', () => {
       .locator('.greese-Collapsible-icon')
       .click()
     await expect(menu.getByRole('link', { name: 'Finance' })).toBeVisible()
-    await menu.getByRole('link', { name: 'Templates', exact: true }).click()
+    await expect(menu.locator('summary a')).toHaveCount(0)
+    await menu.getByRole('link', { name: 'All templates' }).click()
     await expect(page).toHaveURL(/\/templates$/)
   })
 })

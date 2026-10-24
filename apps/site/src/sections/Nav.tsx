@@ -33,7 +33,7 @@ import { ChevronDownIcon } from '@greese/icons'
 import { breakpoints } from '@greese/ui'
 import { REPO_URL } from '../config.ts'
 import { icons } from '../icons.tsx'
-import { hrefOf, navigate, RouteLink, useCurrentRoute } from '../router.tsx'
+import { RouteLink, useCurrentRoute } from '../router.tsx'
 import { TEMPLATES } from '../templates/index.ts'
 import { SearchBox, SearchIconButton, useSearch } from '../search/Search.tsx'
 import { useShell } from '../shell.ts'
@@ -265,20 +265,17 @@ export const Nav = (): JSX.Element => {
         className="site-menu"
       >
         <Stack gap={5}>
-          {/* Each page is a header (its link) over what's on it; the header's
-              row and icon open and close its list. */}
+          {/* Each page is a header over what's on it, its own link first. The
+              header only opens and closes the list: a link inside it would be
+              a control inside a control. */}
           <Accordion className="site-menu-nav">
-            <AccordionItem
-              defaultOpen={home}
-              title={
-                <RouteLink to="home" hash="#top" onClick={close}>
-                  Home
-                </RouteLink>
-              }
-            >
+            <AccordionItem defaultOpen={home} title="Home">
               <ScrollSpy key={route} asChild offset={SPY_OFFSET}>
                 <Stack asChild gap={0} className="site-menu-links">
                   <nav aria-label="Sections">
+                    <RouteLink to="home" hash="#top" onClick={close}>
+                      Home
+                    </RouteLink>
                     {links.map(([id, label]) => (
                       <RouteLink key={id} to="home" hash={`#${id}`} onClick={close}>
                         {label}
@@ -288,44 +285,35 @@ export const Nav = (): JSX.Element => {
                 </Stack>
               </ScrollSpy>
             </AccordionItem>
-            <AccordionItem
-              defaultOpen={studio}
-              title={
-                <RouteLink to="studio" aria-current={studioCurrent} onClick={close}>
-                  Studio
-                </RouteLink>
-              }
-            >
+            <AccordionItem defaultOpen={studio} title="Studio">
               <Stack asChild gap={0} className="site-menu-links">
                 <nav aria-label="Studio">
+                  <RouteLink to="studio" aria-current={studioCurrent} onClick={close}>
+                    Theme Studio
+                  </RouteLink>
                   {STUDIO_TABS.map(([tab, label]) => (
-                    <a
+                    <RouteLink
                       key={tab}
-                      href={`${hrefOf('studio')}?tab=${tab}`}
-                      onClick={(e) => {
-                        // The studio reads its tab from the URL when the history moves.
-                        e.preventDefault()
-                        navigate(e.currentTarget.href)
-                        dispatchEvent(new PopStateEvent('popstate'))
-                        close()
-                      }}
+                      to="studio"
+                      search={`?tab=${tab}`}
+                      onClick={close}
                     >
                       {label}
-                    </a>
+                    </RouteLink>
                   ))}
                 </nav>
               </Stack>
             </AccordionItem>
-            <AccordionItem
-              defaultOpen={route === 'templates'}
-              title={
-                <RouteLink to="templates" aria-current={templatesCurrent} onClick={close}>
-                  Templates
-                </RouteLink>
-              }
-            >
+            <AccordionItem defaultOpen={route === 'templates'} title="Templates">
               <Stack asChild gap={0} className="site-menu-links">
                 <nav aria-label="Templates">
+                  <RouteLink
+                    to="templates"
+                    aria-current={templatesCurrent}
+                    onClick={close}
+                  >
+                    All templates
+                  </RouteLink>
                   {TEMPLATES.map((t) => (
                     <RouteLink key={t.id} to="templates" page={t.id} onClick={close}>
                       {t.title}

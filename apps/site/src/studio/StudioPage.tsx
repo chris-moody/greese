@@ -14,6 +14,7 @@ import {
   useColorScheme,
 } from '@greese/react'
 import { icons } from '../icons.tsx'
+import { useQuery } from '../router.tsx'
 import { useShell } from '../shell.ts'
 import { useStable } from '../useStable.ts'
 import { api, hosted } from './api.ts'
@@ -232,11 +233,9 @@ export const StudioPage = (): JSX.Element => {
     else url.searchParams.set('tab', tab)
     if (url.href !== location.href) history.replaceState(history.state, '', url)
   }, [tab])
-  useEffect(() => {
-    const onPop = () => setTab(tabFromUrl())
-    addEventListener('popstate', onPop)
-    return () => removeEventListener('popstate', onPop)
-  }, [])
+  // A link to another tab (the menu, search) or the history moving opens it.
+  const query = useQuery()
+  useEffect(() => setTab(tabFromUrl()), [query])
 
   const save = async () => {
     setSaving(true)

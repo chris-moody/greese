@@ -79,11 +79,9 @@ export const SearchDialog = ({ open, onOpenChange }: SearchDialogProps): JSX.Ele
       [entry.href, ...recent.filter((href) => href !== entry.href)].slice(0, RECENT_MAX)
     )
     onOpenChange(false)
-    // The docs are another app; everything else is a route here. The studio
-    // reads its tab from the URL when the history moves.
+    // The docs are another app; everything else is a route here.
     if (entry.href.startsWith(DOCS_URL)) return location.assign(entry.href)
     navigate(entry.href)
-    dispatchEvent(new PopStateEvent('popstate'))
   }
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {

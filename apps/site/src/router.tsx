@@ -35,9 +35,12 @@ const routeOf = (pathname: string): Route => {
   return 'home'
 }
 
-/** `studio` → `/greese/studio`; `home` → `/greese/`; `templates`, `finance` → `/greese/templates/finance`. */
-export const hrefOf = (route: Route, hash = '', page = ''): string =>
-  `${BASE}${route === 'home' ? '' : route}${page ? `/${page}` : ''}${hash}`
+/**
+ * `studio` → `/greese/studio`; `home` → `/greese/`; `templates`, `finance` →
+ * `/greese/templates/finance`; `studio` with `?tab=code` → `/greese/studio?tab=code`.
+ */
+export const hrefOf = (route: Route, hash = '', page = '', search = ''): string =>
+  `${BASE}${route === 'home' ? '' : route}${page ? `/${page}` : ''}${search}${hash}`
 
 const listeners = new Set<() => void>()
 const subscribe = (listener: () => void) => {
@@ -52,6 +55,14 @@ const snapshot = (): string => location.pathname
 
 export const useRoute = (): Route =>
   routeOf(useSyncExternalStore(subscribe, snapshot, () => BASE))
+
+/** The query string, kept live (`?tab=motion`): it follows navigate() and the history. */
+export const useQuery = (): string =>
+  useSyncExternalStore(
+    subscribe,
+    () => location.search,
+    () => ''
+  )
 
 /** The page under the route: `finance` at `/templates/finance`, else undefined. */
 export const useSubpage = (): string | undefined =>
@@ -87,6 +98,7 @@ export const RouteLink = ({
   to,
   hash,
   page,
+  search,
   onClick,
   ...props
 }: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> & {
@@ -94,8 +106,10 @@ export const RouteLink = ({
   hash?: string
   /** A page under the route: a template's id. */
   page?: string
+  /** A query string: `?tab=code`. */
+  search?: string
 }): JSX.Element => {
-  const href = hrefOf(to, hash, page)
+  const href = hrefOf(to, hash, page, search)
   return (
     <a
       {...props}

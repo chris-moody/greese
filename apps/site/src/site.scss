@@ -51,15 +51,6 @@ body {
 
 .site-menu-nav .greese-Collapsible-title {
   font-size: var(--greese-type-h5-font-size);
-
-  > a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  > a[aria-current] {
-    color: var(--greese-color-primary);
-  }
 }
 
 /* On phones the navigation slot holds nothing visible (the menu has the
