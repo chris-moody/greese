@@ -35,6 +35,7 @@ import { REPO_URL } from '../config.ts'
 import { icons } from '../icons.tsx'
 import { RouteLink, useCurrentRoute } from '../router.tsx'
 import { TEMPLATES } from '../templates/index.ts'
+import { whenIdle } from '../idle.ts'
 import { SearchBox, SearchIconButton, useSearch } from '../search/Search.tsx'
 import { useShell } from '../shell.ts'
 
@@ -51,15 +52,7 @@ const ThemeSelector = lazy(() =>
  */
 const useIdle = (): boolean => {
   const [idle, setIdle] = useState(false)
-  useEffect(() => {
-    const ready = () =>
-      'requestIdleCallback' in window
-        ? requestIdleCallback(() => setIdle(true), { timeout: 4000 })
-        : setTimeout(() => setIdle(true), 1500)
-    if (document.readyState === 'complete') ready()
-    else addEventListener('load', ready, { once: true })
-    return () => removeEventListener('load', ready)
-  }, [])
+  useEffect(() => whenIdle(() => setIdle(true)), [])
   return idle
 }
 

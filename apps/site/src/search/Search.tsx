@@ -1,23 +1,13 @@
 import { lazy, Suspense, useEffect, useState, type JSX } from 'react'
 import { Icon, IconButton, Key } from '@greese/react'
 import { icons } from '../icons.tsx'
+import { whenIdle } from '../idle.ts'
 
 // The dialog and its index (every docs page) are a chunk of their own,
 // fetched when the pointer or focus comes to a search control, or on open.
 const loadDialog = () => import('./SearchDialog.tsx')
 const SearchDialog = lazy(() => loadDialog().then((m) => ({ default: m.SearchDialog })))
 const preload = () => void loadDialog()
-
-// Fetched once the page is idle too, so keys typed straight after ⌘K land in
-// the field rather than before it exists.
-if (typeof window !== 'undefined') {
-  const idle = () =>
-    'requestIdleCallback' in window
-      ? requestIdleCallback(preload, { timeout: 6000 })
-      : setTimeout(preload, 3000)
-  if (document.readyState === 'complete') idle()
-  else addEventListener('load', idle, { once: true })
-}
 
 const MAC =
   typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.userAgent)
@@ -31,6 +21,9 @@ export const useSearch = (): {
   const [open, setOpen] = useState(false)
   // Mounted on first open and kept, so the query survives closing.
   const [mounted, setMounted] = useState(false)
+  // Fetched once the page is idle too, so keys typed straight after ⌘K land
+  // in the field rather than before it exists.
+  useEffect(() => whenIdle(preload, 6000), [])
   useEffect(() => {
     if (open) setMounted(true)
   }, [open])
