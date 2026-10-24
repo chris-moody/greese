@@ -188,6 +188,12 @@ input, so `react-hook-form`'s `register()` needs no adapters.
 <IconButton label="Close"><XIcon /></IconButton>
 ```
 
+The controls on their own: `Input` (a styled native input, with adornments),
+`Textarea` (grows with its content), `Radio` (inside `RadioGroup`), `Slider`
+(a native range), `FileInput` (the platform picker, camera included on
+phones), `ToggleButton` (on or off, `aria-pressed`) and `ButtonGroup`
+(related buttons, attached or spaced).
+
 Also: `Combobox` (searchable select), `NumberField` (spinbutton with
 steppers), `DateField` (native date and time pickers), `MaskedInput` (formats
 as you type: phones, cards, codes), `ColorPicker` (touch-friendly, with
