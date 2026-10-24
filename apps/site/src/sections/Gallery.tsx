@@ -156,11 +156,7 @@ const Forms = (): JSX.Element => (
       </CheckboxGroup>
       <RadioGroup label="Billing" defaultValue="yearly">
         <Radio value="monthly" label="Monthly" />
-        <Radio
-          value="yearly"
-          label="Yearly"
-          description="Two months free"
-        />
+        <Radio value="yearly" label="Yearly" description="Two months free" />
       </RadioGroup>
     </Demo>
     <Demo title="Toggles and ranges">
@@ -227,11 +223,7 @@ const Feedback = (): JSX.Element => (
       <Alert tone="positive" title="Deployed">
         Version 1.0 is live.
       </Alert>
-      <Alert
-        tone="warning"
-        title="Budget close"
-        greese={{ inView: 'theme', delay: 0.1 }}
-      >
+      <Alert tone="warning" title="Budget close" greese={{ inView: 'theme', delay: 0.1 }}>
         A bundle is within 5% of its size budget.
       </Alert>
     </Demo>
@@ -357,9 +349,7 @@ const Overlays = (): JSX.Element => (
       </Popover>
     </Demo>
     <Demo title="Tooltip">
-      <Tooltip
-        content="Native popover, delayed on hover"
-      >
+      <Tooltip content="Native popover, delayed on hover">
         <Button variant="ghost" greese={{ hover: 'tilt' }}>
           Hover or focus me
         </Button>

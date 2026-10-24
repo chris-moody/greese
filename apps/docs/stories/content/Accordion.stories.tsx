@@ -44,6 +44,9 @@ export const OwnIcon: Story = {
   args: {
     icon: <ChevronRightIcon />,
     iconTransition: 'rotate',
-    style: { maxInlineSize: '36rem', '--greese-collapsible-icon-turn': '90deg' } as CSSProperties,
+    style: {
+      maxInlineSize: '36rem',
+      '--greese-collapsible-icon-turn': '90deg',
+    } as CSSProperties,
   },
 }

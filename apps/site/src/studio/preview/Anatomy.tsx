@@ -41,8 +41,11 @@ const wrap = (classes: string[], max: number): string[] => {
   const lines: string[] = []
   for (const word of classes.map((c) => `.${c}`)) {
     const last = lines.at(-1)
-    if (last !== undefined && last.length + 1 + word.length <= perLine) lines[lines.length - 1] = `${last} ${word}`
-    else for (let i = 0; i < word.length; i += perLine) lines.push(word.slice(i, i + perLine))
+    if (last !== undefined && last.length + 1 + word.length <= perLine)
+      lines[lines.length - 1] = `${last} ${word}`
+    else
+      for (let i = 0; i < word.length; i += perLine)
+        lines.push(word.slice(i, i + perLine))
   }
   return lines
 }

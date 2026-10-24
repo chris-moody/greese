@@ -41,11 +41,21 @@ const Effect = ({
         )}
         <span className="studio-effect-actions">
           {custom ? (
-            <Button size="sm" variant="ghost" tone="neutral" onClick={() => lab.reset(name)}>
+            <Button
+              size="sm"
+              variant="ghost"
+              tone="neutral"
+              onClick={() => lab.reset(name)}
+            >
               Delete
             </Button>
           ) : (
-            <Button size="sm" variant="ghost" tone="neutral" onClick={() => lab.copy(name)}>
+            <Button
+              size="sm"
+              variant="ghost"
+              tone="neutral"
+              onClick={() => lab.copy(name)}
+            >
               Copy to edit
             </Button>
           )}
@@ -154,8 +164,8 @@ export const EffectsSection = ({ lab }: { lab: GreeseLab }): JSX.Element => (
       </Heading>
       <Text variant="p3" tone="muted">
         Each effect is plain keyframes: property → [from, to], or a list of frames. The
-        built-ins always do what their names say; copy one to make your own, edit its code,
-        and assign it where it should play. Distances are shown at their default,{' '}
+        built-ins always do what their names say; copy one to make your own, edit its
+        code, and assign it where it should play. Distances are shown at their default,{' '}
         <Code>1rem</Code>. Play runs an effect on the stage.
       </Text>
     </Stack>

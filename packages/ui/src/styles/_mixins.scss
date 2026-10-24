@@ -229,7 +229,10 @@ $breakpoints: config.$breakpoints;
 /// the effect and the token keep their own values.
 @mixin role-entrance($role, $name, $duration, $ease: var(--greese-easing-enter)) {
   animation-name: var(--greese-motion-#{$role}, #{$name});
-  animation-duration: var(--greese-motion-#{$role}-duration, var(--greese-duration-#{$duration}));
+  animation-duration: var(
+    --greese-motion-#{$role}-duration,
+    var(--greese-duration-#{$duration})
+  );
   animation-timing-function: var(--greese-motion-enter-ease, #{$ease});
   animation-fill-mode: backwards;
 }

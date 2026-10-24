@@ -189,7 +189,10 @@ export const withoutMotion = (spec: ThemeSpec): ThemeSpec => {
 }
 
 /** A motion theme in place of any other; colors and shapes stay. */
-export const applyMotion = (spec: ThemeSpec, preset: MotionPreset | undefined): ThemeSpec => {
+export const applyMotion = (
+  spec: ThemeSpec,
+  preset: MotionPreset | undefined
+): ThemeSpec => {
   const base = withoutMotion(spec)
   return preset ? { ...base, motionDefaults: { ...preset.defaults } } : base
 }

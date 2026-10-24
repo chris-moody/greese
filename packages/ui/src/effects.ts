@@ -285,16 +285,24 @@ const pocket = (direction: Direction, leaving: boolean): ComboDefinition => {
   return {
     params: () => ({ distance: '100%' }),
     parts: ({ distance }) => {
-      const far = (sign: number) => (sign > 0 ? String(distance) : negate(String(distance)))
+      const far = (sign: number) =>
+        sign > 0 ? String(distance) : negate(String(distance))
       const slide = (axis: 'x' | 'y', sign: number) => {
-        const travel = { start: leaving ? ZERO : far(-sign), end: leaving ? far(sign) : ZERO }
+        const travel = {
+          start: leaving ? ZERO : far(-sign),
+          end: leaving ? far(sign) : ZERO,
+        }
         return axis === 'x' ? part('slideRight', travel) : part('slideDown', travel)
       }
       // A share of its size (the default, 100%) is plain percentages, which
       // every engine transitions; any other length is calc() at both ends,
       // the same shape, so greese.js interpolates them.
       const share = /^(-?[\d.]+)%$/.exec(String(distance).trim())
-      const short = sized(dx, dy, share ? `${100 - Number(share[1])}%` : `calc(100% - ${distance})`)
+      const short = sized(
+        dx,
+        dy,
+        share ? `${100 - Number(share[1])}%` : `calc(100% - ${distance})`
+      )
       const full = sized(dx, dy, share ? '100%' : 'calc(100% - 0px)')
       return [
         ...(dx ? [slide('x', dx)] : []),
@@ -348,7 +356,10 @@ const flips = Object.fromEntries(
       ],
     ]
   })
-) as unknown as Record<`flip${keyof typeof FLIPS}` | `flipOut${keyof typeof FLIPS}`, ComboDefinition>
+) as unknown as Record<
+  `flip${keyof typeof FLIPS}` | `flipOut${keyof typeof FLIPS}`,
+  ComboDefinition
+>
 
 export const comboEffects = {
   fadeUp: combo({
@@ -422,19 +433,31 @@ export const comboEffects = {
   ...flips,
   depthIn: combo({
     params: () => ({ depth: -240 }),
-    parts: (p) => [part('fadeIn', {}, [0, 0.6]), part('depth', { start: p.depth, end: 0 })],
+    parts: (p) => [
+      part('fadeIn', {}, [0, 0.6]),
+      part('depth', { start: p.depth, end: 0 }),
+    ],
   }),
   depthOut: combo({
     params: () => ({ depth: -240 }),
-    parts: (p) => [part('fadeOut', {}, [0.4, 1]), part('depth', { start: 0, end: p.depth })],
+    parts: (p) => [
+      part('fadeOut', {}, [0.4, 1]),
+      part('depth', { start: 0, end: p.depth }),
+    ],
   }),
   swingIn: combo({
     params: () => ({ angle: -80 }),
-    parts: (p) => [part('fadeIn', {}, [0, 0.5]), part('hinge', { start: p.angle, end: 0 })],
+    parts: (p) => [
+      part('fadeIn', {}, [0, 0.5]),
+      part('hinge', { start: p.angle, end: 0 }),
+    ],
   }),
   swingOut: combo({
     params: () => ({ angle: -80 }),
-    parts: (p) => [part('fadeOut', {}, [0.5, 1]), part('hinge', { start: 0, end: p.angle })],
+    parts: (p) => [
+      part('fadeOut', {}, [0.5, 1]),
+      part('hinge', { start: 0, end: p.angle }),
+    ],
   }),
 } as const satisfies Record<string, ComboDefinition>
 
@@ -832,7 +855,11 @@ export const cssPlan = (frames: Parameters<typeof toCssSteps>[0]): CssPlan => {
     // The last step is the element's own styles, so it goes, unless it holds
     // a mask: that one has to finish the reveal before the mask disappears.
     const [at, last] = steps.at(-1) ?? []
-    return { enter: at === 'to' && !Object.keys(last!).some(transient) ? steps.slice(0, -1) : steps, exit: {} }
+    return {
+      enter:
+        at === 'to' && !Object.keys(last!).some(transient) ? steps.slice(0, -1) : steps,
+      exit: {},
+    }
   }
   // Everything an overlay's exit sets, so nothing falls back to the theme's
   // default exit (which moves toward the overlay's origin): what the effect

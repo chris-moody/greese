@@ -184,7 +184,8 @@ export const useGreeseLab = (
   const copy = useCallback(
     (name: string) => {
       let next = `${name}Copy`
-      for (let i = 2; effectNameError(next, Object.keys(effects)); i++) next = `${name}Copy${i}`
+      for (let i = 2; effectNameError(next, Object.keys(effects)); i++)
+        next = `${name}Copy${i}`
       setEffects({ ...effects, [next]: { keyframes: defaults?.[name] ?? {} } })
       return next
     },

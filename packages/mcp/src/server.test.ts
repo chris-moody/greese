@@ -14,8 +14,19 @@ const data: GreeseData = {
       description: 'A native button with variants and tones. Loading keeps its width.',
       file: 'packages/react/src/components/Button/Button.tsx',
       props: [
-        { name: 'variant', type: '"solid" | "ghost"', required: false, default: 'solid', description: 'Its emphasis.' },
-        { name: 'label', type: 'string', required: true, description: 'The accessible name.' },
+        {
+          name: 'variant',
+          type: '"solid" | "ghost"',
+          required: false,
+          default: 'solid',
+          description: 'Its emphasis.',
+        },
+        {
+          name: 'label',
+          type: 'string',
+          required: true,
+          description: 'The accessible name.',
+        },
       ],
       styles: {
         className: 'greese-Button',
@@ -24,7 +35,7 @@ const data: GreeseData = {
         attributes: ['[data-loading]'],
         variables: ['--greese-button-bg'],
       },
-      example: "export const Playground = {}",
+      example: 'export const Playground = {}',
     },
     {
       name: 'Dialog',
@@ -34,11 +45,29 @@ const data: GreeseData = {
       props: [],
     },
   ],
-  tokens: { color: { primary: { light: '#000', dark: '#fff' } }, space: { '4': '1rem' }, palette: { red: { 500: '#f00' } } },
+  tokens: {
+    color: { primary: { light: '#000', dark: '#fff' } },
+    space: { '4': '1rem' },
+    palette: { red: { 500: '#f00' } },
+  },
   icons: ['CloseIcon', 'MenuIcon', 'SaveIcon'],
-  guides: [{ name: 'Theming', title: 'Theming', text: '# Theming\n\nDark mode and createTheme.' }],
-  themes: [{ id: 'bevel', description: 'Cut corners. Animated.', scss: '.a{}', css: '.a{}' }],
-  templates: [{ id: 'Finance', description: 'A finance dashboard.', source: 'export const Finance = () => null' }],
+  guides: [
+    {
+      name: 'Theming',
+      title: 'Theming',
+      text: '# Theming\n\nDark mode and createTheme.',
+    },
+  ],
+  themes: [
+    { id: 'bevel', description: 'Cut corners. Animated.', scss: '.a{}', css: '.a{}' },
+  ],
+  templates: [
+    {
+      id: 'Finance',
+      description: 'A finance dashboard.',
+      source: 'export const Finance = () => null',
+    },
+  ],
 }
 
 let client: Client
@@ -80,7 +109,9 @@ describe('the GreeseUI MCP server', () => {
   })
 
   it('lists components by category, and filters', async () => {
-    expect((await call('list_components')).text).toMatch(/## Forms\n- \*\*Button\*\*: A native button with variants and tones\./)
+    expect((await call('list_components')).text).toMatch(
+      /## Forms\n- \*\*Button\*\*: A native button with variants and tones\./
+    )
     const overlays = await call('list_components', { category: 'overlays' })
     expect(overlays.text).toMatch(/Dialog/)
     expect(overlays.text).not.toMatch(/Button/)
@@ -94,7 +125,9 @@ describe('the GreeseUI MCP server', () => {
     expect(text).toMatch(/\| `variant` \| `"solid" \\\| "ghost"` \| `solid` \|/)
     expect(text).toMatch(/`.greese-Button--ghost`/)
     expect(text).toMatch(/```tsx\nexport const Playground/)
-    expect((await call('get_component', { name: 'Button', example: false })).text).not.toMatch(/Playground/)
+    expect(
+      (await call('get_component', { name: 'Button', example: false })).text
+    ).not.toMatch(/Playground/)
   })
 
   it('suggests a name for a miss', async () => {
@@ -104,15 +137,25 @@ describe('the GreeseUI MCP server', () => {
   })
 
   it('searches every kind of document', async () => {
-    expect((await call('search', { query: 'dark mode' })).text).toMatch(/\[guide\] \*\*Theming\*\*/)
-    expect((await call('search', { query: 'finance' })).text).toMatch(/\[template\] \*\*Finance\*\*/)
+    expect((await call('search', { query: 'dark mode' })).text).toMatch(
+      /\[guide\] \*\*Theming\*\*/
+    )
+    expect((await call('search', { query: 'finance' })).text).toMatch(
+      /\[template\] \*\*Finance\*\*/
+    )
     expect((await call('search', { query: 'zzz' })).text).toMatch(/Nothing matches/)
   })
 
   it('lists tokens as custom properties', async () => {
-    expect((await call('list_tokens')).text).toMatch(/Token groups: color, space, palette/)
-    expect((await call('list_tokens', { group: 'color' })).text).toMatch(/`--greese-color-primary`/)
-    expect((await call('list_tokens', { group: 'palette' })).text).toMatch(/"500": "#f00"/)
+    expect((await call('list_tokens')).text).toMatch(
+      /Token groups: color, space, palette/
+    )
+    expect((await call('list_tokens', { group: 'color' })).text).toMatch(
+      /`--greese-color-primary`/
+    )
+    expect((await call('list_tokens', { group: 'palette' })).text).toMatch(
+      /"500": "#f00"/
+    )
     expect((await call('list_tokens', { group: 'nope' })).isError).toBe(true)
   })
 
@@ -129,14 +172,21 @@ describe('the GreeseUI MCP server', () => {
     })
     expect(ok.text).toMatch(/--greese-color-primary: #7c3aed/)
     expect(ok.text).toMatch(/data-greese-theme="brand"/)
-    const bad = await call('create_theme', { name: 'brand', options: { radius: { md: '1px; }' } } })
+    const bad = await call('create_theme', {
+      name: 'brand',
+      options: { radius: { md: '1px; }' } },
+    })
     expect(bad.isError).toBe(true)
   })
 
   it('serves templates and themes', async () => {
     expect((await call('list_templates')).text).toMatch(/\*\*Finance\*\*/)
-    expect((await call('get_template', { id: 'finance' })).text).toMatch(/export const Finance/)
-    expect((await call('get_theme', { id: 'bevel', format: 'both' })).text).toMatch(/```scss[\s\S]*```css/)
+    expect((await call('get_template', { id: 'finance' })).text).toMatch(
+      /export const Finance/
+    )
+    expect((await call('get_theme', { id: 'bevel', format: 'both' })).text).toMatch(
+      /```scss[\s\S]*```css/
+    )
     expect((await call('get_theme', { id: 'nope' })).isError).toBe(true)
   })
 
@@ -146,14 +196,18 @@ describe('the GreeseUI MCP server', () => {
       expect.arrayContaining(['greese://guides/Theming', 'greese://components/Button'])
     )
     const guide = await client.readResource({ uri: 'greese://guides/Theming' })
-    expect(guide.contents[0]).toMatchObject({ text: expect.stringMatching(/createTheme/) })
+    expect(guide.contents[0]).toMatchObject({
+      text: expect.stringMatching(/createTheme/),
+    })
   })
 })
 
 describe('search scoring', () => {
   it('needs every word, and ranks a name above a body', () => {
     expect(score('date picker', 'DateField', 'A date input')).toBe(0)
-    expect(score('date', 'DateField', 'x')).toBeGreaterThan(score('date', 'Other', '', 'date'))
+    expect(score('date', 'DateField', 'x')).toBeGreaterThan(
+      score('date', 'Other', '', 'date')
+    )
     expect(search(data, '')).toEqual([])
   })
 })

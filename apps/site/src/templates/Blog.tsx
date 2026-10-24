@@ -43,7 +43,8 @@ const POSTS: Post[] = [
   {
     id: 1,
     title: 'The case for boring CSS',
-    excerpt: 'Cascade layers, custom properties and a little restraint go further than any runtime.',
+    excerpt:
+      'Cascade layers, custom properties and a little restraint go further than any runtime.',
     topic: 'Engineering',
     author: 'Ada Kim',
     minutes: 7,
@@ -53,7 +54,8 @@ const POSTS: Post[] = [
   {
     id: 2,
     title: 'Designing for the thumb',
-    excerpt: 'Why every primary action on a phone belongs in the bottom third of the screen.',
+    excerpt:
+      'Why every primary action on a phone belongs in the bottom third of the screen.',
     topic: 'Design',
     author: 'Rina Patel',
     minutes: 5,
@@ -63,7 +65,8 @@ const POSTS: Post[] = [
   {
     id: 3,
     title: 'Shipping on Fridays',
-    excerpt: 'What changed when we stopped treating the end of the week as a deploy freeze.',
+    excerpt:
+      'What changed when we stopped treating the end of the week as a deploy freeze.',
     topic: 'Culture',
     author: 'Luis Ortega',
     minutes: 6,
@@ -73,7 +76,8 @@ const POSTS: Post[] = [
   {
     id: 4,
     title: 'Roadmaps that survive contact',
-    excerpt: 'Plans written as bets, not promises, and how we review them every six weeks.',
+    excerpt:
+      'Plans written as bets, not promises, and how we review them every six weeks.',
     topic: 'Product',
     author: 'Sam Okafor',
     minutes: 9,
@@ -93,7 +97,8 @@ const POSTS: Post[] = [
   {
     id: 6,
     title: 'One table, three layouts',
-    excerpt: 'How a single data table becomes cards on a phone without a second component.',
+    excerpt:
+      'How a single data table becomes cards on a phone without a second component.',
     topic: 'Engineering',
     author: 'Tomás Ruiz',
     minutes: 8,
@@ -125,7 +130,11 @@ const Subscribe = (): JSX.Element => {
   const [email, setEmail] = useState('')
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    toast({ title: 'You’re subscribed', description: `The next issue goes to ${email}.`, tone: 'positive' })
+    toast({
+      title: 'You’re subscribed',
+      description: `The next issue goes to ${email}.`,
+      tone: 'positive',
+    })
     setEmail('')
   }
   return (
@@ -163,7 +172,12 @@ export const Blog = (): JSX.Element => {
   return (
     <Container size="lg">
       <Stack gap={6} py={{ xs: 5, md: 7 }}>
-        <Stack gap={3} align="center" textAlign="center" greese={{ enter: 'theme', stagger: 0.06 }}>
+        <Stack
+          gap={3}
+          align="center"
+          textAlign="center"
+          greese={{ enter: 'theme', stagger: 0.06 }}
+        >
           <Text variant="caption" tone="muted" className="tpl-kicker">
             Issue 142 · October 2026
           </Text>
@@ -173,14 +187,23 @@ export const Blog = (): JSX.Element => {
           <Text tone="muted" className="tpl-measure">
             Essays on building software people enjoy using, from the team at Northwind.
           </Text>
-          <Stack direction="row" gap={2} wrap="wrap" justify="center" role="group" aria-label="Filter by topic">
+          <Stack
+            direction="row"
+            gap={2}
+            wrap="wrap"
+            justify="center"
+            role="group"
+            aria-label="Filter by topic"
+          >
             {TOPICS.map((topic) => (
               <Chip
                 key={topic}
                 selectable
                 selected={topics.includes(topic)}
                 onSelectedChange={(on) =>
-                  setTopics((all) => (on ? [...all, topic] : all.filter((t) => t !== topic)))
+                  setTopics((all) =>
+                    on ? [...all, topic] : all.filter((t) => t !== topic)
+                  )
                 }
               >
                 {topic}
@@ -209,7 +232,12 @@ export const Blog = (): JSX.Element => {
 
         <Grid container columns={{ xs: 1, lg: '1fr 20rem' }} gap={6}>
           <Stack gap={5}>
-            <Grid container minChildWidth="16rem" gap={4} greese={{ inView: 'theme', stagger: 0.06 }}>
+            <Grid
+              container
+              minChildWidth="16rem"
+              gap={4}
+              greese={{ inView: 'theme', stagger: 0.06 }}
+            >
               {posts.map((post) => (
                 <Card key={post.id} variant="outline">
                   <Cover hue={post.hue} />
@@ -223,7 +251,9 @@ export const Blog = (): JSX.Element => {
                       startIcon={<HeartIcon />}
                       onClick={() =>
                         setLiked((all) =>
-                          all.includes(post.id) ? all.filter((id) => id !== post.id) : [...all, post.id]
+                          all.includes(post.id)
+                            ? all.filter((id) => id !== post.id)
+                            : [...all, post.id]
                         )
                       }
                     >
@@ -242,8 +272,15 @@ export const Blog = (): JSX.Element => {
                 </Card>
               ))}
             </Grid>
-            {posts.length === 0 && <Text tone="muted">No posts on those topics yet.</Text>}
-            <Pagination count={12} page={page} onPageChange={setPage} label="Older posts" />
+            {posts.length === 0 && (
+              <Text tone="muted">No posts on those topics yet.</Text>
+            )}
+            <Pagination
+              count={12}
+              page={page}
+              onPageChange={setPage}
+              label="Older posts"
+            />
           </Stack>
 
           <Stack gap={5}>

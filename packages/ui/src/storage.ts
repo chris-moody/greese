@@ -123,7 +123,8 @@ export const createStoredValue = <T>(
     key,
     get,
     set: (value) => {
-      const next = typeof value === 'function' ? (value as (current: T) => T)(get()) : value
+      const next =
+        typeof value === 'function' ? (value as (current: T) => T)(get()) : value
       writeText(area, key, serialize(next))
     },
     remove: () => writeText(area, key, null),

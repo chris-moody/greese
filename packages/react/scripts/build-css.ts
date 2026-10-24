@@ -74,7 +74,9 @@ for (const { name } of components) {
   written++
 }
 
-const manifest = JSON.parse(readFileSync(join(UI, 'dist/style-manifest.json'), 'utf8')) as {
+const manifest = JSON.parse(
+  readFileSync(join(UI, 'dist/style-manifest.json'), 'utf8')
+) as {
   blocks: Record<string, unknown>
 }
 const sources = new Map(

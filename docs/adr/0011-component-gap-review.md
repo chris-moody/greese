@@ -43,7 +43,7 @@ Many were already covered under other names:
 | `Countdown`                                                           | `role="timer"`                     | Ticks against an end time, so it doesn't drift; its label is the spoken duration, so it isn't announced every second |
 | `ChatBubble`                                                          | —                                  | Put messages in a `role="log"` so new ones are announced                                                             |
 | `List` + `ListItem`                                                   | `<ul>`                             | `start`, `title`, `description`, `end` slots                                                                         |
-| `Stat` + `StatGroup`                                                  | `<dl>`                             | The trend's direction must be in the text, not only the color                                                       |
+| `Stat` + `StatGroup`                                                  | `<dl>`                             | The trend's direction must be in the text, not only the color                                                        |
 | `Status`                                                              | —                                  | Decorative unless it has a `label` (then `role="img"`)                                                               |
 | `Indicator`                                                           | —                                  | Logical placements, centred on the corner                                                                            |
 | `Key`                                                                 | `<kbd>`                            | Nested for shortcuts                                                                                                 |
@@ -137,16 +137,16 @@ for each count from 2 to 6.
 
 ### 7. What we didn't build, and why
 
-| Component                              | Why not                                                                                                                                                                               |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Calendar                               | A real date grid (keyboard model, locales, ranges) is a project of its own; DateField uses the native picker. A candidate for its own ADR.                                            |
-| Megamenu                               | Large and app-specific: compose AppBar, Popover and links.                                                                                                                            |
-| Filter                                 | A radio group with a reset: SegmentedControl, or selectable Chips plus a Button.                                                                                                      |
-| Theme controller                       | `useColorScheme()` plus a SegmentedControl or Swap. The Theming guide shows it.                                                                                                       |
-| Mockups (browser, phone, window, code) | Marketing decoration, not app UI. `Code block` covers code.                                                                                                                           |
-| Aura, Hover gallery, Mask              | Decorative effects; CSS or the `greese` prop does them per app.                                                                                                                       |
-| Hero, Footer                           | Layout compositions of Box, Stack and Container, not components.                                                                                                                      |
-| Stack (layered cards)                  | A one-off visual; our `Stack` is layout, and the name is taken.                                                                                                                       |
+| Component                              | Why not                                                                                                                                    |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Calendar                               | A real date grid (keyboard model, locales, ranges) is a project of its own; DateField uses the native picker. A candidate for its own ADR. |
+| Megamenu                               | Large and app-specific: compose AppBar, Popover and links.                                                                                 |
+| Filter                                 | A radio group with a reset: SegmentedControl, or selectable Chips plus a Button.                                                           |
+| Theme controller                       | `useColorScheme()` plus a SegmentedControl or Swap. The Theming guide shows it.                                                            |
+| Mockups (browser, phone, window, code) | Marketing decoration, not app UI. `Code block` covers code.                                                                                |
+| Aura, Hover gallery, Mask              | Decorative effects; CSS or the `greese` prop does them per app.                                                                            |
+| Hero, Footer                           | Layout compositions of Box, Stack and Container, not components.                                                                           |
+| Stack (layered cards)                  | A one-off visual; our `Stack` is layout, and the name is taken.                                                                            |
 
 ## Consequences
 

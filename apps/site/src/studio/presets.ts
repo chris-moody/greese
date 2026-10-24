@@ -130,7 +130,17 @@ const HUES = [
 ]
 
 /** Hues for tinted neutrals: the grays, and a few colors pale enough to read as paper. */
-const NEUTRAL_HUES = ['steel', 'gray', 'ash', 'taupe', 'azure', 'jade', 'lavender', 'orange', 'pink']
+const NEUTRAL_HUES = [
+  'steel',
+  'gray',
+  'ash',
+  'taupe',
+  'azure',
+  'jade',
+  'lavender',
+  'orange',
+  'pink',
+]
 
 /** Four different hues, shuffled, and neutrals tinted from another. `random` is injectable for tests. */
 export const randomPreset = (random: () => number = Math.random): Preset => {
@@ -152,4 +162,8 @@ export const randomPreset = (random: () => number = Math.random): Preset => {
 
 /** A color theme: its colors in place of the theme's; nothing else changes. */
 export const applyPreset = (spec: ThemeSpec, preset: Preset): ThemeSpec =>
-  setIn(spec, ['tokens', 'color'], Object.keys(preset.color).length ? structuredClone(preset.color) : undefined)
+  setIn(
+    spec,
+    ['tokens', 'color'],
+    Object.keys(preset.color).length ? structuredClone(preset.color) : undefined
+  )

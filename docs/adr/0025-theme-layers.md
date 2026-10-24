@@ -31,11 +31,11 @@ Coverage was also thin:
 each kind writes its own fields of the spec and no others. Choosing one leaves
 the other two as they are. A test checks every preset against its layer.
 
-| Layer  | Writes                                                                                                                                                                   |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Layer  | Writes                                                                                                                                                         |
+| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Colors | `tokens.color`: brand colors **and the neutrals** (canvas, surfaces, text, borders), tinted from one hue in both schemes, text checked for AA on every surface |
-| Shapes | `tokens.corner` (the radius roles), `shapes`, each component's `shape`, and structural component SCSS (an accordion's spacing, Folio's folder tabs)                      |
-| Motion | `motionDefaults`: the entrance pacing, and the motion roles (which effect plays where, which duration and easing it takes)                                                |
+| Shapes | `tokens.corner` (the radius roles), `shapes`, each component's `shape`, and structural component SCSS (an accordion's spacing, Folio's folder tabs)            |
+| Motion | `motionDefaults`: the entrance pacing, and the motion roles (which effect plays where, which duration and easing it takes)                                     |
 
 Every layer **reassigns**: it points roles at values that keep their own (the
 addendum "Themes reassign" below). Only the shape layer writes component SCSS. The header's theme picker shows the three as separate
@@ -51,15 +51,15 @@ groups:
 A shape theme defines one shape per role and assigns it to every component in
 the role:
 
-| Role | Components |
-| --- | --- |
-| control | Button and the speed dial |
-| field | Input |
+| Role      | Components                                              |
+| --------- | ------------------------------------------------------- |
+| control   | Button and the speed dial                               |
+| field     | Input                                                   |
 | container | Card, Dialog, Popover, Menu, Toast, Tile, AccordionItem |
-| small | Alert and Tooltip |
-| indicator | Badge, Chip, Segment, the segmented control's track |
-| mark | Avatar and Status |
-| tab | Tab |
+| small     | Alert and Tooltip                                       |
+| indicator | Badge, Chip, Segment, the segmented control's track     |
+| mark      | Avatar and Status                                       |
+| tab       | Tab                                                     |
 
 `SHAPE_TARGETS` in `@greese/ui/shapes` says how each component takes a shape:
 
@@ -199,12 +199,12 @@ slide and its mask, carried together by the closing transition.
 **Motion themes set overlays' entrances and exits,** unless an instance's own
 `greese` sets them:
 
-| Theme | Dialog | Popover, menu | Tooltip | Toast |
-| --- | --- | --- | --- | --- |
-| Snappy | scale in and out | scale in and out | scale in and out | pop in |
-| Gentle | blur in, fade out down | blur in, fade out down | blur in, fade out down | fade up |
-| Wipe | iris in and out | wipe down, wipe out up | open and close from the middle | open from the middle |
-| Pocket | wipe up, sink into a pocket below | wipe down, lift into a pocket above | wipe up, sink below | rise out of a pocket |
+| Theme  | Dialog                            | Popover, menu                       | Tooltip                        | Toast                |
+| ------ | --------------------------------- | ----------------------------------- | ------------------------------ | -------------------- |
+| Snappy | scale in and out                  | scale in and out                    | scale in and out               | pop in               |
+| Gentle | blur in, fade out down            | blur in, fade out down              | blur in, fade out down         | fade up              |
+| Wipe   | iris in and out                   | wipe down, wipe out up              | open and close from the middle | open from the middle |
+| Pocket | wipe up, sink into a pocket below | wipe down, lift into a pocket above | wipe up, sink below            | rise out of a pocket |
 
 An overlay's own transition already fades and moves it, so its entrances only
 add what doesn't fight that: a mask, or a scale.
@@ -244,15 +244,14 @@ them rendered.
 ## Addendum (2026-10-23): themes reassign
 
 A motion theme used to redefine built-in effects (`fadeUp` became a wipe) and
-overwrite the duration and easing tokens; a shape theme set the radius scale to
-0. So a chosen effect no longer did what its name said, and a token's value
+overwrite the duration and easing tokens; a shape theme set the radius scale to 0. So a chosen effect no longer did what its name said, and a token's value
 depended on the theme. Themes now only **reassign**: they point roles at
 values, and the values keep their own.
 
-| Layer | Its roles | Point at |
-| --- | --- | --- |
-| Colors | `primary`, `surface`, `fg`… | the palette |
-| Shapes | `--greese-corner-control`, `-field`, `-surface`, `-panel`, `-inset`, `-pill`, `-round` | the radius scale (`none` for the square themes) |
+| Layer  | Its roles                                                                                                                                                          | Point at                                                     |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| Colors | `primary`, `surface`, `fg`…                                                                                                                                        | the palette                                                  |
+| Shapes | `--greese-corner-control`, `-field`, `-surface`, `-panel`, `-inset`, `-pill`, `-round`                                                                             | the radius scale (`none` for the square themes)              |
 | Motion | `theme`, `content`, `rows`, `toast`, `backdrop`, `overlay`, `dialog`, `popover`, `tooltip`, `drawer`, their `-exit`s, the `*-duration`s, `enter-ease`, `exit-ease` | effects, duration and easing tokens (or values of their own) |
 
 - **Components read roles.** The radius roles are a token group (`corner`),

@@ -33,7 +33,9 @@ describe('copying every built-in', () => {
   }, 30_000)
 
   it('refuses a built-in’s name: a built-in keeps its keyframes', () => {
-    expect(validateSpec({ effects: { fadeUp: { keyframes: { x: [0, 1] } } } })).not.toEqual([])
+    expect(
+      validateSpec({ effects: { fadeUp: { keyframes: { x: [0, 1] } } } })
+    ).not.toEqual([])
   })
 })
 

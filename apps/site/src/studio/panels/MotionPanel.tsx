@@ -80,9 +80,9 @@ export const MotionPanel = ({ spec, onChange, lab }: MotionPanelProps): JSX.Elem
         <Text variant="p3" tone="muted">
           Which effect plays where, and which timing it takes: an effect by name (
           <code>wipe-up</code>), a duration token (<code>slow</code>) or an easing token (
-          <code>enter</code>), or a value of your own. The effects and tokens keep their own
-          values; a role only points at one. A component’s or an instance’s own motion still
-          wins.
+          <code>enter</code>), or a value of your own. The effects and tokens keep their
+          own values; a role only points at one. A component’s or an instance’s own motion
+          still wins.
         </Text>
         {ROLES.map(([key, placeholder]) => (
           <ValueRow

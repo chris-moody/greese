@@ -58,7 +58,9 @@ const CollapsibleIcon = ({
       aria-hidden="true"
     >
       <span className="greese-Collapsible-closedIcon">{closed}</span>
-      {openIcon != null && <span className="greese-Collapsible-openIcon">{openIcon}</span>}
+      {openIcon != null && (
+        <span className="greese-Collapsible-openIcon">{openIcon}</span>
+      )}
     </span>
   )
 }

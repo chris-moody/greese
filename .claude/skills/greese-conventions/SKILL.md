@@ -55,7 +55,7 @@ the ADR wins: fix this file in the same change.
 | `packages/react`  | `@greese/react`: components in `src/components/<Name>/<Name>.tsx`; styled by `@greese/ui`                                                                                                 |
 | `packages/js`     | `@greese/js` (greese.js): animation; no dependencies, no React                                                                                                                            |
 | `packages/icons`  | `@greese/icons`: every icon (`createIcon`); `@greese/react` depends on it (ADR 0020)                                                                                                      |
-| `packages/mcp`    | `@greese/mcp`: the MCP server for coding assistants (ADR 0022)                                                                                                                           |
+| `packages/mcp`    | `@greese/mcp`: the MCP server for coding assistants (ADR 0022)                                                                                                                            |
 | `apps/docs`       | Storybook: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`                                                                                                      |
 | `apps/playground` | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                                                                                                                     |
 | `apps/site`       | The web app: the homepage at `/` and Theme Studio at `/studio` (`npm run studio`: edits a theme JSON, generates kit SCSS + CSS)                                                           |

@@ -513,7 +513,9 @@ describe('ScrollSpy', () => {
       'aria-current',
       'location'
     )
-    expect(screen.getByRole('link', { name: 'Usage' })).not.toHaveAttribute('aria-current')
+    expect(screen.getByRole('link', { name: 'Usage' })).not.toHaveAttribute(
+      'aria-current'
+    )
     expect(screen.getByRole('link', { name: 'Elsewhere' })).not.toHaveAttribute(
       'aria-current'
     )

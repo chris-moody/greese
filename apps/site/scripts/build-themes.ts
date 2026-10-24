@@ -18,7 +18,11 @@ import { VARIANTS } from '../src/studio/variants.ts'
 
 const out = join(dirname(fileURLToPath(import.meta.url)), '../../../packages/ui/themes')
 mkdirSync(out, { recursive: true })
-for (const [presets, kind] of [[SHAPES, 'shape'], [MOTIONS, 'motion'], [VARIANTS, 'variant']] as const)
+for (const [presets, kind] of [
+  [SHAPES, 'shape'],
+  [MOTIONS, 'motion'],
+  [VARIANTS, 'variant'],
+] as const)
   for (const preset of presets) {
     const { scss, css } = themeFile(preset, kind)
     writeFileSync(join(out, `${preset.id}.scss`), scss)

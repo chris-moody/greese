@@ -36,16 +36,16 @@ It runs over stdio and needs Node 24 or later.
 
 ## Tools
 
-| Tool                               | What it returns                                                                                                  |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `list_components`                  | Every component by docs category, one line each                                                                  |
-| `get_component`                    | A component's description, every prop (type, default, meaning), its classes, parts, modifiers and CSS variables, and its stories file as example code |
-| `search`                           | Components, guides, templates and themes that match some words                                                   |
-| `list_tokens`                      | Design tokens as CSS custom properties, by group                                                                 |
-| `list_icons`                       | The icons in `@greese/icons`                                                                                     |
-| `create_theme`                     | The CSS of a theme built with `createTheme(options)`                                                             |
-| `list_templates`, `get_template`   | Page templates (finance, admin dashboard, email client, blog, SaaS, store) and their source                      |
-| `list_themes`, `get_theme`         | Shape themes (clip-path and masks), as kit SCSS or compiled CSS                                                  |
+| Tool                             | What it returns                                                                                                                                       |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `list_components`                | Every component by docs category, one line each                                                                                                       |
+| `get_component`                  | A component's description, every prop (type, default, meaning), its classes, parts, modifiers and CSS variables, and its stories file as example code |
+| `search`                         | Components, guides, templates and themes that match some words                                                                                        |
+| `list_tokens`                    | Design tokens as CSS custom properties, by group                                                                                                      |
+| `list_icons`                     | The icons in `@greese/icons`                                                                                                                          |
+| `create_theme`                   | The CSS of a theme built with `createTheme(options)`                                                                                                  |
+| `list_templates`, `get_template` | Page templates (finance, admin dashboard, email client, blog, SaaS, store) and their source                                                           |
+| `list_themes`, `get_theme`       | Shape themes (clip-path and masks), as kit SCSS or compiled CSS                                                                                       |
 
 ## Resources
 

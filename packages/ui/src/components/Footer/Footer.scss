@@ -5,7 +5,8 @@
   .greese-Footer {
     @include mixins.component-root;
 
-    padding-block: var(--greese-space-7) max(var(--greese-space-6), env(safe-area-inset-bottom));
+    padding-block: var(--greese-space-7)
+      max(var(--greese-space-6), env(safe-area-inset-bottom));
     color: var(--greese-color-fg-muted);
     border-block-start: 1px solid var(--greese-color-border);
   }

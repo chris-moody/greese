@@ -79,7 +79,9 @@ describe('resolveGreese', () => {
       style: undefined,
       runtime: false,
     })
-    expect(resolveGreese({ inView: 'theme' }).className).toMatch(/greese-Motion--view-theme/)
+    expect(resolveGreese({ inView: 'theme' }).className).toMatch(
+      /greese-Motion--view-theme/
+    )
   })
 
   it('turns presets into classes and options into variables, with no runtime', () => {
@@ -235,7 +237,13 @@ describe('the runtime', () => {
     expect(card).toHaveClass('greese-Motion--view-fade-up')
     await attached()
     // Readiness is read from the element's box, as the page scrolls.
-    const box = { top: innerHeight - 40, bottom: innerHeight + 60, height: 100, left: 0, right: 100 }
+    const box = {
+      top: innerHeight - 40,
+      bottom: innerHeight + 60,
+      height: 100,
+      left: 0,
+      right: 100,
+    }
     vi.spyOn(card, 'getBoundingClientRect').mockImplementation(() => box as DOMRect)
     // Partly in view (its bottom still under the fold): not yet.
     scrollIntoView(true, 0.4)

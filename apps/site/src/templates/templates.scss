@@ -307,7 +307,11 @@
 }
 
 .tpl-cta {
-  background: color-mix(in oklab, var(--greese-color-primary) 10%, var(--greese-color-surface));
+  background: color-mix(
+    in oklab,
+    var(--greese-color-primary) 10%,
+    var(--greese-color-surface)
+  );
 }
 
 /* Store */

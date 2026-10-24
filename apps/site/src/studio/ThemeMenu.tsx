@@ -34,7 +34,8 @@ const dot = (value: SchemeValue | undefined, fallback: string, scheme: Scheme) =
 /** The color theme the theme's colors are, if any. */
 const colorIn = (spec: ThemeSpec): Preset | undefined =>
   PRESETS.find(
-    (p) => JSON.stringify(getIn(spec, ['tokens', 'color']) ?? {}) === JSON.stringify(p.color)
+    (p) =>
+      JSON.stringify(getIn(spec, ['tokens', 'color']) ?? {}) === JSON.stringify(p.color)
   )
 
 /**
@@ -137,7 +138,13 @@ export const ThemeMenu = ({
       label="Theme"
       className="studio-theme-picker"
       trigger={
-        <Button size="sm" variant="soft" tone="neutral" aria-label={summary} title={summary}>
+        <Button
+          size="sm"
+          variant="soft"
+          tone="neutral"
+          aria-label={summary}
+          title={summary}
+        >
           <span className="studio-theme-trigger">
             <Diamond colors={currentColors(spec, scheme, rendered)} />
             {/* One box to hide on the narrowest phones (site.scss). */}
@@ -187,7 +194,14 @@ export const ThemeMenu = ({
               hideLabel
               size="sm"
               value={variant?.id ?? NONE}
-              onValueChange={(id) => onChange(applyVariant(spec, VARIANTS.find((v) => v.id === id)))}
+              onValueChange={(id) =>
+                onChange(
+                  applyVariant(
+                    spec,
+                    VARIANTS.find((v) => v.id === id)
+                  )
+                )
+              }
             >
               <Segment value={NONE}>Filled</Segment>
               {VARIANTS.map((v) => (
@@ -211,7 +225,14 @@ export const ThemeMenu = ({
           label="Shapes"
           name={`${id}-shapes`}
           value={shape?.id ?? NONE}
-          onValueChange={(id) => onChange(applyShape(spec, SHAPES.find((p) => p.id === id)))}
+          onValueChange={(id) =>
+            onChange(
+              applyShape(
+                spec,
+                SHAPES.find((p) => p.id === id)
+              )
+            )
+          }
           className="studio-theme-group"
         >
           <Radio
@@ -241,7 +262,14 @@ export const ThemeMenu = ({
           label="Motion"
           name={`${id}-motion`}
           value={motion?.id ?? NONE}
-          onValueChange={(id) => onChange(applyMotion(spec, MOTIONS.find((p) => p.id === id)))}
+          onValueChange={(id) =>
+            onChange(
+              applyMotion(
+                spec,
+                MOTIONS.find((p) => p.id === id)
+              )
+            )
+          }
           className="studio-theme-group"
         >
           <Radio

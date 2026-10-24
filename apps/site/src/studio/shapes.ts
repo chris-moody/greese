@@ -65,7 +65,9 @@ type Role = keyof typeof ROLES
 
 /** The shapes by role, named `<theme>-<role>`, and every component in the role assigned. */
 const byRole = (id: string, shapes: Partial<Record<Role, ShapeDef>>) => ({
-  shapes: Object.fromEntries(Object.entries(shapes).map(([role, def]) => [`${id}-${role}`, def])),
+  shapes: Object.fromEntries(
+    Object.entries(shapes).map(([role, def]) => [`${id}-${role}`, def])
+  ),
   assign: Object.fromEntries(
     Object.keys(shapes).flatMap((role) =>
       ROLES[role as Role].map((component) => [component, `${id}-${role}`])
@@ -80,7 +82,10 @@ const byRole = (id: string, shapes: Partial<Record<Role, ShapeDef>>) => ({
  */
 const NONE = 'var(--greese-radius-none)'
 const SQUARE = Object.fromEntries(
-  ['control', 'field', 'surface', 'panel', 'inset', 'pill', 'round'].map((role) => [role, NONE])
+  ['control', 'field', 'surface', 'panel', 'inset', 'pill', 'round'].map((role) => [
+    role,
+    NONE,
+  ])
 )
 
 /**
@@ -330,7 +335,8 @@ const PEBBLE: ShapePreset = {
  */
 const RAISED = (depth: string) =>
   `inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * ${depth}) 0 0 color-mix(in oklab, black 24%, transparent)`
-const RECESSED = 'inset 0 0.1875rem 0 0 color-mix(in oklab, var(--greese-color-fg) 10%, transparent)'
+const RECESSED =
+  'inset 0 0.1875rem 0 0 color-mix(in oklab, var(--greese-color-fg) 10%, transparent)'
 /** What a pressed part does: sinks by most of its band (a transform, so it never fights an effect's translate). */
 const SINK = (by: string) => `@include greese.motion-safe {
   transition:
@@ -399,7 +405,11 @@ ${SINK('0.125rem')}`,
  * element sits. A `transform`, beside the `translate`, `rotate` and `scale`
  * effects animate, so they compose.
  */
-const TURNS = (hover: string, press: string, origin = '50% 50%') => `transform-origin: ${origin};
+const TURNS = (
+  hover: string,
+  press: string,
+  origin = '50% 50%'
+) => `transform-origin: ${origin};
 
 @include greese.motion-safe {
   transition:
@@ -442,13 +452,23 @@ const TILT: ShapePreset = {
       'perspective(24rem) translateZ(-0.75rem)',
       '50% 100%'
     ),
-    Chip: TURNS('perspective(20rem) rotateX(18deg)', 'perspective(20rem) translateZ(-0.5rem)', '50% 100%'),
+    Chip: TURNS(
+      'perspective(20rem) rotateX(18deg)',
+      'perspective(20rem) translateZ(-0.5rem)',
+      '50% 100%'
+    ),
     Card: `&.greese-Card--interactive {
-  ${TURNS('perspective(60rem) rotateX(5deg) rotateY(-7deg) translateZ(1rem)', 'perspective(60rem) translateZ(-0.5rem)')
+  ${TURNS(
+    'perspective(60rem) rotateX(5deg) rotateY(-7deg) translateZ(1rem)',
+    'perspective(60rem) translateZ(-0.5rem)'
+  )
     .split('\n')
     .join('\n  ')}
 }`,
-    Tile: TURNS('perspective(50rem) rotateX(6deg) rotateY(-8deg) translateZ(0.75rem)', 'perspective(50rem) translateZ(-0.5rem)'),
+    Tile: TURNS(
+      'perspective(50rem) rotateX(6deg) rotateY(-8deg) translateZ(0.75rem)',
+      'perspective(50rem) translateZ(-0.5rem)'
+    ),
     // The current tab leans out of the list toward you, from its foot.
     Tab: `transform-origin: 50% 100%;
 
@@ -467,7 +487,16 @@ const TILT: ShapePreset = {
   sample: { borderRadius: '5px', transform: 'perspective(40px) rotateX(28deg)' },
 }
 
-export const SHAPES: ShapePreset[] = [BEVEL, TICKET, RIDGE, FOLIO, SOFT, PEBBLE, EXTRUDE, TILT]
+export const SHAPES: ShapePreset[] = [
+  BEVEL,
+  TICKET,
+  RIDGE,
+  FOLIO,
+  SOFT,
+  PEBBLE,
+  EXTRUDE,
+  TILT,
+]
 
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 
@@ -476,8 +505,12 @@ export const shapeIn = (spec: ThemeSpec): ShapePreset | undefined =>
   SHAPES.find(
     (preset) =>
       same(spec.tokens?.corner, preset.corner) &&
-      Object.entries(preset.shapes).every(([name, def]) => same(spec.shapes?.[name], def)) &&
-      Object.entries(preset.assign).every(([c, name]) => spec.components?.[c]?.shape === name)
+      Object.entries(preset.shapes).every(([name, def]) =>
+        same(spec.shapes?.[name], def)
+      ) &&
+      Object.entries(preset.assign).every(
+        ([c, name]) => spec.components?.[c]?.shape === name
+      )
   )
 
 /** The theme without any shape theme: their radius roles, shapes, assignments and styles go; everything else stays. */
@@ -507,7 +540,10 @@ export const withoutShapes = (spec: ThemeSpec): ThemeSpec => {
 }
 
 /** A shape theme in place of any other; colors, motion and other shapes and styles stay. */
-export const applyShape = (spec: ThemeSpec, preset: ShapePreset | undefined): ThemeSpec => {
+export const applyShape = (
+  spec: ThemeSpec,
+  preset: ShapePreset | undefined
+): ThemeSpec => {
   const base = withoutShapes(spec)
   if (!preset) return base
   const components = { ...base.components }

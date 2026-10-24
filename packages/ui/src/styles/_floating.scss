@@ -59,7 +59,10 @@ $_exit: (
       $value: var(--greese-motion-overlay-exit-#{$property}, #{$base});
     }
 
-    --greese-overlay-exit-#{$property}: var(--greese-motion-#{$role}-exit-#{$property}, #{$value});
+    --greese-overlay-exit-#{$property}: var(
+      --greese-motion-#{$role}-exit-#{$property},
+      #{$value}
+    );
   }
 }
 
@@ -92,14 +95,7 @@ $_exit: (
   --greese-overlay-origin: #{$origin};
 
   transition-property:
-    opacity,
-    translate,
-    scale,
-    transform,
-    mask-size,
-    mask-position,
-    display,
-    overlay;
+    opacity, translate, scale, transform, mask-size, mask-position, display, overlay;
   transition-duration: var(--greese-motion-exit-duration, var(--greese-duration-fast));
   transition-timing-function: var(--greese-motion-exit-ease, var(--greese-easing-exit));
   transition-behavior: allow-discrete;
@@ -115,8 +111,14 @@ $_exit: (
   &#{$open-selector} {
     @include mixins.motion-safe {
       animation-name: var(--greese-overlay-enter);
-      animation-duration: var(--greese-motion-overlay-duration, var(--greese-duration-fast));
-      animation-timing-function: var(--greese-motion-enter-ease, var(--greese-easing-enter));
+      animation-duration: var(
+        --greese-motion-overlay-duration,
+        var(--greese-duration-fast)
+      );
+      animation-timing-function: var(
+        --greese-motion-enter-ease,
+        var(--greese-easing-enter)
+      );
       animation-fill-mode: backwards;
     }
   }

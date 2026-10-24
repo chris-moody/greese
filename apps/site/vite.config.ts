@@ -30,7 +30,9 @@ const ROOT = dirname(fileURLToPath(import.meta.url))
 
 /** Each template's path, read from the registry, so a new one is served on a direct visit too. */
 const TEMPLATE_IDS = [
-  ...readFileSync(join(ROOT, 'src/templates/index.ts'), 'utf8').matchAll(/^ {4}id: '([a-z0-9-]+)'/gm),
+  ...readFileSync(join(ROOT, 'src/templates/index.ts'), 'utf8').matchAll(
+    /^ {4}id: '([a-z0-9-]+)'/gm
+  ),
 ].map((m) => m[1]!)
 
 const fallbackPages = (): Plugin => ({

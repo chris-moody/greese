@@ -60,9 +60,9 @@ const docs = parser.parse(
   files(componentsDir, /\/[A-Z]\w*\.tsx$/).filter((f) => !f.includes('.test.'))
 )
 
-const manifest = JSON.parse(
-  read(at('packages/ui/dist/style-manifest.json'))
-) as { blocks: Record<string, StyleEntry & { stylesheet?: string }> }
+const manifest = JSON.parse(read(at('packages/ui/dist/style-manifest.json'))) as {
+  blocks: Record<string, StyleEntry & { stylesheet?: string }>
+}
 
 // Stories by the component their meta documents.
 const stories = new Map<string, { category: string; source: string }>()
@@ -81,10 +81,14 @@ const components: ComponentDoc[] = docs
         name: p.name,
         type: p.type.name,
         required: p.required,
-        ...(p.defaultValue?.value !== undefined && { default: String(p.defaultValue.value) }),
+        ...(p.defaultValue?.value !== undefined && {
+          default: String(p.defaultValue.value),
+        }),
         description: p.description,
       }))
-      .sort((a, b) => Number(b.required) - Number(a.required) || a.name.localeCompare(b.name))
+      .sort(
+        (a, b) => Number(b.required) - Number(a.required) || a.name.localeCompare(b.name)
+      )
     const block = manifest.blocks[d.displayName]
     const story = stories.get(d.displayName)
     return {

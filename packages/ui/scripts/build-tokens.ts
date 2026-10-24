@@ -276,11 +276,15 @@ const list = (names: readonly string[]): string => {
   // Names that follow a direction, as prefixes: every direction (`D`, wipes,
   // irises, pockets), or the four sides only (`D.slice(0, 4)`, flips).
   const sides = effectDirections.slice(0, 4)
-  const candidates = [...new Set(names.map((n) => /^([a-z]+(?:Out)?)(?=Right|Left|Up|Down)/.exec(n)?.[1]))].filter(
-    (p): p is string => !!p
+  const candidates = [
+    ...new Set(names.map((n) => /^([a-z]+(?:Out)?)(?=Right|Left|Up|Down)/.exec(n)?.[1])),
+  ].filter((p): p is string => !!p)
+  const every = candidates.filter((p) =>
+    effectDirections.every((d) => names.includes(`${p}${d}`))
   )
-  const every = candidates.filter((p) => effectDirections.every((d) => names.includes(`${p}${d}`)))
-  const four = candidates.filter((p) => !every.includes(p) && sides.every((d) => names.includes(`${p}${d}`)))
+  const four = candidates.filter(
+    (p) => !every.includes(p) && sides.every((d) => names.includes(`${p}${d}`))
+  )
   const grouped = new Set([
     ...every.flatMap((p) => effectDirections.map((d) => `${p}${d}`)),
     ...four.flatMap((p) => sides.map((d) => `${p}${d}`)),
@@ -288,8 +292,12 @@ const list = (names: readonly string[]): string => {
   const rest = names.filter((n) => !grouped.has(n))
   const parts = [
     `...${JSON.stringify(rest)}`,
-    ...(every.length ? [`...${JSON.stringify(every)}.flatMap((p) => D.map((d) => p + d))`] : []),
-    ...(four.length ? [`...${JSON.stringify(four)}.flatMap((p) => D.slice(0, 4).map((d) => p + d))`] : []),
+    ...(every.length
+      ? [`...${JSON.stringify(every)}.flatMap((p) => D.map((d) => p + d))`]
+      : []),
+    ...(four.length
+      ? [`...${JSON.stringify(four)}.flatMap((p) => D.slice(0, 4).map((d) => p + d))`]
+      : []),
   ]
   return grouped.size ? `[${parts.join(', ')}]` : JSON.stringify(names)
 }

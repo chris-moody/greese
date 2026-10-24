@@ -168,7 +168,8 @@ const css = (a: Lin): string => {
     terms.push([k < 0 ? -1 : 1, Math.abs(size - 1) < 1e-9 ? v : `${num(size)} * ${v}`])
   }
   if (!terms.length) return '0'
-  if (terms.length === 1 && terms[0]![0] === 1 && !terms[0]![1].includes('var(')) return terms[0]![1]
+  if (terms.length === 1 && terms[0]![0] === 1 && !terms[0]![1].includes('var('))
+    return terms[0]![1]
   const [first, ...rest] = terms
   const head = first![0] < 0 ? `-1 * ${first![1]}` : first![1]
   return `calc(${[head, ...rest.map(([sign, t]) => `${sign < 0 ? '-' : '+'} ${t}`)].join(' ')})`
@@ -237,13 +238,14 @@ const expand = (def: ShapeDef): SymPoint[] => {
     // Per unit of radius: the tangent points, and the arc's center, from the vertex.
     const t = 1 / Math.tan(theta / 2)
     const bis = unit([u1[0] + u2[0], u1[1] + u2[1]])
-    const c: Vec = [(bis[0] / Math.sin(theta / 2)), (bis[1] / Math.sin(theta / 2))]
+    const c: Vec = [bis[0] / Math.sin(theta / 2), bis[1] / Math.sin(theta / 2)]
     const a1 = Math.atan2(u1[1] * t - c[1], u1[0] * t - c[0])
     let a2 = Math.atan2(u2[1] * t - c[1], u2[0] * t - c[0])
     // The short way round.
     while (a2 - a1 > Math.PI) a2 -= 2 * Math.PI
     while (a1 - a2 > Math.PI) a2 += 2 * Math.PI
-    const r = typeof p.round === 'string' ? { param: p.round, k: 1 } : { px: p.round, k: 1 }
+    const r =
+      typeof p.round === 'string' ? { param: p.round, k: 1 } : { px: p.round, k: 1 }
     const steps = 6
     for (let s = 0; s <= steps; s++) {
       const ang = a1 + ((a2 - a1) * s) / steps
@@ -358,7 +360,9 @@ const rule = (selector: string, d: Record<string, string>) =>
   Object.keys(d).length ? `${selector} {\n${decls(d)}\n}` : ''
 
 const paramDecls = (set: ShapeParams | undefined) =>
-  Object.fromEntries(Object.entries(set ?? {}).map(([k, v]) => [shapeVar(k), `${num(v)}px`]))
+  Object.fromEntries(
+    Object.entries(set ?? {}).map(([k, v]) => [shapeVar(k), `${num(v)}px`])
+  )
 
 /** The shape flipped start to end, still clockwise. */
 export const mirrored = (def: ShapeDef): ShapeDef => {
@@ -430,14 +434,25 @@ export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): s
     const params = shapeParams(shapes[u.shape]!)
     return [
       ...(u.transitions ?? []),
-      ...[...params.map(shapeVar), shapeVar(BORDER), '--greese-shape-ring'].map((p) => `${p} ${TIMING}`),
+      ...[...params.map(shapeVar), shapeVar(BORDER), '--greese-shape-ring'].map(
+        (p) => `${p} ${TIMING}`
+      ),
       `${shapeVar(BLEED)} 0s linear`,
     ]
   }
   const groups = new Map<string, { uses: ShapeUse[]; transitions: string[] }>()
   for (const u of live) {
     const transitions = u.still ? [] : transitionsOf(u)
-    const how = [u.pseudo, u.positioned, u.borderColor, u.variants, u.variantTransitions, u.touch, u.still, u.ring]
+    const how = [
+      u.pseudo,
+      u.positioned,
+      u.borderColor,
+      u.variants,
+      u.variantTransitions,
+      u.touch,
+      u.still,
+      u.ring,
+    ]
     const key = JSON.stringify({ how, transitions })
     const group = groups.get(key) ?? { uses: [], transitions }
     group.uses.push(u)
@@ -496,14 +511,24 @@ export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): s
         )
       )
     if (u.touch)
-      out.push(block('@media (pointer: coarse)', rule(list, { 'min-block-size': '44px', 'min-inline-size': '44px' })))
+      out.push(
+        block(
+          '@media (pointer: coarse)',
+          rule(list, { 'min-block-size': '44px', 'min-inline-size': '44px' })
+        )
+      )
     // Forced colors: the system draws borders and outlines; a shape would hide them.
     out.push(
       block(
         '@media (forced-colors: active)',
         [
-          rule(list, { 'clip-path': 'none', ...(ring && { 'border-color': 'CanvasText' }) }),
-          ring ? rule(sels.map((s) => `${s}${pseudo}`).join(',\n'), { display: 'none' }) : '',
+          rule(list, {
+            'clip-path': 'none',
+            ...(ring && { 'border-color': 'CanvasText' }),
+          }),
+          ring
+            ? rule(sels.map((s) => `${s}${pseudo}`).join(',\n'), { display: 'none' })
+            : '',
         ]
           .filter(Boolean)
           .join('\n')
@@ -518,7 +543,8 @@ export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): s
     const sels = mine.map((u) => u.selector)
     const moving = mine.filter((u) => !u.still)
     const { outer, ring } = clips(def)
-    const color = def.border?.color && def.border.color !== 'auto' ? def.border.color : undefined
+    const color =
+      def.border?.color && def.border.color !== 'auto' ? def.border.color : undefined
     out.push(
       rule(sels.join(',\n'), {
         ...paramDecls(def.params),
@@ -541,13 +567,22 @@ export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): s
     // variant (smaller features), which come later so they win.
     const variantsOf = (u: ShapeUse): Array<[selector: string, factor: number]> => [
       [u.selector, 1],
-      ...Object.entries(u.scale ?? {}).map(([suffix, f]) => [join(u.selector, suffix), f] as [string, number]),
+      ...Object.entries(u.scale ?? {}).map(
+        ([suffix, f]) => [join(u.selector, suffix), f] as [string, number]
+      ),
     ]
     const scaled = (set: ShapeParams | undefined, f: number) =>
-      paramDecls(set && Object.fromEntries(Object.entries(set).map(([k, v]) => [k, v * f])))
+      paramDecls(
+        set && Object.fromEntries(Object.entries(set).map(([k, v]) => [k, v * f]))
+      )
     for (const u of mine)
-      for (const [sel, f] of variantsOf(u).slice(1)) out.push(rule(sel, scaled(def.params, f)))
-    const stateRules = (set: ShapeParams | undefined, pick: (u: ShapeUse) => string | false | undefined, fallback: string) => {
+      for (const [sel, f] of variantsOf(u).slice(1))
+        out.push(rule(sel, scaled(def.params, f)))
+    const stateRules = (
+      set: ShapeParams | undefined,
+      pick: (u: ShapeUse) => string | false | undefined,
+      fallback: string
+    ) => {
       if (!set) return ''
       const byFactor = new Map<number, string[]>()
       for (const u of moving) {
@@ -556,7 +591,9 @@ export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): s
         for (const [sel, f] of variantsOf(u))
           byFactor.set(f, [...(byFactor.get(f) ?? []), join(sel, suffix ?? fallback)])
       }
-      return [...byFactor].map(([f, list]) => rule(list.join(',\n'), scaled(set, f))).join('\n')
+      return [...byFactor]
+        .map(([f, list]) => rule(list.join(',\n'), scaled(set, f)))
+        .join('\n')
     }
     const hover = stateRules(def.hover, (u) => u.hover, ':hover')
     if (hover) out.push(block('@media (hover: hover)', hover))
@@ -567,7 +604,13 @@ export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): s
     // it; or a ring inside the shape; or the element's own, drawn inside.
     const own = def.focus ?? (opensToBox(def) ? 'box' : 'ring')
     const modeOf = (u: ShapeUse) =>
-      u.focus === 'keep' ? 'keep' : u.focus === 'ring' && u.ring !== false ? 'ring' : own === 'ring' && u.ring === false ? 'keep' : u.focus ?? own
+      u.focus === 'keep'
+        ? 'keep'
+        : u.focus === 'ring' && u.ring !== false
+          ? 'ring'
+          : own === 'ring' && u.ring === false
+            ? 'keep'
+            : (u.focus ?? own)
     const focusSel = (u: ShapeUse) => join(u.selector, u.focusOn ?? ':focus-visible')
     const rings = mine.filter((u) => modeOf(u) === 'ring').map(focusSel)
     if (rings.length)
@@ -592,7 +635,10 @@ export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): s
           ...Object.fromEntries(shapeParams(def).map((p) => [shapeVar(p), '0px'])),
           [shapeVar(BLEED)]: `${BLEED_PX}px`,
           ...(n && {
-            'transition-delay': [...Array<string>(n - 1).fill('0s'), 'var(--greese-duration-normal)'].join(', '),
+            'transition-delay': [
+              ...Array<string>(n - 1).fill('0s'),
+              'var(--greese-duration-normal)',
+            ].join(', '),
           }),
         })
       )
@@ -635,7 +681,9 @@ export const SHAPE_TARGETS: Record<string, Omit<ShapeTarget, 'selector'>> = {
     variants: {
       '&.greese-Card--outline': { '--greese-shape-ring': 'var(--greese-color-border)' },
       // A clip removes the shadow, so elevation is a stronger edge.
-      '&.greese-Card--elevated': { '--greese-shape-ring': 'var(--greese-color-border-strong)' },
+      '&.greese-Card--elevated': {
+        '--greese-shape-ring': 'var(--greese-color-border-strong)',
+      },
     },
     // Only an interactive card moves on its own (it lifts when hovered), as
     // without a shape: on every card, `translate` would lag the runtime's
@@ -658,7 +706,11 @@ export const SHAPE_TARGETS: Record<string, Omit<ShapeTarget, 'selector'>> = {
     active: false,
     borderColor: 'color-mix(in oklab, var(--greese-badge-tone) 35%, transparent)',
   },
-  Chip: { borderColor: 'var(--greese-color-border)', touch: true, transitions: fast('background-color', 'color') },
+  Chip: {
+    borderColor: 'var(--greese-color-border)',
+    touch: true,
+    transitions: fast('background-color', 'color'),
+  },
   Tile: { hover: false, active: false, borderColor: 'var(--greese-color-border)' },
   // Fields stay focused while they're used: focus is a ring inside the shape.
   Input: {
@@ -669,7 +721,9 @@ export const SHAPE_TARGETS: Record<string, Omit<ShapeTarget, 'selector'>> = {
     borderColor: 'var(--greese-color-border-strong)',
     variants: {
       '&:hover': { '--greese-shape-ring': 'var(--greese-color-fg-muted)' },
-      '&[aria-invalid=true], &[data-invalid]': { '--greese-shape-ring': 'var(--greese-color-negative)' },
+      '&[aria-invalid=true], &[data-invalid]': {
+        '--greese-shape-ring': 'var(--greese-color-negative)',
+      },
     },
     transitions: fast('box-shadow'),
   },
@@ -687,12 +741,29 @@ export const SHAPE_TARGETS: Record<string, Omit<ShapeTarget, 'selector'>> = {
     borderColor: 'transparent',
     transitions: fast('background-color', 'color'),
   },
-  Tab: { ring: false, focus: 'keep', active: false, transitions: fast('color', 'background-color', 'box-shadow') },
-  AccordionItem: { hover: false, active: false, borderColor: 'var(--greese-color-border)' },
+  Tab: {
+    ring: false,
+    focus: 'keep',
+    active: false,
+    transitions: fast('color', 'background-color', 'box-shadow'),
+  },
+  AccordionItem: {
+    hover: false,
+    active: false,
+    borderColor: 'var(--greese-color-border)',
+  },
   // A pulsing status draws its pulse outside the dot: it keeps its own round.
-  Status: { select: '.greese-Status:not(.greese-Status--pulse)', ring: false, still: true },
+  Status: {
+    select: '.greese-Status:not(.greese-Status--pulse)',
+    ring: false,
+    still: true,
+  },
   // In a group, avatars are separated by a ring drawn outside them: those stay round.
-  Avatar: { select: '.greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar)', ring: false, still: true },
+  Avatar: {
+    select: '.greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar)',
+    ring: false,
+    still: true,
+  },
   SpeedDial: {
     select: '.greese-SpeedDial-trigger',
     ring: false,
@@ -803,14 +874,25 @@ export const hexagon = (h = 10): ShapeDef => ({
 
 /** Leaning like italic type: top edge shifted by `s` toward the end. */
 export const slant = (s = 8): ShapeDef => ({
-  points: [P(start(0, 's'), start()), P(end(), start()), P(end(0, 's'), end()), P(start(), end())],
+  points: [
+    P(start(0, 's'), start()),
+    P(end(), start()),
+    P(end(0, 's'), end()),
+    P(start(), end()),
+  ],
   params: { s },
   mirror: true,
 })
 
 /** The top-end corner folded down by `f`. */
 export const dogEar = (f = 18): ShapeDef => ({
-  points: [P(start(), start()), P(end(0, 'f'), start()), P(end(), start(0, 'f')), P(end(), end()), P(start(), end())],
+  points: [
+    P(start(), start()),
+    P(end(0, 'f'), start()),
+    P(end(), start(0, 'f')),
+    P(end(), end()),
+    P(start(), end()),
+  ],
   params: { f },
   mirror: true,
 })
@@ -830,7 +912,14 @@ export const ticket = (r = 12): ShapeDef => {
       )
     })
   return {
-    points: [P(start(), start()), P(end(), start()), ...arc('end'), P(end(), end()), P(start(), end()), ...arc('start')],
+    points: [
+      P(start(), start()),
+      P(end(), start()),
+      ...arc('end'),
+      P(end(), end()),
+      P(start(), end()),
+      ...arc('start'),
+    ],
     params: { r },
   }
 }

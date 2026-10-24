@@ -14,7 +14,12 @@ const words = (text: string) => text.toLowerCase().match(/[a-z0-9]+/g) ?? []
  * name counts most, then the summary, then the body. Small and predictable,
  * which suits a few hundred documents better than an index.
  */
-export const score = (query: string, name: string, summary: string, body = ''): number => {
+export const score = (
+  query: string,
+  name: string,
+  summary: string,
+  body = ''
+): number => {
   const terms = words(query)
   if (!terms.length) return 0
   const fields: Array<[string, number]> = [
@@ -37,7 +42,10 @@ export const score = (query: string, name: string, summary: string, body = ''): 
 
 /** The first sentence of a description (TSDoc wraps lines mid-sentence). */
 export const firstSentence = (text: string): string => {
-  const flat = text.split(/\n\s*\n/)[0]!.replace(/\s+/g, ' ').trim()
+  const flat = text
+    .split(/\n\s*\n/)[0]!
+    .replace(/\s+/g, ' ')
+    .trim()
   return /^.*?[.!?](?=\s|$)/.exec(flat)?.[0] ?? flat
 }
 
@@ -49,9 +57,16 @@ export const search = (data: GreeseData, query: string, limit = 10): Hit[] => {
     if (s) hits.push({ kind, name, summary: firstSentence(summary), score: s })
   }
   for (const c of data.components)
-    add('component', c.name, c.description, c.props.map((p) => `${p.name} ${p.description}`).join(' '))
+    add(
+      'component',
+      c.name,
+      c.description,
+      c.props.map((p) => `${p.name} ${p.description}`).join(' ')
+    )
   for (const g of data.guides) add('guide', g.name, g.title, g.text)
   for (const t of data.templates) add('template', t.id, t.description, t.source)
   for (const t of data.themes) add('theme', t.id, t.description, t.scss)
-  return hits.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name)).slice(0, limit)
+  return hits
+    .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
+    .slice(0, limit)
 }

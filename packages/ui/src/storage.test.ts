@@ -35,7 +35,10 @@ describe('createStoredValue', () => {
   })
 
   it('stores plain text with its own serializer', () => {
-    const scheme = createStoredValue<string>('t-text', 'system', { serialize: String, parse: (t) => t })
+    const scheme = createStoredValue<string>('t-text', 'system', {
+      serialize: String,
+      parse: (t) => t,
+    })
     scheme.set('dark')
     expect(localStorage.getItem('t-text')).toBe('dark')
   })

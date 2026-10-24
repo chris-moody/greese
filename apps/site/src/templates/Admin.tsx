@@ -72,7 +72,13 @@ const services = [
 ] as const
 
 type OrderState = 'Paid' | 'Pending' | 'Shipped' | 'Refunded'
-const orders: Array<{ id: string; customer: string; items: number; total: number; state: OrderState }> = [
+const orders: Array<{
+  id: string
+  customer: string
+  items: number
+  total: number
+  state: OrderState
+}> = [
   { id: '#10482', customer: 'Maya Chen', items: 3, total: 142.8, state: 'Paid' },
   { id: '#10481', customer: 'Jonas Weber', items: 1, total: 39, state: 'Pending' },
   { id: '#10480', customer: 'Aiyana Brooks', items: 5, total: 318.45, state: 'Shipped' },
@@ -88,7 +94,8 @@ const stateTone = {
   Refunded: 'neutral',
 } as const
 
-const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+const money = (n: number) =>
+  n.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
 
 export const Admin = (): JSX.Element => {
   const [tab, setTab] = useState('all')
@@ -132,7 +139,13 @@ export const Admin = (): JSX.Element => {
               startAdornment={<SearchIcon />}
             />
             <Spacer />
-            <Indicator content={<Badge tone="negative" variant="solid">3</Badge>}>
+            <Indicator
+              content={
+                <Badge tone="negative" variant="solid">
+                  3
+                </Badge>
+              }
+            >
               <IconButton label="Notifications, 3 unread" size="sm">
                 <BellIcon />
               </IconButton>
@@ -157,10 +170,20 @@ export const Admin = (): JSX.Element => {
 
           <Card variant="outline">
             <StatGroup>
-              <Stat label="Revenue" value="$48,210" description="up 12% on last week" tone="positive" />
+              <Stat
+                label="Revenue"
+                value="$48,210"
+                description="up 12% on last week"
+                tone="positive"
+              />
               <Stat label="Orders" value="1,204" description="up 3%" tone="positive" />
               <Stat label="New customers" value="312" description="flat" tone="muted" />
-              <Stat label="Refund rate" value="1.8%" description="up 0.4 points" tone="negative" />
+              <Stat
+                label="Refund rate"
+                value="1.8%"
+                description="up 0.4 points"
+                tone="negative"
+              />
             </StatGroup>
           </Card>
 
@@ -179,7 +202,11 @@ export const Admin = (): JSX.Element => {
                           {c.share}%
                         </Text>
                       </Stack>
-                      <Progress value={c.share} size="sm" aria-label={`${c.name}: ${c.share}%`} />
+                      <Progress
+                        value={c.share}
+                        size="sm"
+                        aria-label={`${c.name}: ${c.share}%`}
+                      />
                     </Stack>
                   ))}
                 </Stack>
@@ -194,7 +221,11 @@ export const Admin = (): JSX.Element => {
                   {services.map((s) => (
                     <Stack key={s.name} direction="row" justify="between" align="center">
                       <Text variant="p3">{s.name}</Text>
-                      <Status tone={s.tone} label={s.state} pulse={s.tone !== 'positive'} />
+                      <Status
+                        tone={s.tone}
+                        label={s.state}
+                        pulse={s.tone !== 'positive'}
+                      />
                     </Stack>
                   ))}
                 </Stack>
@@ -249,7 +280,12 @@ export const Admin = (): JSX.Element => {
                 ))}
               </TableBody>
             </Table>
-            <Pagination count={8} page={page} onPageChange={setPage} label="Orders pages" />
+            <Pagination
+              count={8}
+              page={page}
+              onPageChange={setPage}
+              label="Orders pages"
+            />
           </Card>
         </Stack>
       </div>

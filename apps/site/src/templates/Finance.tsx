@@ -43,7 +43,20 @@ const money = (n: number, cents = false) =>
     minimumFractionDigits: cents ? 2 : 0,
   })
 
-const months = ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct']
+const months = [
+  'Nov',
+  'Dec',
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+]
 const income = [6.2, 6.2, 6.4, 6.4, 7.9, 6.4, 6.4, 6.6, 6.6, 6.6, 8.1, 6.6]
 const spending = [4.8, 6.9, 4.1, 4.4, 4.6, 5.2, 4.9, 5.6, 6.1, 4.7, 5.0, 4.3]
 
@@ -55,12 +68,30 @@ const budgets = [
 ]
 
 const transactions = [
-  { id: 1, date: 'Oct 22', name: 'Whole Grain Market', category: 'Groceries', amount: -84.12 },
+  {
+    id: 1,
+    date: 'Oct 22',
+    name: 'Whole Grain Market',
+    category: 'Groceries',
+    amount: -84.12,
+  },
   { id: 2, date: 'Oct 21', name: 'Payroll: Northwind', category: 'Income', amount: 3300 },
-  { id: 3, date: 'Oct 20', name: 'Metro card top-up', category: 'Transport', amount: -40 },
+  {
+    id: 3,
+    date: 'Oct 20',
+    name: 'Metro card top-up',
+    category: 'Transport',
+    amount: -40,
+  },
   { id: 4, date: 'Oct 19', name: 'Sushi Ko', category: 'Dining out', amount: -62.5 },
   { id: 5, date: 'Oct 18', name: 'Streamly', category: 'Subscriptions', amount: -15.99 },
-  { id: 6, date: 'Oct 17', name: 'Transfer to savings', category: 'Transfer', amount: -500 },
+  {
+    id: 6,
+    date: 'Oct 17',
+    name: 'Transfer to savings',
+    category: 'Transfer',
+    amount: -500,
+  },
 ]
 
 const accounts = [
@@ -138,7 +169,11 @@ const TransferDialog = (): JSX.Element => {
             disabled={!amount}
             onClick={() => {
               setOpen(false)
-              toast({ title: 'Transfer scheduled', description: `${money(amount ?? 0, true)} arrives tomorrow.`, tone: 'positive' })
+              toast({
+                title: 'Transfer scheduled',
+                description: `${money(amount ?? 0, true)} arrives tomorrow.`,
+                tone: 'positive',
+              })
             }}
           >
             Send {amount ? money(amount, true) : ''}
@@ -159,7 +194,13 @@ const TransferDialog = (): JSX.Element => {
             <option value="card">Travel card ··· 3346</option>
           </Select>
         </Field>
-        <NumberField label="Amount (USD)" value={amount} onValueChange={setAmount} min={1} step={50} />
+        <NumberField
+          label="Amount (USD)"
+          value={amount}
+          onValueChange={setAmount}
+          min={1}
+          step={50}
+        />
       </Stack>
     </Dialog>
   )
@@ -169,7 +210,12 @@ export const Finance = (): JSX.Element => {
   const [range, setRange] = useState('12m')
   return (
     <Stack gap={5} className="tpl-page" greese={{ enter: 'theme', stagger: 0.06 }}>
-      <Stack direction={{ xs: 'column', sm: 'row' }} gap={3} justify="between" align={{ sm: 'end' }}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        gap={3}
+        justify="between"
+        align={{ sm: 'end' }}
+      >
         <Stack gap={1}>
           <Text tone="muted">Thursday, October 23</Text>
           <Heading level={1} variant="h3">
@@ -193,8 +239,18 @@ export const Finance = (): JSX.Element => {
             tone="positive"
             media={<TrendUpIcon />}
           />
-          <Stat label="Cash" value={money(12480)} description="across 2 accounts" tone="muted" />
-          <Stat label="Investments" value={money(151900)} description="up 3.1%" tone="positive" />
+          <Stat
+            label="Cash"
+            value={money(12480)}
+            description="across 2 accounts"
+            tone="muted"
+          />
+          <Stat
+            label="Investments"
+            value={money(151900)}
+            description="up 3.1%"
+            tone="positive"
+          />
           <Stat
             label="Debt"
             value={money(-9840)}
@@ -212,7 +268,13 @@ export const Finance = (): JSX.Element => {
               <Heading level={2} variant="h5">
                 Cash flow
               </Heading>
-              <SegmentedControl label="Range" hideLabel size="sm" value={range} onValueChange={setRange}>
+              <SegmentedControl
+                label="Range"
+                hideLabel
+                size="sm"
+                value={range}
+                onValueChange={setRange}
+              >
                 <Segment value="6m">6 months</Segment>
                 <Segment value="12m">12 months</Segment>
               </SegmentedControl>
@@ -269,10 +331,15 @@ export const Finance = (): JSX.Element => {
                     <TableCell label="Date">{t.date}</TableCell>
                     <TableCell label="Description">{t.name}</TableCell>
                     <TableCell label="Category">
-                      <Badge tone={categoryTone[t.category as keyof typeof categoryTone]}>{t.category}</Badge>
+                      <Badge tone={categoryTone[t.category as keyof typeof categoryTone]}>
+                        {t.category}
+                      </Badge>
                     </TableCell>
                     <TableCell label="Amount" align="end">
-                      <Text tone={t.amount > 0 ? 'positive' : undefined} weight="semibold">
+                      <Text
+                        tone={t.amount > 0 ? 'positive' : undefined}
+                        weight="semibold"
+                      >
                         {t.amount > 0 ? '+' : ''}
                         {money(t.amount, true)}
                       </Text>
@@ -296,7 +363,11 @@ export const Finance = (): JSX.Element => {
                   title={a.name}
                   description={a.detail}
                   end={
-                    <Text variant="p3" weight="semibold" tone={a.balance < 0 ? 'negative' : undefined}>
+                    <Text
+                      variant="p3"
+                      weight="semibold"
+                      tone={a.balance < 0 ? 'negative' : undefined}
+                    >
                       {money(a.balance, true)}
                     </Text>
                   }

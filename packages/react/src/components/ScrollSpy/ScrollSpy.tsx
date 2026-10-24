@@ -86,11 +86,14 @@ export const ScrollSpy = ({
         const target = document.getElementById(idOf(a))
         return target ? [{ id: target.id, top: target.getBoundingClientRect().top }] : []
       })
-      const end = scrollY > 0 && Math.ceil(scrollY + innerHeight) >= document.documentElement.scrollHeight
+      const end =
+        scrollY > 0 &&
+        Math.ceil(scrollY + innerHeight) >= document.documentElement.scrollHeight
       const id = currentSection(sections, offset ?? innerHeight / 3, end)
       for (const a of links) {
         if (idOf(a) === id) a.setAttribute('aria-current', 'location')
-        else if (a.getAttribute('aria-current') === 'location') a.removeAttribute('aria-current')
+        else if (a.getAttribute('aria-current') === 'location')
+          a.removeAttribute('aria-current')
       }
       if (id !== active) {
         active = id

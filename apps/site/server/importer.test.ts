@@ -83,7 +83,9 @@ describe('importCss: theme layers', () => {
     (_id, preset) => {
       const result = importCss(css(applyShape({}, preset)))
       // Roles the theme leaves at the library's own are left out, as every default is.
-      expect({ ...scalarTokens.corner, ...result.spec.tokens?.corner }).toEqual(preset.corner)
+      expect({ ...scalarTokens.corner, ...result.spec.tokens?.corner }).toEqual(
+        preset.corner
+      )
     }
   )
 })

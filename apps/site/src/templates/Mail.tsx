@@ -117,7 +117,9 @@ const MESSAGES: Message[] = [
     email: 'hello@fieldstone.example',
     subject: 'Your quarterly portfolio summary',
     preview: 'Your portfolio returned 3.1% this quarter. Here’s what moved…',
-    body: ['Your portfolio returned 3.1% this quarter. Here’s what moved it, and what’s next.'],
+    body: [
+      'Your portfolio returned 3.1% this quarter. Here’s what moved it, and what’s next.',
+    ],
     time: 'Oct 18',
     unread: false,
     starred: false,
@@ -209,7 +211,11 @@ export const Mail = (): JSX.Element => {
                 setFolder(f.id)
                 setOpenId(undefined)
               }}
-              endIcon={f.id === 'inbox' && unread ? <Badge tone="primary">{unread}</Badge> : undefined}
+              endIcon={
+                f.id === 'inbox' && unread ? (
+                  <Badge tone="primary">{unread}</Badge>
+                ) : undefined
+              }
             >
               {f.label}
             </Button>
@@ -286,7 +292,11 @@ export const Mail = (): JSX.Element => {
         {open ? (
           <Stack gap={4} p={{ xs: 3, md: 5 }} greese={{ enter: 'theme', stagger: 0.06 }}>
             <Stack direction="row" gap={1} align="center">
-              <IconButton label="Back to messages" className="tpl-mail-back" onClick={() => setOpenId(undefined)}>
+              <IconButton
+                label="Back to messages"
+                className="tpl-mail-back"
+                onClick={() => setOpenId(undefined)}
+              >
                 <ChevronLeftIcon />
               </IconButton>
               <IconButton
@@ -302,7 +312,10 @@ export const Mail = (): JSX.Element => {
                   const before = messages
                   setMessages(messages.filter((m) => m.id !== open.id))
                   setOpenId(undefined)
-                  toast({ title: 'Archived', action: { label: 'Undo', onClick: () => setMessages(before) } })
+                  toast({
+                    title: 'Archived',
+                    action: { label: 'Undo', onClick: () => setMessages(before) },
+                  })
                 }}
               >
                 <ArchiveIcon />
@@ -333,12 +346,18 @@ export const Mail = (): JSX.Element => {
               ))}
             </Stack>
             <Card variant="outline">
-              <Textarea aria-label={`Reply to ${open.from}`} placeholder={`Reply to ${open.from}…`} rows={3} />
+              <Textarea
+                aria-label={`Reply to ${open.from}`}
+                placeholder={`Reply to ${open.from}…`}
+                rows={3}
+              />
               <Stack direction="row" justify="end">
                 <Button
                   size="sm"
                   startIcon={<SendIcon />}
-                  onClick={() => toast({ title: `Reply sent to ${open.from}`, tone: 'positive' })}
+                  onClick={() =>
+                    toast({ title: `Reply sent to ${open.from}`, tone: 'positive' })
+                  }
                 >
                   Send
                 </Button>

@@ -189,13 +189,40 @@ const exitKey = (decls: Array<[string, string]>) =>
     .sort()
     .join(';')
 const EXITS = new Map(
-  exitNames().map((name) => [exitKey(Object.entries(effectPlan(name).exit)), effectClass(name)])
+  exitNames().map((name) => [
+    exitKey(Object.entries(effectPlan(name).exit)),
+    effectClass(name),
+  ])
 )
 const MOTION_DEFAULTS = new Set(['duration', 'delay', 'ease', 'distance', 'stagger'])
 // The motion roles `motion-defaults()` assigns (styles/_kit.scss), as it writes them.
-const ENTRANCE_ROLES = new Set(['theme', 'content', 'rows', 'toast', 'backdrop', 'overlay', 'dialog', 'popover', 'tooltip', 'drawer'])
-const EXIT_ROLES = ['overlay-exit', 'dialog-exit', 'popover-exit', 'tooltip-exit', 'drawer-exit']
-const DURATION_ROLES = new Set(['content-duration', 'rows-duration', 'overlay-duration', 'toast-duration', 'backdrop-duration', 'exit-duration'])
+const ENTRANCE_ROLES = new Set([
+  'theme',
+  'content',
+  'rows',
+  'toast',
+  'backdrop',
+  'overlay',
+  'dialog',
+  'popover',
+  'tooltip',
+  'drawer',
+])
+const EXIT_ROLES = [
+  'overlay-exit',
+  'dialog-exit',
+  'popover-exit',
+  'tooltip-exit',
+  'drawer-exit',
+]
+const DURATION_ROLES = new Set([
+  'content-duration',
+  'rows-duration',
+  'overlay-duration',
+  'toast-duration',
+  'backdrop-duration',
+  'exit-duration',
+])
 const EASE_ROLES = new Set(['enter-ease', 'exit-ease'])
 
 /** A role's value as the spec writes it: an effect or a token by name. */
@@ -205,7 +232,8 @@ const roleValue = (role: string, value: string): string | undefined => {
     const name = value.replace(/^greese-/, '')
     return value.startsWith('greese-') && PRESETS.has(name) ? name : undefined
   }
-  if (DURATION_ROLES.has(role)) return /^var\(--greese-duration-([a-z]+)\)$/.exec(value)?.[1] ?? value
+  if (DURATION_ROLES.has(role))
+    return /^var\(--greese-duration-([a-z]+)\)$/.exec(value)?.[1] ?? value
   if (EASE_ROLES.has(role))
     return /^var\(--greese-easing-([a-z]+)\)$/.exec(value)?.[1] ?? easeName(value)
   return undefined
@@ -325,7 +353,9 @@ export const importCss = (css: string, prefer?: string): ImportResult => {
     if (contexts.some((c) => /prefers-reduced-motion:\s*reduce/.test(c))) continue
     // A built-in effect's own keyframes, which the kit writes beside the roles
     // that play it: implied by the role.
-    if (contexts.some((c) => PRESETS.has(/^@keyframes greese-([\w-]+)$/.exec(c)?.[1] ?? '')))
+    if (
+      contexts.some((c) => PRESETS.has(/^@keyframes greese-([\w-]+)$/.exec(c)?.[1] ?? ''))
+    )
       continue
     const calm = contexts.some((c) => /prefers-reduced-motion:\s*no-preference/.test(c))
     const other = contexts.filter(
@@ -379,7 +409,12 @@ export const importCss = (css: string, prefer?: string): ImportResult => {
       for (const [role, decls] of Object.entries(roleExits)) {
         const exit = EXITS.get(exitKey(decls))
         if (exit) motionDefaults[role] = exit
-        else rest.push(...decls.map(([p, v]) => [`--greese-motion-${role}-${p}`, v] as [string, string]))
+        else
+          rest.push(
+            ...decls.map(
+              ([p, v]) => [`--greese-motion-${role}-${p}`, v] as [string, string]
+            )
+          )
       }
       if (rest.length) skip(rule, 'page-level CSS, not a token', rest)
       continue
@@ -406,7 +441,8 @@ export const importCss = (css: string, prefer?: string): ImportResult => {
         }
         const animation =
           property === 'animation' && calm ? kitAnimation(value) : undefined
-        const exit = property.startsWith('--greese-motion-exit-') && target.kind === 'root'
+        const exit =
+          property.startsWith('--greese-motion-exit-') && target.kind === 'root'
         const token = tokenOf(property)
         if (animation) {
           const preset = animation.name.replace(/^greese-/, '')
@@ -447,7 +483,10 @@ export const importCss = (css: string, prefer?: string): ImportResult => {
       if (exits.length) {
         const exit = EXITS.get(exitKey(exits))
         if (exit) c.motion = { ...c.motion, exit }
-        else rest.push(...exits.map(([p, v]) => [`--greese-motion-exit-${p}`, v] as [string, string]))
+        else
+          rest.push(
+            ...exits.map(([p, v]) => [`--greese-motion-exit-${p}`, v] as [string, string])
+          )
       }
       if (rest.length)
         skip({ ...rule, selector }, 'motion the studio can’t express', rest)

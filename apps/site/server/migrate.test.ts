@@ -15,10 +15,15 @@ describe('stored themes from before themes reassigned roles', () => {
         space: { '4': '1.1rem' },
       },
       motionDefaults: { duration: '0.55s', distance: '1.25rem', stagger: '0.05s' },
-      effects: { fadeUp: { keyframes: { opacity: [0, 1] } }, mine: { keyframes: { opacity: [0, 1] } } },
+      effects: {
+        fadeUp: { keyframes: { opacity: [0, 1] } },
+        mine: { keyframes: { opacity: [0, 1] } },
+      },
       components: {
         Dialog: { motion: { enter: 'pocket-up', exit: 'pocket-out-down' } },
-        TabPanel: { scss: '&:not(.greese-Motion) > * {\n  animation-name: greese-pocket-up;\n}' },
+        TabPanel: {
+          scss: '&:not(.greese-Motion) > * {\n  animation-name: greese-pocket-up;\n}',
+        },
         Card: { styles: { gap: '0' } },
       },
     }
@@ -30,7 +35,10 @@ describe('stored themes from before themes reassigned roles', () => {
   })
 
   it('leave a theme of today as it is', () => {
-    const today = { tokens: { radius: { md: '12px' } }, motionDefaults: { theme: 'pocket-up' } }
+    const today = {
+      tokens: { radius: { md: '12px' } },
+      motionDefaults: { theme: 'pocket-up' },
+    }
     expect(migrateSpec(today)).toEqual(today)
   })
 })

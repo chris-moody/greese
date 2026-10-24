@@ -9,13 +9,18 @@ const KINDS = {
   motion:
     'A GreeseUI motion theme (ADR 0025): it assigns the motion roles (which\n * built-in effect plays where, and which duration and easing it takes) and\n * paces every entrance. It redefines no effect and no token, and sets no\n * colors and no shapes, so it goes with any of those.',
   variant:
-    'A GreeseUI color variant (ADR 0025): how any color theme\'s colors are worn,\n * reassigned per component variant in @layer greese.overrides. It sets no\n * color tokens, shapes or motion, so it goes with any color, shape or motion\n * theme.',
+    "A GreeseUI color variant (ADR 0025): how any color theme's colors are worn,\n * reassigned per component variant in @layer greese.overrides. It sets no\n * color tokens, shapes or motion, so it goes with any color, shape or motion\n * theme.",
 }
 
 const SOURCES = { shape: 'shapes', motion: 'motions', variant: 'variants' }
 
 /** What a theme's files start with: what it is, and how to use it. */
-const header = (id: string, description: string, kind: keyof typeof KINDS, file: 'scss' | 'css') =>
+const header = (
+  id: string,
+  description: string,
+  kind: keyof typeof KINDS,
+  file: 'scss' | 'css'
+) =>
   `/**\n * ${description}\n *\n * ${KINDS[kind]}\n * ${
     file === 'css'
       ? `Load it after GreeseUI's styles:\n *\n *   import '@greese/ui/themes/${id}.css'`

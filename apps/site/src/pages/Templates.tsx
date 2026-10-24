@@ -17,7 +17,8 @@ import { RouteLink, useSubpage } from '../router.tsx'
 import { TEMPLATES, type TemplateEntry } from '../templates/index.ts'
 import '../templates/templates.scss'
 
-const sourceUrl = (t: TemplateEntry) => `${REPO_URL}/blob/main/apps/site/src/templates/${t.file}`
+const sourceUrl = (t: TemplateEntry) =>
+  `${REPO_URL}/blob/main/apps/site/src/templates/${t.file}`
 
 const Gallery = (): JSX.Element => (
   <Container size="lg">
@@ -31,8 +32,8 @@ const Gallery = (): JSX.Element => (
         </Heading>
         <Text tone="muted" className="tpl-measure">
           Six pages made only of GreeseUI components. Each wears the theme you pick in the
-          header, shapes included, and works on a phone. Copy the source, or ask an assistant
-          for it through @greese/mcp.
+          header, shapes included, and works on a phone. Copy the source, or ask an
+          assistant for it through @greese/mcp.
         </Text>
       </Stack>
       <Grid container minChildWidth="18rem" gap={4}>
@@ -62,13 +63,22 @@ const Gallery = (): JSX.Element => (
 )
 
 const TemplateView = ({ template }: { template: TemplateEntry }): JSX.Element => {
-  const Page = useMemo(() => lazy(() => template.load().then((c) => ({ default: c }))), [template])
+  const Page = useMemo(
+    () => lazy(() => template.load().then((c) => ({ default: c }))),
+    [template]
+  )
   // "Replay motion" remounts the page, so every entrance plays again.
   const { replay } = useShell()
   return (
     <div id="main">
       <div className="tpl-bar">
-        <Button asChild size="sm" variant="ghost" tone="neutral" startIcon={<ChevronLeftIcon />}>
+        <Button
+          asChild
+          size="sm"
+          variant="ghost"
+          tone="neutral"
+          startIcon={<ChevronLeftIcon />}
+        >
           <RouteLink to="templates">Templates</RouteLink>
         </Button>
         <Text variant="p3" weight="semibold">

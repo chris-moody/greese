@@ -190,7 +190,9 @@ export const ImportDialog = ({ spec, onImport }: ImportDialogProps): JSX.Element
             <Stack direction="row" gap={2} wrap="wrap" align="center">
               {/* Each layer of a theme in its own brand color, as on the homepage (tones.ts). */}
               <Badge tone="secondary">{plural(result.counts.tokens, 'token')}</Badge>
-              <Badge tone="tertiary">{plural(result.counts.components, 'component')}</Badge>
+              <Badge tone="tertiary">
+                {plural(result.counts.components, 'component')}
+              </Badge>
               <Badge tone="accent">
                 {plural(result.counts.motion, 'motion setting')}
               </Badge>

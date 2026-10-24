@@ -9,14 +9,14 @@ are bugs.
 
 **Where the docs live:**
 
-| Docs            | Path                                                                                                                                 |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Docs            | Path                                                                                                                              |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | Guides (MDX)    | `apps/docs/stories/guides/` (Introduction, Getting started, Theming, Responsive props, Accessibility, Animation, Utility classes) |
-| Stories         | `apps/docs/stories/<Category>/`                                                                                                      |
-| Package READMEs | `packages/{react,tokens,greese}/README.md`                                                                                           |
-| Decisions       | `docs/adr/`                                                                                                                          |
-| Status          | ADR 0013's phase table (`docs/adr/0013-project-scope-and-phases.md`); GLOP ports in ADR 0007's addendum                              |
-| Agent knowledge | `.claude/skills/greese-*/SKILL.md`                                                                                                   |
+| Stories         | `apps/docs/stories/<Category>/`                                                                                                   |
+| Package READMEs | `packages/{react,tokens,greese}/README.md`                                                                                        |
+| Decisions       | `docs/adr/`                                                                                                                       |
+| Status          | ADR 0013's phase table (`docs/adr/0013-project-scope-and-phases.md`); GLOP ports in ADR 0007's addendum                           |
+| Agent knowledge | `.claude/skills/greese-*/SKILL.md`                                                                                                |
 
 **Process:**
 

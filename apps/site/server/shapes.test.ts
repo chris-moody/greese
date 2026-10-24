@@ -40,21 +40,32 @@ describe('theme layers (ADR 0025)', () => {
     ...SHAPES.map((p) => [p.id, p, 'shape'] as const),
     ...MOTIONS.map((p) => [p.id, p, 'motion'] as const),
     ...VARIANTS.map((p) => [p.id, p, 'variant'] as const),
-  ])('%s: its files in @greese/ui are current (npm run themes -w site)', (id, preset, kind) => {
-    const { scss, css } = themeFile(preset, kind)
-    expect(readFileSync(join(themes, `${id}.scss`), 'utf8')).toBe(scss)
-    expect(readFileSync(join(themes, `${id}.css`), 'utf8')).toBe(css)
-  })
+  ])(
+    '%s: its files in @greese/ui are current (npm run themes -w site)',
+    (id, preset, kind) => {
+      const { scss, css } = themeFile(preset, kind)
+      expect(readFileSync(join(themes, `${id}.scss`), 'utf8')).toBe(scss)
+      expect(readFileSync(join(themes, `${id}.css`), 'utf8')).toBe(css)
+    }
+  )
 
   const fields = (spec: ThemeSpec) => ({
     tokens: Object.keys(spec.tokens ?? {}).sort(),
-    top: Object.keys(spec).filter((k) => k !== 'tokens' && k !== 'components').sort(),
-    component: [...new Set(Object.values(spec.components ?? {}).flatMap((c) => Object.keys(c)))].sort(),
+    top: Object.keys(spec)
+      .filter((k) => k !== 'tokens' && k !== 'components')
+      .sort(),
+    component: [
+      ...new Set(Object.values(spec.components ?? {}).flatMap((c) => Object.keys(c))),
+    ].sort(),
   })
 
   it('keeps each layer to its own fields', () => {
     for (const preset of PRESETS.filter((p) => Object.keys(p.color).length))
-      expect(fields(applyPreset({}, preset))).toEqual({ tokens: ['color'], top: [], component: [] })
+      expect(fields(applyPreset({}, preset))).toEqual({
+        tokens: ['color'],
+        top: [],
+        component: [],
+      })
     for (const preset of SHAPES)
       expect(fields(applyShape({}, preset)), preset.id).toEqual({
         tokens: ['corner'],
@@ -89,7 +100,10 @@ describe('theme layers (ADR 0025)', () => {
   })
 
   it('composes one of each, and swaps one without touching the others', () => {
-    const own: ThemeSpec = { components: { Tabs: { styles: { gap: '0' } } }, tokens: { space: { 4: '1.1rem' } } }
+    const own: ThemeSpec = {
+      components: { Tabs: { styles: { gap: '0' } } },
+      tokens: { space: { 4: '1.1rem' } },
+    }
     const ocean = PRESETS.find((p) => p.id === 'ocean')!
     let spec = applyMotion(applyShape(applyPreset(own, ocean), SHAPES[0]), MOTIONS[2])
     expect(shapeIn(spec)?.id).toBe('bevel')
@@ -123,12 +137,17 @@ describe('theme layers (ADR 0025)', () => {
     '%s: reassigns radius roles, and draws everything inside the box so masks and clips keep it',
     (_id, preset) => {
       const css = themeFile(preset, 'shape').css.replace(/\/\*[\s\S]*?\*\//g, '')
-      expect(Object.values(preset.corner).every((r) => /^var\(--greese-radius-[a-z]+\)$/.test(r))).toBe(true)
+      expect(
+        Object.values(preset.corner).every((r) =>
+          /^var\(--greese-radius-[a-z]+\)$/.test(r)
+        )
+      ).toBe(true)
       expect(css).not.toMatch(/--greese-radius-[a-z]+:/)
       expect(css).not.toMatch(/clip-path|@keyframes|\bmask/)
       // Depth is inset shadows only: an outer one would be cut by a motion theme's mask.
       for (const [, shadow] of css.matchAll(/box-shadow: ([^;]+);/g))
-        for (const layer of topLevel(shadow!)) expect(layer.trim(), shadow).toMatch(/^inset /)
+        for (const layer of topLevel(shadow!))
+          expect(layer.trim(), shadow).toMatch(/^inset /)
       // Nothing rests turned: a motion theme's turns start and end where it sits.
       for (const [rule] of css.matchAll(/[^{}]*\{[^{}]*transform: perspective[^{}]*\}/g))
         expect(rule, rule).toMatch(/:hover|:active|aria-selected/)
@@ -141,10 +160,14 @@ describe('theme layers (ADR 0025)', () => {
     (_id, preset) => {
       const { css } = themeFile(preset, 'shape')
       // Every radius role reassigned to the scale's `none`; the scale keeps its values.
-      expect(Object.values(preset.corner).every((r) => r === 'var(--greese-radius-none)')).toBe(true)
+      expect(
+        Object.values(preset.corner).every((r) => r === 'var(--greese-radius-none)')
+      ).toBe(true)
       expect(css).not.toMatch(/--greese-radius-[a-z]+:/)
       for (const name of ['Button', 'Card', 'Input'])
-        expect(css).toMatch(new RegExp(`\\.greese-${name}(:focus-visible|:has\\(:focus-visible\\))`))
+        expect(css).toMatch(
+          new RegExp(`\\.greese-${name}(:focus-visible|:has\\(:focus-visible\\))`)
+        )
       expect(css).not.toMatch(/transition:[^;]*clip-path/)
       expect(css).not.toMatch(/@keyframes/)
       expect(css).not.toMatch(/\bmask:/)
@@ -162,7 +185,9 @@ describe('theme layers (ADR 0025)', () => {
       expect(css).toMatch(/--greese-motion-theme: greese-[a-z-]+;/)
       // It never redefines an effect or a token: the keyframes it carries are
       // the effects' own, and no duration or easing token changes.
-      const carried = [...css.matchAll(/@keyframes greese-([a-z-]+) (\{[\s\S]*?\n {4}\})/g)]
+      const carried = [
+        ...css.matchAll(/@keyframes greese-([a-z-]+) (\{[\s\S]*?\n {4}\})/g),
+      ]
       expect(carried.length).toBeGreaterThan(0)
       for (const [, name, body] of carried)
         expect(body!.replace(/\s+/g, ' ')).toBe(builtIn.get(name!)!.replace(/\s+/g, ' '))
@@ -177,7 +202,14 @@ describe('shapes in a theme spec', () => {
     const errors = validateSpec({
       shapes: {
         Bad: { points: [] },
-        ok: { points: [{ x: {}, y: {} }, { x: { pct: 100 }, y: {} }, { x: { param: 'A-1' }, y: { pct: 100 } }], params: { a: Number.NaN } },
+        ok: {
+          points: [
+            { x: {}, y: {} },
+            { x: { pct: 100 }, y: {} },
+            { x: { param: 'A-1' }, y: { pct: 100 } },
+          ],
+          params: { a: Number.NaN },
+        },
       },
       components: { Button: { shape: 'missing' } },
     })
@@ -199,7 +231,9 @@ describe('shapes in a theme spec', () => {
     })
     expect(scss).toMatch(/@property --greese-shape-a \{/)
     expect(scss).toMatch(/@layer greese\.overrides \{/)
-    expect(scss).toMatch(/\.greese-shape-cut,\n {2}\.greese-Button \{\n {4}--greese-shape-a: 8px;/)
+    expect(scss).toMatch(
+      /\.greese-shape-cut,\n {2}\.greese-Button \{\n {4}--greese-shape-a: 8px;/
+    )
     expect(scss).not.toMatch(/greese-Card/)
   })
 
@@ -209,7 +243,10 @@ describe('shapes in a theme spec', () => {
   })
 
   it('compile through the kit like the rest of the theme', () => {
-    const compiled = compileSpec({ shapes: { cut: bevel() }, components: { Button: { shape: 'cut' } } })
+    const compiled = compileSpec({
+      shapes: { cut: bevel() },
+      components: { Button: { shape: 'cut' } },
+    })
     expect('errors' in compiled ? compiled.errors : []).toEqual([])
     expect('css' in compiled && compiled.css).toMatch(/\.greese-Button::after \{/)
   })

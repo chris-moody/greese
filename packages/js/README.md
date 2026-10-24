@@ -76,14 +76,14 @@ In a framework, build the timeline after mount and `kill()` it on unmount;
 `kill()` also restores what it animated. The guide has React, Vue, Svelte and
 plain JavaScript examples.
 
-| | |
-|---|---|
-| Build | `.to`, `.from`, `.fromTo`, `.animate` (keyframes), `.set`, `.add` (timeline or callback), `.call`, `.label` |
-| Control | `play`, `pause`, `resume`, `reverse`, `restart`, `seek`, `progress`, `time`, `timeScale`, `kill`, `invalidate`, `await` |
-| Options | `paused`, `repeat`, `yoyo`, `repeatDelay`, `timeScale`, `reducedMotion`, `scope`, `onUpdate`, `onComplete` |
-| Positions | `1.5`, `'+=0.2'`, `'-=0.2'`, `'<'`, `'>-0.1'`, `'label+=0.5'` |
-| Eases | `'out'` (default), `'power1'`–`'power4'`, `'sine'`, `'expo'`, `'circ'`, `'back'`, `'elastic'`, `'bounce'` with `.in`/`.out`/`.inOut`; CSS names; `steps(n)`; cubic-bézier arrays; functions |
-| Extras | `splitText(el, { by })`, `fromPixels(animation, targets)`, `ease(name)`, `mix(a, b)`, `batch(fn)` (start many animations: all read, then all write) |
+|           |                                                                                                                                                                                             |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Build     | `.to`, `.from`, `.fromTo`, `.animate` (keyframes), `.set`, `.add` (timeline or callback), `.call`, `.label`                                                                                 |
+| Control   | `play`, `pause`, `resume`, `reverse`, `restart`, `seek`, `progress`, `time`, `timeScale`, `kill`, `invalidate`, `await`                                                                     |
+| Options   | `paused`, `repeat`, `yoyo`, `repeatDelay`, `timeScale`, `reducedMotion`, `scope`, `onUpdate`, `onComplete`                                                                                  |
+| Positions | `1.5`, `'+=0.2'`, `'-=0.2'`, `'<'`, `'>-0.1'`, `'label+=0.5'`                                                                                                                               |
+| Eases     | `'out'` (default), `'power1'`–`'power4'`, `'sine'`, `'expo'`, `'circ'`, `'back'`, `'elastic'`, `'bounce'` with `.in`/`.out`/`.inOut`; CSS names; `steps(n)`; cubic-bézier arrays; functions |
+| Extras    | `splitText(el, { by })`, `fromPixels(animation, targets)`, `ease(name)`, `mix(a, b)`, `batch(fn)` (start many animations: all read, then all write)                                         |
 
 Times are seconds. Transforms use the individual CSS `translate`, `rotate` and
 `scale` properties, so they never fight your CSS `transform`. Colors mix in
@@ -91,12 +91,12 @@ OKLab.
 
 ## Sizes (brotli)
 
-| Entry | Size |
-|---|---|
-| `animate` / `timeline` | 5 kB |
-| Everything (with `splitText`, `fromPixels`) | 5.9 kB |
-| `ease` alone | 0.85 kB |
-| `greese.global.js` (`<script>`) | 6.3 kB |
+| Entry                                       | Size    |
+| ------------------------------------------- | ------- |
+| `animate` / `timeline`                      | 5 kB    |
+| Everything (with `splitText`, `fromPixels`) | 5.9 kB  |
+| `ease` alone                                | 0.85 kB |
+| `greese.global.js` (`<script>`)             | 6.3 kB  |
 
 Full guide: **Guides/greese.js** in the GreeseUI docs. Design decisions:
 [ADR 0008](../../docs/adr/0008-greese-js-animation.md).

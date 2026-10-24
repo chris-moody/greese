@@ -42,17 +42,84 @@ const CATEGORIES = ['Kitchen', 'Desk', 'Outdoor', 'Bath'] as const
 type Category = (typeof CATEGORIES)[number]
 
 const PRODUCTS: Product[] = [
-  { id: 1, name: 'Stoneware mug, set of 2', category: 'Kitchen', price: 34, rating: 4.5, reviews: 212, hue: 28 },
-  { id: 2, name: 'Walnut desk organizer', category: 'Desk', price: 58, was: 72, rating: 4.8, reviews: 96, hue: 35 },
-  { id: 3, name: 'Linen hand towels', category: 'Bath', price: 26, rating: 4.2, reviews: 151, hue: 190 },
-  { id: 4, name: 'Enamel camp kettle', category: 'Outdoor', price: 44, rating: 4.6, reviews: 74, hue: 150 },
-  { id: 5, name: 'Felt laptop sleeve', category: 'Desk', price: 39, rating: 4.4, reviews: 188, hue: 220 },
-  { id: 6, name: 'Cast iron skillet', category: 'Kitchen', price: 49, was: 65, rating: 4.9, reviews: 403, hue: 10 },
-  { id: 7, name: 'Cedar bath caddy', category: 'Bath', price: 52, rating: 4.3, reviews: 39, hue: 45 },
-  { id: 8, name: 'Waxed canvas tote', category: 'Outdoor', price: 68, rating: 4.7, reviews: 120, hue: 95 },
+  {
+    id: 1,
+    name: 'Stoneware mug, set of 2',
+    category: 'Kitchen',
+    price: 34,
+    rating: 4.5,
+    reviews: 212,
+    hue: 28,
+  },
+  {
+    id: 2,
+    name: 'Walnut desk organizer',
+    category: 'Desk',
+    price: 58,
+    was: 72,
+    rating: 4.8,
+    reviews: 96,
+    hue: 35,
+  },
+  {
+    id: 3,
+    name: 'Linen hand towels',
+    category: 'Bath',
+    price: 26,
+    rating: 4.2,
+    reviews: 151,
+    hue: 190,
+  },
+  {
+    id: 4,
+    name: 'Enamel camp kettle',
+    category: 'Outdoor',
+    price: 44,
+    rating: 4.6,
+    reviews: 74,
+    hue: 150,
+  },
+  {
+    id: 5,
+    name: 'Felt laptop sleeve',
+    category: 'Desk',
+    price: 39,
+    rating: 4.4,
+    reviews: 188,
+    hue: 220,
+  },
+  {
+    id: 6,
+    name: 'Cast iron skillet',
+    category: 'Kitchen',
+    price: 49,
+    was: 65,
+    rating: 4.9,
+    reviews: 403,
+    hue: 10,
+  },
+  {
+    id: 7,
+    name: 'Cedar bath caddy',
+    category: 'Bath',
+    price: 52,
+    rating: 4.3,
+    reviews: 39,
+    hue: 45,
+  },
+  {
+    id: 8,
+    name: 'Waxed canvas tote',
+    category: 'Outdoor',
+    price: 68,
+    rating: 4.7,
+    reviews: 120,
+    hue: 95,
+  },
 ]
 
-const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+const money = (n: number) =>
+  n.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
 
 type Sort = 'featured' | 'price-low' | 'price-high' | 'rating'
 
@@ -98,15 +165,35 @@ export const Store = (): JSX.Element => {
   return (
     <Container size="lg">
       <Stack gap={5} py={{ xs: 4, md: 6 }}>
-        <Stack direction="row" justify="between" align="end" gap={3} wrap="wrap" greese={{ enter: 'theme', stagger: 0.06 }}>
+        <Stack
+          direction="row"
+          justify="between"
+          align="end"
+          gap={3}
+          wrap="wrap"
+          greese={{ enter: 'theme', stagger: 0.06 }}
+        >
           <Stack gap={1}>
             <Heading level={1} variant="h2">
               Goods for slow mornings
             </Heading>
             <Text tone="muted">Free shipping over $75 · Returns within 30 days</Text>
           </Stack>
-          <Indicator content={count ? <Badge tone="primary" variant="solid">{count}</Badge> : null}>
-            <Button variant="soft" tone="neutral" startIcon={<CartIcon />} onClick={() => setCartOpen(true)}>
+          <Indicator
+            content={
+              count ? (
+                <Badge tone="primary" variant="solid">
+                  {count}
+                </Badge>
+              ) : null
+            }
+          >
+            <Button
+              variant="soft"
+              tone="neutral"
+              startIcon={<CartIcon />}
+              onClick={() => setCartOpen(true)}
+            >
               Cart
             </Button>
           </Indicator>
@@ -149,10 +236,19 @@ export const Store = (): JSX.Element => {
         <Text variant="p3" tone="muted" role="status">
           {shown.length} {shown.length === 1 ? 'product' : 'products'}
         </Text>
-        <Grid container minChildWidth="14rem" gap={4} greese={{ inView: 'theme', stagger: 0.06 }}>
+        <Grid
+          container
+          minChildWidth="14rem"
+          gap={4}
+          greese={{ inView: 'theme', stagger: 0.06 }}
+        >
           {shown.map((p) => (
             <Card key={p.id} variant="outline" padding={3}>
-              <div className="tpl-product-art" style={{ '--tpl-hue': p.hue } as CSSProperties} aria-hidden="true">
+              <div
+                className="tpl-product-art"
+                style={{ '--tpl-hue': p.hue } as CSSProperties}
+                aria-hidden="true"
+              >
                 {p.was && (
                   <Badge tone="negative" variant="solid" className="tpl-product-sale">
                     Sale
@@ -166,18 +262,31 @@ export const Store = (): JSX.Element => {
                   </Heading>
                   <IconButton
                     size="sm"
-                    label={saved.includes(p.id) ? `Remove ${p.name} from saved` : `Save ${p.name}`}
+                    label={
+                      saved.includes(p.id)
+                        ? `Remove ${p.name} from saved`
+                        : `Save ${p.name}`
+                    }
                     aria-pressed={saved.includes(p.id)}
                     tone={saved.includes(p.id) ? 'primary' : 'neutral'}
                     onClick={() =>
-                      setSaved((s) => (s.includes(p.id) ? s.filter((id) => id !== p.id) : [...s, p.id]))
+                      setSaved((s) =>
+                        s.includes(p.id) ? s.filter((id) => id !== p.id) : [...s, p.id]
+                      )
                     }
                   >
                     <HeartIcon />
                   </IconButton>
                 </Stack>
                 <Stack direction="row" gap={2} align="center">
-                  <Rating label={`Rated ${p.rating} out of 5`} hideLabel value={p.rating} step={0.5} readOnly size="xs" />
+                  <Rating
+                    label={`Rated ${p.rating} out of 5`}
+                    hideLabel
+                    value={p.rating}
+                    step={0.5}
+                    readOnly
+                    size="xs"
+                  />
                   <Text variant="caption" tone="muted">
                     {p.reviews}
                   </Text>
@@ -212,7 +321,9 @@ export const Store = (): JSX.Element => {
               <Text weight="bold">{money(subtotal)}</Text>
             </Stack>
             <Text variant="caption" tone="muted">
-              {subtotal >= 75 ? 'Shipping is on us.' : `${money(75 - subtotal)} more for free shipping.`}
+              {subtotal >= 75
+                ? 'Shipping is on us.'
+                : `${money(75 - subtotal)} more for free shipping.`}
             </Text>
             <Button
               size="lg"
@@ -221,7 +332,11 @@ export const Store = (): JSX.Element => {
               onClick={() => {
                 setCartOpen(false)
                 setCart({})
-                toast({ title: 'Order placed', description: 'A receipt is on its way.', tone: 'positive' })
+                toast({
+                  title: 'Order placed',
+                  description: 'A receipt is on its way.',
+                  tone: 'positive',
+                })
               }}
             >
               Check out

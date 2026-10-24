@@ -49,8 +49,14 @@ $widths: (
       background-color: var(--greese-color-scrim);
       opacity: 0;
       transition-property: opacity, display, overlay;
-      transition-duration: var(--greese-motion-exit-duration, var(--greese-duration-normal));
-      transition-timing-function: var(--greese-motion-exit-ease, var(--greese-easing-exit));
+      transition-duration: var(
+        --greese-motion-exit-duration,
+        var(--greese-duration-normal)
+      );
+      transition-timing-function: var(
+        --greese-motion-exit-ease,
+        var(--greese-easing-exit)
+      );
       transition-behavior: allow-discrete;
     }
 

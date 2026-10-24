@@ -12,10 +12,16 @@ import type { ThemeSpec } from './spec.ts'
  * presets wrote; anything else a theme sets is its own, and stays.
  */
 const LEGACY_SQUARE = { sm: '0', md: '0', lg: '0', pill: '0', round: '0' }
-const LEGACY_TIMING: Array<[duration: Record<string, string>, easing: Record<string, string>]> = [
+const LEGACY_TIMING: Array<
+  [duration: Record<string, string>, easing: Record<string, string>]
+> = [
   [
     { fast: '80ms', normal: '140ms', slow: '220ms' },
-    { standard: 'cubic-bezier(0.3, 0, 0, 1)', enter: 'cubic-bezier(0, 0, 0, 1)', exit: 'cubic-bezier(0.5, 0, 1, 1)' },
+    {
+      standard: 'cubic-bezier(0.3, 0, 0, 1)',
+      enter: 'cubic-bezier(0, 0, 0, 1)',
+      exit: 'cubic-bezier(0.5, 0, 1, 1)',
+    },
   ],
   [
     { fast: '180ms', normal: '320ms', slow: '560ms' },
@@ -35,12 +41,17 @@ const LEGACY_TIMING: Array<[duration: Record<string, string>, easing: Record<str
   ],
   [
     { fast: '110ms', normal: '240ms', slow: '380ms' },
-    { standard: 'cubic-bezier(0.2, 0, 0, 1)', enter: 'cubic-bezier(0.2, 0.9, 0.1, 1)', exit: 'cubic-bezier(0.4, 0, 1, 1)' },
+    {
+      standard: 'cubic-bezier(0.2, 0, 0, 1)',
+      enter: 'cubic-bezier(0.2, 0.9, 0.1, 1)',
+      exit: 'cubic-bezier(0.4, 0, 1, 1)',
+    },
   ],
 ]
 /** The components the old motion themes wrote motion or SCSS into. */
 const LEGACY_MOTION = ['Toast', 'Dialog', 'Popover', 'Menu', 'Tooltip']
-const LEGACY_SCSS = /animation(-name)?: greese-|--greese-motion-exit-translate: var\(--greese-overlay-origin\)/
+const LEGACY_SCSS =
+  /animation(-name)?: greese-|--greese-motion-exit-translate: var\(--greese-overlay-origin\)/
 const LEGACY_SCSS_ON = ['Drawer', 'TabPanel', 'Collapsible', 'Table']
 const LEGACY_DEFAULTS = new Set(['duration', 'delay', 'ease', 'distance', 'stagger'])
 
@@ -50,7 +61,9 @@ const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 export const migrateSpec = (spec: ThemeSpec): ThemeSpec => {
   const tokens = { ...spec.tokens }
   if (same(tokens.radius, LEGACY_SQUARE)) delete tokens.radius
-  const timing = LEGACY_TIMING.find(([d, e]) => same(tokens.duration, d) && same(tokens.easing, e))
+  const timing = LEGACY_TIMING.find(
+    ([d, e]) => same(tokens.duration, d) && same(tokens.easing, e)
+  )
   if (timing) {
     delete tokens.duration
     delete tokens.easing
@@ -62,7 +75,8 @@ export const migrateSpec = (spec: ThemeSpec): ThemeSpec => {
     Object.entries(spec.components ?? {}).flatMap(([name, c]) => {
       const next = { ...c }
       if (timing && LEGACY_MOTION.includes(name)) delete next.motion
-      if (LEGACY_SCSS_ON.includes(name) && next.scss && LEGACY_SCSS.test(next.scss)) delete next.scss
+      if (LEGACY_SCSS_ON.includes(name) && next.scss && LEGACY_SCSS.test(next.scss))
+        delete next.scss
       return Object.keys(next).length ? [[name, next]] : []
     })
   )
