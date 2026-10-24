@@ -32,7 +32,9 @@ module.exports = [
     // 22.75 kB → 23.35 kB (2026-10-24): Header and Footer (a sticky header sets
     // the page's scroll padding), and Collapsible's icon per state with its
     // transitions (23.31 kB).
-    limit: '23.35 kB',
+    // 23.35 kB → 23.4 kB (2026-10-24): an interactive Card's hit strip stays
+    // unclipped, so CardMedia rounds its own corners (23.38 kB).
+    limit: '23.4 kB',
   },
   {
     name: 'CSS: utilities.css (the whole set)',
