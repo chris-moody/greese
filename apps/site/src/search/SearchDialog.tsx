@@ -59,17 +59,20 @@ export const SearchDialog = ({ open, onOpenChange }: SearchDialogProps): JSX.Ele
   // The results in the order they're shown, which is the order the arrows move in.
   const results = useMemo(() => groups.flatMap(([, entries]) => entries), [groups])
   const optionId = (index: number) => `${id}-option-${index}`
+  const activeId = results[active] ? optionId(active) : undefined
 
-  useEffect(() => setActive(0), [query])
+  // A new list (typing, or clearing Recent) starts at its first result.
+  useEffect(() => setActive(0), [results])
   // Opened again, the last query is still there, selected, to type over.
   useEffect(() => {
     if (open) input.current?.select()
   }, [open])
   useEffect(() => {
-    list.current
-      ?.querySelector(`#${CSS.escape(optionId(active))}`)
-      ?.scrollIntoView({ block: 'nearest' })
-  }, [active])
+    if (activeId)
+      list.current
+        ?.querySelector(`#${CSS.escape(activeId)}`)
+        ?.scrollIntoView({ block: 'nearest' })
+  }, [activeId])
 
   const go = (entry: SearchEntry) => {
     setRecent(
@@ -148,7 +151,7 @@ export const SearchDialog = ({ open, onOpenChange }: SearchDialogProps): JSX.Ele
         aria-expanded={results.length > 0}
         aria-controls={`${id}-list`}
         aria-autocomplete="list"
-        aria-activedescendant={results.length ? optionId(active) : undefined}
+        aria-activedescendant={activeId}
         value={query}
         onChange={(e) => setQuery(e.currentTarget.value)}
         onKeyDown={onKeyDown}
@@ -162,10 +165,11 @@ export const SearchDialog = ({ open, onOpenChange }: SearchDialogProps): JSX.Ele
         aria-label="Results"
         className="site-search-results"
       >
-        {groups.map(([group, entries]) => (
-          <div key={group} role="group" aria-labelledby={`${id}-${group}`}>
+        {groups.map(([group, entries], g) => (
+          // By position: a group's name can have spaces, which an id can't.
+          <div key={group} role="group" aria-labelledby={`${id}-group-${g}`}>
             <Text
-              id={`${id}-${group}`}
+              id={`${id}-group-${g}`}
               variant="p3"
               weight="bold"
               tone="muted"

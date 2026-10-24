@@ -9,6 +9,7 @@ import { migrateSpec } from './studio/migrate.ts'
 import type { RenderedColors } from './studio/protocol.ts'
 import type { ThemeSpec } from './studio/spec.ts'
 import { applyEffects } from './effects-runtime.ts'
+import { useStable } from './useStable.ts'
 import { brand, GREESE_SPEC } from './theme.ts'
 
 // The studio is its own chunk: the homepage never loads its editor, the
@@ -61,37 +62,43 @@ const useLayerCss = (spec: ThemeSpec): void => {
     Object.values(spec.components ?? {}).some(
       (c) => c.shape || c.motion || c.scss || c.modifiers || c.styles
     )
-  const key = layered
-    ? JSON.stringify([spec.shapes, spec.components, spec.motionDefaults, spec.effects, spec.tokens?.corner])
-    : ''
+  // Only the layers' parts: a color edit doesn't reload the sheets.
+  const layers = useStable<ThemeSpec | undefined>(
+    layered
+      ? {
+          shapes: spec.shapes,
+          components: spec.components,
+          motionDefaults: spec.motionDefaults,
+          effects: spec.effects,
+          tokens: spec.tokens?.corner && { corner: spec.tokens.corner },
+        }
+      : undefined
+  )
   useEffect(() => {
-    if (!key) return
+    if (!layers) return
     let live = true
     const sheets: HTMLStyleElement[] = []
     void Promise.all([
       import('./studio/shapes.ts'),
       import('./studio/motions.ts'),
       import('./studio/variants.ts'),
-    ]).then(
-      async ([{ shapeIn }, { motionIn }, { variantIn }]) => {
-        for (const layer of [shapeIn(spec), motionIn(spec), variantIn(spec)]) {
-          if (!layer) continue
-          const css = await THEME_CSS[`../../../packages/ui/themes/${layer.id}.css`]?.()
-          if (!live || !css) continue
-          const sheet = document.createElement('style')
-          sheet.dataset.siteTheme = layer.id
-          sheet.textContent = css
-          document.head.append(sheet)
-          sheets.push(sheet)
-        }
+    ]).then(async ([{ shapeIn }, { motionIn }, { variantIn }]) => {
+      for (const layer of [shapeIn(layers), motionIn(layers), variantIn(layers)]) {
+        if (!layer) continue
+        const css = await THEME_CSS[`../../../packages/ui/themes/${layer.id}.css`]?.()
+        if (!live || !css) continue
+        const sheet = document.createElement('style')
+        sheet.dataset.siteTheme = layer.id
+        sheet.textContent = css
+        document.head.append(sheet)
+        sheets.push(sheet)
       }
-    )
+    })
     return () => {
       live = false
       sheets.forEach((sheet) => sheet.remove())
     }
-    // The key stands for the layers' parts of the spec, all this reads.
-  }, [key])
+  }, [layers])
 }
 
 /**
@@ -116,8 +123,8 @@ export const App = (): JSX.Element => {
   const theme = useSiteTheme(spec)
   useLayerCss(spec)
   // The theme's effects work on this page: the homepage, and the studio's stage.
-  const effectsKey = JSON.stringify(spec.effects ?? null)
-  useEffect(() => applyEffects(spec.effects), [effectsKey])
+  const effects = useStable(spec.effects)
+  useEffect(() => applyEffects(effects), [effects])
 
   const shell = useMemo<Shell>(
     () => ({
@@ -128,7 +135,7 @@ export const App = (): JSX.Element => {
       replay,
       replayMotion: () => setReplay((n) => n + 1),
     }),
-    [spec, rendered, replay]
+    [spec, setSpec, rendered, replay]
   )
 
   return (
