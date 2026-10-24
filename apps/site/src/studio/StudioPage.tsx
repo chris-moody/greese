@@ -90,7 +90,8 @@ export const StudioPage = (): JSX.Element => {
   const frame = useRef<HTMLIFrameElement>(null)
   const lab = useGreeseLab(spec, setSpec)
 
-  const dirty = !!file && JSON.stringify(spec) !== file.saved
+  // Serialized when the spec or the file changes, not on every render.
+  const dirty = useMemo(() => !!file && JSON.stringify(spec) !== file.saved, [spec, file])
   /** What the button says once the last save is all there is: the files it wrote. */
   const savedNote = !dirty && written ? `Saved ${written.join(', ')}` : undefined
 

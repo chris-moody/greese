@@ -262,9 +262,14 @@ export const studio = (): Plugin => {
       })
 
       server.middlewares.use('/api', async (req, res, next) => {
-        // Same-origin only: the API writes files.
+        // Same-origin only: the API writes files and runs imported modules.
+        // Browsers send Origin with every write (PUT, POST), so one without it
+        // isn't the studio: a request from another machine, say, when the dev
+        // server listens on the network.
         const origin = req.headers.origin
-        if (origin && origin !== `http://${req.headers.host}`) return send(res, 403, {})
+        const write = req.method !== 'GET' && req.method !== 'HEAD'
+        if ((origin || write) && origin !== `http://${req.headers.host}`)
+          return send(res, 403, {})
         try {
           if (req.url === '/theme' && req.method === 'GET') {
             const spec = readSpec(files.json)
