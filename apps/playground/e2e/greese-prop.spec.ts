@@ -132,6 +132,60 @@ test('a hover that lifts the element away from a still pointer keeps it lifted',
     .toMatch(/^0px( 0px)?$/)
 })
 
+test('entering again while it settles keeps the resting box, so it lifts and stays', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'hover is for fine pointers')
+  const button = page.getByTestId('hover')
+  await button.scrollIntoViewIfNeeded()
+  const box = (await button.boundingBox())!
+  const edge = { x: box.x + box.width / 2, y: box.y + box.height - 2 }
+  const lifted = () => style(page, 'hover', 'translate').then((s) => s.translate)
+  await page.mouse.move(edge.x, edge.y)
+  await expect.poll(lifted).toBe('0px -4px')
+  // Off, and straight back while it's still part-way down: the box it was
+  // measured in is where it rests, not where it is mid-way.
+  await page.mouse.move(edge.x, box.y + box.height + 40)
+  await page.waitForTimeout(40)
+  await page.mouse.move(edge.x, box.y + box.height / 2)
+  await page.mouse.move(edge.x, edge.y)
+  await expect.poll(lifted).toBe('0px -4px')
+  for (let i = 0; i < 4; i++) {
+    await page.waitForTimeout(120)
+    expect(await lifted()).toBe('0px -4px')
+  }
+})
+
+test('the pointer leaving the window from where it rests ends the hover', async ({
+  page,
+  isMobile,
+  browserName,
+}) => {
+  test.skip(isMobile, 'hover is for fine pointers')
+  // WebKit re-checks hover as the button settles back under the real pointer,
+  // which a synthetic exit can't move out of the window: it enters again.
+  test.skip(browserName === 'webkit', 'the real pointer stays in the window')
+  const button = page.getByTestId('hover')
+  await button.scrollIntoViewIfNeeded()
+  const box = (await button.boundingBox())!
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height - 2)
+  await expect
+    .poll(async () => (await style(page, 'hover', 'translate')).translate)
+    .toBe('0px -4px')
+  // A small move below the risen button, still where it rests: every engine
+  // now has the pointer off it, and the runtime watches the resting box.
+  await page.mouse.move(box.x + box.width / 2 + 1, box.y + box.height - 1)
+  expect((await style(page, 'hover', 'translate')).translate).toBe('0px -4px')
+  // What the browser sends as the pointer leaves the window: nowhere to go.
+  await page.evaluate(() => {
+    dispatchEvent(new PointerEvent('pointerout', { relatedTarget: null }))
+  })
+  await expect
+    .poll(async () => (await style(page, 'hover', 'translate')).translate)
+    .toMatch(/^0px( 0px)?$/)
+})
+
 test('an overlay plays its enter preset and exits with its exit preset', async ({
   page,
 }) => {

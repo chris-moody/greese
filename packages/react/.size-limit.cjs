@@ -64,8 +64,8 @@ module.exports = [
     // 33.25 kB → 33.3 kB (2026-10-23): irises in eight directions, as above (33.26 kB).
     // 33.3 kB → 33.35 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (33309 B).
     // 33.35 kB → 33.8 kB (2026-10-24): the same, with greese.js (33.79 kB).
-    // 33.8 kB → 34 kB (2026-10-24): greese.js's kill() puts back the inline styles it found instead of pinning computed values, and callbacks fire once per repeat (ADR 0008 amendment; 33.95 kB).
-    limit: '34 kB',
+    // 33.8 kB → 34.1 kB (2026-10-24): greese.js's kill() puts back the inline styles it found instead of pinning computed values, and callbacks fire once per repeat (ADR 0008 amendment); a hover keeps its resting box and ends when the pointer leaves the window (34.05 kB).
+    limit: '34.1 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -434,6 +434,7 @@ module.exports = [
     // 9.9 kB → 10.25 kB (2026-10-24): the 16 three-dimensional effects (ADR 0025 addendum, 2026-10-24): their definitions (10237 B).
     // 10.25 kB → 10.35 kB (2026-10-24): a hover lasts while the pointer is over where the element rests, so a lift doesn't bounce under a still pointer (10.33 kB).
     // 10.35 kB → 10.55 kB (2026-10-24): greese.js's kill() restores inline styles and callbacks fire once per repeat (ADR 0008 amendment; 10.53 kB).
-    limit: '10.55 kB',
+    // 10.55 kB → 10.75 kB (2026-10-24): the 10.53 kB above was measured against a stale greese.js build; rebuilt, the kill() fix measures 10.65 kB. A hover also keeps its resting box while it settles back, and ends when the pointer leaves the window or the page loses focus (10.74 kB).
+    limit: '10.75 kB',
   },
 ]

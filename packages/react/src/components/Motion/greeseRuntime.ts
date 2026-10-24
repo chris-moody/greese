@@ -270,7 +270,8 @@ const ready = (el: Element): boolean => {
   const { top, bottom, height } = el.getBoundingClientRect()
   const edge = innerHeight * 0.9
   if (top >= 0 && bottom <= edge) return true
-  if (height > innerHeight * 0.5) return Math.min(bottom, innerHeight) - Math.max(top, 0) >= innerHeight * 0.2
+  if (height > innerHeight * 0.5)
+    return Math.min(bottom, innerHeight) - Math.max(top, 0) >= innerHeight * 0.2
   const left = document.documentElement.scrollHeight - scrollY - innerHeight
   return top >= 0 && bottom <= innerHeight && bottom - edge > left
 }
@@ -308,7 +309,9 @@ const startEntrance = ({ el, o, reduce, cleanups }: Setup, entrance: Timeline) =
   }
   const watch = (on: boolean) => {
     for (const type of ['scroll', 'resize'])
-      (on ? addEventListener : removeEventListener)(type, onScroll, { passive: true } as never)
+      (on ? addEventListener : removeEventListener)(type, onScroll, {
+        passive: true,
+      } as never)
   }
   const observer = new IntersectionObserver(([entry]) => {
     if (!entry) return
@@ -357,33 +360,55 @@ const attachInteractions = ({ el, o, ctx, cleanups }: Setup) => {
     // again, over and over. So hover lasts while the pointer is over where the
     // element rests, not where it has moved to.
     const tl = build(o.hover)
-    let rest: DOMRect | undefined
-    // A box with no area (nothing laid out) has nothing under the pointer.
-    const over = (e: PointerEvent) =>
-      !!rest &&
-      rest.width * rest.height > 0 &&
-      e.clientX >= rest.left &&
-      e.clientX <= rest.right &&
-      e.clientY >= rest.top &&
-      e.clientY <= rest.bottom
+    // Where the element rests, in page coordinates (so a scroll doesn't move
+    // it). Measured only at rest, and kept: entering again while it's still
+    // settling back must not measure where it has moved to.
+    let rest: { left: number; top: number; right: number; bottom: number } | undefined
+    const measure = () => {
+      const box = el.getBoundingClientRect()
+      // A box with no area (nothing laid out) has nothing under the pointer.
+      rest =
+        box.width * box.height > 0
+          ? {
+              left: box.left + scrollX,
+              top: box.top + scrollY,
+              right: box.right + scrollX,
+              bottom: box.bottom + scrollY,
+            }
+          : undefined
+    }
+    const over = (e: PointerEvent) => {
+      const x = e.clientX + scrollX
+      const y = e.clientY + scrollY
+      return (
+        !!rest && x >= rest.left && x <= rest.right && y >= rest.top && y <= rest.bottom
+      )
+    }
+    // While the pointer is off the moved element but over where it rests:
+    // leaving that box, the window (no element to go to) or the page's focus
+    // ends the hover.
     const watch = (on: boolean) => {
-      ;(on ? addEventListener : removeEventListener)('pointermove', onMove)
-      ;(on ? addEventListener : removeEventListener)('scroll', leave, true)
+      const toggle = on ? addEventListener : removeEventListener
+      toggle('pointermove', onMove)
+      toggle('pointerout', onOut)
+      toggle('blur', leave)
+      toggle('scroll', leave, true)
     }
     const leave = () => {
       watch(false)
-      rest = undefined
       tl.reverse()
     }
     const onMove = (e: PointerEvent) => {
       if (!over(e)) leave()
     }
+    const onOut = (e: PointerEvent) => {
+      if (!e.relatedTarget) leave()
+    }
     cleanups.push(
       listen(el, ['pointerenter'], (e) => {
         if ((e as PointerEvent).pointerType === 'touch') return
         watch(false)
-        // Measured at rest: mid-way back, the last resting box still holds.
-        if (tl.progress() === 0 || !rest) rest = el.getBoundingClientRect()
+        if (tl.progress() === 0 || !rest) measure()
         tl.play()
       }),
       listen(el, ['pointerleave'], (e) => {
