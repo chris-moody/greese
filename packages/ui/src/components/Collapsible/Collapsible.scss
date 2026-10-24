@@ -40,19 +40,86 @@
   }
 
   .greese-Collapsible-chevron {
-    flex-shrink: 0;
-    inline-size: 1.25em;
-    block-size: 1.25em;
     fill: none;
     stroke: currentcolor;
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 1.75;
-    transition: rotate var(--greese-duration-normal) var(--greese-easing-standard);
+  }
 
-    [open] > .greese-Collapsible-trigger > & {
-      rotate: 180deg;
+  // The icon: one that turns (`--rotate`), or a closed and an open one stacked
+  // in one cell (`--fade` crossfades them, `--none` switches).
+  .greese-Collapsible-icon {
+    --greese-collapsible-icon-turn: 180deg;
+
+    display: inline-grid;
+    flex-shrink: 0;
+    place-items: center;
+    inline-size: 1.25em;
+    block-size: 1.25em;
+
+    > * {
+      display: inline-grid;
+      grid-area: 1 / 1;
+      place-items: center;
+
+      > svg {
+        inline-size: 100%;
+        block-size: 100%;
+      }
     }
+
+    @include mixins.motion-safe {
+      transition: rotate var(--greese-duration-normal) var(--greese-easing-standard);
+
+      > * {
+        transition:
+          opacity var(--greese-duration-normal) var(--greese-easing-standard),
+          rotate var(--greese-duration-normal) var(--greese-easing-standard),
+          scale var(--greese-duration-normal) var(--greese-easing-standard);
+      }
+    }
+  }
+
+  .greese-Collapsible-openIcon {
+    opacity: 0;
+  }
+
+  [open] > .greese-Collapsible-trigger > .greese-Collapsible-icon {
+    &.greese-Collapsible-icon--rotate {
+      rotate: var(--greese-collapsible-icon-turn);
+    }
+
+    > .greese-Collapsible-closedIcon:has(+ .greese-Collapsible-openIcon) {
+      opacity: 0;
+    }
+
+    > .greese-Collapsible-openIcon {
+      opacity: 1;
+    }
+  }
+
+  // Crossfading, each icon turns a quarter as it goes, so the change reads as
+  // one motion.
+  .greese-Collapsible-icon--fade > .greese-Collapsible-openIcon {
+    rotate: -90deg;
+    scale: 0.6;
+  }
+
+  [open] > .greese-Collapsible-trigger > .greese-Collapsible-icon--fade {
+    > .greese-Collapsible-closedIcon {
+      rotate: 90deg;
+      scale: 0.6;
+    }
+
+    > .greese-Collapsible-openIcon {
+      rotate: 0deg;
+      scale: 1;
+    }
+  }
+
+  .greese-Collapsible-icon--none > * {
+    transition: none;
   }
 
   .greese-Collapsible-content {

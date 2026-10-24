@@ -1,0 +1,111 @@
+@use 'sass:map';
+@use '../../styles/mixins';
+
+@layer greese.components {
+  // A sticky header keeps in-page links clear of itself (attribute selectors:
+  // these rules are on the page, not the component, so they stay as written
+  // where the Studio nests the component's own under `&`): the page's scroll
+  // padding is its height (`--greese-header-height`; set it on :root when the
+  // row is taller), plus a floating one's inset. No JavaScript, and nothing
+  // for each section to declare.
+  :root:has([class~='greese-Header--sticky']) {
+    --greese-header-inset: calc(env(safe-area-inset-top) + 1px);
+
+    scroll-padding-block-start: calc(
+      var(--greese-header-height, 3.5rem) + var(--greese-header-inset)
+    );
+  }
+
+  :root:has([class~='greese-Header--sticky'][class~='greese-Header--floating']) {
+    --greese-header-inset: calc(env(safe-area-inset-top) + 2 * var(--greese-space-3));
+  }
+
+  .greese-Header {
+    @include mixins.component-root;
+
+    padding-block-start: env(safe-area-inset-top);
+    color: var(--greese-color-fg);
+    background-color: var(--greese-color-surface-overlay);
+    border-block-end: 1px solid var(--greese-color-border);
+  }
+
+  .greese-Header--sticky {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--greese-z-index-sticky);
+
+    // A shadow fades in over the first few rem of scroll, with no JS.
+    @supports (animation-timeline: scroll()) {
+      animation: greese-header-elevate linear both;
+      animation-range: 0 3rem;
+      animation-timeline: scroll(nearest block);
+    }
+  }
+
+  .greese-Header-inner {
+    display: flex;
+    gap: var(--greese-space-3) var(--greese-space-4);
+    align-items: center;
+    min-block-size: var(--greese-header-height, 3.5rem);
+    margin-inline: auto;
+    padding-inline: max(var(--greese-space-4), env(safe-area-inset-left))
+      max(var(--greese-space-4), env(safe-area-inset-right));
+  }
+
+  @each $size in (sm, md, lg, xl) {
+    .greese-Header--size-#{$size} > .greese-Header-inner {
+      max-inline-size: map.get(mixins.$breakpoints, $size);
+    }
+  }
+
+  .greese-Header-brand {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+  }
+
+  // The navigation takes the room between; the actions sit at the end.
+  .greese-Header-nav {
+    display: flex;
+    flex: 1 1 auto;
+    gap: var(--greese-space-2);
+    align-items: center;
+    min-inline-size: 0;
+  }
+
+  .greese-Header-actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: var(--greese-space-2);
+    align-items: center;
+  }
+
+  // Floating: the bar itself is inset from the page's edges, rounded and
+  // raised; the header around it lets the page show through the gap.
+  .greese-Header--floating {
+    padding: calc(env(safe-area-inset-top) + var(--greese-space-3)) var(--greese-space-3)
+      0;
+    pointer-events: none;
+    background: none;
+    border-block-end: 0;
+    animation: none;
+
+    > .greese-Header-inner {
+      pointer-events: auto;
+      background-color: var(--greese-color-surface-overlay);
+      border: 1px solid var(--greese-color-border);
+      border-radius: var(--greese-corner-surface);
+      box-shadow: var(--greese-shadow-md);
+    }
+  }
+
+  @keyframes greese-header-elevate {
+    from {
+      box-shadow: none;
+    }
+
+    to {
+      box-shadow: var(--greese-shadow-md);
+    }
+  }
+}

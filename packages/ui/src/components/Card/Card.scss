@@ -34,6 +34,7 @@
   }
 
   .greese-Card--interactive {
+    position: relative;
     text-decoration: none;
     cursor: pointer;
     transition:
@@ -50,6 +51,16 @@
       @include mixins.motion-safe {
         translate: 0 -2px;
       }
+    }
+
+    // Hovered, the card rises 2px: its hit area reaches the 2px below it, so
+    // a pointer resting on its lower edge stays over it, instead of the card
+    // rising away, settling back under the pointer and rising again.
+    &::before {
+      position: absolute;
+      inset-block: 100% -2px;
+      inset-inline: 0;
+      content: '';
     }
   }
 

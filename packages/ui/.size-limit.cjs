@@ -29,7 +29,10 @@ module.exports = [
     // 22.5 kB → 22.75 kB (2026-10-24): the three-dimensional effects (ADR 0025
     // addendum): keyframes for six entrances, exit classes for six more, and the
     // overlay exit's `transform` and pivot (22.72 kB).
-    limit: '22.75 kB',
+    // 22.75 kB → 23.35 kB (2026-10-24): Header and Footer (a sticky header sets
+    // the page's scroll padding), and Collapsible's icon per state with its
+    // transitions (23.31 kB).
+    limit: '23.35 kB',
   },
   {
     name: 'CSS: utilities.css (the whole set)',

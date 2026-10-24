@@ -158,10 +158,10 @@ $blocks: (
     variables: (),
   ),
   'Collapsible': (
-    parts: ('chevron', 'content', 'trigger',),
+    parts: ('chevron', 'closedIcon', 'content', 'icon', 'openIcon', 'trigger',),
     modifiers: (),
-    part-modifiers: (),
-    variables: (),
+    part-modifiers: ('icon': ('fade', 'none', 'rotate',)),
+    variables: ('--greese-collapsible-icon-turn',),
   ),
   'ColorPicker': (
     parts: ('alpha', 'area', 'controls', 'hex', 'hue', 'preview', 'sliders', 'swatch', 'swatches', 'thumb',),
@@ -253,11 +253,29 @@ $blocks: (
     part-modifiers: (),
     variables: ('--greese-file-height', '--greese-file-padding',),
   ),
+  'Footer': (
+    parts: ('brand', 'inner', 'legal', 'main', 'sections',),
+    modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl',),
+    part-modifiers: (),
+    variables: (),
+  ),
+  'FooterSection': (
+    parts: ('links', 'title',),
+    modifiers: (),
+    part-modifiers: (),
+    variables: (),
+  ),
   'Grid': (
     parts: (),
     modifiers: ('container', 'queries',),
     part-modifiers: (),
     variables: (),
+  ),
+  'Header': (
+    parts: ('actions', 'brand', 'inner', 'nav',),
+    modifiers: ('floating', 'size-lg', 'size-md', 'size-sm', 'size-xl', 'sticky',),
+    part-modifiers: (),
+    variables: ('--greese-header-height', '--greese-header-inset',),
   ),
   'Heading': (
     parts: (),
