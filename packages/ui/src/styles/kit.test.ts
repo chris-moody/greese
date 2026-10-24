@@ -508,7 +508,9 @@ describe('style manifest', () => {
     expect(readFileSync(`${STYLES}/_manifest.scss`, 'utf8')).toBe(
       manifestScss(styleManifest(compiled, tokenVars))
     )
-  }, 30_000)
+    // It compiles every component's stylesheet: about 30 s while the other
+    // packages' tests run beside it (turbo), so it gets three times that.
+  }, 90_000)
 })
 
 describe('SCSS kit: typography()', () => {
