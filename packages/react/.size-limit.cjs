@@ -10,9 +10,25 @@
  * and client island, about 0.75 kB, shared once by all components): budgets
  * rose by that much in ADR 0009.
  */
+const { dirname, resolve } = require('node:path')
+
+const LAZY = /(greeseRuntime|Motion\/scope)\.js$/
+// External under a fixed name: an external import is written as a path from
+// the temporary bundle to the file, so its length (and every budget) would
+// depend on where the machine keeps temporary files and the checkout.
 const external = (config) => ({
   ...config,
-  external: [config.external, /(greeseRuntime|Motion\/scope)\.js$/].filter(Boolean),
+  plugins: [
+    ...[config.plugins ?? []].flat(),
+    {
+      name: 'greese-lazy-chunks',
+      resolveId: (source, importer) => {
+        const file = importer ? resolve(dirname(importer), source) : source
+        const match = LAZY.exec(file)
+        return match ? { id: `greese:${match[1]}`, external: true } : null
+      },
+    },
+  ],
 })
 
 module.exports = [
