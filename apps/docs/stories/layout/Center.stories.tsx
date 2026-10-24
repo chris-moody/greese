@@ -14,7 +14,7 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Block: Story = {}
+export const Playground: Story = {}
 
 /** `inline` shrinks to its content: handy for icon badges. */
 export const Inline: Story = {

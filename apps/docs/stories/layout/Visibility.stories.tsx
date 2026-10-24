@@ -12,7 +12,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /** CSS-only: no matchMedia, no hydration mismatch. Resize the viewport. */
-export const ShowAbove: Story = {}
+export const Playground: Story = {}
 
 export const Ranges: Story = {
   render: () => (

@@ -20,7 +20,7 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Spaced: Story = {}
+export const Playground: Story = {}
 
 /** `attached` joins the buttons into one segmented control. */
 export const Attached: Story = {

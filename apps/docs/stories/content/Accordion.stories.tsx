@@ -30,7 +30,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /** Native `<details name>`: opening one closes the others, with no JavaScript. */
-export const Exclusive: Story = {}
+export const Playground: Story = {}
 
 export const Independent: Story = { args: { exclusive: false } }
 

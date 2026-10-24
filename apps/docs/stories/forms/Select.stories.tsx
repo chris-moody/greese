@@ -23,6 +23,6 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /** Native select: the platform picker on phones. For search, use Combobox. */
-export const WithPlaceholder: Story = {}
+export const Playground: Story = {}
 
 export const Preselected: Story = { args: { placeholder: undefined, defaultValue: 'au' } }

@@ -19,7 +19,7 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Autosize: Story = {}
+export const Playground: Story = {}
 
 /** `autosize={false}`: a fixed, manually resizable box. */
 export const Fixed: Story = { args: { autosize: false, rows: 4 } }

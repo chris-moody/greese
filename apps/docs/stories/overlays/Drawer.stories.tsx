@@ -20,6 +20,6 @@ type Story = StoryObj<typeof meta>
  * A bottom sheet on phones and a side panel from md. Resize the viewport.
  * Drag the header (or the sheet's handle) toward the edge to dismiss.
  */
-export const Responsive: Story = {}
+export const Playground: Story = {}
 
 export const Start: Story = { args: { placement: 'start', title: 'Navigation' } }

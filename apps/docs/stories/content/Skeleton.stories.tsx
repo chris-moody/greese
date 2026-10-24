@@ -13,7 +13,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /** Hidden from screen readers; the shimmer stops under reduced motion. */
-export const Text: Story = {}
+export const Playground: Story = {}
 
 export const CardPlaceholder: Story = {
   render: () => (

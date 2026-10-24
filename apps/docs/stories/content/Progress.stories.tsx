@@ -12,7 +12,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /** A native progress bar, announced with its percentage. */
-export const Determinate: Story = {}
+export const Playground: Story = {}
 
 /** No `value`: an indeterminate sweep. */
 export const Indeterminate: Story = {

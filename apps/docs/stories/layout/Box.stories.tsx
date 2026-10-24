@@ -21,7 +21,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /** Typed, responsive style props. Spacing takes tokens (0-8) or any length. */
-export const StyleProps: Story = {}
+export const Playground: Story = {}
 
 /** `display` per breakpoint: hidden on phones, a flex row from md. */
 export const ResponsiveDisplay: Story = {

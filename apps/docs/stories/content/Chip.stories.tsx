@@ -12,7 +12,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /** Removable: the remove button is named "Remove Design". */
-export const Removable: Story = {}
+export const Playground: Story = {}
 
 export const Selectable: Story = {
   args: {

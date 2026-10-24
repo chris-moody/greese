@@ -19,7 +19,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /** Square on phones, 16:9 from md. Space is reserved before media loads. */
-export const Responsive: Story = {}
+export const Playground: Story = {}
 
 /** `fit="contain"` letterboxes instead of cropping. */
 export const Contain: Story = { args: { ratio: 1, fit: 'contain' } }

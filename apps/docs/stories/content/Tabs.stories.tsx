@@ -39,7 +39,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /** Arrow keys move between tabs; on narrow screens the list scrolls sideways. */
-export const Horizontal: Story = {}
+export const Playground: Story = {}
 
 export const Vertical: Story = {
   args: {
