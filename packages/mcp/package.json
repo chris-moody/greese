@@ -1,0 +1,68 @@
+{
+  "name": "@greese/mcp",
+  "version": "0.0.0",
+  "description": "An MCP server for GreeseUI: components and their props, classes and examples, tokens, icons, guides, shape themes and page templates, for coding assistants.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "greese",
+    "design-system",
+    "ai"
+  ],
+  "author": "Chris Moody",
+  "license": "MIT",
+  "homepage": "https://chris-moody.github.io/greese/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chris-moody/greese.git",
+    "directory": "packages/mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/chris-moody/greese/issues"
+  },
+  "type": "module",
+  "bin": {
+    "greese-mcp": "./dist/cli.js"
+  },
+  "files": [
+    "LICENSE",
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build": "npm run clean && tsc -p tsconfig.build.json && node scripts/build-data.ts",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src scripts --max-warnings 0",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@greese/ui": "*",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@greese/eslint-config": "*",
+    "@greese/icons": "*",
+    "@greese/react": "*",
+    "@greese/typescript-config": "*",
+    "@types/node": "^24.0.0",
+    "eslint": "^9.39.0",
+    "react-docgen-typescript": "^2.4.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.26.0",
+    "vitest": "^5.0.5"
+  }
+}
