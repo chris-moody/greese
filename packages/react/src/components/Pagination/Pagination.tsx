@@ -74,6 +74,10 @@ export interface PaginationProps
 /**
  * Page navigation. On phones it condenses to previous / current / next; from
  * `sm` it shows the full range.
+ *
+ * ```tsx
+ * <Pagination count={20} defaultPage={1} getHref={(page) => `?page=${page}`} />
+ * ```
  */
 export const Pagination = ({
   greese,

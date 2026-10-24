@@ -23,7 +23,13 @@ export interface LinkProps extends GreeseProps, ComponentPropsWithoutRef<'a'> {
   asChild?: boolean
 }
 
-/** An inline text link. Underlined by default: color alone is not enough to spot a link. */
+/**
+ * An inline text link. Underlined by default: color alone is not enough to spot a link.
+ *
+ * ```tsx
+ * <Link href="/pricing" underline="hover">Pricing</Link>
+ * ```
+ */
 export const Link = ({
   greese,
   tone = 'primary',

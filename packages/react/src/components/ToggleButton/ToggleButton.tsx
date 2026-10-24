@@ -17,6 +17,10 @@ export interface ToggleButtonProps extends GreeseProps, Omit<ButtonProps, 'asChi
 /**
  * A button that stays on or off (`aria-pressed`), like Bold in a toolbar.
  * Group several in an attached ButtonGroup for a segmented control.
+ *
+ * ```tsx
+ * <ToggleButton defaultPressed>Bold</ToggleButton>
+ * ```
  */
 export const ToggleButton = ({
   greese,

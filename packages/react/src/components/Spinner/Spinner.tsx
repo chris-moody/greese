@@ -13,6 +13,10 @@ export interface SpinnerProps extends GreeseProps, ComponentPropsWithRef<'span'>
 /**
  * An indeterminate loading indicator (`role="status"`). Under reduced motion
  * it pulses gently instead of spinning.
+ *
+ * ```tsx
+ * <Spinner label="Loading results" />
+ * ```
  */
 export const Spinner = ({
   greese,

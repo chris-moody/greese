@@ -17,6 +17,10 @@ export interface VideoProps extends GreeseProps, ComponentPropsWithRef<'video'> 
  * A native `<video>` in a ratio frame. Defaults suit phones: `controls`,
  * `playsInline` (no forced fullscreen on iOS) and `preload="metadata"`.
  * Add captions with a `<track kind="captions">` child.
+ *
+ * ```tsx
+ * <Video src="/demo.mp4" poster="/demo.jpg" />
+ * ```
  */
 export const Video = ({
   greese,
@@ -46,6 +50,10 @@ export interface EmbedProps
 /**
  * A third-party embed (YouTube, maps, CodePen) in a ratio frame. Lazy-loaded
  * by default, so off-screen embeds cost nothing at page load.
+ *
+ * ```tsx
+ * <Embed src="https://www.youtube-nocookie.com/embed/ID" title="Product tour" />
+ * ```
  */
 export const Embed = ({
   greese,

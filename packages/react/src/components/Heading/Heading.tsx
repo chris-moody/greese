@@ -28,6 +28,10 @@ export interface HeadingProps extends ComponentPropsWithoutRef<'h2'>, GreeseProp
 /**
  * A heading whose `level` sets the document outline and whose `variant` sets
  * the look (the level's own style by default), so the two never have to fight.
+ *
+ * ```tsx
+ * <Heading level={2} variant="h4">Billing</Heading>
+ * ```
  */
 export const Heading = ({
   greese,

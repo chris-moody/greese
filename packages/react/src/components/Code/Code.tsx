@@ -10,7 +10,13 @@ export interface CodeProps extends ComponentPropsWithRef<'code'>, GreeseProps {
   block?: boolean
 }
 
-/** Inline code, or a code block with `block`. Bring your own syntax highlighting. */
+/**
+ * Inline code, or a code block with `block`. Bring your own syntax highlighting.
+ *
+ * ```tsx
+ * Run <Code>npm install @greese/react</Code>, or <Code block>{source}</Code>
+ * ```
+ */
 export const Code = ({ block, className, greese, ...props }: CodeProps): JSX.Element =>
   withGreese(
     block ? (

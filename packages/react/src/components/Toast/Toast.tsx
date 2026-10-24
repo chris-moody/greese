@@ -127,6 +127,12 @@ export interface ToasterProps extends Omit<ComponentPropsWithRef<'section'>, 'po
  * the top layer, above open dialogs, and announces each toast politely
  * (assertively for negative ones) through live regions that are always
  * present, so screen readers reliably pick them up.
+ *
+ * ```tsx
+ * <Toaster /> // once, near the root
+ *
+ * toast({ title: 'Saved', tone: 'positive' })
+ * ```
  */
 export const Toaster = ({
   max = 3,

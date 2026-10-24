@@ -41,6 +41,12 @@ const fill = (value: number, min: number, max: number): string => {
  *
  * The filled part of the track is one CSS variable, written straight to the
  * element while dragging: no React re-render per step when uncontrolled.
+ *
+ * ```tsx
+ * <Field label="Volume">
+ *   <Slider name="volume" defaultValue={40} />
+ * </Field>
+ * ```
  */
 export const Slider = ({
   greese,

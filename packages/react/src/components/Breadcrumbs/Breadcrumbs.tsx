@@ -24,6 +24,14 @@ export interface BreadcrumbsProps extends GreeseProps, ComponentPropsWithRef<'na
 /**
  * Where the current page sits in the hierarchy: a labelled `<nav>` with an
  * ordered list. Separators are CSS and silent to screen readers.
+ *
+ * ```tsx
+ * <Breadcrumbs>
+ *   <BreadcrumbItem href="/">Home</BreadcrumbItem>
+ *   <BreadcrumbItem href="/docs">Docs</BreadcrumbItem>
+ *   <BreadcrumbItem>Install</BreadcrumbItem>
+ * </Breadcrumbs>
+ * ```
  */
 export const Breadcrumbs = ({
   greese,
@@ -69,7 +77,13 @@ export interface BreadcrumbItemProps extends GreeseProps, ComponentPropsWithRef<
   asChild?: boolean
 }
 
-/** One step in Breadcrumbs. */
+/**
+ * One step in Breadcrumbs.
+ *
+ * ```tsx
+ * <BreadcrumbItem href="/docs">Docs</BreadcrumbItem>
+ * ```
+ */
 export const BreadcrumbItem = ({
   greese,
   current,

@@ -39,7 +39,13 @@ export const initials = (name: string): string => {
   return (first + last).toUpperCase()
 }
 
-/** A person's picture, falling back to their initials if missing or broken. */
+/**
+ * A person's picture, falling back to their initials if missing or broken.
+ *
+ * ```tsx
+ * <Avatar name="Ada Lovelace" src="/ada.jpg" />
+ * ```
+ */
 export const Avatar = ({
   name,
   src,
@@ -103,6 +109,12 @@ export interface AvatarGroupProps extends ComponentPropsWithRef<'div'>, GreesePr
 /**
  * Overlapping avatars, e.g. a document's collaborators. Give it an
  * `aria-label` such as "Shared with".
+ *
+ * ```tsx
+ * <AvatarGroup max={3}>
+ *   {team.map((p) => <Avatar key={p.id} name={p.name} src={p.photo} />)}
+ * </AvatarGroup>
+ * ```
  */
 export const AvatarGroup = ({
   max,

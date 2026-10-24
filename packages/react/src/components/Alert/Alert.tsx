@@ -41,7 +41,15 @@ export interface AlertProps
   announce?: boolean
 }
 
-/** A message about the page or a task: info, success, warning or error. */
+/**
+ * A message about the page or a task: info, success, warning or error.
+ *
+ * ```tsx
+ * <Alert tone="warning" title="Payment failed" onDismiss={hide}>
+ *   Update your card to keep your plan.
+ * </Alert>
+ * ```
+ */
 export const Alert = ({
   greese,
   tone = 'info',

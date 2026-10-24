@@ -8,7 +8,15 @@ export interface CenterProps extends GreeseProps, BoxProps {
   inline?: boolean
 }
 
-/** Centres its children on both axes. Accepts every Box style prop and `asChild`. */
+/**
+ * Centres its children on both axes. Accepts every Box style prop and `asChild`.
+ *
+ * ```tsx
+ * <Center style={{ minBlockSize: '20rem' }}>
+ *   <Spinner label="Loading" />
+ * </Center>
+ * ```
+ */
 export const Center = ({
   greese,
   inline,

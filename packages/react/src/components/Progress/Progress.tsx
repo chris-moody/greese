@@ -16,6 +16,10 @@ export interface ProgressProps
 /**
  * A native `<progress>` bar: announced with its percentage. Label it with
  * a Field, `aria-label` or `aria-labelledby`.
+ *
+ * ```tsx
+ * <Progress value={40} aria-label="Uploading" />
+ * ```
  */
 export const Progress = ({
   greese,

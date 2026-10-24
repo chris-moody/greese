@@ -15,6 +15,13 @@ export interface ButtonGroupProps extends GreeseProps, ComponentPropsWithRef<'di
 /**
  * Groups related buttons (`role="group"`). Give it an `aria-label` when the
  * grouping itself needs a name, e.g. "Text formatting".
+ *
+ * ```tsx
+ * <ButtonGroup attached aria-label="Text formatting">
+ *   <ToggleButton>Bold</ToggleButton>
+ *   <ToggleButton>Italic</ToggleButton>
+ * </ButtonGroup>
+ * ```
  */
 export const ButtonGroup = ({
   greese,

@@ -40,6 +40,12 @@ export interface PopoverProps
  * Non-modal floating content anchored to a trigger, on the native Popover
  * API: top layer, click-outside and Escape to close, and Tab order that flows
  * from the trigger into the content. Positioned by CSS anchor positioning.
+ *
+ * ```tsx
+ * <Popover trigger={<Button variant="outline">Filters</Button>} label="Filters">
+ *   …
+ * </Popover>
+ * ```
  */
 export const Popover = ({
   greese,

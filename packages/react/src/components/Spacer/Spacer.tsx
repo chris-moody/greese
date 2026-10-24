@@ -24,7 +24,17 @@ const SIZE: ResponsiveConfig = {
   toCss: spaceToCss,
 }
 
-/** Flexible or fixed empty space inside a Stack (or any flex container). */
+/**
+ * Flexible or fixed empty space inside a Stack (or any flex container).
+ *
+ * ```tsx
+ * <Stack direction="row">
+ *   <Logo />
+ *   <Spacer />
+ *   <Button>Sign in</Button>
+ * </Stack>
+ * ```
+ */
 export const Spacer = ({
   size,
   className,

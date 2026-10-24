@@ -13,6 +13,13 @@ export interface AppBarProps extends GreeseProps, ComponentPropsWithRef<'header'
  * The top bar: a `<header>` row for brand, navigation and actions. Padded for
  * notches and the status bar (safe-area insets). Lay out its contents with
  * Stack and Spacer.
+ *
+ * ```tsx
+ * <AppBar sticky elevateOnScroll>
+ *   <SidebarTrigger />
+ *   <Heading level={1} variant="h5">Inbox</Heading>
+ * </AppBar>
+ * ```
  */
 export const AppBar = ({
   greese,

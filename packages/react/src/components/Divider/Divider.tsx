@@ -10,6 +10,10 @@ export interface DividerProps extends GreeseProps, ComponentPropsWithRef<'hr'> {
 /**
  * A thematic separator: an `<hr>`, so assistive tech announces it. In a Stack
  * it stretches across the cross axis.
+ *
+ * ```tsx
+ * <Divider orientation="vertical" />
+ * ```
  */
 export const Divider = ({
   greese,

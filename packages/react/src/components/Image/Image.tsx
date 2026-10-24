@@ -57,6 +57,10 @@ const isColor = (value: string) => !/^(data:|https?:|\/|\.)/.test(value)
  * A responsive `<img>`: lazy by default, decoded off the main thread, with an
  * optional ratio frame, placeholder and error fallback. `srcSet`/`sizes` pass
  * through to the image.
+ *
+ * ```tsx
+ * <Image src="/hero.jpg" alt="The team at work" ratio={16 / 9} priority />
+ * ```
  */
 export const Image = ({
   greese,

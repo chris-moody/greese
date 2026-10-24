@@ -37,6 +37,16 @@ export interface SidebarLayoutProps extends GreeseProps, ComponentPropsWithRef<'
  * App shell: a sidebar beside the content from `breakpoint` up; below it the
  * sidebar is off-canvas, opened by a SidebarTrigger. Put Sidebar first, then
  * the content (which can include an AppBar holding the trigger).
+ *
+ * ```tsx
+ * <SidebarLayout breakpoint="md">
+ *   <Sidebar label="Main">…</Sidebar>
+ *   <main>
+ *     <AppBar><SidebarTrigger /></AppBar>
+ *     …
+ *   </main>
+ * </SidebarLayout>
+ * ```
  */
 export const SidebarLayout = ({
   greese,
@@ -74,6 +84,12 @@ export interface SidebarProps
  * The sidebar. Off-canvas below the layout's breakpoint (a native popover:
  * click-outside and Escape close it, and following a link inside does too);
  * a sticky column from the breakpoint up.
+ *
+ * ```tsx
+ * <Sidebar label="Main">
+ *   <nav aria-label="Main">…</nav>
+ * </Sidebar>
+ * ```
  */
 export const Sidebar = ({
   greese,
@@ -128,7 +144,15 @@ export interface SidebarTriggerProps
   children?: ReactNode
 }
 
-/** Opens the off-canvas sidebar; hidden once the sidebar is persistent. */
+/**
+ * Opens the off-canvas sidebar; hidden once the sidebar is persistent.
+ *
+ * ```tsx
+ * <AppBar>
+ *   <SidebarTrigger />
+ * </AppBar>
+ * ```
+ */
 export const SidebarTrigger = ({
   greese,
   label = 'Open navigation',

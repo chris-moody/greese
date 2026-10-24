@@ -6,6 +6,13 @@ export type VisuallyHiddenProps = ComponentPropsWithRef<'span'>
 /**
  * Hides content visually while keeping it available to screen readers — for
  * icon-only buttons, skip links, and extra context on terse labels.
+ *
+ * ```tsx
+ * <button>
+ *   <CloseIcon />
+ *   <VisuallyHidden>Close</VisuallyHidden>
+ * </button>
+ * ```
  */
 export const VisuallyHidden = ({
   className,

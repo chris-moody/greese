@@ -34,6 +34,12 @@ export interface TooltipProps extends GreeseProps {
  *
  * For icon-only buttons, the name still comes from the button's own label;
  * the tooltip adds a visible hint for sighted mouse users.
+ *
+ * ```tsx
+ * <Tooltip content="Copy link">
+ *   <IconButton label="Copy link"><CopyIcon /></IconButton>
+ * </Tooltip>
+ * ```
  */
 export const Tooltip = ({
   greese,

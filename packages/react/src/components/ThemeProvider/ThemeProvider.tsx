@@ -45,6 +45,12 @@ export interface ThemeProviderProps extends ComponentPropsWithoutRef<'div'> {
  * don't set, so a scheme override inside a theme keeps the theme.
  *
  * The wrapper is `display: contents`, so it never affects layout.
+ *
+ * ```tsx
+ * <ThemeProvider theme={brand} scheme="dark">
+ *   <Card>…</Card>
+ * </ThemeProvider>
+ * ```
  */
 export const ThemeProvider = ({
   theme,

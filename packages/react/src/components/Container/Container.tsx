@@ -15,6 +15,10 @@ export interface ContainerProps extends GreeseProps, BoxProps {
  * and respect notches and rounded corners (safe-area insets).
  *
  * Accepts every Box style prop (`px` overrides the gutter) and `asChild`.
+ *
+ * ```tsx
+ * <Container size="lg">…</Container>
+ * ```
  */
 export const Container = ({
   greese,

@@ -26,6 +26,14 @@ export interface SelectProps
  * A native `<select>`: the platform picker on phones, full keyboard support,
  * autofill. Options are plain `<option>` / `<optgroup>` children. `className`
  * and `style` go to the frame; the rest to the select.
+ *
+ * ```tsx
+ * <Field label="Country">
+ *   <Select name="country" placeholder="Choose…">
+ *     <option value="fr">France</option>
+ *   </Select>
+ * </Field>
+ * ```
  */
 export const Select = ({
   greese,

@@ -20,6 +20,12 @@ export interface FileInputProps
  * A native file input with its button styled to match: the platform file
  * picker (camera and photo library on phones), drag-and-drop where the
  * browser supports it, and the chosen file names shown natively.
+ *
+ * ```tsx
+ * <Field label="Receipt">
+ *   <FileInput name="receipt" accept="image/*,.pdf" />
+ * </Field>
+ * ```
  */
 export const FileInput = ({
   greese,

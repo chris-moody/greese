@@ -32,6 +32,12 @@ export interface InputProps
  * A native text-like `<input>` in a styled frame. `className` and `style` go
  * to the frame; every other prop (and `ref`) goes to the input itself, so it
  * works with native forms and form libraries as-is.
+ *
+ * ```tsx
+ * <Field label="Amount">
+ *   <Input type="number" name="amount" startAdornment="$" />
+ * </Field>
+ * ```
  */
 export const Input = ({
   greese,

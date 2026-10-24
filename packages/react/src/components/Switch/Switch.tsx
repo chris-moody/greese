@@ -25,6 +25,10 @@ export interface SwitchProps
  * An on/off switch for settings that apply immediately: a native checkbox
  * with `role="switch"`, so it is announced as on/off and submits like a
  * checkbox.
+ *
+ * ```tsx
+ * <Switch label="Email me updates" name="updates" />
+ * ```
  */
 export const Switch = ({
   greese,

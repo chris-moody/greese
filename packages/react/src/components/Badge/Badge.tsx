@@ -20,6 +20,10 @@ export interface BadgeProps extends GreeseProps, ComponentPropsWithRef<'span'> {
 /**
  * A short status label: "New", "Beta", "3". Not interactive; for removable or
  * selectable labels use Chip.
+ *
+ * ```tsx
+ * <Badge tone="positive">Paid</Badge>
+ * ```
  */
 export const Badge = ({
   greese,

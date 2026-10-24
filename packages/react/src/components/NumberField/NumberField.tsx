@@ -67,6 +67,10 @@ export const parseNumber = (text: string): number | null => {
  * Arrow keys step, Page Up/Down step by `largeStep`, Home/End jump to
  * `min`/`max`. Typed values are clamped on blur or Enter; anything that isn't
  * a number reverts to the last valid value.
+ *
+ * ```tsx
+ * <NumberField label="Guests" name="guests" min={1} max={12} defaultValue={2} />
+ * ```
  */
 export const NumberField = ({
   greese,

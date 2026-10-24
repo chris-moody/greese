@@ -26,7 +26,15 @@ export interface TextareaProps extends GreeseProps, ComponentPropsWithRef<'texta
   maxRows?: number
 }
 
-/** A native `<textarea>`, Field-aware, that grows with its content. */
+/**
+ * A native `<textarea>`, Field-aware, that grows with its content.
+ *
+ * ```tsx
+ * <Field label="Message">
+ *   <Textarea name="message" maxRows={8} />
+ * </Field>
+ * ```
+ */
 export const Textarea = ({
   greese,
   size = 'md',

@@ -21,6 +21,11 @@ export interface SkeletonProps extends GreeseProps, ComponentPropsWithRef<'span'
  * A placeholder in the shape of content that is still loading. Hidden from
  * screen readers: announce loading on the container (e.g. `aria-busy`)
  * instead. The shimmer stops under reduced motion.
+ *
+ * ```tsx
+ * <Skeleton shape="circle" width="3rem" />
+ * <Skeleton lines={3} />
+ * ```
  */
 export const Skeleton = ({
   greese,
