@@ -107,6 +107,31 @@ test('hover lifts with a mouse, never on touch; press squishes', async ({
   await page.mouse.up()
 })
 
+test('a hover that lifts the element away from a still pointer keeps it lifted', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'hover is for fine pointers')
+  const button = page.getByTestId('hover')
+  await button.scrollIntoViewIfNeeded()
+  const box = (await button.boundingBox())!
+  // The bottom 2px: once the button has risen 4px, the pointer is under it.
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height - 2)
+  await expect
+    .poll(async () => (await style(page, 'hover', 'translate')).translate)
+    .toBe('0px -4px')
+  // It stays risen, rather than settling back under the pointer and bouncing.
+  for (let i = 0; i < 4; i++) {
+    await page.waitForTimeout(120)
+    expect((await style(page, 'hover', 'translate')).translate).toBe('0px -4px')
+  }
+  // Leaving where it rests lets it settle.
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height + 20)
+  await expect
+    .poll(async () => (await style(page, 'hover', 'translate')).translate)
+    .toMatch(/^0px( 0px)?$/)
+})
+
 test('an overlay plays its enter preset and exits with its exit preset', async ({
   page,
 }) => {
