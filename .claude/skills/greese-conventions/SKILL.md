@@ -45,6 +45,7 @@ the ADR wins: fix this file in the same change.
 | 0023 shape themes and templates     | the shape themes' four rules; `apps/site/src/templates`                     |
 | 0024 shapes                         | `@greese/ui/shapes`: one geometry, parameters animate, `greese-shape-*`     |
 | 0025 theme layers                   | colors, shapes, motion: one of each, each its own spec fields; mask reveals |
+| 0026 header, footer and anchors     | Header/Footer; sticky header sets scroll padding; hovers measured at rest   |
 
 ## Workspace
 
