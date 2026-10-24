@@ -53,7 +53,9 @@ jobs:
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium firefox webkit
-      - run: npm run test:e2e
+      # One app's browsers at a time: the site's and the playground's suites
+      # together overload a runner, and their tests time out.
+      - run: npm run test:e2e -- --concurrency=1
       - name: Lighthouse budgets
         run: npm run lighthouse -w playground
 
