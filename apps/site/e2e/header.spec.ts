@@ -9,11 +9,13 @@ test('in-page links land with their section just below the sticky header', async
     await expect
       .poll(() =>
         page.evaluate((id) => {
+          // Sections mount a few at a time: one not there yet is far away.
+          const section = document.getElementById(id)
+          if (!section) return Infinity
           const header = document
             .querySelector('.greese-Header')!
             .getBoundingClientRect().bottom
-          const top = document.getElementById(id)!.getBoundingClientRect().top
-          return Math.abs(top - header)
+          return Math.abs(section.getBoundingClientRect().top - header)
         }, name.toLowerCase())
       )
       .toBeLessThan(2)
