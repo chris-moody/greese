@@ -553,12 +553,14 @@ body {
   align-items: center;
 }
 
-/* The narrowest phones: the button shows the colors only, so the header's
-   other buttons fit. Its label still names all three layers. */
-@media (width < 25rem) {
-  .studio-theme-trigger > :not(.studio-theme-canvas) {
-    /* Icons set their display inline (createIcon), which only this beats. */
-    display: none !important;
+/* The shape and motion marks, laid out as the trigger's own children. On the
+   narrowest phones the button shows the colors only, so the header's other
+   buttons fit; its label still names all three layers. */
+.studio-theme-layers {
+  display: contents;
+
+  @media (width < 25rem) {
+    display: none;
   }
 }
 

@@ -140,8 +140,11 @@ export const ThemeMenu = ({
         <Button size="sm" variant="soft" tone="neutral" aria-label={summary} title={summary}>
           <span className="studio-theme-trigger">
             <Diamond colors={currentColors(spec, scheme, rendered)} />
-            {shape ? <ShapeSample preset={shape} /> : <ShapesIcon />}
-            {motion ? <MotionMark preset={motion} /> : <SpeedIcon />}
+            {/* One box to hide on the narrowest phones (site.scss). */}
+            <span className="studio-theme-layers">
+              {shape ? <ShapeSample preset={shape} /> : <ShapesIcon />}
+              {motion ? <MotionMark preset={motion} /> : <SpeedIcon />}
+            </span>
           </span>
         </Button>
       }
