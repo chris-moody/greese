@@ -45,6 +45,7 @@ const GROUPS: Array<[title: string, roles: ColorRole[]]> = [
       'fgMuted',
       'border',
       'borderStrong',
+      'track',
       'scrim',
     ],
   ],

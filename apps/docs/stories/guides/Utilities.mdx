@@ -5,37 +5,82 @@ import { UtilityClasses } from '../_shared/UtilityClasses.tsx'
 
 # Utility classes
 
-Low-level, single-purpose classes for markup and for anything a GreeseUI
-component doesn't render: `<div class="display-flex justify-content-between p-4">`.
-They sit in `@layer greese.utilities`, so they beat a component's own styles
-without `!important`, and every value comes from the tokens, so themes and dark
-mode apply to them.
+Single-purpose classes for markup, and for anything a GreeseUI component doesn't
+render: `<div class="display-flex justify-content-between p-4">`. Each class sets
+one property (a few set a small, named group, like `truncate`), and every value
+comes from the tokens, so themes and dark mode apply to them.
+
+They are opt-in: `greese.css` doesn't include them. Add the ones you use (see
+[Loading them](#loading-them)).
+
+```html
+<article class="p-4 radius-md shadow-md bg-surface">
+  <h2 class="font-weight-semibold mb-2">Plan</h2>
+  <p class="color-fg-muted line-clamp-2">
+    A long description that stops after two lines…
+  </p>
+  <div class="display-flex justify-content-between align-items-center mt-4">
+    <span class="font-weight-bold">$12</span>
+    <button class="greese-Button">Choose</button>
+  </div>
+</article>
+```
+
+With React, they go in `className` on any element or component, alongside the
+component's own classes: `<Card className="p-0 md-p-6">`.
 
 ## Names
 
-A class is named for the **property and the value**: `display-flex`,
-`text-align-center`, `flex-direction-column`, `overflow-hidden`. The
-names are the CSS's own, with no prefix; set `prefix` to add one. Component
-classes are all `greese-*`, so they can't collide.
+A class is named for the **property and the value**, the CSS's own words:
+`display-flex`, `text-center`, `flex-dir-col`, `overflow-hidden`,
+`cursor-pointer`.
 
-| Pattern                      | Examples                                                                    |
-| ---------------------------- | --------------------------------------------------------------------------- |
-| Spacing, with a side         | `p-4`, `pt-3`, `mx-auto`, `ms-2`, `gap-x-4`                                 |
-| Tokens, by name              | `background-primary`, `color-fg-muted`, `radius-md`, `shadow-lg`, `z-modal` |
-| A breakpoint, then the class | `md-display-flex`, `lg-p-6`: from that breakpoint up, mobile first          |
-| `hover`, then the class      | `hover-opacity-75`, `hover-background-primary`: only where hover exists     |
+| Pattern                      | Examples                                                            |
+| ---------------------------- | ------------------------------------------------------------------- |
+| Spacing, with a side         | `p-4`, `pt-3`, `mx-auto`, `ms-2`, `gap-x-4`                         |
+| Tokens, by name              | `bg-primary`, `color-fg-muted`, `radius-md`, `shadow-lg`, `z-modal` |
+| A breakpoint, then the class | `md-display-flex`, `lg-p-6`: from that breakpoint up, mobile first  |
+| `hover`, then the class      | `hover-opacity-75`, `hover-bg-primary`: only where hover exists     |
+| Several declarations         | `truncate`, `line-clamp-3`, `border`, `transition`                  |
 
-Spacing sides: `t b l r` are physical; `x` and `y` are the inline and block
-axes; `s` and `e` are inline **s**tart and **e**nd, which follow the writing
-direction (`ms-2` is the margin on the left in English and the right in
-Arabic). The few abbreviations are `m` margin, `p` padding, `w` width, `h`
-height, `z` z-index, and `background` for background-color.
+The abbreviations are `m` margin, `p` padding, `w` width, `h` height, `z`
+z-index, `bg` background-color, `pos` position, `vis` visibility, `flex-dir`
+flex-direction, `text` for text-align (`text-center`), `upper` and `lower` for
+uppercase and lowercase (`text-transform-upper`), and `col`/`cols` wherever the
+word is column(s): `flex-dir-col`, `grid-template-cols-3`, `grid-col-span-2`. Spacing values are the scale
+(`0`–`8`, and `auto` for margins): `p-4` is `padding: var(--greese-space-4)`.
 
-## Ship only what you use
+### Spacing sides
+
+| Suffix  | Sets                                 | Follows the writing direction?                                              |
+| ------- | ------------------------------------ | --------------------------------------------------------------------------- |
+| (none)  | all sides: `p-4`                     |                                                                             |
+| `t` `b` | top, bottom: `pt-4`                  | no                                                                          |
+| `l` `r` | left, right: `pl-4`                  | no                                                                          |
+| `x` `y` | the inline and block axes: `px-4`    | yes                                                                         |
+| `s` `e` | inline **s**tart and **e**nd: `ps-4` | yes: `ms-2` is the margin on the left in English and on the right in Arabic |
+
+Sizing is logical too: `w-*` sets `inline-size` and `h-*` sets `block-size`.
+
+### With the breakpoints
+
+```html
+<!-- a column on phones, a row from md up -->
+<div class="display-flex flex-dir-col md-flex-dir-row gap-3 md-gap-6">…</div>
+
+<!-- hidden on phones, shown from lg -->
+<aside class="display-none lg-display-block">…</aside>
+```
+
+The breakpoints are the build's (`xs`–`xl`, or your own keys). Only groups where
+it makes sense have them: spacing, width and height, display, position,
+overflow, flex and grid, `text-align`, `order`.
+
+## Loading them
 
 The whole set is about 2,300 classes (7 kB brotli): `@greese/ui/utilities.css`.
-Most projects want only the classes their source spells out, and get them in
-one of three ways, all the same code:
+Most projects want **only the classes their source uses**, and get them one of
+three ways, all the same code.
 
 ```bash
 # A command: scan the files, write the CSS
@@ -57,11 +102,42 @@ import { purgeUtilities } from '@greese/ui/utilities'
 const css = purgeUtilities({ content: [html, source], safelist: [/^p-[0-3]$/] })
 ```
 
-A class counts as used when its name appears anywhere in the content as a whole
-word: in markup, a component, a data file. A class **built from pieces**
-(`` `p-${n}` ``) can't be seen: name it, or add it to `safelist` (strings or
-patterns). Options: `groups` (only these groups), `prefix`, `breakpoints` (the
-build's, when it adds keys).
+Or skip purging and import the whole set: `import '@greese/ui/utilities.css'`.
+
+### What counts as used
+
+A class is used when its name appears **anywhere in the content as a whole
+word**: in markup, in a component, in a data file. So `border` in a sentence
+keeps the `border` class; that is the price of not parsing your code, and a
+`groups` limit narrows it.
+
+A class **built from pieces** (`` `p-${n}` ``) can't be seen. Write the names
+out, or add them to `safelist` (strings or patterns).
+
+### Options
+
+| Option        | What                                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------------------ |
+| `content`     | Globs (command, Vite) or source text (API) to scan                                                           |
+| `safelist`    | Class names or patterns to keep whether or not they're found                                                 |
+| `groups`      | Only these groups: `spacing`, `sizing`, `layout`, `flex`, `grid`, `typography`, `border`, `color`, `effects` |
+| `prefix`      | A prefix for every class (`g` gives `g-p-4`)                                                                 |
+| `breakpoints` | Breakpoint keys and their widths in px: the build's, when it adds keys                                       |
+
+On the command: `--content`, `--out`, `--all` (every class, no scan),
+`--safelist`, `--groups a,b`, `--prefix`.
+
+## How they relate to the rest
+
+- They live in `@layer greese.utilities`, the layer style props and the `greese`
+  prop use, so they beat a component's own styles without `!important`. Your own
+  unlayered CSS still beats them.
+- **Style props** (`<Box p={4}>`, `<Stack gap={{ md: 6 }}>`) and utilities
+  overlap on purpose. Props are typed and live inline on React components;
+  utilities are plain classes, for markup and for anything GreeseUI doesn't
+  render.
+- Colors are the theme's: `bg-primary` follows a `ThemeProvider` theme
+  or `data-greese-theme`, and dark mode, like a component does.
 
 ## All the classes
 

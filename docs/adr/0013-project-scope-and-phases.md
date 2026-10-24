@@ -69,6 +69,10 @@ The phase numbers other ADRs cite:
 | —     | Motion scopes                                         | 2026-10-20 | ADR 0017          |
 | —     | One web app: the homepage and Theme Studio            | 2026-10-20 | ADR 0018          |
 | —     | Utility classes, purged by what the source uses       | 2026-10-21 | ADR 0019          |
+| —     | ScrollSpy; an MCP server, `@greese/mcp`               | 2026-10-23 | ADR 0022          |
+| —     | Shape themes and page templates                       | 2026-10-23 | ADR 0023          |
+| —     | Shapes: one geometry, animated parameters, editor     | 2026-10-23 | ADR 0024          |
+| —     | Theme layers: colors, shapes, motion themes           | 2026-10-23 | ADR 0025          |
 
 When a new body of work lands, add a row here; that's the status record the
 skills and agents keep up to date.

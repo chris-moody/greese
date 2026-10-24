@@ -1,6 +1,6 @@
 # ADR 0012: An optional icons package, and documenting every prop
 
-- **Status:** Accepted
+- **Status:** Accepted (§1: the library does not import the icons package, reversed by [ADR 0020](0020-icons-live-in-the-icons-package.md))
 - **Date:** 2026-10-19
 
 ## Context

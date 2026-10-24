@@ -178,11 +178,10 @@ or directly.
   `{ el, distance, rtl }`, or keyframes with a default `duration`/`ease`. The
   registry is a `Map` in its own module, outside the lazy runtime, so
   defining effects never loads greese.js. Instance options win over an
-  effect's defaults. A definition under a built-in's name replaces it in the
-  runtime (so Theme Studio can retune an effect); a lone CSS preset is still
-  CSS, so a retuned preset also overrides its `@keyframes` (the kit's
-  `keyframes()` mixin), which keeps the CSS and JavaScript twins in step. Names type-check through module
-  augmentation of `GreeseEffectRegistry`.
+  effect's defaults. A built-in's name stays the built-in's (amended by ADR
+  0025: themes reassign effects, they don't rewrite them): a definition under
+  it is never played. Names type-check through module augmentation of
+  `GreeseEffectRegistry`.
 - **Reduced motion** turns each effect in a sequence into a cut and drops the
   delay, but keeps pauses, so "show, wait, hide" still shows. With a
   `timeline` option the whole entrance jumps to its end as before.

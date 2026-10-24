@@ -111,6 +111,8 @@ export const Fill: Story = {
 export const Gradient: Story = {
   render: () => (
     <Stack direction="row" gap={4}>
+      {/* Not an icon: a gradient definition the icons below point at. */}
+      {/* eslint-disable-next-line no-restricted-syntax */}
       <svg width="0" height="0" aria-hidden="true" style={{ position: 'absolute' }}>
         <defs>
           <linearGradient id="icon-sunset" x1="0" y1="0" x2="1" y2="1">

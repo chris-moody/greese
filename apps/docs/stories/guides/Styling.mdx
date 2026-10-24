@@ -240,7 +240,7 @@ overrides still collapse under reduced motion.
 | `token(group, key)`                                                | `var(--greese-<group>-<key>)`, checked                                                                                                                                       |
 | `variable(name)`                                                   | `var(--greese-<name>)` for a component variable, checked                                                                                                                     |
 | `tokens((…))`, `motion-defaults((…))`, `theme(name) { … }`         | Token overrides, entrance tuning, a named theme                                                                                                                              |
-| `keyframes(greese-fade-up, (from: (…), to: (…)))`                  | Replaces a preset's keyframes, or adds `@keyframes` of your own (utilities layer)                                                                                            |
+| `keyframes(greese-float-up, (from: (…), to: (…)))`                 | Adds `@keyframes` of your own (utilities layer); a built-in effect's name is refused                                                                                         |
 | `up`, `down`, `hover`, `focus-ring`, `touch-target`, `motion-safe` | The library's own mixins                                                                                                                                                     |
 
 Call the mixins at the top level of a stylesheet (or inside `theme()`), not
@@ -296,6 +296,38 @@ Error: GreeseUI kit: `Button` has no part `icn`. Parts: icon.
 
 To target a class this version doesn't know (a part from a newer release, say),
 turn the check off: `@use 'pkg:@greese/ui/scss/kit' as greese with ($strict: false);`.
+
+### The library's own mixins
+
+The components are written with a handful of partials, and a theme can `@use`
+them too, so styles copied from a component's source compile in your theme:
+
+| Entry point                    | What's in it                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------ |
+| `pkg:@greese/ui/scss/mixins`   | `up`, `down`, `hover`, `focus-ring`, `touch-target`, `motion-safe`, `component-root` |
+| `pkg:@greese/ui/scss/tones`    | `$tones` (each tone's color and content color) and `$brand`                          |
+| `pkg:@greese/ui/scss/floating` | `surface`, `anchored`, `enter-exit`: what the overlays share                         |
+| `pkg:@greese/ui/scss/controls` | `$sizes`, `frame`, `focused`, `no-zoom-font`: what the form controls share           |
+| `pkg:@greese/ui/scss/maps`     | the token maps (`$color`, `$scalars`, `$breakpoints`, `$typography`…)                |
+
+```scss
+@use 'pkg:@greese/ui/scss/kit' as greese;
+@use 'pkg:@greese/ui/scss/mixins';
+@use 'pkg:@greese/ui/scss/floating';
+
+@include greese.component(Popover) {
+  @include floating.surface;
+
+  @include mixins.up(md) {
+    padding: greese.token(space, 6);
+  }
+}
+```
+
+They are the modules the library itself loads, so a build with its own
+breakpoints (`@use 'pkg:@greese/ui/scss' with ($breakpoints: …)`) reaches
+`mixins.up()` too. What writes a component's own class names (the
+responsive-prop machinery, `tones.classes`) stays private.
 
 ## Theme-wide motion
 
@@ -396,10 +428,17 @@ In the studio:
   shown through every story from its docs page, live as you edit it.
 - **Components:** pick one, or switch on **Inspect** and click any element in
   the preview. You get its classes, parts, modifiers and states, its variables
-  with their current values, a declarations editor for the root, any part or
-  any modifier, and its motion defaults.
-- **Motion:** entrance tuning for the whole theme.
-- **Code:** the generated SCSS and CSS.
+  with their current values, and its motion defaults. Its styles, and those of
+  what it contains, are one **SCSS** box that starts as the library's own source
+  for them and takes the same imports the components use
+  (`@use 'pkg:@greese/ui/scss/mixins'`…, ticked in an **Imports** menu). Once
+  you edit it, it applies inside that component only; the same components used
+  elsewhere keep their styles.
+- **Motion:** entrance tuning for the whole theme, its motion roles (which
+  effect plays where, which timing it takes), and its **Effects**: every
+  built-in's keyframes to read or copy, effects of your own, and a stage to
+  play sequences on.
+- **Code:** the generated SCSS and CSS, highlighted.
 - **Import:** bring in a theme you already have, then edit it. See below.
 
 The preview runs in a frame, so the theme never restyles the editor. It

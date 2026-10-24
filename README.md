@@ -3,12 +3,12 @@
 Mobile-first, TypeScript-first React components with zero-runtime styling:
 static CSS compiled at build time, themed with CSS custom properties.
 
-| Package | |
-|---|---|
-| [`@greese/ui`](packages/ui) | The CSS and design tokens: the stylesheet, per-component CSS, custom properties, Sass kit. No framework needed |
-| [`@greese/react`](packages/react) | React components, styled by `@greese/ui` |
-| [`@greese/js`](packages/js) | greese.js, the animation library behind the `greese` prop |
-| [`@greese/icons`](packages/icons) | Optional line icons; GreeseUI takes any icons |
+| Package                           |                                                                                                                |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| [`@greese/ui`](packages/ui)       | The CSS and design tokens: the stylesheet, per-component CSS, custom properties, Sass kit. No framework needed |
+| [`@greese/react`](packages/react) | React components, styled by `@greese/ui`                                                                       |
+| [`@greese/js`](packages/js)       | greese.js, the animation library behind the `greese` prop                                                      |
+| [`@greese/icons`](packages/icons) | Optional line icons; GreeseUI takes any icons                                                                  |
 
 `@greese/react` depends on `@greese/ui` and `@greese/js`, so one install is
 enough. `@greese/ui` works in plain HTML, and is what the planned Svelte, Vue
@@ -20,14 +20,14 @@ Scope, phases and standing decisions: [ADR 0013](docs/adr/0013-project-scope-and
 
 ## Workspace
 
-| Path | |
-|---|---|
-| `packages/ui` | `@greese/ui`: the CSS, tokens and Sass kit, framework-free. Component styles are edited here |
-| `packages/react`, `packages/js`, `packages/icons` | The other published packages |
-| `packages/eslint-config`, `packages/typescript-config` | Internal shared config |
-| `apps/docs` | Storybook. Uses the library **source**, so edits hot-reload |
-| `apps/playground` | Vite app that uses the **built** `dist/`, the same way a real consumer does. Playwright e2e and perf benchmarks run against it |
-| `apps/site` | The web app, built with GreeseUI from the **built** `dist/`: the homepage at `/` and Theme Studio at `/studio` (`npm run studio`; edits a theme file). Its numbers come from `npm run stats -w site` and the benchmark |
+| Path                                                   |                                                                                                                                                                                                                        |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/ui`                                          | `@greese/ui`: the CSS, tokens and Sass kit, framework-free. Component styles are edited here                                                                                                                           |
+| `packages/react`, `packages/js`, `packages/icons`      | The other published packages                                                                                                                                                                                           |
+| `packages/eslint-config`, `packages/typescript-config` | Internal shared config                                                                                                                                                                                                 |
+| `apps/docs`                                            | Storybook. Uses the library **source**, so edits hot-reload                                                                                                                                                            |
+| `apps/playground`                                      | Vite app that uses the **built** `dist/`, the same way a real consumer does. Playwright e2e and perf benchmarks run against it                                                                                         |
+| `apps/site`                                            | The web app, built with GreeseUI from the **built** `dist/`: the homepage at `/` and Theme Studio at `/studio` (`npm run studio`; edits a theme file). Its numbers come from `npm run stats -w site` and the benchmark |
 
 ## Setup
 
@@ -40,19 +40,19 @@ npx playwright install chromium   # once, for e2e
 
 ## Commands
 
-| Command | |
-|---|---|
-| `npm run dev` | Storybook on :6006 and the playground dev server |
-| `npm run build` | Builds every package and app (turbo, cached) |
-| `npm test` | Unit tests (Vitest + jsdom) |
-| `npm run test:e2e` | Real-browser tests (Playwright, mobile and desktop) on :4310 |
-| `npm run check-types` / `npm run lint` | |
-| `npm run size` | Fails if the bundle-size budgets in `packages/react/.size-limit.json` are exceeded |
-| `npm run test:visual` | Visual regression for every story (builds Storybook first) |
-| `npm run lighthouse -w playground` | Lighthouse budgets on the playground pages (after `npm run build`) |
-| `npm run verify:packages` | Packs both packages and checks them in a clean consumer project |
-| `npm run bench -w playground` | GreeseUI vs MUI performance benchmark |
-| `npm run changeset` | Records a release note for a change to a published package |
+| Command                                |                                                                                    |
+| -------------------------------------- | ---------------------------------------------------------------------------------- |
+| `npm run dev`                          | Storybook on :6006 and the playground dev server                                   |
+| `npm run build`                        | Builds every package and app (turbo, cached)                                       |
+| `npm test`                             | Unit tests (Vitest + jsdom)                                                        |
+| `npm run test:e2e`                     | Real-browser tests (Playwright, mobile and desktop) on :4310                       |
+| `npm run check-types` / `npm run lint` |                                                                                    |
+| `npm run size`                         | Fails if the bundle-size budgets in `packages/react/.size-limit.json` are exceeded |
+| `npm run test:visual`                  | Visual regression for every story (builds Storybook first)                         |
+| `npm run lighthouse -w playground`     | Lighthouse budgets on the playground pages (after `npm run build`)                 |
+| `npm run verify:packages`              | Packs both packages and checks them in a clean consumer project                    |
+| `npm run bench -w playground`          | Render benchmark (the numbers on the homepage)                                     |
+| `npm run changeset`                    | Records a release note for a change to a published package                         |
 
 ## Commits
 
@@ -81,7 +81,7 @@ the repository secret `NPM_TOKEN`.
 ## Documentation
 
 Run `npm run dev` and open http://localhost:6006. You'll find guides (getting
-started, theming, responsive props, accessibility, migrating from MUI), a docs
+started, theming, responsive props, accessibility, animation, utility classes), a docs
 page for every component, and live stories. Decisions are recorded in
 [docs/adr](docs/adr).
 
@@ -91,11 +91,11 @@ page for every component, and live stories. Decisions are recorded in
 <https://chris-moody.github.io/greese/> on pushes to `main` (or run it by
 hand):
 
-| Path | App |
-|---|---|
-| `/` | The homepage, `apps/site` |
-| `/studio` | Theme Studio, a route of the same app: it compiles in the browser and keeps the theme there |
-| `/storybook/` | The docs, `apps/docs` |
+| Path          | App                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------- |
+| `/`           | The homepage, `apps/site`                                                                   |
+| `/studio`     | Theme Studio, a route of the same app: it compiles in the browser and keeps the theme there |
+| `/storybook/` | The docs, `apps/docs`                                                                       |
 
 The app builds for `/<repository>/` (the workflow sets `GREESE_BASE`) and routes by path;
 the build also writes `studio/index.html` and `404.html`, so a direct visit to `/studio` works

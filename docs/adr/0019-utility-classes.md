@@ -28,20 +28,24 @@ plugin and the docs all come from it, as the effects do (ADR 0009 §10a).
 
 ### Names: the property and the value, never another framework's words
 
-`<property>-<value>`: `display-flex`, `text-align-center`,
-`justify-content-between`, `flex-direction-column`, `overflow-hidden`.
+`<property>-<value>`: `display-flex`, `text-center`,
+`justify-content-between`, `flex-dir-col`, `overflow-hidden`.
 
 - **No prefix.** A class is a property and a value, which is what the
   frameworks it will sit beside use too, and nothing here tries to avoid them:
   the names are the CSS's own. Component classes are all `greese-*`, so they
   can't collide. A project that wants a namespace sets `prefix` (`g` gives
   `g-p-4`).
-- **Token-valued groups use the token's name**: `background-primary`,
+- **Token-valued groups use the token's name**: `bg-primary`,
   `color-fg-muted`, `radius-md`, `shadow-lg`, `z-modal`,
   `font-weight-bold`.
 - **Abbreviations are few, and listed**: `m` margin, `p` padding, `w` width,
-  `h` height, `min-w`/`max-w`/`min-h`/`max-h`, `z` z-index, `background` for
-  background-color.
+  `h` height, `min-w`/`max-w`/`min-h`/`max-h`, `z` z-index, `bg`
+  background-color, `pos` position, `vis` visibility, `flex-dir` flex-direction,
+  `text` for text-align (`text-center`), `upper`/`lower` for
+  uppercase/lowercase, and `col`/`cols` wherever the word is column(s)
+  (`flex-dir-col`, `grid-template-cols-3`, `grid-col-span-2`,
+  `grid-auto-flow-col`).
 - **Spacing takes a side**: `t b l r` (physical), `x y` (the inline and block
   axes) and `s e` (inline start and end, which follow the writing direction):
   `pt-3`, `mx-auto`, `ms-2`, `gap-x-4`. Sizing is logical
@@ -58,7 +62,7 @@ plugin and the docs all come from it, as the effects do (ADR 0009 §10a).
 
 Nine groups: **spacing** (margin, padding, gap), **sizing** (size, min/max,
 aspect ratio, object-fit), **layout** (display, position, inset, z-index,
-overflow, visibility, box-sizing, float, `visually-hidden`), **flex**
+overflow, visibility, box-sizing, float), **flex**
 (direction, wrap, flex, grow, shrink, order, justify and align properties),
 **grid** (templates, spans, auto-flow), **typography** (alignment, transform,
 decoration, wrap, overflow, white-space, word-break, weight, style, family,

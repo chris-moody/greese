@@ -46,6 +46,8 @@ included:
 
 ## Setup
 
+No provider is needed to use GreeseUI: the styles load once and every component works. `ThemeProvider` is optional. Reach for it only to apply a `createTheme()` theme, or to force a color scheme, on all or part of the page. The steps below say which are required.
+
 ### 1. Install (required)
 
 ```sh
@@ -59,7 +61,7 @@ npm install @greese/react
 Pick **one** of these:
 
 ```ts
-// Everything (about 13 kB brotli). Simplest.
+// Everything (about 22 kB brotli). Simplest.
 import '@greese/react/styles.css'
 ```
 
@@ -276,6 +278,186 @@ const sunset = createTheme({ name: 'sunset', color: { primary: '#ea580c' } })
 ```
 
 Each theme's CSS is injected once, however many providers use it.
+
+## Shapes
+
+A shape outlines an element with one clip and a border that follows it, and
+animates by its parameters. A 12px corner stays 12px at any size, and the
+border never comes apart from the shape, mid-animation included.
+
+### Shape and motion themes
+
+A theme composes three layers: colors, shapes and motion (ADR 0025). Each
+layer's themes change only that layer, so they mix freely.
+
+**Themes reassign; they never overwrite.** A color theme points the color roles
+(`primary`, `surface`…) at colors, a shape theme points the radius roles at the
+radius scale, and a motion theme points the motion roles at effects and timing
+tokens. The palette, the radius scale, the duration and easing tokens and every
+effect keep their own values under every theme: `--greese-radius-md` is 8px and
+`fadeUp` fades up, whatever the page wears.
+
+**Shape themes** reassign the radius roles and outline every kind of component
+(controls, fields, containers, indicators, avatars, tabs), with smaller
+features on smaller controls. They set no colors and no motion.
+
+| Theme     | Shapes                                                                                                  |
+| --------- | ------------------------------------------------------------------------------------------------------- |
+| `bevel`   | Chamfered corners that slide to the other diagonal on hover; hexagon indicators, trapezoid tabs         |
+| `ticket`  | Round side notches on containers, fields and tabs; tag-shaped controls and badges                       |
+| `ridge`   | Zigzag hems on containers, zigzag ends on controls, zigzag-topped tabs, diamond knobs                   |
+| `folio`   | Dog-eared containers, leaning controls; tab panels are folders the current tab opens into               |
+| `soft`    | Every corner rounded, a step rounder than the library; accordion items as rounded panels                |
+| `pebble`  | Controls, fields, tabs and badges as pills, so square ones are circles; containers extra-rounded        |
+| `extrude` | Keycap depth drawn inside each box: raised controls that sink when pressed, recessed fields             |
+| `tilt`    | Real perspective on hover and press: controls lean back, cards turn and lift, the current tab stands up |
+
+The first four outline components with a clip and a ring (ADR 0024). Soft and
+Pebble only reassign radius roles; Extrude and Tilt add depth, Extrude with
+inset shadows (inside the box, so a motion theme's mask never cuts them off)
+and Tilt with `transform` on hover and press only, so nothing rests turned
+and a motion theme's three-dimensional entrances start and end where the
+element sits.
+
+**Motion themes** pace every entrance and assign which built-in effect plays
+where: the `'theme'` entrance (`greese="theme"`, so a page's reveals follow the
+theme), tab panels and an accordion's content, table rows, toasts and overlays,
+each with the duration and easing it takes. They set no colors and no shapes.
+
+| Theme    | Motion                                                                                                        |
+| -------- | ------------------------------------------------------------------------------------------------------------- |
+| `snappy` | Short and sharp: reveals pop in, overlays scale in and away                                                   |
+| `gentle` | Long and soft: content comes into focus out of a blur, overlays sink away                                     |
+| `wipe`   | Revealed, not moved: reveals wipe up, menus wipe down, dialogs open and close as a circle                     |
+| `pocket` | Everything rises out of an invisible slot at one of its own edges, and sinks back in                          |
+| `depth`  | In three dimensions: reveals flip up, menus swing down from their top edge, dialogs rise from behind the page |
+
+**Color variants** say how a color theme's colors are worn, so any color
+theme takes any variant. `outline` draws what is usually filled (solid and
+soft buttons and badges, soft alerts, filled and elevated cards and tiles,
+avatars, the current tab and segment, toasts, tooltips) as an outline in its color, with text to match,
+and fills what was outlined. A variant reassigns the colors each component
+variant draws with (`modifiers` in the kit), never the color tokens or
+component SCSS, so it goes with every shape theme.
+
+```ts
+import '@greese/ui/themes/outline.css'
+```
+
+Load one of each after GreeseUI's styles:
+
+```ts
+import '@greese/react/styles.css'
+import '@greese/ui/themes/bevel.css'
+import '@greese/ui/themes/wipe.css'
+```
+
+Wipes, irises and pockets are masks, so they compose with a shape's clip; no
+effect touches `clip-path`. Every motion theme's entrances are off for visitors
+who reduce motion.
+
+#### Motion roles
+
+Components have no motion of their own: each says what it is (a dialog, a
+popover) and where it opens from (`--greese-overlay-origin`), and reads its
+motion from a role. Assign roles with the kit's `motion-defaults()`; effects by
+name, durations and easings by token name or as values:
+
+```scss
+@include greese.motion-defaults(
+  (
+    theme: pocket-up,
+    // greese="theme"
+    content: wipe-open-x,
+    // tab panels', an opening accordion's children
+    rows: fade-up,
+    // a table's rows, one after another
+    dialog: iris-in,
+    dialog-exit: iris-out,
+    popover: wipe-down,
+    // menus and speed-dial actions too
+    popover-exit: wipe-out-up,
+    content-duration: slow,
+    // var(--greese-duration-slow)
+    enter-ease: enter,
+    // var(--greese-easing-enter)
+  )
+);
+```
+
+| Role                                                                                                            | Plays                                           | Base theme                                           |
+| --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------- |
+| `theme`                                                                                                         | `greese="theme"`                                | `fadeUp`                                             |
+| `content`                                                                                                       | tab panels' and an opening accordion's children | a short rise                                         |
+| `rows`                                                                                                          | table rows                                      | none                                                 |
+| `toast`, `backdrop`                                                                                             | toasts, a dialog's scrim                        | a short rise, a fade                                 |
+| `overlay`                                                                                                       | every overlay but a drawer                      | a fade from its origin                               |
+| `dialog`, `popover`, `tooltip`                                                                                  | one kind (falls back to `overlay`)              | `overlay`'s                                          |
+| `drawer`                                                                                                        | drawers and the off-canvas sidebar              | a slide from its edge                                |
+| `overlay-exit`, `dialog-exit`, `popover-exit`, `tooltip-exit`, `drawer-exit`                                    | how they leave                                  | a fade toward the origin                             |
+| `content-duration`, `rows-duration`, `overlay-duration`, `toast-duration`, `backdrop-duration`, `exit-duration` | how long                                        | `normal`, `slow`, `fast`, `normal`, `normal`, `fast` |
+| `enter-ease`, `exit-ease`                                                                                       | the curves                                      | `enter`, `exit`                                      |
+
+Each is a custom property, `--greese-motion-<role>` (an exit role's are
+`--greese-motion-<role>-<property>`), so plain CSS can assign one too. A
+component's `motion()` in the kit, or an instance's `greese` prop, overrides
+its role.
+
+#### Radius roles
+
+Components read the radius roles, never the radius scale directly:
+
+| Role                      | Parts                                                     | Base theme |
+| ------------------------- | --------------------------------------------------------- | ---------- |
+| `--greese-corner-control` | buttons, segmented controls, file pickers                 | `md`       |
+| `--greese-corner-field`   | text fields and selects, OTP cells                        | `md`       |
+| `--greese-corner-surface` | cards, dialogs, fieldsets, lists, stats, chat bubbles     | `lg`       |
+| `--greese-corner-panel`   | alerts, tiles, tables, code, media, popovers and menus    | `md`       |
+| `--greese-corner-inset`   | tabs, menu items, tooltips, keys, checkboxes              | `sm`       |
+| `--greese-corner-pill`    | badges, chips, tracks, progress bars                      | `pill`     |
+| `--greese-corner-round`   | knobs, thumbs, radios, step markers, avatars, status dots | `round`    |
+
+A shape theme points them at `none` (`createTheme({ corner: { control:
+'var(--greese-radius-none)' } })`, or `tokens.corner` in the kit), and Bevel and
+Ridge also turn round parts to diamonds. Your own CSS can use a role to follow
+the theme, or the scale to stay as it is.
+
+### Any element
+
+Every shape is also a class. A shape theme's `bevel-card`, for example:
+
+```html
+<section class="greese-shape-bevel-card">…</section>
+```
+
+Its parameters are custom properties, so one element can differ:
+`style="--greese-shape-a: 32px"`. So is its border color:
+`--greese-shape-ring`.
+
+### Making your own
+
+In Theme Studio's **Shapes** tab:
+
+- start from a preset (bevel, notch, tag, hexagon, slant, dog-ear, ticket,
+  zigzag, shield);
+- drag its points;
+- set its parameters for rest, hover, pressed and entrance;
+- choose which components take it.
+
+The theme's SCSS and CSS include it. From code, `shapesCss()` in
+`@greese/ui/shapes` writes the same CSS (a build-time module, not a runtime
+one).
+
+Every shape:
+
+- keeps keyboard focus visible: it opens to its box for the focus ring, or
+  draws a ring inside;
+- moves only for visitors who allow motion;
+- keeps shaped buttons 44px on touch screens;
+- steps aside in forced-colors mode.
+
+A clip also cuts anything painted outside the box, so shaped elements don't
+cast shadows. ADR 0024 has the details.
 
 ## Overriding in plain CSS
 
@@ -521,28 +703,22 @@ The live values, with swatches, are under **Foundations/Tokens**, and the
 color roles and palette under **Foundations/Color**. The property name is
 `--greese-<group>-<key>`, with camelCase keys in kebab case.
 
-| Group       | `createTheme` key    | Keys                                                                                                                                                                                                                                                    |
-| ----------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Color       | `color`              | `canvas`, `surface`, `surfaceOverlay`, `fg`, `fgMuted`, `border`, `borderStrong`, `primary`, `secondary`, `tertiary`, `accent` (each with `…Strong` and `…Content`), `focusRing`, `positive`, `negative`, `negativeContent`, `warning`, `info`, `scrim` |
-| Spacing     | `space`              | `0`–`8` (`0`, `0.25rem`, `0.5rem`, `0.75rem`, `1rem`, `1.5rem`, `2rem`, `3rem`, `4rem`)                                                                                                                                                                 |
-| Radius      | `radius`             | `none`, `sm`, `md`, `lg`, `pill`                                                                                                                                                                                                                        |
-| Font family | `font`               | `body`, `mono`                                                                                                                                                                                                                                          |
-| Type system | `typography`         | variants `p1`–`p3`, `h1`–`h6`, `s1`, `s2`, `caption`, `button`: font size, weight, letter spacing, line height (see Typography)                                                                                                                         |
-| Font weight | `fontWeight`         | `regular`, `medium`, `semibold`, `bold`                                                                                                                                                                                                                 |
-| Line height | `lineHeight`         | `tight`, `snug`, `normal`                                                                                                                                                                                                                               |
-| Shadow      | `shadow`             | `sm`, `md`, `lg`                                                                                                                                                                                                                                        |
-| Stacking    | `zIndex`             | `dropdown`, `sticky`, `overlay`, `modal`, `popover`, `toast`, `tooltip`                                                                                                                                                                                 |
-| Motion      | `duration`, `easing` | `fast`, `normal`, `slow`; `standard`, `enter`, `exit`                                                                                                                                                                                                   |
+| Group        | `createTheme` key    | Keys                                                                                                                                                                                                                                                             |
+| ------------ | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Color        | `color`              | `canvas`, `surface`, `surfaceOverlay`, `fg`, `fgMuted`, `border`, `borderStrong`, `track`, `primary`, `secondary`, `tertiary`, `accent` (each with `…Strong` and `…Content`), `focusRing`, `positive`, `negative`, `negativeContent`, `warning`, `info`, `scrim` |
+| Spacing      | `space`              | `0`–`8` (`0`, `0.25rem`, `0.5rem`, `0.75rem`, `1rem`, `1.5rem`, `2rem`, `3rem`, `4rem`)                                                                                                                                                                          |
+| Radius       | `radius`             | `none`, `sm`, `md`, `lg`, `xl`, `pill`, `round`                                                                                                                                                                                                                  |
+| Radius roles | `corner`             | `control`, `field`, `surface`, `panel`, `inset`, `pill`, `round`: which step of `radius` each kind of part takes                                                                                                                                                 |
+| Font family  | `font`               | `body`, `mono`                                                                                                                                                                                                                                                   |
+| Type system  | `typography`         | variants `p1`–`p3`, `h1`–`h6`, `s1`, `s2`, `caption`, `button`: font size, weight, letter spacing, line height (see Typography)                                                                                                                                  |
+| Font weight  | `fontWeight`         | `regular`, `medium`, `semibold`, `bold`                                                                                                                                                                                                                          |
+| Line height  | `lineHeight`         | `tight`, `snug`, `normal`                                                                                                                                                                                                                                        |
+| Shadow       | `shadow`             | `sm`, `md`, `lg`                                                                                                                                                                                                                                                 |
+| Stacking     | `zIndex`             | `dropdown`, `sticky`, `overlay`, `modal`, `popover`, `toast`, `tooltip`                                                                                                                                                                                          |
+| Motion       | `duration`, `easing` | `fast`, `normal`, `slow`; `standard`, `enter`, `exit`                                                                                                                                                                                                            |
 
 Durations collapse to near zero under `prefers-reduced-motion: reduce`, in
 themes too.
-
-Coming from MUI? `palette.primary.main` is `primary`, `palette.secondary.main`
-is `secondary`, `palette.background.default` is `canvas`,
-`palette.background.paper` is `surface`, `palette.text.secondary` is
-`fgMuted`, and `palette.error.main` is `negative`. MUI's `colors`
-(`deepPurple[500]`) become the palette (`palette.lavender[500]`): the same idea,
-with its own hues and values rather than Material's.
 
 ## Troubleshooting
 

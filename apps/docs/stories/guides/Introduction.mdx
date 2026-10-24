@@ -9,9 +9,9 @@ All CSS is compiled at build time and themed with CSS custom properties; at runt
 components only toggle class names and set a few inline variables. No CSS-in-JS, no
 style injection, no runtime dependencies beyond React.
 
-- **Fast.** Against MUI on 2,000 responsive Stacks: 2.2× less main-thread script on
-  load, 3.5× less per update, interactions about 2× faster.
-- **Responsive like MUI.** `direction={{ xs: 'column', md: 'row' }}` on any layout
+- **Fast.** Styles are static CSS and components only toggle classes, so there is
+  nothing to compute at run time. The homepage has the measurements.
+- **Responsive.** `direction={{ xs: 'column', md: 'row' }}` on any layout
   prop, resolved by static CSS.
 - **Native first.** Real `<button>`, `<input>`, `<select>`, `<dialog>`, `<details>` and
   the Popover API: keyboard, forms, autofill and phone pickers work out of the box.

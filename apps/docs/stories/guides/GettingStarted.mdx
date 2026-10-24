@@ -21,6 +21,8 @@ import '@greese/react/styles.css' // tokens + every component
 Then use components anywhere. Layout and display components are server-component
 safe; interactive ones are marked `'use client'`.
 
+No provider is needed to use GreeseUI: the styles load once and every component works. `ThemeProvider` is optional (see Guides/Theming). Reach for it only to apply a `createTheme()` theme, or to force a color scheme, on all or part of the page.
+
 ```tsx
 import { Button, Stack, TextField } from '@greese/react'
 
@@ -58,7 +60,7 @@ need JavaScript, which comes with the framework packages. With a bundler,
 
 ## Only the CSS you use
 
-`styles.css` is about 13 kB brotli for everything. To ship less, import per-component
+`styles.css` is about 22 kB brotli for everything. To ship less, import per-component
 stylesheets instead. Each one pulls in the shared core and the components it builds
 on, and bundlers de-duplicate the shared imports:
 

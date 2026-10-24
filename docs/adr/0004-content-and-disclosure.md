@@ -57,6 +57,8 @@ negative/warning and `role="status"` for the rest. `Spinner` is always
 
 ### 5. A few built-in glyphs, still icon-agnostic
 
+_Since ADR 0020 these are exports of `@greese/icons`._
+
 Anything user-facing takes your icons (`icon` props, `Icon`). The library
 draws only structural glyphs it can't do without: the dismiss and remove ×
 (Alert, Chip), the accordion chevron and, from [Phase 3](0013-project-scope-and-phases.md#phases), the select chevron

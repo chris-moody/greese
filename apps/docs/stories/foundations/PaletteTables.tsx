@@ -24,7 +24,7 @@ const inkOn = (hex: string): string =>
   (luminance(hex) + 0.05) / 0.05 > 1.05 / (luminance(hex) + 0.05) ? '#000' : '#fff'
 
 /**
- * Every palette color, a table per hue as on MUI's color page. Clicking a
+ * Every palette color, a table per hue. Clicking a
  * shade copies its reference in the chosen format.
  */
 export const PaletteTables = (): JSX.Element => {
