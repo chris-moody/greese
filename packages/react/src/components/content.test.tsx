@@ -230,6 +230,42 @@ describe('Avatar', () => {
 })
 
 describe('Collapsible and Accordion', () => {
+  it('is a Server Component: an accordion hands no function to the DOM', () => {
+    const server = [Accordion, AccordionItem, Collapsible] as unknown as Parameters<
+      typeof functionProps
+    >[1]
+    expect(
+      functionProps(
+        <Accordion exclusive>
+          <AccordionItem title="One">1</AccordionItem>
+        </Accordion>,
+        server
+      )
+    ).toEqual([])
+  })
+
+  it('shares its name with items in fragments and lists, not inside your own components', () => {
+    const Wrapped = () => <AccordionItem title="Wrapped">w</AccordionItem>
+    const { container } = render(
+      <Accordion exclusive>
+        <>
+          <AccordionItem title="In a fragment">f</AccordionItem>
+        </>
+        {['A', 'B'].map((t) => (
+          <AccordionItem key={t} title={t}>
+            {t}
+          </AccordionItem>
+        ))}
+        <Wrapped />
+      </Accordion>
+    )
+    const names = [...container.querySelectorAll('details')].map((d) =>
+      d.getAttribute('name')
+    )
+    expect(names.slice(0, 3).every((n) => n && n === names[0])).toBe(true)
+    expect(names[3]).toBeNull()
+  })
+
   it('hands no function to the DOM without onOpenChange, so a Server Component can render it', () => {
     const server = [Collapsible] as unknown as Parameters<typeof functionProps>[1]
     expect(

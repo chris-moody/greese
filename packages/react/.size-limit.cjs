@@ -69,7 +69,9 @@ module.exports = [
     // 28.85 kB → 28.9 kB (2026-10-24): Button and Collapsible are Server
     // Components: they block a loading or disabled press, and listen for a
     // toggle, without handlers of their own (28.88 kB).
-    limit: '28.9 kB',
+    // 28.9 kB → 28.95 kB (2026-10-24): Accordion is a Server Component too,
+    // handing its items their name and icons itself, not through context (28.9 kB).
+    limit: '28.95 kB',
     modifyRolldownConfig: external,
   },
   {
