@@ -12,7 +12,7 @@
     padding: var(--greese-card-padding);
     overflow: hidden;
     color: var(--greese-color-fg);
-    border-radius: var(--greese-radius-lg);
+    border-radius: var(--greese-corner-surface);
 
     @include mixins.up(md) {
       --greese-card-padding: var(--greese-space-5);

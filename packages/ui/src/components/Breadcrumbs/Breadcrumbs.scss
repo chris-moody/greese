@@ -30,7 +30,7 @@
   .greese-Breadcrumbs-expand {
     color: inherit;
     text-decoration: none;
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
 
     @include mixins.focus-ring(1px);
 

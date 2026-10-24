@@ -4,7 +4,7 @@
   .greese-Popover {
     @include floating.anchored;
     @include floating.surface;
-    @include floating.enter-exit(':popover-open', 0 -0.25rem);
+    @include floating.enter-exit(':popover-open', 0 -0.25rem, popover);
 
     inline-size: max-content;
     max-inline-size: min(22rem, 100vw - 2 * var(--greese-space-3));

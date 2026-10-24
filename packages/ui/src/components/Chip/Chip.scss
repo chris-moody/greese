@@ -15,7 +15,7 @@
     white-space: nowrap;
     background-color: var(--greese-color-surface);
     border: 1px solid var(--greese-color-border);
-    border-radius: var(--greese-radius-pill);
+    border-radius: var(--greese-corner-pill);
 
     &:has(.greese-Chip-toggle) {
       padding-inline: 0;
@@ -96,7 +96,7 @@
   .greese-Chip-toggle {
     align-self: stretch;
     padding-inline: var(--greese-space-3);
-    border-radius: var(--greese-radius-pill);
+    border-radius: var(--greese-corner-pill);
   }
 
   .greese-Chip-remove {
@@ -104,7 +104,7 @@
     inline-size: 1.5rem;
     block-size: 1.5rem;
     color: var(--greese-color-fg-muted);
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
 
     > svg {
       inline-size: 0.875rem;

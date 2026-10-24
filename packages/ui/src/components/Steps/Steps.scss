@@ -42,7 +42,7 @@
     color: var(--greese-color-fg-muted);
     background-color: var(--greese-color-canvas);
     border: 2px solid var(--greese-color-border-strong);
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
 
     > svg {
       inline-size: min(1rem, 65%);
@@ -70,7 +70,7 @@
     block-size: 45%;
     content: '';
     background-color: currentcolor;
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
   }
 
   .greese-Step-body {

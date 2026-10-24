@@ -11,7 +11,8 @@
     @include mixins.component-root;
     @include floating.enter-exit(
       ':popover-open',
-      calc(-100% * var(--greese-sidebar-dir)) 0
+      calc(-100% * var(--greese-sidebar-dir)) 0,
+      drawer
     );
 
     --greese-sidebar-dir: 1;

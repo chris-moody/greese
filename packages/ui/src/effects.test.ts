@@ -25,7 +25,7 @@ describe('effects', () => {
       ...Object.keys(comboEffects),
     ])
     expect(effectNames).toHaveLength(Object.keys(builtInEffects).length)
-    expect(effectNames).toHaveLength(24)
+    expect(effectNames).toHaveLength(94)
     expect(effectFrames('fadeIn')).toEqual({ opacity: [0, 1] })
   })
 
@@ -150,8 +150,8 @@ describe('sequences', () => {
 
 describe('CSS', () => {
   it('plays an effect as CSS exactly when it ends at the resting state', () => {
-    expect(entranceNames()).toHaveLength(13)
-    expect(exitNames()).toHaveLength(11)
+    expect(entranceNames()).toHaveLength(50)
+    expect(exitNames()).toHaveLength(44)
     for (const name of entranceNames()) expect(effectPlan(name).enter, name).toBeDefined()
     expect(exitNames()).toEqual(
       expect.arrayContaining([
@@ -178,12 +178,25 @@ describe('CSS', () => {
     )
   })
 
-  it('writes an exit as what it changes, never the fade', () => {
-    expect(effectPlan('fadeOut').exit).toEqual({})
-    expect(effectPlan('scaleOut').exit).toEqual({ scale: '0' })
+  it('writes an exit as everything an overlay moves to, what it doesn’t touch at rest', () => {
+    const none = { 'mask-image': 'none', transform: 'none' }
+    expect(effectPlan('fadeOut').exit).toEqual({ translate: '0px 0px', scale: '1', opacity: '0', ...none })
+    expect(effectPlan('scaleOut').exit).toEqual({ translate: '0px 0px', scale: '0', opacity: '0', ...none })
     expect(effectPlan('fadeOutDown').exit).toEqual({
       translate: '0px var(--greese-motion-distance, 1rem)',
+      scale: '1',
+      opacity: '0',
+      ...none,
     })
+    // A wipe hides with its mask: it neither fades nor moves, and says where its mask starts.
+    expect(effectPlan('wipeOutRight').exit).toMatchObject({
+      translate: '0px 0px',
+      scale: '1',
+      opacity: '1',
+      'mask-size': '0% 100%',
+      'mask-from': '100% 100%',
+    })
+    expect(effectPlan('irisOut').exit['mask-from']).toBe('142% 142%')
   })
 
   it('plans any keyframes alike: an effect a theme defines gets the same CSS', () => {
@@ -193,9 +206,11 @@ describe('CSS', () => {
       ['66.67%', { rotate: '6deg' }],
     ])
     expect(cssPlan({ scale: [1, 0.5], opacity: [1, 0] })).toEqual({
-      exit: { scale: '0.5' },
+      exit: { translate: '0px 0px', scale: '0.5', opacity: '0', 'mask-image': 'none', transform: 'none' },
     })
-    expect(cssPlan({ color: ['red', 'blue'] })).toEqual({ exit: {} })
+    expect(cssPlan({ color: ['red', 'blue'] })).toEqual({
+      exit: { translate: '0px 0px', scale: '1', opacity: '0', 'mask-image': 'none', transform: 'none' },
+    })
   })
 
   it('turns x, y, scale and rotate into the individual transform properties', () => {
@@ -204,5 +219,146 @@ describe('CSS', () => {
       ['to', { translate: '0px 0px', opacity: '1', scale: '1' }],
     ])
     expect(toCssSteps({ rotate: [0, 90] })[1]).toEqual(['to', { rotate: '90deg' }])
+  })
+})
+
+describe('cssPlan with masks', () => {
+  it('plays a mask reveal as an entrance, keeping its last step', () => {
+    const plan = cssPlan({
+      maskImage: ['linear-gradient(black, black)', 'linear-gradient(black, black)'],
+      maskSize: ['0% 100%', '100% 100%'],
+      opacity: [0, 1],
+    })
+    expect(plan.exit).toEqual({})
+    expect(plan.enter?.map(([at]) => at)).toEqual(['from', 'to'])
+    expect(plan.enter?.[1]?.[1]).toMatchObject({ 'mask-size': '100% 100%' })
+  })
+
+  it('still drops the resting last step when nothing is masked', () => {
+    expect(cssPlan({ opacity: [0, 1] }).enter?.map(([at]) => at)).toEqual(['from'])
+  })
+})
+
+describe('wipes and pockets', () => {
+  it('wipe with a mask that grows to the whole element, holding its image and anchor', () => {
+    expect(effectFrames('wipeRight')).toEqual({
+      maskSize: ['0% 100%', '100% 100%'],
+      maskImage: ['linear-gradient(black, black)', 'linear-gradient(black, black)'],
+      maskRepeat: ['no-repeat', 'no-repeat'],
+      maskPosition: ['0% 50%', '0% 50%'],
+    })
+    // As CSS: an entrance whose last step stays, so the reveal completes before the mask goes.
+    expect(effectPlan('wipeOpenX').enter?.map(([at]) => at)).toEqual(['from', 'to'])
+  })
+
+  it('keep a pocket’s window still: the mask grows by what the element still has to travel', () => {
+    const frames = effectFrames('pocketUp', jsReach('1rem', false), { distance: '20px' }) as Record<string, string[]>
+    expect(frames.y).toEqual(['20px', '0px'])
+    expect(frames.maskSize).toEqual(['100% calc(100% - 20px)', '100% calc(100% - 0px)'])
+    expect(frames.maskPosition).toEqual(['50% 0%', '50% 0%'])
+    // By default a pocket travels its whole size, so it starts out of sight.
+    const full = effectFrames('pocketRight') as Record<string, string[]>
+    expect(full.x).toEqual(['-100%', '0px'])
+    expect(full.maskSize).toEqual(['0% 100%', '100% 100%'])
+    expect(full.maskPosition).toEqual(['100% 50%', '100% 50%'])
+  })
+
+  it('go every direction, corners included, arriving and leaving', () => {
+    const corner = effectFrames('pocketDownLeft') as Record<string, string[]>
+    expect(corner.x).toEqual(['100%', '0px'])
+    expect(corner.y).toEqual(['-100%', '0px'])
+    expect(corner.maskPosition![0]).toBe('0% 100%')
+    expect(effectFrames('wipeUpRight')).toMatchObject({ maskPosition: ['0% 100%', '0% 100%'], maskSize: ['0% 0%', '100% 100%'] })
+    // Leaving: the element moves on into the slot, the mask shrinks with it.
+    const out = effectFrames('pocketOutDown') as Record<string, string[]>
+    expect(out.y).toEqual(['0px', '100%'])
+    expect(out.maskSize).toEqual(['100% 100%', '100% 0%'])
+    expect(out.maskPosition![0]).toBe('50% 0%')
+    expect(effectFrames('wipeOutLeft')).toMatchObject({ maskPosition: ['0% 50%', '0% 50%'], maskSize: ['100% 100%', '0% 100%'] })
+  })
+
+  it('leave by mask: exits an overlay takes, with the mask it ends at', () => {
+    for (const name of ['wipeOutRight', 'wipeCloseX', 'irisOut', 'irisOutDownLeft', 'pocketOutUp'] as const) {
+      expect(effectPlan(name).enter, name).toBeUndefined()
+      expect(effectPlan(name).exit['mask-size'], name).toBeDefined()
+      expect(exitNames()).toContain(name)
+    }
+    // A pocket's exit carries its slide too.
+    expect(effectPlan('pocketOutDown').exit).toMatchObject({
+      translate: '0px 100%',
+      'mask-size': '100% 0%',
+      'mask-position': '50% 0%',
+    })
+    for (const name of ['wipeRight', 'wipeOpenY', 'irisIn', 'irisUpLeft', 'pocketDownRight'] as const)
+      expect(entranceNames(), name).toContain(name)
+  })
+
+  it('never touch clip-path, which belongs to the element’s shape', () => {
+    for (const name of entranceNames()) expect(JSON.stringify(effectFrames(name)), name).not.toMatch(/clip/i)
+  })
+})
+
+describe('irises', () => {
+  it('close toward a side or corner, and open from the same one: an entrance is its exit reversed', () => {
+    expect(effectFrames('irisRight')).toMatchObject({
+      maskSize: ['0% 0%', '142% 142%'],
+      maskPosition: ['100% 50%', '100% 50%'],
+      maskImage: [
+        'radial-gradient(farthest-side at 100% 50%, black 98%, transparent)',
+        'radial-gradient(farthest-side at 100% 50%, black 98%, transparent)',
+      ],
+    })
+    expect(effectFrames('irisOutRight')).toMatchObject({
+      maskSize: ['142% 142%', '0% 0%'],
+      maskPosition: ['100% 50%', '100% 50%'],
+    })
+    expect(effectFrames('irisOutUpLeft')).toMatchObject({ maskPosition: ['0% 0%', '0% 0%'] })
+    expect(effectFrames('irisUpLeft')).toMatchObject({ maskPosition: ['0% 0%', '0% 0%'] })
+  })
+
+  it('open just far enough to cover the element, from the middle, a side or a corner', () => {
+    // An ellipse in the element's proportions, scaled by s, reaches the far
+    // corner from any of those points when 2 / s² ≤ 1.
+    const open = parseFloat(String((effectFrames('irisIn') as Record<string, unknown[]>).maskSize![1])) / 100
+    expect(2 / open ** 2).toBeLessThanOrEqual(1)
+    expect(open).toBeLessThan(1.45)
+  })
+
+  it('write their masks without digits greese.js would mangle', () => {
+    for (const name of effectNames) {
+      const image = (effectFrames(name) as Record<string, unknown[]>).maskImage
+      if (image) expect(String(image[0]), name).not.toMatch(/#[0-9a-f]/i)
+    }
+  })
+})
+
+describe('three-dimensional effects', () => {
+  type Name = Parameters<typeof effectFrames>[0]
+  /** Where an effect's transform starts and ends, from its frames in either form. */
+  const ends = (name: string) => {
+    const frames = effectFrames(name as Name) as unknown
+    const values = Array.isArray(frames)
+      ? (frames as Array<Record<string, unknown>>).map((f) => f.transform).filter(Boolean)
+      : ((frames as Record<string, unknown[]>).transform ?? [])
+    return [values[0], values.at(-1)]
+  }
+
+  it('turn with their own perspective, and arrive or leave by where they end', () => {
+    expect(ends('flipUp')).toEqual(['perspective(800px) rotateX(75deg)', 'perspective(800px) rotateX(0deg)'])
+    for (const name of ['flipUp', 'flipDown', 'flipLeft', 'flipRight', 'depthIn', 'swingIn'])
+      expect(effectPlan(name as Parameters<typeof effectPlan>[0]).enter, name).toBeDefined()
+    expect(effectPlan('flipOutUp').exit).toMatchObject({
+      transform: 'perspective(800px) rotateX(75deg)',
+      opacity: '0',
+    })
+  })
+
+  it('leave the way they came: an exit is its entrance reversed', () => {
+    for (const dir of ['Up', 'Down', 'Left', 'Right'])
+      expect(ends(`flipOut${dir}`), dir).toEqual([...ends(`flip${dir}`)].reverse())
+  })
+
+  it('swing about their top edge, and an overlay leaving with one pivots there too', () => {
+    expect(effectPlan('swingOut').exit).toMatchObject({ 'transform-origin': '50% 0%' })
   })
 })

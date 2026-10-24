@@ -7,7 +7,7 @@
     font-size: 0.875em;
     background-color: var(--greese-color-surface);
     border: 1px solid var(--greese-color-border);
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
   }
 
   .greese-Code--block {
@@ -19,7 +19,7 @@
     overflow-x: auto;
     font-size: var(--greese-type-p3-font-size);
     line-height: var(--greese-line-height-normal);
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-panel);
 
     > code {
       font: inherit;

@@ -45,21 +45,33 @@
     scroll-snap-align: start;
     background: none;
     border: 0;
-    border-radius: var(--greese-radius-sm) var(--greese-radius-sm) 0 0;
+    border-radius: var(--greese-corner-inset) var(--greese-corner-inset) 0 0;
     box-shadow: inset 0 -2px 0 transparent;
     transition:
       color var(--greese-duration-fast) var(--greese-easing-standard),
+      background-color var(--greese-duration-fast) var(--greese-easing-standard),
       box-shadow var(--greese-duration-fast) var(--greese-easing-standard);
 
     @include mixins.focus-ring(-2px);
 
     @include mixins.hover {
       color: var(--greese-color-fg);
+      background-color: color-mix(in oklab, var(--greese-color-fg) 6%, transparent);
     }
 
+    // The current tab is a tinted block over its underline, not a color change
+    // alone. Its fill and edge are hooks a theme reassigns (a color variant
+    // outlines it: `--greese-tab-current-edge: inset 0 0 0 1.5px …`).
     &[aria-selected='true'] {
       color: var(--greese-color-fg);
-      box-shadow: inset 0 -2px 0 var(--greese-color-primary);
+      background-color: var(
+        --greese-tab-current-bg,
+        color-mix(in oklab, var(--greese-color-primary) 12%, transparent)
+      );
+      box-shadow: var(
+        --greese-tab-current-edge,
+        inset 0 -2px 0 var(--greese-color-primary)
+      );
     }
 
     &:disabled {
@@ -69,10 +81,13 @@
 
     [data-orientation='vertical'] & {
       text-align: start;
-      border-radius: var(--greese-radius-sm) 0 0 var(--greese-radius-sm);
+      border-radius: var(--greese-corner-inset) 0 0 var(--greese-corner-inset);
 
       &[aria-selected='true'] {
-        box-shadow: inset -2px 0 0 var(--greese-color-primary);
+        box-shadow: var(
+          --greese-tab-current-edge,
+          inset -2px 0 0 var(--greese-color-primary)
+        );
       }
     }
   }
@@ -80,8 +95,14 @@
   .greese-TabPanel {
     flex: 1 1 auto;
     min-inline-size: 0;
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
 
     @include mixins.focus-ring;
+
+    // A panel's content enters each time its tab is chosen (shown again, it
+    // restarts); the panel itself stays put.
+    @include mixins.content-entrance;
   }
+
+  @include mixins.content-entrance-keyframes;
 }

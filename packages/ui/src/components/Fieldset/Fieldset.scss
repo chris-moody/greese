@@ -21,7 +21,7 @@
     padding: var(--greese-space-4);
     background-color: var(--greese-color-surface);
     border: 1px solid var(--greese-color-border);
-    border-radius: var(--greese-radius-lg);
+    border-radius: var(--greese-corner-surface);
 
     @include mixins.up(md) {
       padding: var(--greese-space-5);

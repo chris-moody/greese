@@ -134,7 +134,7 @@ $blocks: (
     variables: ('--greese-chat-tail', '--greese-chat-tone', '--greese-chat-tone-on',),
   ),
   'Checkbox': (
-    parts: ('box', 'check', 'dash', 'description', 'icon', 'input', 'label', 'text',),
+    parts: ('box', 'description', 'icon', 'input', 'label', 'text',),
     modifiers: (),
     part-modifiers: (),
     variables: (),
@@ -197,7 +197,7 @@ $blocks: (
     parts: ('body', 'close', 'description', 'footer', 'header', 'title',),
     modifiers: ('size-full', 'size-lg', 'size-md', 'size-sm', 'size-xl',),
     part-modifiers: (),
-    variables: ('--greese-dialog-width', '--greese-motion-exit-scale', '--greese-motion-exit-translate', '--greese-scrollbar-gap',),
+    variables: ('--greese-dialog-width', '--greese-motion-backdrop', '--greese-motion-backdrop-duration', '--greese-motion-dialog', '--greese-motion-dialog-exit-mask-from', '--greese-motion-dialog-exit-mask-image', '--greese-motion-dialog-exit-mask-position', '--greese-motion-dialog-exit-mask-repeat', '--greese-motion-dialog-exit-mask-size', '--greese-motion-dialog-exit-opacity', '--greese-motion-dialog-exit-scale', '--greese-motion-dialog-exit-transform', '--greese-motion-dialog-exit-transform-origin', '--greese-motion-dialog-exit-translate', '--greese-motion-drawer', '--greese-motion-drawer-exit-mask-from', '--greese-motion-drawer-exit-mask-image', '--greese-motion-drawer-exit-mask-position', '--greese-motion-drawer-exit-mask-repeat', '--greese-motion-drawer-exit-mask-size', '--greese-motion-drawer-exit-opacity', '--greese-motion-drawer-exit-scale', '--greese-motion-drawer-exit-transform', '--greese-motion-drawer-exit-transform-origin', '--greese-motion-drawer-exit-translate', '--greese-motion-enter-ease', '--greese-motion-exit-duration', '--greese-motion-exit-ease', '--greese-motion-exit-mask-from', '--greese-motion-exit-mask-image', '--greese-motion-exit-mask-position', '--greese-motion-exit-mask-repeat', '--greese-motion-exit-mask-size', '--greese-motion-exit-opacity', '--greese-motion-exit-scale', '--greese-motion-exit-transform', '--greese-motion-exit-transform-origin', '--greese-motion-exit-translate', '--greese-motion-overlay', '--greese-motion-overlay-duration', '--greese-motion-overlay-exit-mask-from', '--greese-motion-overlay-exit-mask-image', '--greese-motion-overlay-exit-mask-position', '--greese-motion-overlay-exit-mask-repeat', '--greese-motion-overlay-exit-mask-size', '--greese-motion-overlay-exit-opacity', '--greese-motion-overlay-exit-scale', '--greese-motion-overlay-exit-transform', '--greese-motion-overlay-exit-transform-origin', '--greese-motion-overlay-exit-translate', '--greese-overlay-enter', '--greese-overlay-exit-mask-from', '--greese-overlay-exit-mask-image', '--greese-overlay-exit-mask-position', '--greese-overlay-exit-mask-repeat', '--greese-overlay-exit-mask-size', '--greese-overlay-exit-opacity', '--greese-overlay-exit-scale', '--greese-overlay-exit-transform', '--greese-overlay-exit-transform-origin', '--greese-overlay-exit-translate', '--greese-overlay-origin', '--greese-scrollbar-gap',),
   ),
   'Diff': (
     parts: ('handle', 'item', 'range', 'tag',),
@@ -323,7 +323,7 @@ $blocks: (
     parts: (),
     modifiers: (),
     part-modifiers: (),
-    variables: ('--greese-motion-exit-scale', '--greese-motion-exit-translate',),
+    variables: ('--greese-motion-enter-ease', '--greese-motion-exit-duration', '--greese-motion-exit-ease', '--greese-motion-exit-mask-from', '--greese-motion-exit-mask-image', '--greese-motion-exit-mask-position', '--greese-motion-exit-mask-repeat', '--greese-motion-exit-mask-size', '--greese-motion-exit-opacity', '--greese-motion-exit-scale', '--greese-motion-exit-transform', '--greese-motion-exit-transform-origin', '--greese-motion-exit-translate', '--greese-motion-overlay', '--greese-motion-overlay-duration', '--greese-motion-overlay-exit-mask-from', '--greese-motion-overlay-exit-mask-image', '--greese-motion-overlay-exit-mask-position', '--greese-motion-overlay-exit-mask-repeat', '--greese-motion-overlay-exit-mask-size', '--greese-motion-overlay-exit-opacity', '--greese-motion-overlay-exit-scale', '--greese-motion-overlay-exit-transform', '--greese-motion-overlay-exit-transform-origin', '--greese-motion-overlay-exit-translate', '--greese-motion-popover', '--greese-motion-popover-exit-mask-from', '--greese-motion-popover-exit-mask-image', '--greese-motion-popover-exit-mask-position', '--greese-motion-popover-exit-mask-repeat', '--greese-motion-popover-exit-mask-size', '--greese-motion-popover-exit-opacity', '--greese-motion-popover-exit-scale', '--greese-motion-popover-exit-transform', '--greese-motion-popover-exit-transform-origin', '--greese-motion-popover-exit-translate', '--greese-overlay-enter', '--greese-overlay-exit-mask-from', '--greese-overlay-exit-mask-image', '--greese-overlay-exit-mask-position', '--greese-overlay-exit-mask-repeat', '--greese-overlay-exit-mask-size', '--greese-overlay-exit-opacity', '--greese-overlay-exit-scale', '--greese-overlay-exit-transform', '--greese-overlay-exit-transform-origin', '--greese-overlay-exit-translate', '--greese-overlay-origin',),
   ),
   'MenuItem': (
     parts: (),
@@ -339,9 +339,9 @@ $blocks: (
   ),
   'Motion': (
     parts: (),
-    modifiers: ('enter', 'enter-blur-in', 'enter-fade-down', 'enter-fade-end', 'enter-fade-in', 'enter-fade-start', 'enter-fade-up', 'enter-pop', 'enter-pop-in', 'enter-scale-in', 'enter-slide-down', 'enter-slide-left', 'enter-slide-right', 'enter-slide-up', 'exit-fade-out-down', 'exit-fade-out-up', 'exit-fall', 'exit-pop-out', 'exit-rise', 'exit-scale-out', 'exit-squish', 'scope', 'stagger', 'view', 'view-blur-in', 'view-fade-down', 'view-fade-end', 'view-fade-in', 'view-fade-start', 'view-fade-up', 'view-pop', 'view-pop-in', 'view-scale-in', 'view-slide-down', 'view-slide-left', 'view-slide-right', 'view-slide-up',),
+    modifiers: ('enter', 'enter-blur-in', 'enter-depth', 'enter-depth-in', 'enter-fade-down', 'enter-fade-end', 'enter-fade-in', 'enter-fade-start', 'enter-fade-up', 'enter-flip-down', 'enter-flip-left', 'enter-flip-right', 'enter-flip-up', 'enter-hinge', 'enter-iris-down', 'enter-iris-down-left', 'enter-iris-down-right', 'enter-iris-in', 'enter-iris-left', 'enter-iris-right', 'enter-iris-up', 'enter-iris-up-left', 'enter-iris-up-right', 'enter-pocket-down', 'enter-pocket-down-left', 'enter-pocket-down-right', 'enter-pocket-left', 'enter-pocket-right', 'enter-pocket-up', 'enter-pocket-up-left', 'enter-pocket-up-right', 'enter-pop', 'enter-pop-in', 'enter-scale-in', 'enter-slide-down', 'enter-slide-left', 'enter-slide-right', 'enter-slide-up', 'enter-swing-in', 'enter-theme', 'enter-turn-x', 'enter-turn-y', 'enter-wipe-down', 'enter-wipe-down-left', 'enter-wipe-down-right', 'enter-wipe-left', 'enter-wipe-open-x', 'enter-wipe-open-y', 'enter-wipe-right', 'enter-wipe-up', 'enter-wipe-up-left', 'enter-wipe-up-right', 'exit-blur-out', 'exit-depth-out', 'exit-fade-out', 'exit-fade-out-down', 'exit-fade-out-up', 'exit-fall', 'exit-flip-out-down', 'exit-flip-out-left', 'exit-flip-out-right', 'exit-flip-out-up', 'exit-glow', 'exit-iris-out', 'exit-iris-out-down', 'exit-iris-out-down-left', 'exit-iris-out-down-right', 'exit-iris-out-left', 'exit-iris-out-right', 'exit-iris-out-up', 'exit-iris-out-up-left', 'exit-iris-out-up-right', 'exit-pocket-out-down', 'exit-pocket-out-down-left', 'exit-pocket-out-down-right', 'exit-pocket-out-left', 'exit-pocket-out-right', 'exit-pocket-out-up', 'exit-pocket-out-up-left', 'exit-pocket-out-up-right', 'exit-pop-out', 'exit-rise', 'exit-scale-out', 'exit-squish', 'exit-swing-out', 'exit-tilt', 'exit-wipe-close-x', 'exit-wipe-close-y', 'exit-wipe-out-down', 'exit-wipe-out-down-left', 'exit-wipe-out-down-right', 'exit-wipe-out-left', 'exit-wipe-out-right', 'exit-wipe-out-up', 'exit-wipe-out-up-left', 'exit-wipe-out-up-right', 'scope', 'stagger', 'view', 'view-blur-in', 'view-depth', 'view-depth-in', 'view-fade-down', 'view-fade-end', 'view-fade-in', 'view-fade-start', 'view-fade-up', 'view-flip-down', 'view-flip-left', 'view-flip-right', 'view-flip-up', 'view-hinge', 'view-iris-down', 'view-iris-down-left', 'view-iris-down-right', 'view-iris-in', 'view-iris-left', 'view-iris-right', 'view-iris-up', 'view-iris-up-left', 'view-iris-up-right', 'view-pocket-down', 'view-pocket-down-left', 'view-pocket-down-right', 'view-pocket-left', 'view-pocket-right', 'view-pocket-up', 'view-pocket-up-left', 'view-pocket-up-right', 'view-pop', 'view-pop-in', 'view-scale-in', 'view-slide-down', 'view-slide-left', 'view-slide-right', 'view-slide-up', 'view-swing-in', 'view-theme', 'view-turn-x', 'view-turn-y', 'view-wipe-down', 'view-wipe-down-left', 'view-wipe-down-right', 'view-wipe-left', 'view-wipe-open-x', 'view-wipe-open-y', 'view-wipe-right', 'view-wipe-up', 'view-wipe-up-left', 'view-wipe-up-right',),
     part-modifiers: (),
-    variables: ('--greese-ease-ease', '--greese-ease-ease-in', '--greese-ease-ease-in-out', '--greese-ease-ease-out', '--greese-ease-in', '--greese-ease-in-out', '--greese-ease-linear', '--greese-ease-out', '--greese-motion-delay', '--greese-motion-dir', '--greese-motion-distance', '--greese-motion-duration', '--greese-motion-ease', '--greese-motion-exit-scale', '--greese-motion-exit-translate', '--greese-motion-index', '--greese-motion-name', '--greese-motion-offset', '--greese-motion-scope', '--greese-motion-stagger', '--greese-motion-wait',),
+    variables: ('--greese-ease-ease', '--greese-ease-ease-in', '--greese-ease-ease-in-out', '--greese-ease-ease-out', '--greese-ease-in', '--greese-ease-in-out', '--greese-ease-linear', '--greese-ease-out', '--greese-motion-content', '--greese-motion-content-duration', '--greese-motion-delay', '--greese-motion-dir', '--greese-motion-distance', '--greese-motion-duration', '--greese-motion-ease', '--greese-motion-enter-ease', '--greese-motion-exit-mask-from', '--greese-motion-exit-mask-image', '--greese-motion-exit-mask-position', '--greese-motion-exit-mask-repeat', '--greese-motion-exit-mask-size', '--greese-motion-exit-opacity', '--greese-motion-exit-scale', '--greese-motion-exit-transform', '--greese-motion-exit-transform-origin', '--greese-motion-exit-translate', '--greese-motion-index', '--greese-motion-name', '--greese-motion-offset', '--greese-motion-scope', '--greese-motion-stagger', '--greese-motion-theme', '--greese-motion-wait',),
   ),
   'NumberField': (
     parts: ('step', 'steppers',),
@@ -365,7 +365,7 @@ $blocks: (
     parts: (),
     modifiers: (),
     part-modifiers: (),
-    variables: ('--greese-motion-exit-scale', '--greese-motion-exit-translate',),
+    variables: ('--greese-motion-enter-ease', '--greese-motion-exit-duration', '--greese-motion-exit-ease', '--greese-motion-exit-mask-from', '--greese-motion-exit-mask-image', '--greese-motion-exit-mask-position', '--greese-motion-exit-mask-repeat', '--greese-motion-exit-mask-size', '--greese-motion-exit-opacity', '--greese-motion-exit-scale', '--greese-motion-exit-transform', '--greese-motion-exit-transform-origin', '--greese-motion-exit-translate', '--greese-motion-overlay', '--greese-motion-overlay-duration', '--greese-motion-overlay-exit-mask-from', '--greese-motion-overlay-exit-mask-image', '--greese-motion-overlay-exit-mask-position', '--greese-motion-overlay-exit-mask-repeat', '--greese-motion-overlay-exit-mask-size', '--greese-motion-overlay-exit-opacity', '--greese-motion-overlay-exit-scale', '--greese-motion-overlay-exit-transform', '--greese-motion-overlay-exit-transform-origin', '--greese-motion-overlay-exit-translate', '--greese-motion-popover', '--greese-motion-popover-exit-mask-from', '--greese-motion-popover-exit-mask-image', '--greese-motion-popover-exit-mask-position', '--greese-motion-popover-exit-mask-repeat', '--greese-motion-popover-exit-mask-size', '--greese-motion-popover-exit-opacity', '--greese-motion-popover-exit-scale', '--greese-motion-popover-exit-transform', '--greese-motion-popover-exit-transform-origin', '--greese-motion-popover-exit-translate', '--greese-overlay-enter', '--greese-overlay-exit-mask-from', '--greese-overlay-exit-mask-image', '--greese-overlay-exit-mask-position', '--greese-overlay-exit-mask-repeat', '--greese-overlay-exit-mask-size', '--greese-overlay-exit-opacity', '--greese-overlay-exit-scale', '--greese-overlay-exit-transform', '--greese-overlay-exit-transform-origin', '--greese-overlay-exit-translate', '--greese-overlay-origin',),
   ),
   'Progress': (
     parts: (),
@@ -391,11 +391,17 @@ $blocks: (
     part-modifiers: (),
     variables: ('--greese-rating-fill', '--greese-rating-off', '--greese-rating-on', '--greese-rating-size',),
   ),
-  'Segment': (
-    parts: ('input',),
+  'ScrollSpy': (
+    parts: (),
     modifiers: (),
     part-modifiers: (),
-    variables: ('--greese-segment-height',),
+    variables: (),
+  ),
+  'Segment': (
+    parts: ('input', 'label',),
+    modifiers: (),
+    part-modifiers: (),
+    variables: ('--greese-segment-current-bg', '--greese-segment-current-edge', '--greese-segment-height',),
   ),
   'SegmentedControl': (
     parts: ('track',),
@@ -413,7 +419,7 @@ $blocks: (
     parts: (),
     modifiers: (),
     part-modifiers: (),
-    variables: ('--greese-motion-exit-scale', '--greese-motion-exit-translate', '--greese-sidebar-dir', '--greese-sidebar-top', '--greese-sidebar-width',),
+    variables: ('--greese-motion-drawer', '--greese-motion-drawer-exit-mask-from', '--greese-motion-drawer-exit-mask-image', '--greese-motion-drawer-exit-mask-position', '--greese-motion-drawer-exit-mask-repeat', '--greese-motion-drawer-exit-mask-size', '--greese-motion-drawer-exit-opacity', '--greese-motion-drawer-exit-scale', '--greese-motion-drawer-exit-transform', '--greese-motion-drawer-exit-transform-origin', '--greese-motion-drawer-exit-translate', '--greese-motion-enter-ease', '--greese-motion-exit-duration', '--greese-motion-exit-ease', '--greese-motion-exit-mask-from', '--greese-motion-exit-mask-image', '--greese-motion-exit-mask-position', '--greese-motion-exit-mask-repeat', '--greese-motion-exit-mask-size', '--greese-motion-exit-opacity', '--greese-motion-exit-scale', '--greese-motion-exit-transform', '--greese-motion-exit-transform-origin', '--greese-motion-exit-translate', '--greese-motion-overlay', '--greese-motion-overlay-duration', '--greese-motion-overlay-exit-mask-from', '--greese-motion-overlay-exit-mask-image', '--greese-motion-overlay-exit-mask-position', '--greese-motion-overlay-exit-mask-repeat', '--greese-motion-overlay-exit-mask-size', '--greese-motion-overlay-exit-opacity', '--greese-motion-overlay-exit-scale', '--greese-motion-overlay-exit-transform', '--greese-motion-overlay-exit-transform-origin', '--greese-motion-overlay-exit-translate', '--greese-overlay-enter', '--greese-overlay-exit-mask-from', '--greese-overlay-exit-mask-image', '--greese-overlay-exit-mask-position', '--greese-overlay-exit-mask-repeat', '--greese-overlay-exit-mask-size', '--greese-overlay-exit-opacity', '--greese-overlay-exit-scale', '--greese-overlay-exit-transform', '--greese-overlay-exit-transform-origin', '--greese-overlay-exit-translate', '--greese-overlay-origin', '--greese-sidebar-dir', '--greese-sidebar-top', '--greese-sidebar-width',),
   ),
   'SidebarLayout': (
     parts: (),
@@ -439,12 +445,6 @@ $blocks: (
     part-modifiers: (),
     variables: ('--greese-slider-fill', '--greese-slider-thumb', '--greese-slider-towards',),
   ),
-  'SortGlyph': (
-    parts: ('down', 'up',),
-    modifiers: (),
-    part-modifiers: (),
-    variables: (),
-  ),
   'Spacer': (
     parts: (),
     modifiers: ('fixed',),
@@ -455,7 +455,7 @@ $blocks: (
     parts: ('actions', 'icon', 'trigger',),
     modifiers: ('fixed',),
     part-modifiers: (),
-    variables: ('--greese-motion-exit-scale', '--greese-motion-exit-translate',),
+    variables: ('--greese-motion-enter-ease', '--greese-motion-exit-duration', '--greese-motion-exit-ease', '--greese-motion-exit-mask-from', '--greese-motion-exit-mask-image', '--greese-motion-exit-mask-position', '--greese-motion-exit-mask-repeat', '--greese-motion-exit-mask-size', '--greese-motion-exit-opacity', '--greese-motion-exit-scale', '--greese-motion-exit-transform', '--greese-motion-exit-transform-origin', '--greese-motion-exit-translate', '--greese-motion-overlay', '--greese-motion-overlay-duration', '--greese-motion-overlay-exit-mask-from', '--greese-motion-overlay-exit-mask-image', '--greese-motion-overlay-exit-mask-position', '--greese-motion-overlay-exit-mask-repeat', '--greese-motion-overlay-exit-mask-size', '--greese-motion-overlay-exit-opacity', '--greese-motion-overlay-exit-scale', '--greese-motion-overlay-exit-transform', '--greese-motion-overlay-exit-transform-origin', '--greese-motion-overlay-exit-translate', '--greese-motion-popover', '--greese-motion-popover-exit-mask-from', '--greese-motion-popover-exit-mask-image', '--greese-motion-popover-exit-mask-position', '--greese-motion-popover-exit-mask-repeat', '--greese-motion-popover-exit-mask-size', '--greese-motion-popover-exit-opacity', '--greese-motion-popover-exit-scale', '--greese-motion-popover-exit-transform', '--greese-motion-popover-exit-transform-origin', '--greese-motion-popover-exit-translate', '--greese-overlay-enter', '--greese-overlay-exit-mask-from', '--greese-overlay-exit-mask-image', '--greese-overlay-exit-mask-position', '--greese-overlay-exit-mask-repeat', '--greese-overlay-exit-mask-size', '--greese-overlay-exit-opacity', '--greese-overlay-exit-scale', '--greese-overlay-exit-transform', '--greese-overlay-exit-transform-origin', '--greese-overlay-exit-translate', '--greese-overlay-origin',),
   ),
   'SpeedDialAction': (
     parts: ('icon', 'label',),
@@ -521,7 +521,7 @@ $blocks: (
     parts: (),
     modifiers: (),
     part-modifiers: (),
-    variables: (),
+    variables: ('--greese-tab-current-bg', '--greese-tab-current-edge',),
   ),
   'TabList': (
     parts: (),
@@ -539,7 +539,7 @@ $blocks: (
     parts: ('caption', 'table',),
     modifiers: ('comfortable', 'compact', 'hoverable', 'stack-below-lg', 'stack-below-md', 'stack-below-sm', 'sticky', 'striped',),
     part-modifiers: (),
-    variables: ('--greese-table-cell-padding', '--greese-table-max-height',),
+    variables: ('--greese-motion-enter-ease', '--greese-motion-rows', '--greese-motion-rows-duration', '--greese-motion-stagger', '--greese-table-cell-padding', '--greese-table-max-height',),
   ),
   'TableCell': (
     parts: (),
@@ -599,7 +599,7 @@ $blocks: (
     parts: ('body', 'description', 'title',),
     modifiers: ('info', 'negative', 'neutral', 'positive', 'primary', 'secondary', 'tertiary', 'warning',),
     part-modifiers: (),
-    variables: ('--greese-toast-tone', '--greese-toast-tone-on',),
+    variables: ('--greese-motion-enter-ease', '--greese-motion-toast', '--greese-motion-toast-duration', '--greese-toast-tone', '--greese-toast-tone-on',),
   ),
   'Toaster': (
     parts: ('list',),
@@ -617,7 +617,7 @@ $blocks: (
     parts: (),
     modifiers: (),
     part-modifiers: (),
-    variables: ('--greese-motion-exit-scale', '--greese-motion-exit-translate',),
+    variables: ('--greese-motion-enter-ease', '--greese-motion-exit-duration', '--greese-motion-exit-ease', '--greese-motion-exit-mask-from', '--greese-motion-exit-mask-image', '--greese-motion-exit-mask-position', '--greese-motion-exit-mask-repeat', '--greese-motion-exit-mask-size', '--greese-motion-exit-opacity', '--greese-motion-exit-scale', '--greese-motion-exit-transform', '--greese-motion-exit-transform-origin', '--greese-motion-exit-translate', '--greese-motion-overlay', '--greese-motion-overlay-duration', '--greese-motion-overlay-exit-mask-from', '--greese-motion-overlay-exit-mask-image', '--greese-motion-overlay-exit-mask-position', '--greese-motion-overlay-exit-mask-repeat', '--greese-motion-overlay-exit-mask-size', '--greese-motion-overlay-exit-opacity', '--greese-motion-overlay-exit-scale', '--greese-motion-overlay-exit-transform', '--greese-motion-overlay-exit-transform-origin', '--greese-motion-overlay-exit-translate', '--greese-motion-tooltip', '--greese-motion-tooltip-exit-mask-from', '--greese-motion-tooltip-exit-mask-image', '--greese-motion-tooltip-exit-mask-position', '--greese-motion-tooltip-exit-mask-repeat', '--greese-motion-tooltip-exit-mask-size', '--greese-motion-tooltip-exit-opacity', '--greese-motion-tooltip-exit-scale', '--greese-motion-tooltip-exit-transform', '--greese-motion-tooltip-exit-transform-origin', '--greese-motion-tooltip-exit-translate', '--greese-overlay-enter', '--greese-overlay-exit-mask-from', '--greese-overlay-exit-mask-image', '--greese-overlay-exit-mask-position', '--greese-overlay-exit-mask-repeat', '--greese-overlay-exit-mask-size', '--greese-overlay-exit-opacity', '--greese-overlay-exit-scale', '--greese-overlay-exit-transform', '--greese-overlay-exit-transform-origin', '--greese-overlay-exit-translate', '--greese-overlay-origin',),
   ),
   'Type': (
     parts: (),

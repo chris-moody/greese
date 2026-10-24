@@ -13,7 +13,7 @@
     display: grid;
     overflow: hidden;
     user-select: none;
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-panel);
 
     > .greese-Diff-item {
       grid-area: 1 / 1;
@@ -53,7 +53,7 @@
     color: var(--greese-color-canvas);
     pointer-events: none;
     background-color: color-mix(in oklab, var(--greese-color-fg) 70%, transparent);
-    border-radius: var(--greese-radius-pill);
+    border-radius: var(--greese-corner-pill);
   }
 
   .greese-Diff-tag--after {
@@ -84,7 +84,7 @@
       content: '';
       background-color: var(--greese-color-canvas);
       border: 2px solid var(--greese-color-border-strong);
-      border-radius: 50%;
+      border-radius: var(--greese-corner-round);
       box-shadow: var(--greese-shadow-md);
       translate: -50% -50%;
     }

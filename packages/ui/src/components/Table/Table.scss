@@ -9,7 +9,7 @@
     max-block-size: var(--greese-table-max-height, none);
     overflow: auto;
     border: 1px solid var(--greese-color-border);
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-panel);
   }
 
   .greese-Table-table {
@@ -66,6 +66,20 @@
     background-color: color-mix(in oklab, var(--greese-color-surface) 60%, transparent);
   }
 
+  // Rows arrive as the theme's `rows` role says, one after another; the base
+  // theme assigns none.
+  .greese-Table tbody > .greese-TableRow {
+    @include mixins.motion-safe {
+      @include mixins.role-entrance(rows, none, slow);
+    }
+
+    @for $i from 2 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: calc(var(--greese-motion-stagger, 0.04s) * #{$i - 1});
+      }
+    }
+  }
+
   .greese-Table--hoverable tbody > .greese-TableRow {
     @include mixins.hover {
       background-color: color-mix(in oklab, var(--greese-color-primary) 6%, transparent);
@@ -91,7 +105,7 @@
     cursor: pointer;
     background: none;
     border: 0;
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
 
     > svg {
       inline-size: 1em;
@@ -102,13 +116,13 @@
       color: var(--greese-color-fg);
     }
 
-    .greese-SortGlyph-up,
-    .greese-SortGlyph-down {
+    // SortIcon draws an up arrow, then a down arrow: the active one is solid.
+    > svg path {
       opacity: 0.35;
     }
 
-    &[data-sort='ascending'] .greese-SortGlyph-up,
-    &[data-sort='descending'] .greese-SortGlyph-down {
+    &[data-sort='ascending'] > svg path:first-child,
+    &[data-sort='descending'] > svg path:last-child {
       opacity: 1;
     }
   }
@@ -145,7 +159,7 @@
           margin-block-end: var(--greese-space-3);
           background-color: var(--greese-color-surface-overlay);
           border: 1px solid var(--greese-color-border);
-          border-radius: var(--greese-radius-md);
+          border-radius: var(--greese-corner-panel);
         }
 
         .greese-TableCell {

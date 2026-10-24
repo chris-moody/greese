@@ -22,7 +22,7 @@ $sizes: (
     line-height: 1;
     vertical-align: middle;
     user-select: none;
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
 
     > img {
       inline-size: 100%;
@@ -38,7 +38,7 @@ $sizes: (
   }
 
   .greese-Avatar--square {
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-panel);
   }
 
   .greese-Avatar-fallback {
@@ -65,8 +65,12 @@ $sizes: (
     isolation: isolate;
   }
 
+  // On the group and its avatars, so the group's size wins over each
+  // avatar's own (an Avatar is `md` unless told otherwise), and the count
+  // matches them.
   @each $size, $value in $sizes {
-    .greese-AvatarGroup--#{$size} {
+    .greese-AvatarGroup--#{$size},
+    .greese-AvatarGroup--#{$size} .greese-Avatar {
       --greese-avatar-size: #{$value};
     }
   }
@@ -74,7 +78,7 @@ $sizes: (
   .greese-AvatarGroup-item {
     position: relative;
     display: inline-flex;
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
 
     > .greese-Avatar {
       box-shadow: 0 0 0 2px var(--greese-color-canvas);

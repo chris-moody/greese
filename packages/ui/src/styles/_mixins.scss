@@ -203,6 +203,47 @@ $breakpoints: config.$breakpoints;
   }
 }
 
+/// Content that switches in (a tab's panel, an accordion's content): the
+/// container stays put and its children enter, a stagger apart. Not when the
+/// container has a `greese` entrance of its own (`.greese-Motion`), which then
+/// plays instead. A theme changes the entrance with `animation-name` on the
+/// same selector (ADR 0025).
+@mixin content-entrance {
+  &:not(.greese-Motion) > * {
+    @include motion-safe {
+      @include role-entrance(content, greese-content-in, normal);
+    }
+
+    @for $i from 2 through 6 {
+      &:nth-child(#{$i}) {
+        animation-delay: calc(var(--greese-motion-stagger, 0.04s) * #{$i - 1});
+      }
+    }
+  }
+}
+
+/// An entrance a theme assigns by role (ADR 0025): `--greese-motion-<role>`
+/// names the effect, `--greese-motion-<role>-duration` its duration, and
+/// `--greese-motion-enter-ease` the curve every role arrives on. Each falls
+/// back to the base theme's. A theme points a role at an effect or a token;
+/// the effect and the token keep their own values.
+@mixin role-entrance($role, $name, $duration, $ease: var(--greese-easing-enter)) {
+  animation-name: var(--greese-motion-#{$role}, #{$name});
+  animation-duration: var(--greese-motion-#{$role}-duration, var(--greese-duration-#{$duration}));
+  animation-timing-function: var(--greese-motion-enter-ease, #{$ease});
+  animation-fill-mode: backwards;
+}
+
+/// The entrance `content-entrance` plays unless a theme picks another.
+@mixin content-entrance-keyframes {
+  @keyframes greese-content-in {
+    from {
+      opacity: 0;
+      translate: 0 0.25rem;
+    }
+  }
+}
+
 /// Motion beyond duration tokens (which already collapse under reduced
 /// motion), e.g. keyframe animations or transforms.
 @mixin motion-safe {

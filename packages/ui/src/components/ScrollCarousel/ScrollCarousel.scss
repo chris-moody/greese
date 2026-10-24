@@ -21,7 +21,7 @@
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-panel);
 
     &::-webkit-scrollbar {
       display: none;
@@ -62,7 +62,7 @@
       transparent
     );
     border: 1px solid var(--greese-color-border);
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
     box-shadow: var(--greese-shadow-md);
     translate: 0 -50%;
     transition: opacity var(--greese-duration-fast) var(--greese-easing-standard);
@@ -140,8 +140,8 @@
       inset: 0;
       content: '';
       background-color: var(--greese-color-border-strong);
-      border-radius: var(--greese-radius-pill);
-      clip-path: inset(0 calc(50% - 0.25rem) round var(--greese-radius-pill));
+      border-radius: var(--greese-corner-pill);
+      clip-path: inset(0 calc(50% - 0.25rem) round var(--greese-corner-pill));
       transition:
         clip-path var(--greese-duration-normal) var(--greese-easing-standard),
         background-color var(--greese-duration-normal) var(--greese-easing-standard);
@@ -149,7 +149,7 @@
 
     &[aria-current='true']::before {
       background-color: var(--greese-color-primary);
-      clip-path: inset(0 round var(--greese-radius-pill));
+      clip-path: inset(0 round var(--greese-corner-pill));
     }
   }
 

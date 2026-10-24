@@ -36,26 +36,34 @@ $widths: (
     max-block-size: calc(100dvh - 2 * var(--greese-space-4));
     padding: var(--greese-space-5);
     overflow: hidden;
-    border-radius: var(--greese-radius-lg);
+    border-radius: var(--greese-corner-surface);
 
     &[open] {
       display: flex;
     }
 
+    // The scrim moves as the theme says too: it arrives with
+    // the theme's `backdrop` role (the base theme fades it in) and stays
+    // rendered for the theme's exit while it fades out.
     &::backdrop {
       background-color: var(--greese-color-scrim);
       opacity: 0;
-      transition:
-        opacity var(--greese-duration-normal) var(--greese-easing-standard),
-        display var(--greese-duration-normal) allow-discrete,
-        overlay var(--greese-duration-normal) allow-discrete;
+      transition-property: opacity, display, overlay;
+      transition-duration: var(--greese-motion-exit-duration, var(--greese-duration-normal));
+      transition-timing-function: var(--greese-motion-exit-ease, var(--greese-easing-exit));
+      transition-behavior: allow-discrete;
     }
 
     &[open]::backdrop {
       opacity: 1;
 
-      @starting-style {
-        opacity: 0;
+      @include mixins.motion-safe {
+        @include mixins.role-entrance(
+          backdrop,
+          greese-backdrop-in,
+          normal,
+          var(--greese-easing-standard)
+        );
       }
     }
   }
@@ -127,6 +135,10 @@ $widths: (
   // direction. Each placement sets every geometry property, so a larger
   // breakpoint's placement fully replaces a smaller one's.
   .greese-Drawer {
+    // A drawer is a dialog that comes from its edge: it takes the theme's
+    // `drawer` role, not the dialog's.
+    @include floating.motion-role(drawer, $shared: false);
+
     --greese-drawer-dir: 1;
 
     max-block-size: none;
@@ -138,7 +150,7 @@ $widths: (
     }
   }
 
-  $edge: var(--greese-radius-lg);
+  $edge: var(--greese-corner-surface);
   $safe-top: max(var(--greese-space-5), env(safe-area-inset-top));
   $safe-bottom: max(var(--greese-space-5), env(safe-area-inset-bottom));
   $side-size: min(24rem, 100vw - 3rem);
@@ -205,15 +217,8 @@ $widths: (
           border-end-end-radius: list.nth($radius, 3);
           border-end-start-radius: list.nth($radius, 4);
 
-          &:not([open]) {
-            translate: map.get($g, from);
-          }
-
-          @starting-style {
-            &[open] {
-              translate: map.get($g, from);
-            }
-          }
+          // Where it opens from: the edge. The theme decides how it moves.
+          --greese-overlay-origin: #{map.get($g, from)};
         }
       }
     }
@@ -238,7 +243,7 @@ $widths: (
         margin-inline: auto;
         content: '';
         background-color: var(--greese-color-border-strong);
-        border-radius: var(--greese-radius-pill);
+        border-radius: var(--greese-corner-pill);
       }
 
       @each $placement in (start, end, top) {
@@ -246,6 +251,12 @@ $widths: (
           display: none;
         }
       }
+    }
+  }
+
+  @keyframes greese-backdrop-in {
+    from {
+      opacity: 0;
     }
   }
 }

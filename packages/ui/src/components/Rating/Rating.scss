@@ -49,7 +49,7 @@ $sizes: (
     touch-action: none;
 
     &:has(.greese-Rating-input:focus-visible) {
-      border-radius: var(--greese-radius-sm);
+      border-radius: var(--greese-corner-inset);
       outline: 2px solid var(--greese-color-focus-ring);
       outline-offset: 2px;
     }

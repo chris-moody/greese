@@ -19,24 +19,24 @@ $sizes: (
     block-size: var(--greese-progress-height);
     overflow: hidden;
     color: var(--greese-color-primary);
-    background-color: var(--greese-color-border);
+    background-color: var(--greese-color-track);
     border: 0;
-    border-radius: var(--greese-radius-pill);
+    border-radius: var(--greese-corner-pill);
     appearance: none;
 
     &::-webkit-progress-bar {
-      background-color: var(--greese-color-border);
+      background-color: var(--greese-color-track);
     }
 
     &::-webkit-progress-value {
       background-color: var(--greese-color-primary);
-      border-radius: var(--greese-radius-pill);
+      border-radius: var(--greese-corner-pill);
       transition: inline-size var(--greese-duration-normal) var(--greese-easing-standard);
     }
 
     &::-moz-progress-bar {
       background-color: var(--greese-color-primary);
-      border-radius: var(--greese-radius-pill);
+      border-radius: var(--greese-corner-pill);
     }
 
     // Indeterminate: a band sweeping across.

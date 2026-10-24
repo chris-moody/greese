@@ -49,8 +49,10 @@
     pointer-events: auto;
     border-inline-start: 3px solid var(--greese-toast-tone);
 
+    // The theme's `toast` role (or a component's `motion()`); the base
+    // theme's rises a little as it fades in.
     @include mixins.motion-safe {
-      animation: greese-toast-in var(--greese-duration-normal) var(--greese-easing-enter);
+      @include mixins.role-entrance(toast, greese-toast-in, normal);
     }
   }
 

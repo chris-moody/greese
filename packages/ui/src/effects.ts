@@ -75,6 +75,8 @@ interface BaseDefinition<P extends Params = Params> {
   stops?(params: P): readonly Stop[]
   /** A parameter as the property's value (`8` → `blur(8px)`). */
   format?(value: Value): Value
+  /** Properties that hold one value throughout, beside the animated one (a mask's image). */
+  fixed?: Readonly<Record<string, Value>>
 }
 
 const base = <const P extends Params>(definition: BaseDefinition<P>) => definition
@@ -84,6 +86,105 @@ const px = (fn: string) => (value: Value) =>
 const plain = (fn: string) => (value: Value) => `${fn}(${value})`
 
 const ZERO = '0px'
+
+/**
+ * Wipes and pockets: a mask that shows everything, anchored at one side (or
+ * the middle), sized from `start` to `end`. A mask, not `clip-path`, because
+ * the clip belongs to the element's shape and a mask composes with it (ADR
+ * 0024); it exists only while the effect plays.
+ */
+// Colors by name, not `#000`: greese.js interpolates the numbers in a value,
+// and would write `#000` back as `#0`, dropping the mask.
+const SOLID = 'linear-gradient(black, black)'
+const WHOLE = '100% 100%'
+const masked = (position: string, start: string, end: string) =>
+  base({
+    property: 'maskSize',
+    params: { start, end },
+    fixed: { maskImage: SOLID, maskRepeat: 'no-repeat', maskPosition: position },
+  })
+
+/** The directions wipes and pockets go in (physical, like the slides): x, y. */
+const DIRECTIONS = {
+  Right: [1, 0],
+  Left: [-1, 0],
+  Up: [0, -1],
+  Down: [0, 1],
+  DownRight: [1, 1],
+  DownLeft: [-1, 1],
+  UpRight: [1, -1],
+  UpLeft: [-1, -1],
+} as const
+type Direction = keyof typeof DIRECTIONS
+
+/** The directions wipes and pockets go in, by name: `Right`, `DownLeft`… */
+export const effectDirections = Object.keys(DIRECTIONS) as Direction[]
+
+/** `50% 0%` for a side: where a direction comes from (`-1`) or goes to (`1`). */
+const side = (dx: number, dy: number, toward: 1 | -1) =>
+  `${50 + 50 * dx * toward}% ${50 + 50 * dy * toward}%`
+/** The mask's size with the moving axes at `amount`. */
+const sized = (dx: number, dy: number, amount: string) =>
+  `${dx ? amount : '100%'} ${dy ? amount : '100%'}`
+
+/**
+ * A wipe in `direction`: arriving, the edge sweeps that way and reveals the
+ * element from the side it leaves; leaving, it sweeps that way and covers it.
+ */
+const wipes = Object.fromEntries(
+  Object.entries(DIRECTIONS).flatMap(([name, [dx, dy]]) => [
+    [`wipe${name}`, masked(side(dx, dy, -1), sized(dx, dy, '0%'), WHOLE)],
+    [`wipeOut${name}`, masked(side(dx, dy, 1), WHOLE, sized(dx, dy, '0%'))],
+  ])
+) as unknown as Record<`wipe${Direction}` | `wipeOut${Direction}`, BaseDefinition>
+
+/**
+ * An iris: an opening the element's shape (an ellipse in its proportions)
+ * that grows from, or shrinks to, a point: the middle, a side or a corner. The
+ * mask is anchored at that point, so it stays put while the opening changes
+ * size. `IRIS_OPEN` is where it just covers the farthest corner from any of
+ * those points, so the whole run is visible change, in and out alike.
+ */
+const iris = (at: string, start: string, end: string) =>
+  base({
+    property: 'maskSize',
+    params: { start, end },
+    fixed: {
+      maskImage: `radial-gradient(${at === '50% 50%' ? 'closest-side' : `farthest-side at ${at}`}, black 98%, transparent)`,
+      maskRepeat: 'no-repeat',
+      maskPosition: at,
+    },
+  })
+// √2: an ellipse in the element's proportions reaches its far corner at 141.4%.
+const OPEN = '142% 142%'
+const SHUT = '0% 0%'
+/**
+ * Leaving, the opening closes toward the side it goes to; arriving, it plays
+ * that backwards, opening from the same side, so an entrance is its exit
+ * reversed.
+ */
+const irises = Object.fromEntries(
+  Object.entries(DIRECTIONS).flatMap(([name, [dx, dy]]) => [
+    [`iris${name}`, iris(side(dx, dy, 1), SHUT, OPEN)],
+    [`irisOut${name}`, iris(side(dx, dy, 1), OPEN, SHUT)],
+  ])
+) as unknown as Record<`iris${Direction}` | `irisOut${Direction}`, BaseDefinition>
+
+/**
+ * Three-dimensional turns and depth: `transform`, with its own perspective, so
+ * they foreshorten wherever they play, with no `perspective` on a parent. Not
+ * the individual `translate`/`rotate`/`scale` the other effects animate, so
+ * they compose with those, and never with a shape's clip-path (applied before
+ * the transform, it turns with the element).
+ */
+const PERSPECTIVE = 'perspective(800px)'
+const turn = (axis: 'X' | 'Y', start: number, end: number, origin?: string) =>
+  base({
+    property: 'transform',
+    params: { start, end },
+    format: (v: Value) => `${PERSPECTIVE} rotate${axis}(${v}deg)`,
+    ...(origin && { fixed: { transformOrigin: origin } }),
+  })
 
 export const baseEffects = {
   fadeIn: base({ property: 'opacity', params: { start: 0, end: 1 } }),
@@ -114,6 +215,29 @@ export const baseEffects = {
     params: { start: 1, end: 1.12 },
     format: plain('brightness'),
   }),
+  // Wipes, every direction (`wipeRight`, `wipeOutUp`, `wipeDownLeft`…),
+  // then from and to the middle.
+  ...wipes,
+  wipeOpenX: masked('50% 50%', '0% 100%', WHOLE),
+  wipeOpenY: masked('50% 50%', '100% 0%', WHOLE),
+  wipeCloseX: masked('50% 50%', WHOLE, '0% 100%'),
+  wipeCloseY: masked('50% 50%', WHOLE, '100% 0%'),
+  // Irises, from and to the middle, then every direction (`irisRight`, `irisOutUpLeft`…).
+  irisIn: iris('50% 50%', SHUT, OPEN),
+  irisOut: iris('50% 50%', OPEN, SHUT),
+  ...irises,
+  // In three dimensions: a turn about the horizontal (`turnX`) or vertical
+  // (`turnY`) axis through the middle, and a move along the line of sight
+  // (`depth`, in px: negative is away).
+  turnX: turn('X', 0, 0),
+  turnY: turn('Y', 0, 0),
+  depth: base({
+    property: 'transform',
+    params: { start: 0, end: 0 },
+    format: (v: Value) => `${PERSPECTIVE} translateZ(${v}px)`,
+  }),
+  // A hinge along the top edge, like a sign swinging down into place.
+  hinge: turn('X', 0, 0, '50% 0%'),
 } as const satisfies Record<string, BaseDefinition>
 
 export type BaseEffect = keyof typeof baseEffects
@@ -147,6 +271,84 @@ interface ComboDefinition {
 const combo = (definition: ComboDefinition) => definition
 
 const away = ({ distance }: Reach) => ({ distance })
+
+/**
+ * A pocket: the element moves out of (or into) an invisible slot at one of
+ * its own edges. It slides `distance` (its whole size, by default, so it
+ * starts or ends out of sight) while a mask anchored where it's going grows or
+ * shrinks by the same amount, so the window it shows through stays where the
+ * element rests. Arriving, it moves `direction`; leaving, it moves on that
+ * way, into the slot on that side.
+ */
+const pocket = (direction: Direction, leaving: boolean): ComboDefinition => {
+  const [dx, dy] = DIRECTIONS[direction]
+  return {
+    params: () => ({ distance: '100%' }),
+    parts: ({ distance }) => {
+      const far = (sign: number) => (sign > 0 ? String(distance) : negate(String(distance)))
+      const slide = (axis: 'x' | 'y', sign: number) => {
+        const travel = { start: leaving ? ZERO : far(-sign), end: leaving ? far(sign) : ZERO }
+        return axis === 'x' ? part('slideRight', travel) : part('slideDown', travel)
+      }
+      // A share of its size (the default, 100%) is plain percentages, which
+      // every engine transitions; any other length is calc() at both ends,
+      // the same shape, so greese.js interpolates them.
+      const share = /^(-?[\d.]+)%$/.exec(String(distance).trim())
+      const short = sized(dx, dy, share ? `${100 - Number(share[1])}%` : `calc(100% - ${distance})`)
+      const full = sized(dx, dy, share ? '100%' : 'calc(100% - 0px)')
+      return [
+        ...(dx ? [slide('x', dx)] : []),
+        ...(dy ? [slide('y', dy)] : []),
+        // Arriving, the window is anchored at the side it moves toward; leaving, the side it leaves.
+        leaving
+          ? part(`wipe${direction}`, { start: full, end: short })
+          : part(`wipeOut${direction}`, { start: short, end: full }),
+      ]
+    },
+  }
+}
+
+const pockets = Object.fromEntries(
+  (Object.keys(DIRECTIONS) as Direction[]).flatMap((name) => [
+    [`pocket${name}`, pocket(name, false)],
+    [`pocketOut${name}`, pocket(name, true)],
+  ])
+) as unknown as Record<`pocket${Direction}` | `pocketOut${Direction}`, ComboDefinition>
+
+/**
+ * A flip: the element turns into place about its middle, from `angle` degrees
+ * (75 by default) toward the direction it arrives in: `flipUp` rises, its
+ * bottom edge leading; `flipRight` swings in from the left. Leaving, it turns
+ * back out the same way.
+ */
+const FLIPS = { Up: ['X', 1], Down: ['X', -1], Left: ['Y', 1], Right: ['Y', -1] } as const
+const flips = Object.fromEntries(
+  Object.entries(FLIPS).flatMap(([name, [axis, sign]]) => {
+    const effect = `turn${axis}` as const
+    return [
+      [
+        `flip${name}`,
+        combo({
+          params: () => ({ angle: 75 }),
+          parts: (p) => [
+            part('fadeIn', {}, [0, 0.5]),
+            part(effect, { start: sign * Number(p.angle), end: 0 }),
+          ],
+        }),
+      ],
+      [
+        `flipOut${name}`,
+        combo({
+          params: () => ({ angle: 75 }),
+          parts: (p) => [
+            part('fadeOut', {}, [0.5, 1]),
+            part(effect, { start: 0, end: sign * Number(p.angle) }),
+          ],
+        }),
+      ],
+    ]
+  })
+) as unknown as Record<`flip${keyof typeof FLIPS}` | `flipOut${keyof typeof FLIPS}`, ComboDefinition>
 
 export const comboEffects = {
   fadeUp: combo({
@@ -212,6 +414,27 @@ export const comboEffects = {
       part('slideDown', { start: 0, end: p.drop }),
       part('scaleOut', { start: 1, end: p.scale }),
     ],
+  }),
+  // Pockets, every direction, arriving and leaving.
+  ...pockets,
+  // Flips, depth and swings: three-dimensional, each leaving as its arrival
+  // reversed (`flipOutUp` turns back down the way `flipUp` came).
+  ...flips,
+  depthIn: combo({
+    params: () => ({ depth: -240 }),
+    parts: (p) => [part('fadeIn', {}, [0, 0.6]), part('depth', { start: p.depth, end: 0 })],
+  }),
+  depthOut: combo({
+    params: () => ({ depth: -240 }),
+    parts: (p) => [part('fadeOut', {}, [0.4, 1]), part('depth', { start: 0, end: p.depth })],
+  }),
+  swingIn: combo({
+    params: () => ({ angle: -80 }),
+    parts: (p) => [part('fadeIn', {}, [0, 0.5]), part('hinge', { start: p.angle, end: 0 })],
+  }),
+  swingOut: combo({
+    params: () => ({ angle: -80 }),
+    parts: (p) => [part('fadeOut', {}, [0.5, 1]), part('hinge', { start: 0, end: p.angle })],
   }),
 } as const satisfies Record<string, ComboDefinition>
 
@@ -280,7 +503,7 @@ const tracksOf = (
   for (const key of Object.keys(defaults))
     if (args[key] !== undefined) params[key] = args[key]
   if (isBase(name)) {
-    const { stops, format, property } = baseEffects[name] as BaseDefinition
+    const { stops, format, property, fixed } = baseEffects[name] as BaseDefinition
     const at = stops
       ? stops(params)
       : ([
@@ -292,6 +515,13 @@ const tracksOf = (
         property,
         stops: at.map(([offset, value]) => [offset, format ? format(value) : value]),
       },
+      ...Object.entries(fixed ?? {}).map(([prop, value]) => ({
+        property: prop,
+        stops: [
+          [0, value],
+          [1, value],
+        ] as Stop[],
+      })),
     ]
   }
   return (definition as ComboDefinition).parts(params, reach).flatMap((p) =>
@@ -523,7 +753,27 @@ export const toCssSteps = (
 }
 
 /** Whether a CSS value is the property's resting state, where an element is when nothing animates it. */
+/**
+ * A mask only exists while an entrance plays: the element has none of its
+ * own, so wherever the mask ends, the element is at rest once it's gone.
+ * Masks are how an entrance wipes or rises out of a pocket without touching
+ * `clip-path`, which belongs to the element's shape (ADR 0024).
+ */
+const transient = (property: string): boolean => property.includes('mask')
+
+/** A mask's size that shows the whole element: every percentage 100 or more, every length 0. */
+const whole = (size: string) =>
+  (size.match(/-?[\d.]+[a-z%]*/gi) ?? []).every((n) =>
+    n.endsWith('%') ? parseFloat(n) >= 100 : parseFloat(n) === 0
+  )
+
 const atRest = (property: string, value: string): boolean => {
+  // A mask is at rest when it shows everything: an entrance that ends so
+  // arrives, one that ends with the element masked away leaves.
+  if (property === 'mask-size') return whole(value)
+  if (transient(property)) return true
+  // Where a turn pivots moves nothing by itself.
+  if (property === 'transform-origin') return true
   const numbers = (text: string) => text.match(/-?[\d.]+/g)?.map(Number) ?? []
   switch (property) {
     case 'opacity':
@@ -531,6 +781,12 @@ const atRest = (property: string, value: string): boolean => {
     case 'translate':
     case 'rotate':
       return numbers(value).every((n) => n === 0)
+    // A turn or a depth with its perspective: at rest when it turns and moves
+    // nowhere (the perspective alone changes nothing).
+    case 'transform':
+      return (value.match(/(rotate|translate)\w*\([^)]*\)/g) ?? []).every((fn) =>
+        numbers(fn.replace(/^\w+\(/, '')).every((n) => n === 0)
+      )
     case 'scale':
       return numbers(value).every((n) => n === 1)
     case 'filter':
@@ -552,9 +808,13 @@ export interface CssPlan {
    */
   enter?: CssStep[]
   /**
-   * When it ends away from rest, what an overlay's exit changes: the
-   * `translate` and `scale` it ends at (opacity is always faded). Empty for a
-   * plain fade.
+   * When it ends away from rest, everything an overlay's exit sets: the
+   * `translate`, `scale` and `opacity` it ends at, and its mask (`mask-image`
+   * is `none` without one). A wipe, iris or pocket adds the mask it ends at
+   * (`mask-size`, `mask-position`, `mask-repeat`) and the size it starts at
+   * (`mask-from`): an overlay holds that mask while it closes
+   * (styles/_floating.scss). Complete, so nothing falls through to an exit a
+   * theme assigns around it.
    */
   exit: Record<string, string>
 }
@@ -568,12 +828,33 @@ export const cssPlan = (frames: Parameters<typeof toCssSteps>[0]): CssPlan => {
   const steps = toCssSteps(frames)
   const end: Record<string, string> = {}
   for (const [, declarations] of steps) Object.assign(end, declarations)
-  if (Object.entries(end).every(([property, value]) => atRest(property, value)))
-    return { enter: steps.at(-1)?.[0] === 'to' ? steps.slice(0, -1) : steps, exit: {} }
+  if (Object.entries(end).every(([property, value]) => atRest(property, value))) {
+    // The last step is the element's own styles, so it goes, unless it holds
+    // a mask: that one has to finish the reveal before the mask disappears.
+    const [at, last] = steps.at(-1) ?? []
+    return { enter: at === 'to' && !Object.keys(last!).some(transient) ? steps.slice(0, -1) : steps, exit: {} }
+  }
+  // Everything an overlay's exit sets, so nothing falls back to the theme's
+  // default exit (which moves toward the overlay's origin): what the effect
+  // doesn't move stays put. A masked exit hides with its mask, so it stays
+  // opaque; anything else fades, as overlays always have.
+  const masked = 'mask-size' in end
+  const mask = Object.entries(end).filter(([property]) => property.startsWith('mask-'))
   return {
-    exit: Object.fromEntries(
-      Object.entries(end).filter(([property]) => /^(translate|scale)$/.test(property))
-    ),
+    exit: {
+      translate: end.translate ?? '0px 0px',
+      scale: end.scale ?? '1',
+      opacity: end.opacity ?? (masked ? '1' : '0'),
+      'mask-image': 'none',
+      ...Object.fromEntries(mask),
+      // A three-dimensional exit turns or sinks (`transform`, with its own
+      // perspective), about its own pivot.
+      transform: end.transform ?? 'none',
+      ...(end['transform-origin'] && { 'transform-origin': end['transform-origin'] }),
+      // What size the mask starts at: the overlay holds it while open (an
+      // iris starts just past the far corner, at 142%).
+      ...(masked && { 'mask-from': steps[0]?.[1]['mask-size'] ?? '100% 100%' }),
+    },
   }
 }
 

@@ -54,6 +54,9 @@ export const color = /* @__PURE__ */ (() =>
     fgMuted: { light: steel[700], dark: steel[400] },
     border: { light: steel[200], dark: steel[800] },
     borderStrong: { light: steel[400], dark: steel[700] },
+    // The empty part of a progress bar, a slider or a radial progress: lighter
+    // than the borders in dark mode, so it shows on the canvas and on surfaces.
+    track: { light: steel[200], dark: steel[600] },
     primary: { light: blue[600], dark: blue[400] },
     primaryStrong: { light: blue[700], dark: blue[300] },
     primaryContent: { light: white, dark: steel[999] },
@@ -107,7 +110,35 @@ export const radius = {
   sm: '4px',
   md: '8px',
   lg: '16px',
+  xl: '24px',
   pill: '999px',
+  round: '50%',
+} as const
+
+/**
+ * The radius roles: what each kind of part takes from the radius scale. The
+ * components read these, never the scale directly, so a shape theme reassigns
+ * a role (`control: var(--greese-radius-none)`) and every token keeps its
+ * value (ADR 0025): `--greese-radius-md` is 8px under every theme.
+ */
+export const corner = {
+  /** Buttons, segmented controls, file pickers. */
+  control: 'var(--greese-radius-md)',
+  /** Text fields and selects, OTP cells. */
+  field: 'var(--greese-radius-md)',
+  /** Cards, dialogs, fieldsets, lists, stats, chat bubbles. */
+  surface: 'var(--greese-radius-lg)',
+  /** Alerts, tiles, tables, code, media, popovers and menus. */
+  panel: 'var(--greese-radius-md)',
+  /** Small parts inside others: tabs, menu items, tooltips, keys, checkboxes. */
+  inset: 'var(--greese-radius-sm)',
+  /** Badges, chips, tracks, progress bars. */
+  pill: 'var(--greese-radius-pill)',
+  /**
+   * Round parts that stand for something: knobs and thumbs, radios, step
+   * markers, avatars, status dots.
+   */
+  round: 'var(--greese-radius-round)',
 } as const
 
 export const font = {
@@ -156,6 +187,7 @@ export const easing = {
 export const scalarTokens = {
   space,
   radius,
+  corner,
   font,
   fontWeight,
   lineHeight,
@@ -168,8 +200,8 @@ export const scalarTokens = {
 export type ScalarGroup = keyof typeof scalarTokens
 
 /**
- * Mobile-first breakpoints: each value is a `min-width` in px. Matches MUI's
- * defaults so responsive props port across unchanged.
+ * Mobile-first breakpoints: each value is a `min-width` in px. The defaults
+ * every responsive prop is resolved against.
  *
  * Media queries cannot read custom properties, so these are compile-time
  * constants in the CSS; changing them means recompiling the SCSS.

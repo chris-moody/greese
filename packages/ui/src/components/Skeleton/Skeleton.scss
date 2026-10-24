@@ -14,7 +14,7 @@
     );
     background-repeat: no-repeat;
     background-size: 50% 100%;
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
 
     @include mixins.motion-safe {
       animation: greese-skeleton-shimmer 1.4s ease-in-out infinite;
@@ -29,13 +29,13 @@
 
   .greese-Skeleton--rect {
     block-size: var(--greese-skeleton-height, 8rem);
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-panel);
   }
 
   .greese-Skeleton--circle {
     inline-size: var(--greese-skeleton-width, 2.5rem);
     block-size: var(--greese-skeleton-height, var(--greese-skeleton-width, 2.5rem));
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
   }
 
   .greese-Skeleton-lines {

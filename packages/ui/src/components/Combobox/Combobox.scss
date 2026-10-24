@@ -16,7 +16,7 @@
     cursor: pointer;
     background: none;
     border: 0;
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
 
     > svg {
       inline-size: 1rem;
@@ -53,7 +53,7 @@
     padding-inline: var(--greese-space-3);
     font-size: var(--greese-type-p3-font-size);
     cursor: pointer;
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
 
     &[data-active] {
       background-color: color-mix(in oklab, var(--greese-color-fg) 8%, transparent);

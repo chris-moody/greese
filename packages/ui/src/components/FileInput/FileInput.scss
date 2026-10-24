@@ -10,7 +10,7 @@
     font-family: inherit;
     color: var(--greese-color-fg-muted);
     cursor: pointer;
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-control);
 
     @include mixins.focus-ring;
 
@@ -24,7 +24,7 @@
       cursor: pointer;
       background-color: transparent;
       border: 1px solid var(--greese-color-border-strong);
-      border-radius: var(--greese-radius-md);
+      border-radius: var(--greese-corner-control);
       transition: background-color var(--greese-duration-fast)
         var(--greese-easing-standard);
     }

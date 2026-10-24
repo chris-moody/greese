@@ -174,17 +174,21 @@ describe('SCSS kit: motion()', () => {
     )
   })
 
-  it('sets only what an overlay exit changes, as the exit classes do', () => {
+  it('sets everything an overlay exit sets, as the exit classes do', () => {
     const css =
       compile(`@include greese.component(Dialog) { @include greese.motion((exit: scale-out)); }
       @include greese.component(Popover) { @include greese.motion((exit: fade-out-up)); }`)
-    expect(declared(css, '.greese-Dialog')).toEqual([['--greese-motion-exit-scale', '0']])
-    expect(declared(css, '.greese-Popover')).toEqual([
-      [
-        '--greese-motion-exit-translate',
-        '0px calc(-1 * var(--greese-motion-distance, 1rem))',
-      ],
+    expect(declared(css, '.greese-Dialog')).toEqual([
+      ['--greese-motion-exit-translate', '0px 0px'],
+      ['--greese-motion-exit-scale', '0'],
+      ['--greese-motion-exit-opacity', '0'],
+      ['--greese-motion-exit-mask-image', 'none'],
+      ['--greese-motion-exit-transform', 'none'],
     ])
+    expect(Object.fromEntries(declared(css, '.greese-Popover'))).toMatchObject({
+      '--greese-motion-exit-translate':
+        '0px calc(-1 * var(--greese-motion-distance, 1rem))',
+    })
   })
 
   it('retunes the component’s transitions through its duration and easing tokens', () => {
@@ -205,18 +209,62 @@ describe('SCSS kit: motion()', () => {
     ])
   })
 
+  it('assigns motion roles with motion-defaults(), pointing at effects and tokens', () => {
+    const css = compile(`@include greese.motion-defaults((
+      content: wipe-open-x,
+      rows: none,
+      dialog: iris-in,
+      dialog-exit: iris-out,
+      content-duration: slow,
+      exit-duration: 200ms,
+      enter-ease: enter,
+    ));`)
+    const root = Object.fromEntries(declared(css, ':root'))
+    expect(root).toMatchObject({
+      '--greese-motion-content': 'greese-wipe-open-x',
+      '--greese-motion-rows': 'none',
+      '--greese-motion-dialog': 'greese-iris-in',
+      '--greese-motion-dialog-exit-mask-size': '0% 0%',
+      '--greese-motion-dialog-exit-mask-from': '142% 142%',
+      '--greese-motion-content-duration': 'var(--greese-duration-slow)',
+      '--greese-motion-exit-duration': '200ms',
+      '--greese-motion-enter-ease': 'var(--greese-easing-enter)',
+    })
+    // The tokens and the effects keep their own values.
+    expect(css).not.toMatch(/--greese-duration-slow:/)
+    expect(css).toMatch(/@keyframes greese-wipe-open-x/)
+    expect(() =>
+      compile('@include greese.motion-defaults((content: fade-out));')
+    ).toThrow(/no entrance `fade-out`/)
+    expect(() =>
+      compile('@include greese.motion-defaults((dialog-exit: fade-up));')
+    ).toThrow(/no exit `fade-up`/)
+  })
+
+  it('keeps a built-in effect’s plan: effect() refuses its name', () => {
+    expect(() =>
+      compile('@include greese.effect(fade-up, (enter: (from: (opacity: 0))));')
+    ).toThrow(/built-in effect/)
+  })
+
   it('accepts every entrance src/effects.ts defines, and the built CSS has its keyframes', () => {
     const built = readFileSync(
       new URL('../../dist/css/Motion.css', import.meta.url),
       'utf8'
     )
-    expect(entranceNames()).toHaveLength(13)
-    for (const effect of entranceNames()) {
-      const name = effectClass(effect)
+    expect(entranceNames()).toHaveLength(50)
+    // One compile for all of them: one each is seconds of Sass.
+    const names = entranceNames().map(effectClass)
+    const css = compile(
+      names
+        .map(
+          (name) =>
+            `@include greese.component(Card) { @include greese.motion((enter: ${name})); }`
+        )
+        .join('\n')
+    )
+    for (const name of names) {
       expect(built, name).toContain(`@keyframes greese-${name} {`)
-      const css = compile(
-        `@include greese.component(Card) { @include greese.motion((enter: ${name})); }`
-      )
       expect(css, name).toContain(`animation: greese-${name} `)
     }
   })
@@ -251,14 +299,10 @@ describe('SCSS kit: effect()', () => {
     expect(wobble.enter).toHaveLength(3)
   })
 
-  it('retunes an overlay exit, and accepts a new one in motion(exit:)', () => {
+  it('accepts an exit of the theme’s own in motion(exit:)', () => {
     const css = compile(
-      `@include greese.effect(scale-out, (exit: (scale: '0.5')));
-      @include greese.effect(sink, (exit: (translate: '0 2rem')));
+      `@include greese.effect(sink, (exit: (translate: '0 2rem')));
       @include greese.component(Dialog) { @include greese.motion((exit: sink)); }`
-    )
-    expect(css).toMatch(
-      /\.greese-Motion--exit-scale-out \{\s+--greese-motion-exit-scale: 0\.5;/
     )
     expect(declared(css, '.greese-Dialog')).toEqual([
       ['--greese-motion-exit-translate', '0 2rem'],
@@ -276,13 +320,22 @@ describe('SCSS kit: effect()', () => {
         ? `(enter: (${plan.enter.map(([at, d]) => `'${at}': ${decl(d)}`).join(', ')}))`
         : `(exit: ${Object.keys(plan.exit).length ? decl(plan.exit) : '()'})`
     }
-    for (const effect of effectNames) {
-      const plan = effectPlan(effect)
-      const name = effectClass(effect)
-      const css = squash(compile(`@include greese.effect(x-${name}, ${toScss(plan)});`))
-      // The kit's rules sit in the utilities layer; the text is the rules alone.
-      expect(css, effect).toContain(squash(effectCss(`x-${name}`, plan)))
-    }
+    // One compile for every effect (one each took seconds with 66 of them).
+    const css = squash(
+      compile(
+        effectNames
+          .map(
+            (effect) =>
+              `@include greese.effect(x-${effectClass(effect)}, ${toScss(effectPlan(effect))});`
+          )
+          .join('\n')
+      )
+    )
+    // The kit's rules sit in the utilities layer; the text is the rules alone.
+    for (const effect of effectNames)
+      expect(css, effect).toContain(
+        squash(effectCss(`x-${effectClass(effect)}`, effectPlan(effect)))
+      )
   })
 
   it('still stops the build on a name nothing defines', () => {
@@ -388,7 +441,7 @@ describe('SCSS kit: tokens() and theme()', () => {
       /no token group `colr`/
     )
     expect(() => compile('@include greese.tokens((radius: (huge: 1px)));')).toThrow(
-      /no `radius` token `huge`. Keys: none, sm, md, lg, pill/
+      /no `radius` token `huge`. Keys: none, sm, md, lg, xl, pill/
     )
   })
 })
@@ -505,21 +558,24 @@ describe('SCSS kit: typography()', () => {
 
 describe('SCSS kit: keyframes()', () => {
   it('writes keyframes in the utilities layer, from steps', () => {
-    const css = compile(`@include greese.keyframes(greese-fade-up, (
+    const css = compile(`@include greese.keyframes(greese-float-up, (
       from: (opacity: 0, translate: '0 2rem'),
       '60%': (opacity: 1),
       to: (opacity: 1, translate: '0 0'),
     ));`)
     expect(css).toContain('@layer greese.utilities')
     expect(css).toMatch(
-      /@keyframes greese-fade-up\s*{\s*from\s*{\s*opacity:\s*0;\s*translate:\s*0 2rem;/
+      /@keyframes greese-float-up\s*{\s*from\s*{\s*opacity:\s*0;\s*translate:\s*0 2rem;/
     )
     expect(css).toMatch(/60%\s*{\s*opacity:\s*1;/)
   })
 
-  it('only takes names that start with greese-', () => {
+  it('only takes names that start with greese-, and none of a built-in', () => {
     expect(() =>
       compile(`@include greese.keyframes(wobble, (from: (opacity: 0)));`)
     ).toThrow(/start with `greese-`/)
+    expect(() =>
+      compile(`@include greese.keyframes(greese-fade-up, (from: (opacity: 0)));`)
+    ).toThrow(/built-in effect keeps its keyframes/)
   })
 })

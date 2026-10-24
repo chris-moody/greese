@@ -7,7 +7,7 @@
     text-decoration-line: underline;
     text-decoration-thickness: from-font;
     text-underline-offset: 0.2em;
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
     transition: color var(--greese-duration-fast) var(--greese-easing-standard);
 
     @include mixins.focus-ring(1px);

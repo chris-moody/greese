@@ -1,0 +1,4 @@
+// `pkg:@greese/ui/scss/tones`: the tone names and their color tokens, for theme
+// authors (ADR 0021). Hidden: `classes()`, which writes a block's own
+// `--<tone>` modifier classes and only makes sense in the library's sheets.
+@forward '../tones' hide classes;

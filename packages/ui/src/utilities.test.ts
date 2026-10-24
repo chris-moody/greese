@@ -35,22 +35,22 @@ describe('utility classes', () => {
       'padding-inline-end': 'var(--greese-space-1)',
     })
     expect(byName('display-flex')?.declarations).toEqual({ display: 'flex' })
-    expect(byName('text-align-center')?.declarations).toEqual({
+    expect(byName('text-center')?.declarations).toEqual({
       'text-align': 'center',
     })
     expect(byName('justify-content-between')?.declarations).toEqual({
       'justify-content': 'space-between',
     })
-    expect(byName('flex-direction-column')?.declarations).toEqual({
+    expect(byName('flex-dir-col')?.declarations).toEqual({
       'flex-direction': 'column',
     })
   })
 
   it('take their values from the tokens', () => {
-    expect(byName('background-primary')?.declarations).toEqual({
+    expect(byName('bg-primary')?.declarations).toEqual({
       'background-color': 'var(--greese-color-primary)',
     })
-    expect(byName('background-surface-overlay')).toBeDefined()
+    expect(byName('bg-surface-overlay')).toBeDefined()
     expect(byName('radius-md')?.declarations).toEqual({
       'border-radius': 'var(--greese-radius-md)',
     })
@@ -59,6 +59,42 @@ describe('utility classes', () => {
     })
     expect(byName('font-weight-bold')).toBeDefined()
     expect(byName('shadow-lg')).toBeDefined()
+  })
+
+  it('abbreviate the long property names, and only these', () => {
+    expect(byName('vis-hidden')?.declarations).toEqual({ visibility: 'hidden' })
+    expect(byName('pos-absolute')?.declarations).toEqual({ position: 'absolute' })
+    expect(byName('bg-surface')?.declarations).toEqual({
+      'background-color': 'var(--greese-color-surface)',
+    })
+    expect(byName('flex-dir-col-reverse')?.declarations).toEqual({
+      'flex-direction': 'column-reverse',
+    })
+    expect(byName('text-transform-upper')?.declarations).toEqual({
+      'text-transform': 'uppercase',
+    })
+    expect(byName('text-transform-lower')).toBeDefined()
+    expect(byName('grid-template-cols-3')?.declarations).toEqual({
+      'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
+    })
+    expect(byName('grid-col-span-2')?.declarations).toEqual({ 'grid-column': 'span 2' })
+    expect(byName('grid-auto-flow-col-dense')?.declarations).toEqual({
+      'grid-auto-flow': 'column dense',
+    })
+    // The long names, and the class `visibility-*` covers, are gone.
+    const all = utilityClasses().map((c) => c.name)
+    for (const old of [
+      'visually-hidden',
+      'visibility-hidden',
+      'position-fixed',
+      'background-primary',
+      'flex-direction-column',
+      'text-align-center',
+      'text-transform-uppercase',
+      'grid-column-span-2',
+    ])
+      expect(all, old).not.toContain(old)
+    expect(all.filter((n) => /column/.test(n))).toEqual([])
   })
 
   it('make several declarations where one would not do', () => {
@@ -132,9 +168,9 @@ describe('purging', () => {
 
   it('keeps only the classes the content spells out', () => {
     const css = purgeUtilities({
-      content: ['<p class="text-align-center pt-3">hi</p>', 'const x = "p-40"'],
+      content: ['<p class="text-center pt-3">hi</p>', 'const x = "p-40"'],
     })
-    expect(css).toContain('.text-align-center {')
+    expect(css).toContain('.text-center {')
     expect(css).toContain('.pt-3 {')
     // A longer word that only starts with a class name is not that class.
     expect(css).not.toContain('.p-4 {')
@@ -161,7 +197,7 @@ describe('reading files', () => {
     await mkdir(join(dir, 'node_modules/pkg'), { recursive: true })
     await writeFile(join(dir, 'index.html'), '<main class="display-grid"></main>')
     await writeFile(join(dir, 'src/App.tsx'), '<a className="hover-opacity-75" />')
-    await writeFile(join(dir, 'node_modules/pkg/x.js'), '"position-fixed"')
+    await writeFile(join(dir, 'node_modules/pkg/x.js'), '"pos-fixed"')
   }
 
   it('globs the content, skipping node_modules, and purges what it finds', async () => {
@@ -177,7 +213,7 @@ describe('reading files', () => {
     })
     expect(css).toContain('.display-grid {')
     expect(css).toContain('.hover-opacity-75:hover')
-    expect(css).not.toContain('position-fixed')
+    expect(css).not.toContain('pos-fixed')
   })
 
   it('serves the purged css as a virtual module, and refreshes it when a file changes', async () => {

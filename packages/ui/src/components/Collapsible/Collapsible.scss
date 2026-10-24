@@ -30,7 +30,7 @@
     font-weight: var(--greese-font-weight-semibold);
     cursor: pointer;
     list-style: none;
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
 
     @include mixins.focus-ring;
 
@@ -58,5 +58,12 @@
   .greese-Collapsible-content {
     padding-block-end: var(--greese-space-4);
     color: var(--greese-color-fg-muted);
+
+    // Opening, the content's children enter as it grows; the box stays put.
+    [open] > & {
+      @include mixins.content-entrance;
+    }
   }
+
+  @include mixins.content-entrance-keyframes;
 }

@@ -8,9 +8,9 @@
   background: linear-gradient(
     to var(--greese-slider-towards),
     var(--greese-color-primary) var(--greese-slider-fill),
-    var(--greese-color-border) var(--greese-slider-fill)
+    var(--greese-color-track) var(--greese-slider-fill)
   );
-  border-radius: var(--greese-radius-pill);
+  border-radius: var(--greese-corner-pill);
 }
 
 @mixin thumb {
@@ -19,7 +19,7 @@
   block-size: var(--greese-slider-thumb);
   background-color: var(--greese-color-canvas);
   border: 2px solid var(--greese-color-primary);
-  border-radius: 50%;
+  border-radius: var(--greese-corner-round);
   box-shadow: var(--greese-shadow-sm);
 }
 

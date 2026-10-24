@@ -11,7 +11,7 @@
     cursor: pointer;
     background-color: var(--greese-color-canvas);
     border: 1.5px solid var(--greese-color-border-strong);
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
     appearance: none;
 
     &:disabled {

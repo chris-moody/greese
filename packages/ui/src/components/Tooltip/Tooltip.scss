@@ -3,7 +3,7 @@
 @layer greese.components {
   .greese-Tooltip {
     @include floating.anchored;
-    @include floating.enter-exit(':popover-open');
+    @include floating.enter-exit(':popover-open', 0 0, tooltip);
 
     max-inline-size: min(18rem, 100vw - 2 * var(--greese-space-3));
     padding: var(--greese-space-1) var(--greese-space-2);
@@ -12,6 +12,6 @@
     color: var(--greese-color-canvas);
     background-color: var(--greese-color-fg);
     border: 0;
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
   }
 }

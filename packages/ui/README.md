@@ -30,14 +30,14 @@ the framework packages provide.
 | `@greese/ui/base.css`            | Opt-in reset and page defaults                                                                                                                                  |
 | `@greese/ui/css/<Name>.css`      | One component's own styles (plus the shared core). A component built on others (a Dialog uses Button) needs theirs too; the framework packages wire that up     |
 | `@greese/ui/tokens.css`          | `--greese-*` custom properties, in `@layer greese.tokens`                                                                                                       |
-| `@greese/ui/palette.css`         | Opt-in: the palette as `--greese-<hue>-<shade>` (`--greese-lavender-600`), about 2 kB compressed                                                                  |
+| `@greese/ui/palette.css`         | Opt-in: the palette as `--greese-<hue>-<shade>` (`--greese-lavender-600`), about 2 kB compressed                                                                |
 | `@greese/ui/scss`                | The whole stylesheet as Sass, configurable (`@use 'pkg:@greese/ui/scss' with ($breakpoints: …)`)                                                                |
 | `@greese/ui/scss/kit`            | The theming kit: `@use 'pkg:@greese/ui/scss/kit' as greese`, build-time themes that reject unknown names                                                        |
 | `@greese/ui/scss/tokens`         | The token CSS, plus `$breakpoints` and `$space-keys` Sass maps                                                                                                  |
 | `@greese/ui/scss/layers`         | Only the cascade layer order statement                                                                                                                          |
 | `@greese/ui/scss/maps`           | Only the Sass maps (`$breakpoints`, `$space-keys`, every token default as `$color` and `$scalars`, the palette as `$palette`, and `$layer-order`); emits no CSS |
 | `@greese/ui/style-manifest.json` | Every component's styling API, read from the compiled CSS                                                                                                       |
-| `@greese/ui`                     | TypeScript constants (`color`, `palette` and each hue, `space`, `radius`, `lineHeight`, `shadow`, `breakpoints`, …), `createTheme()` and `getSchemeScript()`      |
+| `@greese/ui`                     | TypeScript constants (`color`, `palette` and each hue, `space`, `radius`, `lineHeight`, `shadow`, `breakpoints`, …), `createTheme()` and `getSchemeScript()`    |
 
 It has no dependencies.
 
@@ -51,7 +51,6 @@ are `primary` (what components use for interactive emphasis), `secondary`,
 `tertiary` and `accent`, each with `…Strong` and a WCAG-safe `…Content`
 color that `createTheme` derives when you set only the main color.
 
-`palette` is 22 hues × 11 shades (`50`–`999`), like
-MUI's `colors`. Use it instead of hex literals: `palette.lavender[600]` or
+`palette` is 22 hues × 11 shades (`50`–`999`). Use it instead of hex literals: `palette.lavender[600]` or
 `import { lavender } from '@greese/ui'` in TypeScript, `lavender-600` in
 the SCSS kit, `var(--greese-lavender-600)` with `palette.css`.

@@ -1,0 +1,5 @@
+// `pkg:@greese/ui/scss/mixins`: the library's mixins, for theme authors
+// (ADR 0021). It forwards `../mixins` itself, so it is the module the kit and
+// the components load, configured by the same `$breakpoints`. Hidden: what only
+// makes sense where the library writes its own classes (responsive props).
+@forward '../mixins' hide responsive-prop, responsive-var, space-tokens;

@@ -50,7 +50,7 @@ $sizes: (
   color: var(--greese-color-fg);
   background-color: var(--greese-color-canvas);
   border: 1px solid var(--greese-color-border-strong);
-  border-radius: var(--greese-radius-md);
+  border-radius: var(--greese-corner-field);
   transition:
     border-color var(--greese-duration-fast) var(--greese-easing-standard),
     box-shadow var(--greese-duration-fast) var(--greese-easing-standard);

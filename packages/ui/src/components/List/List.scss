@@ -17,7 +17,7 @@
 
   .greese-List--framed {
     border: 1px solid var(--greese-color-border);
-    border-radius: var(--greese-radius-lg);
+    border-radius: var(--greese-corner-surface);
 
     > .greese-ListItem {
       padding-inline: var(--greese-space-4);

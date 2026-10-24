@@ -25,7 +25,7 @@
     cursor: pointer;
     background-color: var(--greese-color-primary);
     border: 0;
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
     box-shadow: var(--greese-shadow-lg);
     transition: background-color var(--greese-duration-fast) var(--greese-easing-standard);
 
@@ -53,7 +53,7 @@
   // The actions: a column above the button, aligned to its inline end.
   .greese-SpeedDial-actions {
     @include floating.anchored;
-    @include floating.enter-exit(':popover-open', 0 0.5rem);
+    @include floating.enter-exit(':popover-open', 0 0.5rem, popover);
 
     flex-direction: column;
     gap: var(--greese-space-2);
@@ -77,7 +77,7 @@
     cursor: pointer;
     background: none;
     border: 0;
-    border-radius: var(--greese-radius-pill);
+    border-radius: var(--greese-corner-pill);
 
     @include mixins.focus-ring;
   }
@@ -89,7 +89,7 @@
     white-space: nowrap;
     background-color: var(--greese-color-surface-overlay);
     border: 1px solid var(--greese-color-border);
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-panel);
     box-shadow: var(--greese-shadow-sm);
   }
 
@@ -101,7 +101,7 @@
     margin-inline-end: 0.375rem;
     background-color: var(--greese-color-surface-overlay);
     border: 1px solid var(--greese-color-border);
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
     box-shadow: var(--greese-shadow-md);
     transition: background-color var(--greese-duration-fast) var(--greese-easing-standard);
 

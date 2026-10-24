@@ -15,11 +15,13 @@ import { breakpoints as defaultBreakpoints, color, scalarTokens } from './tokens
  *
  * **Names.** `<property>-<value>`: the property's own name and the value's own
  * keyword, so a class reads as the declaration it makes (`display-flex`,
- * `text-align-center`, `justify-content-between`). Token-valued groups use
- * the token's name (`p-4`, `background-primary`, `radius-md`,
+ * `text-center`, `justify-content-between`). Token-valued groups use
+ * the token's name (`p-4`, `bg-primary`, `radius-md`,
  * `z-modal`). These abbreviations only, for the properties used most:
- * `m` margin, `p` padding, `w` width, `h` height, `z` z-index, `background`
- * for background-color. Spacing takes a side: `t b l r` (physical), `x y` (the
+ * `m` margin, `p` padding, `w` width, `h` height, `z` z-index, `bg`
+ * background-color, `pos` position, `vis` visibility, `flex-dir` flex-direction,
+ * `col`/`cols` for column/columns, `text` for text-align, `upper`/`lower` for
+ * uppercase/lowercase. Spacing takes a side: `t b l r` (physical), `x y` (the
  * inline and block axes), `s e` (inline start and end, which follow the
  * writing direction): `pt-3`, `mx-auto`, `ms-2`. A breakpoint or
  * `hover` goes first: `md-display-flex`, `hover-opacity-75`.
@@ -233,7 +235,7 @@ const definitions: UtilityDefinition[] = [
   },
   {
     group: 'layout',
-    stem: 'position',
+    stem: 'pos',
     property: 'position',
     values: same('static', 'relative', 'absolute', 'fixed', 'sticky'),
     responsive: true,
@@ -279,7 +281,7 @@ const definitions: UtilityDefinition[] = [
   ),
   {
     group: 'layout',
-    stem: 'visibility',
+    stem: 'vis',
     property: 'visibility',
     values: same('visible', 'hidden', 'collapse'),
     responsive: true,
@@ -296,28 +298,18 @@ const definitions: UtilityDefinition[] = [
     property: 'float',
     values: same('start', 'end', 'none'),
   },
-  {
-    group: 'layout',
-    stem: 'visually-hidden',
-    values: {
-      '': {
-        position: 'absolute',
-        'inline-size': '1px',
-        'block-size': '1px',
-        margin: '-1px',
-        overflow: 'hidden',
-        'clip-path': 'inset(50%)',
-        'white-space': 'nowrap',
-      },
-    },
-  },
 
   // Flexbox.
   {
     group: 'flex',
-    stem: 'flex-direction',
+    stem: 'flex-dir',
     property: 'flex-direction',
-    values: same('row', 'row-reverse', 'column', 'column-reverse'),
+    values: {
+      row: 'row',
+      'row-reverse': 'row-reverse',
+      col: 'column',
+      'col-reverse': 'column-reverse',
+    },
     responsive: true,
   },
   {
@@ -401,7 +393,7 @@ const definitions: UtilityDefinition[] = [
   // Grid.
   {
     group: 'grid',
-    stem: 'grid-template-columns',
+    stem: 'grid-template-cols',
     property: 'grid-template-columns',
     values: {
       none: 'none',
@@ -419,7 +411,7 @@ const definitions: UtilityDefinition[] = [
   },
   {
     group: 'grid',
-    stem: 'grid-column',
+    stem: 'grid-col',
     property: 'grid-column',
     values: {
       auto: 'auto',
@@ -449,17 +441,17 @@ const definitions: UtilityDefinition[] = [
     property: 'grid-auto-flow',
     values: {
       row: 'row',
-      column: 'column',
+      col: 'column',
       dense: 'dense',
       'row-dense': 'row dense',
-      'column-dense': 'column dense',
+      'col-dense': 'column dense',
     },
   },
 
   // Text.
   {
     group: 'typography',
-    stem: 'text-align',
+    stem: 'text',
     property: 'text-align',
     values: same('start', 'center', 'end', 'justify', 'left', 'right'),
     responsive: true,
@@ -468,7 +460,12 @@ const definitions: UtilityDefinition[] = [
     group: 'typography',
     stem: 'text-transform',
     property: 'text-transform',
-    values: same('uppercase', 'lowercase', 'capitalize', 'none'),
+    values: {
+      upper: 'uppercase',
+      lower: 'lowercase',
+      capitalize: 'capitalize',
+      none: 'none',
+    },
   },
   {
     group: 'typography',
@@ -608,7 +605,7 @@ const definitions: UtilityDefinition[] = [
   { group: 'color', stem: 'color', property: 'color', values: colors, hover: true },
   {
     group: 'color',
-    stem: 'background',
+    stem: 'bg',
     property: 'background-color',
     values: colors,
     hover: true,

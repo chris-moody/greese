@@ -548,8 +548,8 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
   }
 }
 
-/// Every effect by kebab-case name: the built-in ones, then those defined with
-/// `effect()` (which replace a built-in of the same name).
+/// Every effect by kebab-case name: the built-in ones and those defined with
+/// `effect()` (which can't take a built-in's name).
 @function _effects() {
   @return map.merge(defaults.$effects, $_defined);
 }
@@ -568,10 +568,56 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
   @return $out;
 }
 
-/// Tunes every `greese` prop entrance on the page (or in the theme):
-/// `motion-defaults((duration: 0.3s, ease: out, distance: 2rem))`.
+/// Tunes every `greese` prop entrance on the page (or in the theme), and
+/// assigns the theme's motion roles (ADR 0025):
+///
+///   duration, delay, ease, distance, stagger   every `greese` entrance's pacing
+///   theme      the entrance `greese="theme"` plays (base: fade-up)
+///   content    a tab panel's, an opening accordion's children (base: a short rise)
+///   rows       a table's rows, one after another (base: none)
+///   toast, backdrop                            their entrances
+///   overlay    every overlay's entrance but a drawer's; `dialog`, `popover`
+///              (menus and speed-dial actions too), `tooltip` and `drawer`
+///              (the sidebar too) for one kind
+///   overlay-exit, dialog-exit, popover-exit, tooltip-exit, drawer-exit
+///              how they leave: an exit by name
+///   content-duration, rows-duration, overlay-duration, toast-duration,
+///   backdrop-duration, exit-duration           a duration token (`fast`,
+///              `normal`, `slow`) or a time
+///   enter-ease, exit-ease                      an easing token (`standard`,
+///              `enter`, `exit`), an ease name or a curve
+///
+/// `motion-defaults((content: wipe-open-x, dialog: iris-in, dialog-exit: iris-out,
+/// content-duration: slow))`. A role points at an effect or a token: the
+/// effects keep their keyframes and the tokens their values.
 @mixin motion-defaults($options) {
-  $known: (duration, delay, ease, distance, stagger);
+  $pacing: (duration, delay, ease, distance, stagger);
+  $entrances: (
+    theme,
+    content,
+    rows,
+    toast,
+    backdrop,
+    overlay,
+    dialog,
+    popover,
+    tooltip,
+    drawer
+  );
+  $exits: (overlay-exit, dialog-exit, popover-exit, tooltip-exit, drawer-exit);
+  $durations: (
+    content-duration,
+    rows-duration,
+    overlay-duration,
+    toast-duration,
+    backdrop-duration,
+    exit-duration
+  );
+  $eases: (enter-ease, exit-ease);
+  $known: list.join(
+    list.join(list.join($pacing, $entrances), $exits),
+    list.join($durations, $eases)
+  );
   $root: ':root';
 
   @include _layer-order;
@@ -588,25 +634,80 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
           'motion-defaults() has no option `#{$key}`. Options: #{_join($known)}.'
         );
 
-        @if $key == ease {
-          $value: _ease($value);
-        }
+        @if _in($exits, $key) {
+          // An exit by name: everything it sets, under the role's prefix.
+          $name: _kebab($value);
+          $checked: _check(
+            _in(_effects-with(exit), $name),
+            'motion-defaults(): no exit `#{$name}` for `#{$key}`. Effects that end away from rest: #{_join(_effects-with(exit))}.'
+          );
 
-        --greese-motion-#{$key}: #{_css($value)};
+          @each $property, $v in map.get(map.get(_effects(), $name), exit) {
+            --greese-motion-#{$key}-#{$property}: #{string.unquote($v)};
+          }
+        } @else {
+          @if $key == ease {
+            $value: _ease($value);
+          } @else if _in($entrances, $key) {
+            $name: _kebab($value);
+
+            @if $name == none {
+              $value: none;
+            } @else {
+              $checked: _check(
+                _in(_effects-with(enter), $name),
+                'motion-defaults(): no entrance `#{$name}` for `#{$key}`. Effects that end at rest: #{_join(_effects-with(enter))}.'
+              );
+              $value: greese-#{$name};
+            }
+          } @else if _in($durations, $key) and _in((fast, normal, slow), $value) {
+            $value: var(--greese-duration-#{$value});
+          } @else if _in($eases, $key) and _in((standard, enter, exit), $value) {
+            $value: var(--greese-easing-#{$value});
+          } @else if _in($eases, $key) {
+            $value: _ease($value);
+          }
+
+          --greese-motion-#{$key}: #{_css($value)};
+        }
+      }
+    }
+  }
+
+  // The keyframes of the entrances it assigns, so the theme works on a page
+  // that hasn't loaded the Motion styles: the effects' own, unchanged.
+  $played: ();
+
+  @each $key, $value in $options {
+    @if _in($entrances, $key) and _kebab($value) != none {
+      $played: map.set($played, _kebab($value), true);
+    }
+  }
+
+  @if list.length($played) > 0 {
+    @layer greese.utilities {
+      @media (prefers-reduced-motion: no-preference) {
+        @each $name, $unused in $played {
+          @include effect.keyframes($name, map.get(_effects(), $name));
+        }
       }
     }
   }
 }
 
-/// Replaces one of the `greese` prop's entrance keyframes, or adds a
-/// `@keyframes` of your own: `keyframes(greese-fade-up, (from: (opacity: 0,
-/// translate: 0 2rem), to: (opacity: 1, translate: 0 0)))`. Steps are `from`,
-/// `to` or percentages (quoted: `'60%'`). It sits in the utilities layer, after
-/// the library's own, so a preset's name is overridden by this one.
+/// Adds a `@keyframes` of your own, for a component's `motion((keyframes: …))`:
+/// `keyframes(greese-float-up, (from: (opacity: 0, translate: 0 2rem), to:
+/// (opacity: 1, translate: 0 0)))`. Steps are `from`, `to` or percentages
+/// (quoted: `'60%'`). A built-in effect's name is refused: a built-in keeps its
+/// keyframes, and a theme assigns another where it wants one (ADR 0025).
 @mixin keyframes($name, $steps) {
   $checked: _check(
     string.index('#{$name}', 'greese-') == 1,
-    'keyframes() names start with `greese-`: `greese-fade-up` overrides that preset.'
+    'keyframes() names start with `greese-`, like `greese-float-up`.'
+  );
+  $checked: _check(
+    not map.has-key(defaults.$effects, string.slice('#{$name}', 8)),
+    'keyframes(#{$name}): a built-in effect keeps its keyframes. Name yours differently and assign it.'
   );
 
   @include _layer-order;
@@ -634,6 +735,13 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 @mixin effect($name, $plan) {
   $name: _kebab($name);
   $plan: _normal($plan);
+
+  // A built-in always does what its name says; a theme assigns another
+  // effect where it wants one (ADR 0025), it doesn't rewrite this one.
+  $checked: _check(
+    not map.has-key(defaults.$effects, $name),
+    'effect(#{$name}): `#{$name}` is a built-in effect, which keeps its own plan. Name yours differently and assign it.'
+  );
   $checked: _check(
     map.has-key($plan, enter) or map.has-key($plan, exit),
     'effect(#{$name}) needs a plan with `enter` or `exit`.'

@@ -84,14 +84,14 @@
     overflow-wrap: anywhere;
     color: var(--greese-chat-tone-on);
     background-color: var(--greese-chat-tone);
-    border-radius: var(--greese-radius-lg);
+    border-radius: var(--greese-corner-surface);
 
     // Square where the tail joins, so the bubble runs into its point.
     border-end-start-radius: 0;
   }
 
   .greese-ChatBubble--end .greese-ChatBubble-bubble {
-    border-end-start-radius: var(--greese-radius-lg);
+    border-end-start-radius: var(--greese-corner-surface);
     border-end-end-radius: 0;
   }
 

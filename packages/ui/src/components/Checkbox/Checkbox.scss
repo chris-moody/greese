@@ -11,7 +11,7 @@
     cursor: pointer;
     background-color: var(--greese-color-canvas);
     border: 1.5px solid var(--greese-color-border-strong);
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
 
     &:disabled {
       cursor: not-allowed;
@@ -53,12 +53,14 @@
     opacity: 1;
   }
 
-  .greese-Checkbox-dash,
-  .greese-Checkbox-input:indeterminate + .greese-Checkbox-icon .greese-Checkbox-check {
+  // The icon draws a check, then a dash (CheckDashIcon): checked shows the
+  // first, indeterminate the second.
+  .greese-Checkbox-icon path:last-child,
+  .greese-Checkbox-input:indeterminate + .greese-Checkbox-icon path:first-child {
     display: none;
   }
 
-  .greese-Checkbox-input:indeterminate + .greese-Checkbox-icon .greese-Checkbox-dash {
+  .greese-Checkbox-input:indeterminate + .greese-Checkbox-icon path:last-child {
     display: inline;
   }
 }

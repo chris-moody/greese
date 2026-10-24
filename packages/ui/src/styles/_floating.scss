@@ -6,7 +6,7 @@
   color: var(--greese-color-fg);
   background-color: var(--greese-color-surface-overlay);
   border: 1px solid var(--greese-color-border);
-  border-radius: var(--greese-radius-md);
+  border-radius: var(--greese-corner-panel);
   box-shadow: var(--greese-shadow-lg);
 }
 
@@ -22,31 +22,118 @@
   position-try-fallbacks: flip-block, flip-inline;
 }
 
-/// Fade (and optionally slide) in on open and out on close, including the
-/// top-layer exit, where supported. Instant elsewhere and under reduced motion.
-/// The exit can be restyled per instance with the `greese` prop's `exit`.
-@mixin enter-exit($open-selector, $from-translate: 0 0) {
-  transition:
-    opacity var(--greese-duration-fast) var(--greese-easing-standard),
-    translate var(--greese-duration-fast) var(--greese-easing-standard),
-    scale var(--greese-duration-fast) var(--greese-easing-standard),
-    display var(--greese-duration-fast) allow-discrete,
-    overlay var(--greese-duration-fast) allow-discrete;
+/// What an overlay's exit sets, and the base theme's values: a fade back toward
+/// the overlay's origin, no mask.
+$_exit: (
+  opacity: 0,
+  translate: var(--greese-overlay-origin),
+  scale: 1,
+  mask-image: none,
+  mask-repeat: no-repeat,
+  mask-position: 50% 50%,
+  mask-size: 100% 100%,
+  mask-from: 100% 100%,
+  transform: none,
+  transform-origin: 50% 50%,
+);
+
+/// Which of the theme's motion roles an overlay takes (ADR 0025): `$role`'s
+/// entrance and exit, else the `overlay` role's (when `$shared`), else the base
+/// theme's. A theme assigns roles with the kit's `motion-defaults()`
+/// (`dialog: iris-in`, `popover-exit: wipe-out-up`); the effects keep their
+/// own keyframes. Resolved into the overlay's own variables, so a part can
+/// take another role: a drawer is a dialog that takes `drawer`.
+@mixin motion-role($role, $shared: true) {
+  $enter: greese-overlay-in;
+
+  @if $shared {
+    $enter: var(--greese-motion-overlay, greese-overlay-in);
+  }
+
+  --greese-overlay-enter: var(--greese-motion-#{$role}, #{$enter});
+
+  @each $property, $base in $_exit {
+    $value: $base;
+
+    @if $shared {
+      $value: var(--greese-motion-overlay-exit-#{$property}, #{$base});
+    }
+
+    --greese-overlay-exit-#{$property}: var(--greese-motion-#{$role}-exit-#{$property}, #{$value});
+  }
+}
+
+/// An overlay's exit value: an instance's or a component's own exit
+/// (`--greese-motion-exit-*`, from the `greese` prop or the kit's `motion()`),
+/// else its role's.
+@function _exit($property) {
+  @return var(--greese-motion-exit-#{$property}, var(--greese-overlay-exit-#{$property}));
+}
+
+/// An overlay's motion is the theme's (ADR 0025): the component only says
+/// what it is (`$role`) and where it opens from (`$origin`, as
+/// `--greese-overlay-origin`: a drawer's edge, a popover's trigger); the
+/// theme decides what to do with them.
+///
+/// - Arriving: its role's entrance, over `--greese-motion-overlay-duration`
+///   (the base theme's is a short fade from the origin). A component's
+///   `motion((enter: …))` or an instance's `greese` prop overrides it.
+/// - Leaving: its role's exit (the base theme fades back toward the origin),
+///   over the theme's exit timing, or the instance's or component's exit.
+///
+/// The transition here isn't motion of its own: closing, an overlay has to
+/// stay rendered (`display` and `overlay`, allow-discrete) while the exit
+/// plays, and its properties move to the exit's values. Opening, there is
+/// nothing to transition from, so only the animation plays. Under reduced
+/// motion the duration tokens collapse and the animation is off.
+@mixin enter-exit($open-selector, $origin: 0 0, $role: dialog) {
+  @include motion-role($role);
+
+  --greese-overlay-origin: #{$origin};
+
+  transition-property:
+    opacity,
+    translate,
+    scale,
+    transform,
+    mask-size,
+    mask-position,
+    display,
+    overlay;
+  transition-duration: var(--greese-motion-exit-duration, var(--greese-duration-fast));
+  transition-timing-function: var(--greese-motion-exit-ease, var(--greese-easing-exit));
+  transition-behavior: allow-discrete;
+
+  // A wipe, iris or pocket exit's mask: held open, at the size it starts
+  // from, then sized away as it closes. Without one, the image is `none`.
+  mask-image: _exit(mask-image);
+  mask-repeat: _exit(mask-repeat);
+  mask-position: _exit(mask-position);
+  mask-size: _exit(mask-from);
+  transform-origin: _exit(transform-origin);
 
   &#{$open-selector} {
-    opacity: 1;
-    translate: 0 0;
-
-    @starting-style {
-      opacity: 0;
-      translate: $from-translate;
+    @include mixins.motion-safe {
+      animation-name: var(--greese-overlay-enter);
+      animation-duration: var(--greese-motion-overlay-duration, var(--greese-duration-fast));
+      animation-timing-function: var(--greese-motion-enter-ease, var(--greese-easing-enter));
+      animation-fill-mode: backwards;
     }
   }
 
-  // The `greese` prop's `exit` presets set these (utils/greese.ts).
   &:not(#{$open-selector}) {
-    opacity: 0;
-    translate: var(--greese-motion-exit-translate, #{$from-translate});
-    scale: var(--greese-motion-exit-scale, 1);
+    opacity: _exit(opacity);
+    translate: _exit(translate);
+    scale: _exit(scale);
+    transform: _exit(transform);
+    mask-size: _exit(mask-size);
+  }
+
+  // The base theme's entrance: a fade from the component's origin.
+  @keyframes greese-overlay-in {
+    from {
+      opacity: 0;
+      translate: var(--greese-overlay-origin);
+    }
   }
 }

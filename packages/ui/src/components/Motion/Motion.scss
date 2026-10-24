@@ -28,6 +28,13 @@
     --greese-motion-dir: -1;
   }
 
+  // `'theme'`: whatever entrance the theme assigns (ADR 0025). Themes reassign
+  // which effect plays; the effects themselves keep their own keyframes.
+  .greese-Motion--enter-theme,
+  .greese-Motion--view-theme {
+    --greese-motion-name: var(--greese-motion-theme, greese-fade-up);
+  }
+
   // Each effect's name classes, and what an overlay's exit changes: read by
   // the floating enter-exit mixin.
   @each $name, $plan in defaults.$effects {

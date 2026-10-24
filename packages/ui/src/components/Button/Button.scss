@@ -35,7 +35,7 @@
     user-select: none;
     background-color: var(--greese-button-bg);
     border: 1px solid var(--greese-button-border, transparent);
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-control);
     transition:
       background-color var(--greese-duration-fast) var(--greese-easing-standard),
       border-color var(--greese-duration-fast) var(--greese-easing-standard),

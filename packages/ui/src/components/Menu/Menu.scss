@@ -6,7 +6,7 @@
   .greese-Menu {
     @include floating.anchored;
     @include floating.surface;
-    @include floating.enter-exit(':popover-open', 0 -0.25rem);
+    @include floating.enter-exit(':popover-open', 0 -0.25rem, popover);
 
     min-inline-size: 11rem;
     padding: var(--greese-space-1);
@@ -29,7 +29,7 @@
     cursor: pointer;
     background: none;
     border: 0;
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
     outline: none;
 
     // Focus is the highlight: keyboard and pointer both move it.

@@ -15,7 +15,7 @@
     background-color: var(--greese-color-surface);
     border: 1px solid var(--greese-color-border-strong);
     border-block-end-width: 2px;
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
 
     // A shortcut: the outer <kbd> only groups the keys.
     &:has(> .greese-Key) {

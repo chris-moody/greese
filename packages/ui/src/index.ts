@@ -26,3 +26,8 @@ export {
   type ColorScheme,
   type SchemeScriptOptions,
 } from './colorScheme.ts'
+export {
+  createStoredValue,
+  type StoredValue,
+  type StoredValueOptions,
+} from './storage.ts'

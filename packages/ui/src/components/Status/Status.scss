@@ -26,7 +26,7 @@ $sizes: (
     block-size: var(--greese-status-size);
     vertical-align: middle;
     background-color: var(--greese-status-tone);
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
   }
 
   .greese-Status--neutral {

@@ -9,7 +9,7 @@
     padding: var(--greese-tile-padding, var(--greese-space-3) var(--greese-space-4));
     color: var(--greese-color-fg);
     border: 1px solid var(--greese-color-border);
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-panel);
   }
 
   .greese-Tile--filled {

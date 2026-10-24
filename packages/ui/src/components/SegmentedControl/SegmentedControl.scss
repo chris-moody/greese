@@ -28,7 +28,7 @@
     padding: 3px;
     background-color: var(--greese-color-surface);
     border: 1px solid var(--greese-color-border);
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-control);
   }
 
   // Sizes
@@ -53,7 +53,7 @@
     color: var(--greese-color-fg-muted);
     white-space: nowrap;
     cursor: pointer;
-    border-radius: calc(var(--greese-radius-md) - 3px);
+    border-radius: calc(var(--greese-corner-control) - 3px);
     transition:
       background-color var(--greese-duration-fast) var(--greese-easing-standard),
       color var(--greese-duration-fast) var(--greese-easing-standard);
@@ -62,10 +62,15 @@
       color: var(--greese-color-fg);
     }
 
+    // The chosen segment's fill and edge are hooks a theme reassigns (a color
+    // variant outlines it).
     &:has(:checked) {
       color: var(--greese-color-fg);
-      background-color: var(--greese-color-surface-overlay);
-      box-shadow: var(--greese-shadow-sm);
+      background-color: var(
+        --greese-segment-current-bg,
+        var(--greese-color-surface-overlay)
+      );
+      box-shadow: var(--greese-segment-current-edge, var(--greese-shadow-sm));
     }
 
     &:has(:focus-visible) {
@@ -84,6 +89,14 @@
   }
 
   // The real radio covers the segment: it takes clicks, taps and focus.
+  // Icons and text centered as boxes: an inline icon sits on the text's
+  // middle, below the segment's.
+  .greese-Segment-label {
+    display: inline-flex;
+    gap: var(--greese-space-1);
+    align-items: center;
+  }
+
   .greese-Segment-input {
     position: absolute;
     inset: 0;

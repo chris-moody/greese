@@ -1,0 +1,6 @@
+@layer greese.components {
+  // The link to the section the page is on (ScrollSpy sets the attribute).
+  .greese-ScrollSpy [aria-current='location'] {
+    color: var(--greese-color-primary);
+  }
+}

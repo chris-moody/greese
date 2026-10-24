@@ -54,7 +54,7 @@
     cursor: pointer;
     background: none;
     border: 0;
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-panel);
     transition: color var(--greese-duration-fast) var(--greese-easing-standard);
 
     @include mixins.focus-ring(-2px);

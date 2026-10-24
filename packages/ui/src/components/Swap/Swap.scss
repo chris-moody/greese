@@ -14,7 +14,7 @@
     cursor: pointer;
     background: none;
     border: 0;
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-control);
 
     @include mixins.focus-ring;
 

@@ -15,7 +15,7 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
   block-size: var(--greese-colorpicker-thumb);
   background: transparent;
   border: 3px solid #fff;
-  border-radius: 50%;
+  border-radius: var(--greese-corner-round);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--greese-color-black) 35%, transparent),
     var(--greese-shadow-sm);
@@ -50,7 +50,7 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
       linear-gradient(to top, #000, transparent),
       linear-gradient(to right, #fff, transparent),
       hsl(var(--greese-colorpicker-hue) 100% 50%);
-    border-radius: var(--greese-radius-md);
+    border-radius: var(--greese-corner-panel);
     box-shadow: inset 0 0 0 1px
       color-mix(in srgb, var(--greese-color-black) 10%, transparent);
 
@@ -98,7 +98,7 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
         var(--greese-colorpicker-current)
       ),
       $checker;
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
 
     // The theme's border, so dark swatches stay visible on dark surfaces.
     box-shadow: inset 0 0 0 1px var(--greese-color-border-strong);
@@ -135,7 +135,7 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
     &::-webkit-slider-runnable-track {
       block-size: 0.75rem;
       background: var(--greese-colorpicker-track);
-      border-radius: var(--greese-radius-pill);
+      border-radius: var(--greese-corner-pill);
       box-shadow: inset 0 0 0 1px
         color-mix(in srgb, var(--greese-color-black) 10%, transparent);
     }
@@ -143,7 +143,7 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
     &::-moz-range-track {
       block-size: 0.75rem;
       background: var(--greese-colorpicker-track);
-      border-radius: var(--greese-radius-pill);
+      border-radius: var(--greese-corner-pill);
     }
 
     &::-webkit-slider-thumb {
@@ -208,7 +208,7 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
       linear-gradient(var(--greese-colorpicker-swatch), var(--greese-colorpicker-swatch)),
       $checker;
     border: 0;
-    border-radius: var(--greese-radius-sm);
+    border-radius: var(--greese-corner-inset);
 
     // The theme's border, so dark swatches stay visible on dark surfaces.
     box-shadow: inset 0 0 0 1px var(--greese-color-border-strong);

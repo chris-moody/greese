@@ -20,7 +20,7 @@
     margin: 0;
     cursor: pointer;
     background-color: var(--greese-color-border-strong);
-    border-radius: var(--greese-radius-pill);
+    border-radius: var(--greese-corner-pill);
     appearance: none;
 
     &:disabled {
@@ -48,7 +48,7 @@
     margin-inline-start: 0.125rem;
     pointer-events: none;
     background-color: var(--greese-color-canvas);
-    border-radius: 50%;
+    border-radius: var(--greese-corner-round);
     box-shadow: var(--greese-shadow-sm);
     transition: translate var(--greese-duration-fast) var(--greese-easing-standard);
   }

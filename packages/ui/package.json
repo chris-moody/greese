@@ -38,7 +38,8 @@
     "bin",
     "dist",
     "src/styles",
-    "src/components/**/*.scss"
+    "src/components/**/*.scss",
+    "themes"
   ],
   "exports": {
     ".": {
@@ -57,6 +58,10 @@
       "types": "./dist/utilities.d.ts",
       "default": "./dist/utilities.js"
     },
+    "./shapes": {
+      "types": "./dist/shapes.d.ts",
+      "default": "./dist/shapes.js"
+    },
     "./utilities-files": {
       "types": "./dist/utilitiesFiles.d.ts",
       "default": "./dist/utilitiesFiles.js"
@@ -71,6 +76,7 @@
     "./css/*": "./dist/css/*",
     "./tokens.css": "./dist/tokens.css",
     "./palette.css": "./dist/palette.css",
+    "./themes/*": "./themes/*",
     "./scss": {
       "sass": "./src/styles/index.scss"
     },
@@ -79,6 +85,18 @@
     },
     "./scss/config": {
       "sass": "./src/styles/_config.scss"
+    },
+    "./scss/mixins": {
+      "sass": "./src/styles/public/_mixins.scss"
+    },
+    "./scss/tones": {
+      "sass": "./src/styles/public/_tones.scss"
+    },
+    "./scss/floating": {
+      "sass": "./src/styles/public/_floating.scss"
+    },
+    "./scss/controls": {
+      "sass": "./src/styles/public/_controls.scss"
     },
     "./scss/tokens": "./dist/_tokens.scss",
     "./scss/layers": "./dist/_layers.scss",

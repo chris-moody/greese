@@ -12,7 +12,24 @@ module.exports = [
     // Per-component CSS (css/<Name>.css) only ships what's imported.
     // 20 → 21 kB (2026-10-20): the type system (ADR 0016): the default
     // variants' custom properties at four breakpoints, and a class per variant.
-    limit: '21 kB',
+    // 21 kB → 21.15 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025):
+    // their keyframes and classes, about 0.1 kB.
+    // 21.15 kB → 21.5 kB (2026-10-23): wipes and pockets in every direction, arriving
+    // and leaving (27 more effects, generated from one table of directions; ADR 0025
+    // addendum): keyframes for the six more entrances; exits play in the runtime (21.45
+    // kB).
+    // 21.5 kB → 21.75 kB (2026-10-23): overlays leave with wipes and pockets too (ADR
+    // 0025 addendum): an exit class with its mask for each of the 21 new exits, and the
+    // floating mixin's mask (21687 B).
+    // 21.75 kB → 22.5 kB (2026-10-23): irises in eight directions, arriving and
+    // leaving (16 more effects: keyframes and exit classes), and themes that
+    // reassign instead of overwrite (ADR 0025): the motion roles every overlay,
+    // toast, backdrop, tab panel and table row reads, and the radius roles
+    // (`--greese-corner-*`) components read in place of the scale (22420 B).
+    // 22.5 kB → 22.75 kB (2026-10-24): the three-dimensional effects (ADR 0025
+    // addendum): keyframes for six entrances, exit classes for six more, and the
+    // overlay exit's `transform` and pivot (22.72 kB).
+    limit: '22.75 kB',
   },
   {
     name: 'CSS: utilities.css (the whole set)',
