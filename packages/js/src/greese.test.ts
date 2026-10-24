@@ -48,6 +48,23 @@ describe('ease', () => {
 })
 
 describe('mix', () => {
+  it('reads the color forms browsers compute: oklab(), oklch() and color(srgb)', () => {
+    const near = (input: string, expected: number[]) =>
+      parseColor(input)!.forEach((v, i) => expect(v).toBeCloseTo(expected[i]!, 0))
+    // As Chrome computes color-mix(in oklab, red 50%, blue), and Firefox's
+    // canvas converts it: #8c53a2.
+    near('oklab(0.539974 0.0962086 -0.0928316)', [140, 83, 162, 1])
+    near('oklch(0.7 0.1 200)', [64, 177, 183, 1])
+    near('color(srgb 0.5 0 0.5 / 0.5)', [127.5, 0, 127.5, 0.5])
+    expect(parseColor('color(display-p3 1 0 0)')).toBeUndefined()
+  })
+
+  it('blends between those forms and rgb() instead of switching halfway', () => {
+    const halfway = mix('rgb(255, 0, 0)', 'color(srgb 0 0 1)')(0.5)
+    expect(halfway).toMatch(/^rgb\(\d+ \d+ \d+ \/ 1\)$/)
+    expect(halfway).not.toBe('color(srgb 0 0 1)')
+  })
+
   it('interpolates numbers, units and number-shaped strings', () => {
     expect(mix(0, 10)(0.25)).toBe(2.5)
     expect(mix('10px', '30px')(0.5)).toBe('20px')

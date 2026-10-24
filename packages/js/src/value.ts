@@ -14,9 +14,14 @@ const round = (n: number): number => Math.round(n * 1e6) / 1e6
 type Rgba = [number, number, number, number]
 
 const HEX = /^#([\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/i
-const RGB = /^rgba?\(([^)]+)\)$/i
+// The forms browsers compute colors to: `rgb()`, and for color-mix() and the
+// newer spaces `oklab()`, `oklch()` and `color(srgb …)`.
+const FUNCTION = /^(rgba?|oklab|oklch|color)\(\s*(?:srgb\s+)?([^)]+)\)$/i
 
-/** Parses `#rgb[a]`, `#rrggbb[aa]`, `rgb()`/`rgba()` and `transparent`. */
+/**
+ * Parses `#rgb[a]`, `#rrggbb[aa]`, `rgb()`/`rgba()`, `oklab()`, `oklch()`,
+ * `color(srgb …)` and `transparent`, to sRGB channels (0–255) and alpha.
+ */
 export const parseColor = (input: string): Rgba | undefined => {
   const s = input.trim()
   if (s === 'transparent') return [0, 0, 0, 0]
@@ -26,18 +31,24 @@ export const parseColor = (input: string): Rgba | undefined => {
     const n = (i: number) => parseInt(full.slice(i, i + 2), 16)
     return [n(0), n(2), n(4), full.length === 8 ? n(6) / 255 : 1]
   }
-  const rgb = RGB.exec(s)?.[1]
-  if (!rgb) return undefined
-  const parts = rgb.split(/[\s,/]+/).filter(Boolean)
+  const m = FUNCTION.exec(s)
+  // `color()` in another space (display-p3…) isn't sRGB: not read here.
+  if (!m || (m[1] === 'color' && !/^color\(\s*srgb\s/i.test(s))) return undefined
+  const parts = m[2]!.split(/[\s,/]+/).filter(Boolean)
   if (parts.length < 3) return undefined
-  const channel = (p: string, max: number) =>
-    p.endsWith('%') ? (parseFloat(p) / 100) * max : parseFloat(p)
-  return [
-    channel(parts[0]!, 255),
-    channel(parts[1]!, 255),
-    channel(parts[2]!, 255),
-    parts[3] === undefined ? 1 : channel(parts[3], 1),
-  ]
+  // Browsers compute these spaces' channels as plain numbers (`none` is 0);
+  // only rgb() takes percentages, of 255.
+  const [x, y, z, a = 1] = parts.map((p, i) =>
+    p.endsWith('%') ? (parseFloat(p) / 100) * (i < 3 ? 255 : 1) : parseFloat(p) || 0
+  )
+  const space = m[1]!.toLowerCase()
+  if (space === 'color') return [x! * 255, y! * 255, z! * 255, a]
+  if (space === 'oklab') return labToRgb([x!, y!, z!, a])
+  if (space === 'oklch') {
+    const h = (z! * Math.PI) / 180
+    return labToRgb([x!, y! * Math.cos(h), y! * Math.sin(h), a])
+  }
+  return [x!, y!, z!, a]
 }
 
 // sRGB <-> OKLab (Björn Ottosson). Mixing in OKLab keeps transitions
@@ -63,14 +74,22 @@ const toOklab = ([r, g, b, a]: Rgba): Rgba => {
   ]
 }
 
-const fromOklab = ([L, A, B, a]: Rgba): string => {
+/** OKLab to sRGB channels (0–255, clipped to sRGB) and alpha. */
+function labToRgb([L, A, B, a]: Rgba): Rgba {
   const l = (L + 0.3963377774 * A + 0.2158037573 * B) ** 3
   const m = (L - 0.1055613458 * A - 0.0638541728 * B) ** 3
   const s = (L - 0.0894841775 * A - 1.291485548 * B) ** 3
   const c = (v: number) => Math.round(Math.min(255, Math.max(0, fromLinear(v))))
-  const r = c(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s)
-  const g = c(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s)
-  const b = c(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s)
+  return [
+    c(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s),
+    c(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s),
+    c(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s),
+    a,
+  ]
+}
+
+const fromOklab = (lab: Rgba): string => {
+  const [r, g, b, a] = labToRgb(lab)
   return `rgb(${r} ${g} ${b} / ${round(a)})`
 }
 

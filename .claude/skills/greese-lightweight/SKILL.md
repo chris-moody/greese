@@ -33,7 +33,7 @@ budgets and ADR 0008 covers greese.js.
 | `greese` prop runtime (lazy chunk)                      | 7 kB                     | same                             |
 | `greese.css` (`@greese/ui`)                             | 20 kB                    | `packages/ui/.size-limit.cjs`    |
 | `base.css` (`@greese/ui`)                               | 1 kB                     | same                             |
-| greese.js: everything / `animate` / `ease` / `<script>` | 6.5 / 5.5 / 1 / 6.85 kB | `packages/js/.size-limit.json`   |
+| greese.js: everything / `animate` / `ease` / `<script>` | 6.55 / 5.65 / 1 / 6.9 kB | `packages/js/.size-limit.json`   |
 
 Every component entry includes the `greese` prop's shared static part (about
 0.75 kB: resolver + island). The runtime is a lazy chunk, behind a dynamic

@@ -203,6 +203,13 @@ so every later computed-style read forced a style recalculation.
   play-through. `seek()` to a label that doesn't exist throws. Cost:
   `animate` 5.18 → 5.47 kB and the `<script>` build 6.48 → 6.77 kB, over
   their budgets, raised to 5.5 and 6.85 kB for this change.
+- **Amended 2026-10-24: computed colors.** Browsers compute `color-mix()` and
+  the newer color spaces to `oklab()`, `oklch()` and `color(srgb …)`, which
+  `parseColor` didn't read, so an animation from a GreeseUI token (built
+  with `color-mix(in oklab, …)`) switched halfway instead of blending. It
+  reads them now (other `color()` spaces still switch). Cost: everything
+  6.42 → 6.52 kB, `animate` 5.49 → 5.61 kB and the `<script>` build 6.8 →
+  6.9 kB; budgets raised to 6.55, 5.65 and 6.9 kB.
 - **Measured gain, honestly:** on the homepage's first screen, these changes
   cut layouts during load from 194 to 94 and style recalculations from 338
   to 160. The time inside the forced first style calculation fell by about
