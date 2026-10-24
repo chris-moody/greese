@@ -16,6 +16,7 @@
     "lighthouse": "lhci autorun"
   },
   "dependencies": {
+    "@greese/icons": "*",
     "@greese/react": "*",
     "@greese/ui": "*",
     "react": "^19.3.1",

@@ -118,12 +118,12 @@ test('an overlay plays its enter preset and exits with its exit preset', async (
   )
   await page.keyboard.press('Escape')
   await expect(dialog).toBeHidden()
-  // Closed: the exit state the transition ran to.
+  // Closed: the exit state the transition ran to (scaleOut ends at 0).
   expect(
     await page
       .locator('dialog.greese-Motion--exit-scale-out')
       .evaluate((el) => getComputedStyle(el).scale)
-  ).toBe('0.95')
+  ).toBe('0')
 })
 
 test.describe('reduced motion', () => {

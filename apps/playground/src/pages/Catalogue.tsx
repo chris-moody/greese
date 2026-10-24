@@ -1,4 +1,5 @@
 import { useState, type JSX } from 'react'
+import { InfoIcon } from '@greese/icons'
 import {
   ScrollCarousel,
   ScrollCarouselSlide,
@@ -22,11 +23,7 @@ const tile = (hue: number) => ({
   background: `hsl(${hue} 60% 45%)`,
 })
 
-const Glyph = () => (
-  <svg viewBox="0 0 16 16" aria-hidden="true">
-    <circle cx="8" cy="8" r="5" fill="currentColor" />
-  </svg>
-)
+const Glyph = () => <InfoIcon />
 
 /** Fixtures for e2e/catalogue.spec.ts: the components from ADR 0011. */
 export const Catalogue = (): JSX.Element => {

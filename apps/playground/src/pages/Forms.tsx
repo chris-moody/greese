@@ -17,14 +17,9 @@ import {
   TextField,
   ToggleButton,
 } from '@greese/react'
+import { PlusIcon } from '@greese/icons'
 import '@greese/react/base.css'
 import '@greese/react/styles.css'
-
-const Plus = () => (
-  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M8 3v10M3 8h10" />
-  </svg>
-)
 
 /** Form fixtures for e2e/forms.spec.ts: keyboard, touch and submission. */
 export const Forms = (): JSX.Element => {
@@ -77,7 +72,7 @@ export const Forms = (): JSX.Element => {
               Small button
             </Button>
             <IconButton label="Add item" size="sm">
-              <Plus />
+              <PlusIcon strokeWidth={2} />
             </IconButton>
           </Stack>
         </Stack>
