@@ -11,7 +11,7 @@ are bugs.
 
 | Docs            | Path                                                                                                                                 |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Guides (MDX)    | `apps/docs/stories/guides/` (Introduction, Getting started, Theming, Responsive props, Accessibility, Animation, Migrating from MUI) |
+| Guides (MDX)    | `apps/docs/stories/guides/` (Introduction, Getting started, Theming, Responsive props, Accessibility, Animation, Utility classes) |
 | Stories         | `apps/docs/stories/<Category>/`                                                                                                      |
 | Package READMEs | `packages/{react,tokens,greese}/README.md`                                                                                           |
 | Decisions       | `docs/adr/`                                                                                                                          |

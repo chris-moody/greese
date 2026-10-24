@@ -176,15 +176,16 @@ try { compile('@include greese.component(Buton) {}') } catch { failed = true }
 if (!failed) throw new Error('kit accepted an unknown component')
 const manifest = JSON.parse(readFileSync(createRequire(import.meta.url).resolve('@greese/ui/style-manifest.json'), 'utf8'))
 if (!manifest.blocks.Button?.variables.includes('--greese-button-tone')) throw new Error('style manifest incomplete')
+// The partials theme authors @use (ADR 0021): published, and the same modules the kit configures.
+const authored = compileString("@use 'pkg:@greese/ui/scss/config' with ($breakpoints: (xs: 0px, sm: 500px, md: 700px, lg: 1000px, xl: 1400px));\\n@use 'pkg:@greese/ui/scss/kit' as greese;\\n@use 'pkg:@greese/ui/scss/mixins';\\n@use 'pkg:@greese/ui/scss/tones';\\n@use 'pkg:@greese/ui/scss/floating';\\n@use 'pkg:@greese/ui/scss/controls';\\n@include greese.component(Card) { @include mixins.up(md) { gap: 1px; } @include floating.surface; }", { importers: [new NodePackageImporter()], url: new URL(import.meta.url) }).css
+if (!authored.includes('@media (width >= 700px)') || !authored.includes('.greese-Card')) throw new Error('authoring entry points wrong: ' + authored)
 `
   )
   run('node', ['kit.mjs'], work)
-  ok(
-    'pkg:@greese/ui/scss/kit compiles and checks names; style-manifest.json resolves'
-  )
+  ok('pkg:@greese/ui/scss/kit compiles and checks names; the authoring partials resolve; style-manifest.json resolves')
 
-  // 4c. The icons, separate from the library: they render on the server and
-  // the library doesn't pull them in.
+  // 4c. The icons render on the server, and the library depends on them (it
+  // draws its own glyphs with them: ADR 0020).
   writeFileSync(
     join(work, 'icons.mjs'),
     `import { readFileSync } from 'node:fs'
@@ -195,11 +196,11 @@ const html = renderToString(createElement(SearchIcon, { title: 'Search' }))
 if (!html.includes('role="img"') || !html.includes('<title>Search</title>')) throw new Error('icon html: ' + html)
 if (createIcon('Kite', 'M0 0').displayName !== 'KiteIcon') throw new Error('createIcon')
 const react = JSON.parse(readFileSync('node_modules/@greese/react/package.json', 'utf8'))
-if (react.dependencies?.['@greese/icons']) throw new Error('@greese/react must not depend on the icons')
+if (!react.dependencies?.['@greese/icons']) throw new Error('@greese/react must depend on the icons')
 `
   )
   run('node', ['icons.mjs'], work)
-  ok('@greese/icons renders on the server, and @greese/react does not depend on it')
+  ok('@greese/icons renders on the server, and @greese/react depends on it')
 
   // 5. Every per-component @import points at a shipped file: React's
   // stylesheets import @greese/ui's, which import core.
@@ -211,7 +212,8 @@ if (react.dependencies?.['@greese/icons']) throw new Error('@greese/react must n
   ]) {
     for (const file of readdirSync(dir)) {
       for (const [, target] of readFileSync(join(dir, file), 'utf8').matchAll(pattern)) {
-        if (!existsSync(join(base, target))) throw new Error(`${file} imports missing ${target}`)
+        if (!existsSync(join(base, target)))
+          throw new Error(`${file} imports missing ${target}`)
       }
     }
   }
@@ -221,15 +223,25 @@ if (react.dependencies?.['@greese/icons']) throw new Error('@greese/react must n
 
   // 5b. @greese/ui is framework-free: it needs no other package, and plain
   // HTML can use its stylesheet.
-  const ui = JSON.parse(readFileSync(join(work, 'node_modules/@greese/ui/package.json'), 'utf8'))
+  const ui = JSON.parse(
+    readFileSync(join(work, 'node_modules/@greese/ui/package.json'), 'utf8')
+  )
   if (ui.dependencies || ui.peerDependencies)
     throw new Error('@greese/ui must not depend on any package')
-  const react = JSON.parse(readFileSync(join(work, 'node_modules/@greese/react/package.json'), 'utf8'))
+  const react = JSON.parse(
+    readFileSync(join(work, 'node_modules/@greese/react/package.json'), 'utf8')
+  )
   if (!react.dependencies?.['@greese/ui'] || !react.dependencies?.['@greese/js'])
     throw new Error('@greese/react must depend on @greese/ui and @greese/js')
-  if (!readFileSync(join(work, 'node_modules/@greese/ui/dist/greese.css'), 'utf8').includes('.greese-Button'))
+  if (
+    !readFileSync(join(work, 'node_modules/@greese/ui/dist/greese.css'), 'utf8').includes(
+      '.greese-Button'
+    )
+  )
     throw new Error('greese.css has no Button styles')
-  ok('@greese/ui needs no other package; @greese/react depends on @greese/ui and @greese/js')
+  ok(
+    '@greese/ui needs no other package; @greese/react depends on @greese/ui and @greese/js'
+  )
 
   // 6. A bundler follows (and de-duplicates) the per-component import chain.
   writeFileSync(

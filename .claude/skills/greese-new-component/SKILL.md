@@ -24,8 +24,7 @@ has a check.
 ## 2. Design the API
 
 - Props mirror the native element's (`ComponentPropsWithRef<'el'>`), plus
-  only what's needed. Name things as the platform or MUI does, to ease
-  migration; check `stories/guides/MigratingFromMui.mdx`.
+  only what's needed. Name things as the platform does.
 - Value components take `value` / `defaultValue` / `onValueChange` (via
   `useControllableState`) and keep the native `onChange`.
 - Layout-ish props are `Responsive<T>` where a per-breakpoint value is

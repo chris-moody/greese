@@ -12,9 +12,10 @@ animation library, greese.js (`@greese/js`), and framework packages such as
 | `@greese/react`                               | `packages/react`  |
 | `@greese/js` (greese.js)                      | `packages/js`     |
 | `@greese/icons` (optional)                    | `packages/icons`  |
+| `@greese/mcp` (MCP server)                    | `packages/mcp`    |
 | Storybook docs                                | `apps/docs`       |
 | e2e, visual, Lighthouse                       | `apps/playground` |
-| Web app: homepage `/`, Theme Studio `/studio` | `apps/site`       |
+| Web app: `/`, `/studio`, `/templates`         | `apps/site`       |
 
 ## Before changing anything
 
@@ -40,6 +41,9 @@ ADRs in `docs/adr/` that govern each area. Then use the skill for the task:
 - **Don't push or publish** unless asked. Publishing is deferred.
 - **Every exported component has its own story page,** parts like
   AccordionItem included; docs lint enforces it.
+- **Icons live in `@greese/icons`.** Never inline an `<svg>` icon or write a
+  one-off `<Svg>` component: add it to `packages/icons/src/icons.tsx` (ADR 0020;
+  ESLint enforces it).
 - **No new runtime dependencies** without an ADR.
 - **Budgets are only raised deliberately,** with the reason stated.
 - **Report gate results faithfully,** failures and skips included.
