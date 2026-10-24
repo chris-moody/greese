@@ -12,7 +12,9 @@ describe('the hosted studio', () => {
       const served = compileSpec(spec, FILE)
       expect(await compileInBrowser(spec)).toEqual(served)
     }
-  })
+    // Two compiles: a couple of seconds alone, longer while every package
+    // builds and tests at once.
+  }, 30_000)
 
   it('imports SCSS that uses the kit', async () => {
     const result = await hostedApi.import({
