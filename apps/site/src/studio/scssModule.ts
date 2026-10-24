@@ -280,7 +280,7 @@ export const declarationProblems = (
 }
 
 /** What is wrong with one import. */
-const useProblem = ({ url, line }: ScssUse): string | undefined => {
+const scssUseProblem = ({ url, line }: ScssUse): string | undefined => {
   if (url.startsWith('sass:')) return undefined
   if (url.startsWith(PKG)) {
     const entry = url.slice(PKG.length)
@@ -299,7 +299,7 @@ export const scssProblems = (text: string): string[] => {
   const { uses, body, bodyLine, problems } = splitScss(text)
   const out = [...problems]
   for (const use of uses) {
-    const problem = useProblem(use)
+    const problem = scssUseProblem(use)
     if (problem) out.push(problem)
   }
   const bare = body

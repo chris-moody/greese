@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type JSX } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react'
 import {
   Alert,
   Button,
@@ -15,6 +15,7 @@ import {
 } from '@greese/react'
 import { icons } from '../icons.tsx'
 import { useShell } from '../shell.ts'
+import { useStable } from '../useStable.ts'
 import { api, hosted } from './api.ts'
 import { PaletteOptions } from './fields.tsx'
 import { StudioToolbar } from './StudioControls.tsx'
@@ -58,7 +59,13 @@ export const StudioPage = (): JSX.Element => {
   const [drawer, setDrawer] = useState(false)
   // Inspect: a click in the preview picks the component to edit.
   const [inspect, setInspect] = useState(false)
-  const [file, setFile] = useState<FileState>()
+  // The dev server reads the theme file; the hosted studio works on the
+  // theme the shell holds (what was chosen in the header, or last saved).
+  const [file, setFile] = useState<FileState | undefined>(() =>
+    hosted
+      ? { file: 'Kept in this browser', outputs: [], saved: JSON.stringify(spec) }
+      : undefined
+  )
   const [loadError, setLoadError] = useState<string>()
   const [compiled, setCompiled] = useState({
     scss: '',
@@ -95,32 +102,29 @@ export const StudioPage = (): JSX.Element => {
    * wearing (it then shows as unsaved if it differs from the file); only an
    * explicit reload takes the file's.
    */
-  const load = useCallback(async (adopt = true) => {
-    try {
-      const loaded = await api.load()
-      if (adopt) setSpec(loaded.spec)
-      setFile({
-        file: loaded.file,
-        outputs: loaded.outputs,
-        saved: JSON.stringify(loaded.spec),
-      })
-      setChangedOnDisk(false)
-      setWritten(undefined)
-      setLoadError(undefined)
-    } catch (error) {
-      setLoadError((error as Error).message)
-    }
-  }, [])
+  const load = useCallback(
+    async (adopt = true) => {
+      try {
+        const loaded = await api.load()
+        if (adopt) setSpec(loaded.spec)
+        setFile({
+          file: loaded.file,
+          outputs: loaded.outputs,
+          saved: JSON.stringify(loaded.spec),
+        })
+        setChangedOnDisk(false)
+        setWritten(undefined)
+        setLoadError(undefined)
+      } catch (error) {
+        setLoadError((error as Error).message)
+      }
+    },
+    [setSpec]
+  )
 
-  // The dev server reads the theme file; the hosted studio works on the
-  // theme the shell holds (what was chosen in the header, or last saved).
   useEffect(() => {
-    if (hosted) {
-      setFile({ file: 'Kept in this browser', outputs: [], saved: JSON.stringify(spec) })
-      return
-    }
-    void load(false)
-  }, [])
+    if (!hosted) void load(false)
+  }, [load])
 
   // Someone edited the theme file outside the studio.
   useEffect(() => {
@@ -157,31 +161,34 @@ export const StudioPage = (): JSX.Element => {
     return () => clearTimeout(timer)
   }, [spec, file])
 
-  const effectsKey = JSON.stringify(spec.effects ?? null)
-  const custom = customBreakpoints(spec)
-  const breakpointsKey = JSON.stringify(custom ?? null)
-  const cssMessage = (): ToPreview => ({
-    type: 'css',
-    css: compiled.css,
-    full: compiled.full,
-    breakpoints: compiled.full && custom ? Object.fromEntries(custom) : undefined,
-  })
-  useEffect(() => post(cssMessage()), [compiled.css, compiled.full, breakpointsKey, post])
+  const effects = useStable(spec.effects)
+  const custom = useStable(customBreakpoints(spec))
+  const cssMessage = useMemo<ToPreview>(
+    () => ({
+      type: 'css',
+      css: compiled.css,
+      full: compiled.full,
+      breakpoints: compiled.full && custom ? Object.fromEntries(custom) : undefined,
+    }),
+    [compiled.css, compiled.full, custom]
+  )
+  useEffect(() => post(cssMessage), [cssMessage, post])
   useEffect(
     () => post({ type: 'scope', theme: spec.name || undefined, scheme }),
     [spec.name, scheme, post]
   )
   // "Replay motion" in the header remounts the preview's gallery.
   const replayed = useRef(replay)
+  const { play: playLab } = lab
   useEffect(() => {
     if (replay !== replayed.current) {
       post({ type: 'replay' })
-      lab.play()
+      playLab()
     }
     replayed.current = replay
-  }, [replay, post, lab.play])
+  }, [replay, post, playLab])
   useEffect(() => post({ type: 'inspect', on: inspect }), [inspect, post])
-  useEffect(() => post({ type: 'effects', effects: spec.effects }), [effectsKey, post])
+  useEffect(() => post({ type: 'effects', effects }), [effects, post])
   useEffect(() => post({ type: 'feature', block: component }), [component, post])
   useEffect(
     () =>
@@ -196,9 +203,9 @@ export const StudioPage = (): JSX.Element => {
     const onMessage = (event: MessageEvent<FromPreview>) => {
       if (event.origin !== location.origin) return
       if (event.data.type === 'ready') {
-        post(cssMessage())
+        post(cssMessage)
         post({ type: 'scope', theme: spec.name || undefined, scheme })
-        post({ type: 'effects', effects: spec.effects })
+        post({ type: 'effects', effects })
         post({ type: 'inspect', on: inspect })
         post({ type: 'feature', block: component })
       }
@@ -215,7 +222,7 @@ export const StudioPage = (): JSX.Element => {
     }
     window.addEventListener('message', onMessage)
     return () => window.removeEventListener('message', onMessage)
-  }, [compiled.css, spec.name, scheme, inspect, component, post])
+  }, [cssMessage, spec.name, scheme, effects, inspect, component, post, setRendered])
 
   // The open tab is in the URL, so a link can open it. Replaced, not pushed:
   // switching tabs shouldn't fill the back button's history.

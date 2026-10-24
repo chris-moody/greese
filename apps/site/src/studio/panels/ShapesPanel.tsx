@@ -32,6 +32,7 @@ import {
 } from '@greese/ui/shapes'
 import { setIn } from '../edit.ts'
 import type { ThemeSpec } from '../spec.ts'
+import { useStable } from '../../useStable.ts'
 
 type State = 'params' | 'hover' | 'active'
 const STATES: Array<[State, string]> = [
@@ -62,7 +63,9 @@ const PARAM = /^[a-z][a-z0-9]*$/
 
 /** A coordinate at a box size, as the compiler computes it (without rounding arcs). */
 const coord = (l: ShapeLength, size: number, params: ShapeParams) =>
-  ((l.pct ?? 0) / 100) * size + (l.px ?? 0) + (l.param ? (l.k ?? 1) * (params[l.param] ?? 0) : 0)
+  ((l.pct ?? 0) / 100) * size +
+  (l.px ?? 0) +
+  (l.param ? (l.k ?? 1) * (params[l.param] ?? 0) : 0)
 
 /** A state's parameters: the rest values with the state's on top. */
 const paramsIn = (def: ShapeDef, state: State): ShapeParams => ({
@@ -73,10 +76,11 @@ const paramsIn = (def: ShapeDef, state: State): ShapeParams => ({
 const round = (n: number, step = 0.5) => Math.round(n / step) * step
 
 /** Parameters moving toward a target over a normal duration, as the page moves them. */
-const useTween = (target: ShapeParams): ShapeParams => {
+const useTween = (next: ShapeParams): ShapeParams => {
+  // The same object while its values are: a new one starts a tween.
+  const target = useStable(next)
   const [shown, setShown] = useState(target)
   const from = useRef(target)
-  const key = JSON.stringify(target)
   useEffect(() => {
     const start = from.current
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -95,8 +99,7 @@ const useTween = (target: ShapeParams): ShapeParams => {
       if (t < 1) frame = requestAnimationFrame(step)
     })
     return () => cancelAnimationFrame(frame)
-    // The key stands for the target's values.
-  }, [key])
+  }, [target])
   return shown
 }
 
@@ -129,7 +132,9 @@ const Canvas = ({
   const inner = shapePoints(def, w, h, params, border)
   const path = (pts: Array<[number, number]>) =>
     `M${pts.map(([x, y]) => `${x + PAD},${y + PAD}`).join('L')}Z`
-  const handles = def.points.map((p) => [coord(p.x, w, params) + PAD, coord(p.y, h, params) + PAD] as const)
+  const handles = def.points.map(
+    (p) => [coord(p.x, w, params) + PAD, coord(p.y, h, params) + PAD] as const
+  )
   const svg = useRef<SVGSVGElement>(null)
   const drag = useRef<{ i: number; x: number; y: number; def: ShapeDef } | null>(null)
 
@@ -146,7 +151,8 @@ const Canvas = ({
     const next = structuredClone(d.def)
     const p = next.points[d.i]!
     const shift = (l: ShapeLength, delta: number, size: number): ShapeLength => {
-      if (event.shiftKey) return { ...l, pct: round((l.pct ?? 0) + (delta / size) * 100, 0.5) }
+      if (event.shiftKey)
+        return { ...l, pct: round((l.pct ?? 0) + (delta / size) * 100, 0.5) }
       if (l.param) {
         // Move the parameter in the state being edited: every point using it follows.
         const k = l.k ?? 1
@@ -168,7 +174,9 @@ const Canvas = ({
     const mid = (l1: ShapeLength, l2: ShapeLength): ShapeLength => ({
       pct: round(((l1.pct ?? 0) + (l2.pct ?? 0)) / 2, 0.5),
       px: round(((l1.px ?? 0) + (l2.px ?? 0)) / 2),
-      ...(l1.param && l1.param === l2.param && (l1.k ?? 1) === (l2.k ?? 1) && { param: l1.param, k: l1.k }),
+      ...(l1.param &&
+        l1.param === l2.param &&
+        (l1.k ?? 1) === (l2.k ?? 1) && { param: l1.param, k: l1.k }),
     })
     const points = [...def.points]
     points.splice(i + 1, 0, { x: mid(a.x, b.x), y: mid(a.y, b.y) })
@@ -191,7 +199,11 @@ const Canvas = ({
     >
       <rect className="studio-shape-box" x={PAD} y={PAD} width={w} height={h} />
       <path className="studio-shape-fill" d={path(outline)} />
-      <path className="studio-shape-ring" d={`${path(outline)}${path(inner)}`} fillRule="evenodd" />
+      <path
+        className="studio-shape-ring"
+        d={`${path(outline)}${path(inner)}`}
+        fillRule="evenodd"
+      />
       {handles.map(([x, y], i) => {
         const [nx, ny] = handles[(i + 1) % handles.length]!
         return (
@@ -266,11 +278,21 @@ const LengthRow = ({
     <Text variant="p3" weight="semibold">
       {axis}
     </Text>
-    <Num label={`${axis} percent`} value={value.pct} step={0.5} onChange={(pct) => onChange({ ...value, pct })} />
+    <Num
+      label={`${axis} percent`}
+      value={value.pct}
+      step={0.5}
+      onChange={(pct) => onChange({ ...value, pct })}
+    />
     <Text variant="caption" tone="muted">
       % +
     </Text>
-    <Num label={`${axis} pixels`} value={value.px} step={0.5} onChange={(px) => onChange({ ...value, px })} />
+    <Num
+      label={`${axis} pixels`}
+      value={value.px}
+      step={0.5}
+      onChange={(px) => onChange({ ...value, px })}
+    />
     <Text variant="caption" tone="muted">
       px +
     </Text>
@@ -337,14 +359,24 @@ export const ShapesPanel = ({
     <Stack direction="row" gap={2} align="end" wrap="wrap">
       {names.length > 0 && (
         <Field label="Shape">
-          <Select size="sm" value={name} onChange={(e) => (setChosen(e.currentTarget.value), setPoint(0))}>
+          <Select
+            size="sm"
+            value={name}
+            onChange={(e) => (setChosen(e.currentTarget.value), setPoint(0))}
+          >
             {names.map((n) => (
               <option key={n}>{n}</option>
             ))}
           </Select>
         </Field>
       )}
-      <Menu trigger={<Button size="sm" variant="soft" tone="neutral">New shape</Button>}>
+      <Menu
+        trigger={
+          <Button size="sm" variant="soft" tone="neutral">
+            New shape
+          </Button>
+        }
+      >
         {Object.keys(SHAPE_PRESETS).map((preset) => (
           <MenuItem key={preset} onSelect={() => create(preset)}>
             {preset}
@@ -358,8 +390,8 @@ export const ShapesPanel = ({
     return (
       <Stack gap={3}>
         <Text variant="p3" tone="muted">
-          Shapes outline buttons and containers with one clip and a border that follows it, and
-          animate by their parameters. Start one from a preset.
+          Shapes outline buttons and containers with one clip and a border that follows
+          it, and animate by their parameters. Start one from a preset.
         </Text>
         {header}
       </Stack>
@@ -386,14 +418,26 @@ export const ShapesPanel = ({
 
       <Stack gap={2}>
         <Stack direction="row" justify="between" align="center" gap={2} wrap="wrap">
-          <SegmentedControl label="Preview box" hideLabel size="xs" value={box} onValueChange={(v) => setBox(v as BoxName)}>
+          <SegmentedControl
+            label="Preview box"
+            hideLabel
+            size="xs"
+            value={box}
+            onValueChange={(v) => setBox(v as BoxName)}
+          >
             {Object.entries(BOXES).map(([k, b]) => (
               <Segment key={k} value={k}>
                 {b.label}
               </Segment>
             ))}
           </SegmentedControl>
-          <SegmentedControl label="State" hideLabel size="xs" value={state} onValueChange={(v) => setState(v as State)}>
+          <SegmentedControl
+            label="State"
+            hideLabel
+            size="xs"
+            value={state}
+            onValueChange={(v) => setState(v as State)}
+          >
             {STATES.map(([k, label]) => (
               <Segment key={k} value={k}>
                 {label}
@@ -401,10 +445,17 @@ export const ShapesPanel = ({
             ))}
           </SegmentedControl>
         </Stack>
-        <Canvas def={def} box={box} state={state} selected={point} onSelect={setPoint} onChange={put} />
+        <Canvas
+          def={def}
+          box={box}
+          state={state}
+          selected={point}
+          onSelect={setPoint}
+          onChange={put}
+        />
         <Text variant="caption" tone="muted">
-          Drag a point to move its pixels, or its parameter if it has one (in the state shown);
-          Shift-drag for its percentage. Click a small dot to add a point.
+          Drag a point to move its pixels, or its parameter if it has one (in the state
+          shown); Shift-drag for its percentage. Click a small dot to add a point.
         </Text>
       </Stack>
 
@@ -425,8 +476,18 @@ export const ShapesPanel = ({
             <TrashIcon />
           </IconButton>
         </Stack>
-        <LengthRow axis="x" value={selected.x} params={params} onChange={(x) => setPointAt(point, { ...selected, x })} />
-        <LengthRow axis="y" value={selected.y} params={params} onChange={(y) => setPointAt(point, { ...selected, y })} />
+        <LengthRow
+          axis="x"
+          value={selected.x}
+          params={params}
+          onChange={(x) => setPointAt(point, { ...selected, x })}
+        />
+        <LengthRow
+          axis="y"
+          value={selected.y}
+          params={params}
+          onChange={(y) => setPointAt(point, { ...selected, y })}
+        />
         <div className="studio-shape-length">
           <Text variant="p3" weight="semibold">
             round
@@ -448,7 +509,10 @@ export const ShapesPanel = ({
             value={typeof selected.round === 'string' ? selected.round : ''}
             onChange={(e) => {
               const { round: _r, ...rest } = selected
-              setPointAt(point, e.currentTarget.value ? { ...rest, round: e.currentTarget.value } : rest)
+              setPointAt(
+                point,
+                e.currentTarget.value ? { ...rest, round: e.currentTarget.value } : rest
+              )
             }}
           >
             <option value="">no parameter</option>
@@ -464,10 +528,14 @@ export const ShapesPanel = ({
           Parameters
         </Heading>
         <Text variant="caption" tone="muted">
-          Pixels per state. States animate between these values, so the shape and its border
-          move together. Empty means the rest value.
+          Pixels per state. States animate between these values, so the shape and its
+          border move together. Empty means the rest value.
         </Text>
-        <div className="studio-shape-params" role="table" aria-label="Parameters by state">
+        <div
+          className="studio-shape-params"
+          role="table"
+          aria-label="Parameters by state"
+        >
           <div role="row" className="studio-shape-params-row">
             <Text variant="caption" weight="semibold" role="columnheader">
               name
@@ -485,7 +553,11 @@ export const ShapesPanel = ({
               </code>
               {STATES.map(([s, label]) => (
                 <span role="cell" key={s}>
-                  <Num label={`${p}, ${label}`} value={def[s]?.[p]} onChange={(v) => setParam(s, p, v)} />
+                  <Num
+                    label={`${p}, ${label}`}
+                    value={def[s]?.[p]}
+                    onChange={(v) => setParam(s, p, v)}
+                  />
                 </span>
               ))}
             </div>
@@ -536,7 +608,9 @@ export const ShapesPanel = ({
             aria-label="Border color"
             size="sm"
             value={def.border?.color ?? 'auto'}
-            onChange={(e) => put({ ...def, border: { ...def.border, color: e.currentTarget.value } })}
+            onChange={(e) =>
+              put({ ...def, border: { ...def.border, color: e.currentTarget.value } })
+            }
           >
             {COLORS.map(([v, label]) => (
               <option key={v} value={v}>
@@ -554,7 +628,9 @@ export const ShapesPanel = ({
             hideLabel
             size="xs"
             value={focus}
-            onValueChange={(v) => put({ ...def, focus: v === 'auto' ? undefined : (v as 'box' | 'ring') })}
+            onValueChange={(v) =>
+              put({ ...def, focus: v === 'auto' ? undefined : (v as 'box' | 'ring') })
+            }
           >
             <Segment value="auto">Auto</Segment>
             <Segment value="box" disabled={!opensToBox(def)}>
@@ -581,7 +657,9 @@ export const ShapesPanel = ({
               label={component}
               checked={assigned(component)}
               onCheckedChange={(on) =>
-                onChange(setIn(spec, ['components', component, 'shape'], on ? name : undefined))
+                onChange(
+                  setIn(spec, ['components', component, 'shape'], on ? name : undefined)
+                )
               }
             />
           ))}
@@ -619,9 +697,14 @@ export const ShapesPanel = ({
           tone="neutral"
           disabled={!NAME.test(rename) || !!spec.shapes?.[rename]}
           onClick={() => {
-            let next = setIn(setIn(spec, ['shapes', rename], def), ['shapes', name], undefined)
+            let next = setIn(
+              setIn(spec, ['shapes', rename], def),
+              ['shapes', name],
+              undefined
+            )
             for (const [c, comp] of Object.entries(spec.components ?? {}))
-              if (comp.shape === name) next = setIn(next, ['components', c, 'shape'], rename)
+              if (comp.shape === name)
+                next = setIn(next, ['components', c, 'shape'], rename)
             onChange(next)
             setChosen(rename)
             setRename('')
@@ -636,7 +719,8 @@ export const ShapesPanel = ({
           onClick={() => {
             let next = setIn(spec, ['shapes', name], undefined)
             for (const [c, comp] of Object.entries(spec.components ?? {}))
-              if (comp.shape === name) next = setIn(next, ['components', c, 'shape'], undefined)
+              if (comp.shape === name)
+                next = setIn(next, ['components', c, 'shape'], undefined)
             onChange(next)
             setChosen(undefined)
           }}

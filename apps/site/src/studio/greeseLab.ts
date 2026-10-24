@@ -88,7 +88,7 @@ export const useGreeseLab = (
   const [drafts, setDrafts] = useState<Record<string, string>>({})
   const [sequence, setSequence] = useState(EXAMPLES[0]!)
   const [played, setPlayed] = useState({ key: 0, sequence: EXAMPLES[0]! })
-  const effects = spec.effects ?? {}
+  const effects = useMemo(() => spec.effects ?? {}, [spec.effects])
 
   useEffect(() => {
     let live = true
