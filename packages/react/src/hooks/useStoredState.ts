@@ -23,13 +23,16 @@ export type StoredState<T> = [
  * const [layout, setLayout] = useStoredState<'grid' | 'list'>('photos-layout', 'grid')
  * ```
  */
-export const useStoredState = <T,>(
+export const useStoredState = <T>(
   key: string,
   fallback: T,
   options?: StoredValueOptions<T>
 ): StoredState<T> => {
   const area = options?.area
   // One handle per key and area: its cache keeps the value's identity stable.
+  // The fallback and options are read when it's made; a new object literal
+  // each render mustn't make a new handle (and a new value identity).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const stored = useMemo(() => createStoredValue(key, fallback, options), [key, area])
   const value = useSyncExternalStore(stored.subscribe, stored.get, () => fallback)
   return [value, stored.set, stored.remove]

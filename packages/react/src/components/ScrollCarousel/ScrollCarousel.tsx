@@ -231,11 +231,14 @@ export const ScrollCarousel = ({
       scrollToSlide(indexProp)
   }, [indexProp, scrollToSlide])
 
-  // A `defaultIndex` other than the first slide: start there.
+  // A `defaultIndex` other than the first slide: start there, once. It's the
+  // starting point by definition, so later changes to it don't move the view.
+  const started = useRef(false)
   useEffect(() => {
+    if (started.current) return
+    started.current = true
     if (indexProp === undefined && defaultIndex) scrollToSlide(defaultIndex)
-    // Only on mount: defaultIndex is the starting point, by definition.
-  }, [])
+  }, [indexProp, defaultIndex, scrollToSlide])
 
   const go = (target: number) => {
     const next = loop

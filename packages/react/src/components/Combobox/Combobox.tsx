@@ -140,14 +140,16 @@ export const Combobox = ({
   const anchor = useAnchoredPopover(placement, 4)
 
   const visible = filtering ? options.filter((o) => filter(o, text)) : options
-  const optionId = (option: ComboboxOption) =>
-    `${listId}-option-${options.indexOf(option)}`
+  // Ids by position in the full list, looked up once per options, not per render.
+  const indexOf = useMemo(() => new Map(options.map((o, i) => [o, i])), [options])
+  const optionId = (option: ComboboxOption) => `${listId}-option-${indexOf.get(option)}`
   const enabledIndexes = visible.flatMap((o, i) => (o.disabled ? [] : [i]))
 
   // Outside value changes update the text, unless the user is typing.
+  const valueLabel = labelOf(value)
   useEffect(() => {
-    if (document.activeElement !== input.current) setText(labelOf(value))
-  }, [value, options])
+    if (document.activeElement !== input.current) setText(valueLabel)
+  }, [valueLabel])
 
   // The popup is a manual popover: shown and sized to the field while open.
   useLayoutEffect(() => {
@@ -162,12 +164,11 @@ export const Combobox = ({
     if (!open && shown) el.hidePopover()
   }, [open])
 
+  const activeId =
+    open && active >= 0 && visible[active] ? optionId(visible[active]) : undefined
   useEffect(() => {
-    if (!open || active < 0) return
-    document
-      .getElementById(optionId(visible[active]!))
-      ?.scrollIntoView({ block: 'nearest' })
-  }, [active, open])
+    if (activeId) document.getElementById(activeId)?.scrollIntoView({ block: 'nearest' })
+  }, [activeId])
 
   const openWith = (index: number, filter: boolean) => {
     setFiltering(filter)
@@ -222,9 +223,7 @@ export const Combobox = ({
         aria-expanded={open}
         aria-controls={listId}
         aria-autocomplete="list"
-        aria-activedescendant={
-          open && active >= 0 && visible[active] ? optionId(visible[active]) : undefined
-        }
+        aria-activedescendant={activeId}
         value={text}
         onChange={(event: ChangeEvent<HTMLInputElement>) => {
           const next = event.target.value
