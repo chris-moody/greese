@@ -1,9 +1,10 @@
 /**
- * Starting points for a theme: the brand colors (and a radius scale) as
- * palette names, which the kit compiles to their colors. Applying one
- * replaces the theme's colors and radii and keeps everything else
- * (components, motion, other tokens). Content and strong colors are left
- * out on purpose: the kit derives readable ones (WCAG AA) from each color.
+ * Color themes: the brand colors and the neutrals (canvas, surfaces, text,
+ * borders), tinted from one hue, as palette names the kit compiles. A color
+ * theme is one of three layers (ADR 0025): applying one replaces the theme's
+ * colors and nothing else, so shapes, radii and motion stay whatever their
+ * own layers say. Content and strong colors are left out on purpose: the kit
+ * derives readable ones (WCAG AA) from each color.
  */
 import { GREESE_SPEC } from '../theme.ts'
 import { setIn } from './edit.ts'
@@ -13,12 +14,27 @@ export interface Preset {
   id: string
   label: string
   color: Record<string, SchemeValue>
-  radius?: Record<string, string>
 }
 
 const pair = (hue: string, light = 600, dark = 400): SchemeValue => ({
   light: `${hue}-${light}`,
   dark: `${hue}-${dark}`,
+})
+
+/**
+ * The page's neutrals, tinted from one hue: the canvas and surfaces at the
+ * light end in light mode and the dark end in dark mode, text and borders
+ * from the same ramp (presets.test.ts checks the text meets AA on them).
+ */
+export const neutrals = (hue: string): Record<string, SchemeValue> => ({
+  canvas: pair(hue, 50, 999),
+  surface: pair(hue, 100, 900),
+  'surface-overlay': { light: '#ffffff', dark: `${hue}-800` },
+  fg: pair(hue, 999, 100),
+  'fg-muted': pair(hue, 700, 300),
+  border: pair(hue, 200, 800),
+  'border-strong': pair(hue, 400, 700),
+  track: pair(hue, 200, 600),
 })
 
 export const PRESETS: Preset[] = [
@@ -33,8 +49,8 @@ export const PRESETS: Preset[] = [
       secondary: pair('royal'),
       tertiary: pair('turquoise', 700),
       accent: pair('gold', 500, 300),
+      ...neutrals('azure'),
     },
-    radius: { sm: '6px', md: '10px', lg: '18px' },
   },
   {
     id: 'sunset',
@@ -44,6 +60,7 @@ export const PRESETS: Preset[] = [
       secondary: pair('ruby'),
       tertiary: pair('gold', 700),
       accent: pair('magenta'),
+      ...neutrals('orange'),
     },
   },
   {
@@ -54,8 +71,8 @@ export const PRESETS: Preset[] = [
       secondary: pair('lime', 700),
       tertiary: pair('aqua', 700),
       accent: pair('orange'),
+      ...neutrals('jade'),
     },
-    radius: { sm: '2px', md: '6px', lg: '12px' },
   },
   {
     id: 'grape',
@@ -65,8 +82,8 @@ export const PRESETS: Preset[] = [
       secondary: pair('magenta'),
       tertiary: pair('royal'),
       accent: pair('jade'),
+      ...neutrals('lavender'),
     },
-    radius: { sm: '8px', md: '14px', lg: '24px' },
   },
   {
     id: 'mono',
@@ -76,8 +93,8 @@ export const PRESETS: Preset[] = [
       secondary: pair('silver', 600, 400),
       tertiary: pair('taupe', 700, 300),
       accent: pair('red'),
+      ...neutrals('gray'),
     },
-    radius: { sm: '0', md: '2px', lg: '4px' },
   },
   {
     id: 'candy',
@@ -87,8 +104,8 @@ export const PRESETS: Preset[] = [
       secondary: pair('azure', 700),
       tertiary: pair('lavender', 500, 300),
       accent: pair('yellow', 400, 300),
+      ...neutrals('pink'),
     },
-    radius: { sm: '10px', md: '18px', lg: '28px' },
   },
 ]
 
@@ -112,14 +129,10 @@ const HUES = [
   'ruby',
 ]
 
-const RADII = [
-  { sm: '0', md: '2px', lg: '4px' },
-  { sm: '4px', md: '8px', lg: '16px' },
-  { sm: '6px', md: '12px', lg: '20px' },
-  { sm: '10px', md: '18px', lg: '28px' },
-]
+/** Hues for tinted neutrals: the grays, and a few colors pale enough to read as paper. */
+const NEUTRAL_HUES = ['steel', 'gray', 'ash', 'taupe', 'azure', 'jade', 'lavender', 'orange', 'pink']
 
-/** Four different hues, shuffled, and a radius scale. `random` is injectable for tests. */
+/** Four different hues, shuffled, and neutrals tinted from another. `random` is injectable for tests. */
 export const randomPreset = (random: () => number = Math.random): Preset => {
   const hues = [...HUES]
   const pick = () => hues.splice(Math.floor(random() * hues.length), 1)[0]!
@@ -132,13 +145,11 @@ export const randomPreset = (random: () => number = Math.random): Preset => {
       secondary: pair(secondary),
       tertiary: pair(tertiary, 700),
       accent: pair(accent),
+      ...neutrals(NEUTRAL_HUES[Math.floor(random() * NEUTRAL_HUES.length)]!),
     },
-    radius: RADII[Math.floor(random() * RADII.length)]!,
   }
 }
 
-/** A preset's colors and radii, replacing the theme's; everything else stays. */
-export const applyPreset = (spec: ThemeSpec, preset: Preset): ThemeSpec => {
-  const withColor = setIn(spec, ['tokens', 'color'], structuredClone(preset.color))
-  return setIn(withColor, ['tokens', 'radius'], preset.radius && { ...preset.radius })
-}
+/** A color theme: its colors in place of the theme's; nothing else changes. */
+export const applyPreset = (spec: ThemeSpec, preset: Preset): ThemeSpec =>
+  setIn(spec, ['tokens', 'color'], Object.keys(preset.color).length ? structuredClone(preset.color) : undefined)

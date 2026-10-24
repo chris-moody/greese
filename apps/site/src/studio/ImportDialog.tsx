@@ -8,6 +8,8 @@ import {
   Dialog,
   Field,
   FileInput,
+  Icon,
+  IconButton,
   Select,
   Stack,
   Tab,
@@ -18,6 +20,7 @@ import {
   Textarea,
   TextField,
 } from '@greese/react'
+import { icons } from '../icons.tsx'
 import { api, hosted, type ImportSource } from './api.ts'
 import { mergeSpecs, type ImportResult } from './importer.ts'
 import type { ThemeSpec } from './spec.ts'
@@ -85,9 +88,9 @@ export const ImportDialog = ({ spec, onImport }: ImportDialogProps): JSX.Element
       onOpenChange={setOpen}
       size="lg"
       trigger={
-        <Button size="sm" variant="soft" tone="neutral">
-          Import
-        </Button>
+        <IconButton size="sm" variant="soft" label="Import a theme">
+          <Icon>{icons.import}</Icon>
+        </IconButton>
       }
       title="Import a theme"
       description="From a studio JSON file, createTheme() options or output, the SCSS kit, or hand-written CSS overrides."
@@ -185,8 +188,9 @@ export const ImportDialog = ({ spec, onImport }: ImportDialogProps): JSX.Element
         {result && (
           <Stack gap={3} role="status">
             <Stack direction="row" gap={2} wrap="wrap" align="center">
-              <Badge tone="accent">{plural(result.counts.tokens, 'token')}</Badge>
-              <Badge tone="accent">{plural(result.counts.components, 'component')}</Badge>
+              {/* Each layer of a theme in its own brand color, as on the homepage (tones.ts). */}
+              <Badge tone="secondary">{plural(result.counts.tokens, 'token')}</Badge>
+              <Badge tone="tertiary">{plural(result.counts.components, 'component')}</Badge>
               <Badge tone="accent">
                 {plural(result.counts.motion, 'motion setting')}
               </Badge>

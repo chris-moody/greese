@@ -3,8 +3,9 @@
  * which compiles in the browser, keyed by their path inside @greese/ui so the
  * kit's relative `@use`s resolve as they do on disk:
  *
- *   virtual:greese-kit         what the kit reads: src/styles/_*.scss and the
- *                              generated token modules in dist/ (small, always)
+ *   virtual:greese-kit         what the kit reads: src/styles/_*.scss, the
+ *                              authoring entry points in src/styles/public/ and
+ *                              the generated token modules in dist/ (small, always)
  *   virtual:greese-stylesheet  the rest of the stylesheet: every component's SCSS
  *                              and the entry points (a lazy chunk, for building
  *                              the whole stylesheet with other breakpoints)
@@ -23,6 +24,7 @@ const read = (dir: string, accept: (file: string) => boolean, prefix: string) =>
 
 const kit = () => [
   ...read('src/styles', (f) => /^_.*\.scss$/.test(f), '/src/styles'),
+  ...read('src/styles/public', (f) => /^_.*\.scss$/.test(f), '/src/styles/public'),
   ...read('dist', (f) => /^_.*\.scss$/.test(f), '/dist'),
 ]
 

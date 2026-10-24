@@ -18,19 +18,23 @@ describe('effect lists', () => {
   })
 })
 
-describe('retuning every built-in', () => {
-  it('compiles and validates with each effect as the Greese tab shows it', async () => {
+describe('copying every built-in', () => {
+  it('compiles and validates each effect, copied under its own name', async () => {
     const frames = await describeGreeseEffects()
     const effects = Object.fromEntries(
-      Object.entries(frames).map(([name, keyframes]) => [name, { keyframes }])
+      Object.entries(frames).map(([name, keyframes]) => [`${name}Copy`, { keyframes }])
     )
     expect(validateSpec({ effects })).toEqual([])
     const result = compileSpec({ tokens: {}, components: {}, effects })
     expect(result).not.toHaveProperty('errors')
     const css = (result as { css: string }).css
     for (const name of entranceNames())
-      expect(css).toContain(`@keyframes greese-${effectClass(name)}`)
+      expect(css).toContain(`@keyframes greese-${effectClass(name)}-copy`)
   }, 30_000)
+
+  it('refuses a built-in’s name: a built-in keeps its keyframes', () => {
+    expect(validateSpec({ effects: { fadeUp: { keyframes: { x: [0, 1] } } } })).not.toEqual([])
+  })
 })
 
 describe('a theme with effects', () => {
@@ -38,7 +42,7 @@ describe('a theme with effects', () => {
     tokens: {},
     components: {},
     effects: {
-      fadeUp: { keyframes: { opacity: [0, 1], y: ['2rem', '0px'] } },
+      floatUp: { keyframes: { opacity: [0, 1], y: ['2rem', '0px'] } },
       spinIn: { keyframes: { rotate: [-90, 0], opacity: [0, 1] }, duration: 0.8 },
     },
   }
@@ -48,8 +52,8 @@ describe('a theme with effects', () => {
       ...spec,
       effects: {
         ...spec.effects,
-        // A retuned overlay exit, and a new one.
-        scaleOut: { keyframes: { scale: [1, 0.5], opacity: [1, 0] } },
+        // Overlay exits of the theme's own.
+        shrink: { keyframes: { scale: [1, 0.5], opacity: [1, 0] } },
         sink: { keyframes: { y: [0, '2rem'], opacity: [1, 0] } },
       },
       components: {
@@ -59,16 +63,16 @@ describe('a theme with effects', () => {
     })
     expect(result).not.toHaveProperty('errors')
     const { css, scss } = result as { css: string; scss: string }
-    expect(scss).toContain('@include greese.effect(fade-up,')
+    expect(scss).toContain('@include greese.effect(float-up,')
     expect(scss).toContain('@include greese.effect(spin-in,')
-    expect(css).toMatch(/@keyframes greese-fade-up/)
+    expect(css).toMatch(/@keyframes greese-float-up/)
     expect(css).toMatch(/translate:\s*0px 2rem/)
     // A new effect gets the same CSS a built-in has, and motion() accepts it.
     expect(css).toMatch(/@keyframes greese-spin-in \{\s+from \{\s+rotate: -90deg/)
     expect(css).toMatch(/\.greese-Card \{[^}]*animation: greese-spin-in /)
-    // Exits: retuned and new.
+    // Exits of the theme's own, and the built-ins' unchanged.
     expect(css).toMatch(
-      /\.greese-Motion--exit-scale-out \{\s+--greese-motion-exit-scale: 0\.5;/
+      /\.greese-Motion--exit-shrink \{[^}]*--greese-motion-exit-scale: 0\.5;/
     )
     expect(css).toMatch(
       /\.greese-Motion--exit-sink \{\s+--greese-motion-exit-translate: 0px 2rem;/
@@ -87,6 +91,7 @@ describe('a theme with effects', () => {
       },
     })
     expect(enter).toContain('fade-up')
+    expect(enter).toContain('float-up')
     expect(enter).toContain('spin-in')
     expect(exit).toContain('sink')
     expect(exit).toContain('fade-out')
@@ -95,11 +100,10 @@ describe('a theme with effects', () => {
 
   it('generates the module that defines every effect, and types the new names', () => {
     const ts = specToEffectsTs(spec)!
-    expect(ts).toContain("defineGreeseEffect('fadeUp', {")
+    expect(ts).toContain("defineGreeseEffect('floatUp', {")
     expect(ts).toContain("defineGreeseEffect('spinIn', {")
     expect(ts).toContain('duration: 0.8,')
-    expect(ts).toMatch(/GreeseEffectRegistry {\n\s+spinIn: true\n/)
-    expect(ts).not.toMatch(/fadeUp: true/)
+    expect(ts).toMatch(/GreeseEffectRegistry {\n\s+floatUp: true\n\s+spinIn: true\n/)
     expect(specToEffectsTs({ tokens: {} })).toBeUndefined()
     expect(specToScss({ tokens: {} })).not.toContain('effect(')
   })

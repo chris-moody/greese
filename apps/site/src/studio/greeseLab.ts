@@ -37,7 +37,7 @@ export const effectNameError = (name: string, existing: string[]): string | unde
   if (!/^[a-z][A-Za-z0-9]*$/.test(name))
     return 'Use camelCase letters and digits, starting with a lower-case letter.'
   if (isBuiltInEffect(name) || SITE_EFFECTS.includes(name))
-    return `${name} is a built-in effect: edit it in the list instead.`
+    return `${name} is a built-in effect, which keeps its own keyframes: name yours differently.`
   if (existing.includes(name)) return `${name} is already one of the theme's effects.`
   return undefined
 }
@@ -49,9 +49,9 @@ export interface GreeseLab {
   names: string[]
   /** The theme's own new effects. */
   custom: string[]
-  /** The theme's effects, retuned built-ins and new ones: the spec's. */
+  /** The theme's own effects: the spec's. Built-ins are never retuned (ADR 0025). */
   effects: Record<string, EffectSpec>
-  /** Whether the theme retunes (or defines) this effect. */
+  /** Whether the theme defines this effect. */
   isSet: (name: string) => boolean
   /** The code to show: as typed, else the theme's, else the original. */
   codeOf: (name: string) => string
@@ -59,11 +59,13 @@ export interface GreeseLab {
   errors: Record<string, string>
   /** Code typed for an effect: valid code goes into the theme, invalid stays a draft. */
   edit: (name: string, code: string) => void
-  /** Back to the library's effect (built-in) or removed (new). */
+  /** Removes one of the theme's effects. */
   reset: (name: string) => void
   setDuration: (name: string, seconds: number | undefined) => void
   /** Adds a new effect; returns what's wrong, if anything. */
   add: (name: string, code: string) => string | undefined
+  /** Adds a copy of a built-in under a free name, to change; returns the name. */
+  copy: (name: string) => string
   sequence: string
   setSequence: (sequence: string) => void
   /** Names in the sequence that aren't effects. */
@@ -73,7 +75,7 @@ export interface GreeseLab {
 }
 
 /**
- * The Greese tab's state. The effects belong to the theme (`spec.effects`):
+ * The Motion tab's effects' state. The effects belong to the theme (`spec.effects`):
  * editing one changes the spec, which the studio saves, compiles into the
  * theme's CSS and effects module, and applies to the preview and the page.
  * What's being typed that doesn't parse yet is kept as a draft.
@@ -141,18 +143,16 @@ export const useGreeseLab = (
 
   const edit = useCallback(
     (name: string, code: string) => {
+      // A built-in always does what its name says: only the theme's own change.
+      if (isBuiltInEffect(name)) return
       // What's typed is shown as typed (reformatting it under the cursor would
       // make editing impossible); valid code also goes into the theme.
       setDrafts((d) => ({ ...d, [name]: code }))
       const parsed = parseKeyframes(code)
       if ('error' in parsed) return
-      const original = defaults?.[name]
-      // Back to the library's own: nothing to keep.
-      if (original && formatKeyframes(original) === formatKeyframes(parsed.frames))
-        return setEffects(without(effects, name))
       setEffects({ ...effects, [name]: { ...effects[name], keyframes: parsed.frames } })
     },
-    [defaults, effects, setEffects]
+    [effects, setEffects]
   )
   const reset = useCallback(
     (name: string) => {
@@ -180,6 +180,15 @@ export const useGreeseLab = (
       return undefined
     },
     [effects, setEffects]
+  )
+  const copy = useCallback(
+    (name: string) => {
+      let next = `${name}Copy`
+      for (let i = 2; effectNameError(next, Object.keys(effects)); i++) next = `${name}Copy${i}`
+      setEffects({ ...effects, [next]: { keyframes: defaults?.[name] ?? {} } })
+      return next
+    },
+    [defaults, effects, setEffects]
   )
 
   const known = useMemo(
@@ -211,6 +220,7 @@ export const useGreeseLab = (
     reset,
     setDuration,
     add,
+    copy,
     sequence,
     setSequence,
     unknown,

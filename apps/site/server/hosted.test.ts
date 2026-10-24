@@ -23,6 +23,30 @@ describe('the hosted studio', () => {
     expect(JSON.stringify(result)).toContain('#0e7490')
   })
 
+  it('resolves every SCSS entry point the package exports, as a project does', async () => {
+    const manifest = JSON.parse(
+      readFileSync(new URL('../../../packages/ui/package.json', import.meta.url), 'utf8')
+    ) as { exports: Record<string, unknown> }
+    const entries = Object.keys(manifest.exports)
+      .filter((key) => key === './scss' || key.startsWith('./scss/'))
+      .filter((key) => !['./scss'].includes(key))
+    expect(entries).toEqual(
+      expect.arrayContaining([
+        './scss/mixins',
+        './scss/tones',
+        './scss/floating',
+        './scss/controls',
+      ])
+    )
+    for (const entry of entries) {
+      const result = await hostedApi.import({
+        text: `@use 'pkg:@greese/ui${entry.slice(1)}' as m;`,
+        format: 'scss',
+      })
+      expect(result, entry).not.toHaveProperty('errors')
+    }
+  })
+
   it('reports what only the dev server can do', async () => {
     expect(await hostedApi.import({ path: 'theme.ts' })).toHaveProperty('errors')
   })

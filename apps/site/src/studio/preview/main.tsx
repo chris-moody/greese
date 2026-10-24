@@ -60,6 +60,8 @@ const Preview = (): JSX.Element => {
         if (message.breakpoints) configureBreakpoints(message.breakpoints)
         themeStyle.textContent = message.css
         setCss((n) => n + 1)
+        // Layout may have changed: the anatomy measures again.
+        requestAnimationFrame(() => window.dispatchEvent(new Event('studio:css')))
       }
       if (message.type === 'scope')
         setScope({ theme: message.theme, scheme: message.scheme })

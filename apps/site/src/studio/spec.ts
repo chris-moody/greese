@@ -17,7 +17,26 @@ import {
   isBuiltInEffect,
   scalarTokens,
   type CssPlan,
+  LAYER_ORDER,
 } from '@greese/ui'
+import {
+  shapeClass,
+  shapeParams,
+  shapeProperties,
+  shapeSelector,
+  shapesCss,
+  shapeTarget,
+  type ShapeDef,
+  type ShapeUse,
+} from '@greese/ui/shapes'
+import {
+  declarationProblems,
+  mergeUses,
+  scssProblems,
+  splitScss,
+  type ReservedUse,
+  type SplitScss,
+} from './scssModule.ts'
 import { formatKeyframes } from './effectCode.ts'
 
 /** One value for both schemes, or a light/dark pair. */
@@ -52,7 +71,17 @@ export interface ComponentSpec {
   modifiers?: Record<string, Declarations>
   /** Declarations per part: `{ icon: { opacity: '0.8' } }`. */
   parts?: Record<string, Declarations>
+  /**
+   * The SCSS of this component and what it contains (ADR 0021): leading `@use`
+   * lines, then a body written inside `.greese-<Name>` (`&`, nesting, mixins,
+   * the kit). The Studio starts it from the library's own SCSS for the family;
+   * it is stored only once edited, and then applies in full, inside this
+   * component only.
+   */
+  scss?: string
   motion?: MotionSpec
+  /** One of the theme's shapes (`shapes`), by name: its outline, border and motion. */
+  shape?: string
 }
 
 /** An effect the theme defines: its keyframes (greese.js's), and how long it runs. */
@@ -92,6 +121,11 @@ export interface ThemeSpec {
   effects?: Record<string, EffectSpec>
   /** Overrides by component name: `{ Button: { … } }`. */
   components?: Record<string, ComponentSpec>
+  /**
+   * Shapes by kebab-case name (ADR 0024): each is a `greese-shape-<name>`
+   * class for any element, and components take one with `shape`.
+   */
+  shapes?: Record<string, ShapeDef>
 }
 
 export const emptySpec = (): ThemeSpec => ({ tokens: {}, components: {} })
@@ -125,6 +159,8 @@ const KEY = /^[a-z0-9][a-z0-9-]*$/
 const TYPE_PROP = /^[a-z][a-zA-Z]*$/
 // Values become CSS text: nothing that could end a declaration or a rule.
 const UNSAFE = /[;{}]|<\//
+const SHAPE_NAME = /^[a-z][a-z0-9-]*$/
+const PARAM = /^[a-z][a-z0-9]*$/
 
 /** Problems that would make the generated SCSS unsafe or invalid. */
 export const validateSpec = (spec: ThemeSpec): string[] => {
@@ -190,6 +226,10 @@ export const validateSpec = (spec: ThemeSpec): string[] => {
   for (const [name, effect] of Object.entries(spec.effects ?? {})) {
     if (!EFFECT_NAME.test(name))
       errors.push(`effects: ${JSON.stringify(name)} must be camelCase letters and digits`)
+    else if (isBuiltInEffect(name))
+      errors.push(
+        `effects: ${name} is a built-in effect, which keeps its own keyframes; name yours differently and assign it`
+      )
     const where = `effects.${name}`
     const frames = effect?.keyframes
     const list = Array.isArray(frames)
@@ -233,12 +273,73 @@ export const validateSpec = (spec: ThemeSpec): string[] => {
       key(`${name} parts`, p)
       decls(`${name}-${p}`, d)
     }
+    if (c.scss) errors.push(...scssProblems(c.scss).map((p) => `${name} scss: ${p}`))
     const { durations, easings, ...motion } = c.motion ?? {}
     for (const [k, v] of Object.entries({ ...motion, ...durations, ...easings }))
       value(`${name} motion.${k}`, v)
   }
+  for (const [name, shape] of Object.entries(spec.shapes ?? {})) {
+    const where = `shapes.${name}`
+    if (!SHAPE_NAME.test(name)) errors.push(`shapes: ${JSON.stringify(name)} is not a kebab-case name`)
+    if (!Array.isArray(shape.points) || shape.points.length < 3)
+      errors.push(`${where}: a shape needs at least 3 points`)
+    for (const [i, p] of (shape.points ?? []).entries())
+      for (const [axis, l] of [['x', p?.x], ['y', p?.y]] as const) {
+        if (!l || typeof l !== 'object') {
+          errors.push(`${where} point ${i + 1}: no ${axis}`)
+          continue
+        }
+        for (const k of ['pct', 'px', 'k'] as const)
+          if (l[k] !== undefined && !Number.isFinite(l[k]))
+            errors.push(`${where} point ${i + 1} ${axis}.${k}: not a number`)
+        if (l.param !== undefined && !PARAM.test(l.param))
+          errors.push(`${where} point ${i + 1} ${axis}.param: ${JSON.stringify(l.param)} is not a parameter name`)
+      }
+    for (const state of ['params', 'hover', 'active'] as const)
+      for (const [k, v] of Object.entries(shape[state] ?? {})) {
+        if (!PARAM.test(k)) errors.push(`${where}.${state}: ${JSON.stringify(k)} is not a parameter name`)
+        if (!Number.isFinite(v)) errors.push(`${where}.${state}.${k}: not a number of px`)
+      }
+    if (shape.border?.color && UNSAFE.test(shape.border.color))
+      errors.push(`${where}.border.color: ${JSON.stringify(shape.border.color)} is not a value`)
+  }
+  for (const [name, c] of Object.entries(spec.components ?? {}))
+    if (c.shape && !spec.shapes?.[c.shape])
+      errors.push(`${name} shape: the theme has no shape named ${JSON.stringify(c.shape)}`)
+  errors.push(...mergedUses(spec, 'stylesheet').problems)
+  errors.push(
+    ...declarationProblems(
+      componentSplits(spec).map(([name, split]) => [name, split.declarations])
+    )
+  )
   return errors
 }
+
+/** The imports the theme file writes itself, which a component's own may repeat but not contradict. */
+const reservedUses = (spec: ThemeSpec, entry: 'stylesheet' | 'config'): ReservedUse[] => [
+  { url: 'pkg:@greese/ui/scss/kit', namespace: 'greese' },
+  ...(customBreakpoints(spec)
+    ? [
+        entry === 'config'
+          ? { url: 'pkg:@greese/ui/scss/config', namespace: 'config' }
+          : { url: 'pkg:@greese/ui/scss', namespace: 'scss' },
+      ]
+    : []),
+]
+
+/** Every component with SCSS, split into imports, declarations and body, by name. */
+const componentSplits = (spec: ThemeSpec): Array<[string, SplitScss]> =>
+  Object.keys(spec.components ?? {})
+    .sort()
+    .filter((name) => spec.components![name]!.scss?.trim())
+    .map((name) => [name, splitScss(spec.components![name]!.scss!)])
+
+/** Every component's SCSS imports, merged, for the top of the theme file. */
+const mergedUses = (spec: ThemeSpec, entry: 'stylesheet' | 'config') =>
+  mergeUses(
+    componentSplits(spec).map(([name, split]) => [name, split.uses] as const),
+    reservedUses(spec, entry)
+  )
 
 const kebabOf = (value: string): string =>
   value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
@@ -284,7 +385,12 @@ const filled = <T>(record: Record<string, T> | undefined): Array<[string, T]> =>
 const declarations = (d: Declarations | undefined, indent: string): string[] =>
   filled(d).map(([p, v]) => `${indent}${p}: ${v};`)
 
-const componentScss = (name: string, c: ComponentSpec, indent: string): string => {
+const componentScss = (
+  name: string,
+  c: ComponentSpec,
+  indent: string,
+  mark: (origin: LineOrigin & { span: number }) => string
+): string => {
   const inner = `${indent}  `
   const lines = declarations(c.styles, inner)
   const vars = filled(c.vars)
@@ -319,6 +425,18 @@ const componentScss = (name: string, c: ComponentSpec, indent: string): string =
   }
   if (options.length)
     lines.push(`${inner}@include greese.motion(${map(options, inner)});`)
+  if (c.scss?.trim()) {
+    // Only the body: the imports go at the top of the file. Its first line
+    // carries a marker, so an error can be traced back to the box and line.
+    const { body, bodyLine } = splitScss(c.scss)
+    const bodyLines = body.trimEnd().split('\n')
+    if (body.trim())
+      lines.push(
+        `${inner}${mark({ component: name, line: bodyLine, span: bodyLines.length })}${bodyLines
+          .map((line, i) => (i === 0 || !line ? line : `${inner}${line}`))
+          .join('\n')}`
+      )
+  }
   if (!lines.length) return ''
   return `${indent}@include greese.component(${name}) {\n${lines.join('\n')}\n${indent}}`
 }
@@ -351,7 +469,30 @@ export const specToScss = (
   source = 'greese-theme.json',
   /** How the stylesheet is brought in: whole (the output), or just its settings. */
   entry: 'stylesheet' | 'config' = 'stylesheet'
-): string => {
+): string => specToScssWithLines(spec, source, entry).scss
+
+/** Where a line of the generated theme came from: a component's SCSS box, and its line there. */
+export interface LineOrigin {
+  component: string
+  line: number
+}
+
+/** A marked line, and how many lines from it come from the same place. */
+type Marked = LineOrigin & { span: number }
+
+const MARK = /\/\*§(\d+)§\*\//
+
+/**
+ * `specToScss`, and which component's SCSS each line of it came from, so a
+ * Sass error in the generated file points back at the box and line you wrote.
+ */
+export const specToScssWithLines = (
+  spec: ThemeSpec,
+  source = 'greese-theme.json',
+  entry: 'stylesheet' | 'config' = 'stylesheet'
+): { scss: string; origin: (line: number) => LineOrigin | undefined } => {
+  const marks: Marked[] = []
+  const mark = (origin: Marked) => `/*§${marks.push(origin) - 1}§*/`
   const indent = spec.name ? '  ' : ''
   const blocks: string[] = []
 
@@ -428,7 +569,7 @@ export const specToScss = (
     )
 
   for (const name of Object.keys(spec.components ?? {}).sort()) {
-    const block = componentScss(name, spec.components![name]!, indent)
+    const block = componentScss(name, spec.components![name]!, indent, mark)
     if (block) blocks.push(block)
   }
 
@@ -440,10 +581,70 @@ export const specToScss = (
   const effects = Object.entries(spec.effects ?? {})
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([name, effect]) => effectScss(name, effect))
-  return `// Generated by GreeseUI Theme Studio from ${source}. Edit it there, or in
+  // Components' own imports, once each, after the kit and any breakpoints
+  // (the partials load the configured settings).
+  const imports = mergedUses(spec, entry).lines.map(
+    ({ text, component, line }) => `${mark({ component, line, span: 1 })}${text}`
+  )
+  // Then their top-level variables, mixins and functions, which Sass allows
+  // only at a file's top level, before any component uses them.
+  const declared = componentSplits(spec).flatMap(([component, { declarations }]) =>
+    declarations.map(
+      ({ text, line }) =>
+        `${mark({ component, line, span: text.split('\n').length })}${text.trim()}`
+    )
+  )
+  const shapes = shapesScss(spec)
+  const marked = `// Generated by GreeseUI Theme Studio from ${source}. Edit it there, or in
 // the studio (npm run studio); changes made here are overwritten.
-${useLines(spec, entry)}
-${effects.length ? `\n${effects.join('\n\n')}\n` : ''}${body ? `\n${body}\n` : ''}`
+${useLines(spec, entry)}${imports.length ? `\n${imports.join('\n')}` : ''}${declared.length ? `\n\n${declared.join('\n\n')}` : ''}
+${effects.length ? `\n${effects.join('\n\n')}\n` : ''}${body ? `\n${body}\n` : ''}${shapes ? `\n${shapes}\n` : ''}`
+  // Strip the markers, keeping where each body and import landed.
+  const starts: Array<[generated: number, origin: Marked]> = []
+  const scss = marked
+    .split('\n')
+    .map((text, i) => {
+      const found = MARK.exec(text)
+      if (!found) return text
+      starts.push([i + 1, marks[Number(found[1])]!])
+      return text.replace(MARK, '')
+    })
+    .join('\n')
+  const origin = (line: number): LineOrigin | undefined => {
+    const before = starts.filter(([at]) => at <= line).at(-1)
+    if (!before) return undefined
+    const [at, { span, ...from }] = before
+    return line - at < span ? { ...from, line: from.line + (line - at) } : undefined
+  }
+  return { scss, origin }
+}
+
+/**
+ * The theme's shapes (ADR 0024), as plain CSS, which is also SCSS: their
+ * parameters registered, a `greese-shape-<name>` class for each, and the
+ * components that take one. Written by @greese/ui/shapes, the same code the
+ * Studio's editor previews with; the kit isn't involved, since a shape needs
+ * no names checked beyond the components'.
+ */
+export const shapesScss = (spec: ThemeSpec): string => {
+  const shapes = Object.fromEntries(filled(spec.shapes) as Array<[string, ShapeDef]>)
+  if (!Object.keys(shapes).length) return ''
+  const scope = spec.name ? `:where([data-greese-theme='${spec.name}']) ` : ''
+  const uses: ShapeUse[] = Object.keys(shapes).map((name) => ({
+    shape: name,
+    selector: `${scope}.${shapeClass(name)}`,
+  }))
+  for (const name of Object.keys(spec.components ?? {}).sort()) {
+    const shape = spec.components![name]!.shape
+    if (shape && shapes[shape])
+      uses.push({ ...shapeTarget(name), shape, selector: `${scope}${shapeSelector(name)}` })
+  }
+  const params = new Set(Object.values(shapes).flatMap((def) => shapeParams(def)))
+  const css = shapesCss(shapes, uses)
+    .split('\n')
+    .map((l) => (l ? `  ${l}` : l))
+    .join('\n')
+  return `// Shapes (ADR 0024)\n${shapeProperties(params)}\n${LAYER_ORDER}\n@layer greese.overrides {\n${css}\n}`
 }
 
 /**

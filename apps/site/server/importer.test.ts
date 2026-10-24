@@ -2,7 +2,7 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { createTheme } from '@greese/ui'
+import { createTheme, scalarTokens } from '@greese/ui'
 import {
   detectFormat,
   importCss,
@@ -10,6 +10,8 @@ import {
   mergeSpecs,
   parseCss,
 } from '../src/studio/importer.ts'
+import { MOTIONS, motionOnlySpec } from '../src/studio/motions.ts'
+import { applyShape, SHAPES } from '../src/studio/shapes.ts'
 import type { ThemeSpec } from '../src/studio/spec.ts'
 import { compileSpec, importTheme } from './studio.ts'
 
@@ -64,6 +66,26 @@ describe('importCss: round trip through the kit', () => {
     expect(result.themes).toEqual(['brand'])
     expect(result.spec).toEqual(named)
   })
+})
+
+describe('importCss: theme layers', () => {
+  it.each(MOTIONS.map((m) => [m.id, m] as const))(
+    'reads back the %s motion theme as its role assignments',
+    (_id, preset) => {
+      const result = importCss(css(motionOnlySpec(preset)))
+      expect(result.spec.motionDefaults).toEqual(preset.defaults)
+      expect(result.skipped).toEqual([])
+    }
+  )
+
+  it.each(SHAPES.map((p) => [p.id, p] as const))(
+    'reads back the %s shape theme’s radius roles',
+    (_id, preset) => {
+      const result = importCss(css(applyShape({}, preset)))
+      // Roles the theme leaves at the library's own are left out, as every default is.
+      expect({ ...scalarTokens.corner, ...result.spec.tokens?.corner }).toEqual(preset.corner)
+    }
+  )
 })
 
 describe('importCss: other sources', () => {
@@ -231,7 +253,7 @@ describe('importTheme', () => {
     mkdirSync(join(root, 'styles'), { recursive: true })
     writeFileSync(
       join(root, 'brand.ts'),
-      `import { createTheme } from '@greese/ui'
+      `import { createTheme, scalarTokens } from '@greese/ui'
 export const brand = createTheme({ name: 'brand', radius: { md: '3px' } })\n`
     )
     writeFileSync(

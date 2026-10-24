@@ -8,8 +8,8 @@ import {
   Stack,
   Text,
   TextField,
-  Textarea,
 } from '@greese/react'
+import { CodeEditor } from '../CodeEditor.tsx'
 import { GROUPS, type GreeseLab } from '../greeseLab.ts'
 
 /** One effect: its name, state, Play, and its keyframes as editable code. */
@@ -35,19 +35,18 @@ const Effect = ({
         ) : (
           edited && (
             <Badge tone="primary" variant="soft">
-              {custom ? 'New' : 'Edited'}
+              New
             </Badge>
           )
         )}
         <span className="studio-effect-actions">
-          {edited && (
-            <Button
-              size="sm"
-              variant="ghost"
-              tone="neutral"
-              onClick={() => lab.reset(name)}
-            >
-              {custom ? 'Delete' : 'Reset'}
+          {custom ? (
+            <Button size="sm" variant="ghost" tone="neutral" onClick={() => lab.reset(name)}>
+              Delete
+            </Button>
+          ) : (
+            <Button size="sm" variant="ghost" tone="neutral" onClick={() => lab.copy(name)}>
+              Copy to edit
             </Button>
           )}
           <Button size="sm" variant="soft" onClick={() => lab.play(name)}>
@@ -62,12 +61,12 @@ const Effect = ({
           error && `${error} The theme keeps the last valid code until this is fixed.`
         }
       >
-        <Textarea
-          className="studio-effect-code"
+        <CodeEditor
+          language="js"
           rows={Math.max(2, lab.codeOf(name).split('\n').length)}
-          spellCheck={false}
           value={lab.codeOf(name)}
-          onChange={(e) => lab.edit(name, e.currentTarget.value)}
+          readOnly={!custom}
+          onChange={(code) => lab.edit(name, code)}
         />
       </Field>
       {custom && (
@@ -119,13 +118,12 @@ const NewEffect = ({ lab }: { lab: GreeseLab }): JSX.Element => {
           autoComplete="off"
         />
         <Field label="Keyframes" error={error}>
-          <Textarea
-            className="studio-effect-code"
+          <CodeEditor
+            language="js"
             rows={5}
-            spellCheck={false}
             value={code}
-            onChange={(e) => {
-              setCode(e.currentTarget.value)
+            onChange={(next) => {
+              setCode(next)
               setError(undefined)
             }}
           />
@@ -141,22 +139,28 @@ const NewEffect = ({ lab }: { lab: GreeseLab }): JSX.Element => {
 }
 
 /**
- * The theme's effects. Every built-in with the keyframes it plays, as code you
- * can retune; below, effects of your own. They're part of the theme: saving
- * writes them to the theme file, builds a retuned entrance preset's
- * `@keyframes` into the CSS, and generates a module that defines them for the
- * app (see the Code tab).
+ * The theme's effects, in the Motion tab: effects of your own, then every
+ * built-in with the keyframes it plays. A built-in keeps its keyframes (a theme
+ * assigns effects, it never rewrites one: ADR 0025); copy one to start yours.
+ * Yours are part of the theme: saving writes them to the theme file, builds
+ * their `@keyframes` into the CSS, and generates a module that defines them for
+ * the app (see the Code tab). Play runs one on the stage beside the editor.
  */
-export const GreesePanel = ({ lab }: { lab: GreeseLab }): JSX.Element => (
-  <Stack gap={5}>
-    <Text variant="p3" tone="muted">
-      Each effect is plain keyframes: property → [from, to], or a list of frames. Edit the
-      code and the theme changes with it, in the preview, on the pages and in what Save
-      writes. Distances are shown at their default, <Code>1rem</Code>; Reset returns an
-      effect to the library’s.
-    </Text>
+export const EffectsSection = ({ lab }: { lab: GreeseLab }): JSX.Element => (
+  <Stack gap={4}>
+    <Stack gap={2}>
+      <Heading level={3} variant="h5">
+        Effects
+      </Heading>
+      <Text variant="p3" tone="muted">
+        Each effect is plain keyframes: property → [from, to], or a list of frames. The
+        built-ins always do what their names say; copy one to make your own, edit its code,
+        and assign it where it should play. Distances are shown at their default,{' '}
+        <Code>1rem</Code>. Play runs an effect on the stage.
+      </Text>
+    </Stack>
     <Stack gap={3}>
-      <Heading level={3} variant="h6">
+      <Heading level={4} variant="h6">
         Your effects
       </Heading>
       {lab.custom.map((name) => (
@@ -176,7 +180,7 @@ export const GreesePanel = ({ lab }: { lab: GreeseLab }): JSX.Element => (
       if (!names.length) return null
       return (
         <Stack gap={3} key={title}>
-          <Heading level={3} variant="h6">
+          <Heading level={4} variant="h6">
             {title}
           </Heading>
           {names.map((name) => (

@@ -14,12 +14,14 @@
  * Dev-only by design: it writes to disk, so it never exists in a build, and
  * it only accepts requests from the dev server's own origin.
  */
+import { errorLine, type ErrorAt } from '../src/studio/scssModule.ts'
 import {
   existsSync,
   mkdirSync,
   readFileSync,
   realpathSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from 'node:fs'
 import type { IncomingMessage, ServerResponse } from 'node:http'
@@ -40,6 +42,7 @@ import {
   emptySpec,
   specToEffectsTs,
   specToScss,
+  specToScssWithLines,
   stylesheetScss,
   validateSpec,
   type ThemeSpec,
@@ -76,15 +79,42 @@ export const themeFiles = (
  * alone and the stylesheet part once per set of breakpoints.
  */
 export type Compiled =
-  { scss: string; css: string; effects?: string; full?: boolean } | { errors: string[] }
+  | { scss: string; css: string; effects?: string; full?: boolean }
+  | { errors: string[]; at?: ErrorAt }
 
 const stylesheets = new Map<string, string>()
 
 /** The theme's SCSS and CSS, compiled through the real kit. */
+/**
+ * When the @greese/ui this process loaded was built. The compiler runs in
+ * Node, and Node keeps the first copy of a package it loads: a library
+ * rebuilt while the studio runs (new effect rules, shape targets) isn't
+ * picked up until the studio restarts, even by Vite's own restarts. Rather
+ * than compile with the old one, and fail in ways that point elsewhere, the
+ * studio says so.
+ */
+const LIBRARY = join(APP, '../../packages/ui/dist/index.js')
+const builtAt = (): number => {
+  try {
+    return statSync(LIBRARY).mtimeMs
+  } catch {
+    return 0
+  }
+}
+const LOADED = builtAt()
+
 export const compileSpec = (spec: ThemeSpec, source?: string): Compiled => {
+  if (builtAt() > LOADED + 1000)
+    return {
+      errors: [
+        '@greese/ui was rebuilt after the studio started, so it can’t compile with the new library. Restart `npm run studio` (or the site’s dev server).',
+      ],
+    }
   const errors = validateSpec(spec)
   if (errors.length) return { errors }
   const scss = specToScss(spec, source)
+  // The text compiled for the theme part, and where its lines came from.
+  let compiled = specToScssWithLines(spec, source)
   const effects = specToEffectsTs(spec, source)
   const build = (text: string) =>
     compileString(text, {
@@ -98,13 +128,19 @@ export const compileSpec = (spec: ThemeSpec, source?: string): Compiled => {
     if (!stylesheets.has(key)) stylesheets.set(key, build(stylesheetScss(own)))
     return {
       scss,
-      css: `${stylesheets.get(key)}\n${build(specToScss(spec, source, 'config'))}`,
+      css: `${stylesheets.get(key)}\n${build((compiled = specToScssWithLines(spec, source, 'config')).scss)}`,
       effects,
       full: true,
     }
   } catch (error) {
     // Sass errors read well; keep the first line and the kit's message.
-    return { errors: [String((error as Error).message).split('\n\n')[0]!] }
+    const message = String((error as Error).message).split('\n\n')[0]!
+    const line = errorLine(error)
+    const from = line === undefined ? undefined : compiled.origin(line)
+    return {
+      errors: [message],
+      ...(from && { at: { ...from, message: message.replace(/^Error: /, '') } }),
+    }
   }
 }
 

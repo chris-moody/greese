@@ -68,3 +68,18 @@ export const loadStories = async (name: string): Promise<LoadedStories | undefin
     ]),
   }
 }
+
+/**
+ * The components a story file lists as `subcomponents` (an Accordion's
+ * AccordionItem): the children that go inside it, read from the file's text so
+ * the studio need not load its stories.
+ */
+export const subcomponentsOf = async (name: string): Promise<string[]> => {
+  const source = sources[pathOf.get(name) ?? '']
+  if (!source) return []
+  const body = /subcomponents:\s*\{([^}]*)\}/.exec(await source())?.[1] ?? ''
+  return body
+    .split(',')
+    .map((entry) => /^\s*(\w+)/.exec(entry)?.[1])
+    .filter((n): n is string => !!n)
+}

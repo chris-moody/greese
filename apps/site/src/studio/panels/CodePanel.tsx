@@ -1,5 +1,7 @@
 import type { JSX } from 'react'
 import { Button, Code, Heading, Stack, Text } from '@greese/react'
+import { Highlighted } from '../CodeEditor.tsx'
+import type { Language } from '../highlight.ts'
 import type { ThemeSpec } from '../spec.ts'
 
 const BUILT_IN = ['xs', 'sm', 'md', 'lg', 'xl']
@@ -93,8 +95,8 @@ export const CodePanel = ({
           it in place of <code>styles.css</code>. Tell the JavaScript the same
           {extras(breakpoints).length ? ', and TypeScript about the keys you added' : ''}:
         </Text>
-        <Code block className="studio-code">
-          {appSnippet(breakpoints)}
+        <Code block className="studio-code studio-highlighted">
+          <Highlighted language="js" value={appSnippet(breakpoints)} />
         </Code>
       </Stack>
     )}
@@ -107,13 +109,15 @@ export const CodePanel = ({
     )}
     {(
       [
-        ['SCSS', scss, 'greese-theme.scss'] as const,
-        ['Compiled CSS', css, 'greese-theme.css'] as const,
+        ['SCSS', scss, 'greese-theme.scss', 'scss'] as const,
+        ['Compiled CSS', css, 'greese-theme.css', 'css'] as const,
         ...(effects
-          ? [['Effects (TypeScript)', effects, 'greese-theme.effects.ts']]
+          ? [['Effects (TypeScript)', effects, 'greese-theme.effects.ts', 'js']]
           : []),
-      ] as ReadonlyArray<readonly [title: string, text: string, name: string]>
-    ).map(([title, text, name]) => (
+      ] as ReadonlyArray<
+        readonly [title: string, text: string, name: string, language: Language]
+      >
+    ).map(([title, text, name, language]) => (
       <Stack gap={2} key={title}>
         <Stack direction="row" justify="between" align="center" gap={2}>
           <Heading level={3} variant="h6">
@@ -140,8 +144,11 @@ export const CodePanel = ({
             </Button>
           </Stack>
         </Stack>
-        <Code block className="studio-code">
-          {text || '/* Nothing yet: the theme changes nothing. */'}
+        <Code block className="studio-code studio-highlighted">
+          <Highlighted
+            language={language}
+            value={text || '/* Nothing yet: the theme changes nothing. */'}
+          />
         </Code>
       </Stack>
     ))}

@@ -9,3 +9,7 @@ declare module 'virtual:greese-kit' {
   const files: Record<string, string>
   export default files
 }
+
+declare module 'virtual:greese-utilities.css' {
+  /** The utility classes this app's source uses (@greese/ui/vite). */
+}

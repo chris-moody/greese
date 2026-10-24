@@ -1,5 +1,6 @@
 import { Component, useEffect, useState, type JSX, type ReactNode } from 'react'
 import { Card, Heading, Spinner, Stack, Text } from '@greese/react'
+import { Anatomy } from './Anatomy.tsx'
 import { hasStories, loadStories, type LoadedStories } from './stories.ts'
 
 /** One broken story shows a message instead of taking the preview down. */
@@ -51,6 +52,29 @@ export const ComponentPreview = ({ block }: { block: string }): JSX.Element => {
           </Text>
         </Stack>
         {loaded === undefined && hasStories(block) && <Spinner label="Loading stories" />}
+        {loaded && loaded.stories[0] && (
+          <Card padding={4}>
+            <Stack gap={3}>
+              <Text variant="h3" weight="semibold" tone="muted">
+                Anatomy: {loaded.stories[0][0]}
+              </Text>
+              <Text variant="caption" tone="muted">
+                Every element of {block}, and of what it contains and is built on, with
+                the classes it carries. Edit them under Styles in the Components tab.
+              </Text>
+              <div className="studio-story" data-layout="padded">
+                <StoryBoundary>
+                  <Anatomy block={block}>
+                    {(() => {
+                      const Story = loaded.stories[0]![1]
+                      return <Story />
+                    })()}
+                  </Anatomy>
+                </StoryBoundary>
+              </div>
+            </Stack>
+          </Card>
+        )}
         {loaded && (
           <Stack gap={4}>
             {loaded.stories.map(([name, Story]) => (

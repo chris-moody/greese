@@ -69,6 +69,7 @@ const ABBREVIATIONS: Record<ColorRole, string> = {
   fgMuted: 'Fm',
   border: 'Bd',
   borderStrong: 'Bs',
+  track: 'Tk',
   focusRing: 'Fr',
   positive: 'Po',
   negative: 'Ne',
@@ -216,7 +217,7 @@ export const ColorDialog = ({
       })()
     : []
   const controls = (
-    <Stack direction="row" gap={3} align="center" wrap="wrap">
+    <Stack direction="row" gap={3} align="center" wrap="wrap" className="px-5 pt-5">
       {target ? `Color: ${colorName(target)}` : 'Color'}
       {target && (
         <>
@@ -247,7 +248,6 @@ export const ColorDialog = ({
             <Segment value="light">Light</Segment>
             <Segment value="dark">Dark</Segment>
           </SegmentedControl>
-          
           {isSet(spec, target) && (
             <Button
               size="sm"
@@ -265,7 +265,7 @@ export const ColorDialog = ({
 
   return (
     <Dialog
-    className="p0"
+      className="p-0 studio-color-dialog"
       open={!!role}
       onOpenChange={(open) => !open && onClose()}
       size="xl"
@@ -274,7 +274,7 @@ export const ColorDialog = ({
       {target && (
         <Stack gap={4}>
           <Tabs defaultValue="palette">
-            <TabList aria-label="Color source">
+            <TabList aria-label="Color source" className="px-5">
               <Tab value="palette">Palette</Tab>
               <Tab value="custom">Custom</Tab>
             </TabList>
@@ -352,7 +352,7 @@ export const ColorDialog = ({
               </div>
             </TabPanel>
             <TabPanel value="custom">
-              <Stack gap={3}>
+              <Stack gap={3} className="px-5">
                 <ColorPicker
                   label={`${kebab(target)}, ${scheme}`}
                   value={currentHex ?? '#000000'}
@@ -370,7 +370,7 @@ export const ColorDialog = ({
             </TabPanel>
           </Tabs>
 
-          <Stack gap={2}>
+          <Stack gap={2} className="px-5 pb-5">
             <Text variant="p3" weight="semibold" tone="muted">
               Contrast (WCAG)
             </Text>

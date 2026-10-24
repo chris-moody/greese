@@ -1,7 +1,7 @@
 @use 'pkg:@greese/ui/scss/kit' as greese;
 
-/* The editor's own layout. It uses GreeseUI's defaults: the theme being
-   edited only reaches the preview iframe. */
+/* The editor's own layout. The editor wears the theme being chosen, like
+   every page; the preview iframe shows it with your edits too. */
 
 /* Under the shared header. Wide: the page is exactly the screen tall, and the
    editor and the preview scroll on their own (see .site--studio below). */
@@ -37,7 +37,10 @@
 .studio-body {
   display: grid;
   flex: 1;
-  grid-template-rows: auto 80vh;
+  position: relative;
+  min-block-size: 0;
+  overflow: hidden;
+  grid-template-rows: minmax(0, 1fr);
   /* One column that never grows past the screen, whatever scrolls inside. */
   grid-template-columns: minmax(0, 1fr);
 }
@@ -53,6 +56,63 @@
   min-inline-size: 0;
   padding: var(--greese-space-4);
   background: var(--greese-color-surface);
+  /* Below md: a drawer over the preview, off-canvas until opened. Hidden, it
+     also leaves the tab order. */
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 3;
+  inline-size: min(26rem, 100% - 3rem);
+  overflow: auto;
+  visibility: hidden;
+  border-inline-end: 1px solid var(--greese-color-border);
+  box-shadow: var(--greese-shadow-lg);
+  transform: translateX(-100%);
+  transition:
+    transform 0.2s ease,
+    visibility 0.2s;
+
+  &[data-open] {
+    visibility: visible;
+    transform: none;
+  }
+
+  &:dir(rtl) {
+    transform: translateX(100%);
+
+    &[data-open] {
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.studio-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  visibility: hidden;
+  background: color-mix(in srgb, var(--greese-color-canvas) 60%, transparent);
+  opacity: 0;
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
+
+  &[data-open] {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+.studio-drawer-toggle {
+  position: absolute;
+  inset-block-end: var(--greese-space-4);
+  inset-inline-end: var(--greese-space-3);
+  z-index: 4;
+  box-shadow: var(--greese-shadow-lg);
 }
 
 .studio-preview-frame[hidden] {
@@ -74,13 +134,17 @@
   .studio-body {
     grid-template-rows: none;
     grid-template-columns: minmax(24rem, 34rem) 1fr;
-    min-block-size: 0;
-    overflow: hidden;
   }
 
   .studio-editor {
-    overflow: auto;
-    border-inline-end: 1px solid var(--greese-color-border);
+    position: relative;
+    inset: auto;
+    z-index: auto;
+    inline-size: auto;
+    visibility: visible;
+    box-shadow: none;
+    transform: none;
+    transition: none;
   }
 }
 
@@ -139,7 +203,7 @@ code.studio-row-label {
   block-size: 1.25rem;
   overflow: hidden;
   border: 1px solid var(--greese-color-border-strong);
-  border-radius: var(--greese-radius-sm);
+  border-radius: var(--greese-corner-inset);
 }
 
 .studio-swatch > span {
@@ -206,7 +270,7 @@ code.studio-row-label {
   cursor: pointer;
   background: var(--greese-color-canvas);
   border: 1px solid var(--greese-color-border);
-  border-radius: var(--greese-radius-md);
+  border-radius: var(--greese-corner-panel);
 }
 
 .studio-chip[aria-expanded='true'] {
@@ -218,7 +282,7 @@ code.studio-row-label {
   grid-template-columns: 1fr 1fr;
   overflow: hidden;
   border: 1px solid var(--greese-color-border);
-  border-radius: var(--greese-radius-sm);
+  border-radius: var(--greese-corner-inset);
 }
 
 .studio-chip-half {
@@ -265,7 +329,7 @@ code.studio-row-label {
   padding: var(--greese-space-3);
   background: var(--greese-color-canvas);
   border: 1px solid var(--greese-color-border);
-  border-radius: var(--greese-radius-md);
+  border-radius: var(--greese-corner-panel);
 }
 
 /* Radius: a tile per option, each showing its corner. */
@@ -283,7 +347,7 @@ code.studio-row-label {
   cursor: pointer;
   background: var(--greese-color-canvas);
   border: 1px solid var(--greese-color-border);
-  border-radius: var(--greese-radius-sm);
+  border-radius: var(--greese-corner-inset);
 }
 
 .studio-radius > span {
@@ -308,16 +372,19 @@ code.studio-row-label {
 .studio-palette {
   display: grid;
   gap: 2px;
-  padding-block-start: 0.75rem;
-  overflow-x: auto;
-  grid-template-columns: repeat(var(--studio-palette-shades), minmax(0, 1fr));
+  padding: 0.75rem var(--greese-space-3) 0;
+  justify-content: center;
+  /* Below md: a fixed square, small enough that a row of shades fits the
+     narrowest screen (11 × 1.25rem + gaps + padding < 288px), so no scrolling. */
+  grid-template-columns: repeat(var(--studio-palette-shades), 1.25rem);
 }
 
-@include greese.up(sm) {
+@include greese.up(md) {
   .studio-palette {
     grid-auto-flow: column;
     grid-template-columns: repeat(var(--studio-palette-groups), minmax(0, 1fr));
     grid-template-rows: repeat(var(--studio-palette-shades), auto);
+    padding-inline: var(--greese-space-5);
   }
 }
 
@@ -325,7 +392,7 @@ code.studio-row-label {
   display: grid;
   place-content: center;
   aspect-ratio: 1;
-  min-inline-size: 1.5rem;
+  inline-size: 1.25rem;
   padding: 0;
   border: 0;
   border-radius: 3px;
@@ -334,6 +401,10 @@ code.studio-row-label {
   font-weight: 700;
   line-height: 1;
   cursor: pointer;
+
+  @include greese.up(md) {
+    inline-size: 3rem;
+  }
 }
 
 .studio-palette-swatch[data-current] {
@@ -348,7 +419,16 @@ code.studio-row-label {
   position: relative;
 }
 
+.studio-color-dialog .greese-Dialog-close {
+  margin-block-start: var(--greese-space-3);
+  margin-inline-end: var(--greese-space-3);
+}
+
 .studio-palette-more {
+  @include greese.down(md) {
+    display: none;
+  }
+
   font-size: 0.5rem;
   font-weight: 500;
   opacity: 0.8;
@@ -384,7 +464,7 @@ code.studio-row-label {
   font-weight: 600;
 }
 
-/* The Greese tab: effect code in the editor, the sequence stage in the main area. */
+/* The Motion tab's effects: their code in the editor, the sequence stage in the main area. */
 .studio-effect-actions {
   display: inline-flex;
   gap: var(--greese-space-1);
@@ -408,4 +488,235 @@ code.studio-row-label {
 .studio-stage-card {
   flex: 1;
   min-block-size: 16rem;
+}
+
+// The component family: which style blocks the Styles box edits.
+.studio-family {
+  display: grid;
+  gap: var(--greese-space-1);
+}
+
+.studio-family-block {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--greese-space-2);
+  align-items: center;
+  font-size: 0.8125rem;
+}
+
+// The highlighted code box (CodeEditor): the coloured text sits under a
+// transparent textarea that shares its font, padding and scroll.
+.studio-codebox {
+  position: relative;
+  font: 0.75rem / 1.55 var(--greese-font-mono);
+  background: var(--greese-color-surface);
+  border: 1px solid var(--greese-color-border);
+  border-radius: var(--greese-corner-panel);
+
+  &:focus-within {
+    outline: 2px solid var(--greese-color-focus-ring);
+    outline-offset: 1px;
+  }
+
+  &[data-invalid] {
+    border-color: var(--greese-color-negative);
+  }
+}
+
+.studio-codebox-layer,
+.studio-codebox-input {
+  padding: var(--greese-space-3);
+  margin: 0;
+  font: inherit;
+  letter-spacing: normal;
+  tab-size: 2;
+  white-space: pre;
+  overflow-wrap: normal;
+}
+
+.studio-codebox-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: var(--greese-color-fg);
+  pointer-events: none;
+
+  // Scrolls with the text, since the layer is its containing block.
+  > .studio-codebox-mark {
+    position: absolute;
+    inset-inline: 0;
+    block-size: 1lh;
+    background: color-mix(in srgb, var(--greese-color-negative) 14%, transparent);
+    border-inline-start: 3px solid var(--greese-color-negative);
+  }
+}
+
+.studio-codebox-input {
+  position: relative;
+  display: block;
+  inline-size: 100%;
+  min-block-size: 0;
+  overflow: auto;
+  color: transparent;
+  caret-color: var(--greese-color-fg);
+  resize: vertical;
+  background: transparent;
+  border: 0;
+  border-radius: inherit;
+  outline: 0;
+  box-shadow: none;
+  // The library's Textarea grows to its content; the code box keeps its rows
+  // and scrolls, with the layer under it following (CodeEditor's onScroll).
+  field-sizing: fixed;
+
+  &::selection {
+    color: transparent;
+    background: color-mix(in srgb, var(--greese-color-primary) 30%, transparent);
+  }
+}
+
+// The colours of `highlight()`'s tokens, in the code box and in read-only code.
+.studio-codebox-layer,
+.studio-highlighted {
+  .tok-comment {
+    font-style: italic;
+    color: light-dark(#6a737d, #8b949e);
+  }
+
+  .tok-string {
+    color: light-dark(#0a7a4b, #7ee787);
+  }
+
+  .tok-number {
+    color: light-dark(#b45309, #ffa657);
+  }
+
+  .tok-selector {
+    color: light-dark(#6f42c1, #d2a8ff);
+  }
+
+  .tok-tag {
+    color: light-dark(#116329, #7ee787);
+  }
+
+  .tok-pseudo {
+    color: light-dark(#c2410c, #ffa198);
+  }
+
+  .tok-attribute {
+    color: light-dark(#0e7490, #56d4dd);
+  }
+
+  .tok-property {
+    color: light-dark(#0550ae, #79c0ff);
+  }
+
+  .tok-variable {
+    color: light-dark(#116329, #7ee787);
+  }
+
+  .tok-function {
+    color: light-dark(#8250df, #d2a8ff);
+  }
+
+  .tok-at,
+  .tok-keyword {
+    color: light-dark(#cf222e, #ff7b72);
+  }
+
+  .tok-punctuation {
+    color: light-dark(#57606a, #8b949e);
+  }
+}
+
+// The imports menu's list.
+.studio-imports {
+  font-size: 0.8125rem;
+
+  summary {
+    cursor: pointer;
+  }
+
+  ul {
+    padding-inline-start: var(--greese-space-5);
+    margin-block: var(--greese-space-2) 0;
+  }
+}
+
+// The shape editor (ShapesPanel): the canvas draws the shape from the same
+// points the CSS is built from, with its border ring and a handle per point.
+.studio-shape-canvas {
+  display: block;
+  inline-size: 100%;
+  max-block-size: 22rem;
+  touch-action: none;
+  background:
+    conic-gradient(
+      var(--greese-color-surface) 25%,
+      var(--greese-color-canvas) 0 50%,
+      var(--greese-color-surface) 0 75%,
+      var(--greese-color-canvas) 0
+    )
+    0 0 / 16px 16px;
+  border: 1px solid var(--greese-color-border);
+  border-radius: var(--greese-corner-panel);
+}
+
+.studio-shape-box {
+  fill: none;
+  stroke: var(--greese-color-border-strong);
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.studio-shape-fill {
+  fill: color-mix(in oklab, var(--greese-color-primary) 18%, transparent);
+}
+
+.studio-shape-ring {
+  fill: var(--greese-color-primary);
+}
+
+.studio-shape-handle {
+  cursor: grab;
+  fill: var(--greese-color-canvas);
+  stroke: var(--greese-color-primary);
+  stroke-width: 2;
+
+  &[data-selected] {
+    fill: var(--greese-color-primary);
+  }
+}
+
+.studio-shape-add {
+  cursor: copy;
+  fill: var(--greese-color-fg-muted);
+  opacity: 0.35;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.studio-shape-length {
+  display: grid;
+  grid-template-columns: 3rem repeat(3, minmax(0, 1fr) auto) minmax(6rem, 1.4fr);
+  gap: var(--greese-space-1);
+  align-items: center;
+
+  @container (width < 30rem) {
+    grid-template-columns: 3rem repeat(2, minmax(0, 1fr) auto);
+  }
+}
+
+.studio-shape-params {
+  display: grid;
+  gap: var(--greese-space-1);
+}
+
+.studio-shape-params-row {
+  display: grid;
+  grid-template-columns: 4rem repeat(4, minmax(0, 1fr));
+  gap: var(--greese-space-1);
+  align-items: center;
 }

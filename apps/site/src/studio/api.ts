@@ -1,4 +1,5 @@
 import type { ImportResult } from './importer.ts'
+import type { ErrorAt } from './scssModule.ts'
 import type { ThemeSpec } from './spec.ts'
 
 /** What to import: text (pasted or uploaded) or a file in the project. */
@@ -14,6 +15,8 @@ export interface Compiled {
   /** `css` is the whole stylesheet, built for the theme's own breakpoints. */
   full?: boolean
   errors?: string[]
+  /** When the error is in a component's SCSS: where, to mark the line in its box. */
+  at?: ErrorAt
 }
 
 export interface Loaded extends Compiled {

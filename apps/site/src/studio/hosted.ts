@@ -11,10 +11,12 @@ import example from '../../example/greese-theme.json'
 import type { Compiled, ImportSource, Loaded } from './api.ts'
 import { KEY, stored } from './storage.ts'
 import { detectFormat, importCss, importJson, type ImportResult } from './importer.ts'
+import { errorLine } from './scssModule.ts'
 import {
   customBreakpoints,
   specToEffectsTs,
   specToScss,
+  specToScssWithLines,
   stylesheetScss,
   validateSpec,
   type ThemeSpec,
@@ -29,6 +31,10 @@ const entries: Record<string, string> = {
   'pkg:@greese/ui/scss': '/src/styles/index.scss',
   'pkg:@greese/ui/scss/config': '/src/styles/_config.scss',
   'pkg:@greese/ui/scss/kit': '/src/styles/_kit.scss',
+  'pkg:@greese/ui/scss/mixins': '/src/styles/public/_mixins.scss',
+  'pkg:@greese/ui/scss/tones': '/src/styles/public/_tones.scss',
+  'pkg:@greese/ui/scss/floating': '/src/styles/public/_floating.scss',
+  'pkg:@greese/ui/scss/controls': '/src/styles/public/_controls.scss',
   'pkg:@greese/ui/scss/tokens': '/dist/_tokens.scss',
   'pkg:@greese/ui/scss/layers': '/dist/_layers.scss',
   'pkg:@greese/ui/scss/maps': '/dist/_maps.scss',
@@ -74,6 +80,8 @@ export const compileSpec = async (spec: ThemeSpec): Promise<Compiled> => {
   if (errors.length) return { errors }
   const scss = specToScss(spec, FILE)
   const effects = specToEffectsTs(spec, FILE)
+  // The text compiled for the theme part, and where its lines came from.
+  let compiled = specToScssWithLines(spec, FILE)
   try {
     const own = customBreakpoints(spec)
     if (!own) return { scss, css: await compileScss(scss), effects }
@@ -84,10 +92,18 @@ export const compileSpec = async (spec: ThemeSpec): Promise<Compiled> => {
       await loadComponents()
       stylesheets.set(key, await compileScss(stylesheetScss(own)))
     }
-    const theme = await compileScss(specToScss(spec, FILE, 'config'))
+    const theme = await compileScss(
+      (compiled = specToScssWithLines(spec, FILE, 'config')).scss
+    )
     return { scss, css: `${stylesheets.get(key)}\n${theme}`, effects, full: true }
   } catch (error) {
-    return { errors: [firstPart(error)] }
+    const message = firstPart(error)
+    const line = errorLine(error)
+    const from = line === undefined ? undefined : compiled.origin(line)
+    return {
+      errors: [message],
+      ...(from && { at: { ...from, message: message.replace(/^Error: /, '') } }),
+    }
   }
 }
 

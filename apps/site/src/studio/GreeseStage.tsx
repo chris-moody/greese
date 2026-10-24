@@ -12,7 +12,7 @@ import {
 import { EXAMPLES, type GreeseLab } from './greeseLab.ts'
 
 /**
- * The Greese tab's main area: type a sequence, play it, replay it. The card on
+ * The Motion tab's main area: type a sequence, play it, replay it. The card on
  * the stage wears it, so you see exactly what `greese="…"` does.
  */
 export const GreeseStage = ({ lab }: { lab: GreeseLab }): JSX.Element => {

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { derivedContent, derivedStrong, mixOklab } from '../src/studio/derived.ts'
 import { over } from '../src/studio/panels/ColorsSection.tsx'
 import { applyPreset, PRESETS, randomPreset } from '../src/studio/presets.ts'
+import { contrastRatio } from '@greese/ui'
+import { resolveColor } from '../src/studio/resolve.ts'
 import { compileSpec } from './studio.ts'
 
 describe('derived colors, as the studio shows them', () => {
@@ -41,13 +43,31 @@ describe('presets', () => {
 
   it('picks four different hues at random', () => {
     const { color } = randomPreset()
-    const hues = Object.values(color).map(
-      (v) => (typeof v === 'string' ? v : v.light).split('-')[0]
-    )
+    const hues = (['primary', 'secondary', 'tertiary', 'accent'] as const).map((role) => {
+      const v = color[role]!
+      return (typeof v === 'string' ? v : v.light).split('-')[0]
+    })
     expect(new Set(hues).size).toBe(4)
   })
 
-  it('replaces colors and radii, and keeps components and motion', () => {
+  it('tint the neutrals, with text that meets AA on every ground, in both schemes', () => {
+    for (const preset of PRESETS.filter((p) => p.color.canvas)) {
+      for (const scheme of ['light', 'dark'] as const) {
+        const hex = (role: string) => {
+          const v = preset.color[role]!
+          return resolveColor(typeof v === 'string' ? v : v[scheme], scheme)!
+        }
+        for (const text of ['fg', 'fg-muted'])
+          for (const ground of ['canvas', 'surface', 'surface-overlay'])
+            expect(
+              contrastRatio(hex(text), hex(ground)),
+              `${preset.id} ${scheme}: ${text} on ${ground}`
+            ).toBeGreaterThanOrEqual(4.5)
+      }
+    }
+  })
+
+  it('replaces colors only: radii, components and motion are other layers', () => {
     const spec = {
       tokens: {
         color: { canvas: '#000' },
@@ -60,7 +80,7 @@ describe('presets', () => {
     const ocean = PRESETS.find((p) => p.id === 'ocean')!
     const next = applyPreset(spec, ocean)
     expect(next.tokens!.color).toEqual(ocean.color)
-    expect(next.tokens!.radius).toEqual(ocean.radius)
+    expect(next.tokens!.radius).toEqual({ md: '3px' })
     expect(next.tokens!.space).toEqual({ 4: '1.1rem' })
     expect(next.components).toEqual(spec.components)
     expect(next.motionDefaults).toEqual(spec.motionDefaults)
@@ -70,6 +90,6 @@ describe('presets', () => {
         next,
         PRESETS.find((p) => p.id === 'default')!
       ).tokens!.color
-    ).toEqual({})
+    ).toBeUndefined()
   })
 })

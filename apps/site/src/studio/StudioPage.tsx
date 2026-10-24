@@ -2,6 +2,9 @@ import { useCallback, useEffect, useRef, useState, type JSX } from 'react'
 import {
   Alert,
   Button,
+  Icon,
+  IconButton,
+  Show,
   Stack,
   Tab,
   TabList,
@@ -10,6 +13,7 @@ import {
   Text,
   useColorScheme,
 } from '@greese/react'
+import { icons } from '../icons.tsx'
 import { useShell } from '../shell.ts'
 import { api, hosted } from './api.ts'
 import { PaletteOptions } from './fields.tsx'
@@ -17,12 +21,22 @@ import { GreeseStage } from './GreeseStage.tsx'
 import { useGreeseLab } from './greeseLab.ts'
 import { CodePanel } from './panels/CodePanel.tsx'
 import { ComponentsPanel } from './panels/ComponentsPanel.tsx'
-import { GreesePanel } from './panels/GreesePanel.tsx'
 import { MotionPanel } from './panels/MotionPanel.tsx'
+import { ShapesPanel } from './panels/ShapesPanel.tsx'
 import { TokensPanel } from './panels/TokensPanel.tsx'
 import type { FromPreview, Picked, ToPreview } from './protocol.ts'
+import type { ErrorAt } from './scssModule.ts'
 import { customBreakpoints } from './spec.ts'
 import './studio.scss'
+
+const TABS = ['tokens', 'components', 'shapes', 'motion', 'code'] as const
+type StudioTab = (typeof TABS)[number]
+
+/** The tab a link opens: `/studio?tab=motion`. Tokens when there's none, or it's unknown. */
+const tabFromUrl = (): StudioTab => {
+  const tab = new URLSearchParams(location.search).get('tab')
+  return TABS.find((t) => t === tab) ?? 'tokens'
+}
 
 interface FileState {
   file: string
@@ -40,6 +54,8 @@ interface FileState {
 export const StudioPage = (): JSX.Element => {
   const { spec, setSpec, rendered, setRendered, replay, inspect, setStudio } = useShell()
   const { scheme } = useColorScheme()
+  // Below md the editor is a drawer over the preview; from md it's a column.
+  const [drawer, setDrawer] = useState(false)
   const [file, setFile] = useState<FileState>()
   const [loadError, setLoadError] = useState<string>()
   const [compiled, setCompiled] = useState({
@@ -52,11 +68,13 @@ export const StudioPage = (): JSX.Element => {
   /** The latest compile, so a slow one (a whole stylesheet) never lands after a newer. */
   const latest = useRef(0)
   const [errors, setErrors] = useState<string[]>([])
+  /** Where the last compile error is, when it's in a component's SCSS. */
+  const [errorAt, setErrorAt] = useState<ErrorAt>()
   const [saving, setSaving] = useState(false)
   /** What the last save wrote; cleared by the next edit, since the button then says Save. */
   const [written, setWritten] = useState<string[]>()
   const [changedOnDisk, setChangedOnDisk] = useState(false)
-  const [tab, setTab] = useState('tokens')
+  const [tab, setTab] = useState<StudioTab>(tabFromUrl)
   const [component, setComponent] = useState('Button')
   const [picked, setPicked] = useState<Picked>()
   const frame = useRef<HTMLIFrameElement>(null)
@@ -125,6 +143,7 @@ export const StudioPage = (): JSX.Element => {
       if (run !== latest.current) return
       setBuilding(false)
       setErrors(result.errors ?? [])
+      setErrorAt(result.at)
       if (result.css !== undefined)
         setCompiled({
           scss: result.scss!,
@@ -196,6 +215,20 @@ export const StudioPage = (): JSX.Element => {
     return () => window.removeEventListener('message', onMessage)
   }, [compiled.css, spec.name, scheme, inspect, component, post])
 
+  // The open tab is in the URL, so a link can open it. Replaced, not pushed:
+  // switching tabs shouldn't fill the back button's history.
+  useEffect(() => {
+    const url = new URL(location.href)
+    if (tab === 'tokens') url.searchParams.delete('tab')
+    else url.searchParams.set('tab', tab)
+    if (url.href !== location.href) history.replaceState(history.state, '', url)
+  }, [tab])
+  useEffect(() => {
+    const onPop = () => setTab(tabFromUrl())
+    addEventListener('popstate', onPop)
+    return () => removeEventListener('popstate', onPop)
+  }, [])
+
   const save = async () => {
     setSaving(true)
     const result = await api.save(spec)
@@ -225,16 +258,17 @@ export const StudioPage = (): JSX.Element => {
   // Inspect and the rendered colors belong to this page's preview.
   useEffect(() => () => setRendered(undefined), [setRendered])
 
-  const showComponent = (name: string) => {
-    setComponent(name)
-    setTab('components')
-  }
-
   return (
     <div className="studio">
       <div className="studio-body">
         <PaletteOptions />
-        <aside className="studio-editor">
+        <aside
+          id="studio-editor"
+          className="studio-editor"
+          aria-label="Theme editor"
+          data-open={drawer || undefined}
+          onKeyDown={(e) => e.key === 'Escape' && setDrawer(false)}
+        >
           {file && (
             <Text variant="p3" tone="muted" className="studio-file">
               {file.file}
@@ -262,12 +296,12 @@ export const StudioPage = (): JSX.Element => {
               <pre className="studio-errors">{errors.join('\n')}</pre>
             </Alert>
           )}
-          <Tabs value={tab} onValueChange={setTab}>
+          <Tabs value={tab} onValueChange={(v) => setTab(v as StudioTab)}>
             <TabList aria-label="Editor">
               <Tab value="tokens">Tokens</Tab>
               <Tab value="components">Components</Tab>
+              <Tab value="shapes">Shapes</Tab>
               <Tab value="motion">Motion</Tab>
-              <Tab value="greese">Greese</Tab>
               <Tab value="code">Code</Tab>
             </TabList>
             <TabPanel value="tokens">
@@ -285,29 +319,52 @@ export const StudioPage = (): JSX.Element => {
                 component={component}
                 onComponent={setComponent}
                 picked={picked}
+                errorAt={errorAt}
               />
+            </TabPanel>
+            <TabPanel value="shapes">
+              <ShapesPanel spec={spec} onChange={setSpec} />
             </TabPanel>
             <TabPanel value="motion">
-              <MotionPanel spec={spec} onChange={setSpec} onComponent={showComponent} />
-            </TabPanel>
-            <TabPanel value="greese">
-              <GreesePanel lab={lab} />
+              <MotionPanel spec={spec} onChange={setSpec} lab={lab} />
             </TabPanel>
             <TabPanel value="code">
-              <CodePanel
-                scss={compiled.scss}
-                css={compiled.css}
-                effects={compiled.effects}
-                outputs={file?.outputs ?? []}
-                spec={hosted ? spec : undefined}
-                breakpoints={custom}
-              />
+              {/* Only while open: it colours the whole compiled CSS. */}
+              {tab === 'code' && (
+                <CodePanel
+                  scss={compiled.scss}
+                  css={compiled.css}
+                  effects={compiled.effects}
+                  outputs={file?.outputs ?? []}
+                  spec={hosted ? spec : undefined}
+                  breakpoints={custom}
+                />
+              )}
             </TabPanel>
           </Tabs>
         </aside>
-        {tab === 'greese' && <GreeseStage lab={lab} />}
+        <Show below="md">
+          <div
+            className="studio-scrim"
+            data-open={drawer || undefined}
+            onClick={() => setDrawer(false)}
+            aria-hidden="true"
+          />
+          <IconButton
+            className="studio-drawer-toggle"
+            label={drawer ? 'Close the editor' : 'Open the editor'}
+            aria-controls="studio-editor"
+            aria-expanded={drawer}
+            onClick={() => setDrawer((open) => !open)}
+            variant="solid"
+            tone="primary"
+          >
+            <Icon>{drawer ? icons.close : icons.sliders}</Icon>
+          </IconButton>
+        </Show>
+        {tab === 'motion' && <GreeseStage lab={lab} />}
         <iframe
-          hidden={tab === 'greese'}
+          hidden={tab === 'motion'}
           ref={frame}
           src={`${import.meta.env.BASE_URL}preview.html`}
           title="Theme preview"

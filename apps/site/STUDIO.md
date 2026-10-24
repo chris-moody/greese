@@ -30,28 +30,31 @@ The SCSS and CSS are generated: edit the JSON or use the studio, and keep
 hand-written overrides in a stylesheet of your own. If the JSON changes on
 disk, the studio reloads it, or asks first when you have unsaved edits.
 
-## Greese tab
+## Motion tab
 
-The theme's effects. Every built-in effect is listed with the keyframes it
-plays, as code; edit it and the theme changes. Below the list, add an effect of
-your own with a name (camelCase) and its keyframes. A stage replaces the
-preview while the tab is open: type a sequence, play it, replay it.
+Theme-wide entrance tuning (duration, delay, ease, distance and stagger for
+every `greese` prop entrance), the theme's **Roles** (which effect plays where,
+and which duration and easing it takes: `motion-defaults()`, ADR 0025), a note
+on scopes, and the theme's **Effects**. Every built-in effect is listed with the
+keyframes it plays, as read-only code: a built-in always does what its name
+says. Copy one to edit it, or add an effect of your own with a name (camelCase)
+and its keyframes, then assign it to a role or name it in a `greese` prop. A stage replaces the preview while the tab is
+open: type a sequence, play it, replay it; an effect's Play runs it there.
 
 Effects are part of the theme (`effects` in `greese-theme.json`), so Save
 writes them through:
 
-- a retuned entrance preset (`fadeUp`, `popIn`…) is built into the CSS as its
-  `@keyframes`, with the kit's `keyframes()` mixin, so it's retuned even when
-  played alone as plain CSS;
-- every effect, retuned or new, goes into `greese-theme.effects.ts`: a module
-  of `defineGreeseEffect()` calls (and the new names in `GreeseEffectRegistry`,
-  so they type-check) to import once at the app's entry. A definition under a
-  built-in's name replaces it in sequences, interactions and timelines. The
-  file exists only while the theme has effects;
+- each one that ends at rest is built into the CSS as its `@keyframes`, with
+  the kit's `effect()` mixin, so it plays alone as plain CSS;
+- every one goes into `greese-theme.effects.ts`: a module of
+  `defineGreeseEffect()` calls (and the names in `GreeseEffectRegistry`, so
+  they type-check) to import once at the app's entry. A built-in's name is
+  refused, by the spec check, the kit and the runtime alike. The file exists
+  only while the theme has effects;
 - the preview and the pages (homepage, stage) apply them live. The hosted
   studio keeps them in the browser; the Code tab downloads the files.
 
-Reset returns a built-in to the library's keyframes; Delete removes a new one.
+Delete removes one of yours.
 Replay motion in the header plays the stage again.
 
 ### Where effects are defined
@@ -86,7 +89,7 @@ change.
 
 Built-in effects and the ones you add go the same way.
 
-1. **Edit.** The Greese tab parses the code as you type. Valid code is written
+1. **Edit.** The Motion tab's Effects section parses the code as you type. Valid code is written
    to `spec.effects[name]` (`{ keyframes, duration? }`) in `greese-theme.json`;
    code that doesn't parse stays a draft and the theme keeps the last valid
    version. Reset deletes the entry.
@@ -96,8 +99,8 @@ Built-in effects and the ones you add go the same way.
      `@include greese.effect(name, (enter: …))` or `(exit: …)`, from
      `cssPlan(keyframes)`. They come before the components, so a component's
      `motion(enter: …)` or `motion(exit: …)` can name them. The mixin writes the
-     same classes and `@keyframes` as the built-ins, in `@layer greese.utilities`
-     after the library's own, so a built-in's name is retuned;
+     same classes and `@keyframes` as the built-ins, in `@layer greese.utilities`,
+     under names of the theme's own (a built-in's is refused);
    - `greese-theme.css`: that SCSS compiled;
    - `greese-theme.effects.ts` (`specToEffectsTs`): one
      `defineGreeseEffect('name', { keyframes, duration })` per effect in the
@@ -114,8 +117,8 @@ Built-in effects and the ones you add go the same way.
 An overlay's `exit` with an effect that only the effects module defines (not in
 the compiled CSS) works too: the runtime sets what it changes on the overlay.
 
-A retuned effect is fixed keyframes: it no longer reads its parameters, but
-keeps the timing keys (`duration`, `offset`, `ease`).
+A theme's effect is fixed keyframes: it reads no parameters, but keeps the
+timing keys (`duration`, `offset`, `ease`).
 
 ## Theme
 
@@ -132,6 +135,77 @@ and renders apply exactly as in the docs, with the theme being edited
 applied. A story added to the docs appears here with no extra work. Each
 story renders in a block root, as in Storybook, and honours its `layout`
 parameter (`centered`, or `fullscreen` in a short scrolling frame).
+
+### Anatomy
+
+Above the stories, the first one is shown again as the component's **anatomy**
+(`src/studio/preview/Anatomy.tsx`): every element that belongs to the component,
+to what it contains and to what it is built on is outlined, and labelled in a
+gutter to the right with the `greese-*` classes it carries. Nesting shows as
+colour, every disclosure starts open so each section is visible (an exclusive
+Accordion's shared `name` is dropped) and can be closed and opened again, and the same tree is listed as text under
+it. The elements are found by walking the rendered DOM, so what is labelled is
+what is there. It measures again when the theme's CSS changes and when a disclosure opens
+or closes.
+
+## Component styles
+
+Themes are more than tokens: the **Components tab** edits a component's own
+styles. Its **Styles** box is the code of a component _family_, edited together,
+in a highlighted editor (`src/studio/CodeEditor.tsx`, which colours CSS, SCSS and
+the JavaScript effects are written in, with no dependency: the text is
+tokenized by `src/studio/highlight.ts` and drawn under a transparent textarea).
+
+- **The family** is derived, not listed: the component's own style blocks, then
+  those of the components that go inside it (the `subcomponents` its story
+  file names) and what they are built on (`component-styles.json`, read from each
+  component's source). Accordion: Accordion, AccordionItem, Collapsible.
+
+### One SCSS box, starting from the library's own
+
+- **It starts as the family's library SCSS:** every stylesheet the family is
+  built from (Accordion.scss, Collapsible.scss), each under a `// src/components/…`
+  comment, made to fit the box (`familySource` in `src/studio/copySource.ts`):
+  library paths become `pkg:` imports, written once at the top; the `@layer`
+  wrapper goes; the component's class becomes `&` and its modifiers
+  `&.greese-Accordion--x`, in the selectors of outer rules only (inside another
+  rule, as in `.greese-AvatarGroup-item > .greese-Avatar`, it is another
+  element and stays a class); what writes the library's own classes
+  (`mixins.responsive-prop`, `tones.classes`) is left out, with a comment; and
+  rules about components outside the family are dropped (AccordionItem's box has
+  no `.greese-Accordion` rules).
+- **Nothing is kept until you edit it.** Then the theme keeps the whole text
+  (`components.<Name>.scss`) and writes it inside
+  `@include greese.component(Accordion) { … }`, so it applies under the
+  component's class only (`.greese-Accordion .greese-Collapsible-trigger`), in
+  the overrides layer, and a named theme's attribute comes from the kit. A
+  Collapsible or AccordionItem used on its own keeps the library's styles, or its
+  own box's if you edit that. Editing the text back to the library's, or
+  **Reset**, drops it. The copy is yours and won't follow later library changes.
+- **Imports.** The **Imports** menu lists what the box can `@use`, with a
+  checkbox each: the library's entry points (`pkg:@greese/ui/scss/kit` as
+  `greese`, `config`, `maps`, `mixins`, `tones`, `floating`, `controls`) and
+  `sass:map`, `list`, `math`, `string`, `color` and `meta`. The boxes are read
+  from the text, so typing or deleting a `@use` ticks or clears its box; ticking
+  adds the line after the last import, unticking deletes it (`toggleImport` in
+  `src/studio/scssModule.ts`). A library path pasted from a component's source
+  (`../../styles/mixins`) is rewritten to its `pkg:` form as you type, so the
+  theme compiles in your project. `with (…)`, `@forward`, `@import`, a `@use`
+  after the styles, and anything else are refused, with the line (ADR 0021).
+- **One file.** The theme file writes every component's imports once, at the top
+  (after the kit and any breakpoints, which the partials read), then the
+  top-level `@mixin`s, `@function`s and the variables they read, then each body
+  inside `component(Name)`. Two components giving one name to two modules, or
+  declaring the same mixin, is an error naming both.
+- **Errors in place.** A compile error in a component's SCSS is marked on its
+  line in the box, with Sass's message under it; the preview keeps the last CSS
+  that compiled. (`specToScssWithLines` records where every line of the generated
+  file came from.)
+
+It applies live: the spec compiles through the real kit and the CSS goes to the
+preview. The family is `src/studio/family.ts`. Every component's source compiles
+in its box, and so does each family's starting text (tests, against the real
+kit).
 
 ## Themes, colors and radius
 

@@ -1,15 +1,12 @@
-import { useState, type JSX } from 'react'
+import type { JSX } from 'react'
 import { Badge, Field, Heading, Select, Stack, Text } from '@greese/react'
 import { getIn, setIn } from '../edit.ts'
-import { DeclarationsEditor, SchemeInput, ValueRow } from '../fields.tsx'
+import { SchemeInput, ValueRow } from '../fields.tsx'
+import { FamilyStyles } from './FamilyStyles.tsx'
+import type { ErrorAt } from '../scssModule.ts'
 import { blockNames, blocks } from '../manifest.ts'
 import type { Picked } from '../protocol.ts'
-import {
-  motionChoices,
-  type Declarations,
-  type SchemeValue,
-  type ThemeSpec,
-} from '../spec.ts'
+import { motionChoices, type SchemeValue, type ThemeSpec } from '../spec.ts'
 
 const Chips = ({
   label,
@@ -40,6 +37,8 @@ interface ComponentsPanelProps {
   onComponent: (name: string) => void
   /** The element last picked with Inspect, if it was this component. */
   picked?: Picked
+  /** The last compile error, when it is in a component's SCSS. */
+  errorAt?: ErrorAt
 }
 
 export const ComponentsPanel = ({
@@ -48,18 +47,10 @@ export const ComponentsPanel = ({
   component,
   onComponent,
   picked,
+  errorAt,
 }: ComponentsPanelProps): JSX.Element => {
   const info = blocks[component]!
   const base = ['components', component]
-  const [target, setTarget] = useState('root')
-  const targets = [
-    'root',
-    ...info.modifiers.map((m) => `modifier:${m}`),
-    ...info.parts.map((p) => `part:${p}`),
-  ]
-  const current = targets.includes(target) ? target : 'root'
-  const [kind, name] = current.split(':') as ['root' | 'modifier' | 'part', string?]
-  const declPath = kind === 'root' ? [...base, 'styles'] : [...base, `${kind}s`, name!]
   const set = (path: string[], value: unknown) => onChange(setIn(spec, path, value))
   const get = (path: string[]) => (getIn(spec, path) as string | undefined) ?? ''
   const choices = motionChoices(spec)
@@ -99,6 +90,13 @@ export const ComponentsPanel = ({
         {live && <Chips label="Picked" items={live.classes} />}
       </Stack>
 
+      <FamilyStyles
+        spec={spec}
+        onChange={onChange}
+        component={component}
+        errorAt={errorAt}
+      />
+
       {info.variables.length > 0 && (
         <Stack gap={2}>
           <Heading level={3} variant="h6">
@@ -133,34 +131,6 @@ export const ComponentsPanel = ({
           })}
         </Stack>
       )}
-
-      <Stack gap={2}>
-        <Heading level={3} variant="h6">
-          Styles
-        </Heading>
-        <Field label="Target">
-          <Select
-            size="sm"
-            value={current}
-            onChange={(e) => setTarget(e.currentTarget.value)}
-          >
-            {targets.map((t) => (
-              <option key={t} value={t}>
-                {t === 'root'
-                  ? `.${info.className}`
-                  : t.startsWith('modifier:')
-                    ? `.${info.className}--${t.slice(9)}`
-                    : `.${info.className}-${t.slice(5)}`}
-              </option>
-            ))}
-          </Select>
-        </Field>
-        <DeclarationsEditor
-          label={current}
-          value={getIn(spec, declPath) as Declarations | undefined}
-          onChange={(next) => set(declPath, Object.keys(next).length ? next : undefined)}
-        />
-      </Stack>
 
       <Stack gap={2}>
         <Heading level={3} variant="h6">
