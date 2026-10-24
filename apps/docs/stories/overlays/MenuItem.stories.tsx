@@ -6,7 +6,12 @@ const meta = {
   title: 'Overlays/MenuItem',
   component: MenuItem,
   args: { children: 'Rename' },
-  argTypes: { tone: { control: 'inline-radio', options: ['neutral', 'negative'] } },
+  argTypes: {
+    tone: {
+      control: 'inline-radio',
+      options: ['neutral', 'primary', 'secondary', 'tertiary', 'accent', 'negative'],
+    },
+  },
   decorators: [
     (Story) => (
       <Menu trigger={<Button variant="outline">Actions</Button>}>

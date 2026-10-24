@@ -194,6 +194,20 @@ describe('Menu', () => {
     </Menu>
   )
 
+  it('gives an item its tone, brand colors included', () => {
+    render(
+      <Menu trigger={<Button>Actions</Button>}>
+        <MenuItem>Rename</MenuItem>
+        <MenuItem tone="primary">Publish</MenuItem>
+        <MenuItem tone="negative">Delete</MenuItem>
+      </Menu>
+    )
+    const [rename, publish, remove] = screen.getAllByRole('menuitem', { hidden: true })
+    expect(rename!.className).toBe('greese-MenuItem')
+    expect(publish).toHaveClass('greese-MenuItem--primary')
+    expect(remove).toHaveClass('greese-MenuItem--negative')
+  })
+
   it('is a labelled menu button', () => {
     render(<Example />)
     const trigger = screen.getByRole('button', { name: 'Actions' })

@@ -184,7 +184,7 @@ export const MenuItem = ({
       aria-disabled={disabled || undefined}
       className={cx(
         'greese-MenuItem',
-        tone === 'negative' && 'greese-MenuItem--negative',
+        tone !== 'neutral' && `greese-MenuItem--${tone}`,
         className
       )}
       onClick={(event: MouseEvent<HTMLButtonElement>) => {
