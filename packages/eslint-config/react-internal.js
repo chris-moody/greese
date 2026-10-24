@@ -36,6 +36,24 @@ export const config = [
     },
   },
   {
+    // Icons are drawn once, in @greese/icons (ADR 0020): add one to that
+    // package instead of inlining an `<svg>` or writing a one-off component.
+    // A graphic that is not an icon (a chart, a sprite of gradients) says so
+    // with an eslint-disable comment and the reason.
+    files: ['**/*.tsx'],
+    ignores: ['**/*.test.tsx', '**/createIcon.tsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "JSXOpeningElement[name.name='svg']",
+          message:
+            'Do not inline an <svg> icon: add it to packages/icons/src/icons.tsx and import it from @greese/icons (ADR 0020). If this is not an icon, disable this rule here and say why.',
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.{ts,tsx,cts,mts}'],
     languageOptions: { parser: tseslint.parser },
     plugins: { '@typescript-eslint': tseslint.plugin },
