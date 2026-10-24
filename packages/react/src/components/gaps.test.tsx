@@ -12,6 +12,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFoot,
   TableHead,
   TableHeaderCell,
   TableRow,
@@ -195,6 +196,30 @@ describe('Table', () => {
       </Table>
     )
   }
+
+  it('has a footer row group, which keeps its role when the table stacks', () => {
+    const Totals = ({ stacked }: { stacked?: boolean }) => (
+      <Table caption="Totals" stackBelow={stacked ? 'sm' : undefined}>
+        <TableBody>
+          <TableRow>
+            <TableCell>Rent</TableCell>
+          </TableRow>
+        </TableBody>
+        <TableFoot data-testid="foot">
+          <TableRow>
+            <TableCell>Total</TableCell>
+          </TableRow>
+        </TableFoot>
+      </Table>
+    )
+    const { unmount } = render(<Totals />)
+    expect(screen.getByTestId('foot').tagName).toBe('TFOOT')
+    expect(screen.getByTestId('foot')).not.toHaveAttribute('role')
+    unmount()
+    // Stacked, the table's display changes, so its parts say what they are.
+    render(<Totals stacked />)
+    expect(screen.getByTestId('foot')).toHaveAttribute('role', 'rowgroup')
+  })
 
   it('is a named, keyboard-scrollable table with sortable headers', async () => {
     render(<Example />)
