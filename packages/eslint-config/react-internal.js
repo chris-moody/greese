@@ -22,7 +22,10 @@ export const config = [
     plugins: { 'react-hooks': pluginReactHooks },
     settings: { react: { version: 'detect' } },
     rules: {
-      ...pluginReactHooks.configs.recommended.rules,
+      // rules-of-hooks and exhaustive-deps. In v6 `configs.recommended` is a
+      // flat-config array, whose `.rules` is undefined: spreading it silently
+      // enabled nothing. The legacy entry is a plain object with the rules.
+      ...pluginReactHooks.configs['recommended-legacy'].rules,
       // Unnecessary with the modern JSX transform.
       'react/react-in-jsx-scope': 'off',
       // Valid React 19 attributes the plugin does not know yet.
