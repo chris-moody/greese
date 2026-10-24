@@ -21,6 +21,7 @@ npx playwright test e2e/<area>.spec.ts      # in apps/playground, after building
 
 ```bash
 npx turbo run build check-types lint test size test:e2e --force
+npm run format:check
 npm run build -w docs && npm run test:visual -w playground
 cd apps/playground && npx lhci autorun && cd ../..
 VERIFY_TMP=<scratch dir> npm run verify:packages
@@ -31,6 +32,7 @@ VERIFY_TMP=<scratch dir> npm run verify:packages
 | `build`           | TS compiles; CSS compiles; every rendered class has a stylesheet; every stylesheet is in `greese.css`; Storybook builds                     | "Classes with no stylesheet", "Stylesheets missing from styles/index.scss"                                  |
 | `check-types`     | Types across packages, scripts and stories                                                                                                  | A prop renamed without updating stories                                                                     |
 | `lint`            | ESLint (zero warnings), stylelint, docs **story coverage**                                                                                  | Raw colors, `--_vars`, irregular whitespace, a component without a story                                    |
+| `format:check`    | Prettier formatting, everywhere but generated files (`.prettierignore`)                                                                     | `npm run format` fixes it                                                                                   |
 | `test`            | Unit + axe; coverage gate on `resolveResponsive`                                                                                            |                                                                                                             |
 | `size`            | Budgets (`packages/react/.size-limit.cjs`, `packages/ui/.size-limit.cjs`, `packages/js/.size-limit.json`)                                   | See `greese-lightweight`                                                                                    |
 | `test:e2e`        | Real layout, focus, top layer, touch, in 5 projects                                                                                         | If many unrelated tests hang for the same minutes at once, it was the machine (sleep), not the code; re-run |
