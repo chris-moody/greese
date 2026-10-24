@@ -1,5 +1,5 @@
 import { useState, type JSX } from 'react'
-import { palette, paletteShades } from '@greese/ui'
+import { contrastRatio, palette, paletteShades } from '@greese/ui'
 import { Grid, Segment, SegmentedControl, Stack, Text } from '@greese/react'
 
 type Format = 'css' | 'scss' | 'ts'
@@ -10,18 +10,9 @@ const FORMATS: Record<Format, (hue: string, shade: number) => string> = {
   ts: (hue, shade) => `palette.${hue}[${shade}]`,
 }
 
-/** WCAG relative luminance of a `#rrggbb` color. */
-const luminance = (hex: string): number => {
-  const [r, g, b] = [1, 3, 5].map((i) => {
-    const c = parseInt(hex.slice(i, i + 2), 16) / 255
-    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
-  })
-  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
-}
-
 /** Black or white, whichever reads better on the color. */
 const inkOn = (hex: string): string =>
-  (luminance(hex) + 0.05) / 0.05 > 1.05 / (luminance(hex) + 0.05) ? '#000' : '#fff'
+  contrastRatio(hex, '#000')! > contrastRatio(hex, '#fff')! ? '#000' : '#fff'
 
 /**
  * Every palette color, a table per hue. Clicking a
