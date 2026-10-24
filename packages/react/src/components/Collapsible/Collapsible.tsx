@@ -1,4 +1,3 @@
-'use client'
 import { ChevronDownIcon } from '@greese/icons'
 import type { ComponentPropsWithRef, JSX, ReactNode, SyntheticEvent } from 'react'
 import { cx } from '../../utils/cx.ts'
@@ -93,10 +92,15 @@ export const Collapsible = ({
       {...props}
       open={open ?? defaultOpen}
       className={cx('greese-Collapsible', className)}
-      onToggle={(event: SyntheticEvent<HTMLDetailsElement>) => {
-        const isOpen = event.currentTarget.open
-        if (isOpen !== open) onOpenChange?.(isOpen)
-      }}
+      // Only around a callback you pass (which only a client component can):
+      // without one it's plain HTML, so a Server Component can render it.
+      onToggle={
+        onOpenChange &&
+        ((event: SyntheticEvent<HTMLDetailsElement>) => {
+          const isOpen = event.currentTarget.open
+          if (isOpen !== open) onOpenChange(isOpen)
+        })
+      }
     >
       <summary className="greese-Collapsible-trigger">
         <span className="greese-Collapsible-title">{title}</span>

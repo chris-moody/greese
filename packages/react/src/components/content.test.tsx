@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { renderToString } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
 import { expectNoAxeViolations } from '../test/axe.ts'
+import { functionProps } from '../test/serverProps.ts'
 import { Accordion, AccordionItem } from './Accordion/Accordion.tsx'
 import { Alert } from './Alert/Alert.tsx'
 import { Avatar, AvatarGroup, initials } from './Avatar/Avatar.tsx'
@@ -229,6 +230,13 @@ describe('Avatar', () => {
 })
 
 describe('Collapsible and Accordion', () => {
+  it('hands no function to the DOM without onOpenChange, so a Server Component can render it', () => {
+    const server = [Collapsible] as unknown as Parameters<typeof functionProps>[1]
+    expect(
+      functionProps(<Collapsible title="More">Details</Collapsible>, server)
+    ).toEqual([])
+  })
+
   it('is a native details/summary that reports toggles', () => {
     const onOpenChange = vi.fn()
     render(
