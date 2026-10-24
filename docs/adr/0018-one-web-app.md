@@ -16,10 +16,12 @@ One app, `apps/site`, with two routes: `/` (the homepage) and `/studio` (Theme
 Studio). The studio's code lives in `apps/site/src/studio` and its dev-server
 file access in `apps/site/server`; `npm run studio` runs the app.
 
-- **One header**, on both routes: the wordmark, the section links with
-  **Studio** after Components, then a **theme menu**, **Replay motion**, the
-  color scheme and GitHub. The studio route adds **Inspect**, **Import** and
-  **Save** (with its green Saved badge); they're not on the homepage.
+- **One header**, on every route: the wordmark, the section links with
+  **Studio** after Components, then **search** (the site's pages and
+  sections, the templates and every docs page, in a dialog), a **theme
+  menu**, **Replay motion**, the color scheme and GitHub. The studio's own
+  controls, **Inspect**, **Import** and **Save** (with its green Saved
+  badge), head its editor rather than the header (amended 2026-10-24).
 - **One theme.** The theme menu (the studio's presets, "Greese" first, the
   site's own orange) sets a theme that the homepage wears, built with
   `createTheme` from the spec, and the studio edits. It starts as the site's

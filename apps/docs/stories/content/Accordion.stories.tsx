@@ -1,5 +1,7 @@
+import type { CSSProperties } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Accordion, AccordionItem } from '@greese/react'
+import { ChevronRightIcon, MinusIcon, PlusIcon } from '@greese/icons'
 
 const meta = {
   title: 'Content/Accordion',
@@ -31,3 +33,17 @@ type Story = StoryObj<typeof meta>
 export const Exclusive: Story = {}
 
 export const Independent: Story = { args: { exclusive: false } }
+
+/** An icon per state: a plus that crossfades to a minus as each item opens. */
+export const PlusAndMinus: Story = {
+  args: { icon: <PlusIcon />, openIcon: <MinusIcon /> },
+}
+
+/** One icon of your own that turns: here a chevron pointing on, turned a quarter to point down. */
+export const OwnIcon: Story = {
+  args: {
+    icon: <ChevronRightIcon />,
+    iconTransition: 'rotate',
+    style: { maxInlineSize: '36rem', '--greese-collapsible-icon-turn': '90deg' } as CSSProperties,
+  },
+}
