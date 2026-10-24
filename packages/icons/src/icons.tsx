@@ -43,6 +43,11 @@ export const ChevronLeftIcon = /* @__PURE__ */ createIcon(
 )
 export const ChevronRightIcon = /* @__PURE__ */ createIcon('ChevronRight', 'M6 4l4 4-4 4')
 export const CloseIcon = /* @__PURE__ */ createIcon('Close', 'M4 4l8 8|M12 4l-8 8')
+/** A circle split down the middle: following the system's light or dark. */
+export const ContrastIcon = /* @__PURE__ */ createIcon(
+  'Contrast',
+  'M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2z|M8 2v12|M8 4.5h3.5|M8 7h5|M8 9.5h5|M8 12h3.5'
+)
 export const CopyIcon = /* @__PURE__ */ createIcon(
   'Copy',
   'M10 8h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z|M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2',
