@@ -27,13 +27,13 @@ import {
 import { setIn } from '../edit.ts'
 import { resolveColor } from '../resolve.ts'
 import type { RenderedColors } from '../protocol.ts'
+import { kebab } from '../naming.ts'
 import type { SchemeValue, ThemeSpec } from '../spec.ts'
 import {
   colorName,
   estimate,
   grade,
   isSet,
-  kebab,
   minimumFor,
   NO_TEXT,
   ON_CANVAS,

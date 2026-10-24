@@ -5,12 +5,10 @@
  * browser resolves them for the components.
  */
 import { color } from '@greese/ui'
+import { kebab } from '../naming.ts'
 
 /** `#rrggbb`, or `#rrggbbaa` when the color isn't opaque. */
 export type Measured = Record<string, string>
-
-const kebab = (value: string): string =>
-  value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 
 const hex2 = (n: number) => n.toString(16).padStart(2, '0')
 

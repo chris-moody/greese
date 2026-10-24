@@ -5,9 +5,7 @@ import { getIn, setIn } from '../edit.ts'
 import { SchemeInput, ValueRow } from '../fields.tsx'
 import type { RenderedColors } from '../protocol.ts'
 import { isCustomToken, type SchemeValue, type ThemeSpec } from '../spec.ts'
-
-const kebab = (value: string): string =>
-  value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
+import { kebab } from '../naming.ts'
 
 const NAME = /^[a-z0-9][a-z0-9-]*$/
 

@@ -38,6 +38,7 @@ import {
   type SplitScss,
 } from './scssModule.ts'
 import { formatKeyframes } from './effectCode.ts'
+import { kebab } from './naming.ts'
 
 /** One value for both schemes, or a light/dark pair. */
 export type SchemeValue = string | { light: string; dark: string }
@@ -373,16 +374,13 @@ const mergedUses = (spec: ThemeSpec, entry: 'stylesheet' | 'config') =>
     reservedUses(spec, entry)
   )
 
-const kebabOf = (value: string): string =>
-  value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
-
 /** The token names the system has, by kebab-case group: `color`, `radius`, `line-height`… */
 const KNOWN: Record<string, Set<string>> = {
-  color: new Set(Object.keys(color).map(kebabOf)),
+  color: new Set(Object.keys(color).map(kebab)),
   ...Object.fromEntries(
     Object.entries(scalarTokens).map(([group, values]) => [
-      kebabOf(group),
-      new Set(Object.keys(values).map(kebabOf)),
+      kebab(group),
+      new Set(Object.keys(values).map(kebab)),
     ])
   ),
 }

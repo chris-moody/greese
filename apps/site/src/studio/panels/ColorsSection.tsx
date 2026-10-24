@@ -6,9 +6,7 @@ import { resolveColor } from '../resolve.ts'
 import type { RenderedColors } from '../protocol.ts'
 import type { SchemeValue, ThemeSpec } from '../spec.ts'
 import { ColorDialog } from './ColorDialog.tsx'
-
-export const kebab = (value: string): string =>
-  value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
+import { kebab } from '../naming.ts'
 
 export const colorName = (value: string): string =>
   value.replace(/[A-Z][a-z]*/g, () => '')

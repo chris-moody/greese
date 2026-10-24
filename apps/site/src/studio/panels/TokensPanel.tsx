@@ -10,9 +10,7 @@ import { CustomTokens } from './CustomTokens.tsx'
 import { BreakpointsSection } from './BreakpointsSection.tsx'
 import { RadiusSection } from './RadiusSection.tsx'
 import { TypographySection } from './TypographySection.tsx'
-
-export const kebab = (value: string): string =>
-  value.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
+import { kebab } from '../naming.ts'
 
 interface PanelProps {
   spec: ThemeSpec

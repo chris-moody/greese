@@ -19,6 +19,7 @@ import {
 } from '@greese/ui'
 import { blocks } from './manifest.ts'
 import type { ComponentSpec, Declarations, SchemeValue, ThemeSpec } from './spec.ts'
+import { kebab } from './naming.ts'
 
 export interface Skipped {
   /** Where it came from: a selector, an at-rule. */
@@ -135,7 +136,6 @@ export const parseCss = (css: string): Rule[] => {
 
 // --- recognising what the studio holds ------------------------------------
 
-const kebab = (s: string) => s.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 const norm = (v: string) => v.replace(/\s+/g, ' ').replace(/"/g, "'").trim().toLowerCase()
 
 const COLORS = new Map(Object.entries(color).map(([k, v]) => [kebab(k), v]))
