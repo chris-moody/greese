@@ -3,6 +3,7 @@ import { Card, Grid, Heading, Icon, Stack, Text } from '@greese/react'
 import { facts, kB } from '../data/index.ts'
 import { icons } from '../icons.tsx'
 import { Section } from '../Section.tsx'
+import { toneStyle } from '../tones.ts'
 
 const reasons: Array<{ icon: ReactNode; title: string; body: string }> = [
   {
@@ -48,14 +49,15 @@ export const Why = (): JSX.Element => (
       container
       columns={{ xs: 1, sm: 2, lg: 3 }}
       gap={4}
-      greese={{ inView: 'fadeUp', stagger: 0.08, distance: '1.5rem' }}
+      greese={{ inView: 'theme', stagger: 0.08, distance: '1.5rem' }}
     >
-      {reasons.map((r) => (
+      {reasons.map((r, i) => (
         <Card key={r.title} padding={5} greese={{ hover: 'rise' }}>
           <Stack gap={3}>
             <Icon
               size="1.75rem"
               className="site-why-icon"
+              style={toneStyle(i)}
               greese={{ inView: 'pop', delay: 0.2 }}
             >
               {r.icon}

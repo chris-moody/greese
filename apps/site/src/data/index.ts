@@ -116,6 +116,13 @@ export const outcome = (m: Metric, setup: Setup = 'greese'): 'win' | 'loss' | 'e
   return r > 1.05 ? 'win' : r < 0.95 ? 'loss' : 'even'
 }
 
+/**
+ * The metrics from GreeseUI's biggest win over MUI to its smallest, then the
+ * ties, then the losses: the order the homepage shows them in.
+ */
+export const byWin = (setup: Setup = 'greese'): Metric[] =>
+  [...benchmark.metrics].sort((a, b) => ratio(b, setup) - ratio(a, setup))
+
 /** Wins, ties and losses against MUI across the metrics. */
 export const scorecard = (setup: Setup) => {
   const tally = { win: 0, even: 0, loss: 0 }

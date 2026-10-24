@@ -1,0 +1,340 @@
+@use 'pkg:@greese/ui/scss/kit' as greese;
+
+/* The templates' few layout rules: everything else is components and their
+   props. Colors are tokens, so every template follows the theme. */
+
+.tpl-page {
+  padding: var(--greese-space-4);
+
+  @include greese.up(md) {
+    padding: var(--greese-space-6);
+  }
+}
+
+.tpl-kicker {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tpl-measure {
+  max-inline-size: 40rem;
+}
+
+.tpl-grow {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.tpl-empty {
+  min-block-size: 12rem;
+  padding: var(--greese-space-5);
+  text-align: center;
+}
+
+/* The bar above a template: back to the gallery, its name, its source. */
+.tpl-bar {
+  display: flex;
+  gap: var(--greese-space-3);
+  align-items: center;
+  padding: var(--greese-space-2) var(--greese-space-4);
+  border-block-end: 1px solid var(--greese-color-border);
+}
+
+.tpl-source {
+  display: inline-flex;
+  gap: var(--greese-space-1);
+  align-items: center;
+  margin-inline-start: auto;
+  font-size: var(--greese-type-p3-font-size);
+}
+
+.tpl-open {
+  display: inline-flex;
+  gap: var(--greese-space-1);
+  align-items: center;
+}
+
+/* Cover art: two hues of one, in a gradient. No images to load. */
+.tpl-art {
+  aspect-ratio: 16 / 9;
+  background:
+    radial-gradient(
+      circle at 25% 30%,
+      oklch(0.85 0.12 var(--tpl-hue)) 0 18%,
+      transparent 19%
+    ),
+    linear-gradient(
+      135deg,
+      oklch(0.72 0.14 var(--tpl-hue)),
+      oklch(0.5 0.16 calc(var(--tpl-hue) + 50))
+    );
+  border-radius: var(--greese-corner-panel);
+
+  &[data-tall] {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* Finance: income and spending bars, side by side per month. */
+.tpl-chart {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--greese-space-1);
+  align-items: end;
+  block-size: 12rem;
+}
+
+.tpl-chart-month {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: var(--greese-space-1);
+  block-size: 100%;
+  text-align: center;
+}
+
+.tpl-chart-pair {
+  display: flex;
+  gap: 2px;
+  align-items: end;
+  justify-content: center;
+}
+
+.tpl-chart-bar {
+  inline-size: min(0.6rem, 40%);
+  border-start-start-radius: 3px;
+  border-start-end-radius: 3px;
+}
+
+.tpl-chart-bar--in,
+.tpl-key--in::before {
+  background: var(--greese-color-primary);
+}
+
+.tpl-chart-bar--out,
+.tpl-key--out::before {
+  background: var(--greese-color-border-strong);
+}
+
+.tpl-key::before {
+  display: inline-block;
+  inline-size: 0.6rem;
+  block-size: 0.6rem;
+  margin-inline-end: var(--greese-space-1);
+  content: '';
+  border-radius: 2px;
+}
+
+/* A budget over its limit: the bar in the negative color (Progress fills
+   with the primary color, read here). */
+.tpl-over {
+  --greese-color-primary: var(--greese-color-negative);
+}
+
+/* Admin: the sidebar sticks under the site's header. */
+.tpl-shell {
+  --greese-sidebar-top: 3.5rem;
+
+  min-block-size: calc(100dvh - 3.5rem);
+}
+
+.tpl-brand {
+  padding: var(--greese-space-2) var(--greese-space-3) var(--greese-space-3);
+}
+
+.tpl-nav-button {
+  justify-content: flex-start;
+}
+
+.tpl-main {
+  min-inline-size: 0;
+}
+
+/* Mail: three panes from md; below it, the list and the message take turns. */
+.tpl-mail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-block-size: calc(100dvh - 7rem);
+
+  @include greese.up(md) {
+    grid-template-columns: 13rem 20rem minmax(0, 1fr);
+    block-size: calc(100dvh - 7rem);
+  }
+}
+
+.tpl-mail-folders,
+.tpl-mail-list {
+  min-block-size: 0;
+  overflow: auto;
+  border-block-end: 1px solid var(--greese-color-border);
+
+  @include greese.up(md) {
+    border-block-end: 0;
+    border-inline-end: 1px solid var(--greese-color-border);
+  }
+}
+
+// Phones: the folders are a row that scrolls sideways.
+@include greese.down(md) {
+  .tpl-mail-folders > .greese-Stack {
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+  }
+
+  .tpl-mail-folders .greese-Divider,
+  .tpl-mail-folders .greese-Text,
+  .tpl-mail-folders .greese-Stack .greese-Stack {
+    display: none;
+  }
+
+  .tpl-mail-folders .greese-Button {
+    flex: none;
+    inline-size: auto;
+  }
+
+  .tpl-mail[data-reading] .tpl-mail-list,
+  .tpl-mail:not([data-reading]) .tpl-mail-reader {
+    display: none;
+  }
+}
+
+@include greese.up(md) {
+  .tpl-mail-back {
+    display: none;
+  }
+}
+
+.tpl-mail-reader {
+  min-block-size: 0;
+  overflow: auto;
+}
+
+.tpl-mail-items {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.tpl-mail-item {
+  display: flex;
+  gap: var(--greese-space-3);
+  align-items: flex-start;
+  inline-size: 100%;
+  padding: var(--greese-space-3);
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-block-end: 1px solid var(--greese-color-border);
+
+  &:hover {
+    background: var(--greese-color-surface);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--greese-color-focus-ring);
+    outline-offset: -2px;
+  }
+
+  &[aria-current] {
+    background: color-mix(in oklab, var(--greese-color-primary) 10%, transparent);
+  }
+
+  &[data-unread] {
+    box-shadow: inset 3px 0 var(--greese-color-primary);
+  }
+}
+
+.tpl-mail-item-text {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.tpl-mail-item-top {
+  display: flex;
+  gap: var(--greese-space-2);
+  justify-content: space-between;
+}
+
+/* Blog: the featured story beside its cover from md. */
+.tpl-featured {
+  display: grid;
+  gap: var(--greese-space-5);
+  color: inherit;
+  text-decoration: none;
+
+  @include greese.up(md) {
+    grid-template-columns: 1.2fr 1fr;
+    align-items: center;
+  }
+}
+
+/* SaaS */
+.tpl-hero {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--greese-color-primary) 9%, var(--greese-color-canvas)),
+    var(--greese-color-canvas)
+  );
+}
+
+.tpl-logo {
+  letter-spacing: -0.02em;
+  opacity: 0.7;
+}
+
+.tpl-feature-icon {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  font-size: 1.25rem;
+  color: var(--greese-color-primary);
+  background: color-mix(in oklab, var(--greese-color-primary) 12%, transparent);
+  border-radius: var(--greese-corner-panel);
+}
+
+.tpl-plan {
+  block-size: 100%;
+
+  > .greese-Button {
+    margin-block-start: auto;
+  }
+}
+
+.tpl-cta {
+  background: color-mix(in oklab, var(--greese-color-primary) 10%, var(--greese-color-surface));
+}
+
+/* Store */
+.tpl-product-art {
+  position: relative;
+  aspect-ratio: 1;
+  background:
+    radial-gradient(
+      ellipse at 50% 60%,
+      oklch(0.6 0.12 var(--tpl-hue)) 0 30%,
+      transparent 31%
+    ),
+    oklch(0.93 0.04 var(--tpl-hue));
+  border-radius: var(--greese-corner-panel);
+}
+
+.tpl-product-art--thumb {
+  flex: none;
+  inline-size: 3.5rem;
+}
+
+.tpl-product-sale {
+  position: absolute;
+  inset-block-start: var(--greese-space-2);
+  inset-inline-start: var(--greese-space-2);
+}
+
+.tpl-was {
+  text-decoration: line-through;
+}

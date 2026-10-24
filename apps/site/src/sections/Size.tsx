@@ -48,7 +48,7 @@ const SizeTable = ({ rows, caption }: { rows: Row[]; caption: string }): JSX.Ele
       hideCaption
       hoverable
       stackBelow="sm"
-      greese={{ inView: 'fadeIn' }}
+      greese={{ inView: 'theme' }}
     >
       <TableHead>
         <TableRow>
@@ -59,7 +59,7 @@ const SizeTable = ({ rows, caption }: { rows: Row[]; caption: string }): JSX.Ele
           </TableHeaderCell>
         </TableRow>
       </TableHead>
-      <TableBody greese={{ inView: 'fadeStart', stagger: 0.03, distance: '0.75rem' }}>
+      <TableBody greese={{ inView: 'theme', stagger: 0.03, distance: '0.75rem' }}>
         {sorted.map((r) => (
           <TableRow key={r.label}>
             <TableCell label="Entry">
@@ -99,7 +99,7 @@ export const Size = (): JSX.Element => (
     }
     tinted
   >
-    <Tabs defaultValue="bundles" greese={{ inView: 'fadeUp' }}>
+    <Tabs defaultValue="bundles" greese={{ inView: 'theme' }}>
       <TabList aria-label="Size tables">
         {panels.map((p) => (
           <Tab key={p.value} value={p.value} greese={{ press: 'squish' }}>
@@ -110,7 +110,7 @@ export const Size = (): JSX.Element => (
       {panels.map((p) => (
         <TabPanel key={p.value} value={p.value}>
           <Stack gap={3} className="site-panel">
-            <Text tone="muted" variant="p3" greese={{ inView: 'fadeIn' }}>
+            <Text tone="muted" variant="p3" greese={{ inView: 'theme' }}>
               {p.caption}. Measured {facts.date}.
             </Text>
             <SizeTable rows={sizeTables[p.value]} caption={p.caption} />

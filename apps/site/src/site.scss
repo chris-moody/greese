@@ -9,6 +9,12 @@
   scroll-padding-block-start: 5rem;
 }
 
+/* 320px is the narrowest width WCAG reflow (1.4.10) asks pages to work at;
+   below it the page scrolls sideways instead of squeezing further. */
+body {
+  min-inline-size: 320px;
+}
+
 /* The chart's MUI series and the hero's glow are colors of the site's theme
    (theme.ts), so they follow its scheme like any token. GreeseUI's series is
    the primary color, read on the bar itself. */
@@ -29,7 +35,7 @@
   inset-block-start: -4rem;
   z-index: 10;
   padding: var(--greese-space-2) var(--greese-space-3);
-  border-radius: var(--greese-radius-md);
+  border-radius: var(--greese-corner-panel);
   background: var(--greese-color-primary);
   color: var(--greese-color-primary-content);
 }
@@ -40,6 +46,52 @@
 
 .site-nav {
   min-block-size: 3.5rem;
+}
+
+/* The header's links are pills: tinted when hovered, and the section the
+   page is on (ScrollSpy) or the page itself (Studio, Templates) in the
+   primary color on a primary tint, like the current tab. They follow the
+   theme's radius, so a square shape theme squares them too. */
+.site-nav-links a {
+  position: relative;
+  padding: var(--greese-space-1) var(--greese-space-3);
+  text-decoration: none;
+  border-radius: var(--greese-corner-pill);
+  transition:
+    background-color var(--greese-duration-fast) var(--greese-easing-standard),
+    color var(--greese-duration-fast) var(--greese-easing-standard);
+
+  &:hover {
+    background-color: color-mix(in oklab, var(--greese-color-fg) 7%, transparent);
+  }
+
+  // Hovered, a link rises 4px: the hit area reaches below it, so the pointer
+  // stays over it and it doesn't run away from the mouse.
+  &::after {
+    position: absolute;
+    inset: -0.25rem 0 -0.75rem;
+    content: '';
+  }
+}
+
+.site-nav-links,
+.site-menu-links {
+  [aria-current] {
+    color: var(--greese-color-primary);
+    background-color: color-mix(in oklab, var(--greese-color-primary) 12%, transparent);
+  }
+}
+
+/* The drawer's links: one per row, text in line with the controls above
+   (the padding that holds their tint is pulled back out), each at least
+   44px tall to tap. */
+.site-menu-links > a {
+  display: block;
+  padding: var(--greese-space-3) var(--greese-space-2);
+  margin-inline: calc(-1 * var(--greese-space-2));
+  text-decoration: none;
+  border-radius: var(--greese-corner-panel);
+  font-size: var(--greese-type-p1-font-size);
 }
 
 .site-wordmark {
@@ -89,6 +141,7 @@
 }
 
 .site-stat-value {
+  color: var(--site-tone-strong, inherit);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
@@ -107,7 +160,11 @@
 }
 
 .site-why-icon {
-  color: var(--greese-color-primary);
+  box-sizing: content-box;
+  padding: var(--greese-space-2);
+  color: var(--site-tone-strong, var(--greese-color-primary));
+  background: color-mix(in oklab, var(--site-tone, var(--greese-color-primary)) 14%, transparent);
+  border-radius: var(--greese-corner-control);
 }
 
 .site-panel {
@@ -161,7 +218,7 @@
   gap: 2px;
   padding: var(--greese-space-2);
   margin-inline: calc(-1 * var(--greese-space-2));
-  border-radius: var(--greese-radius-md);
+  border-radius: var(--greese-corner-panel);
   outline-offset: 2px;
 }
 
@@ -226,7 +283,7 @@
 .site-track {
   position: relative;
   block-size: 2.5rem;
-  border-radius: var(--greese-radius-pill);
+  border-radius: var(--greese-corner-pill);
   background: var(--greese-color-surface);
   border: 1px solid var(--greese-color-border);
 }
@@ -258,16 +315,106 @@
   padding-block: var(--greese-space-6) var(--greese-space-7);
 }
 
-/* A preset's brand colors, in the theme menu, on every page (the menu is in the shared header). */
-.studio-theme-dots {
-  display: flex;
-  gap: 3px;
+/* The theme picker (in the shared header): colors as a diamond, primary at
+   the top then clockwise, beside a shape and a motion icon. */
+.studio-theme-trigger,
+.studio-theme-option {
+  display: inline-flex;
+  gap: var(--greese-space-2);
+  align-items: center;
 }
 
-.studio-theme-dots > span {
-  inline-size: 0.75rem;
-  block-size: 0.75rem;
-  border-radius: 50%;
+/* The narrowest phones: the button shows the colors only, so the header's
+   other buttons fit. Its label still names all three layers. */
+@media (width < 22.5rem) {
+  .studio-theme-trigger > :not(.studio-theme-canvas) {
+    /* Icons set their display inline (createIcon), which only this beats. */
+    display: none !important;
+  }
+}
+
+/* The canvas tile the diamond sits on: the theme's page color. */
+.studio-theme-canvas > .studio-theme-diamond {
+  scale: 0.8;
+}
+
+.studio-theme-canvas {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  inline-size: 1.625rem;
+  block-size: 1.625rem;
+  border-radius: var(--greese-corner-inset);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, currentcolor 18%, transparent);
+}
+
+.studio-theme-diamond {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  rotate: 45deg;
+
+  > span {
+    position: absolute;
+    inline-size: 0.55rem;
+    block-size: 0.55rem;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--greese-color-fg) 15%, transparent);
+  }
+
+  > :nth-child(1) {
+    inset-block-start: 0;
+    inset-inline-start: 0;
+  }
+
+  > :nth-child(2) {
+    inset-block-start: 0;
+    inset-inline-end: 0;
+  }
+
+  > :nth-child(3) {
+    inset-block-end: 0;
+    inset-inline-end: 0;
+  }
+
+  > :nth-child(4) {
+    inset-block-end: 0;
+    inset-inline-start: 0;
+  }
+}
+
+/* A shape theme's control, drawn small with its own outline. */
+.studio-theme-shape {
+  display: inline-block;
+  flex: none;
+  inline-size: 30px;
+  block-size: 16px;
+  background: currentcolor;
+  opacity: 0.75;
+}
+
+/* A motion theme's mark: its first two letters, in a box the size of a shape sample. */
+.studio-theme-mark {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  min-inline-size: 1.5rem;
+  font-size: var(--greese-type-caption-font-size);
+  font-weight: var(--greese-font-weight-bold);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.studio-theme-picker {
+  inline-size: min(20rem, 100vw - 2rem);
+  overflow: visible;
+}
+
+.studio-theme-scroll {
+  max-block-size: min(34rem, 100dvh - 7rem);
+  overflow: auto;
 }
 
 /* The ring follows a counter that already eases, so its own transition would only lag. */

@@ -31,9 +31,9 @@ export const Section = ({
         <Stack
           gap={3}
           className="site-section-head"
-          greese={{ inView: 'fadeUp', stagger: 0.08 }}
+          greese={{ inView: 'theme', stagger: 0.08 }}
         >
-          <Text variant="p3" weight="semibold" tone="primary" className="site-eyebrow">
+          <Text variant="p3" weight="semibold" tone="secondary" className="site-eyebrow">
             {eyebrow}
           </Text>
           <Heading id={`${id}-title`} level={2} variant="h2">

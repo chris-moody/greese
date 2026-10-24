@@ -79,7 +79,7 @@ const Demo = ({
   <Card
     padding={5}
     greese={{
-      enter: 'fadeUp',
+      enter: 'theme',
       hover: 'rise',
       scope: { stagger: 0.05, delay: 0.05 },
     }}
@@ -90,13 +90,13 @@ const Demo = ({
         weight="semibold"
         tone="muted"
         className="site-demo-title"
-        greese={{ enter: 'fadeUp' }}
+        greese={{ enter: 'theme' }}
       >
         {title}
       </Text>
       <Stack gap={3}>
         {Children.toArray(children).map((child, i) => (
-          <Motion key={i} greese={{ enter: 'fadeUp' }}>
+          <Motion key={i} greese={{ enter: 'theme' }}>
             {child}
           </Motion>
         ))}
@@ -151,21 +151,20 @@ const Forms = (): JSX.Element => (
     </Demo>
     <Demo title="Choices">
       <CheckboxGroup label="Notify me" defaultValue={['email']}>
-        <Checkbox value="email" label="Email" greese={{ press: 'squish' }} />
-        <Checkbox value="sms" label="Text message" greese={{ press: 'squish' }} />
+        <Checkbox value="email" label="Email" />
+        <Checkbox value="sms" label="Text message" />
       </CheckboxGroup>
       <RadioGroup label="Billing" defaultValue="yearly">
-        <Radio value="monthly" label="Monthly" greese={{ press: 'squish' }} />
+        <Radio value="monthly" label="Monthly" />
         <Radio
           value="yearly"
           label="Yearly"
           description="Two months free"
-          greese={{ press: 'squish' }}
         />
       </RadioGroup>
     </Demo>
     <Demo title="Toggles and ranges">
-      <Switch label="Beta features" defaultChecked greese={{ press: 'squish' }} />
+      <Switch label="Beta features" defaultChecked />
       <Slider aria-label="Volume" defaultValue={60} greese={{ focus: 'glow' }} />
       <SegmentedControl label="View" defaultValue="grid" size="sm">
         <Segment value="list">List</Segment>
@@ -174,7 +173,7 @@ const Forms = (): JSX.Element => (
       </SegmentedControl>
     </Demo>
     <Demo title="Ratings and codes">
-      <Rating label="Rate greese" defaultValue={4} greese={{ press: 'squish' }} />
+      <Rating label="Rate greese" defaultValue={4} />
       <Field label="Verification code">
         <OtpField length={4} size="sm" greese={{ focus: 'glow' }} />
       </Field>
@@ -231,7 +230,7 @@ const Feedback = (): JSX.Element => (
       <Alert
         tone="warning"
         title="Budget close"
-        greese={{ inView: 'fadeStart', delay: 0.1 }}
+        greese={{ inView: 'theme', delay: 0.1 }}
       >
         A bundle is within 5% of its size budget.
       </Alert>
@@ -250,7 +249,7 @@ const Feedback = (): JSX.Element => (
         direction="row"
         gap={2}
         wrap="wrap"
-        greese={{ enter: 'fadeIn', stagger: 0.05 }}
+        greese={{ enter: 'theme', stagger: 0.05 }}
       >
         <Chip selectable defaultSelected greese={{ press: 'squish' }}>
           React
@@ -277,7 +276,7 @@ const Feedback = (): JSX.Element => (
       <Counters />
     </Demo>
     <Demo title="People">
-      <AvatarGroup max={4} greese={{ enter: 'fadeEnd', stagger: 0.06 }}>
+      <AvatarGroup max={4} greese={{ enter: 'theme', stagger: 0.06 }}>
         <Avatar name="Ada Lovelace" />
         <Avatar name="Grace Hopper" />
         <Avatar name="Katherine Johnson" />
@@ -305,11 +304,10 @@ const Overlays = (): JSX.Element => (
     <Demo title="Dialog and drawer">
       <Dialog
         trigger={<Button greese={{ hover: 'rise', press: 'squish' }}>Open dialog</Button>}
-        title="Pop in, scale out"
+        title="The theme’s entrance and exit"
         description="A native <dialog>: focus is trapped and returned."
-        greese={{ enter: 'pop', exit: 'scaleOut' }}
       >
-        <Text>Close it to watch the exit.</Text>
+        <Text>Close it to watch the exit. Pick a motion theme to change both.</Text>
       </Dialog>
       <Drawer
         trigger={
@@ -330,7 +328,6 @@ const Overlays = (): JSX.Element => (
             Actions
           </Button>
         }
-        greese={{ enter: 'scaleIn', exit: 'fadeOutUp' }}
       >
         <MenuItem onSelect={() => toast({ title: 'Duplicated' })}>Duplicate</MenuItem>
         <MenuItem onSelect={() => toast({ title: 'Shared' })}>Share</MenuItem>
@@ -353,7 +350,6 @@ const Overlays = (): JSX.Element => (
           </Button>
         }
         label="About anchoring"
-        greese={{ enter: 'fadeUp', exit: 'fadeOutDown' }}
       >
         <Text variant="p3">
           The Popover API plus CSS anchor positioning. No positioning library.
@@ -363,7 +359,6 @@ const Overlays = (): JSX.Element => (
     <Demo title="Tooltip">
       <Tooltip
         content="Native popover, delayed on hover"
-        greese={{ enter: 'fadeUp', exit: 'fadeOut' }}
       >
         <Button variant="ghost" greese={{ hover: 'tilt' }}>
           Hover or focus me
@@ -406,7 +401,7 @@ const Data = (): JSX.Element => {
               </TableHeaderCell>
             </TableRow>
           </TableHead>
-          <TableBody greese={{ enter: 'fadeStart', stagger: 0.05 }} key={String(desc)}>
+          <TableBody greese={{ enter: 'theme', stagger: 0.05 }} key={String(desc)}>
             {rows.map((p) => (
               <TableRow key={p.name}>
                 <TableCell label="Name">{p.name}</TableCell>
@@ -423,7 +418,7 @@ const Data = (): JSX.Element => {
         <Steps
           current={1}
           aria-label="Checkout"
-          greese={{ enter: 'fadeStart', stagger: 0.06 }}
+          greese={{ enter: 'theme', stagger: 0.06 }}
         >
           <Step>Cart</Step>
           <Step>Shipping</Step>
@@ -440,7 +435,7 @@ const Data = (): JSX.Element => {
         <Pagination count={12} defaultPage={4} />
       </Demo>
       <Demo title="Disclosure">
-        <Accordion exclusive greese={{ enter: 'fadeUp', stagger: 0.05 }}>
+        <Accordion exclusive greese={{ enter: 'theme', stagger: 0.05 }}>
           <AccordionItem title="Native <details>" defaultOpen>
             <Text variant="p3">Opens and closes with no JavaScript.</Text>
           </AccordionItem>
@@ -472,7 +467,7 @@ export const Gallery = (): JSX.Element => {
       intro="Everything below is GreeseUI itself, each with a greese prop. Use them: they work."
       tinted
     >
-      <Tabs value={tab} onValueChange={setTab} greese={{ inView: 'fadeUp' }}>
+      <Tabs value={tab} onValueChange={setTab} greese={{ inView: 'theme' }}>
         <TabList aria-label="Component groups">
           {tabs.map((t) => (
             <Tab key={t.value} value={t.value} greese={{ press: 'squish' }}>
@@ -491,7 +486,7 @@ export const Gallery = (): JSX.Element => {
         variant="h6"
         tone="muted"
         className="site-gallery-note"
-        greese={{ inView: 'fadeIn' }}
+        greese={{ inView: 'theme' }}
       >
         Every component, with every prop and state, is in the Storybook docs.
       </Heading>

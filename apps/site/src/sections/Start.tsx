@@ -12,7 +12,7 @@ const steps = [
   },
   {
     title: 'Build, and add motion',
-    code: `import { Button, Card } from '@greese/react'\n\n<Card greese={{ inView: 'fadeUp' }}>\n  <Button greese={{ hover: 'rise' }}>Ship it</Button>\n</Card>`,
+    code: `import { Button, Card } from '@greese/react'\n\n<Card greese={{ inView: 'theme' }}>\n  <Button greese={{ hover: 'rise' }}>Ship it</Button>\n</Card>`,
   },
 ]
 
@@ -20,14 +20,14 @@ export const Start = (): JSX.Element => (
   <Section
     id="start"
     eyebrow="Get started"
-    title="Three steps, no providers"
-    intro="Requires React 19. No context provider, no CSS-in-JS setup, no build plugin."
+    title="Three steps, nothing to wrap"
+    intro="Requires React 19. No provider to wrap your app in, no CSS-in-JS setup, no build plugin. ThemeProvider is optional, only for applying a custom theme or forcing a color scheme."
   >
     <Grid
       container
       columns={{ xs: 1, md: 3 }}
       gap={4}
-      greese={{ inView: 'fadeUp', stagger: 0.1 }}
+      greese={{ inView: 'theme', stagger: 0.1 }}
     >
       {steps.map((step, i) => (
         <Card key={step.title} padding={5} greese={{ hover: 'rise' }}>
@@ -56,7 +56,7 @@ export const Start = (): JSX.Element => (
       gap={3}
       wrap="wrap"
       justify="center"
-      greese={{ inView: 'fadeUp' }}
+      greese={{ inView: 'theme' }}
     >
       <Button asChild size="lg" greese={{ hover: 'rise', press: 'squish' }}>
         <a href={DOCS_URL}>Read the docs</a>

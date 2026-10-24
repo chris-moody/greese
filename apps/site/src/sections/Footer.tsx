@@ -13,7 +13,7 @@ export const Footer = (): JSX.Element => (
           direction={{ xs: 'column', md: 'row' }}
           justify="between"
           gap={4}
-          greese={{ inView: 'fadeUp', stagger: 0.06 }}
+          greese={{ inView: 'theme', stagger: 0.06 }}
         >
           <Text tone="muted" variant="p3">
             GreeseUI and greese.js. Built with GreeseUI; every number on this page was

@@ -1,6 +1,7 @@
 import type { JSX } from 'react'
 import { Card, Container, Grid, Stack, Text } from '@greese/react'
 import { facts, kB, metric, ratio } from '../data/index.ts'
+import { toneStyle } from '../tones.ts'
 
 interface Stat {
   value: string
@@ -30,15 +31,16 @@ export const Stats = (): JSX.Element => (
       container
       columns={{ xs: 2, md: 5 }}
       gap={3}
-      greese={{ enter: 'fadeUp', stagger: 0.07, delay: 0.5 }}
+      greese={{ enter: 'theme', stagger: 0.07, delay: 0.5 }}
     >
-      {stats.map((s) => (
+      {stats.map((s, i) => (
         <Card key={s.label} variant="filled" padding={4} greese={{ hover: 'rise' }}>
           <Stack gap={1}>
             <Text
               variant="h3"
               weight="bold"
               className="site-stat-value"
+              style={toneStyle(i)}
               greese={{ enter: 'blurIn', delay: 0.7 }}
             >
               {s.value}

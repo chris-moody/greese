@@ -8,26 +8,36 @@ import {
 } from 'react'
 
 /**
- * Two routes, by path under the app's base: `/` (the homepage) and
- * `/studio` (Theme Studio). A tiny History-API router: a library would cost
- * more than the page's whole routing, and a link is a plain anchor, so it
- * works without JavaScript and opens in a new tab as usual.
+ * Three routes, by path under the app's base: `/` (the homepage), `/studio`
+ * (Theme Studio) and `/templates` (the gallery, and `/templates/<id>` for
+ * each). A tiny History-API router: a library would cost more than the
+ * page's whole routing, and a link is a plain anchor, so it works without
+ * JavaScript and opens in a new tab as usual.
  */
-export type Route = 'home' | 'studio'
+export type Route = 'home' | 'studio' | 'templates'
 
 /** The base the app is served from, with a trailing slash: `/` or `/greese/`. */
 export const BASE = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`
 
+/** The path under the base, without slashes at either end: `templates/finance`. */
+const pathOf = (pathname: string): string =>
+  (pathname.startsWith(BASE) ? pathname.slice(BASE.length) : pathname).replace(
+    /^\/|\/$/g,
+    ''
+  )
+
 const routeOf = (pathname: string): Route => {
-  const path = pathname.startsWith(BASE) ? pathname.slice(BASE.length) : pathname
-  return /^studio\/?$/.test(path.replace(/^\//, '')) ? 'studio' : 'home'
+  const path = pathOf(pathname)
+  if (path === 'studio') return 'studio'
+  if (/^templates(\/[a-z0-9-]+)?$/.test(path)) return 'templates'
+  return 'home'
 }
 
-/** `studio` → `/greese/studio`; `home` → `/greese/`. */
-export const hrefOf = (route: Route, hash = ''): string =>
-  `${BASE}${route === 'studio' ? 'studio' : ''}${hash}`
+/** `studio` → `/greese/studio`; `home` → `/greese/`; `templates`, `finance` → `/greese/templates/finance`. */
+export const hrefOf = (route: Route, hash = '', page = ''): string =>
+  `${BASE}${route === 'home' ? '' : route}${page ? `/${page}` : ''}${hash}`
 
 const listeners = new Set<() => void>()
 const subscribe = (listener: () => void) => {
@@ -42,6 +52,10 @@ const snapshot = (): string => location.pathname
 
 export const useRoute = (): Route =>
   routeOf(useSyncExternalStore(subscribe, snapshot, () => BASE))
+
+/** The page under the route: `finance` at `/templates/finance`, else undefined. */
+export const useSubpage = (): string | undefined =>
+  pathOf(useSyncExternalStore(subscribe, snapshot, () => BASE)).split('/')[1]
 
 /** Scrolls to `#id` once it exists: the page's sections mount a few at a time. */
 const scrollToHash = (hash: string) => {
@@ -72,13 +86,16 @@ export const navigate = (href: string): void => {
 export const RouteLink = ({
   to,
   hash,
+  page,
   onClick,
   ...props
 }: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> & {
   to: Route
   hash?: string
+  /** A page under the route: a template's id. */
+  page?: string
 }): JSX.Element => {
-  const href = hrefOf(to, hash)
+  const href = hrefOf(to, hash, page)
   return (
     <a
       {...props}
@@ -105,9 +122,10 @@ export const RouteLink = ({
 /** Resets the scroll position when the route changes. */
 export const ScrollOnRoute = (): null => {
   const route = useRoute()
+  const page = useSubpage()
   useEffect(() => {
     if (!location.hash) scrollTo({ top: 0 })
-  }, [route])
+  }, [route, page])
   return null
 }
 

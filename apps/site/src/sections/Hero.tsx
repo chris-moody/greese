@@ -41,9 +41,9 @@ const Preview = (): JSX.Element => (
     variant="elevated"
     padding={5}
     className="site-preview"
-    greese={{ enter: 'fadeStart', delay: 0.35, duration: 0.7, distance: '2rem' }}
+    greese={{ enter: 'theme', delay: 0.35, duration: 0.7, distance: '2rem' }}
   >
-    <Stack gap={4} greese={{ enter: 'fadeUp', stagger: 0.08, delay: 0.55 }}>
+    <Stack gap={4} greese={{ enter: 'theme', stagger: 0.08, delay: 0.55 }}>
       <Stack direction="row" justify="between" align="center">
         <Text weight="semibold">Release 1.0</Text>
         <Badge tone="positive" greese={{ enter: 'pop', delay: 1.1 }}>
@@ -54,14 +54,14 @@ const Preview = (): JSX.Element => (
         value={86}
         aria-label="Release checklist"
         className="site-grow"
-        greese={{ enter: 'fadeIn', delay: 0.9 }}
+        greese={{ enter: 'theme', delay: 0.9 }}
       />
-      <Switch label="Motion for everyone" defaultChecked greese={{ press: 'squish' }} />
+      <Switch label="Motion for everyone" defaultChecked />
       <Stack direction="row" justify="between" align="center">
         <AvatarGroup
           max={3}
           size="sm"
-          greese={{ enter: 'fadeEnd', stagger: 0.06, delay: 1 }}
+          greese={{ enter: 'theme', stagger: 0.06, delay: 1 }}
         >
           <Avatar name="Ada Lovelace" />
           <Avatar name="Grace Hopper" />
@@ -87,10 +87,10 @@ export const Hero = (): JSX.Element => (
             </Badge>
           </div>
           <Heading level={1} variant="h1" className="site-hero-title">
-            <Text asChild greese={{ enter: 'fadeUp', delay: 0.1 }}>
+            <Text asChild greese={{ enter: 'theme', delay: 0.1 }}>
               <span>Components that move,</span>
             </Text>{' '}
-            <Text asChild tone="primary" greese={{ enter: 'fadeUp', delay: 0.5 }}>
+            <Text asChild tone="primary" greese={{ enter: 'theme', delay: 0.5 }}>
               <span>weigh almost nothing.</span>
             </Text>
           </Heading>
@@ -99,7 +99,7 @@ export const Hero = (): JSX.Element => (
             tone="muted"
             className="site-measure"
             // The page's largest paint: no delay, so it isn't held invisible.
-            greese={{ enter: 'fadeUp' }}
+            greese={{ enter: 'theme' }}
           >
             GreeseUI is a mobile-first React library with zero-runtime CSS, native
             elements underneath, and an animation prop on every component. The whole
@@ -110,7 +110,7 @@ export const Hero = (): JSX.Element => (
             direction="row"
             gap={3}
             wrap="wrap"
-            greese={{ enter: 'fadeUp', stagger: 0.08, delay: 0.45 }}
+            greese={{ enter: 'theme', stagger: 0.08, delay: 0.45 }}
           >
             <Button asChild size="lg" greese={{ hover: 'rise', press: 'squish' }}>
               <a href="#start">Get started</a>
@@ -130,7 +130,7 @@ export const Hero = (): JSX.Element => (
             align="center"
             gap={2}
             className="site-install"
-            greese={{ enter: 'fadeIn', delay: 0.6 }}
+            greese={{ enter: 'theme', delay: 0.6 }}
           >
             <Code>{INSTALL}</Code>
             <IconButton

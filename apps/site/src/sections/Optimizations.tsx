@@ -78,11 +78,11 @@ export const Optimizations = (): JSX.Element => (
     intro="Most of the speed comes from work GreeseUI doesn’t do at runtime."
     tinted
   >
-    <Accordion greese={{ inView: 'fadeUp', stagger: 0.06 }}>
+    <Accordion greese={{ inView: 'theme', stagger: 0.06 }}>
       {items.map((item, i) => (
         <AccordionItem key={item.title} title={item.title} defaultOpen={i === 0}>
           <Stack gap={2}>
-            <Text tone="muted" greese={{ enter: 'fadeIn' }}>
+            <Text tone="muted" greese={{ enter: 'theme' }}>
               {item.body}
             </Text>
           </Stack>

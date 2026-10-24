@@ -19,6 +19,7 @@ import {
 } from '@greese/react'
 import {
   benchmark,
+  byWin,
   fmt,
   mainThread,
   outcome,
@@ -77,11 +78,12 @@ const Chart = ({ setup }: { setup: Setup }): JSX.Element => (
       <span className="site-key site-key--greese">{SETUPS[setup].legend}</span>
       <span className="site-key site-key--mui">MUI</span>
       <Text variant="p3" tone="muted">
-        Lower is better. Each row has its own scale.
+        Lower is better. Each row has its own scale, and the rows run from GreeseUI’s
+        biggest win to its smallest.
       </Text>
     </Stack>
-    <Stack gap={3} greese={{ inView: 'fadeUp', stagger: 0.05, distance: '0.75rem' }}>
-      {benchmark.metrics.map((m) => {
+    <Stack gap={3} greese={{ inView: 'theme', stagger: 0.05, distance: '0.75rem' }}>
+      {byWin(setup).map((m) => {
         const value = m[setup]
         const max = Math.max(value, m.mui)
         const v = verdict(m, setup)
@@ -114,7 +116,7 @@ const DataTable = (): JSX.Element => (
     caption="GreeseUI vs MUI benchmark medians"
     hideCaption
     stackBelow="sm"
-    greese={{ inView: 'fadeIn' }}
+    greese={{ inView: 'theme' }}
   >
     <TableHead>
       <TableRow>
@@ -124,8 +126,8 @@ const DataTable = (): JSX.Element => (
         <TableHeaderCell align="end">MUI</TableHeaderCell>
       </TableRow>
     </TableHead>
-    <TableBody greese={{ inView: 'fadeStart', stagger: 0.03, distance: '0.75rem' }}>
-      {benchmark.metrics.map((m) => (
+    <TableBody greese={{ inView: 'theme', stagger: 0.03, distance: '0.75rem' }}>
+      {byWin().map((m) => (
         <TableRow key={m.label}>
           <TableCell label="Metric">{m.label}</TableCell>
           <TableCell label="GreeseUI" align="end">
@@ -153,7 +155,7 @@ const Summary = ({ setup }: { setup: Setup }): JSX.Element => {
       container
       columns={{ xs: 1, sm: 2 }}
       gap={3}
-      greese={{ inView: 'fadeUp', stagger: 0.08 }}
+      greese={{ inView: 'theme', stagger: 0.08 }}
     >
       <Card variant="filled" padding={4}>
         <Text variant="h3" weight="bold" className="site-stat-value">
@@ -195,7 +197,7 @@ export const Speed = (): JSX.Element => {
       }
     >
       <Summary setup={setup} />
-      <Card padding={{ xs: 4, md: 6 }} greese={{ inView: 'fadeUp' }}>
+      <Card padding={{ xs: 4, md: 6 }} greese={{ inView: 'theme' }}>
         <Stack gap={5}>
           <Stack direction="row" gap={3} wrap="wrap">
             <SegmentedControl
@@ -203,7 +205,7 @@ export const Speed = (): JSX.Element => {
               size="sm"
               value={view}
               onValueChange={setView}
-              greese={{ inView: 'fadeIn' }}
+              greese={{ inView: 'theme' }}
             >
               <Segment value="chart">Chart</Segment>
               <Segment value="table">Table</Segment>
@@ -214,7 +216,7 @@ export const Speed = (): JSX.Element => {
                 size="sm"
                 value={setup}
                 onValueChange={(v) => setSetup(v as Setup)}
-                greese={{ inView: 'fadeIn', delay: 0.1 }}
+                greese={{ inView: 'theme', delay: 0.1 }}
               >
                 {(Object.keys(SETUPS) as Setup[]).map((s) => (
                   <Segment key={s} value={s}>
@@ -227,7 +229,7 @@ export const Speed = (): JSX.Element => {
           {view === 'chart' ? <Chart setup={setup} /> : <DataTable />}
         </Stack>
       </Card>
-      <Text tone="muted" className="site-measure" greese={{ inView: 'fadeUp' }}>
+      <Text tone="muted" className="site-measure" greese={{ inView: 'theme' }}>
         Where MUI still comes out ahead: style recalculation. MUI generates one class per
         distinct style at runtime, so each element matches a single short rule; GreeseUI’s
         classes are compiled ahead of time, so an element matches several, inside cascade
