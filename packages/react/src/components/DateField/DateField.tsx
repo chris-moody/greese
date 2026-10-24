@@ -1,4 +1,3 @@
-'use client'
 import type { JSX } from 'react'
 import { cx } from '../../utils/cx.ts'
 import { TextField, type TextFieldProps } from '../TextField/TextField.tsx'

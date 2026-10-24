@@ -1,4 +1,3 @@
-'use client'
 import type { JSX, ReactNode } from 'react'
 import { Field } from '../Field/Field.tsx'
 import { Input, type InputProps } from '../Input/Input.tsx'
