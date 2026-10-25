@@ -38,7 +38,8 @@ budgets and ADR 0008 covers greese.js.
 | `@greese/icons`: every icon / one icon                  | 2.25 kB / 400 B          | `packages/icons/.size-limit.json` |
 
 Every component entry includes the `greese` prop's shared static part (about
-2.3 kB: resolver, island and the names of what CSS plays; ADR 0009). The runtime is a lazy chunk, behind a dynamic
+1.4 kB: resolver, island and the names of what CSS plays; 1.8 kB with Slot
+and `cx`, which components with `asChild` carry anyway; ADR 0009). The runtime is a lazy chunk, behind a dynamic
 `import()`. size-limit doesn't split chunks, so component entries keep it
 external (`modifyRolldownConfig: external`) and it's measured on its own.
 Keep it lazy: a static import of `greeseRuntime.ts` or greese.js from any
