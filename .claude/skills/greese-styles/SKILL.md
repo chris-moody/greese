@@ -144,7 +144,7 @@ whose rules browsers that pass the test never match.
 cd packages/ui
 npx stylelint "src/**/*.scss" --fix && npm run lint
 npm run build            # catches unbundled stylesheets
-npm run size             # CSS budgets: greese.css ≤ 20 kB brotli
+npm run size             # CSS budgets: greese.css ≤ 23.4 kB brotli
 npm run build -w @greese/react   # catches classes React renders that have no stylesheet
 ```
 
