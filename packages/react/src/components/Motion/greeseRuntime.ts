@@ -265,16 +265,29 @@ const buildEntrance = ({ el, o, reduce, ctx, cleanups }: Setup): Timeline => {
  * and near the end of the page, where it can't scroll clear of that edge,
  * once wholly in view. Not from IntersectionObserver's ratio, which an
  * element's or an ancestor's clip-path (a shape, ADR 0024) lowers for good.
+ *
+ * A pixel's slack at the page's end: layout is fractional and scrolling
+ * whole pixels, so a footer that ends the page can end 0.39px past the
+ * viewport (900.39 of 900) and was never wholly in view.
  */
-const ready = (el: Element): boolean => {
-  const { top, bottom, height } = el.getBoundingClientRect()
-  const edge = innerHeight * 0.9
+export const isReady = (
+  { top, bottom, height }: { top: number; bottom: number; height: number },
+  viewport: number,
+  left: number
+): boolean => {
+  const edge = viewport * 0.9
   if (top >= 0 && bottom <= edge) return true
-  if (height > innerHeight * 0.5)
-    return Math.min(bottom, innerHeight) - Math.max(top, 0) >= innerHeight * 0.2
-  const left = document.documentElement.scrollHeight - scrollY - innerHeight
-  return top >= 0 && bottom <= innerHeight && bottom - edge > left
+  if (height > viewport * 0.5)
+    return Math.min(bottom, viewport) - Math.max(top, 0) >= viewport * 0.2
+  return top > -1 && bottom < viewport + 1 && bottom - edge > left - 1
 }
+
+const ready = (el: Element): boolean =>
+  isReady(
+    el.getBoundingClientRect(),
+    innerHeight,
+    document.documentElement.scrollHeight - scrollY - innerHeight
+  )
 
 /** Plays the entrance now, or, for `inView`, when the element scrolls into view. */
 const startEntrance = ({ el, o, reduce, cleanups }: Setup, entrance: Timeline) => {

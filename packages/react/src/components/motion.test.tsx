@@ -21,6 +21,7 @@ import { Motion } from './Motion/Motion.tsx'
 import { defineGreeseEffect, removeGreeseEffect } from './Motion/effects.ts'
 import { effectClass } from '@greese/ui/effects'
 import { entranceNames } from '@greese/ui/effect-classes'
+import { isReady } from './Motion/greeseRuntime.ts'
 import { loadGreeseRuntime } from './Motion/registry.ts'
 import { Stack } from './Stack/Stack.tsx'
 import { Text } from './Text/Text.tsx'
@@ -657,5 +658,27 @@ describe('useGreese', () => {
     const items = [...screen.getByTestId('strict').querySelectorAll('li')]
     expect(items.map((li) => li.style.opacity)).toEqual(['0', '0'])
     expect(renderToString(<List id="ssr" />)).toContain('pulse ssr')
+  })
+})
+
+describe('scroll reveals: when an element is ready', () => {
+  const box = (top: number, bottom: number) => ({ top, bottom, height: bottom - top })
+
+  it('reveals once wholly in view and clear of the bottom 10%', () => {
+    expect(isReady(box(100, 700), 1000, 500)).toBe(true)
+    expect(isReady(box(700, 950), 1000, 500)).toBe(false)
+  })
+
+  it('reveals one taller than half the viewport once a fifth of it shows', () => {
+    expect(isReady(box(700, 1800), 1000, 500)).toBe(true)
+    expect(isReady(box(900, 2000), 1000, 500)).toBe(false)
+  })
+
+  it('reveals what ends the page once wholly in view, a sub-pixel past the edge included', () => {
+    // A footer at the end of a page, as Chromium lays it out: 900.39 of 900.
+    expect(isReady(box(660.39, 900.39), 900, 0)).toBe(true)
+    // Still cut off by more than a pixel, or more page left to scroll: not yet.
+    expect(isReady(box(670, 910), 900, 0)).toBe(false)
+    expect(isReady(box(660, 900), 900, 200)).toBe(false)
   })
 })
