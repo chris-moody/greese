@@ -47,6 +47,7 @@ the ADR wins: fix this file in the same change.
 | 0025 theme layers                   | colors, shapes, motion: one of each, each its own spec fields; mask reveals    |
 | 0026 header, footer and anchors     | Header/Footer; sticky header sets scroll padding; hovers measured at rest      |
 | 0027 client boundaries              | what forces `'use client'`; pure parts in their own files; Field keeps context |
+| 0028 docs in the web app            | `/docs` renders the stories and MDX; which Storybook APIs they may use         |
 
 ## Workspace
 
@@ -57,9 +58,9 @@ the ADR wins: fix this file in the same change.
 | `packages/js`     | `@greese/js` (greese.js): animation; no dependencies, no React                                                                                                                            |
 | `packages/icons`  | `@greese/icons`: every icon (`createIcon`); `@greese/react` depends on it (ADR 0020)                                                                                                      |
 | `packages/mcp`    | `@greese/mcp`: the MCP server for coding assistants (ADR 0022)                                                                                                                            |
-| `apps/docs`       | Storybook: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`                                                                                                      |
+| `apps/docs`       | The docs' source: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`. Storybook runs them for authoring and visual tests; the web app renders them at `/docs`      |
 | `apps/playground` | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                                                                                                                     |
-| `apps/site`       | The web app: the homepage at `/` and Theme Studio at `/studio` (`npm run studio`: edits a theme JSON, generates kit SCSS + CSS)                                                           |
+| `apps/site`       | The web app: the homepage at `/`, the docs at `/docs` and Theme Studio at `/studio` (`npm run studio`: edits a theme JSON, generates kit SCSS + CSS)                                      |
 
 Use npm, never yarn. Node ≥ 24.
 
@@ -177,6 +178,12 @@ See the `greese-styles` skill for detail. In short:
   - `component`, plus `subcomponents` on a parent for its props tabs;
   - for a part, a `decorators` entry that renders it inside its parent;
   - `args`, and a `Playground` story first.
+- **The web app renders the docs too** (`/docs`, ADR 0028), so a story file
+  and an MDX page must work there: stories may use args, argTypes
+  (`control`, `options`), decorators, `render` and `parameters.layout`, with
+  a `/** comment */` above each story as its description; MDX may use
+  `Meta`, `Canvas`, `Controls`, `Source` and `Subheading`. Any other
+  Storybook API needs adding to `apps/site/src/docs` first.
 - **Styling sections are generated.** Every docs page ends with one, built
   from the style manifest: the classes a component renders, its items, the
   components it's built on, and override examples. A part with no classes of

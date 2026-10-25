@@ -20,14 +20,14 @@ Scope, phases and standing decisions: [ADR 0013](docs/adr/0013-project-scope-and
 
 ## Workspace
 
-| Path                                                   |                                                                                                                                                                                                                        |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/ui`                                          | `@greese/ui`: the CSS, tokens and Sass kit, framework-free. Component styles are edited here                                                                                                                           |
-| `packages/react`, `packages/js`, `packages/icons`      | The other published packages                                                                                                                                                                                           |
-| `packages/eslint-config`, `packages/typescript-config` | Internal shared config                                                                                                                                                                                                 |
-| `apps/docs`                                            | Storybook. Uses the library **source**, so edits hot-reload                                                                                                                                                            |
-| `apps/playground`                                      | Vite app that uses the **built** `dist/`, the same way a real consumer does. Playwright e2e and perf benchmarks run against it                                                                                         |
-| `apps/site`                                            | The web app, built with GreeseUI from the **built** `dist/`: the homepage at `/` and Theme Studio at `/studio` (`npm run studio`; edits a theme file). Its numbers come from `npm run stats -w site` and the benchmark |
+| Path                                                   |                                                                                                                                                                                                                                                                                                         |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/ui`                                          | `@greese/ui`: the CSS, tokens and Sass kit, framework-free. Component styles are edited here                                                                                                                                                                                                            |
+| `packages/react`, `packages/js`, `packages/icons`      | The other published packages                                                                                                                                                                                                                                                                            |
+| `packages/eslint-config`, `packages/typescript-config` | Internal shared config                                                                                                                                                                                                                                                                                  |
+| `apps/docs`                                            | The docs' source: stories and MDX guides, run by Storybook (`npm run dev -w docs`) for authoring and visual tests. Uses the library **source**, so edits hot-reload                                                                                                                                     |
+| `apps/playground`                                      | Vite app that uses the **built** `dist/`, the same way a real consumer does. Playwright e2e and perf benchmarks run against it                                                                                                                                                                          |
+| `apps/site`                                            | The web app, built with GreeseUI from the **built** `dist/`: the homepage at `/`, the docs at `/docs` (rendered from `apps/docs`' stories and MDX), Theme Studio at `/studio` (`npm run studio`; edits a theme file) and the templates. Its numbers come from `npm run stats -w site` and the benchmark |
 
 ## Setup
 
@@ -87,25 +87,24 @@ page for every component, and live stories. Decisions are recorded in
 
 ## GitHub Pages
 
-`.github/workflows/pages.yml` publishes three apps to
+`.github/workflows/pages.yml` publishes the web app to
 <https://chris-moody.github.io/greese/> on pushes to `main` (or run it by
 hand):
 
-| Path          | App                                                                                         |
-| ------------- | ------------------------------------------------------------------------------------------- |
-| `/`           | The homepage, `apps/site`                                                                   |
-| `/studio`     | Theme Studio, a route of the same app: it compiles in the browser and keeps the theme there |
-| `/storybook/` | The docs, `apps/docs`, which the app's build copies into its own `dist/`                    |
+| Path      | App                                                                                         |
+| --------- | ------------------------------------------------------------------------------------------- |
+| `/`       | The homepage, `apps/site`                                                                   |
+| `/studio` | Theme Studio, a route of the same app: it compiles in the browser and keeps the theme there |
+| `/docs`   | The docs, a route of the same app, rendered from `apps/docs`' stories and MDX (ADR 0028)    |
 
 The app builds for `/<repository>/` (the workflow sets `GREESE_BASE`) and routes by path;
-the build also writes `studio/index.html` and `404.html`, so a direct visit to `/studio` works
-on Pages. Enable Pages once under Settings → Pages → Source: GitHub Actions.
+the build also writes `studio/index.html`, a copy per docs page and template, and `404.html`,
+so a direct visit to any of them works on Pages. Enable Pages once under Settings → Pages →
+Source: GitHub Actions.
 
-`apps/site/dist` is the whole site, docs included: `npx turbo run build --filter=site`
-builds Storybook first, and `npm run preview -w site` serves it all, so the
-search's docs results open locally as they do on Pages. In development,
-`/storybook/` sends you to Storybook's dev server (`npm run dev` at the root
-runs both), so stories hot-reload.
+The docs are pages of the app, under its header and in the theme you're wearing: edit a
+story or a guide in `apps/docs` and the app's dev server (`npm run studio`) shows it. Storybook
+isn't deployed; it stays the place to author stories and the source of the visual tests.
 
 To refresh the homepage's numbers, rebuild, run `npm run stats -w site`, and
 re-run the benchmark with `node bench/run.ts --json ../site/src/data/bench.json`
