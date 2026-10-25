@@ -1,4 +1,12 @@
-import { lazy, Suspense, useEffect, useMemo, useState, type JSX } from 'react'
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  type JSX,
+} from 'react'
 import { ThemeProvider, Toaster, useStoredState, type Theme } from '@greese/react'
 import { Home } from './pages/Home.tsx'
 import { Nav } from './sections/Nav.tsx'
@@ -26,6 +34,19 @@ const Docs = lazy(() =>
 )
 
 const GREESE_JSON = JSON.stringify(GREESE_SPEC)
+
+const never = () => () => {}
+/**
+ * False while the page hydrates the prerendered homepage, true after: what
+ * the browser alone knows (a theme saved in the hosted studio) waits for it,
+ * so the first render matches the server's HTML.
+ */
+const useHydrated = (): boolean =>
+  useSyncExternalStore(
+    never,
+    () => true,
+    () => false
+  )
 
 /**
  * The theme every page wears: the site's own until a visitor picks or edits
@@ -113,15 +134,20 @@ const useLayerCss = (spec: ThemeSpec): void => {
  */
 export const App = (): JSX.Element => {
   const route = useRoute()
+  const hydrated = useHydrated()
   // The theme being worn, kept between visits: every pick in the theme menu.
-  const [spec, setSpec] = useStoredState<ThemeSpec>(WORN, stored() ?? GREESE_SPEC, {
+  const [worn, setSpec] = useStoredState<ThemeSpec | null>(WORN, null, {
     // A theme worn before themes reassigned roles loses what its old layers overwrote.
     parse: (text) => {
       const value: unknown = JSON.parse(text)
       return isSpec(value) ? migrateSpec(value) : value
     },
-    validate: isSpec,
+    validate: (value): value is ThemeSpec | null => value === null || isSpec(value),
   })
+  // Before any pick, the theme saved in the hosted studio: read once
+  // hydrated, since the server's HTML (the prerendered homepage) can't know it.
+  const saved = useMemo(() => (hydrated ? stored() : undefined), [hydrated])
+  const spec = worn ?? saved ?? GREESE_SPEC
   const [rendered, setRendered] = useState<RenderedColors>()
   const [replay, setReplay] = useState(0)
   const theme = useSiteTheme(spec)

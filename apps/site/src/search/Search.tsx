@@ -1,4 +1,11 @@
-import { lazy, Suspense, useEffect, useState, type JSX } from 'react'
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type JSX,
+} from 'react'
 import { Icon, IconButton, Key } from '@greese/react'
 import { icons } from '../icons.tsx'
 import { whenIdle } from '../idle.ts'
@@ -9,8 +16,14 @@ const loadDialog = () => import('./SearchDialog.tsx')
 const SearchDialog = lazy(() => loadDialog().then((m) => ({ default: m.SearchDialog })))
 const preload = () => void loadDialog()
 
-const MAC =
-  typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.userAgent)
+const isMac = () => /Mac|iPhone|iPad/.test(navigator.userAgent)
+const never = () => () => {}
+/**
+ * Whether to show ⌘ rather than Ctrl. The prerendered homepage can't know,
+ * so it says Ctrl, and hydrating keeps it until the page is the browser's;
+ * then a Mac's says ⌘.
+ */
+const useMac = (): boolean => useSyncExternalStore(never, isMac, () => false)
 
 /** What the search controls open: the shortcut's handler and the dialog's state. */
 export const useSearch = (): {
@@ -57,11 +70,11 @@ interface SearchTriggerProps {
   onOpen: () => void
 }
 
-const triggerProps = ({ open, onOpen }: SearchTriggerProps) => ({
+const triggerProps = ({ open, onOpen }: SearchTriggerProps, mac: boolean) => ({
   type: 'button' as const,
   'aria-haspopup': 'dialog' as const,
   'aria-expanded': open,
-  'aria-keyshortcuts': MAC ? 'Meta+K' : 'Control+K',
+  'aria-keyshortcuts': mac ? 'Meta+K' : 'Control+K',
   onClick: onOpen,
   onPointerEnter: preload,
   onFocus: preload,
@@ -72,18 +85,21 @@ const triggerProps = ({ open, onOpen }: SearchTriggerProps) => ({
  * placeholder would be and the shortcut. A button (it opens the search
  * dialog), dressed as the field it leads to.
  */
-export const SearchBox = (props: SearchTriggerProps): JSX.Element => (
-  // Named Search; the shortcut is aria-keyshortcuts, so the key isn't read out.
-  <button {...triggerProps(props)} aria-label="Search" className="site-search-box">
-    <Icon>{icons.search}</Icon>
-    <span className="site-search-box-text">Search</span>
-    <Key size="sm">{MAC ? '⌘' : 'Ctrl'} K</Key>
-  </button>
-)
+export const SearchBox = (props: SearchTriggerProps): JSX.Element => {
+  const mac = useMac()
+  return (
+    // Named Search; the shortcut is aria-keyshortcuts, so the key isn't read out.
+    <button {...triggerProps(props, mac)} aria-label="Search" className="site-search-box">
+      <Icon>{icons.search}</Icon>
+      <span className="site-search-box-text">Search</span>
+      <Key size="sm">{mac ? '⌘' : 'Ctrl'} K</Key>
+    </button>
+  )
+}
 
 /** Search below md: the magnifying glass alone, an icon button's size. */
 export const SearchIconButton = (props: SearchTriggerProps): JSX.Element => (
-  <IconButton {...triggerProps(props)} size="sm" variant="soft" label="Search">
+  <IconButton {...triggerProps(props, useMac())} size="sm" variant="soft" label="Search">
     <Icon>{icons.search}</Icon>
   </IconButton>
 )
