@@ -460,6 +460,42 @@ describe('navigation', () => {
       '?page=1'
     )
   })
+
+  it('Pagination links for a given page are a Server Component; others keep state on the client', () => {
+    const server = [Pagination, Button, Slot] as unknown as Parameters<
+      typeof functionProps
+    >[1]
+    const getHref = (p: number) => `?page=${p}`
+    expect(
+      functionProps(
+        <Pagination
+          count={9}
+          page={4}
+          getHref={getHref}
+          labels={{ page: (n) => `${n}` }}
+        />,
+        server
+      )
+    ).toEqual([])
+    // Without `page`, links track their own page, as before: a client component.
+    expect(functionProps(<Pagination count={9} getHref={getHref} />, server)).toContain(
+      '<PaginationState> getHref'
+    )
+  })
+
+  it('Pagination links for a given page still report presses', async () => {
+    const onPageChange = vi.fn()
+    render(
+      <Pagination count={3} page={1} getHref={() => '#'} onPageChange={onPageChange} />
+    )
+    await userEvent.click(screen.getByRole('link', { name: 'Page 2' }))
+    expect(onPageChange).toHaveBeenCalledWith(2)
+    // Controlled: the page moves when the parent passes the new one.
+    expect(screen.getByRole('link', { name: 'Page 1' })).toHaveAttribute(
+      'aria-current',
+      'page'
+    )
+  })
 })
 
 describe('Phase 5 accessibility', () => {
