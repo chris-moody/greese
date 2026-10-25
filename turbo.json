@@ -6,6 +6,12 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "storybook-static/**"]
     },
+    "site#build": {
+      "dependsOn": ["^build"],
+      "env": ["GREESE_BASE"],
+      "passThroughEnv": ["CI"],
+      "outputs": ["dist/**"]
+    },
     "check-types": {
       "dependsOn": ["^build"]
     },
