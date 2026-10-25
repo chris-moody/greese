@@ -2,15 +2,18 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { expectNoAxeViolations } from '../test/axe.ts'
+import { functionProps } from '../test/serverProps.ts'
 import { computeFallbackPosition, positionArea } from '../utils/anchor.ts'
 import { AppBar } from './AppBar/AppBar.tsx'
-import { BreadcrumbItem, Breadcrumbs } from './Breadcrumbs/Breadcrumbs.tsx'
+import { BreadcrumbItem } from './Breadcrumbs/BreadcrumbItem.tsx'
+import { Breadcrumbs } from './Breadcrumbs/Breadcrumbs.tsx'
 import { Button } from './Button/Button.tsx'
 import { Dialog, Drawer } from './Dialog/Dialog.tsx'
 import { Menu, MenuItem, MenuSeparator } from './Menu/Menu.tsx'
 import { Pagination, paginationRange } from './Pagination/Pagination.tsx'
 import { Popover } from './Popover/Popover.tsx'
 import { currentSection, ScrollSpy } from './ScrollSpy/ScrollSpy.tsx'
+import { Slot } from './Slot/Slot.tsx'
 import { Sidebar, SidebarLayout, SidebarTrigger } from './Sidebar/Sidebar.tsx'
 import { toast, Toaster } from './Toast/Toast.tsx'
 import { Tooltip } from './Tooltip/Tooltip.tsx'
@@ -383,6 +386,24 @@ describe('navigation', () => {
     expect(screen.queryByText('Projects')).toBeNull()
     await userEvent.click(screen.getByRole('button', { name: 'Show full path' }))
     expect(screen.getByRole('link', { name: 'Projects' })).toBeInTheDocument()
+  })
+
+  it('BreadcrumbItem is a Server Component, router links included', () => {
+    const server = [BreadcrumbItem, Slot] as unknown as Parameters<
+      typeof functionProps
+    >[1]
+    expect(
+      functionProps(
+        <>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem asChild>
+            <a href="/docs">Docs</a>
+          </BreadcrumbItem>
+          <BreadcrumbItem>Here</BreadcrumbItem>
+        </>,
+        server
+      )
+    ).toEqual([])
   })
 
   it.each([

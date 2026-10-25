@@ -6,7 +6,8 @@ import { expectNoAxeViolations } from '../test/axe.ts'
 import { functionProps } from '../test/serverProps.ts'
 import { Accordion, AccordionItem } from './Accordion/Accordion.tsx'
 import { Alert } from './Alert/Alert.tsx'
-import { Avatar, AvatarGroup, initials } from './Avatar/Avatar.tsx'
+import { Avatar, initials } from './Avatar/Avatar.tsx'
+import { AvatarGroup } from './Avatar/AvatarGroup.tsx'
 import { Badge } from './Badge/Badge.tsx'
 import { Button } from './Button/Button.tsx'
 import { Card, CardMedia } from './Card/Card.tsx'
@@ -213,6 +214,21 @@ describe('Avatar', () => {
     const group = screen.getByRole('group', { name: 'Shared with' })
     expect(group.querySelectorAll('.greese-Avatar')).toHaveLength(3)
     expect(screen.getByRole('img', { name: '2 more' })).toHaveTextContent('+2')
+  })
+
+  it('groups as a Server Component: AvatarGroup hands no function on', () => {
+    // Avatar stays a client component (its image fallback); the group isn't.
+    const server = [AvatarGroup] as unknown as Parameters<typeof functionProps>[1]
+    expect(
+      functionProps(
+        <AvatarGroup aria-label="Team" max={1}>
+          <Avatar name="A B" />
+          <Avatar name="C D" />
+          <Avatar name="E F" />
+        </AvatarGroup>,
+        server
+      )
+    ).toEqual([])
   })
 
   it('shows the one left over instead of a "+1"', () => {
