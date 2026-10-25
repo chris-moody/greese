@@ -50,3 +50,37 @@ file access in `apps/site/server`; `npm run studio` runs the app.
   `apps/site/server`; `site` is the rest of the app.
 - A saved theme in the browser applies to the homepage too, which is the point
   and also something to know when the homepage looks different on a visit.
+
+## Addendum (2026-10-24): the docs are part of the app
+
+The app's docs links (the header's, and every docs result in the search)
+point at `<base>storybook/`, which only existed on Pages, assembled there by
+the workflow. Locally nothing served it: the dev server and `vite preview`
+answered with the homepage, so the links seemed dead.
+
+- **The app's build includes the docs.** `server/storybook.ts` copies
+  `apps/docs/storybook-static` into `dist/storybook`, and turbo builds the
+  docs before the app (`site#build` depends on `docs#build`). `dist/` is the
+  whole site: the Pages workflow uploads it as it is, and `vite preview`
+  serves it locally. A build without the docs fails in CI and warns locally.
+- **In development, `/storybook/…` redirects to Storybook's dev server** on
+  the same host. Storybook's dev server can't run under a sub-path, so it
+  keeps its port (read from `apps/docs`' `dev` script), and stories keep
+  hot-reloading. While it isn't running, or runs on this machine only and
+  the request came from another device, the link opens a page saying what to
+  run, which reloads itself until Storybook answers.
+- **`GREESE_BASE` reaches the build.** Turbo's strict environment mode
+  dropped it, so a Pages build used `/` and every asset 404'd under
+  `/greese/`. `site#build` now declares it (`env`, so it's in the cache key)
+  and passes `CI` through.
+- **The production build rendered nothing.** The `react` chunk group pulled
+  React out of the chunk shared by both entries (`effects-runtime`), where
+  Rolldown had put its runtime helpers, onto an import cycle; React's chunk
+  ran first and threw `__commonJSMin is not a function`, leaving a blank
+  page. The dev server doesn't split chunks, and no gate loaded the build.
+  `effects-runtime.ts` now joins the `react` group, which costs nothing
+  (`output.strictExecutionOrder` also fixed it, for 18 kB more on the
+  homepage), and `server/runtimeChunk.ts` fails the build if the helpers'
+  chunk is ever on a cycle again.
+- **Tests:** `server/storybook.test.ts` (paths under the base, the redirect
+  target and port, the cycle check).
