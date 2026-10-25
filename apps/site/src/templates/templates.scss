@@ -342,3 +342,46 @@
 .tpl-was {
   text-decoration: line-through;
 }
+
+/* The gallery's cards: the template's screenshot in the scheme being worn
+   (the kit's rule: the scheme attribute, else the system's), over the
+   gradient while it loads. */
+.tpl-shot-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--greese-color-border);
+}
+
+.tpl-shot {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.tpl-shot--dark {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-greese-scheme='light']) {
+    .tpl-shot--light {
+      display: none;
+    }
+
+    .tpl-shot--dark {
+      display: block;
+    }
+  }
+}
+
+:root[data-greese-scheme='dark'] {
+  .tpl-shot--light {
+    display: none;
+  }
+
+  .tpl-shot--dark {
+    display: block;
+  }
+}

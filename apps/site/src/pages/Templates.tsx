@@ -17,6 +17,15 @@ import { RouteLink, useSubpage } from '../router.tsx'
 import { TEMPLATES, type TemplateEntry } from '../templates/index.ts'
 import '../templates/templates.scss'
 
+// Each template's screenshots, light and dark (`npm run shots -w site`).
+const SHOTS = import.meta.glob<string>('../templates/shots/*.webp', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+})
+const shot = (id: string, scheme: 'light' | 'dark') =>
+  SHOTS[`../templates/shots/${id}-${scheme}.webp`]
+
 const sourceUrl = (t: TemplateEntry) =>
   `${REPO_URL}/blob/main/apps/site/src/templates/${t.file}`
 
@@ -40,11 +49,28 @@ const Gallery = (): JSX.Element => (
         {TEMPLATES.map((t) => (
           <Card key={t.id} variant="outline" interactive asChild>
             <RouteLink to="templates" page={t.id}>
+              {/* The page itself, in the scheme being worn; the card's title
+                  names it, so the picture is left unnamed. */}
               <div
-                className="tpl-art"
+                className="tpl-art tpl-shot-frame"
                 style={{ '--tpl-hue': t.hue } as CSSProperties}
-                aria-hidden="true"
-              />
+              >
+                {(['light', 'dark'] as const).map(
+                  (scheme) =>
+                    shot(t.id, scheme) && (
+                      <img
+                        key={scheme}
+                        src={shot(t.id, scheme)}
+                        alt=""
+                        width={800}
+                        height={450}
+                        loading="lazy"
+                        decoding="async"
+                        className={`tpl-shot tpl-shot--${scheme}`}
+                      />
+                    )
+                )}
+              </div>
               <Heading level={2} variant="h5">
                 {t.title}
               </Heading>
