@@ -270,7 +270,7 @@ and use them by name, alone or in sequences.
 
 - **Entrance presets are pure CSS:** they render in Server Components and
   cost no JavaScript.
-- **Everything else loads a small runtime plus greese.js** (about 9.8 kB,
+- **Everything else loads a small runtime plus greese.js** (about 10.8 kB,
   brotli) as a lazy chunk, the first time a prop needs it. Add
   `import '@greese/react/greese'` at your entry to load it up front.
 - **Reduced motion is respected throughout.**
