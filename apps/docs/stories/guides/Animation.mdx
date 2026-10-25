@@ -290,8 +290,9 @@ name's keyframes at that distance.
   (about 10.8 kB together). Components load it with a dynamic `import()`, so
   your bundler puts it in its own chunk, fetched the first time a prop needs
   it. A page with no such prop never downloads it.
-- **The cost to every component** is about 2.3 kB (brotli), paid once per
-  app. That's the resolver and the client island that attaches the runtime.
+- **The cost to every component** is about 1.4 kB (brotli), paid once per
+  app: the resolver, the client island that attaches the runtime, and the
+  names of the effects CSS can play (so a preset never loads the runtime).
 
 ### Loading the runtime up front
 

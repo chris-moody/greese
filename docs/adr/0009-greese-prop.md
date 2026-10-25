@@ -291,3 +291,23 @@ effects), which the static part carries so a preset never needs the runtime.
 Six budgets now sit within 1% of their limits (the whole library, Menu,
 Combobox, `useGreese`, the lazy runtime): a change to the static part needs
 a deliberate raise, or a cut elsewhere.
+
+## Addendum (2026-10-25): the static cost, measured properly
+
+The 2026-10-24 addendum's 2.2 kB overstated it: `{ Stack }` minus
+`{ VisuallyHidden }` also counts Stack's own code (Box, the style props).
+Measured on its own (withGreese and what it imports, the lazy chunks
+external, brotli), and compared with this ADR's first commit (c0c62e1,
+2026-10-18) the same way:
+
+| Static part                 | 2026-10-18 | 2026-10-25 |
+| --------------------------- | ---------- | ---------- |
+| Resolver + island           | 930 B      | 1,403 B    |
+| With Slot and `cx` (shared) | 1,356 B    | 1,807 B    |
+
+Section 4's 0.75 kB was the first row, measured another way. The growth,
+about 470 B, is the list of effect names CSS plays (`effect-classes`, from
+2026-10-21: overlay exits, wipes and pockets, three-dimensional effects),
+which lets the resolver tell a CSS preset from one that needs the runtime
+without loading it; the island's batching (reads before writes across
+islands) and its scope loading; and the resolver's newer options.
