@@ -105,6 +105,13 @@ export const Table = ({
   )
 }
 
+/**
+ * The header row group: the TableRow of column headers.
+ *
+ * ```tsx
+ * <TableHead><TableRow><TableHeaderCell>Name</TableHeaderCell></TableRow></TableHead>
+ * ```
+ */
 export const TableHead = ({
   greese,
   ...props
@@ -118,12 +125,26 @@ export const TableBody = ({
 }: ComponentPropsWithRef<'tbody'> & GreeseProps): JSX.Element =>
   withGreese(<tbody role="rowgroup" {...props} />, greese)
 
+/**
+ * The footer row group, for totals: stays a row group when the table stacks.
+ *
+ * ```tsx
+ * <TableFoot><TableRow><TableCell label="Total">$420</TableCell></TableRow></TableFoot>
+ * ```
+ */
 export const TableFoot = ({
   greese,
   ...props
 }: ComponentPropsWithRef<'tfoot'> & GreeseProps): JSX.Element =>
   withGreese(<tfoot role="rowgroup" {...props} />, greese)
 
+/**
+ * One row; a card of label/value pairs when the table stacks.
+ *
+ * ```tsx
+ * <TableRow><TableCell label="Number">INV-001</TableCell></TableRow>
+ * ```
+ */
 export const TableRow = ({
   greese,
   className,
@@ -193,6 +214,13 @@ export interface TableCellProps
   align?: 'start' | 'center' | 'end'
 }
 
+/**
+ * A data cell. Give it the column's `label` so stacked rows can show it.
+ *
+ * ```tsx
+ * <TableCell label="Total" align="end">$10</TableCell>
+ * ```
+ */
 export const TableCell = ({
   greese,
   label,
