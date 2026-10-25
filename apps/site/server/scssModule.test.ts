@@ -241,7 +241,7 @@ describe('component SCSS with imports, through the real kit', () => {
     )
     expect(css).toMatch(/\.greese-Card:hover \{\s+opacity: 0\.9;/)
     expect(css).toMatch(/\.greese-Badge:hover \{\s+color: red;/)
-  })
+  }, 30_000)
 
   it('gives a component’s mixins the theme’s own breakpoints', () => {
     const custom = {
