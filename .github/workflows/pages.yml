@@ -1,8 +1,8 @@
 # GreeseUI on GitHub Pages, at https://chris-moody.github.io/greese/:
 #
 #   /            the homepage (apps/site)
-#   /storybook/  the docs (apps/docs), where the site's "docs" links point;
-#                the site's build copies them in (apps/site/server/storybook.ts)
+#   /docs        the docs, a route of the same app, made from apps/docs'
+#                stories and MDX at build time (apps/site/src/docs)
 #   /studio      Theme Studio, a route of the same app (apps/site): hosted, it
 #                compiles in the browser and keeps the theme there
 #
@@ -41,8 +41,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
       - run: npm ci --no-audit --no-fund
-      # Builds the packages first (turbo), then the docs, then the site, which
-      # copies the docs' build into its own dist/ (it fails without it in CI).
+      # Builds the packages first (turbo), then the site, docs included.
       - run: npx turbo run build --filter=site
         env:
           GREESE_BASE: /${{ github.event.repository.name }}/
@@ -50,7 +49,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -r apps/site/dist/. _site/
-          # Serve files as they are, including Storybook's _-prefixed ones.
+          # Serve files as they are, including _-prefixed ones.
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
