@@ -144,3 +144,12 @@ made the build fail when a component stylesheet is missing from
 `styles/index.scss`.
 
 When porting more, record the decision and its reason here the same way.
+
+## Addendum (2026-10-24): every table carries its roles
+
+Section 4 set explicit `table`, `rowgroup`, `row`, `columnheader` and `cell`
+roles on stacked tables only, which took a context to tell each part whether
+its table stacks, and made all seven parts client components. Every table
+now carries the roles: they're redundant but harmless on a table whose
+display is unchanged, and the parts are Server Components. Hydrating a
+500-row table took 25% less time at 4× CPU throttling (ADR 0027).
