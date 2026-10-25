@@ -1,3 +1,4 @@
+import '../styles/library.ts'
 import type { JSX } from 'react'
 import { useShell } from '../shell.ts'
 import { ThemeMenu } from './ThemeMenu.tsx'

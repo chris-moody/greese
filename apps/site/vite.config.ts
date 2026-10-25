@@ -173,7 +173,10 @@ export default defineConfig({
               // import cycle (a blank page), or cost the homepage a request
               // (150 ms of LCP); runtimeChunkGuard checks for the cycle.
               name: (id, ctx) => (homepageReaches(ctx).has(id) ? 'greese' : null),
-              test: /packages\/(react|ui|js)\/(dist|src)\/|\/src\/effects-runtime\.ts$/,
+              // Scripts only: the library's stylesheets stay with what imports
+              // them, the first screen's with the page and the rest lazy
+              // (src/styles), or this chunk's CSS would block the first paint.
+              test: /packages\/(react|ui|js)\/(dist|src)\/.*\.[jt]sx?$|\/src\/effects-runtime\.ts$/,
               minShareCount: 2,
             },
           ],

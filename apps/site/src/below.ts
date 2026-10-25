@@ -1,3 +1,5 @@
+// The whole library's styles come with it (styles/library.ts).
+import './styles/library.ts'
 // Everything below the first screen, in one chunk: the first screen loads
 // without it, and it arrives while the hero is already painted.
 export { Footer } from './sections/Footer.tsx'

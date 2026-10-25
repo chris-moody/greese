@@ -1,7 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
 import '@greese/react/base.css'
-import '@greese/react/styles.css'
+// Render-blocking: only what the first screen uses. The rest is library.ts.
+import './styles/firstScreen.ts'
 import 'virtual:greese-utilities.css'
 // No `import '@greese/react/greese'`: the first screen animates with CSS
 // presets, so the greese prop's runtime can load lazily, after first paint.
@@ -10,6 +11,10 @@ import 'virtual:greese-utilities.css'
 import './effects.ts'
 import './site.scss'
 import { App } from './App.tsx'
+
+// The rest of the library's styles, asked for now but not waited on: the
+// prerendered first screen paints without them (styles/library.ts).
+void import('./styles/library.ts')
 
 const root = document.getElementById('root')!
 const app = (

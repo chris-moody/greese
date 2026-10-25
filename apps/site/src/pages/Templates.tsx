@@ -1,3 +1,4 @@
+import '../styles/library.ts'
 import { lazy, Suspense, useMemo, type CSSProperties, type JSX } from 'react'
 import {
   Button,

@@ -1,3 +1,4 @@
+import '../styles/library.ts'
 import type { JSX } from 'react'
 import { Footer as Base, FooterSection, Link, Stack, Text } from '@greese/react'
 import { REPO_URL } from '../config.ts'
