@@ -18,34 +18,35 @@ the ADR wins: fix this file in the same change.
 
 **Read the ADR for the area you touch before changing it:**
 
-| ADR                                 | Governs                                                                     |
-| ----------------------------------- | --------------------------------------------------------------------------- |
-| 0001 styling model                  | SCSS + CSS variables, cascade layers, responsive props, class naming        |
-| 0002 color scheme and theming       | tokens, `data-greese-scheme`, `createTheme`, ThemeProvider                  |
-| 0003 native form controls           | native inputs, Field wiring, `onValueChange`                                |
-| 0004 content and disclosure         | `<details>`, media, text components                                         |
-| 0005 overlays and positioning       | `<dialog>`, Popover API, anchor positioning, focus return                   |
-| 0006 distribution and quality gates | per-component CSS, budgets, visual/e2e/Lighthouse gates                     |
-| 0007 component gaps                 | Combobox, NumberField, DateField, Table, SegmentedControl                   |
-| 0008 greese.js                      | the animation package (`packages/js`)                                       |
-| 0009 the `greese` prop              | motion on every component: CSS presets, lazy runtime, coverage check        |
-| 0010 SCSS kit and Theme Studio      | style manifest, `greese.overrides` layer, kit API, `apps/site/src/studio`   |
-| 0011 component gap review           | ScrollCarousel, Rating, Diff, OtpField…: native bases, what was skipped           |
-| 0012 icons package and docs rules   | `@greese/icons`, prop descriptions, docs page layout                        |
-| 0013 project scope and phases       | goals, non-goals, the phase table, React/browser/licence decisions          |
-| 0015 extensible tokens              | `$extend` / `createTheme({ extend })`; added tokens in Theme Studio         |
-| 0016 typography system              | type variants, `--greese-type-*`, `greese-Type--*`, `typography()`          |
-| 0017 motion scopes                  | `greese={{ scope }}`: ordered entrances across depth, lazy chunk            |
-| 0018 one web app                    | the homepage and Theme Studio: one app, two routes, one header              |
-| 0014 framework-agnostic packages    | `@greese/ui` owns the CSS; framework packages render its markup             |
-| 0021 scss authoring                 | `pkg:@greese/ui/scss/{mixins,tones,floating,controls}`; Studio SCSS imports |
-| 0020 icons package                  | every icon is `@greese/icons`'; the no-inline-svg rule                      |
-| 0019 utility classes                | utility classes from `src/utilities.ts`, naming rules, purging              |
-| 0022 MCP server                     | `@greese/mcp`: data baked at build time, its tools; its two dependencies    |
-| 0023 shape themes and templates     | the shape themes' four rules; `apps/site/src/templates`                     |
-| 0024 shapes                         | `@greese/ui/shapes`: one geometry, parameters animate, `greese-shape-*`     |
-| 0025 theme layers                   | colors, shapes, motion: one of each, each its own spec fields; mask reveals |
-| 0026 header, footer and anchors     | Header/Footer; sticky header sets scroll padding; hovers measured at rest   |
+| ADR                                 | Governs                                                                        |
+| ----------------------------------- | ------------------------------------------------------------------------------ |
+| 0001 styling model                  | SCSS + CSS variables, cascade layers, responsive props, class naming           |
+| 0002 color scheme and theming       | tokens, `data-greese-scheme`, `createTheme`, ThemeProvider                     |
+| 0003 native form controls           | native inputs, Field wiring, `onValueChange`                                   |
+| 0004 content and disclosure         | `<details>`, media, text components                                            |
+| 0005 overlays and positioning       | `<dialog>`, Popover API, anchor positioning, focus return                      |
+| 0006 distribution and quality gates | per-component CSS, budgets, visual/e2e/Lighthouse gates                        |
+| 0007 component gaps                 | Combobox, NumberField, DateField, Table, SegmentedControl                      |
+| 0008 greese.js                      | the animation package (`packages/js`)                                          |
+| 0009 the `greese` prop              | motion on every component: CSS presets, lazy runtime, coverage check           |
+| 0010 SCSS kit and Theme Studio      | style manifest, `greese.overrides` layer, kit API, `apps/site/src/studio`      |
+| 0011 component gap review           | ScrollCarousel, Rating, Diff, OtpField…: native bases, what was skipped              |
+| 0012 icons package and docs rules   | `@greese/icons`, prop descriptions, docs page layout                           |
+| 0013 project scope and phases       | goals, non-goals, the phase table, React/browser/licence decisions             |
+| 0015 extensible tokens              | `$extend` / `createTheme({ extend })`; added tokens in Theme Studio            |
+| 0016 typography system              | type variants, `--greese-type-*`, `greese-Type--*`, `typography()`             |
+| 0017 motion scopes                  | `greese={{ scope }}`: ordered entrances across depth, lazy chunk               |
+| 0018 one web app                    | the homepage and Theme Studio: one app, two routes, one header                 |
+| 0014 framework-agnostic packages    | `@greese/ui` owns the CSS; framework packages render its markup                |
+| 0021 scss authoring                 | `pkg:@greese/ui/scss/{mixins,tones,floating,controls}`; Studio SCSS imports    |
+| 0020 icons package                  | every icon is `@greese/icons`'; the no-inline-svg rule                         |
+| 0019 utility classes                | utility classes from `src/utilities.ts`, naming rules, purging                 |
+| 0022 MCP server                     | `@greese/mcp`: data baked at build time, its tools; its two dependencies       |
+| 0023 shape themes and templates     | the shape themes' four rules; `apps/site/src/templates`                        |
+| 0024 shapes                         | `@greese/ui/shapes`: one geometry, parameters animate, `greese-shape-*`        |
+| 0025 theme layers                   | colors, shapes, motion: one of each, each its own spec fields; mask reveals    |
+| 0026 header, footer and anchors     | Header/Footer; sticky header sets scroll padding; hovers measured at rest      |
+| 0027 client boundaries              | what forces `'use client'`; pure parts in their own files; Field keeps context |
 
 ## Workspace
 
@@ -78,8 +79,12 @@ Use npm, never yarn. Node ≥ 24.
   fails `check-types` for any exported component without it; extend its
   `Excluded` list only for components with no box of their own. Never
   import the runtime or greese.js statically from a component (ADR 0009).
-- **`'use client'`** goes at the top only if the component uses hooks, state
-  or event handlers. Layout and text components stay server-component safe.
+- **`'use client'`** goes at the top only if the component uses state,
+  effects, refs or context, or hands an element a function of its own
+  (`useId` and `useMemo` work on the server). It covers the whole file, so
+  a pure part goes in a file of its own, and a handler that only forwards a
+  callback attaches only when given one (ADR 0027). Layout and text
+  components stay server-component safe.
 - **Props:**
   - `interface <Name>Props extends ComponentPropsWithRef<'el'>`, using `Omit`
     for anything you redefine;
