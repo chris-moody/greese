@@ -7,7 +7,7 @@
       "outputs": ["dist/**", "storybook-static/**"]
     },
     "site#build": {
-      "dependsOn": ["^build", "docs#build"],
+      "dependsOn": ["^build"],
       "env": ["GREESE_BASE"],
       "passThroughEnv": ["CI"],
       "outputs": ["dist/**"]
