@@ -28,6 +28,10 @@ const StudioPage = lazy(() =>
 const Templates = lazy(() =>
   import('./pages/Templates.tsx').then((m) => ({ default: m.Templates }))
 )
+// The footer, on every page; the homepage brings its own after its sections.
+const Footer = lazy(() =>
+  import('./sections/Footer.tsx').then((m) => ({ default: m.Footer }))
+)
 // The docs too: their pages, stories and props load only when one is opened.
 const Docs = lazy(() =>
   import('./docs/DocsPage.tsx').then((m) => ({ default: m.DocsPageView }))
@@ -188,6 +192,7 @@ export const App = (): JSX.Element => {
                 ) : (
                   <Templates />
                 )}
+                <Footer />
               </Suspense>
             )}
             <Toaster />
