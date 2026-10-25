@@ -1,6 +1,6 @@
 # greese.js (`@greese/js`)
 
-A small keyframe and timeline animation library for the web: about 5 kB
+A small keyframe and timeline animation library for the web: about 5.6 kB
 (brotli), no dependencies, no framework.
 
 - **Keyframe-based**, WAAPI-style: `{ opacity: [0, 1] }`, or frames with
@@ -93,10 +93,10 @@ OKLab.
 
 | Entry                                       | Size    |
 | ------------------------------------------- | ------- |
-| `animate` / `timeline`                      | 5 kB    |
-| Everything (with `splitText`, `fromPixels`) | 5.9 kB  |
+| `animate` / `timeline`                      | 5.6 kB  |
+| Everything (with `splitText`, `fromPixels`) | 6.5 kB  |
 | `ease` alone                                | 0.85 kB |
-| `greese.global.js` (`<script>`)             | 6.3 kB  |
+| `greese.global.js` (`<script>`)             | 6.9 kB  |
 
 Full guide: **Guides/greese.js** in the GreeseUI docs. Design decisions:
 [ADR 0008](../../docs/adr/0008-greese-js-animation.md).
