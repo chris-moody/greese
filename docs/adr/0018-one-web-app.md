@@ -109,8 +109,20 @@ homepage's HTML first.
   applied for real (150 ms RTT, 1.6 Mbps, 4× CPU), medians of three: first
   paint 1.55 → 1.09 s, LCP 2.06 → 1.64 s (the hero's text, which fades in;
   1.09 s with reduced motion).
-- **Lighthouse's simulated timings barely move** (LCP 2.53 → 2.50 s, over
-  its 2 s budget): it attributes about 0.9 s to the render-blocking
-  stylesheet (the whole library's CSS, 33 kB compressed) and 0.4 s to the
-  hero's fade. Those are separate decisions: a first-screen stylesheet with
-  the rest loaded after, and whether the hero's largest text fades in.
+- **The stylesheet is split.** Render-blocking: the tokens and the 31
+  library blocks the first screen uses, with the ones they depend on
+  (`src/styles/firstScreen.ts`, in the library's order), about 14 kB
+  brotli of the whole 22 kB. The whole library's CSS (`src/styles/library.ts`)
+  is asked for when `main.tsx` runs, without blocking the paint, and every
+  lazy part imports it, so nothing renders before its styles. It repeats the
+  first screen's blocks (about 12 kB), so the library's rules keep their own
+  order and the cascade is a single stylesheet's. The build fails when the
+  prerendered HTML uses a block, or a block it depends on, that
+  firstScreen.ts doesn't load (`missingBlocks`); with the rest of the CSS
+  held back, the first screen is pixel-identical on a phone and a desktop.
+  The `greese` chunk group takes scripts only, or it pulled the whole
+  library's CSS into a render-blocking file.
+- **Measured** 2026-10-25, same profile, medians of three: first paint
+  0.90 s, LCP 1.45 s. Lighthouse (simulated): LCP 2.50 → 2.24 s,
+  performance 0.95 → 0.97; still over its 2 s LCP budget by the hero's
+  fade-in, which stays for now.
