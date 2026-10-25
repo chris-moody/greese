@@ -1,4 +1,5 @@
 @use 'pkg:@greese/ui/scss/kit' as greese;
+@use '../code';
 
 /* The editor's own layout. The editor wears the theme being chosen, like
    every page; the preview iframe shows it with your edits too. */
@@ -583,55 +584,7 @@ code.studio-row-label {
 // The colours of `highlight()`'s tokens, in the code box and in read-only code.
 .studio-codebox-layer,
 .studio-highlighted {
-  .tok-comment {
-    font-style: italic;
-    color: light-dark(#6a737d, #8b949e);
-  }
-
-  .tok-string {
-    color: light-dark(#0a7a4b, #7ee787);
-  }
-
-  .tok-number {
-    color: light-dark(#b45309, #ffa657);
-  }
-
-  .tok-selector {
-    color: light-dark(#6f42c1, #d2a8ff);
-  }
-
-  .tok-tag {
-    color: light-dark(#116329, #7ee787);
-  }
-
-  .tok-pseudo {
-    color: light-dark(#c2410c, #ffa198);
-  }
-
-  .tok-attribute {
-    color: light-dark(#0e7490, #56d4dd);
-  }
-
-  .tok-property {
-    color: light-dark(#0550ae, #79c0ff);
-  }
-
-  .tok-variable {
-    color: light-dark(#116329, #7ee787);
-  }
-
-  .tok-function {
-    color: light-dark(#8250df, #d2a8ff);
-  }
-
-  .tok-at,
-  .tok-keyword {
-    color: light-dark(#cf222e, #ff7b72);
-  }
-
-  .tok-punctuation {
-    color: light-dark(#57606a, #8b949e);
-  }
+  @include code.tokens;
 }
 
 // The imports menu's list.
