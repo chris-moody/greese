@@ -84,3 +84,32 @@ test('on a phone, the pages are a sheet that a link closes', async ({ page }) =>
     await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
   ).toBe(0)
 })
+
+test('on a phone, the pages button stays under the header as the page scrolls', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/docs/forms-button')
+  await expect(page.locator('.docs-canvas').first()).toBeVisible()
+  await page.mouse.wheel(0, 2500)
+  const trigger = page.getByRole('button', { name: 'Docs pages' })
+  await expect(trigger).toBeInViewport()
+  await expect(trigger).toHaveText('Pages')
+  const header = (await page.locator('.site-nav').boundingBox())!
+  const box = (await trigger.boundingBox())!
+  expect(box.y).toBeGreaterThanOrEqual(header.y + header.height - 1)
+  // At the frame's end, the word before the icon.
+  expect(box.x + box.width).toBeGreaterThan(390 - 40)
+})
+
+test('every page ends with the footer', async ({ page }) => {
+  for (const path of [
+    '/docs/forms-button',
+    '/studio',
+    '/templates',
+    '/templates/finance',
+  ]) {
+    await page.goto(path)
+    await expect(page.locator('.site-footer')).toHaveCount(1)
+  }
+})

@@ -81,8 +81,30 @@
   display: flex;
   gap: var(--greese-space-2);
   align-items: center;
+  justify-content: space-between;
   min-block-size: 2.5rem;
   margin-block-end: var(--greese-space-3);
+
+  // Below md: stuck under the header, the pages' button at its end.
+  @include greese.down(md) {
+    position: sticky;
+    inset-block-start: var(--greese-sidebar-top);
+    z-index: 2;
+    padding-block: var(--greese-space-2);
+    margin-inline: calc(-1 * var(--greese-space-4));
+    padding-inline: var(--greese-space-4);
+    background-color: var(--greese-color-canvas);
+    border-block-end: 1px solid var(--greese-color-border);
+  }
+}
+
+.docs-pages-trigger {
+  margin-inline-start: auto;
+
+  // From md the sidebar is a column of the page: nothing to open.
+  @include greese.up(md) {
+    display: none;
+  }
 }
 
 .docs-columns {

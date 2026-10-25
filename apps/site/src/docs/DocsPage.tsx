@@ -4,8 +4,9 @@
  * sticky column from md, an off-canvas sheet below it) and the page's own
  * sections beside it from lg.
  */
-import { Suspense, useEffect, useLayoutEffect, useState, type JSX } from 'react'
+import { Suspense, useEffect, useLayoutEffect, useRef, useState, type JSX } from 'react'
 import {
+  Button,
   Collapsible,
   Container,
   Heading,
@@ -13,12 +14,11 @@ import {
   ScrollSpy,
   Sidebar,
   SidebarLayout,
-  SidebarTrigger,
   Spinner,
   Stack,
   Text,
 } from '@greese/react'
-import { ChevronLeftIcon, ChevronRightIcon } from '@greese/icons'
+import { ChevronLeftIcon, ChevronRightIcon, MenuIcon } from '@greese/icons'
 import { RouteLink, useSubpage } from '../router.tsx'
 import { ComponentPage } from './ComponentPage.tsx'
 import { MdxPage } from './MdxPage.tsx'
@@ -152,19 +152,37 @@ export const DocsPageView = (): JSX.Element => {
     }
   }, [page])
 
+  // The sidebar's id, for the trigger: SidebarLayout makes it, and the
+  // library's SidebarTrigger can't show a word beside its icon.
+  const sidebar = useRef<HTMLElement>(null)
+  const [sidebarId, setSidebarId] = useState<string>()
+  useLayoutEffect(() => setSidebarId(sidebar.current?.id), [])
+
   return (
     <SidebarLayout breakpoint="md" className="docs">
-      <Sidebar label="Docs pages" className="docs-sidebar">
+      <Sidebar ref={sidebar} label="Docs pages" className="docs-sidebar">
         <Nav current={page} />
       </Sidebar>
       <Container size="lg" className="docs-main">
+        {/* Below md, it sticks under the header, so the pages are a tap away
+            wherever the page is scrolled to. */}
         <div className="docs-bar">
-          <SidebarTrigger label="Docs pages" size="sm" />
           {page && (
-            <Text variant="p3" tone="muted">
+            <Text variant="p3" tone="muted" className="docs-bar-path">
               {page.title.split('/').slice(0, -1).join(' / ')}
             </Text>
           )}
+          <Button
+            size="sm"
+            variant="soft"
+            tone="neutral"
+            endIcon={<MenuIcon />}
+            popoverTarget={sidebarId}
+            aria-label="Docs pages"
+            className="docs-pages-trigger"
+          >
+            Pages
+          </Button>
         </div>
         <div className="docs-columns">
           {page ? (
