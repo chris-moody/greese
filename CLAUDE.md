@@ -11,7 +11,7 @@ animation library, greese.js (`@greese/js`), and framework packages such as
 | `@greese/ui` (CSS, tokens, kit)       | `packages/ui`     |
 | `@greese/react`                       | `packages/react`  |
 | `@greese/js` (greese.js)              | `packages/js`     |
-| `@greese/icons` (optional)            | `packages/icons`  |
+| `@greese/icons`                       | `packages/icons`  |
 | `@greese/mcp` (MCP server)            | `packages/mcp`    |
 | Storybook docs                        | `apps/docs`       |
 | e2e, visual, Lighthouse               | `apps/playground` |
