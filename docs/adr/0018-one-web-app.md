@@ -88,3 +88,29 @@ answered with the homepage, so the links seemed dead.
   chunk is ever on a cycle again.
 - **Tests:** `server/storybook.test.ts` (paths under the base, the redirect
   target and port, the cycle check).
+
+## Addendum (2026-10-25): the homepage is prerendered
+
+The built homepage was an empty `#root` until about 300 kB of JavaScript had
+loaded and React had rendered, so nothing painted before it. The build now
+renders `/` to HTML (`server/prerender.ts`, through Vite's SSR loader with
+the app's own config) and `main.tsx` hydrates it. The routes' copies
+(`studio/`, `docs/…`, `404.html`) keep the empty root, so they never show the
+homepage's HTML first.
+
+- **Hydration must match.** What only the browser knows takes a server
+  value while hydrating, then updates: the library's hooks already do
+  (`useSyncExternalStore` server snapshots); the site's theme saved in the
+  hosted studio is read once hydrated (`useHydrated` in App.tsx), and the
+  search's ⌘/Ctrl label likewise. Anything new the homepage renders from
+  `window`, `navigator` or storage needs the same, or React reports error
+  418 and re-renders the page.
+- **Measured** 2026-10-25 in Chromium under Lighthouse's phone profile
+  applied for real (150 ms RTT, 1.6 Mbps, 4× CPU), medians of three: first
+  paint 1.55 → 1.09 s, LCP 2.06 → 1.64 s (the hero's text, which fades in;
+  1.09 s with reduced motion).
+- **Lighthouse's simulated timings barely move** (LCP 2.53 → 2.50 s, over
+  its 2 s budget): it attributes about 0.9 s to the render-blocking
+  stylesheet (the whole library's CSS, 33 kB compressed) and 0.4 s to the
+  hero's fade. Those are separate decisions: a first-screen stylesheet with
+  the rest loaded after, and whether the hero's largest text fades in.
