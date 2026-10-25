@@ -2,7 +2,6 @@ import type { JSX } from 'react'
 import { Footer as Base, FooterSection, Link, Stack, Text } from '@greese/react'
 import { REPO_URL } from '../config.ts'
 import { RouteLink } from '../router.tsx'
-import { facts } from '../data/index.ts'
 
 export const Footer = (): JSX.Element => (
   <Base
@@ -12,8 +11,7 @@ export const Footer = (): JSX.Element => (
       <Stack gap={2}>
         <Text weight="bold">greese</Text>
         <Text tone="muted" variant="p3">
-          GreeseUI and greese.js. Built with GreeseUI; every number on this page was
-          measured from the repository on {facts.date}.
+          GreeseUI and greese.js. Built with GreeseUI.
         </Text>
       </Stack>
     }
