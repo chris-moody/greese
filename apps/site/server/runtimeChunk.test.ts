@@ -17,6 +17,21 @@ describe('runtimeChunkGuard', () => {
     ).toEqual(['effects.js', 'greese.js', 'react.js', 'effects.js'])
   })
 
+  it("finds a cycle through a chunk that wraps CommonJS, as React's does", () => {
+    // greese calls require_react() at its top level; on a cycle, before react has run.
+    expect(
+      runtimeCycle({
+        'react.js': {
+          imports: ['greese.js'],
+          modules: ['/node_modules/react/index.js'],
+          wrapsCommonJs: true,
+        },
+        'greese.js': { imports: ['react.js'], modules: ['/packages/react/x.js'] },
+        'polyfill.js': { imports: [], modules: [RUNTIME] },
+      })
+    ).toEqual(['react.js', 'greese.js', 'react.js'])
+  })
+
   it('passes when the runtime chunk is on no cycle', () => {
     expect(
       runtimeCycle({
