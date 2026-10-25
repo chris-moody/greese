@@ -95,11 +95,17 @@ hand):
 | ------------- | ------------------------------------------------------------------------------------------- |
 | `/`           | The homepage, `apps/site`                                                                   |
 | `/studio`     | Theme Studio, a route of the same app: it compiles in the browser and keeps the theme there |
-| `/storybook/` | The docs, `apps/docs`                                                                       |
+| `/storybook/` | The docs, `apps/docs`, which the app's build copies into its own `dist/`                    |
 
 The app builds for `/<repository>/` (the workflow sets `GREESE_BASE`) and routes by path;
 the build also writes `studio/index.html` and `404.html`, so a direct visit to `/studio` works
 on Pages. Enable Pages once under Settings → Pages → Source: GitHub Actions.
+
+`apps/site/dist` is the whole site, docs included: `npx turbo run build --filter=site`
+builds Storybook first, and `npm run preview -w site` serves it all, so the
+search's docs results open locally as they do on Pages. In development,
+`/storybook/` sends you to Storybook's dev server (`npm run dev` at the root
+runs both), so stories hot-reload.
 
 To refresh the homepage's numbers, rebuild, run `npm run stats -w site`, and
 re-run the benchmark with `node bench/run.ts --json ../site/src/data/bench.json`
