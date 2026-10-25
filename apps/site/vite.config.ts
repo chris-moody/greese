@@ -4,24 +4,27 @@ import { fileURLToPath } from 'node:url'
 import { NodePackageImporter } from 'sass-embedded'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
+import mdx from '@mdx-js/rollup'
+import remarkGfm from 'remark-gfm'
 import { getSchemeScript } from '@greese/ui'
 import { greeseUtilities } from '@greese/ui/vite'
-import { docsIndex } from './server/docsIndex.ts'
+import { docgenDocs } from './server/docgen.ts'
+import { docsIndex, docsPages } from './server/docsIndex.ts'
 import { kitSources } from './server/kitSources.ts'
 import { runtimeChunkGuard } from './server/runtimeChunk.ts'
+import { storyNames } from './server/storyNames.ts'
 import { storybook } from './server/storybook.ts'
 import { studio } from './server/studio.ts'
 
 /**
- * The greese web app: the homepage at `/`, Theme Studio at `/studio` and the
- * templates at `/templates`, one
- * client-routed app. `npm run studio` (from the repository root) runs it with
+ * The greese web app: the homepage at `/`, Theme Studio at `/studio`, the
+ * templates at `/templates` and the docs at `/docs`, one client-routed app. `npm run studio` (from the repository root) runs it with
  * the studio's file access; built, it's static, for GitHub Pages.
  *
  * `base` is where the app is served from: `/` here, and the Pages workflow
  * sets GREESE_BASE to `/<repository>/`. Routes are paths under it, so the
- * build also writes `studio/index.html`, `templates/…/index.html` and
- * `404.html` as copies of the page:
+ * build also writes `studio/index.html`, `templates/…/index.html`,
+ * `docs/…/index.html` and `404.html` as copies of the page:
  * a host with no rewrites (GitHub Pages) then serves the app for a direct
  * visit to `/studio` or any other path.
  *
@@ -37,12 +40,61 @@ const TEMPLATE_IDS = [
   ),
 ].map((m) => m[1]!)
 
+type Graph = {
+  getModuleInfo: (id: string) => {
+    importedIds: readonly string[]
+    dynamicallyImportedIds: readonly string[]
+  } | null
+}
+
+/** The routes' own chunks: the homepage doesn't load them. */
+const ROUTES = [
+  'src/docs/DocsPage.tsx',
+  'src/studio/StudioPage.tsx',
+  'src/pages/Templates.tsx',
+].map((file) => join(ROOT, file))
+const reachSets = new WeakMap<object, Set<string>>()
+
+/**
+ * Everything the homepage can load: what `index.html` reaches, its own lazy
+ * sections included, but not another route's page. Worked out once per build
+ * (the entry's module info is the same object throughout a chunking pass).
+ */
+const homepageReaches = (ctx: Graph): Set<string> => {
+  const entry = join(ROOT, 'index.html')
+  const info = ctx.getModuleInfo(entry)
+  if (!info) return new Set()
+  let set = reachSets.get(info)
+  if (set) return set
+  set = new Set([entry])
+  const queue = [entry]
+  for (let id = queue.pop(); id !== undefined; id = queue.pop()) {
+    const module = ctx.getModuleInfo(id)
+    for (const next of [
+      ...(module?.importedIds ?? []),
+      ...(module?.dynamicallyImportedIds ?? []),
+    ])
+      if (!set.has(next) && !ROUTES.includes(next)) {
+        set.add(next)
+        queue.push(next)
+      }
+  }
+  reachSets.set(info, set)
+  return set
+}
+
 const fallbackPages = (): Plugin => ({
   name: 'greese-fallback-pages',
   apply: 'build',
   closeBundle() {
     const dist = join(ROOT, 'dist')
-    const pages = ['studio', 'templates', ...TEMPLATE_IDS.map((id) => `templates/${id}`)]
+    const pages = [
+      'studio',
+      'templates',
+      ...TEMPLATE_IDS.map((id) => `templates/${id}`),
+      'docs',
+      ...docsPages().pages.map((page) => `docs/${page.id}`),
+    ]
     for (const page of pages) {
       mkdirSync(join(dist, page), { recursive: true })
       copyFileSync(join(dist, 'index.html'), join(dist, page, 'index.html'))
@@ -53,6 +105,13 @@ const fallbackPages = (): Plugin => ({
 
 export default defineConfig({
   base: process.env.GREESE_BASE ?? '/',
+  resolve: {
+    alias: {
+      // The docs' MDX and shared components use Storybook's blocks; in the app
+      // they're its own (src/docs/blocks.tsx), drawn with GreeseUI.
+      '@storybook/addon-docs/blocks': join(ROOT, 'src/docs/blocks.tsx'),
+    },
+  },
   css: {
     preprocessorOptions: {
       // `pkg:@greese/ui/scss/kit` in the site's own styles: the breakpoints
@@ -61,10 +120,18 @@ export default defineConfig({
     },
   },
   plugins: [
-    react(),
+    // The docs' MDX pages (apps/docs/stories), compiled as Storybook does, with
+    // GitHub-flavoured Markdown; before React's plugin, which handles the JSX.
+    {
+      enforce: 'pre',
+      ...mdx({ remarkPlugins: [remarkGfm], providerImportSource: undefined }),
+    },
+    react({ include: /\.(mdx|[jt]sx?)$/ }),
     studio(),
     kitSources(),
     docsIndex(),
+    docgenDocs(),
+    storyNames(),
     storybook(),
     // Only the utility classes the app's source uses (ADR 0019).
     greeseUtilities({
@@ -92,15 +159,19 @@ export default defineConfig({
           groups: [
             {
               name: 'react',
-              // With effects-runtime, which both entries share: as a chunk of
-              // its own it took Rolldown's runtime helpers onto an import
-              // cycle, and the page stayed blank (runtimeChunkGuard checks).
-              test: /node_modules\/(react|react-dom|scheduler)\/|\/src\/effects-runtime\.ts$/,
+              test: /node_modules\/(react|react-dom|scheduler)\//,
               minShareCount: 1,
             },
             {
-              name: 'greese',
-              test: /packages\/(react|ui|js)\/(dist|src)\//,
+              // What the homepage uses, in one chunk. The rest of the library
+              // (the docs use all of it, to name and run its components) stays
+              // with the pages that use it, so the homepage never loads it.
+              // effects-runtime, which both entries share, goes in with it: in
+              // a chunk of its own it took Rolldown's runtime helpers onto an
+              // import cycle (a blank page), or cost the homepage a request
+              // (150 ms of LCP); runtimeChunkGuard checks for the cycle.
+              name: (id, ctx) => (homepageReaches(ctx).has(id) ? 'greese' : null),
+              test: /packages\/(react|ui|js)\/(dist|src)\/|\/src\/effects-runtime\.ts$/,
               minShareCount: 2,
             },
           ],

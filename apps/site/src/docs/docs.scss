@@ -1,0 +1,396 @@
+@use 'pkg:@greese/ui/scss/kit' as greese;
+@use '../code';
+
+/*
+ * The docs (src/docs), on GreeseUI tokens like the rest of the app: every
+ * colour, radius and space follows the theme being worn.
+ */
+
+.docs {
+  // The sidebar sticks under the app's header, not under the window's top.
+  --greese-sidebar-top: calc(
+    var(--greese-header-height, 3.5rem) + var(--greese-header-inset, 1px)
+  );
+  --greese-sidebar-width: 15rem;
+
+  min-block-size: auto;
+}
+
+.docs-sidebar {
+  background-color: var(--greese-color-canvas);
+
+  @include greese.up(md) {
+    padding-block-start: var(--greese-space-5);
+  }
+}
+
+.docs-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--greese-space-1);
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 0 0 var(--greese-space-2);
+    margin: 0;
+    list-style: none;
+  }
+}
+
+.docs-nav-section > summary {
+  font-size: var(--greese-type-p3-font-size);
+  font-weight: 600;
+}
+
+.docs-nav-link {
+  display: block;
+  padding: var(--greese-space-1) var(--greese-space-3);
+  font-size: var(--greese-type-p3-font-size);
+  color: var(--greese-color-fg-muted);
+  text-decoration: none;
+  border-radius: var(--greese-corner-control);
+
+  &:hover {
+    color: var(--greese-color-fg);
+    background-color: color-mix(in srgb, var(--greese-color-fg) 6%, transparent);
+  }
+
+  &[aria-current='page'] {
+    font-weight: 600;
+    color: var(--greese-color-primary);
+    background-color: color-mix(in srgb, var(--greese-color-primary) 12%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--greese-color-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+.docs-nav-group {
+  color: var(--greese-color-fg-muted);
+}
+
+.docs-main {
+  padding-block: var(--greese-space-4) var(--greese-space-8);
+}
+
+.docs-bar {
+  display: flex;
+  gap: var(--greese-space-2);
+  align-items: center;
+  min-block-size: 2.5rem;
+  margin-block-end: var(--greese-space-3);
+}
+
+.docs-columns {
+  display: grid;
+  gap: var(--greese-space-7);
+
+  @include greese.up(lg) {
+    grid-template-columns: minmax(0, 1fr) 13rem;
+    align-items: start;
+  }
+}
+
+.docs-article {
+  display: flex;
+  flex-direction: column;
+  gap: var(--greese-space-5);
+  min-inline-size: 0;
+}
+
+.docs-intro {
+  margin-block-end: var(--greese-space-2);
+}
+
+.docs-lead {
+  font-size: var(--greese-type-p1-font-size, 1.125rem);
+  color: var(--greese-color-fg-muted);
+}
+
+.docs-measure {
+  max-inline-size: 72ch;
+}
+
+// Headings take the reader to themselves: the `#` shows on hover and focus.
+.docs-heading {
+  position: relative;
+  margin-block-start: var(--greese-space-5);
+
+  &:hover .docs-heading-anchor,
+  .docs-heading-anchor:focus-visible {
+    opacity: 1;
+  }
+}
+
+.docs-heading-anchor {
+  margin-inline-start: var(--greese-space-2);
+  font-weight: 400;
+  color: var(--greese-color-fg-muted);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity var(--greese-duration-fast) var(--greese-easing-standard);
+
+  @media (hover: none) {
+    opacity: 0.5;
+  }
+}
+
+.docs-subheading {
+  margin-block: var(--greese-space-5) var(--greese-space-2);
+}
+
+// MDX guides and descriptions: running text.
+.docs-prose {
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+
+  > :first-child {
+    margin-block-start: 0;
+  }
+
+  p,
+  ul,
+  ol,
+  blockquote {
+    max-inline-size: 72ch;
+    margin-block: 0 var(--greese-space-4);
+  }
+
+  ul,
+  ol {
+    padding-inline-start: var(--greese-space-5);
+  }
+
+  li + li {
+    margin-block-start: var(--greese-space-1);
+  }
+
+  blockquote {
+    padding-inline-start: var(--greese-space-4);
+    color: var(--greese-color-fg-muted);
+    border-inline-start: 3px solid var(--greese-color-border-strong);
+  }
+
+  hr {
+    margin-block: var(--greese-space-6);
+    border: 0;
+    border-block-start: 1px solid var(--greese-color-border);
+  }
+
+  img {
+    max-inline-size: 100%;
+  }
+
+  .docs-code,
+  .docs-table-scroll,
+  .docs-story {
+    margin-block-end: var(--greese-space-4);
+  }
+}
+
+.docs-prop-description {
+  p,
+  ul {
+    margin-block-end: var(--greese-space-2);
+  }
+}
+
+.docs-table-scroll {
+  max-inline-size: 100%;
+  overflow-x: auto;
+
+  table {
+    inline-size: 100%;
+    font-size: var(--greese-type-p3-font-size);
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: var(--greese-space-2) var(--greese-space-3);
+    text-align: start;
+    vertical-align: top;
+    border-block-end: 1px solid var(--greese-color-border);
+  }
+
+  th {
+    font-weight: 600;
+  }
+}
+
+.docs-required {
+  margin-inline-start: 0.15em;
+  color: var(--greese-color-negative);
+}
+
+// A story's frame: its `layout` decides the padding, and fixed-position
+// examples (a dock, a floating button) stay inside it.
+.docs-canvas {
+  position: relative;
+  contain: layout;
+  padding: var(--greese-space-5);
+  overflow: auto;
+  color: var(--greese-color-fg);
+  background-color: var(--greese-color-canvas);
+  border: 1px solid var(--greese-color-border);
+  border-radius: var(--greese-corner-surface) var(--greese-corner-surface) 0 0;
+}
+
+.docs-canvas--centered {
+  display: grid;
+  place-items: center;
+  min-block-size: 10rem;
+}
+
+.docs-canvas--fullscreen {
+  min-block-size: 12rem;
+  padding: 0;
+}
+
+.docs-story-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--greese-space-1);
+  border: 1px solid var(--greese-color-border);
+  border-block-start: 0;
+  border-radius: 0 0 var(--greese-corner-surface) var(--greese-corner-surface);
+}
+
+.docs-story > .docs-code .docs-code-block {
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+}
+
+// Code: the page's palette in both schemes.
+.docs-code {
+  position: relative;
+}
+
+.docs-code-block {
+  @include code.tokens;
+  @include code.prism;
+
+  display: block;
+  max-inline-size: 100%;
+  padding: var(--greese-space-4);
+  // Room for the copy button, so it never sits on the code.
+  padding-inline-end: calc(var(--greese-space-4) + 2.5rem);
+  overflow-x: auto;
+  font-family: var(--greese-font-mono);
+  font-size: var(--greese-type-p3-font-size);
+  line-height: 1.6;
+  white-space: pre;
+  tab-size: 2;
+}
+
+.docs-code-copy {
+  position: absolute;
+  inset-block-start: var(--greese-space-2);
+  inset-inline-end: var(--greese-space-2);
+}
+
+// "Try it": the live preview above its editable code.
+.docs-live {
+  overflow: hidden;
+  border: 1px solid var(--greese-color-border);
+  border-radius: var(--greese-corner-surface);
+}
+
+.docs-live-preview {
+  padding: var(--greese-space-5);
+  color: var(--greese-color-fg);
+  background-color: var(--greese-color-canvas);
+}
+
+.docs-live-editor {
+  position: relative;
+  padding: 0;
+  border-block-start: 1px solid var(--greese-color-border);
+
+  pre {
+    min-block-size: 4rem;
+    padding: var(--greese-space-4) !important;
+    margin: 0;
+    font-family: var(--greese-font-mono) !important;
+  }
+}
+
+.docs-live-reset {
+  position: absolute;
+  inset-block-start: var(--greese-space-2);
+  inset-inline-end: var(--greese-space-2);
+}
+
+.docs-live-error {
+  padding: var(--greese-space-3) var(--greese-space-4);
+  margin: 0;
+  font-family: var(--greese-font-mono);
+  font-size: var(--greese-type-p3-font-size);
+  color: var(--greese-color-negative);
+  white-space: pre-wrap;
+  background-color: color-mix(
+    in oklab,
+    var(--greese-color-negative) 10%,
+    var(--greese-color-canvas)
+  );
+}
+
+// "On this page", beside the article from lg.
+.docs-toc {
+  display: none;
+
+  @include greese.up(lg) {
+    position: sticky;
+    inset-block-start: calc(var(--greese-sidebar-top) + var(--greese-space-5));
+    display: block;
+    max-block-size: calc(100dvh - var(--greese-sidebar-top) - var(--greese-space-7));
+    overflow-y: auto;
+  }
+
+  ul {
+    padding: 0;
+    margin: var(--greese-space-2) 0 0;
+    list-style: none;
+  }
+
+  li[data-level='3'] {
+    padding-inline-start: var(--greese-space-3);
+  }
+
+  a {
+    display: block;
+    padding-block: var(--greese-space-1);
+    font-size: var(--greese-type-p3-font-size);
+    color: var(--greese-color-fg-muted);
+    text-decoration: none;
+
+    &:hover,
+    &[aria-current] {
+      color: var(--greese-color-primary);
+    }
+  }
+}
+
+.docs-pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--greese-space-3);
+  justify-content: space-between;
+  padding-block-start: var(--greese-space-5);
+  margin-block-start: var(--greese-space-6);
+  border-block-start: 1px solid var(--greese-color-border);
+}
+
+.docs-pager-link {
+  display: inline-flex;
+  gap: var(--greese-space-1);
+  align-items: center;
+}
+
+.docs-pager-next {
+  margin-inline-start: auto;
+}

@@ -8,13 +8,13 @@ import {
 } from 'react'
 
 /**
- * Three routes, by path under the app's base: `/` (the homepage), `/studio`
- * (Theme Studio) and `/templates` (the gallery, and `/templates/<id>` for
- * each). A tiny History-API router: a library would cost more than the
+ * Four routes, by path under the app's base: `/` (the homepage), `/studio`
+ * (Theme Studio), `/templates` (the gallery, and `/templates/<id>` for each)
+ * and `/docs` (the docs, and `/docs/<id>` for each page). A tiny History-API router: a library would cost more than the
  * page's whole routing, and a link is a plain anchor, so it works without
  * JavaScript and opens in a new tab as usual.
  */
-export type Route = 'home' | 'studio' | 'templates'
+export type Route = 'home' | 'studio' | 'templates' | 'docs'
 
 /** The base the app is served from, with a trailing slash: `/` or `/greese/`. */
 export const BASE = import.meta.env.BASE_URL.endsWith('/')
@@ -32,6 +32,7 @@ const routeOf = (pathname: string): Route => {
   const path = pathOf(pathname)
   if (path === 'studio') return 'studio'
   if (/^templates(\/[a-z0-9-]+)?$/.test(path)) return 'templates'
+  if (/^docs(\/[a-z0-9-]+)?$/.test(path)) return 'docs'
   return 'home'
 }
 

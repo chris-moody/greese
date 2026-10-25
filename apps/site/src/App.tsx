@@ -20,6 +20,10 @@ const StudioPage = lazy(() =>
 const Templates = lazy(() =>
   import('./pages/Templates.tsx').then((m) => ({ default: m.Templates }))
 )
+// The docs too: their pages, stories and props load only when one is opened.
+const Docs = lazy(() =>
+  import('./docs/DocsPage.tsx').then((m) => ({ default: m.DocsPageView }))
+)
 
 const GREESE_JSON = JSON.stringify(GREESE_SPEC)
 
@@ -102,8 +106,8 @@ const useLayerCss = (spec: ThemeSpec): void => {
 }
 
 /**
- * The web app: the homepage at `/`, Theme Studio at `/studio` and the
- * templates at `/templates`, under one header. Every page wears the theme
+ * The web app: the homepage at `/`, Theme Studio at `/studio`, the
+ * templates at `/templates` and the docs at `/docs`, under one header. Every page wears the theme
  * being chosen, the studio's editor included, and keeps it between visits;
  * the studio's preview shows the theme with your edits as well.
  */
@@ -150,7 +154,15 @@ export const App = (): JSX.Element => {
             <Nav />
             {route === 'home' && <Home />}
             {route !== 'home' && (
-              <Suspense>{route === 'studio' ? <StudioPage /> : <Templates />}</Suspense>
+              <Suspense>
+                {route === 'studio' ? (
+                  <StudioPage />
+                ) : route === 'docs' ? (
+                  <Docs />
+                ) : (
+                  <Templates />
+                )}
+              </Suspense>
             )}
             <Toaster />
           </div>

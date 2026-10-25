@@ -1,0 +1,192 @@
+/**
+ * The docs, at `/docs/<page>`: a page of the app like any other, under its
+ * header and in the theme being worn, with the docs' pages in a sidebar (a
+ * sticky column from md, an off-canvas sheet below it) and the page's own
+ * sections beside it from lg.
+ */
+import { Suspense, useEffect, useLayoutEffect, useState, type JSX } from 'react'
+import {
+  Collapsible,
+  Container,
+  Heading,
+  Link,
+  ScrollSpy,
+  Sidebar,
+  SidebarLayout,
+  SidebarTrigger,
+  Spinner,
+  Stack,
+  Text,
+} from '@greese/react'
+import { ChevronLeftIcon, ChevronRightIcon } from '@greese/icons'
+import { RouteLink, useSubpage } from '../router.tsx'
+import { ComponentPage } from './ComponentPage.tsx'
+import { MdxPage } from './MdxPage.tsx'
+import { neighbours, pageById, pageName, SECTIONS, type DocsPage } from './pages.ts'
+import './docs.scss'
+
+const Nav = ({ current }: { current?: DocsPage }): JSX.Element => (
+  <nav aria-label="Docs" className="docs-nav">
+    {SECTIONS.map((section) => (
+      <Collapsible
+        key={section.name}
+        title={section.name}
+        defaultOpen={
+          section.name === 'Guides' || section.pages.some(({ page }) => page === current)
+        }
+        className="docs-nav-section"
+      >
+        <ul>
+          {section.pages.map(({ page, label, group }) => (
+            <li key={page.id}>
+              <RouteLink
+                to="docs"
+                page={page.id}
+                aria-current={page === current ? 'page' : undefined}
+                className="docs-nav-link"
+              >
+                {group && <span className="docs-nav-group">{group} / </span>}
+                {label}
+              </RouteLink>
+            </li>
+          ))}
+        </ul>
+      </Collapsible>
+    ))}
+  </nav>
+)
+
+/** The page's sections, read from what it rendered, for the "On this page" list. */
+const useSections = (page: DocsPage): Array<[string, string, number]> => {
+  const [sections, setSections] = useState<Array<[string, string, number]>>([])
+  useLayoutEffect(() => {
+    const headings = document.querySelectorAll<HTMLElement>(
+      '.docs-article h2[id], .docs-article h3[id]'
+    )
+    setSections(
+      [...headings].map((h) => [
+        h.id,
+        (h.textContent ?? '').replace(/#$/, '').trim(),
+        h.tagName === 'H2' ? 2 : 3,
+      ])
+    )
+    // A visit to `/docs/<page>#section`: the browser looked for it before
+    // the page loaded, so scroll to it now that it's there.
+    if (location.hash)
+      document
+        .getElementById(decodeURIComponent(location.hash.slice(1)))
+        ?.scrollIntoView()
+  }, [page])
+  return sections
+}
+
+const OnThisPage = ({ page }: { page: DocsPage }): JSX.Element | null => {
+  const sections = useSections(page)
+  if (sections.length < 2) return null
+  return (
+    <ScrollSpy asChild offset={100}>
+      <nav aria-label="On this page" className="docs-toc">
+        <Text variant="caption" tone="muted" className="docs-toc-title">
+          On this page
+        </Text>
+        <ul>
+          {sections.map(([id, text, level]) => (
+            <li key={id} data-level={level}>
+              <a href={`#${id}`}>{text}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </ScrollSpy>
+  )
+}
+
+const PageFoot = ({ page }: { page: DocsPage }): JSX.Element => {
+  const { previous, next } = neighbours(page)
+  return (
+    <nav aria-label="Previous and next" className="docs-pager">
+      {previous && (
+        <Link asChild tone="neutral" className="docs-pager-link">
+          <RouteLink to="docs" page={previous.id} rel="prev">
+            <ChevronLeftIcon /> {pageName(previous)}
+          </RouteLink>
+        </Link>
+      )}
+      {next && (
+        <Link asChild tone="neutral" className="docs-pager-link docs-pager-next">
+          <RouteLink to="docs" page={next.id} rel="next">
+            {pageName(next)} <ChevronRightIcon />
+          </RouteLink>
+        </Link>
+      )}
+    </nav>
+  )
+}
+
+const Loading = (): JSX.Element => (
+  <Stack align="center" py={8}>
+    <Spinner label="Loading the page" />
+  </Stack>
+)
+
+const NotFound = (): JSX.Element => (
+  <Stack gap={3} py={6}>
+    <Heading level={1} variant="h2">
+      No such page
+    </Heading>
+    <Text tone="muted">
+      The docs have no page at this address. Pick one from the list, or search for it.
+    </Text>
+  </Stack>
+)
+
+export const DocsPageView = (): JSX.Element => {
+  const id = useSubpage()
+  const page = pageById(id)
+
+  useEffect(() => {
+    const before = document.title
+    document.title = page ? `${pageName(page)} · GreeseUI docs` : 'GreeseUI docs'
+    return () => {
+      document.title = before
+    }
+  }, [page])
+
+  return (
+    <SidebarLayout breakpoint="md" className="docs">
+      <Sidebar label="Docs pages" className="docs-sidebar">
+        <Nav current={page} />
+      </Sidebar>
+      <Container size="lg" className="docs-main">
+        <div className="docs-bar">
+          <SidebarTrigger label="Docs pages" size="sm" />
+          {page && (
+            <Text variant="p3" tone="muted">
+              {page.title.split('/').slice(0, -1).join(' / ')}
+            </Text>
+          )}
+        </div>
+        <div className="docs-columns">
+          {page ? (
+            // The contents list reads the page's headings, so it waits with it.
+            <Suspense key={page.id} fallback={<Loading />}>
+              <article id="main" className="docs-article">
+                {page.kind === 'mdx' ? (
+                  <MdxPage page={page} />
+                ) : (
+                  <ComponentPage page={page} />
+                )}
+                <PageFoot page={page} />
+              </article>
+              <OnThisPage page={page} />
+            </Suspense>
+          ) : (
+            <article id="main" className="docs-article">
+              <NotFound />
+            </article>
+          )}
+        </div>
+      </Container>
+    </SidebarLayout>
+  )
+}
