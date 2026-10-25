@@ -157,6 +157,19 @@ describe('Card and media', () => {
     expect(screen.getByText('No image')).toHaveClass('greese-Image--fallback')
   })
 
+  it('Video, Embed and Icon have no axe violations', async () => {
+    const { container } = render(
+      <>
+        <Video src="clip.mp4" aria-label="Product tour" />
+        <Embed title="Demo" src="https://example.com/embed" />
+        <Icon label="Search">
+          <svg viewBox="0 0 1 1" />
+        </Icon>
+      </>
+    )
+    await expectNoAxeViolations(container)
+  })
+
   it('Video plays inline on iOS; Embed lazy-loads and requires a title', () => {
     render(
       <>

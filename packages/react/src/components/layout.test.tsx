@@ -336,6 +336,10 @@ describe('layout primitives', () => {
             <AspectRatio ratio={16 / 9}>
               <img src="data:," alt="Placeholder" />
             </AspectRatio>
+            <Spacer size={2} />
+            <Center>
+              <p>Centred</p>
+            </Center>
           </Stack>
         </main>
       </Container>

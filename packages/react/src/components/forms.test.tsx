@@ -365,6 +365,15 @@ describe('Slider and FileInput', () => {
     )
     expect(screen.getByLabelText('Avatar')).toHaveAttribute('type', 'file')
   })
+
+  it('FileInput has no axe violations in a Field', async () => {
+    const { container } = render(
+      <Field label="Avatar" description="A square image works best.">
+        <FileInput accept="image/*" />
+      </Field>
+    )
+    await expectNoAxeViolations(container)
+  })
 })
 
 describe('native forms', () => {

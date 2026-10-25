@@ -121,6 +121,15 @@ describe('Dialog and Drawer', () => {
     expect(cancel.defaultPrevented).toBe(false)
   })
 
+  it('Drawer has no axe violations while open', async () => {
+    const { container } = render(
+      <Drawer defaultOpen title="Filters">
+        <p>Body</p>
+      </Drawer>
+    )
+    await expectNoAxeViolations(container)
+  })
+
   it('Drawer resolves a responsive placement', () => {
     render(<Drawer defaultOpen title="Filters" placement={{ xs: 'bottom', md: 'end' }} />)
     expect(screen.getByRole('dialog')).toHaveClass(
@@ -133,6 +142,15 @@ describe('Dialog and Drawer', () => {
 })
 
 describe('Popover and Tooltip', () => {
+  it('Popover has no axe violations while open', async () => {
+    const { container } = render(
+      <Popover trigger={<Button>Filters</Button>} label="Filter options" defaultOpen>
+        <p>Content</p>
+      </Popover>
+    )
+    await expectNoAxeViolations(container)
+  })
+
   it('Popover wires its trigger to a native popover and tracks state', async () => {
     const onOpenChange = vi.fn()
     render(
@@ -196,6 +214,12 @@ describe('Menu', () => {
       </MenuItem>
     </Menu>
   )
+
+  it('has no axe violations while open, separator included', async () => {
+    const { container } = render(<Example />)
+    await userEvent.click(screen.getByRole('button', { name: 'Actions' }))
+    await expectNoAxeViolations(container)
+  })
 
   it('gives an item its tone, brand colors included', () => {
     render(

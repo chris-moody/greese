@@ -71,6 +71,15 @@ describe('Indicator', () => {
     )
     expect(screen.getByRole('button', { name: 'Inbox' })).toBeInTheDocument()
   })
+
+  it('has no axe violations', async () => {
+    const { container } = render(
+      <Indicator content={<span>3 unread</span>}>
+        <button type="button">Inbox</button>
+      </Indicator>
+    )
+    await expectNoAxeViolations(container)
+  })
 })
 
 describe('Stat', () => {
@@ -142,6 +151,15 @@ describe('RadialProgress', () => {
 })
 
 describe('TextRotate', () => {
+  it('has no axe violations', async () => {
+    const { container } = render(
+      <p>
+        Builds that are <TextRotate items={['faster', 'smaller', 'lighter']} />
+      </p>
+    )
+    await expectNoAxeViolations(container)
+  })
+
   it('reads every item once and animates a hidden copy', () => {
     const { container } = render(<TextRotate items={['faster', 'smaller', 'lighter']} />)
     const root = container.firstChild as HTMLElement
@@ -328,6 +346,19 @@ describe('Dock', () => {
     const button = screen.getByRole('button', { name: 'Menu' })
     expect(button).toHaveClass('greese-DockItem-link')
     expect(button.querySelector('.greese-DockItem-icon')).not.toBeNull()
+  })
+})
+
+describe('Countdown accessibility', () => {
+  // Outside the fake timers below: axe waits on real ones.
+  it('has no axe violations, as a clock or with labels', async () => {
+    const { container } = render(
+      <>
+        <Countdown seconds={3725} running={false} />
+        <Countdown seconds={90} running={false} format="labels" />
+      </>
+    )
+    await expectNoAxeViolations(container)
   })
 })
 

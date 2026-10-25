@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { renderToString } from 'react-dom/server'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { expectNoAxeViolations } from '../test/axe.ts'
 import { setMedia } from '../test/matchMedia.ts'
 import { useGreese } from '../hooks/useGreese.ts'
 import { useTimeline } from '../hooks/useTimeline.ts'
@@ -192,6 +193,15 @@ describe('the greese prop on components', () => {
     expect(dialog.style.getPropertyValue('--greese-motion-exit-scale')).toBe('0.9')
     cleanup()
     removeGreeseEffect('sink')
+  })
+
+  it('Motion has no axe violations', async () => {
+    const { container } = render(
+      <Motion asChild greese="blurIn">
+        <a href="#x">Link</a>
+      </Motion>
+    )
+    await expectNoAxeViolations(container)
   })
 
   it('wraps any element with Motion', () => {

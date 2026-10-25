@@ -234,6 +234,20 @@ describe('AutoLayout', () => {
     expect(resolveMaxSize(undefined, 6)).toBe(6)
   })
 
+  it('has no axe violations', async () => {
+    const { container } = render(
+      <AutoLayout columns={6} gap={2}>
+        <AutoLayoutItem size={{ xs: 6, md: 2 }}>
+          <p>Side</p>
+        </AutoLayoutItem>
+        <AutoLayoutItem size={{ xs: 6, md: 4 }}>
+          <p>Main</p>
+        </AutoLayoutItem>
+      </AutoLayout>
+    )
+    await expectNoAxeViolations(container)
+  })
+
   it('maps sizes to per-breakpoint variables', () => {
     render(
       <AutoLayout columns={6} gap={{ xs: 2, md: '20px' }} data-testid="row">
