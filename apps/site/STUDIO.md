@@ -13,6 +13,24 @@ GREESE_THEME=src/styles/greese-theme.json npm run studio   # your own
 `GREESE_THEME` is resolved from the directory you ran npm in. It opens on
 <http://localhost:5180/studio>.
 
+### On a phone or another device
+
+Start it on the network, then open the **Studio on another device** link it
+prints beside Vite's Network URL:
+
+```sh
+npm run studio -- --host
+#   ➜  Network: http://192.168.1.5:5180/
+#   ➜  Studio on another device: http://192.168.1.5:5180/studio?studio-token=…
+```
+
+Every page loads from another device without it, but the studio's API (load,
+compile, save, import) answers this machine only, or a device that has opened
+that link once: the API writes files and runs the modules you import, and on
+a network anyone could send it a request. The link signs the device in with a
+cookie, so it keeps working across restarts. To sign every device out, delete
+`apps/site/.local/studio-token`.
+
 A hosted copy runs at <https://chris-moody.github.io/greese/studio/>. It
 compiles in your browser and keeps the theme there: save, then download
 `greese-theme.json` (and the SCSS and CSS) from the Code tab, and open the
