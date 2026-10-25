@@ -154,17 +154,20 @@ test.describe('on a phone', () => {
     // The whole screen, once it has slid in.
     await expect.poll(async () => Math.round((await menu.boundingBox())!.width)).toBe(375)
     await expect(menu.getByRole('link', { name: 'GitHub' })).toHaveCount(0)
-    // The page on screen is open; another opens by its row, and lists its own
-    // link first (the row only opens and closes it).
+    // The page on screen is open. A row's name goes to the page; the rest of
+    // the row opens what's on it. No list repeats its page's own link.
     await expect(menu.getByRole('link', { name: 'Code' })).toBeVisible()
     await expect(menu.getByRole('link', { name: 'Finance' })).toBeHidden()
-    await menu
-      .locator('summary', { hasText: 'Templates' })
-      .locator('.greese-Collapsible-icon')
-      .click()
+    await expect(
+      menu.getByRole('link', { name: /^(All docs|All templates|Theme Studio)$/ })
+    ).toHaveCount(0)
+    const toggle = menu.getByRole('button', { name: /^Templates/ })
+    await toggle.click()
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true')
     await expect(menu.getByRole('link', { name: 'Finance' })).toBeVisible()
-    await expect(menu.locator('summary a')).toHaveCount(0)
-    await menu.getByRole('link', { name: 'All templates' }).click()
+    await expect(page).toHaveURL(/\/studio$/)
+    await menu.getByRole('link', { name: 'Templates', exact: true }).click()
     await expect(page).toHaveURL(/\/templates$/)
+    await expect(menu).toBeHidden()
   })
 })

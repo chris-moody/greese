@@ -49,8 +49,69 @@ body {
   border-radius: 0;
 }
 
-.site-menu-nav .greese-Collapsible-title {
+/* A page's row: its name links to it; the rest of the row (the chevron too)
+   is the button that opens its list. Both at least 44px tall to tap. */
+.site-menu-section {
+  border-block-end: 1px solid var(--greese-color-border);
+}
+
+.site-menu-head {
+  display: flex;
+  align-items: stretch;
+  min-block-size: 3rem;
+}
+
+.site-menu-page {
+  display: flex;
+  align-items: center;
+  padding-inline-end: var(--greese-space-3);
   font-size: var(--greese-type-h5-font-size);
+  font-weight: 600;
+  color: var(--greese-color-fg);
+  text-decoration: none;
+
+  &[aria-current] {
+    color: var(--greese-color-primary);
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.site-menu-toggle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: flex-end;
+  min-inline-size: 3rem;
+  padding: 0 var(--greese-space-2);
+  color: var(--greese-color-fg-muted);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: var(--greese-corner-control);
+
+  &:hover {
+    color: var(--greese-color-fg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--greese-color-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+.site-menu-chevron {
+  transition: rotate var(--greese-duration-fast) var(--greese-easing-standard);
+
+  .site-menu-section[data-open] & {
+    rotate: 180deg;
+  }
+}
+
+.site-menu-section > [id] {
+  padding-block-end: var(--greese-space-2);
 }
 
 /* On phones the navigation slot holds nothing visible (the menu has the
