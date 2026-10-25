@@ -279,3 +279,15 @@ the viewport, as a root margin). One taller than half the viewport reveals
 once it fills half of it. Near the end of a page, which may not scroll far
 enough to clear the band, a second observer reveals an element once it is
 wholly visible. The runtime budget rose 7.25 → 7.5 kB for it.
+
+## Addendum (2026-10-24): the static cost today
+
+Section 4's "about 0.75 kB" no longer holds. Measured on 2026-10-24 with
+size-limit, a component with the prop tree-shakes to about 2.2 kB more than
+one without it: `{ Stack }` 2.44 kB, `{ Button }` 2.38 kB, `{ VisuallyHidden }`
+(no prop) 0.13 kB. It's still paid once per app, not per component. It grew
+with the names of what CSS plays (entrances, exits, three-dimensional
+effects), which the static part carries so a preset never needs the runtime.
+Six budgets now sit within 1% of their limits (the whole library, Menu,
+Combobox, `useGreese`, the lazy runtime): a change to the static part needs
+a deliberate raise, or a cut elsewhere.
