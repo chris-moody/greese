@@ -407,7 +407,11 @@ components, and generates the kit SCSS and the compiled CSS.
 ```sh
 npm run studio                                         # the example theme
 GREESE_THEME=src/styles/greese-theme.json npm run studio   # yours
+npm run studio -- --host                               # also on your phone
 ```
+
+On another device, open the studio link it prints (with a token): until a
+device has, its pages load but it can't load, save or import a theme.
 
 It edits `greese-theme.json` (the source of truth, which you commit) and
 writes two files next to it on save:

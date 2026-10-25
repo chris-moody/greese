@@ -269,3 +269,28 @@ endpoints:
 
 `sass` is a dev dependency of the private studio app, not a dependency of
 any published package.
+
+## Addendum (2026-10-24): the API on a network
+
+The API trusted a request whose `Origin` matched its `Host`. That stops
+other sites in a browser, but any other client can send both headers, and
+with `--host` (testing on a phone) the dev server is on the network. A
+script there could then run any module under `apps/site` through `/import`
+(`scripts/build-themes.ts` writes files when imported), compile SCSS that
+loads stylesheets from anywhere on disk, and overwrite the theme files.
+
+- **This machine is trusted by its address:** a loopback connection
+  (`127.0.0.0/8`, `::1`), which a request can't forge.
+- **Another device signs in once.** The studio prints a link carrying a
+  token beside Vite's Network URL. Opening it sets an `HttpOnly`,
+  `SameSite=Strict` cookie and redirects without the token, so the studio's
+  own requests carry it and no other site's can. The token lives in
+  `apps/site/.local/studio-token` (mode 0600, untracked), so a phone stays
+  signed in across restarts; deleting it signs every device out.
+- **Every endpoint is guarded,** reads included: compiling a spec can load
+  stylesheets from disk, and the theme's path is in the answer.
+- **The `Origin` check stays,** so a site the developer visits can't use a
+  signed-in browser's cookie. Pages and Vite's own modules still load on the
+  network as before.
+- **Tests:** `server/access.test.ts` (loopback, forged headers, the cookie,
+  cross-site writes, the exchange, the token file).
