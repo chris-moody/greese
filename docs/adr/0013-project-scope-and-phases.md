@@ -81,19 +81,19 @@ skills and agents keep up to date.
 
 ## Standing decisions
 
-| Question           | Decision                                                                                                                             |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Publish target     | Public npm under `@greese`, with provenance. The npm org and the `NPM_TOKEN` secret wait for the first release                       |
-| React floor        | React 19 only                                                                                                                        |
-| Browser baseline   | Baseline 2024 (`@property`, container queries and cascade layers; ADR 0001)                                                          |
-| Docs hosting       | GitHub Pages (`.github/workflows/pages.yml`): the homepage at `/`, Storybook at `/storybook/`, the hosted Theme Studio at `/studio/` |
-| Repository         | <https://github.com/chris-moody/greese>; each published package's `repository`, `homepage` and `bugs` point there                    |
-| Licence            | MIT                                                                                                                                  |
-| Package manager    | npm workspaces                                                                                                                       |
-| TypeScript         | Pinned to `~6.0` until typescript-eslint supports TS 7                                                                               |
-| ESLint             | Stays on 9 until eslint-plugin-react supports 10                                                                                     |
-| Icons              | Components take icons as `ReactNode`; the optional `@greese/icons` package is separate and never imported by the library (ADR 0012)  |
-| Private registries | None: installing needs only the public npm registry                                                                                  |
+| Question           | Decision                                                                                                                                     |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Publish target     | Public npm under `@greese`, with provenance. The npm org and the `NPM_TOKEN` secret wait for the first release                               |
+| React floor        | React 19 only                                                                                                                                |
+| Browser baseline   | Baseline 2024 (`@property`, container queries and cascade layers; ADR 0001)                                                                  |
+| Docs hosting       | GitHub Pages (`.github/workflows/pages.yml`): the homepage at `/`, Storybook at `/storybook/`, the hosted Theme Studio at `/studio/`         |
+| Repository         | <https://github.com/chris-moody/greese>; each published package's `repository`, `homepage` and `bugs` point there                            |
+| Licence            | MIT                                                                                                                                          |
+| Package manager    | npm workspaces                                                                                                                               |
+| TypeScript         | Pinned to `~6.0` until typescript-eslint supports TS 7                                                                                       |
+| ESLint             | Stays on 9 until eslint-plugin-react supports 10                                                                                             |
+| Icons              | Components take any icon as a `ReactNode` and default to `@greese/icons`, which `@greese/react` depends on (ADR 0020, reversing ADR 0012 §1) |
+| Private registries | None: installing needs only the public npm registry                                                                                          |
 
 ## Deferred
 

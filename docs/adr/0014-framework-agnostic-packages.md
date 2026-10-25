@@ -1,6 +1,6 @@
 # ADR 0014: Framework-agnostic packages under `@greese`
 
-- **Status:** Accepted
+- **Status:** Accepted (the table's `@greese/icons` row: `@greese/react` now depends on it, [ADR 0020](0020-icons-live-in-the-icons-package.md))
 - **Date:** 2026-10-20
 - **Supersedes:** the package names and the "React-first" scope in ADR 0013.
   Nothing had been published, so nothing breaks.

@@ -1,6 +1,6 @@
 # ADR 0004: Content, media and disclosure
 
-- **Status:** Accepted
+- **Status:** Accepted (§5's built-in glyphs: they come from `@greese/icons` now, [ADR 0020](0020-icons-live-in-the-icons-package.md))
 - **Date:** 2026-10-17
 
 ## Decisions
