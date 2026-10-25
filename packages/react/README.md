@@ -132,9 +132,10 @@ this repository) edits a theme visually and writes the SCSS and CSS. See
 
 ## Icons
 
-GreeseUI ships no icon set: every icon slot takes any `ReactNode`. The
-optional `@greese/icons` package has the line icons these docs use, sized
-to text and drawn in `currentColor`:
+Every icon slot takes any `ReactNode`, so you can bring your own. The
+defaults come from `@greese/icons`, which `@greese/react` depends on (it
+installs with it): line icons sized to text and drawn in `currentColor`,
+which you can use directly:
 
 ```tsx
 import { SearchIcon } from '@greese/icons'
