@@ -2,87 +2,87 @@
   "runs": 9,
   "cpu": 4,
   "stacks": 2000,
-  "date": "2026-10-19",
+  "date": "2026-10-25",
   "metrics": [
     {
       "label": "First paint from navigation",
       "key": "navToPaint",
       "unit": "ms",
-      "greese": 612.1999998092651,
-      "greeseCss": 611.4000005722046,
-      "mui": 736
+      "greese": 619.4000005722046,
+      "greeseCss": 601.1999998092651,
+      "mui": 746.8999996185303
     },
     {
       "label": "Render to first paint",
       "key": "renderToPaint",
       "unit": "ms",
-      "greese": 386.30000019073486,
-      "greeseCss": 393,
-      "mui": 510.4000005722046
+      "greese": 391.20000076293945,
+      "greeseCss": 384.1000003814697,
+      "mui": 520.8000001907349
     },
     {
       "label": "Main-thread script (load)",
       "key": "scriptMs",
       "unit": "ms",
-      "greese": 224.017,
-      "greeseCss": 222.87199999999999,
-      "mui": 499.627
+      "greese": 223.894,
+      "greeseCss": 223.846,
+      "mui": 499.851
     },
     {
       "label": "Style recalculation (load)",
       "key": "styleMs",
       "unit": "ms",
-      "greese": 34.842999999999996,
-      "greeseCss": 29.481,
-      "mui": 25.257
+      "greese": 45.218,
+      "greeseCss": 28.070999999999998,
+      "mui": 23.773
     },
     {
       "label": "Layout (load)",
       "key": "layoutMs",
       "unit": "ms",
-      "greese": 95.393,
-      "greeseCss": 97.46100000000001,
-      "mui": 95.697
+      "greese": 97.631,
+      "greeseCss": 97.495,
+      "mui": 94.515
     },
     {
       "label": "Update: click to paint",
       "key": "update",
       "unit": "ms",
-      "greese": 112.85000038146973,
-      "greeseCss": 113.0499997138977,
-      "mui": 285.40000009536743
+      "greese": 120.39999961853027,
+      "greeseCss": 112.09999990463257,
+      "mui": 265.44999980926514
     },
     {
       "label": "Update: script per toggle",
       "key": "updateScriptMs",
       "unit": "ms",
-      "greese": 59.820249999999994,
-      "greeseCss": 60.117250000000006,
-      "mui": 232.37425000000002
+      "greese": 59.43200000000001,
+      "greeseCss": 59.29075,
+      "mui": 217.6915
     },
     {
       "label": "Update: style recalc per toggle",
       "key": "updateStyleMs",
       "unit": "ms",
-      "greese": 18.079,
-      "greeseCss": 17.52675,
-      "mui": 15.905250000000002
+      "greese": 23.823749999999997,
+      "greeseCss": 17.30425,
+      "mui": 14.65825
     },
     {
       "label": "Longest interaction (INP basis)",
       "key": "inp",
       "unit": "ms",
-      "greese": 216,
-      "greeseCss": 216,
+      "greese": 232,
+      "greeseCss": 224,
       "mui": 384
     },
     {
       "label": "JavaScript executed (uncompressed)",
       "key": "jsKb",
       "unit": "kB",
-      "greese": 227.8505859375,
-      "greeseCss": 227.822265625,
-      "mui": 295.1416015625
+      "greese": 233.4599609375,
+      "greeseCss": 233.4345703125,
+      "mui": 295.4365234375
     },
     {
       "label": "<style> elements in the document",

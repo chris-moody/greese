@@ -1,6 +1,6 @@
 {
-  "date": "2026-10-24",
-  "components": 116,
+  "date": "2026-10-25",
+  "components": 119,
   "dependencies": [
     "@greese/icons",
     "@greese/js",
@@ -9,13 +9,13 @@
   "react": [
     {
       "name": "JS: whole library (components)",
-      "size": 28342,
-      "sizeLimit": 28450
+      "size": 28836,
+      "sizeLimit": 28950
     },
     {
       "name": "JS: whole library, with greese.js",
-      "size": 33309,
-      "sizeLimit": 33350
+      "size": 34240,
+      "sizeLimit": 34250
     },
     {
       "name": "JS: tree-shaken { VisuallyHidden }",
@@ -24,52 +24,52 @@
     },
     {
       "name": "JS: tree-shaken { Stack }",
-      "size": 2496,
+      "size": 2444,
       "sizeLimit": 2500
     },
     {
       "name": "JS: tree-shaken { Button }",
-      "size": 2407,
+      "size": 2375,
       "sizeLimit": 2450
     },
     {
       "name": "JS: tree-shaken { TextField }",
-      "size": 2462,
+      "size": 2409,
       "sizeLimit": 2500
     },
     {
       "name": "JS: tree-shaken { Tabs, TabList, Tab, TabPanel }",
-      "size": 2619,
+      "size": 2617,
       "sizeLimit": 2650
     },
     {
       "name": "JS: tree-shaken { Dialog }",
-      "size": 3585,
+      "size": 3556,
       "sizeLimit": 3600
     },
     {
       "name": "JS: tree-shaken { Menu, MenuItem }",
-      "size": 3239,
+      "size": 3235,
       "sizeLimit": 3250
     },
     {
       "name": "JS: tree-shaken { toast, Toaster }",
-      "size": 3632,
+      "size": 3604,
       "sizeLimit": 3650
     },
     {
       "name": "JS: tree-shaken { Combobox }",
-      "size": 4785,
-      "sizeLimit": 4800
+      "size": 4823,
+      "sizeLimit": 4850
     },
     {
       "name": "JS: tree-shaken { NumberField }",
-      "size": 3641,
+      "size": 3581,
       "sizeLimit": 3650
     },
     {
       "name": "JS: tree-shaken { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell }",
-      "size": 2648,
+      "size": 2539,
       "sizeLimit": 2650
     },
     {
@@ -84,62 +84,62 @@
     },
     {
       "name": "ColorPicker",
-      "size": 4265,
+      "size": 4214,
       "sizeLimit": 4300
     },
     {
       "name": "MaskedInput",
-      "size": 2919,
+      "size": 2857,
       "sizeLimit": 2950
     },
     {
       "name": "JS: tree-shaken { ScrollCarousel, ScrollCarouselSlide }",
-      "size": 3828,
+      "size": 3791,
       "sizeLimit": 3850
     },
     {
       "name": "JS: tree-shaken { Rating }",
-      "size": 3117,
+      "size": 3071,
       "sizeLimit": 3150
     },
     {
       "name": "JS: tree-shaken { OtpField }",
-      "size": 2650,
+      "size": 2585,
       "sizeLimit": 2650
     },
     {
       "name": "JS: tree-shaken { Diff }",
-      "size": 2238,
+      "size": 2178,
       "sizeLimit": 2250
     },
     {
       "name": "JS: tree-shaken { Countdown }",
-      "size": 2300,
+      "size": 2253,
       "sizeLimit": 2300
     },
     {
       "name": "JS: tree-shaken { SpeedDial, SpeedDialAction }",
-      "size": 3354,
+      "size": 3296,
       "sizeLimit": 3400
     },
     {
       "name": "JS: tree-shaken { ScrollSpy }",
-      "size": 2310,
+      "size": 2253,
       "sizeLimit": 2350
     },
     {
       "name": "JS: tree-shaken { useStoredState }",
-      "size": 534,
+      "size": 554,
       "sizeLimit": 600
     },
     {
       "name": "JS: tree-shaken { Swap }",
-      "size": 2135,
+      "size": 2091,
       "sizeLimit": 2150
     },
     {
       "name": "JS: tree-shaken { useGreese } (with greese.js)",
-      "size": 5535,
+      "size": 5974,
       "sizeLimit": 6000
     },
     {
@@ -149,15 +149,15 @@
     },
     {
       "name": "JS: greese prop runtime (lazy chunk, with greese.js)",
-      "size": 10237,
-      "sizeLimit": 10250
+      "size": 10837,
+      "sizeLimit": 10850
     }
   ],
   "ui": [
     {
       "name": "CSS: greese.css",
-      "size": 22724,
-      "sizeLimit": 22750
+      "size": 23385,
+      "sizeLimit": 23400
     },
     {
       "name": "CSS: utilities.css (the whole set)",
@@ -173,13 +173,13 @@
   "js": [
     {
       "name": "greese.js: everything",
-      "size": 6104,
-      "sizeLimit": 6500
+      "size": 6524,
+      "sizeLimit": 6550
     },
     {
       "name": "greese.js: animate",
-      "size": 5182,
-      "sizeLimit": 5250
+      "size": 5610,
+      "sizeLimit": 5650
     },
     {
       "name": "greese.js: ease",
@@ -188,8 +188,8 @@
     },
     {
       "name": "greese.js: <script> build (window.greese)",
-      "size": 6482,
-      "sizeLimit": 6750
+      "size": 6899,
+      "sizeLimit": 6900
     }
   ]
 }
