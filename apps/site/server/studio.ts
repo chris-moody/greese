@@ -11,10 +11,13 @@
  * Choose the file with GREESE_THEME (relative to where npm was run):
  *   GREESE_THEME=src/styles/greese-theme.json npm run studio
  *
- * Dev-only by design: it writes to disk, so it never exists in a build, and
- * it only accepts requests from the dev server's own origin.
+ * Dev-only by design: it writes to disk, so it never exists in a build. It
+ * answers this machine, and other devices (with `--host`, for testing on a
+ * phone) only once they've opened the link it prints, which carries a token
+ * (access.ts).
  */
 import { errorLine, type ErrorAt } from '../src/studio/scssModule.ts'
+import { studioAccess, studioToken, TOKEN_PARAM } from './access.ts'
 import {
   existsSync,
   mkdirSync,
@@ -253,6 +256,21 @@ export const studio = (): Plugin => {
     name: 'greese-theme-studio',
     apply: 'serve',
     configureServer(server) {
+      const token = studioToken(join(APP, '.local/studio-token'))
+      const access = studioAccess(token)
+      // Beside Vite's Network URLs (only with --host): the link for another
+      // device, which signs it in.
+      const printUrls = server.printUrls.bind(server)
+      server.printUrls = () => {
+        printUrls()
+        for (const url of server.resolvedUrls?.network ?? [])
+          server.config.logger.info(
+            `  \u279c  Studio on another device: ${url}studio?${TOKEN_PARAM}=${token}`
+          )
+      }
+      server.middlewares.use((req, res, next) => {
+        if (!access.exchange(req, res)) next()
+      })
       server.watcher.add(files.json)
       server.watcher.on('change', (file) => {
         if (resolve(file) !== files.json) return
@@ -262,14 +280,12 @@ export const studio = (): Plugin => {
       })
 
       server.middlewares.use('/api', async (req, res, next) => {
-        // Same-origin only: the API writes files and runs imported modules.
-        // Browsers send Origin with every write (PUT, POST), so one without it
-        // isn't the studio: a request from another machine, say, when the dev
-        // server listens on the network.
-        const origin = req.headers.origin
-        const write = req.method !== 'GET' && req.method !== 'HEAD'
-        if ((origin || write) && origin !== `http://${req.headers.host}`)
-          return send(res, 403, {})
+        if (!access.allowed(req))
+          return send(res, 403, {
+            errors: [
+              'On another device, open the studio link `npm run studio` prints (it signs the device in).',
+            ],
+          })
         try {
           if (req.url === '/theme' && req.method === 'GET') {
             const spec = readSpec(files.json)
