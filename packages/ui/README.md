@@ -30,7 +30,7 @@ the framework packages provide.
 | `@greese/ui/base.css`            | Opt-in reset and page defaults                                                                                                                                  |
 | `@greese/ui/css/<Name>.css`      | One component's own styles (plus the shared core). A component built on others (a Dialog uses Button) needs theirs too; the framework packages wire that up     |
 | `@greese/ui/tokens.css`          | `--greese-*` custom properties, in `@layer greese.tokens`                                                                                                       |
-| `@greese/ui/palette.css`         | Opt-in: the palette as `--greese-<hue>-<shade>` (`--greese-lavender-600`), about 2 kB compressed                                                                |
+| `@greese/ui/palette.css`         | Opt-in: the palette as `--greese-<hue>-<shade>` (`--greese-lavender-600`), about 1.5 kB compressed                                                              |
 | `@greese/ui/scss`                | The whole stylesheet as Sass, configurable (`@use 'pkg:@greese/ui/scss' with ($breakpoints: …)`)                                                                |
 | `@greese/ui/scss/kit`            | The theming kit: `@use 'pkg:@greese/ui/scss/kit' as greese`, build-time themes that reject unknown names                                                        |
 | `@greese/ui/scss/tokens`         | The token CSS, plus `$breakpoints` and `$space-keys` Sass maps                                                                                                  |
