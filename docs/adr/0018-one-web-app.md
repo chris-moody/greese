@@ -53,6 +53,10 @@ file access in `apps/site/server`; `npm run studio` runs the app.
 
 ## Addendum (2026-10-24): the docs are part of the app
 
+> Superseded by [ADR 0028](0028-docs-in-the-web-app.md): the app renders the
+> docs itself, and no longer copies or links to Storybook. The `GREESE_BASE`
+> and blank-page fixes below still stand.
+
 The app's docs links (the header's, and every docs result in the search)
 point at `<base>storybook/`, which only existed on Pages, assembled there by
 the workflow. Locally nothing served it: the dev server and `vite preview`
