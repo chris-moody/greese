@@ -11,6 +11,7 @@ import { greeseUtilities } from '@greese/ui/vite'
 import { docgenDocs } from './server/docgen.ts'
 import { docsIndex, docsPages } from './server/docsIndex.ts'
 import { kitSources } from './server/kitSources.ts'
+import { prerenderHome } from './server/prerender.ts'
 import { runtimeChunkGuard } from './server/runtimeChunk.ts'
 import { storyNames } from './server/storyNames.ts'
 import { studio } from './server/studio.ts'
@@ -85,7 +86,8 @@ const homepageReaches = (ctx: Graph): Set<string> => {
 const fallbackPages = (): Plugin => ({
   name: 'greese-fallback-pages',
   apply: 'build',
-  closeBundle() {
+  // The copies take the empty page first; then the homepage gets its HTML.
+  async closeBundle() {
     const dist = join(ROOT, 'dist')
     const pages = [
       'studio',
@@ -99,6 +101,7 @@ const fallbackPages = (): Plugin => ({
       copyFileSync(join(dist, 'index.html'), join(dist, page, 'index.html'))
     }
     copyFileSync(join(dist, 'index.html'), join(dist, '404.html'))
+    await prerenderHome(ROOT, dist)
   },
 })
 
@@ -126,7 +129,8 @@ export default defineConfig({
       ...mdx({ remarkPlugins: [remarkGfm], providerImportSource: undefined }),
     },
     react({ include: /\.(mdx|[jt]sx?)$/ }),
-    studio(),
+    // The studio's file API is for the dev server, not the homepage's prerender.
+    ...(process.env.GREESE_PRERENDER ? [] : [studio()]),
     kitSources(),
     docsIndex(),
     docgenDocs(),

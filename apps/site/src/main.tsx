@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import '@greese/react/base.css'
 import '@greese/react/styles.css'
 import 'virtual:greese-utilities.css'
@@ -11,8 +11,14 @@ import './effects.ts'
 import './site.scss'
 import { App } from './App.tsx'
 
-createRoot(document.getElementById('root')!).render(
+const root = document.getElementById('root')!
+const app = (
   <StrictMode>
     <App />
   </StrictMode>
 )
+// The built homepage arrives rendered (server/prerender.ts), so it paints
+// before this script runs; it's hydrated. Other routes, and the dev server,
+// start from an empty root.
+if (root.firstElementChild) hydrateRoot(root, app)
+else createRoot(root).render(app)
