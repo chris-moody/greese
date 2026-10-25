@@ -13,7 +13,6 @@ import { docsIndex, docsPages } from './server/docsIndex.ts'
 import { kitSources } from './server/kitSources.ts'
 import { runtimeChunkGuard } from './server/runtimeChunk.ts'
 import { storyNames } from './server/storyNames.ts'
-import { storybook } from './server/storybook.ts'
 import { studio } from './server/studio.ts'
 
 /**
@@ -132,7 +131,6 @@ export default defineConfig({
     docsIndex(),
     docgenDocs(),
     storyNames(),
-    storybook(),
     // Only the utility classes the app's source uses (ADR 0019).
     greeseUtilities({
       content: ['index.html', 'preview.html', 'src/**/*.{ts,tsx}'],
