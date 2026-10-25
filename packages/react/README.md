@@ -149,10 +149,13 @@ import { SearchIcon } from '@greese/icons'
 Every component renders from a React Server Component. Those with no state of
 their own are Server Components themselves and ship no JavaScript: layout and
 text, `Button`, `IconButton`, `Badge`, `Card`, `Alert` (without `onDismiss`),
-`Collapsible` and `Accordion`, among others. A loading or disabled `Button`
-blocks presses with HTML and CSS, and only an `onClick` you pass (which only a
-client component can) adds a handler. Interactive ones (Dialog, Tabs, Menu,
-form controls) are client components: they render on the server and hydrate.
+`Collapsible` and `Accordion`, `Table` and all its parts, `AvatarGroup` and
+`BreadcrumbItem`, among others. `Pagination` is one too with `getHref` and the
+current `page`, read from the URL: its links and labels are computed on the
+server. A loading or disabled `Button` blocks presses with HTML and CSS, and
+only an `onClick` you pass (which only a client component can) adds a
+handler. Interactive ones (Dialog, Tabs, Menu, form controls) are client
+components: they render on the server and hydrate.
 `Accordion` hands its `name` and icons to the `AccordionItem`s among its
 children (fragments and lists included); an item inside a component of your
 own takes them as its own props.
