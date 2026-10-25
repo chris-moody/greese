@@ -1,8 +1,13 @@
-import type { JSX } from 'react'
+import { lazy, Suspense, type JSX } from 'react'
 import { Accordion, AccordionItem, Drawer, ScrollSpy, Stack } from '@greese/react'
 import { RouteLink, useCurrentRoute } from '../../router.tsx'
 import { TEMPLATES } from '../../templates/index.ts'
 import { SECTIONS, SPY_OFFSET, STUDIO_TABS } from './links.ts'
+
+// The docs' sections come with the docs' index: loaded when the menu opens.
+const DocsMenuLinks = lazy(() =>
+  import('../../docs/MenuLinks.tsx').then((m) => ({ default: m.DocsMenuLinks }))
+)
 
 /**
  * The phones' menu: the whole screen, each page a header over what's on it,
@@ -50,6 +55,24 @@ export const PhoneMenu = ({
                 </nav>
               </Stack>
             </ScrollSpy>
+          </AccordionItem>
+          <AccordionItem defaultOpen={route === 'docs'} title="Docs">
+            <Stack asChild gap={0} className="site-menu-links">
+              <nav aria-label="Docs">
+                <RouteLink
+                  to="docs"
+                  aria-current={route === 'docs' ? 'page' : undefined}
+                  onClick={close}
+                >
+                  All docs
+                </RouteLink>
+                {open && (
+                  <Suspense>
+                    <DocsMenuLinks onFollow={close} />
+                  </Suspense>
+                )}
+              </nav>
+            </Stack>
           </AccordionItem>
           <AccordionItem defaultOpen={studio} title="Studio">
             <Stack asChild gap={0} className="site-menu-links">

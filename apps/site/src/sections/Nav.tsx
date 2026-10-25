@@ -48,7 +48,7 @@ const themePlaceholder = (
 
 /**
  * The header, on every page: the wordmark and the links (the section the page
- * is on, or Studio or Templates, highlighted), then search, the theme menu,
+ * is on, or Docs, Studio or Templates, highlighted), then search, the theme menu,
  * Replay motion, the color scheme and GitHub. From md the wordmark goes home
  * and its arrow opens the homepage's sections. Below md search is an icon
  * and the scheme a select, beside the theme menu, Replay and GitHub, and the
@@ -93,9 +93,10 @@ export const Nav = (): JSX.Element => {
   )
   const studioCurrent = studio ? 'page' : undefined
   const templatesCurrent = route === 'templates' ? 'page' : undefined
+  const docsCurrent = route === 'docs' ? 'page' : undefined
   const navLink = (
     key: string,
-    to: 'home' | 'studio' | 'templates',
+    to: 'home' | 'studio' | 'templates' | 'docs',
     label: string,
     extra = {}
   ) => (
@@ -167,6 +168,7 @@ export const Nav = (): JSX.Element => {
                     className: 'site-nav-section',
                   })
                 )}
+              {navLink('docs', 'docs', 'Docs', { 'aria-current': docsCurrent })}
               {navLink('studio', 'studio', 'Studio', { 'aria-current': studioCurrent })}
               {navLink('templates', 'templates', 'Templates', {
                 'aria-current': templatesCurrent,

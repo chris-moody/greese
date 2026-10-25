@@ -17,9 +17,10 @@ import {
   Text,
   toast,
 } from '@greese/react'
-import { DOCS_URL, INSTALL } from '../config.ts'
+import { INSTALL } from '../config.ts'
 import { facts, kB } from '../data/index.ts'
 import { icons } from '../icons.tsx'
+import { RouteLink } from '../router.tsx'
 
 const copy = async (text: string) => {
   try {
@@ -122,7 +123,7 @@ export const Hero = (): JSX.Element => (
               tone="neutral"
               greese={{ hover: 'rise', press: 'squish' }}
             >
-              <a href={DOCS_URL}>Browse the docs</a>
+              <RouteLink to="docs">Browse the docs</RouteLink>
             </Button>
           </Stack>
           <Stack

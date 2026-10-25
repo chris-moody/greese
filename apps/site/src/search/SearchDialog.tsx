@@ -9,7 +9,6 @@ import {
   type MouseEvent,
 } from 'react'
 import { Button, Dialog, Icon, Input, Key, Text, useStoredState } from '@greese/react'
-import { DOCS_URL } from '../config.ts'
 import { icons } from '../icons.tsx'
 import { navigate } from '../router.tsx'
 import { ENTRIES, grouped, highlight, search, type SearchEntry } from './entries.ts'
@@ -79,8 +78,6 @@ export const SearchDialog = ({ open, onOpenChange }: SearchDialogProps): JSX.Ele
       [entry.href, ...recent.filter((href) => href !== entry.href)].slice(0, RECENT_MAX)
     )
     onOpenChange(false)
-    // The docs are another app; everything else is a route here.
-    if (entry.href.startsWith(DOCS_URL)) return location.assign(entry.href)
     navigate(entry.href)
   }
 

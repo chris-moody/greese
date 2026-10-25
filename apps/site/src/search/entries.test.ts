@@ -38,11 +38,17 @@ describe('search', () => {
 
   it('finds the docs pages, the templates and the studio', () => {
     expect(search('button')[0]).toMatchObject({ title: 'Button', group: 'Docs' })
-    expect(search('button')[0]!.href).toMatch(
-      /storybook\/\?path=\/docs\/forms-button--docs$/
-    )
+    // A page of the app, not another site.
+    expect(search('button')[0]!.href).toBe('/docs/forms-button')
     expect(search('finance')[0]).toMatchObject({ group: 'Templates' })
     expect(search('shapes').map((e) => e.group)).toContain('Theme Studio')
+  })
+
+  it("finds a guide's sections, and opens the guide there", () => {
+    expect(search('dark mode flash')[0]).toMatchObject({
+      group: 'In the docs',
+      href: '/docs/guides-getting-started#dark-mode-without-a-flash',
+    })
   })
 })
 

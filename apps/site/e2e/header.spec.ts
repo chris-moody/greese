@@ -26,7 +26,11 @@ test('the wordmark goes home and its arrow opens the sections on hover; the row 
   page,
 }) => {
   await page.goto('/templates')
-  await expect(page.locator('.site-nav-links a')).toHaveText(['Studio', 'Templates'])
+  await expect(page.locator('.site-nav-links a')).toHaveText([
+    'Docs',
+    'Studio',
+    'Templates',
+  ])
   await page.locator('.site-home-toggle').hover()
   const menu = page.getByRole('dialog', { name: 'Homepage sections' })
   await expect(menu).toBeVisible()

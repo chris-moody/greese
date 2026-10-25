@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
 import { Footer as Base, FooterSection, Link, Stack, Text } from '@greese/react'
-import { DOCS_URL, REPO_URL } from '../config.ts'
+import { REPO_URL } from '../config.ts'
 import { RouteLink } from '../router.tsx'
 import { facts } from '../data/index.ts'
 
@@ -35,8 +35,8 @@ export const Footer = (): JSX.Element => (
       </Link>
     </FooterSection>
     <FooterSection title="Learn">
-      <Link href={DOCS_URL} tone="neutral" greese={{ hover: 'rise' }}>
-        Docs
+      <Link asChild tone="neutral" greese={{ hover: 'rise' }}>
+        <RouteLink to="docs">Docs</RouteLink>
       </Link>
       <Link href={REPO_URL} tone="neutral" greese={{ hover: 'rise' }}>
         GitHub

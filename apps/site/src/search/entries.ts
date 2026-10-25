@@ -1,5 +1,4 @@
 import docs from 'virtual:greese-docs'
-import { DOCS_URL } from '../config.ts'
 import { hrefOf } from '../router.tsx'
 import { TEMPLATES } from '../templates/index.ts'
 
@@ -38,8 +37,8 @@ const studio = (tab: string, title: string, hint: string): SearchEntry => ({
 
 /**
  * Everything the search finds: the app's pages, the homepage's sections, the
- * studio's tabs, the templates and every docs page (by its Storybook title,
- * from virtual:greese-docs). In the order shown when nothing is typed.
+ * studio's tabs, the templates, every docs page (by its title, from
+ * virtual:greese-docs) and the sections of the docs' guides. In the order shown when nothing is typed.
  */
 export const ENTRIES: SearchEntry[] = [
   { group: 'Pages', title: 'Home', hint: 'GreeseUI', href: hrefOf('home') },
@@ -58,9 +57,9 @@ export const ENTRIES: SearchEntry[] = [
   {
     group: 'Pages',
     title: 'Docs',
-    hint: 'Storybook',
-    href: DOCS_URL,
-    keywords: 'storybook',
+    hint: 'Guides and every component',
+    href: hrefOf('docs'),
+    keywords: 'documentation api props storybook',
   },
   home('why', 'Why', 'Why GreeseUI'),
   home('size', 'Size', 'Bundle size', 'weight bytes kb budget'),
@@ -87,9 +86,18 @@ export const ENTRIES: SearchEntry[] = [
       group: 'Docs',
       title: path.pop()!,
       hint: path.join(' / '),
-      href: `${DOCS_URL}?path=/docs/${id}--docs`,
+      href: hrefOf('docs', '', id),
     }
   }),
+  // A guide's sections: "dark mode flash" finds Theming's, and opens it there.
+  ...docs.flatMap(({ title, id, headings = [] }) =>
+    headings.map(([text, anchor]): SearchEntry => ({
+      group: 'In the docs',
+      title: text,
+      hint: title.split('/').join(' / '),
+      href: hrefOf('docs', `#${anchor}`, id),
+    }))
+  ),
 ]
 
 const words = (text: string) => text.toLowerCase().split(/\s+/).filter(Boolean)

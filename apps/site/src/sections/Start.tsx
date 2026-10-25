@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
 import { Badge, Button, Card, Code, Grid, Heading, Stack, Text } from '@greese/react'
-import { DOCS_URL, INSTALL } from '../config.ts'
+import { INSTALL } from '../config.ts'
 import { RouteLink } from '../router.tsx'
 import { Section } from '../Section.tsx'
 
@@ -59,7 +59,7 @@ export const Start = (): JSX.Element => (
       greese={{ inView: 'theme' }}
     >
       <Button asChild size="lg" greese={{ hover: 'rise', press: 'squish' }}>
-        <a href={DOCS_URL}>Read the docs</a>
+        <RouteLink to="docs">Read the docs</RouteLink>
       </Button>
       <Button
         asChild
