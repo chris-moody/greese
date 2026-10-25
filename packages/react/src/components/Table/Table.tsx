@@ -1,7 +1,4 @@
-'use client'
 import {
-  createContext,
-  use,
   useId,
   type ComponentPropsWithRef,
   type CSSProperties,
@@ -17,8 +14,9 @@ export type TableStackBreakpoint = 'sm' | 'md' | 'lg'
 
 // When stacked, rows are no longer display:table-*, and browsers drop table
 // semantics for them; explicit roles keep the table announced as a table.
-const StackedContext = createContext(false)
-const role = (stacked: boolean, value: string) => (stacked ? value : undefined)
+// Every table carries them, stacked or not: they're redundant (and harmless)
+// on a plain table, and knowing which tables stack would take a context,
+// which would make every part a client component (ADR 0007, addendum).
 
 export interface TableProps extends GreeseProps, ComponentPropsWithRef<'table'> {
   /** Names the table (rendered as `<caption>`). Required: tables need a name. */
@@ -72,7 +70,6 @@ export const Table = ({
   ...props
 }: TableProps): JSX.Element => {
   const captionId = useId()
-  const stacked = stackBelow !== undefined
   return withGreese(
     <div
       role="region"
@@ -94,14 +91,14 @@ export const Table = ({
           : style
       }
     >
-      <table {...props} role={role(stacked, 'table')} className="greese-Table-table">
+      <table {...props} role="table" className="greese-Table-table">
         <caption
           id={captionId}
           className={cx('greese-Table-caption', hideCaption && 'greese-VisuallyHidden')}
         >
           {caption}
         </caption>
-        <StackedContext value={stacked}>{children}</StackedContext>
+        {children}
       </table>
     </div>,
     greese
@@ -112,20 +109,20 @@ export const TableHead = ({
   greese,
   ...props
 }: ComponentPropsWithRef<'thead'> & GreeseProps): JSX.Element =>
-  withGreese(<thead role={role(use(StackedContext), 'rowgroup')} {...props} />, greese)
+  withGreese(<thead role="rowgroup" {...props} />, greese)
 
 /** Rows here can enter in sequence: `greese={{ enter: 'fadeUp', stagger: 0.04 }}`. */
 export const TableBody = ({
   greese,
   ...props
 }: ComponentPropsWithRef<'tbody'> & GreeseProps): JSX.Element =>
-  withGreese(<tbody role={role(use(StackedContext), 'rowgroup')} {...props} />, greese)
+  withGreese(<tbody role="rowgroup" {...props} />, greese)
 
 export const TableFoot = ({
   greese,
   ...props
 }: ComponentPropsWithRef<'tfoot'> & GreeseProps): JSX.Element =>
-  withGreese(<tfoot role={role(use(StackedContext), 'rowgroup')} {...props} />, greese)
+  withGreese(<tfoot role="rowgroup" {...props} />, greese)
 
 export const TableRow = ({
   greese,
@@ -133,11 +130,7 @@ export const TableRow = ({
   ...props
 }: ComponentPropsWithRef<'tr'> & GreeseProps): JSX.Element =>
   withGreese(
-    <tr
-      role={role(use(StackedContext), 'row')}
-      {...props}
-      className={cx('greese-TableRow', className)}
-    />,
+    <tr role="row" {...props} className={cx('greese-TableRow', className)} />,
     greese
   )
 
@@ -168,7 +161,7 @@ export const TableHeaderCell = ({
 }: TableHeaderCellProps): JSX.Element =>
   withGreese(
     <th
-      role={role(use(StackedContext), scope === 'row' ? 'rowheader' : 'columnheader')}
+      role={scope === 'row' ? 'rowheader' : 'columnheader'}
       scope={scope}
       aria-sort={sort === 'ascending' || sort === 'descending' ? sort : undefined}
       {...props}
@@ -209,7 +202,7 @@ export const TableCell = ({
 }: TableCellProps): JSX.Element =>
   withGreese(
     <td
-      role={role(use(StackedContext), 'cell')}
+      role="cell"
       data-label={label}
       {...props}
       data-align={align && align !== 'start' ? align : undefined}

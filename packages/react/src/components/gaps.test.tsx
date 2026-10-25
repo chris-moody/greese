@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { expectNoAxeViolations } from '../test/axe.ts'
+import { functionProps } from '../test/serverProps.ts'
 import { Combobox } from './Combobox/Combobox.tsx'
 import { DateField } from './DateField/DateField.tsx'
 import { dismissDirection, shouldDismiss } from './Dialog/Dialog.tsx'
@@ -197,9 +198,9 @@ describe('Table', () => {
     )
   }
 
-  it('has a footer row group, which keeps its role when the table stacks', () => {
-    const Totals = ({ stacked }: { stacked?: boolean }) => (
-      <Table caption="Totals" stackBelow={stacked ? 'sm' : undefined}>
+  it('has a footer row group that keeps its role, so it survives stacking', () => {
+    render(
+      <Table caption="Totals" stackBelow="sm">
         <TableBody>
           <TableRow>
             <TableCell>Rent</TableCell>
@@ -212,13 +213,45 @@ describe('Table', () => {
         </TableFoot>
       </Table>
     )
-    const { unmount } = render(<Totals />)
     expect(screen.getByTestId('foot').tagName).toBe('TFOOT')
-    expect(screen.getByTestId('foot')).not.toHaveAttribute('role')
-    unmount()
     // Stacked, the table's display changes, so its parts say what they are.
-    render(<Totals stacked />)
     expect(screen.getByTestId('foot')).toHaveAttribute('role', 'rowgroup')
+  })
+
+  it('is a Server Component: no context, and no function handed to the DOM', () => {
+    const server = [
+      Table,
+      TableHead,
+      TableBody,
+      TableFoot,
+      TableRow,
+      TableHeaderCell,
+      TableCell,
+    ] as unknown as Parameters<typeof functionProps>[1]
+    expect(
+      functionProps(
+        <Table caption="Plain">
+          <TableHead>
+            <TableRow>
+              <TableHeaderCell>Name</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableHeaderCell scope="row">Ada</TableHeaderCell>
+              <TableCell>1815</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>,
+        server
+      )
+    ).toEqual([])
+  })
+
+  it('carries explicit roles on every table, stacked or not', () => {
+    render(<Example />)
+    expect(screen.getByRole('table')).toHaveAttribute('role', 'table')
+    expect(screen.getAllByRole('row')[0]).toHaveAttribute('role', 'row')
   })
 
   it('is a named, keyboard-scrollable table with sortable headers', async () => {
