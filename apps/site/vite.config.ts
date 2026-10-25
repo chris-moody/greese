@@ -8,6 +8,7 @@ import { getSchemeScript } from '@greese/ui'
 import { greeseUtilities } from '@greese/ui/vite'
 import { docsIndex } from './server/docsIndex.ts'
 import { kitSources } from './server/kitSources.ts'
+import { runtimeChunkGuard } from './server/runtimeChunk.ts'
 import { studio } from './server/studio.ts'
 
 /**
@@ -68,6 +69,7 @@ export default defineConfig({
       content: ['index.html', 'preview.html', 'src/**/*.{ts,tsx}'],
     }) as Plugin,
     fallbackPages(),
+    runtimeChunkGuard(),
     {
       // The saved color scheme applies before first paint.
       name: 'greese-scheme-script',
@@ -88,7 +90,10 @@ export default defineConfig({
           groups: [
             {
               name: 'react',
-              test: /node_modules\/(react|react-dom|scheduler)\//,
+              // With effects-runtime, which both entries share: as a chunk of
+              // its own it took Rolldown's runtime helpers onto an import
+              // cycle, and the page stayed blank (runtimeChunkGuard checks).
+              test: /node_modules\/(react|react-dom|scheduler)\/|\/src\/effects-runtime\.ts$/,
               minShareCount: 1,
             },
             {
