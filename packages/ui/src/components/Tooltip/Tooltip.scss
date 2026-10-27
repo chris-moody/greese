@@ -6,6 +6,10 @@
     @include floating.enter-exit(':popover-open', 0 0, tooltip);
 
     max-inline-size: min(18rem, 100vw - 2 * var(--greese-space-3));
+
+    // A line or two never needs to scroll; not being a scroller lets a
+    // theme's shape draw its border on the tooltip's own box.
+    overflow: visible;
     padding: var(--greese-space-1) var(--greese-space-2);
     font-size: var(--greese-type-caption-font-size);
     line-height: var(--greese-line-height-snug);

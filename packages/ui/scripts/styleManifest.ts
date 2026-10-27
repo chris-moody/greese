@@ -105,7 +105,7 @@ export const styleManifest = (
     }
 
     // Variables belong to the block their name starts with, else to the
-    // sheet's own block: --greese-file-height lives in FileInput.css.
+    // sheet's own block: --greese-file-font lives in FileInput.css.
     const blocks = [...new Set(own)].sort((a, b) => b.length - a.length)
     for (const v of new Set(css.match(VARIABLE) ?? [])) {
       if (tokenVars.has(v) || RESPONSIVE_VAR.test(v)) continue

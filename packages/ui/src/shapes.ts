@@ -67,6 +67,11 @@ export interface ShapeTarget {
   selector: string
   /** In SHAPE_TARGETS: the element a component's shape goes on, when not its root (`.greese-SpeedDial-trigger`). */
   select?: string
+  /**
+   * Where the element faces the other way, as in right-to-left text: a
+   * selector suffix (`.greese-ChatBubble--end &`) that takes the shape mirrored.
+   */
+  mirrorOn?: string
   /** The pseudo-element free for the border. @default '::after' */
   pseudo?: '::before' | '::after'
   /** Selector suffix for hover (`:hover`), or a selector of its own (`&--interactive:hover`). */
@@ -396,8 +401,10 @@ const clips = (def: ShapeDef) => {
   return { outer: polygon(outer), ring: polygon(ring, 'evenodd') }
 }
 
+// A suffix with `&` anywhere in it is a selector of its own (`&--x:hover`,
+// `.greese-OtpField[data-invalid] &`); any other is appended (`:hover`).
 const join = (selector: string, suffix: string) =>
-  suffix.startsWith('&') ? suffix.replace(/&/g, selector) : `${selector}${suffix}`
+  suffix.includes('&') ? suffix.replace(/&/g, selector) : `${selector}${suffix}`
 
 const block = (head: string, body: string) =>
   body.trim()
@@ -554,14 +561,26 @@ export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): s
         '--greese-shape-ring-clip': ring,
       })
     )
-    if (def.mirror) {
+    const turned = mine
+      .filter((u) => u.mirrorOn)
+      .map((u) => join(u.selector, u.mirrorOn!))
+    if (def.mirror || turned.length) {
       const flipped = clips(mirrored(def))
-      out.push(
-        rule(sels.map((s) => `${s}:dir(rtl)`).join(',\n'), {
-          '--greese-shape-clip': flipped.outer,
-          '--greese-shape-ring-clip': flipped.ring,
-        })
-      )
+      const as = (c: { outer: string; ring: string }) => ({
+        '--greese-shape-clip': c.outer,
+        '--greese-shape-ring-clip': c.ring,
+      })
+      // Mirrored in right-to-left text, and where it faces the other way;
+      // facing the other way in right-to-left text, it's back as drawn.
+      const mirroredSels = [
+        ...(def.mirror ? sels.map((s) => `${s}:dir(rtl)`) : []),
+        ...turned,
+      ]
+      out.push(rule(mirroredSels.join(',\n'), as(flipped)))
+      if (def.mirror && turned.length)
+        out.push(
+          rule(turned.map((s) => `${s}:dir(rtl)`).join(',\n'), as({ outer, ring }))
+        )
     }
     // Every selector a state applies on: the element's own, then each scaled
     // variant (smaller features), which come later so they win.
@@ -653,6 +672,22 @@ export const shapeCss = (def: ShapeDef, target: ShapeTarget): string =>
 const fast = (...properties: string[]) =>
   properties.map((p) => `${p} var(--greese-duration-fast) var(--greese-easing-standard)`)
 
+/** A field: focused while it's used, so focus is a ring inside the shape. */
+const FIELD: Omit<ShapeTarget, 'selector'> = {
+  hover: false,
+  active: false,
+  focus: 'ring',
+  focusOn: ':has(:focus-visible)',
+  borderColor: 'var(--greese-color-border-strong)',
+  variants: {
+    '&:hover': { '--greese-shape-ring': 'var(--greese-color-fg-muted)' },
+    '&[aria-invalid=true], &[data-invalid]': {
+      '--greese-shape-ring': 'var(--greese-color-negative)',
+    },
+  },
+  transitions: fast('box-shadow'),
+}
+
 /**
  * How each component takes a shape: which element, whether a pseudo-element
  * is free for the border, how it shows focus, its own transitions. A
@@ -713,19 +748,35 @@ export const SHAPE_TARGETS: Record<string, Omit<ShapeTarget, 'selector'>> = {
   },
   Tile: { hover: false, active: false, borderColor: 'var(--greese-color-border)' },
   // Fields stay focused while they're used: focus is a ring inside the shape.
-  Input: {
+  Input: FIELD,
+  Select: FIELD,
+  Textarea: FIELD,
+  // A code's boxes are drawn for the one input over them: they never take
+  // focus, the box being typed in shows it. Its caret is ::after.
+  OtpField: {
+    select: '.greese-OtpField-slot',
+    pseudo: '::before',
     hover: false,
     active: false,
-    focus: 'ring',
-    focusOn: ':has(:focus-visible)',
+    focus: 'keep',
     borderColor: 'var(--greese-color-border-strong)',
     variants: {
-      '&:hover': { '--greese-shape-ring': 'var(--greese-color-fg-muted)' },
-      '&[aria-invalid=true], &[data-invalid]': {
+      '.greese-OtpField[data-invalid] &': {
         '--greese-shape-ring': 'var(--greese-color-negative)',
+      },
+      '&.greese-OtpField-slot--active': {
+        '--greese-shape-ring': 'var(--greese-color-focus-ring)',
+        '--greese-shape-border': '2px',
       },
     },
     transitions: fast('box-shadow'),
+  },
+  // A collapsible's header, the part you press (themes give it a surface).
+  Collapsible: {
+    select: '.greese-Collapsible-trigger',
+    active: false,
+    borderColor: 'var(--greese-collapsible-border, var(--greese-color-border))',
+    transitions: fast('background-color'),
   },
   SegmentedControl: {
     select: '.greese-SegmentedControl-track',
@@ -733,12 +784,19 @@ export const SHAPE_TARGETS: Record<string, Omit<ShapeTarget, 'selector'>> = {
     active: false,
     borderColor: 'var(--greese-color-border)',
   },
+  // The chosen segment's edge is a hook a color variant sets (Outline draws
+  // it in the primary): drawn along the shape, not clipped by it.
   Segment: {
     hover: false,
     active: false,
     focus: 'ring',
     focusOn: ':has(:focus-visible)',
     borderColor: 'transparent',
+    variants: {
+      '&:has(:checked)': {
+        '--greese-shape-ring': 'var(--greese-segment-current-ring, transparent)',
+      },
+    },
     transitions: fast('background-color', 'color'),
   },
   Tab: {
@@ -747,10 +805,21 @@ export const SHAPE_TARGETS: Record<string, Omit<ShapeTarget, 'selector'>> = {
     active: false,
     transitions: fast('color', 'background-color', 'box-shadow'),
   },
+  // An item's panel takes the shape, not the <details> around it: its header
+  // is a Collapsible's, shaped as one.
   AccordionItem: {
+    select: '.greese-AccordionItem > .greese-Collapsible-content',
     hover: false,
     active: false,
     borderColor: 'var(--greese-color-border)',
+  },
+  // A bubble's tail is drawn outside it (::before), so its shape takes the
+  // tail in; an end bubble's points the other way. It has no border.
+  ChatBubble: {
+    select: '.greese-ChatBubble-bubble',
+    mirrorOn: '.greese-ChatBubble--end &',
+    ring: false,
+    still: true,
   },
   // A pulsing status draws its pulse outside the dot: it keeps its own round.
   Status: {
@@ -764,12 +833,6 @@ export const SHAPE_TARGETS: Record<string, Omit<ShapeTarget, 'selector'>> = {
     ring: false,
     still: true,
   },
-  SpeedDial: {
-    select: '.greese-SpeedDial-trigger',
-    ring: false,
-    touch: true,
-    transitions: fast('background-color'),
-  },
   // Overlays move as the theme says (ADR 0025): a transition here would
   // replace the one that keeps them rendered while they leave, so their
   // shapes stay still.
@@ -778,12 +841,29 @@ export const SHAPE_TARGETS: Record<string, Omit<ShapeTarget, 'selector'>> = {
     still: true,
     borderColor: 'var(--greese-color-border)',
   },
-  // These scroll their own content, and a border layer inside a scroller
-  // would scroll with it: they're only clipped, their own border kept.
-  Popover: { positioned: true, still: true, ring: false },
-  Menu: { positioned: true, still: true, ring: false },
-  Tooltip: { positioned: true, still: true, ring: false },
-  Toast: { still: true, borderColor: 'var(--greese-color-border-strong)' },
+  // Overlays take a border along the shape, or a clip cuts theirs off where
+  // it cuts a corner. A popover scrolls its own content only once it's taller
+  // than the screen; then its border layer scrolls with it. A menu scrolls a
+  // viewport inside it, and a tooltip doesn't scroll.
+  Popover: { positioned: true, still: true, borderColor: 'var(--greese-color-border)' },
+  Menu: { positioned: true, still: true, borderColor: 'var(--greese-color-border)' },
+  // No border of its own: a color variant can give it one (the hook).
+  Tooltip: {
+    positioned: true,
+    still: true,
+    borderColor: 'var(--greese-tooltip-border, transparent)',
+  },
+  // A clip removes the toast's shadow and its tone's thick start edge (a
+  // border): the edge is drawn inside instead, and the border leans to it.
+  Toast: {
+    still: true,
+    borderColor:
+      'color-mix(in oklab, var(--greese-toast-edge) 45%, var(--greese-color-border-strong))',
+    variants: {
+      '&': { 'box-shadow': 'inset 3px 0 0 var(--greese-toast-edge)' },
+      '&:dir(rtl)': { 'box-shadow': 'inset -3px 0 0 var(--greese-toast-edge)' },
+    },
+  },
 }
 
 /** The element a component's shape goes on. */

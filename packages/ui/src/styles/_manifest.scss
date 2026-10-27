@@ -65,7 +65,7 @@ $blocks: (
     parts: (),
     modifiers: ('accent', 'info', 'negative', 'neutral', 'outline', 'positive', 'primary', 'secondary', 'soft', 'solid', 'tertiary', 'warning',),
     part-modifiers: (),
-    variables: ('--greese-badge-tone', '--greese-badge-tone-on',),
+    variables: ('--greese-badge-surface', '--greese-badge-tone', '--greese-badge-tone-on',),
   ),
   'Box': (
     parts: (),
@@ -248,10 +248,10 @@ $blocks: (
     variables: (),
   ),
   'FileInput': (
-    parts: (),
+    parts: ('button', 'control', 'files',),
     modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
-    variables: ('--greese-file-height', '--greese-file-padding',),
+    variables: ('--greese-file-font',),
   ),
   'Footer': (
     parts: ('brand', 'inner', 'legal', 'main', 'sections',),
@@ -338,7 +338,7 @@ $blocks: (
     variables: (),
   ),
   'Menu': (
-    parts: (),
+    parts: ('viewport',),
     modifiers: (),
     part-modifiers: (),
     variables: ('--greese-motion-enter-ease', '--greese-motion-exit-duration', '--greese-motion-exit-ease', '--greese-motion-exit-mask-from', '--greese-motion-exit-mask-image', '--greese-motion-exit-mask-position', '--greese-motion-exit-mask-repeat', '--greese-motion-exit-mask-size', '--greese-motion-exit-opacity', '--greese-motion-exit-scale', '--greese-motion-exit-transform', '--greese-motion-exit-transform-origin', '--greese-motion-exit-translate', '--greese-motion-overlay', '--greese-motion-overlay-duration', '--greese-motion-overlay-exit-mask-from', '--greese-motion-overlay-exit-mask-image', '--greese-motion-overlay-exit-mask-position', '--greese-motion-overlay-exit-mask-repeat', '--greese-motion-overlay-exit-mask-size', '--greese-motion-overlay-exit-opacity', '--greese-motion-overlay-exit-scale', '--greese-motion-overlay-exit-transform', '--greese-motion-overlay-exit-transform-origin', '--greese-motion-overlay-exit-translate', '--greese-motion-popover', '--greese-motion-popover-exit-mask-from', '--greese-motion-popover-exit-mask-image', '--greese-motion-popover-exit-mask-position', '--greese-motion-popover-exit-mask-repeat', '--greese-motion-popover-exit-mask-size', '--greese-motion-popover-exit-opacity', '--greese-motion-popover-exit-scale', '--greese-motion-popover-exit-transform', '--greese-motion-popover-exit-transform-origin', '--greese-motion-popover-exit-translate', '--greese-overlay-enter', '--greese-overlay-exit-mask-from', '--greese-overlay-exit-mask-image', '--greese-overlay-exit-mask-position', '--greese-overlay-exit-mask-repeat', '--greese-overlay-exit-mask-size', '--greese-overlay-exit-opacity', '--greese-overlay-exit-scale', '--greese-overlay-exit-transform', '--greese-overlay-exit-transform-origin', '--greese-overlay-exit-translate', '--greese-overlay-origin',),
@@ -387,9 +387,9 @@ $blocks: (
   ),
   'Progress': (
     parts: (),
-    modifiers: ('lg', 'md', 'sm', 'xl', 'xs',),
+    modifiers: ('lg', 'loading', 'md', 'sm', 'xl', 'xs',),
     part-modifiers: (),
-    variables: ('--greese-progress-height',),
+    variables: ('--greese-progress-height', '--greese-progress-stripes', '--greese-progress-tile',),
   ),
   'RadialProgress': (
     parts: ('label',),
@@ -596,7 +596,7 @@ $blocks: (
     variables: ('--greese-textrotate-duration',),
   ),
   'Textarea': (
-    parts: (),
+    parts: ('control',),
     modifiers: ('autosize', 'size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
     variables: ('--greese-textarea-max-rows', '--greese-textarea-padding', '--greese-textarea-rows',),
@@ -617,7 +617,7 @@ $blocks: (
     parts: ('body', 'description', 'title',),
     modifiers: ('info', 'negative', 'neutral', 'positive', 'primary', 'secondary', 'tertiary', 'warning',),
     part-modifiers: (),
-    variables: ('--greese-motion-enter-ease', '--greese-motion-toast', '--greese-motion-toast-duration', '--greese-toast-tone', '--greese-toast-tone-on',),
+    variables: ('--greese-motion-enter-ease', '--greese-motion-toast', '--greese-motion-toast-duration', '--greese-toast-edge', '--greese-toast-tone', '--greese-toast-tone-on',),
   ),
   'Toaster': (
     parts: ('list',),

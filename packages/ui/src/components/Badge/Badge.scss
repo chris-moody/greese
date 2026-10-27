@@ -7,7 +7,12 @@
     (neutral, primary, secondary, tertiary, accent, positive, negative, warning, info)
   );
 
+  // Every variant is opaque: mixed over a surface, never over transparent,
+  // so whatever a badge is pinned to (an Indicator's avatar or icon) doesn't
+  // show through it. Set the surface to what it sits on, if not the canvas.
   .greese-Badge {
+    --greese-badge-surface: var(--greese-color-canvas);
+
     display: inline-flex;
     gap: var(--greese-space-1);
     align-items: center;
@@ -23,7 +28,11 @@
 
   .greese-Badge--soft {
     color: var(--greese-badge-tone);
-    background-color: color-mix(in oklab, var(--greese-badge-tone) 14%, transparent);
+    background-color: color-mix(
+      in oklab,
+      var(--greese-badge-tone) 14%,
+      var(--greese-badge-surface)
+    );
   }
 
   .greese-Badge--solid {
@@ -33,6 +42,11 @@
 
   .greese-Badge--outline {
     color: var(--greese-badge-tone);
-    border-color: color-mix(in oklab, var(--greese-badge-tone) 55%, transparent);
+    background-color: var(--greese-badge-surface);
+    border-color: color-mix(
+      in oklab,
+      var(--greese-badge-tone) 55%,
+      var(--greese-badge-surface)
+    );
   }
 }

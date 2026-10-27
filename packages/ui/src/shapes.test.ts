@@ -162,6 +162,26 @@ describe('mirrored shapes', () => {
       /\.t:dir\(rtl\) \{\n {2}--greese-shape-clip: polygon\(/
     )
   })
+
+  it('point the other way where the element faces it, and back in right-to-left text', () => {
+    const css = shapeCss(tag(), { selector: '.b', mirrorOn: '.end &', ring: false })
+    // The clip a rule (by its exact selector list) gives.
+    const clipOf = (selectors: string) =>
+      `\n${css}`
+        .split(`\n${selectors} {\n`)
+        .slice(1)
+        .map(
+          (rest) =>
+            rest.slice(0, rest.indexOf('}')).match(/--greese-shape-clip: ([^;]+);/)?.[1]
+        )
+        .find(Boolean)
+    const drawn = clipOf('.b')
+    const flipped = clipOf('.b:dir(rtl),\n.end .b')
+    expect(drawn).toMatch(/^polygon\(/)
+    expect(flipped).toMatch(/^polygon\(/)
+    expect(flipped).not.toBe(drawn)
+    expect(clipOf('.end .b:dir(rtl)')).toBe(drawn)
+  })
 })
 
 describe('shape targets', () => {
@@ -186,6 +206,16 @@ describe('shape targets', () => {
     )
     expect(css).toMatch(
       /\.b\.b--small:hover \{\n {4}--greese-shape-a: 0px;\n {4}--greese-shape-b: 5px;/
+    )
+  })
+
+  it('read a suffix with & anywhere in it as a selector of its own', () => {
+    const css = shapeCss(bevel(), {
+      selector: '.slot',
+      variants: { '.group[data-invalid] &': { '--greese-shape-ring': 'red' } },
+    })
+    expect(css).toMatch(
+      /\.group\[data-invalid\] \.slot \{\n {2}--greese-shape-ring: red;/
     )
   })
 

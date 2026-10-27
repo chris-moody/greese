@@ -15,25 +15,12 @@
     z-index: var(--greese-z-index-sticky);
   }
 
-  .greese-SpeedDial-trigger {
-    display: inline-grid;
-    place-items: center;
-    inline-size: 3.5rem;
-    block-size: 3.5rem;
-    padding: 0;
-    color: var(--greese-color-primary-content);
-    cursor: pointer;
-    background-color: var(--greese-color-primary);
-    border: 0;
+  // A solid primary IconButton, larger and round, lifted off the page.
+  .greese-SpeedDial-trigger.greese-Button {
+    --greese-button-height: 3.5rem;
+
     border-radius: var(--greese-corner-round);
     box-shadow: var(--greese-shadow-lg);
-    transition: background-color var(--greese-duration-fast) var(--greese-easing-standard);
-
-    @include mixins.focus-ring;
-
-    @include mixins.hover {
-      background-color: var(--greese-color-primary-strong);
-    }
   }
 
   .greese-SpeedDial-icon {
@@ -93,17 +80,17 @@
     box-shadow: var(--greese-shadow-sm);
   }
 
-  .greese-SpeedDialAction-icon {
-    display: inline-grid;
-    place-items: center;
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
+  // An outline IconButton's look on the page's overlay surface.
+  .greese-SpeedDialAction-icon.greese-Button {
+    --greese-button-height: 2.75rem;
+    --greese-button-fg: var(--greese-color-fg);
+    --greese-button-bg: var(--greese-color-surface-overlay);
+    --greese-button-bg-hover: var(--greese-color-surface);
+    --greese-button-border: var(--greese-color-border);
+
     margin-inline-end: 0.375rem;
-    background-color: var(--greese-color-surface-overlay);
-    border: 1px solid var(--greese-color-border);
     border-radius: var(--greese-corner-round);
     box-shadow: var(--greese-shadow-md);
-    transition: background-color var(--greese-duration-fast) var(--greese-easing-standard);
 
     > svg {
       inline-size: 1.25rem;
@@ -111,10 +98,11 @@
     }
   }
 
+  // The whole action is the button: hovering its label lights the icon too.
   .greese-SpeedDialAction {
     @include mixins.hover {
       .greese-SpeedDialAction-icon {
-        background-color: var(--greese-color-surface);
+        background-color: var(--greese-button-bg-hover);
       }
     }
   }

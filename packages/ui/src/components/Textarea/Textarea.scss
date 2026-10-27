@@ -2,29 +2,42 @@
 @use '../../styles/controls';
 
 @layer greese.components {
+  // The frame draws the border and states; the textarea inside fills it.
   .greese-Textarea {
-    @include controls.frame;
+    @include controls.frame($focus-within: true);
 
-    display: block;
+    display: flex;
     inline-size: 100%;
+  }
+
+  .greese-Textarea-control {
+    flex: 1 1 auto;
+    min-inline-size: 0;
     padding: var(--greese-space-2) var(--greese-textarea-padding);
-    font-family: inherit;
+    font: inherit;
     line-height: var(--greese-line-height-normal);
+    color: inherit;
     resize: vertical;
+    background: none;
+    border: 0;
+    border-radius: inherit;
+    outline: none;
 
     &::placeholder {
       color: var(--greese-color-fg-muted);
       opacity: 1;
     }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
   }
 
-  .greese-Textarea--autosize {
+  .greese-Textarea--autosize .greese-Textarea-control {
     // Lines from `rows` up to `maxRows`, in the text's own line height.
-    min-block-size: calc(
-      var(--greese-textarea-rows) * 1lh + 2 * var(--greese-space-2) + 2px
-    );
+    min-block-size: calc(var(--greese-textarea-rows) * 1lh + 2 * var(--greese-space-2));
     max-block-size: calc(
-      var(--greese-textarea-max-rows, 1000) * 1lh + 2 * var(--greese-space-2) + 2px
+      var(--greese-textarea-max-rows, 1000) * 1lh + 2 * var(--greese-space-2)
     );
 
     @supports (field-sizing: content) {

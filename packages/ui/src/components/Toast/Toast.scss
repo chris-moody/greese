@@ -41,13 +41,17 @@
   .greese-Toast {
     @include floating.surface;
 
+    // The thick start edge in the toast's tone: a hook a shape theme draws
+    // inside the toast, where its clip would cut a border off.
+    --greese-toast-edge: var(--greese-toast-tone);
+
     display: flex;
     gap: var(--greese-space-2);
     align-items: center;
     padding: var(--greese-space-3);
     padding-inline-start: var(--greese-space-4);
     pointer-events: auto;
-    border-inline-start: 3px solid var(--greese-toast-tone);
+    border-inline-start: 3px solid var(--greese-toast-edge);
 
     // The theme's `toast` role (or a component's `motion()`); the base
     // theme's rises a little as it fades in.
@@ -57,7 +61,7 @@
   }
 
   .greese-Toast--neutral {
-    border-inline-start-color: var(--greese-color-border-strong);
+    --greese-toast-edge: var(--greese-color-border-strong);
   }
 
   .greese-Toast-body {

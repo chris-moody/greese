@@ -53,10 +53,10 @@ the role:
 
 | Role      | Components                                              |
 | --------- | ------------------------------------------------------- |
-| control   | Button and the speed dial                               |
-| field     | Input                                                   |
+| control   | Button (the speed dial's buttons are Buttons)           |
+| field     | Input, Select, Textarea, OtpField's boxes               |
 | container | Card, Dialog, Popover, Menu, Toast, Tile, AccordionItem |
-| small     | Alert and Tooltip                                       |
+| small     | Alert, Tooltip, a Collapsible's header                  |
 | indicator | Badge, Chip, Segment, the segmented control's track     |
 | mark      | Avatar and Status                                       |
 | tab       | Tab                                                     |
@@ -76,6 +76,22 @@ the role:
 A pulsing status dot and an avatar in a group keep their round: the first
 draws its pulse outside the dot, the second a separating ring outside the
 avatar.
+
+A theme can also give one component a shape of its own, outside its role:
+Bevel's avatars are cut squares, Folio's status dots take a fold to their size,
+and both cut chat bubbles round their tail (a target's `mirrorOn` turns an end
+bubble's shape the other way).
+
+**A border along the shape needs a box that doesn't scroll.** A menu scrolls a
+viewport inside it (`.greese-Menu-viewport`) and a tooltip doesn't scroll, so
+both draw their border along the shape. A popover draws one too: it scrolls
+itself only once it's taller than the screen, and then its border scrolls with
+its content. Under a clip, an element's own border is cut away and only the
+shape's border shows, so a part that told something by its border (a toast's
+tone edge, the Outline variant's current segment) keeps it through a hook the
+shape draws: `--greese-toast-edge`, drawn inside, and
+`--greese-segment-current-ring` and `--greese-tab-current-ring`, the color
+alone.
 
 ### Motion themes
 

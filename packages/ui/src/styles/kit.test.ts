@@ -156,7 +156,7 @@ describe('SCSS kit: vars()', () => {
         duration-fast: 60ms,
       ));
     }
-    @include greese.component(FileInput) { @include greese.vars((file-height: 3rem)); }
+    @include greese.component(FileInput) { @include greese.vars((file-font: 1rem)); }
   `)
 
   it('expands short names, and takes full names and tokens', () => {
@@ -165,7 +165,7 @@ describe('SCSS kit: vars()', () => {
       ['--greese-radius-md', '2px'],
       ['--greese-button-on-tone', 'light-dark(white, black)'],
     ])
-    expect(css).toContain('--greese-file-height: 3rem;')
+    expect(css).toContain('--greese-file-font: 1rem;')
   })
 
   it('keeps duration tokens out of reduced motion', () => {

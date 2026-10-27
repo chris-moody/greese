@@ -34,7 +34,11 @@ module.exports = [
     // transitions (23.31 kB).
     // 23.35 kB → 23.4 kB (2026-10-24): an interactive Card's hit strip stays
     // unclipped, so CardMedia rounds its own corners (23.38 kB).
-    limit: '23.4 kB',
+    // 23.4 kB → 23.6 kB (2026-10-27): Progress's `loading` stripes (one rule per
+    // engine's fill pseudo-element, which can't share a selector list), and the
+    // frames Textarea, FileInput and Menu's viewport gained so shape themes reach
+    // them (23.53 kB).
+    limit: '23.6 kB',
   },
   {
     name: 'CSS: utilities.css (the whole set)',

@@ -9,7 +9,22 @@
     @include floating.enter-exit(':popover-open', 0 -0.25rem, popover);
 
     min-inline-size: 11rem;
+
+    // The viewport scrolls, not the menu: a theme's shape draws its border on
+    // the menu's own box, which a scrolling box would carry away.
+    overflow: clip;
+
+    &:popover-open {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .greese-Menu-viewport {
+    min-block-size: 0;
     padding: var(--greese-space-1);
+    overflow: auto;
+    overscroll-behavior: contain;
   }
 
   .greese-MenuItem {
