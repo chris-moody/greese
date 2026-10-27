@@ -37,4 +37,8 @@ export interface RenderedColors {
 
 /** Messages from the preview to the studio. */
 export type FromPreview =
-  { type: 'ready' } | ({ type: 'pick' } & Picked) | ({ type: 'colors' } & RenderedColors)
+  | { type: 'ready' }
+  | ({ type: 'pick' } & Picked)
+  | ({ type: 'colors' } & RenderedColors)
+  /** The previewed content's height, in px: wide, the frame takes it, and the page scrolls. */
+  | { type: 'size'; height: number }

@@ -21,13 +21,15 @@ interface PreviewSync {
   onColors: (colors: RenderedColors | undefined) => void
   /** A component picked in the preview with Inspect on. */
   onPick: (pick: Picked) => void
+  /** The preview's content height, in px. */
+  onSize: (height: number) => void
 }
 
 /**
  * Keeps the preview (an iframe, so the theme never restyles the editor) in
  * step with the studio: its CSS, scope, effects, inspect state and featured
  * component, sent as they change and all again when it (re)loads; and hears
- * back the colors it renders and the component Inspect picks.
+ * back the colors it renders, the component Inspect picks and its height.
  */
 export const usePreviewSync = ({
   frame,
@@ -41,6 +43,7 @@ export const usePreviewSync = ({
   onReplay,
   onColors,
   onPick,
+  onSize,
 }: PreviewSync): void => {
   const post = useCallback(
     (message: ToPreview) =>
@@ -83,9 +86,9 @@ export const usePreviewSync = ({
   }, [replay, post, onReplay])
 
   // The latest callbacks, so the listener isn't re-added for each new function.
-  const handlers = useRef({ onColors, onPick })
+  const handlers = useRef({ onColors, onPick, onSize })
   useEffect(() => {
-    handlers.current = { onColors, onPick }
+    handlers.current = { onColors, onPick, onSize }
   })
   useEffect(() => {
     const onMessage = (event: MessageEvent<FromPreview>) => {
@@ -105,6 +108,7 @@ export const usePreviewSync = ({
         const { type: _type, ...pick } = event.data
         handlers.current.onPick(pick)
       }
+      if (event.data.type === 'size') handlers.current.onSize(event.data.height)
     }
     window.addEventListener('message', onMessage)
     return () => window.removeEventListener('message', onMessage)

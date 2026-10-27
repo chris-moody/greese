@@ -1,4 +1,8 @@
+import { readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
+
+const theme = (id: string) =>
+  readFileSync(new URL(`../../../packages/ui/themes/${id}.css`, import.meta.url), 'utf8')
 
 test('a docs page is a page of the app: its header, its theme, its examples', async ({
   page,
@@ -113,3 +117,89 @@ test('every page ends with the footer', async ({ page }) => {
     await expect(page.locator('.site-footer')).toHaveCount(1)
   }
 })
+
+test('from md the pages are a column beside the page, under every motion theme', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1200, height: 800 })
+  // A motion theme's drawer exit (Snappy's scales it to nothing, a wipe masks
+  // it away) is for the sheet below md; the docked column is never closed.
+  for (const id of ['snappy', 'gentle', 'wipe', 'pocket', 'depth']) {
+    await page.goto('/docs/forms-button')
+    await page.addStyleTag({ content: theme(id) })
+    const sidebar = page.locator('.docs-sidebar')
+    await expect(sidebar, id).toBeVisible()
+    expect(
+      await sidebar.evaluate((el) => {
+        const s = getComputedStyle(el)
+        return [s.scale, s.maskImage, Math.round(el.getBoundingClientRect().width)]
+      }),
+      id
+    ).toEqual(['none', 'none', 240])
+  }
+})
+
+for (const [path, sidebar, content] of [
+  ['/docs/forms-button', '.docs-sidebar', '.docs-main'],
+  ['/studio', '.studio-editor', '.studio-preview-frame'],
+] as const)
+  test(`from md, ${path}'s sidebar stays under the header to the end, the content isn't held to the screen, and the footer follows it`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.goto(path)
+    const footer = page.locator('.greese-Footer')
+    await expect(footer).toBeAttached()
+    // The footer is the content's own sibling, in the column beside the sidebar.
+    expect(
+      await page
+        .locator(content)
+        .evaluate(
+          (el) =>
+            el.parentElement === document.querySelector('.greese-Footer')?.parentElement
+        )
+    ).toBe(true)
+    // The page scrolls: the content isn't fitted to the screen.
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollHeight))
+      .toBeGreaterThan(1600)
+    const top = (await page.locator(sidebar).boundingBox())!
+    // The preview may still be growing as it loads: scroll to the footer itself.
+    await footer.scrollIntoViewIfNeeded()
+    await expect(footer).toBeInViewport()
+    const bottom = (await page.locator(sidebar).boundingBox())!
+    expect(Math.abs(bottom.y - top.y)).toBeLessThan(1)
+    expect(Math.abs(bottom.height - top.height)).toBeLessThan(1)
+  })
+
+for (const [path, bar, trigger, sidebar] of [
+  ['/docs/forms-button', '.docs-bar', 'Docs pages', '.docs-sidebar'],
+  ['/studio', '.studio-drawer-bar', 'Theme editor', '.studio-editor'],
+] as const)
+  test(`below md, ${path}'s sidebar opens from a bar flush under the header that stays there, and the page scrolls`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 800 })
+    await page.goto(path)
+    const at = async () => (await page.locator(bar).boundingBox())!.y
+    // No gap above the bar: it starts where the header ends (once the fonts
+    // have settled the header's height).
+    await expect
+      .poll(async () => {
+        const header = (await page.locator('.greese-Header').boundingBox())!
+        return Math.abs((await at()) - (header.y + header.height))
+      })
+      .toBeLessThan(1)
+    // The page itself scrolls (nothing is fitted to the screen), and the bar
+    // stays where it was.
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollHeight))
+      .toBeGreaterThan(1600)
+    const before = await at()
+    await page.locator('.greese-Footer').scrollIntoViewIfNeeded()
+    expect(await page.evaluate(() => scrollY)).toBeGreaterThan(800)
+    expect(Math.abs((await at()) - before)).toBeLessThan(1)
+    await expect(page.locator(sidebar)).toBeHidden()
+    await page.locator(bar).getByRole('button', { name: trigger }).click()
+    await expect(page.locator(sidebar)).toBeVisible()
+  })

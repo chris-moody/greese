@@ -1,11 +1,18 @@
 import '../styles/library.ts'
-import { useEffect, useRef, useState, type JSX } from 'react'
+import {
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type JSX,
+} from 'react'
 import {
   Alert,
   Button,
-  Icon,
-  IconButton,
-  Show,
+  Sidebar,
+  SidebarLayout,
   Stack,
   Tab,
   TabList,
@@ -15,6 +22,7 @@ import {
   useColorScheme,
 } from '@greese/react'
 import { icons } from '../icons.tsx'
+import { Footer } from '../sections/LazyFooter.tsx'
 import { useShell } from '../shell.ts'
 import { hosted } from './api.ts'
 import { PaletteOptions } from './fields.tsx'
@@ -43,14 +51,14 @@ import './studio.scss'
 export const StudioPage = (): JSX.Element => {
   const { spec, setSpec, rendered, setRendered, replay } = useShell()
   const { scheme } = useColorScheme()
-  // Below md the editor is a drawer over the preview; from md it's a column.
-  const [drawer, setDrawer] = useState(false)
   // Inspect: a click in the preview picks the component to edit.
   const [inspect, setInspect] = useState(false)
   const [tab, setTab] = useStudioTab()
   const [component, setComponent] = useState('Button')
   const [picked, setPicked] = useState<Picked>()
   const frame = useRef<HTMLIFrameElement>(null)
+  // Wide, the frame is as tall as what it shows, and the page scrolls.
+  const [previewHeight, setPreviewHeight] = useState<number>()
   const lab = useGreeseLab(spec, setSpec)
   const theme = useThemeFile(spec, setSpec)
   const { file, loadError, dirty, changedOnDisk, savedNote } = theme
@@ -72,6 +80,7 @@ export const StudioPage = (): JSX.Element => {
       setComponent(pick.block)
       setTab('components')
     },
+    onSize: setPreviewHeight,
   })
   // The rendered colors belong to this page's preview.
   useEffect(() => () => setRendered(undefined), [setRendered])
@@ -79,123 +88,122 @@ export const StudioPage = (): JSX.Element => {
   // The theme's own breakpoints: the Code panel's app setup needs them too.
   const custom = customBreakpoints(spec)
 
+  // The editor's id, for the bar's trigger: SidebarLayout makes it, and the
+  // library's SidebarTrigger can't show a word beside its icon (as the docs).
+  const editor = useRef<HTMLElement>(null)
+  const [editorId, setEditorId] = useState<string>()
+  useLayoutEffect(() => setEditorId(editor.current?.id), [])
+
   const save = async () => {
     const refused = await theme.save()
     if (refused) setErrors(refused)
   }
 
   return (
-    <div className="studio">
-      <div className="studio-body">
-        <PaletteOptions />
-        <aside
-          id="studio-editor"
-          className="studio-editor"
-          aria-label="Theme editor"
-          data-open={drawer || undefined}
-          onKeyDown={(e) => e.key === 'Escape' && setDrawer(false)}
-        >
-          <StudioToolbar
-            inspect={inspect}
-            onInspect={setInspect}
-            saving={theme.saving}
-            canSave={dirty && errors.length === 0}
-            savedNote={savedNote}
-            onSave={() => void save()}
-          />
-          {file && (
-            <Text variant="p3" tone="muted" className="studio-file">
-              {file.file}
-            </Text>
-          )}
-          {loadError && (
-            <Alert tone="negative" title="Read-only">
-              {loadError}
-            </Alert>
-          )}
-          {changedOnDisk && dirty && (
-            <Alert tone="warning" title="The theme file changed on disk">
-              <Stack direction="row" gap={2}>
-                <Button size="sm" onClick={() => void theme.load()}>
-                  Load it
-                </Button>
-                <Button size="sm" variant="ghost" onClick={theme.keepMine}>
-                  Keep mine
-                </Button>
-              </Stack>
-            </Alert>
-          )}
-          {errors.length > 0 && (
-            <Alert tone="negative" title="The theme doesn’t compile">
-              <pre className="studio-errors">{errors.join('\n')}</pre>
-            </Alert>
-          )}
-          <Tabs value={tab} onValueChange={(v) => setTab(v as StudioTab)}>
-            <TabList aria-label="Editor">
-              <Tab value="tokens">Tokens</Tab>
-              <Tab value="components">Components</Tab>
-              <Tab value="shapes">Shapes</Tab>
-              <Tab value="motion">Motion</Tab>
-              <Tab value="code">Code</Tab>
-            </TabList>
-            <TabPanel value="tokens">
-              <TokensPanel
-                spec={spec}
-                onChange={setSpec}
-                rendered={rendered}
-                building={building}
+    // Below md the editor is a sheet opened from the bar above the preview;
+    // from md, a column that stays in view while the page scrolls.
+    <SidebarLayout breakpoint="md" className="studio">
+      <PaletteOptions />
+      <Sidebar ref={editor} label="Theme editor" className="studio-editor">
+        <StudioToolbar
+          inspect={inspect}
+          onInspect={setInspect}
+          saving={theme.saving}
+          canSave={dirty && errors.length === 0}
+          savedNote={savedNote}
+          onSave={() => void save()}
+        />
+        {file && (
+          <Text variant="p3" tone="muted" className="studio-file">
+            {file.file}
+          </Text>
+        )}
+        {loadError && (
+          <Alert tone="negative" title="Read-only">
+            {loadError}
+          </Alert>
+        )}
+        {changedOnDisk && dirty && (
+          <Alert tone="warning" title="The theme file changed on disk">
+            <Stack direction="row" gap={2}>
+              <Button size="sm" onClick={() => void theme.load()}>
+                Load it
+              </Button>
+              <Button size="sm" variant="ghost" onClick={theme.keepMine}>
+                Keep mine
+              </Button>
+            </Stack>
+          </Alert>
+        )}
+        {errors.length > 0 && (
+          <Alert tone="negative" title="The theme doesn’t compile">
+            <pre className="studio-errors">{errors.join('\n')}</pre>
+          </Alert>
+        )}
+        <Tabs value={tab} onValueChange={(v) => setTab(v as StudioTab)}>
+          <TabList aria-label="Editor">
+            <Tab value="tokens">Tokens</Tab>
+            <Tab value="components">Components</Tab>
+            <Tab value="shapes">Shapes</Tab>
+            <Tab value="motion">Motion</Tab>
+            <Tab value="code">Code</Tab>
+          </TabList>
+          <TabPanel value="tokens">
+            <TokensPanel
+              spec={spec}
+              onChange={setSpec}
+              rendered={rendered}
+              building={building}
+            />
+          </TabPanel>
+          <TabPanel value="components">
+            <ComponentsPanel
+              spec={spec}
+              onChange={setSpec}
+              component={component}
+              onComponent={setComponent}
+              picked={picked}
+              errorAt={errorAt}
+            />
+          </TabPanel>
+          <TabPanel value="shapes">
+            <ShapesPanel spec={spec} onChange={setSpec} />
+          </TabPanel>
+          <TabPanel value="motion">
+            <MotionPanel spec={spec} onChange={setSpec} lab={lab} />
+          </TabPanel>
+          <TabPanel value="code">
+            {/* Only while open: it colours the whole compiled CSS. */}
+            {tab === 'code' && (
+              <CodePanel
+                scss={compiled.scss}
+                css={compiled.css}
+                effects={compiled.effects}
+                outputs={file?.outputs ?? []}
+                spec={hosted ? spec : undefined}
+                breakpoints={custom}
               />
-            </TabPanel>
-            <TabPanel value="components">
-              <ComponentsPanel
-                spec={spec}
-                onChange={setSpec}
-                component={component}
-                onComponent={setComponent}
-                picked={picked}
-                errorAt={errorAt}
-              />
-            </TabPanel>
-            <TabPanel value="shapes">
-              <ShapesPanel spec={spec} onChange={setSpec} />
-            </TabPanel>
-            <TabPanel value="motion">
-              <MotionPanel spec={spec} onChange={setSpec} lab={lab} />
-            </TabPanel>
-            <TabPanel value="code">
-              {/* Only while open: it colours the whole compiled CSS. */}
-              {tab === 'code' && (
-                <CodePanel
-                  scss={compiled.scss}
-                  css={compiled.css}
-                  effects={compiled.effects}
-                  outputs={file?.outputs ?? []}
-                  spec={hosted ? spec : undefined}
-                  breakpoints={custom}
-                />
-              )}
-            </TabPanel>
-          </Tabs>
-        </aside>
-        <Show below="md">
-          <div
-            className="studio-scrim"
-            data-open={drawer || undefined}
-            onClick={() => setDrawer(false)}
-            aria-hidden="true"
-          />
-          <IconButton
-            className="studio-drawer-toggle"
-            label={drawer ? 'Close the editor' : 'Open the editor'}
-            aria-controls="studio-editor"
-            aria-expanded={drawer}
-            onClick={() => setDrawer((open) => !open)}
-            variant="solid"
-            tone="primary"
+            )}
+          </TabPanel>
+        </Tabs>
+      </Sidebar>
+      <div className="studio-main">
+        <div className="studio-drawer-bar">
+          <Text variant="p3" tone="muted">
+            Theme preview
+          </Text>
+          <Button
+            size="sm"
+            variant="soft"
+            tone="neutral"
+            endIcon={icons.sliders}
+            popoverTarget={editorId}
+            aria-label="Theme editor"
+            className="studio-drawer-trigger"
           >
-            <Icon>{drawer ? icons.close : icons.sliders}</Icon>
-          </IconButton>
-        </Show>
+            Editor
+          </Button>
+        </div>
         {tab === 'motion' && <GreeseStage lab={lab} />}
         <iframe
           hidden={tab === 'motion'}
@@ -203,8 +211,16 @@ export const StudioPage = (): JSX.Element => {
           src={`${import.meta.env.BASE_URL}preview.html`}
           title="Theme preview"
           className="studio-preview-frame"
+          style={
+            previewHeight
+              ? ({ '--studio-preview-height': `${previewHeight}px` } as CSSProperties)
+              : undefined
+          }
         />
+        <Suspense>
+          <Footer />
+        </Suspense>
       </div>
-    </div>
+    </SidebarLayout>
   )
 }

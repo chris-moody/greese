@@ -20,6 +20,26 @@ import { measureColors } from './measure.ts'
 import './preview.scss'
 
 const post = (message: FromPreview) => window.parent.postMessage(message, location.origin)
+
+/**
+ * Reports the content's height to the studio, which sizes the frame to it on
+ * wide screens, so the page scrolls rather than the frame. The content, not
+ * the page: the root is at least the frame's height (100vh), which would
+ * never let the frame shrink.
+ */
+const sizes =
+  typeof ResizeObserver === 'undefined'
+    ? undefined
+    : new ResizeObserver(([entry]) => {
+        if (!entry) return
+        const bottom = entry.target.getBoundingClientRect().bottom + scrollY
+        post({ type: 'size', height: Math.ceil(bottom) })
+      })
+const reportSize = (el: HTMLElement | null) => {
+  if (!el || !sizes) return
+  sizes.observe(el)
+  return () => sizes.unobserve(el)
+}
 const themeStyle = document.getElementById('theme')!
 // The prebuilt stylesheet, as text: it's dropped when the theme brings a
 // whole one, built for its own breakpoints.
@@ -105,7 +125,7 @@ const Preview = (): JSX.Element => {
   return (
     <ThemeProvider theme={scope.theme} asChild>
       <div className="studio-preview-root">
-        <Container size="lg" key={run} className="studio-preview">
+        <Container size="lg" key={run} className="studio-preview" ref={reportSize}>
           <Stack gap={7}>
             <ComponentPreview block={feature} />
             <Gallery />

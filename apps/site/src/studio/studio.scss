@@ -4,19 +4,54 @@
 /* The editor's own layout. The editor wears the theme being chosen, like
    every page; the preview iframe shows it with your edits too. */
 
-/* Under the shared header. Wide: the page is exactly the screen tall, and the
-   editor and the preview scroll on their own (see .site--studio below). */
+/* Below the shared header. */
+$below-header: calc(
+  100dvh - var(--greese-header-height, 3.5rem) - var(--greese-header-inset, 1px)
+);
+
+/* The page scrolls at every width: the preview at its content's full height
+   (the frame reports it) or the motion stage, then the footer. The editor is
+   a Sidebar: below md a sheet opened from the bar above the preview, from md
+   a column that stays under the header and scrolls on its own. */
 .studio {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-block-size: 0;
+  // The editor sticks under the app's header, not under the window's top.
+  --greese-sidebar-top: calc(
+    var(--greese-header-height, 3.5rem) + var(--greese-header-inset, 1px)
+  );
+  --greese-sidebar-width: 26rem;
+
+  min-block-size: auto;
+
+  @include greese.up(md) {
+    --greese-sidebar-width: clamp(24rem, 36vw, 34rem);
+  }
 }
 
-.site--studio {
+/* The bar, the preview (or the motion stage) and the footer after it. */
+.studio-main {
   display: flex;
   flex-direction: column;
-  min-block-size: 100dvh;
+  min-inline-size: 0;
+}
+
+/* Below md: stuck under the header, the editor's button at its end; from md
+   the editor is a column of the page, so there's nothing to open. */
+.studio-drawer-bar {
+  position: sticky;
+  inset-block-start: var(--greese-sidebar-top);
+  z-index: 2;
+  display: flex;
+  gap: var(--greese-space-2);
+  align-items: center;
+  justify-content: space-between;
+  min-block-size: 2.5rem;
+  padding: var(--greese-space-2) var(--greese-space-4);
+  background-color: var(--greese-color-canvas);
+  border-block-end: 1px solid var(--greese-color-border);
+
+  @include greese.up(md) {
+    display: none;
+  }
 }
 
 .studio-bar {
@@ -38,87 +73,10 @@
   font-family: var(--greese-font-mono);
 }
 
-/* Phones: the page scrolls, editor above the preview. Wider: side by side,
-   each scrolling on its own. */
-.studio-body {
-  display: grid;
-  flex: 1;
-  position: relative;
-  min-block-size: 0;
-  overflow: hidden;
-  grid-template-rows: minmax(0, 1fr);
-  /* One column that never grows past the screen, whatever scrolls inside. */
-  grid-template-columns: minmax(0, 1fr);
-}
-
 .studio-editor {
-  /* The containing block for the visually hidden inputs inside (switches,
-     segments): without it they sit against the page and make it scroll. */
-  position: relative;
   container-type: inline-size;
-  display: flex;
-  flex-direction: column;
   gap: var(--greese-space-4);
-  min-inline-size: 0;
   padding: var(--greese-space-4);
-  background: var(--greese-color-surface);
-  /* Below md: a drawer over the preview, off-canvas until opened. Hidden, it
-     also leaves the tab order. */
-  position: absolute;
-  inset-block: 0;
-  inset-inline-start: 0;
-  z-index: 3;
-  inline-size: min(26rem, 100% - 3rem);
-  overflow: auto;
-  visibility: hidden;
-  border-inline-end: 1px solid var(--greese-color-border);
-  box-shadow: var(--greese-shadow-lg);
-  transform: translateX(-100%);
-  transition:
-    transform 0.2s ease,
-    visibility 0.2s;
-
-  &[data-open] {
-    visibility: visible;
-    transform: none;
-  }
-
-  &:dir(rtl) {
-    transform: translateX(100%);
-
-    &[data-open] {
-      transform: none;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
-}
-
-.studio-scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  visibility: hidden;
-  background: color-mix(in srgb, var(--greese-color-canvas) 60%, transparent);
-  opacity: 0;
-  transition:
-    opacity 0.2s,
-    visibility 0.2s;
-
-  &[data-open] {
-    visibility: visible;
-    opacity: 1;
-  }
-}
-
-.studio-drawer-toggle {
-  position: absolute;
-  inset-block-end: var(--greese-space-4);
-  inset-inline-end: var(--greese-space-3);
-  z-index: 4;
-  box-shadow: var(--greese-shadow-lg);
 }
 
 .studio-preview-frame[hidden] {
@@ -127,31 +85,15 @@
 
 .studio-preview-frame {
   display: block;
+  flex: none;
   inline-size: 100%;
-  block-size: 100%;
+  block-size: max(var(--studio-preview-height, 0px), #{$below-header});
   border: 0;
 }
 
-@include greese.up(md) {
-  .site--studio {
-    block-size: 100dvh;
-  }
-
-  .studio-body {
-    grid-template-rows: none;
-    grid-template-columns: minmax(24rem, 34rem) 1fr;
-  }
-
-  .studio-editor {
-    position: relative;
-    inset: auto;
-    z-index: auto;
-    inline-size: auto;
-    visibility: visible;
-    box-shadow: none;
-    transform: none;
-    transition: none;
-  }
+.studio-main > .studio-stage {
+  min-block-size: $below-header;
+  overflow: visible;
 }
 
 /* Label above the value in a narrow editor, beside it when there's room. */
@@ -530,7 +472,7 @@ code.studio-row-label {
 }
 
 .studio-codebox-layer,
-.studio-codebox-input {
+.studio-codebox-input > .greese-Textarea-control {
   padding: var(--greese-space-3);
   margin: 0;
   font: inherit;
@@ -557,27 +499,42 @@ code.studio-row-label {
   }
 }
 
+// The library Textarea's frame: none of its own, the code box is the frame
+// (a theme's field shape included).
 .studio-codebox-input {
   position: relative;
   display: block;
-  inline-size: 100%;
-  min-block-size: 0;
-  overflow: auto;
+  font: inherit;
   color: transparent;
   caret-color: var(--greese-color-fg);
-  resize: vertical;
   background: transparent;
   border: 0;
   border-radius: inherit;
   outline: 0;
   box-shadow: none;
-  // The library's Textarea grows to its content; the code box keeps its rows
-  // and scrolls, with the layer under it following (CodeEditor's onScroll).
-  field-sizing: fixed;
+  clip-path: none;
 
-  &::selection {
-    color: transparent;
-    background: color-mix(in srgb, var(--greese-color-primary) 30%, transparent);
+  &::after {
+    display: none;
+  }
+
+  > .greese-Textarea-control {
+    position: relative;
+    display: block;
+    inline-size: 100%;
+    min-block-size: 0;
+    max-block-size: none;
+    overflow: auto;
+    resize: vertical;
+
+    // The library's Textarea grows to its content; the code box keeps its rows
+    // and scrolls, with the layer under it following (CodeEditor's onScroll).
+    field-sizing: fixed;
+
+    &::selection {
+      color: transparent;
+      background: color-mix(in srgb, var(--greese-color-primary) 30%, transparent);
+    }
   }
 }
 

@@ -127,7 +127,9 @@ test('the code box draws its text where you type and select it, scrolled or not'
       let n = from
       while (!lines[n - 1]!.trim()) n++
       const column = lines[n - 1]!.search(/\S/)
-      const code = ta.parentElement!.querySelector('.studio-codebox-layer code')!
+      const code = ta
+        .closest('.studio-codebox')!
+        .querySelector('.studio-codebox-layer code')!
       const walker = document.createTreeWalker(code, NodeFilter.SHOW_TEXT)
       let line = 1
       let col = 0
