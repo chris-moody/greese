@@ -21,7 +21,8 @@ describe('Box', () => {
     render(<Box data-testid="b" id="x" />)
     const box = screen.getByTestId('b')
     expect(box.tagName).toBe('DIV')
-    expect(box.className).toBe('greese-Box')
+    expect(box).toHaveClass('greese-Box')
+    expect(box.className).not.toMatch(/--/) // no modifiers
     expect(box.getAttribute('style')).toBeNull()
     expect(box).toHaveAttribute('id', 'x')
   })

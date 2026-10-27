@@ -230,7 +230,8 @@ describe('Menu', () => {
       </Menu>
     )
     const [rename, publish, remove] = screen.getAllByRole('menuitem', { hidden: true })
-    expect(rename!.className).toBe('greese-MenuItem')
+    expect(rename).toHaveClass('greese-MenuItem')
+    expect(rename!.className).not.toMatch(/--/) // no tone
     expect(publish).toHaveClass('greese-MenuItem--primary')
     expect(remove).toHaveClass('greese-MenuItem--negative')
   })

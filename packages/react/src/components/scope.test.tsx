@@ -1,5 +1,6 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { installIntersectionObserver, intersect, watching } from '../test/intersection.ts'
 import { resolveGreese } from '../utils/greese.ts'
 import {
   applyScopes,
@@ -109,26 +110,15 @@ describe('applyScopes', () => {
 
 describe('holdUntilVisible', () => {
   it('waits for the scope to scroll into view, then lets it play', () => {
-    let callback!: IntersectionObserverCallback
-    const disconnect = vi.fn()
-    vi.stubGlobal(
-      'IntersectionObserver',
-      class {
-        constructor(cb: IntersectionObserverCallback) {
-          callback = cb
-        }
-        observe() {}
-        disconnect = disconnect
-      }
-    )
+    installIntersectionObserver()
     const el = document.createElement('div')
     holdUntilVisible(el, false)
     expect(el.dataset.greeseScope).toBe('pending')
-    callback([{ isIntersecting: false } as IntersectionObserverEntry], {} as never)
+    intersect({ isIntersecting: false })
     expect(el.dataset.greeseScope).toBe('pending')
-    callback([{ isIntersecting: true } as IntersectionObserverEntry], {} as never)
+    intersect({ isIntersecting: true })
     expect(el.dataset.greeseScope).toBeUndefined()
-    expect(disconnect).toHaveBeenCalled()
+    expect(watching()).toBe(0) // it lets go of the element
     vi.unstubAllGlobals()
   })
 

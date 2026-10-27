@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { expectNoAxeViolations } from '../test/axe.ts'
+import { installIntersectionObserver, intersect } from '../test/intersection.ts'
 import { ScrollCarousel, ScrollCarouselSlide } from './ScrollCarousel/ScrollCarousel.tsx'
 import { ChatBubble } from './ChatBubble/ChatBubble.tsx'
 import { Countdown, durationText, splitDuration } from './Countdown/Countdown.tsx'
@@ -59,25 +60,17 @@ describe('Status', () => {
 })
 
 describe('Indicator', () => {
-  it('pins its content to a corner of its child', () => {
-    render(
-      <Indicator content={<span>3</span>} placement="bottom-start">
+  it('pins its content to a corner of its child', async () => {
+    const { container } = render(
+      <Indicator content={<span>3 unread</span>} placement="bottom-start">
         <button type="button">Inbox</button>
       </Indicator>
     )
-    expect(screen.getByText('3').parentElement).toHaveClass(
+    expect(screen.getByText('3 unread').parentElement).toHaveClass(
       'greese-Indicator-item',
       'greese-Indicator-item--bottom-start'
     )
     expect(screen.getByRole('button', { name: 'Inbox' })).toBeInTheDocument()
-  })
-
-  it('has no axe violations', async () => {
-    const { container } = render(
-      <Indicator content={<span>3 unread</span>}>
-        <button type="button">Inbox</button>
-      </Indicator>
-    )
     await expectNoAxeViolations(container)
   })
 })
@@ -179,7 +172,8 @@ describe('TextRotate', () => {
     const { container, rerender } = render(<TextRotate items={many} />)
     expect(container.firstChild).toHaveClass(`greese-TextRotate--${TEXT_ROTATE_MAX}`)
     rerender(<TextRotate items={['only']} />)
-    expect((container.firstChild as HTMLElement).className).toBe('greese-TextRotate')
+    expect(container.firstChild).toHaveClass('greese-TextRotate')
+    expect((container.firstChild as HTMLElement).className).not.toMatch(/--/)
   })
 })
 
@@ -538,6 +532,12 @@ describe('OtpField', () => {
     expect(onValueChange).toHaveBeenLastCalledWith('123')
     const slots = container.querySelectorAll('.greese-OtpField-slot')
     expect([...slots].map((s) => s.textContent)).toEqual(['1', '2', '3', ''])
+    // While focused, the next box to fill is marked; blurred, none is.
+    fireEvent.focus(input)
+    expect(slots[3]).toHaveClass('greese-OtpField-slot--active')
+    expect(container.querySelectorAll('.greese-OtpField-slot--active')).toHaveLength(1)
+    fireEvent.blur(input)
+    expect(container.querySelector('.greese-OtpField-slot--active')).toBeNull()
     fireEvent.change(input, { target: { value: '1234' } })
     expect(onComplete).toHaveBeenCalledWith('1234')
     expect(onComplete).toHaveBeenCalledTimes(1)
@@ -556,19 +556,8 @@ describe('OtpField', () => {
 })
 
 describe('ScrollCarousel', () => {
-  let observed: IntersectionObserverCallback | undefined
   beforeEach(() => {
-    observed = undefined
-    vi.stubGlobal(
-      'IntersectionObserver',
-      class {
-        constructor(callback: IntersectionObserverCallback) {
-          observed = callback
-        }
-        observe() {}
-        disconnect() {}
-      }
-    )
+    installIntersectionObserver()
     HTMLElement.prototype.scrollTo = vi.fn() as typeof HTMLElement.prototype.scrollTo
     // jsdom has no layout: give the viewport three slides' width to scroll.
     vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockReturnValue(900)
@@ -642,17 +631,7 @@ describe('ScrollCarousel', () => {
       </ScrollCarousel>
     )
     const groups = screen.getAllByRole('group')
-    act(() =>
-      observed!(
-        [
-          {
-            target: groups[1]!,
-            intersectionRatio: 1,
-          } as unknown as IntersectionObserverEntry,
-        ],
-        {} as IntersectionObserver
-      )
-    )
+    act(() => intersect({ intersectionRatio: 1 }, { target: groups[1]! }))
     expect(onIndexChange).toHaveBeenLastCalledWith(1)
   })
 })

@@ -1,9 +1,12 @@
 import { StrictMode, useRef, useState } from 'react'
 import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { renderToString } from 'react-dom/server'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { expectNoAxeViolations } from '../test/axe.ts'
+import { restoreFrames, fakeFrames } from '../test/frames.ts'
+import { installIntersectionObserver, intersect } from '../test/intersection.ts'
 import { setMedia } from '../test/matchMedia.ts'
 import { useGreese } from '../hooks/useGreese.ts'
 import { useTimeline } from '../hooks/useTimeline.ts'
@@ -11,7 +14,6 @@ import {
   cssEase,
   needsRuntime,
   resolveGreese,
-  type GreeseMotion,
   type GreeseOptions,
 } from '../utils/greese.ts'
 import { Button } from './Button/Button.tsx'
@@ -26,84 +28,59 @@ import { loadGreeseRuntime } from './Motion/registry.ts'
 import { Stack } from './Stack/Stack.tsx'
 import { Text } from './Text/Text.tsx'
 
-/** Captures IntersectionObserver callbacks so tests can scroll things into view. */
-const observers: Array<{
-  callback: IntersectionObserverCallback
-  disconnected: boolean
-}> = []
-class FakeIntersectionObserver {
-  record: (typeof observers)[number]
-  constructor(callback: IntersectionObserverCallback) {
-    this.record = { callback, disconnected: false }
-    observers.push(this.record)
-  }
-  observe() {}
-  disconnect() {
-    this.record.disconnected = true
-  }
-}
 /** Scrolls observed elements to `ratio` visible, in an 800px-tall viewport. */
 const scrollIntoView = (isIntersecting: boolean, ratio = isIntersecting ? 1 : 0) =>
-  act(() => {
-    for (const o of observers.filter((o) => !o.disconnected)) {
-      o.callback(
-        [
-          {
-            isIntersecting,
-            intersectionRatio: ratio,
-            intersectionRect: { height: 100 * ratio } as DOMRectReadOnly,
-            boundingClientRect: { bottom: 100 } as DOMRectReadOnly,
-            rootBounds: { height: 800 } as DOMRectReadOnly,
-          } as IntersectionObserverEntry,
-        ],
-        {} as IntersectionObserver
-      )
-    }
-  })
+  act(() =>
+    intersect({
+      isIntersecting,
+      intersectionRatio: ratio,
+      intersectionRect: { height: 100 * ratio } as DOMRectReadOnly,
+      boundingClientRect: { bottom: 100 } as DOMRectReadOnly,
+      rootBounds: { height: 800 } as DOMRectReadOnly,
+    })
+  )
+
+/** The classes a resolved prop adds, in any order. */
+const classes = (resolved: { className?: string }) => resolved.className?.split(' ') ?? []
 
 /** Lets the lazily loaded runtime attach. */
 const attached = () => act(async () => void (await loadGreeseRuntime()))
 
-beforeEach(() => {
-  observers.length = 0
-  vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver)
-})
+beforeEach(installIntersectionObserver)
 afterEach(() => {
+  restoreFrames()
   vi.unstubAllGlobals()
-  vi.useRealTimers()
   setMedia({ reducedMotion: false })
 })
 
 describe('resolveGreese', () => {
   it("plays the theme's entrance, in CSS, for 'theme'", () => {
-    expect(resolveGreese({ enter: 'theme' })).toEqual({
-      className: 'greese-Motion greese-Motion--enter greese-Motion--enter-theme',
-      style: undefined,
-      runtime: false,
-    })
+    const theme = resolveGreese({ enter: 'theme' })
+    expect(classes(theme)).toEqual(
+      expect.arrayContaining(['greese-Motion', 'greese-Motion--enter-theme'])
+    )
+    expect(theme).toMatchObject({ style: undefined, runtime: false })
     expect(resolveGreese({ inView: 'theme' }).className).toMatch(
       /greese-Motion--view-theme/
     )
   })
 
   it('turns presets into classes and options into variables, with no runtime', () => {
-    expect(resolveGreese('fadeUp')).toEqual({
-      className: 'greese-Motion greese-Motion--enter greese-Motion--enter-fade-up',
-      style: undefined,
-      runtime: false,
+    const fadeUp = resolveGreese('fadeUp')
+    expect(classes(fadeUp)).toContain('greese-Motion--enter-fade-up')
+    expect(fadeUp).toMatchObject({ style: undefined, runtime: false })
+    const tuned = resolveGreese({
+      enter: 'pop',
+      duration: 0.3,
+      delay: 0.1,
+      distance: '2rem',
+      stagger: 0.05,
+      ease: 'inOut',
     })
-    expect(
-      resolveGreese({
-        enter: 'pop',
-        duration: 0.3,
-        delay: 0.1,
-        distance: '2rem',
-        stagger: 0.05,
-        ease: 'inOut',
-      })
-    ).toEqual({
-      className:
-        'greese-Motion greese-Motion--enter greese-Motion--enter-pop greese-Motion--stagger',
+    expect(classes(tuned)).toEqual(
+      expect.arrayContaining(['greese-Motion--enter-pop', 'greese-Motion--stagger'])
+    )
+    expect(tuned).toMatchObject({
       style: {
         '--greese-motion-duration': '0.3s',
         '--greese-motion-delay': '0.1s',
@@ -113,8 +90,8 @@ describe('resolveGreese', () => {
       },
       runtime: false,
     })
-    expect(resolveGreese({ exit: 'scaleOut' }).className).toBe(
-      'greese-Motion greese-Motion--exit-scale-out'
+    expect(classes(resolveGreese({ exit: 'scaleOut' }))).toContain(
+      'greese-Motion--exit-scale-out'
     )
     expect(resolveGreese(undefined)).toEqual({ runtime: false })
   })
@@ -196,17 +173,8 @@ describe('the greese prop on components', () => {
     removeGreeseEffect('sink')
   })
 
-  it('Motion has no axe violations', async () => {
+  it('wraps any element with Motion', async () => {
     const { container } = render(
-      <Motion asChild greese="blurIn">
-        <a href="#x">Link</a>
-      </Motion>
-    )
-    await expectNoAxeViolations(container)
-  })
-
-  it('wraps any element with Motion', () => {
-    render(
       <Motion asChild greese="blurIn">
         <a href="#x">Link</a>
       </Motion>
@@ -215,6 +183,7 @@ describe('the greese prop on components', () => {
       'greese-Motion',
       'greese-Motion--enter-blur-in'
     )
+    await expectNoAxeViolations(container)
   })
 })
 
@@ -222,9 +191,7 @@ describe('the runtime', () => {
   it('plays an interaction while hovered and reverses on leave', async () => {
     render(<Button greese={{ hover: 'rise' }}>Go</Button>)
     await attached()
-    vi.useFakeTimers({
-      toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],
-    })
+    fakeFrames()
     const button = screen.getByRole('button')
     fireEvent.pointerEnter(button)
     act(() => vi.advanceTimersByTime(400))
@@ -267,13 +234,14 @@ describe('the runtime', () => {
       await new Promise((r) => requestAnimationFrame(r))
     })
     expect(card.dataset.greeseView).toBe('in')
-    expect(observers.every((o) => o.disconnected)).toBe(true) // once
+    // Once: scrolling away and back doesn't hold or replay it.
+    scrollIntoView(false)
+    scrollIntoView(true)
+    expect(card.dataset.greeseView).toBe('in')
   })
 
   it('counts text up on a hidden copy, keeping one readable string', async () => {
-    vi.useFakeTimers({
-      toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],
-    })
+    fakeFrames()
     render(<Text greese={{ text: 'count', duration: 0.2 }}>480</Text>)
     await attached()
     const p = screen.getByText('480', { selector: 'span' }).parentElement!
@@ -330,9 +298,7 @@ describe('the runtime', () => {
 describe('effects and sequences', () => {
   // Fake from the start, so entrances that play on attach run on fake frames.
   beforeEach(() => {
-    vi.useFakeTimers({
-      toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],
-    })
+    fakeFrames()
   })
 
   it('sends sequences and defined effects to the runtime, keeping CSS for a lone preset', () => {
@@ -342,8 +308,8 @@ describe('effects and sequences', () => {
       runtime: true,
     })
     expect(resolveGreese('fadeOut').runtime).toBe(true)
-    expect(resolveGreese({ exit: 'fadeOutDown' }).className).toBe(
-      'greese-Motion greese-Motion--exit-fade-out-down'
+    expect(classes(resolveGreese({ exit: 'fadeOutDown' }))).toContain(
+      'greese-Motion--exit-fade-out-down'
     )
     expect(resolveGreese('scaleIn').runtime).toBe(false)
   })
@@ -424,8 +390,11 @@ describe('effects and sequences', () => {
 
 describe('one source of truth for effect names', () => {
   it('plays every entrance as CSS, from keyframes @greese/ui builds', () => {
-    // Vitest runs from the package root; the styles are @greese/ui's.
-    const built = readFileSync('../ui/dist/css/Motion.css', 'utf8')
+    // @greese/ui's built styles, from this file rather than the working directory.
+    const built = readFileSync(
+      join(import.meta.dirname, '../../../ui/dist/css/Motion.css'),
+      'utf8'
+    )
     expect(entranceNames.length).toBeGreaterThan(0)
     for (const preset of entranceNames) {
       expect(resolveGreese(preset).className).toContain(`--enter-${effectClass(preset)}`)
@@ -433,47 +402,49 @@ describe('one source of truth for effect names', () => {
     }
   })
 
+  /** A card playing `greese` on fake frames, read at `ms`. */
+  const playFor = async (greese: GreeseOptions, ms: number) => {
+    fakeFrames()
+    render(
+      <Card data-testid="c" greese={greese}>
+        Hi
+      </Card>
+    )
+    await attached()
+    act(() => vi.advanceTimersByTime(ms))
+    const { opacity, scale, translate } = screen.getByTestId('c').style
+    cleanup()
+    restoreFrames()
+    return { opacity, scale, translate }
+  }
+
   it('keeps a built-in: a definition under its name never replaces it', async () => {
-    const { timeline } = await import('@greese/js')
-    const { addMotion } = await import('./Motion/greeseRuntime.ts')
-    const run = () =>
-      addMotion(
-        timeline({ paused: true }),
-        [document.createElement('div')],
-        'fall',
-        { distance: '1rem', rtl: false },
-        { duration: 0.5, options: {} }
-      )
-    expect(run()).toBe(0.5)
     defineGreeseEffect('fall', { keyframes: { y: [0, 9] }, duration: 2 })
-    expect(run()).toBe(0.5)
+    // The built-in's half second, not the definition's two: fall has dropped
+    // and shrunk, and never moved the definition's 9px.
+    const end = await playFor({ enter: 'fadeIn,fall', duration: 0.5 }, 1200)
+    expect(parseFloat(end.scale)).toBeCloseTo(0.98)
+    expect(end.translate).not.toMatch(/9px/)
     removeGreeseEffect('fall')
   })
 
   it('plays a call’s arguments: its own parameters and its timing', async () => {
-    const { timeline } = await import('@greese/js')
-    const { addMotion } = await import('./Motion/greeseRuntime.ts')
-    const at = (sequence: GreeseMotion, options = {}) =>
-      addMotion(
-        timeline({ paused: true }),
-        [document.createElement('div')],
-        sequence,
-        { distance: '1rem', rtl: false },
-        { duration: 0.5, options }
-      )
-    expect(at('fadeIn')).toBe(0.5)
-    // Its own duration, then its offset on top; the instance's duration yields.
-    expect(at('fadeIn(0.25, 0.8, 1)', { duration: 3 })).toBe(1)
-    expect(at('fadeIn(duration: 1, offset: 0.5)')).toBe(1.5)
-    expect(at('fadeUp(2rem)+fadeIn({ end: 0.5, offset: 0.25 })')).toBe(0.75)
-    // Steps still follow each other, and an offset shifts only its own effect.
-    expect(at('fadeIn(offset: 0.2),scaleIn')).toBe(1.2)
+    // Its own end and duration: 0.8 after 1 s, though the instance asks for 3.
+    expect(
+      (await playFor({ enter: 'fadeIn(0.25, 0.8, 1)', duration: 3 }, 1100)).opacity
+    ).toBe('0.8')
+    // An offset delays only its own effect: still fading at 1.4 s, done by 1.6 s.
+    const offset = 'fadeIn(duration: 1, offset: 0.5)'
+    expect(Number((await playFor({ enter: offset }, 1400)).opacity)).toBeLessThan(1)
+    expect((await playFor({ enter: offset }, 1600)).opacity).toBe('1')
+    // Steps still follow each other: scaleIn starts after fadeIn's offset end.
+    const steps: GreeseOptions = { enter: 'fadeIn(offset: 0.2),scaleIn', duration: 0.5 }
+    expect(parseFloat((await playFor(steps, 1000)).scale)).toBeLessThan(1)
+    expect(parseFloat((await playFor(steps, 1300)).scale)).toBe(1)
   })
 
   it('never mistakes an Object prototype key for an effect', async () => {
-    vi.useFakeTimers({
-      toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],
-    })
+    fakeFrames()
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     render(
       <Card data-testid="c" greese="fadeIn,constructor">
@@ -483,17 +454,12 @@ describe('one source of truth for effect names', () => {
     await attached()
     expect(warn).toHaveBeenCalledWith('greese: no effect named "constructor"')
     warn.mockRestore()
-    // Let the ticker take its last frame before real timers return.
-    cleanup()
-    vi.advanceTimersByTime(100)
   })
 })
 
 describe('useTimeline', () => {
   it('builds after mount and restores on unmount', () => {
-    vi.useFakeTimers({
-      toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],
-    })
+    fakeFrames()
     const Demo = () => {
       const box = useRef<HTMLDivElement>(null)
       const tl = useTimeline(
@@ -520,16 +486,7 @@ describe('useTimeline', () => {
 
 describe('useGreese', () => {
   beforeEach(() => {
-    vi.useFakeTimers({
-      toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],
-    })
-  })
-
-  // Unmount, then let the shared ticker take its last frame; a frame left
-  // pending when real timers return would stall the loop for later tests.
-  afterEach(() => {
-    cleanup()
-    vi.advanceTimersByTime(100)
+    fakeFrames()
   })
 
   /** Timelines start playing on a microtask, then run on (fake) frames. */

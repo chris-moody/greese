@@ -1,17 +1,11 @@
 // @vitest-environment node
-import { fileURLToPath } from 'node:url'
-import { compileString, NodePackageImporter } from 'sass-embedded'
 import { describe, expect, it } from 'vitest'
+import { blocks, compileScss, rules } from '../../../ui/src/test/sass.ts'
 import { resolveResponsive, responsiveVar, isSpaceToken } from './responsive.ts'
 
 /** The SCSS mixin lives in @greese/ui; this checks it against the resolver here. */
-const STYLES = fileURLToPath(new URL('../../../ui/src/styles/', import.meta.url))
-
-const compile = (scss: string): string =>
-  compileString(`@use 'mixins';\n${scss}`, {
-    loadPaths: [STYLES],
-    importers: [new NodePackageImporter()],
-  }).css
+const compile = (scss: string): string => compileScss(`@use 'mixins';\n${scss}`)
+const md = '@media (width >= 900px)'
 
 describe('responsive-prop mixin', () => {
   const css = compile(`
@@ -20,32 +14,36 @@ describe('responsive-prop mixin', () => {
   `)
 
   it('sets the property directly, xs with no media query', () => {
-    expect(css).toMatch(/^\.greese-Test--xs-gap-2 \{\s+gap: var\(--greese-space-2\);/m)
-    expect(css).toMatch(
-      /@media \(width >= 900px\) \{[^@]*\.greese-Test--md-gap-2 \{\s+gap: var\(--greese-space-2\);/
-    )
+    const gap = [['gap', 'var(--greese-space-2)']]
+    expect(rules(css, '.greese-Test--xs-gap-2')).toEqual([
+      { within: [], declarations: gap },
+    ])
+    expect(rules(css, '.greese-Test--md-gap-2')).toEqual([
+      { within: [md], declarations: gap },
+    ])
   })
 
   it('emits breakpoints smallest first, so source order is the mobile-first fallback', () => {
+    const preludes = blocks(css).map((b) => b.prelude)
     const at = ['xs', 'sm', 'md', 'lg', 'xl'].map((bp) =>
-      css.indexOf(`.greese-Test--${bp}-gap-2 {`)
+      preludes.indexOf(`.greese-Test--${bp}-gap-2`)
     )
     expect(at.every((i) => i >= 0)).toBe(true)
     expect([...at].sort((x, y) => x - y)).toEqual(at)
   })
 
   it('reads open-ended values from the breakpoint variable on a value class', () => {
-    expect(css).toMatch(
-      /@media \(width >= 900px\) \{[^@]*\.greese-Test--md-gap \{\s+gap: var\(--greese-test-gap-md\);/
-    )
+    expect(rules(css, '.greese-Test--md-gap')).toEqual([
+      { within: [md], declarations: [['gap', 'var(--greese-test-gap-md)']] },
+    ])
   })
 
   it('has no uses class, no fallback chain and nothing to register', () => {
-    expect(css).not.toMatch(/\.greese-Test--gap \{/)
+    expect(rules(css, '.greese-Test--gap')).toEqual([])
     expect(css).not.toContain('var(--greese-test-gap-md, ')
     expect(css).not.toContain('@property')
     // An unset prop never touches the element: nothing hangs off the block class.
-    expect(css).not.toMatch(/^\.greese-Test \{/m)
+    expect(rules(css, '.greese-Test')).toEqual([])
   })
 
   it('generates every class resolveResponsive can produce', () => {
@@ -59,7 +57,8 @@ describe('responsive-prop mixin', () => {
         { block: 'greese-Test', prop: 'direction' },
       ],
     ])
-    for (const cls of className.split(' ')) expect(css).toContain(`.${cls} {`)
+    const preludes = blocks(css).map((b) => b.prelude)
+    for (const cls of className.split(' ')) expect(preludes).toContain(`.${cls}`)
     expect(responsiveVar('greese-Test', 'gap', 'md')).toBe('--greese-test-gap-md')
   })
 })
@@ -69,22 +68,31 @@ describe('responsive-prop options', () => {
     const css =
       compile(`@include mixins.responsive-prop('greese-T', 'min', grid-template-columns,
       $template: 'repeat(auto-fill, minmax(min(VALUE, 100%), 1fr))');`)
-    expect(css).toContain(
-      'grid-template-columns: repeat(auto-fill, minmax(min(var(--greese-t-min-xs), 100%), 1fr));'
-    )
+    expect(rules(css, '.greese-T--xs-min')[0]?.declarations).toEqual([
+      [
+        'grid-template-columns',
+        'repeat(auto-fill, minmax(min(var(--greese-t-min-xs), 100%), 1fr))',
+      ],
+    ])
   })
 
   it('adds container-query variants under a scope, winning by specificity', () => {
     const css = compile(`@include mixins.responsive-prop('greese-I', 'span', grid-column,
       (2: span 2), $container-scope: '.greese-G--container >');`)
-    expect(css).toContain(
-      '.greese-G--container > .greese-I--xs-span-2 {\n  grid-column: span 2;'
-    )
-    expect(css).toMatch(
-      /@container \(width >= 900px\) \{[^@]*\.greese-G--container > \.greese-I--md-span \{\s+grid-column: var\(--greese-i-span-md\);/
-    )
+    const scoped = '.greese-G--container > .greese-I'
+    expect(rules(css, `${scoped}--xs-span-2`)).toEqual([
+      { within: [], declarations: [['grid-column', 'span 2']] },
+    ])
+    expect(rules(css, `${scoped}--md-span`)).toEqual([
+      {
+        within: ['@container (width >= 900px)'],
+        declarations: [['grid-column', 'var(--greese-i-span-md)']],
+      },
+    ])
     // The viewport variant is still there for grids that are not containers.
-    expect(css).toMatch(/@media \(width >= 900px\) \{[^@]*\.greese-I--md-span-2 \{/)
+    expect(rules(css, '.greese-I--md-span-2')).toEqual([
+      { within: [md], declarations: [['grid-column', 'span 2']] },
+    ])
   })
 })
 
@@ -105,7 +113,7 @@ describe('up mixin', () => {
       .a { @include mixins.up(xs) { color: red; } }
       .b { @include mixins.up(lg) { color: red; } }
     `)
-    expect(css).toMatch(/^\.a \{\s+color: red;/m)
+    expect(rules(css, '.a')).toEqual([{ within: [], declarations: [['color', 'red']] }])
     expect(css).toContain('@media (width >= 1200px)')
   })
 
@@ -117,11 +125,7 @@ describe('up mixin', () => {
 })
 
 describe('configurable breakpoints', () => {
-  const load = (config: string) =>
-    compileString(`@use 'index' with (${config});`, {
-      loadPaths: [STYLES],
-      importers: [new NodePackageImporter()],
-    }).css
+  const load = (config: string) => compileScss(`@use 'index' with (${config});`)
 
   it('recompiles every component with custom values', () => {
     const css = load(

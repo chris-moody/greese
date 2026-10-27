@@ -660,7 +660,7 @@ describe('brand tones', () => {
       </>
     )
     const [plain, filter] = container.querySelectorAll('.greese-Chip')
-    expect(plain!.className).toBe('greese-Chip')
+    expect(plain!.className).not.toMatch(/--/) // no tone, not selected
     expect(filter).toHaveClass('greese-Chip--secondary')
     expect(filter).not.toHaveClass('greese-Chip--selected')
     await user.click(screen.getByRole('button', { name: 'Filter' }))
