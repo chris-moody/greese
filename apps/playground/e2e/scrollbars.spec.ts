@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import { atLeast, openFixture, settled } from './support.ts'
 
 /**
  * Overlays with scrollbars that take space (Windows, macOS with a mouse).
@@ -7,12 +8,9 @@ import { expect, test, type Page } from '@playwright/test'
  */
 test.use({ launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] } })
 
-test.beforeEach(async ({ page }) => {
-  await page.goto('/?page=overlays')
-  await page.getByTestId('appbar').waitFor()
-})
-
-const wide = (page: Page) => page.viewportSize()!.width >= 900
+test.beforeEach(({ page }) =>
+  openFixture(page, 'overlays', (p) => p.getByTestId('appbar'))
+)
 
 test('modal scroll lock: no gutter strip and no shift with space-taking scrollbars', async ({
   page,
@@ -33,14 +31,14 @@ test('modal scroll lock: no gutter strip and no shift with space-taking scrollba
   await page.getByRole('button', { name: 'Open drawer' }).click()
   const drawer = page.getByRole('dialog', { name: 'Filters' })
   await expect(drawer).toBeVisible()
-  await page.waitForTimeout(400)
+  await settled(drawer)
   // The scrollbar goes (so the top layer spans the screen), the page is padded
   // by its width (so nothing shifts), and an end drawer meets the screen edge.
   expect(
     await page.evaluate(() => innerWidth - document.documentElement.clientWidth)
   ).toBe(0)
   expect(await content()).toBe(before)
-  if (wide(page)) {
+  if (atLeast(page, 'md')) {
     const box = (await drawer.boundingBox())!
     expect(box.x + box.width).toBeCloseTo(await page.evaluate(() => innerWidth), 0)
   }

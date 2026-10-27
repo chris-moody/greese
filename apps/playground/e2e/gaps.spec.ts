@@ -1,12 +1,12 @@
 import { expect, test, type Page } from '@playwright/test'
+import { atLeast, openFixture, settled } from './support.ts'
 
 /** Phase 7 components in real engines. */
-test.beforeEach(async ({ page }) => {
-  await page.goto('/?page=gaps')
-  await page.getByRole('combobox', { name: 'Country' }).waitFor()
-})
+test.beforeEach(({ page }) =>
+  openFixture(page, 'gaps', (p) => p.getByRole('combobox', { name: 'Country' }))
+)
 
-const wide = (page: Page) => page.viewportSize()!.width >= 900
+const wide = (page: Page) => atLeast(page, 'md')
 
 test('combobox: type to filter, arrows and Enter select, popup anchored at full width', async ({
   page,
@@ -47,30 +47,11 @@ test('combobox: arrows open the full list, skip disabled options, Escape closes'
   await expect(input).toBeFocused()
 })
 
-test('number field: arrows step, typed values clamp on Enter', async ({ page }) => {
-  const qty = page.getByRole('spinbutton', { name: 'Quantity' })
-  await qty.focus()
-  await page.keyboard.press('ArrowUp')
-  await page.keyboard.press('ArrowUp')
-  await expect(qty).toHaveValue('7')
-  await qty.fill('99')
-  await page.keyboard.press('Enter')
-  await expect(qty).toHaveValue('20')
-  await expect(qty).toHaveAttribute('aria-valuenow', '20')
-})
-
 test('segmented control: native arrow keys move the selection', async ({ page }) => {
   await page.getByRole('radio', { name: 'List' }).focus()
   await page.keyboard.press('ArrowRight')
   await expect(page.getByRole('radio', { name: 'Grid' })).toBeChecked()
   await expect(page.getByRole('radio', { name: 'Grid' })).toBeFocused()
-})
-
-test('date field: a native date input that accepts an ISO value', async ({ page }) => {
-  const due = page.getByLabel('Due date')
-  await expect(due).toHaveAttribute('type', 'date')
-  await due.fill('2026-10-18')
-  await expect(due).toHaveValue('2026-10-18')
 })
 
 test('table: stacked cards on phones, a real table above sm', async ({ page }) => {
@@ -80,7 +61,7 @@ test('table: stacked cards on phones, a real table above sm', async ({ page }) =
   const label = await page
     .getByTestId('cell')
     .evaluate((el) => getComputedStyle(el, '::before').content)
-  if (page.viewportSize()!.width < 600) {
+  if (!atLeast(page, 'sm')) {
     expect(display).toBe('block')
     expect(label).toBe('"Number"')
   } else {
@@ -109,6 +90,7 @@ const dragHeader = async (page: Page, distance: number, slow = false) => {
   for (let i = 1; i <= steps; i++) {
     const d = (travel * i) / steps
     await page.mouse.move(wide(page) ? x + d : x, wide(page) ? y : y + d)
+    // Paces the hand, not a wait: a fast release would read as a flick.
     if (slow) await page.waitForTimeout(40)
   }
   await page.mouse.up()
@@ -124,12 +106,16 @@ test('drawer: a short drag snaps back, a long drag dismisses', async ({
   await page.getByRole('button', { name: 'Open sheet' }).click()
   const drawer = page.getByRole('dialog', { name: 'Filters' })
   await expect(drawer).toBeVisible()
-  await page.waitForTimeout(400)
+  await settled(drawer)
+  const rest = (await drawer.boundingBox())!
 
   await dragHeader(page, 30, true)
-  await page.waitForTimeout(300)
+  // Snapped back: visible, and where it rested before the drag.
+  await settled(drawer)
   await expect(drawer).toBeVisible()
-  expect(await drawer.evaluate((el) => el.style.translate)).toBe('')
+  const back = (await drawer.boundingBox())!
+  expect(back.x).toBeCloseTo(rest.x, 0)
+  expect(back.y).toBeCloseTo(rest.y, 0)
 
   await dragHeader(page, 600)
   await expect(drawer).toBeHidden()

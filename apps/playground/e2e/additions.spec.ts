@@ -1,13 +1,14 @@
 import { expect, test, type Page } from '@playwright/test'
+import { space } from '@greese/ui'
+import { atLeast, box as boxOf, isTouch, openFixture, px } from './support.ts'
 
 /** Break and the ported components (ADR 0007's addendum), in real engines. */
-test.beforeEach(async ({ page }) => {
-  await page.goto('/?page=additions')
-  await page.getByTestId('heading').waitFor()
-})
+test.beforeEach(({ page }) =>
+  openFixture(page, 'additions', (p) => p.getByTestId('heading'))
+)
 
-const wide = (page: Page) => page.viewportSize()!.width >= 900
-const box = async (page: Page, id: string) => (await page.getByTestId(id).boundingBox())!
+const wide = (page: Page) => atLeast(page, 'md')
+const box = (page: Page, id: string) => boxOf(page.getByTestId(id))
 
 test('Break: a line break from md, a non-breaking space below it', async ({ page }) => {
   const heading = page.getByTestId('heading')
@@ -31,7 +32,7 @@ test('AutoLayout: full width on phones; from md, items grow into spare room', as
     return
   }
   const gap = b!.x - (a!.x + a!.width)
-  expect(gap).toBeCloseTo(12, 0) // space-3
+  expect(gap).toBeCloseTo(px(space[3]), 0)
   // Row 1 is full at 4 + 4 + 4: nothing grows, three equal columns.
   for (const item of [a, b, c])
     expect(item!.width).toBeCloseTo((row.width - 2 * gap) / 3, 0)
@@ -58,10 +59,8 @@ test('MaskedInput: formats as you type and backspaces over literals', async ({
   await expect(input).toHaveValue('(555) 124-567_')
 })
 
-test('ColorPicker: drag or tap the area, keyboard, and swatches', async ({
-  page,
-  isMobile,
-}) => {
+test('ColorPicker: drag or tap the area, keyboard, and swatches', async ({ page }) => {
+  const isMobile = isTouch()
   const area = page.getByRole('slider', { name: 'Saturation and brightness' })
   const rect = (await area.boundingBox())!
   if (isMobile) {

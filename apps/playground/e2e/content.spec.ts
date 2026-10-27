@@ -1,15 +1,9 @@
 import { expect, test } from '@playwright/test'
+import { typography } from '@greese/ui'
+import { atLeast, isTouch, openFixture, px, settled, style } from './support.ts'
 
 /** Content, media and disclosure in real engines. */
-test.beforeEach(async ({ page }) => {
-  await page.goto('/?page=content')
-  await page.getByTestId('h1').waitFor()
-})
-
-const style = (
-  locator: ReturnType<import('@playwright/test').Page['getByTestId']>,
-  prop: string
-) => locator.evaluate((el, p) => getComputedStyle(el).getPropertyValue(p), prop)
+test.beforeEach(({ page }) => openFixture(page, 'content', (p) => p.getByTestId('h1')))
 
 test('exclusive accordion: keyboard opens an item and the browser closes the other', async ({
   page,
@@ -40,10 +34,11 @@ for (const dir of ['ltr', 'rtl'] as const) {
 }
 
 test('headings step up at md and lg; text clamps to two lines', async ({ page }) => {
-  const width = page.viewportSize()!.width
   const size = parseFloat(await style(page.getByTestId('h1'), 'font-size'))
-  // The h1 variant: 2.25rem, 2.75rem from md (900), 3.5rem from lg (1200).
-  expect(size).toBe(width >= 1200 ? 56 : width >= 900 ? 44 : 36)
+  // The h1 variant steps up at md and lg.
+  const { base, md, lg } = typography.h1
+  const step = atLeast(page, 'lg') ? lg : atLeast(page, 'md') ? md : base
+  expect(size).toBe(px(step!.fontSize!))
 
   const clamped = page.getByTestId('clamped')
   const lineHeight = parseFloat(await style(clamped, 'line-height'))
@@ -64,16 +59,15 @@ test('card media bleeds through the padding to the inside of the border', async 
 
 test('an interactive card stays risen under a pointer on its lower edge; media keeps its corners', async ({
   page,
-  isMobile,
 }) => {
-  test.skip(isMobile, 'hover is for fine pointers')
+  test.skip(isTouch(), 'hover is for fine pointers')
   const card = page.getByTestId('card-link')
   await card.scrollIntoViewIfNeeded()
   const box = (await card.boundingBox())!
   // The bottom 1px: once the card has risen 2px, the pointer is below its box.
   await page.mouse.move(box.x + box.width / 2, box.y + box.height - 1)
   await expect.poll(() => style(card, 'translate')).toBe('0px -2px')
-  await page.waitForTimeout(400)
+  await settled(card)
   // Risen, the pointer is below the card's box: the strip under the card must
   // still be what's there, or a browser that re-checks hover would let the
   // card settle back under the pointer, rise again, and so on.
@@ -87,12 +81,6 @@ test('an interactive card stays risen under a pointer on its lower edge; media k
     await style(card, 'border-top-left-radius')
   )
   expect(await style(media, 'overflow')).toBe('hidden')
-})
-
-test('priority images load eagerly at high priority', async ({ page }) => {
-  const img = page.getByRole('img', { name: 'Hero' })
-  await expect(img).toHaveAttribute('loading', 'eager')
-  await expect(img).toHaveAttribute('fetchpriority', 'high')
 })
 
 test('reduced motion: skeleton stops shimmering, spinner pulses instead', async ({

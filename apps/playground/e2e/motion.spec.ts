@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { computed } from './support.ts'
 
 /** greese.js in real engines: computed-style reads, transforms, colors, playback. */
 test.beforeEach(async ({ page }) => {
@@ -6,11 +7,8 @@ test.beforeEach(async ({ page }) => {
   await page.waitForFunction(() => window.motion !== undefined)
 })
 
-const styleOf = (page: Page, id: string, ...props: string[]) =>
-  page.getByTestId(id).evaluate((el, names) => {
-    const s = getComputedStyle(el)
-    return Object.fromEntries(names.map((n) => [n, s.getPropertyValue(n).trim()]))
-  }, props)
+const styleOf = <P extends string>(page: Page, id: string, ...props: P[]) =>
+  computed(page.getByTestId(id), ...props)
 
 test('seeks: reads computed starting values and writes transforms, colors and variables', async ({
   page,
@@ -51,19 +49,29 @@ test('seeks: reads computed starting values and writes transforms, colors and va
   )
 })
 
-test('plays on the real clock, reverses and scales time', async ({ page }) => {
-  const start = Date.now()
-  await page.evaluate(async () => {
+test('plays on the clock, reverses and scales time', async ({ page }) => {
+  // The page's clock, faked from load: time moves only when the test says.
+  await page.clock.install()
+  await page.reload()
+  await page.waitForFunction(() => window.motion !== undefined, null, { polling: 50 })
+  // An installed clock still runs at real speed until paused; the fixture's
+  // timeline is paused, so jumping ahead starts nothing.
+  await page.clock.pauseAt(Date.now() + 60_000)
+  await page.evaluate(() => {
     window.motion!.timeScale(4).play()
-    await window.motion!
   })
-  // 1 s of timeline at 4x: about 0.25 s of real time.
-  expect(Date.now() - start).toBeLessThan(900)
+  // 1 s of timeline at 4x: 0.1 s of clock is about 0.4 s of it (less the
+  // frame playback waits for), and 0.3 s all of it. At 1x it would be 0.1.
+  await page.clock.runFor(100)
+  const early = await page.evaluate(() => window.motion!.progress())
+  expect(early).toBeGreaterThan(0.3)
+  expect(early).toBeLessThanOrEqual(0.4)
+  await page.clock.runFor(200)
   expect(await page.evaluate(() => window.motion!.progress())).toBe(1)
-  await page.evaluate(async () => {
+  await page.evaluate(() => {
     window.motion!.reverse()
-    await window.motion!
   })
+  await page.clock.runFor(300)
   expect(await page.evaluate(() => window.motion!.time())).toBe(0)
   expect((await styleOf(page, 'box', 'translate')).translate).toBe('10px')
 })
@@ -113,7 +121,8 @@ test('mixed units blend smoothly: a px radius token to rem, a px width to vw', a
 test('useGreese scopes selectors, applies its build before paint and reverts on unmount', async ({
   page,
 }) => {
-  const item = (id: string) => page.getByTestId(id).locator('.hook-item')
+  // Found by its text, not `.hook-item`: that's the selector under test.
+  const item = (id: string) => page.getByTestId(id).getByText(id, { exact: true })
   const opacity = (id: string) =>
     item(id).evaluate((el) => Number(getComputedStyle(el).opacity))
   // A 10 s linear from(): only just started, so it was applied up front.

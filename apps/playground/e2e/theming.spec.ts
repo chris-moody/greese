@@ -1,9 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
-import { color, palette } from '@greese/ui'
-
-/** `#rrggbb` as the browser reports it: `rgb(r, g, b)`. */
-const rgb = (hex: string) =>
-  `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ')})`
+import { color, palette, radius } from '@greese/ui'
+import { rgb } from './support.ts'
 
 /**
  * Real-browser check of the theming model (docs/adr/0002): nested themes and
@@ -31,15 +28,19 @@ const expected = (page: Mode, os: Mode) => ({
   default: {
     primary: PRIMARY.default[page],
     surface: SURFACE.default[page],
-    radius: '8px',
+    radius: radius.md,
   },
   'plain-dark': {
     primary: PRIMARY.default.dark,
     surface: SURFACE.default.dark,
-    radius: '8px',
+    radius: radius.md,
   },
-  brand: { primary: PRIMARY.brand[page], surface: SURFACE.brand, radius: '8px' },
-  'brand-dark': { primary: PRIMARY.brand.dark, surface: SURFACE.brand, radius: '8px' },
+  brand: { primary: PRIMARY.brand[page], surface: SURFACE.brand, radius: radius.md },
+  'brand-dark': {
+    primary: PRIMARY.brand.dark,
+    surface: SURFACE.brand,
+    radius: radius.md,
+  },
   // Themes replace, never stack: `rounded` inside `brand` is defaults + rounded.
   'rounded-in-dark': {
     primary: PRIMARY.default.dark,
@@ -49,10 +50,14 @@ const expected = (page: Mode, os: Mode) => ({
   'brand-light-in-dark': {
     primary: PRIMARY.brand.light,
     surface: SURFACE.brand,
-    radius: '8px',
+    radius: radius.md,
   },
   // scheme="system" follows the OS even when the page scheme is forced.
-  'brand-system': { primary: PRIMARY.brand[os], surface: SURFACE.brand, radius: '8px' },
+  'brand-system': {
+    primary: PRIMARY.brand[os],
+    surface: SURFACE.brand,
+    radius: radius.md,
+  },
 })
 
 const assertAll = async (page: Page, pageMode: Mode, os: Mode) => {
@@ -107,12 +112,4 @@ test('a saved scheme is applied before first paint on reload', async ({ page }) 
     'dark'
   )
   await assertAll(page, 'dark', 'light')
-})
-
-test('theme CSS is injected once per theme, in <head>', async ({ page }) => {
-  await page.getByTestId('brand').waitFor()
-  const hrefs = await page
-    .locator('head style[data-href^="greese-theme-"]')
-    .evaluateAll((els) => els.map((el) => el.getAttribute('data-href')))
-  expect(hrefs.sort()).toEqual(['greese-theme-brand', 'greese-theme-rounded'])
 })

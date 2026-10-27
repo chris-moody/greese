@@ -1,8 +1,6 @@
 import { expect, test } from '@playwright/test'
-import { color } from '@greese/ui'
-
-const rgb = (hex: string) =>
-  `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ')})`
+import { color, radius } from '@greese/ui'
+import { rgb } from './support.ts'
 
 /**
  * @greese/ui on its own (docs/adr/0014): a page of plain HTML, using the
@@ -19,7 +17,9 @@ test.describe('plain HTML with @greese/ui', () => {
 
     await page.evaluate(() => (document.documentElement.dataset.greeseScheme = 'light'))
     await expect.poll(background).toBe(rgb(color.primary.light))
-    expect(await primary.evaluate((el) => getComputedStyle(el).borderRadius)).toBe('8px')
+    expect(await primary.evaluate((el) => getComputedStyle(el).borderRadius)).toBe(
+      radius.md
+    )
 
     await page.evaluate(() => (document.documentElement.dataset.greeseScheme = 'dark'))
     // The button transitions its colors, so wait for them to settle.

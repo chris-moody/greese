@@ -1,20 +1,15 @@
 import { expect, test, type Page } from '@playwright/test'
+import { computed, frames, isTouch, leaves, openFixture, settled } from './support.ts'
 
 /**
  * The `greese` prop in real engines: CSS presets, stagger, scroll reveals,
  * interactions, text effects and overlay exits. Long durations keep the CSS
  * animations running while they're measured.
  */
-test.beforeEach(async ({ page }) => {
-  await page.goto('/?page=motion')
-  await page.getByTestId('enter').waitFor()
-})
+test.beforeEach(({ page }) => openFixture(page, 'motion', (p) => p.getByTestId('enter')))
 
-const style = (page: Page, testId: string, ...props: string[]) =>
-  page.getByTestId(testId).evaluate((el, names) => {
-    const s = getComputedStyle(el)
-    return Object.fromEntries(names.map((n) => [n, s.getPropertyValue(n)]))
-  }, props)
+const style = <P extends string>(page: Page, testId: string, ...props: P[]) =>
+  computed(page.getByTestId(testId), ...props)
 
 test('enter presets are CSS animations, staggered per child', async ({ page }) => {
   expect((await style(page, 'enter', 'animation-name'))['animation-name']).toBe(
@@ -59,7 +54,8 @@ test('scroll reveals wait out of view, then play', async ({ page }) => {
   await reveal.evaluate((el) =>
     scrollBy(0, el.getBoundingClientRect().top - innerHeight + 24)
   )
-  await page.waitForTimeout(300)
+  // Long enough for the observer and the scroll check to have run.
+  await frames(reveal, 10)
   await expect(reveal).toHaveAttribute('data-greese-view', 'pending')
   // Wholly in view, clear of the bottom edge: it plays.
   await reveal.evaluate((el) => el.scrollIntoView({ block: 'center' }))
@@ -78,14 +74,12 @@ test('scroll reveals wait out of view, then play', async ({ page }) => {
   ).toHaveCount(0)
 })
 
-test('hover lifts with a mouse, never on touch; press squishes', async ({
-  page,
-  isMobile,
-}) => {
+test('hover lifts with a mouse, never on touch; press squishes', async ({ page }) => {
+  const isMobile = isTouch()
   const button = page.getByTestId('hover')
   if (isMobile) {
     await button.tap()
-    await page.waitForTimeout(400)
+    await settled(button)
     // A tap may press (squish, then release) but never leaves a hover lift.
     expect((await style(page, 'hover', 'translate')).translate).toMatch(
       /^(none|0px( 0px)?)$/
@@ -109,8 +103,8 @@ test('hover lifts with a mouse, never on touch; press squishes', async ({
 
 test('a hover that lifts the element away from a still pointer keeps it lifted', async ({
   page,
-  isMobile,
 }) => {
+  const isMobile = isTouch()
   test.skip(isMobile, 'hover is for fine pointers')
   const button = page.getByTestId('hover')
   await button.scrollIntoViewIfNeeded()
@@ -120,11 +114,10 @@ test('a hover that lifts the element away from a still pointer keeps it lifted',
   await expect
     .poll(async () => (await style(page, 'hover', 'translate')).translate)
     .toBe('0px -4px')
-  // It stays risen, rather than settling back under the pointer and bouncing.
-  for (let i = 0; i < 4; i++) {
-    await page.waitForTimeout(120)
-    expect((await style(page, 'hover', 'translate')).translate).toBe('0px -4px')
-  }
+  // It stays risen, rather than settling back under the pointer and bouncing:
+  // still for half a second of frames, and still lifted.
+  await settled(button, { frames: 30 })
+  expect((await style(page, 'hover', 'translate')).translate).toBe('0px -4px')
   // Leaving where it rests lets it settle.
   await page.mouse.move(box.x + box.width / 2, box.y + box.height + 20)
   await expect
@@ -134,8 +127,8 @@ test('a hover that lifts the element away from a still pointer keeps it lifted',
 
 test('entering again while it settles keeps the resting box, so it lifts and stays', async ({
   page,
-  isMobile,
 }) => {
+  const isMobile = isTouch()
   test.skip(isMobile, 'hover is for fine pointers')
   const button = page.getByTestId('hover')
   await button.scrollIntoViewIfNeeded()
@@ -147,21 +140,19 @@ test('entering again while it settles keeps the resting box, so it lifts and sta
   // Off, and straight back while it's still part-way down: the box it was
   // measured in is where it rests, not where it is mid-way.
   await page.mouse.move(edge.x, box.y + box.height + 40)
-  await page.waitForTimeout(40)
+  await leaves(button, 'translate', '0px -4px') // it has started down
   await page.mouse.move(edge.x, box.y + box.height / 2)
   await page.mouse.move(edge.x, edge.y)
   await expect.poll(lifted).toBe('0px -4px')
-  for (let i = 0; i < 4; i++) {
-    await page.waitForTimeout(120)
-    expect(await lifted()).toBe('0px -4px')
-  }
+  await settled(button, { frames: 30 })
+  expect(await lifted()).toBe('0px -4px')
 })
 
 test('the pointer leaving the window from where it rests ends the hover', async ({
   page,
-  isMobile,
   browserName,
 }) => {
+  const isMobile = isTouch()
   test.skip(isMobile, 'hover is for fine pointers')
   // WebKit re-checks hover as the button settles back under the real pointer,
   // which a synthetic exit can't move out of the window: it enters again.

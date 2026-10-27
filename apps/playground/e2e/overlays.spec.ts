@@ -1,13 +1,12 @@
 import { expect, test, type Page } from '@playwright/test'
+import { atLeast, isTouch, openFixture, settled } from './support.ts'
 
 /** Native top-layer behaviour (dialog, popover) and navigation, in real engines. */
-test.beforeEach(async ({ page }) => {
-  await page.goto('/?page=overlays')
-  await page.getByTestId('appbar').waitFor()
-})
+test.beforeEach(({ page }) =>
+  openFixture(page, 'overlays', (p) => p.getByTestId('appbar'))
+)
 
-const isTouch = (name: string) => ['mobile', 'iphone'].includes(name)
-const wide = (page: Page) => page.viewportSize()!.width >= 900
+const wide = (page: Page) => atLeast(page, 'md')
 
 test('dialog: traps focus, blocks the page, locks scroll, and returns focus on Escape', async ({
   page,
@@ -81,7 +80,7 @@ test('drawer: bottom sheet on phones, side panel from md', async ({ page }) => {
   await page.getByRole('button', { name: 'Open drawer' }).click()
   const drawer = page.getByRole('dialog', { name: 'Filters' })
   await expect(drawer).toBeVisible()
-  await page.waitForTimeout(400) // let the slide-in finish
+  await settled(drawer) // the slide-in has finished
   const box = (await drawer.boundingBox())!
   const { width, height } = page.viewportSize()!
   if (wide(page)) {
@@ -132,8 +131,8 @@ test('menu: keyboard open, arrows, Enter selects, Escape returns focus', async (
 
 test('tooltip: appears after a hover delay, flipping below when there is no room above', async ({
   page,
-}, testInfo) => {
-  test.skip(isTouch(testInfo.project.name), 'hover tooltips are mouse-only')
+}) => {
+  test.skip(isTouch(), 'hover tooltips are mouse-only')
   const trigger = page.getByRole('button', { name: 'Help' })
   const tip = page.getByRole('tooltip')
   await expect(trigger).toHaveAccessibleDescription('Opens the help centre')
@@ -197,5 +196,5 @@ test('pagination condenses to previous / current / next on phones', async ({ pag
   const visible = await pages.evaluateAll(
     (els) => els.filter((el) => el.checkVisibility()).length
   )
-  expect(visible).toBe(page.viewportSize()!.width < 600 ? 1 : 5)
+  expect(visible).toBe(atLeast(page, 'sm') ? 5 : 1)
 })

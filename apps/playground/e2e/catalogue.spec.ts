@@ -1,17 +1,16 @@
 import { expect, test } from '@playwright/test'
+import { controlledBy, isTouch as touch, openFixture, shownAcross } from './support.ts'
 
 /** ADR 0011's components in real engines: scrolling, dragging, the top layer. */
-test.beforeEach(async ({ page }) => {
-  await page.goto('/?page=catalogue')
-  await page.getByRole('region', { name: 'Colors' }).waitFor()
-})
-
-const touch = () => !!test.info().project.use.hasTouch
+test.beforeEach(({ page }) =>
+  openFixture(page, 'catalogue', (p) => p.getByRole('region', { name: 'Colors' }))
+)
 
 test('carousel: one slide per view, snapped, and the index follows scrolling', async ({
   page,
 }) => {
-  const viewport = page.getByTestId('carousel').locator('.greese-ScrollCarousel-viewport')
+  // The scrolling region, as the dots name it.
+  const viewport = await controlledBy(page.getByRole('button', { name: 'Slide 1' }))
   const slides = page.getByRole('group', { name: /of 4/ })
   await expect(slides).toHaveCount(4)
   const view = (await viewport.boundingBox())!
@@ -32,7 +31,8 @@ test('carousel: one slide per view, snapped, and the index follows scrolling', a
 test('carousel: dots and buttons scroll to a slide, snapped to its start', async ({
   page,
 }) => {
-  const viewport = page.getByTestId('carousel').locator('.greese-ScrollCarousel-viewport')
+  // The scrolling region, as the dots name it.
+  const viewport = await controlledBy(page.getByRole('button', { name: 'Slide 1' }))
   await page.getByRole('button', { name: 'Slide 4' }).click()
   await expect(page.getByTestId('slide')).toHaveText('3')
   // A smooth scroll across three slides: under a full parallel run, WebKit's
@@ -85,10 +85,8 @@ test('diff: the divider follows the slider, by keyboard and pointer', async ({
       .toBeLessThan(30)
   }
   // The before side is clipped exactly at the divider.
-  const clip = await diff
-    .locator('.greese-Diff-item--before')
-    .evaluate((el) => getComputedStyle(el).clipPath)
-  expect(clip).toMatch(/inset\(/)
+  const split = Number(await page.getByTestId('split').textContent())
+  expect(await shownAcross(diff.locator('.greese-Diff-item--before'))).toBe(split)
 })
 
 test('otp field: typing and pasting fill the boxes, the code completes once', async ({
@@ -97,9 +95,9 @@ test('otp field: typing and pasting fill the boxes, the code completes once', as
   const input = page.getByRole('textbox', { name: 'Code' })
   await input.click()
   await page.keyboard.type('12a3')
+  // The boxes are aria-hidden: what the eye reads, so found by their part.
   const slots = page.locator('.greese-OtpField-slot')
   await expect(slots).toHaveText(['1', '2', '3', '', '', ''])
-  await expect(slots.nth(3)).toHaveClass(/greese-OtpField-slot--active/)
   await page.keyboard.type('456')
   await expect(page.getByTestId('code')).toHaveText('123456')
   await expect(input).toHaveValue('123456')
@@ -113,9 +111,9 @@ test('rating: the fill follows the choice; click, tap, keys and halves', async (
 }) => {
   const rating = page.getByRole('group', { name: 'Rating', exact: true })
   await rating.scrollIntoViewIfNeeded()
-  const fill = (group = rating) =>
-    group.evaluate((el) => el.style.getPropertyValue('--greese-rating-fill'))
-  expect(await fill()).toBe('40%')
+  // What the stars draw: the filled row, clipped to the value.
+  const fill = (group = rating) => shownAcross(group.locator('.greese-Rating-filled'))
+  await expect.poll(() => fill()).toBe(40)
 
   await rating.getByRole('radio', { name: '2 stars' }).focus()
   await page.keyboard.press('ArrowRight')
@@ -131,15 +129,15 @@ test('rating: the fill follows the choice; click, tap, keys and halves', async (
   if (touch()) await page.touchscreen.tap(fourth.x, fourth.y)
   else await page.mouse.click(fourth.x, fourth.y)
   await expect(rating.getByRole('radio', { name: '4 stars' })).toBeChecked()
-  await expect.poll(() => fill()).toBe('80%')
+  await expect.poll(() => fill()).toBe(80)
 
   // Hovering previews, where there's a mouse; leaving restores the choice.
   if (!touch()) {
     const fifth = at(0.95)
     await page.mouse.move(fifth.x, fifth.y)
-    await expect.poll(() => fill()).toBe('100%')
+    await expect.poll(() => fill()).toBe(100)
     await page.mouse.move(stars.x - 40, stars.y - 40)
-    await expect.poll(() => fill()).toBe('80%')
+    await expect.poll(() => fill()).toBe(80)
   }
 
   // Halves: the left half of the third star is 2.5.
@@ -150,7 +148,7 @@ test('rating: the fill follows the choice; click, tap, keys and halves', async (
   if (touch()) await page.touchscreen.tap(half.x, half.y)
   else await page.mouse.click(half.x, half.y)
   await expect(halves.getByRole('radio', { name: '2.5 stars' })).toBeChecked()
-  await expect.poll(() => fill(halves)).toBe('50%')
+  await expect.poll(() => fill(halves)).toBe(50)
 })
 
 test('speed dial: opens its actions above the button in the top layer, Escape closes', async ({

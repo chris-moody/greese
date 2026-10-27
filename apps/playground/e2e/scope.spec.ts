@@ -1,14 +1,12 @@
 import { expect, test, type Page } from '@playwright/test'
+import { openFixture } from './support.ts'
 
 /**
  * Scopes (docs/adr/0017): a parent that decides when the entrances inside it
  * start, across depth, played by CSS. Long durations keep the animations
  * running while they're measured.
  */
-test.beforeEach(async ({ page }) => {
-  await page.goto('/?page=motion')
-  await page.getByTestId('enter').waitFor()
-})
+test.beforeEach(({ page }) => openFixture(page, 'motion', (p) => p.getByTestId('enter')))
 
 const delay = (page: Page, testId: string) =>
   page.getByTestId(testId).evaluate((el) => getComputedStyle(el).animationDelay)

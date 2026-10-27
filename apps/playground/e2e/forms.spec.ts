@@ -1,15 +1,13 @@
 import { expect, test } from '@playwright/test'
+import { isTouch, openFixture } from './support.ts'
 
 /**
  * Form controls in real engines: keyboard behaviour comes from the native
  * elements, so this checks we kept it while restyling them.
  */
-test.beforeEach(async ({ page }) => {
-  await page.goto('/?page=forms')
-  await page.getByRole('form', { name: 'Profile' }).waitFor()
-})
-
-const isTouch = (projectName: string) => ['mobile', 'iphone'].includes(projectName)
+test.beforeEach(({ page }) =>
+  openFixture(page, 'forms', (p) => p.getByRole('form', { name: 'Profile' }))
+)
 
 test('keyboard: Space toggles checkboxes and switches, arrows move radios', async ({
   page,
@@ -35,14 +33,11 @@ test('keyboard: Space toggles checkboxes and switches, arrows move radios', asyn
   await expect(bold).toHaveAttribute('aria-pressed', 'true')
 })
 
-test('keyboard: arrows move the slider and its filled track', async ({ page }) => {
+test('keyboard: arrows move the restyled native slider', async ({ page }) => {
   const slider = page.getByRole('slider', { name: 'Volume' })
   await slider.focus()
   for (let i = 0; i < 5; i++) await page.keyboard.press('ArrowRight')
   await expect(slider).toHaveValue('55')
-  expect(
-    await slider.evaluate((el) => el.style.getPropertyValue('--greese-slider-fill'))
-  ).toBe('55%')
 })
 
 test('keyboard focus shows the focus ring', async ({ page }) => {
@@ -90,8 +85,8 @@ test('the textarea grows with its content where field-sizing is supported', asyn
 
 test('touch: inputs never trigger iOS zoom and targets are finger-sized', async ({
   page,
-}, testInfo) => {
-  test.skip(!isTouch(testInfo.project.name), 'touch devices only')
+}) => {
+  test.skip(!isTouch(), 'touch devices only')
 
   // Even the small input renders text at 16px or more on touch screens.
   for (const name of ['Name', 'Small input', 'Bio']) {

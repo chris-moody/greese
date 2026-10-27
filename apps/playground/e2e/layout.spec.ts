@@ -1,20 +1,22 @@
 import { expect, test, type Page } from '@playwright/test'
+import { breakpoints, space } from '@greese/ui'
+import { box as boxOf, computed, px } from './support.ts'
 
 /**
  * Responsive layout in a real browser: jsdom has no layout engine. Every
  * fixture is asserted at each breakpoint boundary.
  */
-const WIDTHS = { xs: 375, sm: 600, md: 900, lg: 1200, xl: 1536 } as const
+const WIDTHS = { ...breakpoints, xs: 375 } as const
 type Bp = keyof typeof WIDTHS
 const atLeast = (bp: Bp, min: Bp) => WIDTHS[bp] >= WIDTHS[min]
 
-const css = (page: Page, id: string, ...props: string[]) =>
-  page.getByTestId(id).evaluate((el, names) => {
-    const s = getComputedStyle(el)
-    return Object.fromEntries(names.map((n) => [n, s.getPropertyValue(n)]))
-  }, props)
-
-const box = async (page: Page, id: string) => (await page.getByTestId(id).boundingBox())!
+const css = <P extends string>(page: Page, id: string, ...props: P[]) =>
+  computed(page.getByTestId(id), ...props)
+const box = (page: Page, id: string) => boxOf(page.getByTestId(id))
+/** A space token as the browser computes it: `2` → `8px`. */
+const sp = (step: keyof typeof space) => `${px(space[step])}px`
+/** Container's gutter: space 4, space 6 from md. */
+const gutter = (bp: Bp) => sp(atLeast(bp, 'md') ? 6 : 4)
 const tracks = async (page: Page, id: string) =>
   (await css(page, id, 'grid-template-columns'))['grid-template-columns']!.split(' ')
     .length
@@ -30,15 +32,15 @@ for (const [bp, width] of Object.entries(WIDTHS) as Array<[Bp, number]>) {
     test('Stack resolves direction and gap per breakpoint', async ({ page }) => {
       expect(await css(page, 'stack-responsive', 'flex-direction', 'row-gap')).toEqual({
         'flex-direction': atLeast(bp, 'md') ? 'row' : 'column',
-        'row-gap': atLeast(bp, 'lg') ? '13px' : '8px',
+        'row-gap': atLeast(bp, 'lg') ? '13px' : sp(2),
       })
     })
 
     test('nested Stacks never inherit a parent breakpoint value', async ({ page }) => {
       expect((await css(page, 'outer', 'row-gap'))['row-gap']).toBe(
-        atLeast(bp, 'md') ? '32px' : 'normal'
+        atLeast(bp, 'md') ? sp(6) : 'normal'
       )
-      expect((await css(page, 'inner-gap', 'row-gap'))['row-gap']).toBe('4px')
+      expect((await css(page, 'inner-gap', 'row-gap'))['row-gap']).toBe(sp(1))
       expect((await css(page, 'inner-plain', 'row-gap'))['row-gap']).toBe('normal')
     })
 
@@ -56,14 +58,14 @@ for (const [bp, width] of Object.entries(WIDTHS) as Array<[Bp, number]>) {
       const b = await css(page, 'box', 'display', 'padding-top', 'max-width')
       expect(b.display).toBe(atLeast(bp, 'sm') ? 'block' : 'none')
       if (atLeast(bp, 'sm')) {
-        expect(b['padding-top']).toBe(atLeast(bp, 'md') ? '32px' : '8px')
-        expect(b['max-width']).toBe('320px')
+        expect(b['padding-top']).toBe(sp(atLeast(bp, 'md') ? 6 : 2))
+        expect(b['max-width']).toBe(`${px('20rem')}px`)
       }
       // Only mt is set: the Container's own gutter must survive. Style props
       // are utilities, so a declared-but-unset prop would wipe it.
       expect(await css(page, 'box-partial', 'margin-top', 'padding-left')).toEqual({
-        'margin-top': '16px',
-        'padding-left': atLeast(bp, 'md') ? '32px' : '16px',
+        'margin-top': sp(4),
+        'padding-left': gutter(bp),
       })
     })
 
@@ -73,10 +75,11 @@ for (const [bp, width] of Object.entries(WIDTHS) as Array<[Bp, number]>) {
       expect(await tracks(page, 'grid-columns')).toBe(
         atLeast(bp, 'lg') ? 4 : atLeast(bp, 'sm') ? 2 : 1
       )
-      // auto-fill: as many >=200px tracks (8px gaps) as the grid's width allows.
+      // auto-fill: as many >=200px tracks (space-2 gaps) as the grid's width allows.
       const { width: gridWidth } = await box(page, 'grid-min')
+      const gap = px(space[2])
       expect(await tracks(page, 'grid-min')).toBe(
-        Math.max(1, Math.floor((gridWidth + 8) / 208))
+        Math.max(1, Math.floor((gridWidth + gap) / (200 + gap)))
       )
     })
 
@@ -109,10 +112,10 @@ for (const [bp, width] of Object.entries(WIDTHS) as Array<[Bp, number]>) {
 
     test('Container caps width; px overrides its gutter', async ({ page }) => {
       const c = await css(page, 'container', 'max-width', 'padding-left')
-      expect(c['max-width']).toBe('600px')
-      expect(c['padding-left']).toBe(atLeast(bp, 'md') ? '32px' : '16px')
+      expect(c['max-width']).toBe(`${breakpoints.sm}px`)
+      expect(c['padding-left']).toBe(gutter(bp))
       expect((await css(page, 'container-px', 'padding-left'))['padding-left']).toBe(
-        '8px'
+        sp(2)
       )
     })
 
