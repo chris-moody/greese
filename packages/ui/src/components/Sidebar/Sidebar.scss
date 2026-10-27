@@ -55,7 +55,9 @@
         align-items: start;
 
         // Persistent: an ordinary sticky column. Author `display` overrides
-        // the UA's `[popover]:not(:popover-open) { display: none }`.
+        // the UA's `[popover]:not(:popover-open) { display: none }`. It's
+        // never open as a popover, so every property a theme's drawer exit
+        // sets (a scale, a turn, a wipe's mask) is put back to rest.
         > .greese-Sidebar {
           position: sticky;
           inset-block-start: var(--greese-sidebar-top, 0);
@@ -64,6 +66,9 @@
           box-shadow: none;
           opacity: 1;
           translate: none;
+          scale: none;
+          transform: none;
+          mask-image: none;
 
           &[data-collapsed] {
             --greese-sidebar-width: 4.5rem;
