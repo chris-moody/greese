@@ -63,6 +63,8 @@ automatic), and `npx tsc --noEmit -p packages/react` is clean.
 
 ## 4. Unit tests
 
+Follow `greese-testing` for steps 4, 5 and 7; in short:
+
 Add a `describe('<Name>')` block to the matching area file in
 `packages/react/src/components/` (`layout`, `forms`, `content`, `overlays`,
 `gaps`, `ported`), or a new `<area>.test.tsx`. Cover:

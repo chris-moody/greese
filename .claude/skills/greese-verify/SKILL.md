@@ -5,6 +5,7 @@ description: The full GreeseUI quality gate list with exact commands, what each 
 
 # Verifying GreeseUI changes
 
+Writing the tests is `greese-testing`; this is the gate list for afterwards.
 Run from the repo root. Scale the gates to the change, but never skip one
 that the change can affect. Report results faithfully: if something failed
 or was skipped, say so.

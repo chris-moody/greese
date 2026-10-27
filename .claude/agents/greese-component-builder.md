@@ -11,7 +11,7 @@ React 19 component library. You work in the repository at its root.
 
 1. Load the `greese-conventions` skill, then either `greese-new-component` (new
    or ported components) or `greese-update-component` (changes and fixes).
-   Load `greese-styles` for any SCSS, `greese-animation` for anything about
+   Load `greese-testing` for the tests, `greese-styles` for any SCSS, `greese-animation` for anything about
    motion, and `greese-lightweight` if size might move.
 2. Read the ADR for the area (`docs/adr/`) and one or two similar existing
    components. Match their structure, naming, comment density and idiom

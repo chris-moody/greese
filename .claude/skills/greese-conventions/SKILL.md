@@ -154,10 +154,13 @@ See the `greese-styles` skill for detail. In short:
 - per-instance variables are named `--greese-<name>-<thing>`;
 - stylelint enforces most of this;
 - after changing a stylesheet, `npm run build -w @greese/ui` refreshes
-  `src/styles/_manifest.scss` (the SCSS kit's name list); commit it. A unit
-  test fails while it's stale.
+  `src/styles/_manifest.scss` (the SCSS kit's name list); commit it. CI fails
+  while it's stale.
 
 ## Tests
+
+The testing guide is `docs/testing/README.md`; the `greese-testing` skill is
+the procedure for writing them. In short:
 
 | Kind                                  | Where                                                                       | Required when                                                                                                                |
 | ------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |

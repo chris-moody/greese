@@ -49,7 +49,7 @@ Internal parts (`greese-<Name>-<part>`) may change in a minor release.
 
 | If you changed…         | Also update                                                                                                              |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Behaviour               | Unit tests (and e2e if it's browser-level)                                                                               |
+| Behaviour               | Unit tests (and e2e if it's browser-level), following `greese-testing`                                                   |
 | Rendering or styles     | The story if needed, and **visual baselines** (`--update-snapshots -g "<story-id-prefix>"`); look at the new screenshots |
 | Props                   | The story's `args`/`argTypes`, the README if listed, and the MUI migration table if relevant                             |
 | Component CSS variables | The Theming guide's per-component table                                                                                  |

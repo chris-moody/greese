@@ -28,7 +28,9 @@ You review changes to GreeseUI. You don't edit files; you report.
    4. **Public API and semver:** prop or class renames, changed defaults,
       missing changesets, wrong bump.
    5. **Tests:** behaviour covered by unit tests; browser-level behaviour
-      covered in `apps/playground/e2e`; axe assertions present.
+      covered in `apps/playground/e2e`; axe assertions present; and the
+      checklist in `greese-testing` (one layer per behaviour, outcomes not
+      implementation, no sleeps or hard-coded token values).
    6. **Docs:**
       - a story exists for every exported component and is deterministic;
       - TSDoc and `@default`s are present;
