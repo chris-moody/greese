@@ -114,6 +114,13 @@ export default defineConfig({
       '@storybook/addon-docs/blocks': join(ROOT, 'src/docs/blocks.tsx'),
     },
   },
+  optimizeDeps: {
+    // The docs' stories load on demand from outside the app's root, so the
+    // dependency scan wouldn't find what they import (react-hook-form) until
+    // a page asked for it; then Vite re-optimizes and the page's import fails
+    // ("Outdated Optimize Dep"). Scanned up front, they're bundled at start.
+    entries: ['index.html', 'preview.html', '../docs/stories/**/*.stories.tsx'],
+  },
   css: {
     preprocessorOptions: {
       // `pkg:@greese/ui/scss/kit` in the site's own styles: the breakpoints
