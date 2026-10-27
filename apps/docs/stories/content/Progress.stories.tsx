@@ -19,4 +19,11 @@ export const Indeterminate: Story = {
   args: { value: undefined, 'aria-label': 'Processing' },
 }
 
+/**
+ * `loading`: a value that's still being worked on. The filled part runs with
+ * stripes in the bar's two colors (they hold still under reduced motion), and
+ * the bar is `aria-busy`.
+ */
+export const Loading: Story = { args: { loading: true, size: 'lg' } }
+
 export const Small: Story = { args: { size: 'sm' } }

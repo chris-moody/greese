@@ -16,14 +16,20 @@ const meta = {
       </>
     ),
   },
+  // A box that scrolls on its own, so the bar has something to stick to
+  // wherever the story is shown (a page's canvas only scrolls sideways).
   render: (args) => (
-    <div>
+    <div style={{ blockSize: '24rem', overflowY: 'auto' }}>
       <AppBar {...args} />
-      <Stack p={5}>
+      <Stack gap={4} p={5}>
         <Text tone="muted">
-          Scroll: the bar sticks and gains a shadow, with no scroll listener.
+          Scroll this box: the bar sticks and gains a shadow, with no scroll listener.
         </Text>
-        <div style={{ blockSize: '120vh' }} />
+        {Array.from({ length: 12 }, (_, i) => (
+          <Text key={i}>
+            Row {i + 1}. Content scrolls under the bar while it stays at the top.
+          </Text>
+        ))}
       </Stack>
     </div>
   ),
