@@ -5,12 +5,15 @@ export type EaseFn = (t: number) => number
  * An easing: a function, CSS-style cubic-bézier control points, or a name.
  *
  * Names: `linear`; the CSS keywords `ease`, `ease-in`, `ease-out`,
- * `ease-in-out`; `steps(n)`; `in`, `out`, `inOut` (power2); or a family with
+ * `ease-in-out`; CSS `cubic-bezier(x1, y1, x2, y2)`, as easing tokens and
+ * computed styles write it; `steps(n)`; `in`, `out`, `inOut` (power2); or a family with
  * a direction: `power1`–`power4`, `sine`, `expo`, `circ`, `back`,
  * `elastic`, `bounce`, each `.in`, `.out` or `.inOut`, e.g. `power3.out`,
  * `back.out(2)`, `elastic.out(1.2, 0.4)`.
  */
-export type Ease = string | EaseFn | readonly [number, number, number, number]
+export type Ease = string | EaseFn | Readonly<Bezier>
+
+type Bezier = [x1: number, y1: number, x2: number, y2: number]
 
 /**
  * A cubic-bézier easing from CSS-style control points (endpoints fixed at
@@ -103,6 +106,8 @@ const cache = new Map<string, EaseFn>()
 const byName = (name: string): EaseFn => {
   const keyword = keywords[name]
   if (keyword) return keyword
+  const bezier = /^cubic-bezier\(([^)]+)\)$/.exec(name)
+  if (bezier) return cubicBezier(...(bezier[1]!.split(',').map(Number) as Bezier))
   const steps = /^steps\((\d+)\)$/.exec(name)
   if (steps) {
     const n = Number(steps[1])

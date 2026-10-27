@@ -221,3 +221,33 @@ A finding for apps rather than the library: on the homepage, loading the
 first full style calculation into a JavaScript task, which counted as
 blocking time. Animating the first screen with CSS presets and letting the
 runtime load lazily took Lighthouse's Total Blocking Time to 20 ms.
+
+## Addendum (2026-10-26): values per target, and CSS's cubic-bezier()
+
+The site's footer logo loops dozens of particles, each with its own drift and
+moment, and sweeps its sparkles across in order of position, at the pace and
+ease of the motion theme being worn. Both were one `animate()` call per
+target, and the theme's ease, a CSS `cubic-bezier()` string, wasn't one
+greese.js read.
+
+- **Per-target values (`PerTarget`).** Any keyframe value, in `to`, `from`,
+  `fromTo`, `set` and `animate`, may be a function
+  `(index, target, targets) => value`. It's called once per target as the
+  animation is built, never while it plays, so rendering stays a pure
+  function of time. GLOP's engine code has the same form.
+- **Function staggers.** `stagger` also takes a `PerTarget<number>`: each
+  target's own offset, such as one ordered by position.
+- **`cubic-bezier()` strings** are eases, as easing tokens, motion themes and
+  computed styles write them, beside the bézier arrays.
+- **Typing:** `Keyframe` and `Vars` no longer list `EaseFn` in their index
+  signatures. An ease function is already a `PerTarget` (it takes fewer
+  parameters), and listing two function types left a value function's
+  parameters untyped. In the property-list form of `Keyframes`, a function
+  goes inside the list (`{ y: [0, (i) => …] }`): allowed alone, it made
+  `{ keyframes: (ctx) => … }` (a `defineGreeseEffect` definition) read as
+  keyframes too, and the definition's `ctx` lost its type.
+- **Cost:** everything 6.52 → 6.59 kB, `animate` 5.61 → 5.67 kB, `ease`
+  847 → 879 B and the `<script>` build 6.9 → 6.98 kB; budgets raised to 6.6,
+  5.7 and 7 kB. In `@greese/react`, the whole library with greese.js
+  34.22 → 34.38 kB, `useGreese` 5.97 → 6.05 kB and the `greese` prop's lazy
+  runtime 10.85 → 10.91 kB; budgets raised to 34.4, 6.1 and 10.95 kB.

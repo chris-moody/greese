@@ -23,6 +23,7 @@ export {
   type AnimateOptions,
   type Keyframe,
   type Keyframes,
+  type PerTarget,
   type Position,
   type StaggerOptions,
   type TimelineOptions,

@@ -25,17 +25,17 @@ budgets and ADR 0008 covers greese.js.
 
 ## Budgets (brotli)
 
-| What                                                    | Budget                   | Where                             |
-| ------------------------------------------------------- | ------------------------ | --------------------------------- |
-| All components (greese.js excluded)                     | 28.95 kB                 | `packages/react/.size-limit.cjs`  |
-| All components + greese.js                              | 34.25 kB                 | same                              |
-| Each listed component, tree-shaken                      | 0.3–4.85 kB              | same                              |
-| `greese` prop runtime (lazy chunk)                      | 10.85 kB                 | same                              |
-| `greese.css` (`@greese/ui`)                             | 23.4 kB                  | `packages/ui/.size-limit.cjs`     |
-| `utilities.css` (`@greese/ui`, the whole set)           | 7.5 kB                   | same                              |
-| `base.css` (`@greese/ui`)                               | 1 kB                     | same                              |
-| greese.js: everything / `animate` / `ease` / `<script>` | 6.55 / 5.65 / 1 / 6.9 kB | `packages/js/.size-limit.json`    |
-| `@greese/icons`: every icon / one icon                  | 2.25 kB / 400 B          | `packages/icons/.size-limit.json` |
+| What                                                    | Budget               | Where                             |
+| ------------------------------------------------------- | -------------------- | --------------------------------- |
+| All components (greese.js excluded)                     | 28.95 kB             | `packages/react/.size-limit.cjs`  |
+| All components + greese.js                              | 34.25 kB             | same                              |
+| Each listed component, tree-shaken                      | 0.3–4.85 kB          | same                              |
+| `greese` prop runtime (lazy chunk)                      | 10.85 kB             | same                              |
+| `greese.css` (`@greese/ui`)                             | 23.4 kB              | `packages/ui/.size-limit.cjs`     |
+| `utilities.css` (`@greese/ui`, the whole set)           | 7.5 kB               | same                              |
+| `base.css` (`@greese/ui`)                               | 1 kB                 | same                              |
+| greese.js: everything / `animate` / `ease` / `<script>` | 6.6 / 5.7 / 1 / 7 kB | `packages/js/.size-limit.json`    |
+| `@greese/icons`: every icon / one icon                  | 2.25 kB / 400 B      | `packages/icons/.size-limit.json` |
 
 Every component entry includes the `greese` prop's shared static part (about
 1.4 kB: resolver, island and the names of what CSS plays; 1.8 kB with Slot

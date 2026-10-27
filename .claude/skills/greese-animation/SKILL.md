@@ -72,7 +72,7 @@ plan it implemented.
   - in Playwright, never return a timeline from `page.evaluate`, because
     it's a thenable and would be awaited.
 - **Size:** `npm run build -w @greese/js && npm run size -w @greese/js`.
-  The budget is 6.55 kB for everything (`animate` alone 5.65 kB). Measure per module (see
+  The budget is 6.6 kB for everything (`animate` alone 5.7 kB). Measure per module (see
   `greese-lightweight`) before adding features. Heavyweight features (plugins,
   ScrollTrigger, morphing, physics) are out of scope.
 - **Docs:**

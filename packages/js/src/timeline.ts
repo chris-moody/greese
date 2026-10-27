@@ -23,11 +23,21 @@ import type { Mixer, Value } from './value.ts'
  */
 export type Position = number | string
 
-type Prop = Value | undefined
+/**
+ * A value per target, worked out when the animation is built: a function of
+ * the target's index in the list, the target and the list. Gives each target
+ * its own value, or its own place in a stagger, from one call:
+ * `x: (i) => i * 10`, `stagger: (i, el) => el.getBBox().x / 500`.
+ */
+export type PerTarget<T> = (index: number, target: Target, targets: Target[]) => T
+
+type Prop = Value | undefined | PerTarget<Value>
 
 /** A keyframe: property values, plus optional `offset` (0–1) and `ease`. */
 export interface Keyframe {
-  [prop: string]: Prop | Ease
+  // An ease function is a PerTarget too, so leaving it out keeps a value
+  // function's parameters typed.
+  [prop: string]: Prop | Exclude<Ease, EaseFn>
   offset?: number
   ease?: Ease
 }
@@ -35,12 +45,17 @@ export interface Keyframe {
 /**
  * Keyframes, WAAPI-style: an array of frames, or an object of property →
  * value list (`{ opacity: [0, 1], x: [0, 40, 20] }`). A single value or
- * frame animates from the current value.
+ * frame animates from the current value. Any value may be a
+ * {@link PerTarget} function; in the object form, inside its list
+ * (`{ x: [0, (i) => i * 10] }`), so an object holding a function alone
+ * (`{ keyframes: (ctx) => … }`, say) is never mistaken for keyframes.
  */
-export type Keyframes = Keyframe[] | { [prop: string]: Prop | Prop[] }
+export type Keyframes = Keyframe[] | { [prop: string]: Value | undefined | Prop[] }
 
 /** Property values plus animation options, for `to`, `from` and `fromTo`. */
-export type Vars = { [prop: string]: Prop | Ease | StaggerOptions } & AnimateOptions
+export type Vars = {
+  [prop: string]: Prop | Exclude<Ease, EaseFn> | StaggerOptions
+} & AnimateOptions
 
 export interface StaggerOptions {
   /** Seconds between neighbouring targets. */
@@ -54,8 +69,11 @@ export interface AnimateOptions {
   duration?: number
   /** @default 'out' (power2.out) */
   ease?: Ease
-  /** Offsets each target's start, in seconds, or `{ each, from }`. */
-  stagger?: number | StaggerOptions
+  /**
+   * Offsets each target's start: seconds between neighbours, `{ each, from }`,
+   * or a {@link PerTarget} function giving each target's own offset.
+   */
+  stagger?: number | StaggerOptions | PerTarget<number>
 }
 
 export interface TimelineOptions {
@@ -184,12 +202,17 @@ interface Child {
   call?: () => void
 }
 
+/** A per-target value for target `i`, or the value itself. */
+const perTarget = <T>(value: T | PerTarget<T>, i: number, list: Target[]): T =>
+  typeof value === 'function' ? (value as PerTarget<T>)(i, list[i]!, list) : value
+
 const staggerOffset = (
   stagger: AnimateOptions['stagger'],
   i: number,
-  n: number
+  list: Target[]
 ): number => {
-  if (!stagger) return 0
+  if (!stagger || typeof stagger === 'function') return perTarget(stagger ?? 0, i, list)
+  const n = list.length
   const { each, from = 'start' } =
     typeof stagger === 'number' ? { each: stagger } : stagger
   const origin =
@@ -301,17 +324,17 @@ export class Timeline implements PromiseLike<void> {
     const stops = toStops(keyframes)
     let end = at
     list.forEach((target, i) => {
-      const start = at + staggerOffset(stagger, i, list.length)
+      const start = at + staggerOffset(stagger, i, list)
       end = Math.max(end, start + duration)
-      for (const [prop, list] of stops) {
-        for (let k = 0; k + 1 < list.length; k++) {
-          const [o1, v1, e1] = list[k]!
-          const [o2, v2] = list[k + 1]!
+      for (const [prop, values] of stops) {
+        for (let k = 0; k + 1 < values.length; k++) {
+          const [o1, v1, e1] = values[k]!
+          const [o2, v2] = values[k + 1]!
           this.#track(target, prop).add({
             start: start + o1 * duration,
             end: start + o2 * duration,
-            from: v1,
-            to: v2,
+            from: perTarget(v1, i, list),
+            to: perTarget(v2, i, list),
             ease: toEase(e1 ?? optEase),
           })
         }
@@ -339,15 +362,15 @@ export class Timeline implements PromiseLike<void> {
     const at = this.#resolve(position)
     let end = at
     list.forEach((target, i) => {
-      const start = at + staggerOffset(stagger, i, list.length)
+      const start = at + staggerOffset(stagger, i, list)
       end = Math.max(end, start + duration)
       for (const prop in fromVars) {
         if (OPTION_KEYS.has(prop)) continue
         this.#track(target, prop).add({
           start,
           end: start + duration,
-          from: fromVars[prop] as Prop,
-          to: toVars[prop] as Prop,
+          from: perTarget(fromVars[prop] as Prop, i, list),
+          to: perTarget(toVars[prop] as Prop, i, list),
           ease: toEase(ease),
           immediate: true,
         })

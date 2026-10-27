@@ -45,6 +45,11 @@ describe('ease', () => {
   it('matches CSS ease at its midpoint', () => {
     expect(cubicBezier(0.25, 0.1, 0.25, 1)(0.5)).toBeCloseTo(0.8024, 3)
   })
+
+  it('reads CSS cubic-bezier() strings, as tokens and computed styles write them', () => {
+    expect(ease('cubic-bezier(0.25, 0.1, 0.25, 1)')(0.5)).toBeCloseTo(0.8024, 3)
+    expect(ease('cubic-bezier(0,0,1,1)')(0.4)).toBeCloseTo(0.4)
+  })
 })
 
 describe('mix', () => {
@@ -183,6 +188,32 @@ describe('timeline on plain objects', () => {
     expect(tl.duration()).toBe(1.5)
     tl.seek(0.5)
     expect(items.map((i) => i.v)).toEqual([0, 0.5, 0])
+  })
+
+  it('takes per-target values and staggers from functions', () => {
+    const items = [{ v: 0 }, { v: 0 }, { v: 0 }]
+    const seen: unknown[] = []
+    const tl = timeline({ paused: true }).to(items, {
+      v: (i, target, targets) => {
+        seen.push([target === items[i], targets.length])
+        return (i + 1) * 10
+      },
+      duration: 1,
+      ease: 'linear',
+      stagger: (i) => [1, 0, 0.5][i]!,
+    })
+    expect(seen).toEqual(Array(3).fill([true, 3]))
+    expect(tl.duration()).toBe(2)
+    tl.seek(1)
+    expect(items.map((i) => i.v)).toEqual([0, 20, 15])
+    const keyed = [{ x: 0 }, { x: 0 }]
+    timeline({ paused: true })
+      .animate(keyed, { x: [0, (i) => i + 1, 0] }, { duration: 1, ease: 'linear' })
+      .seek(0.5)
+    expect(keyed.map((k) => k.x)).toEqual([1, 2])
+    const from = [{ y: 5 }, { y: 5 }]
+    timeline({ paused: true }).fromTo(from, { y: (i) => i * 2 }, { y: 5, duration: 1 })
+    expect(from.map((f) => f.y)).toEqual([0, 2])
   })
 
   it('shows from-values immediately and returns to the original', () => {
