@@ -9,6 +9,7 @@ import { bevel } from '@greese/ui/shapes'
 import { shapesScss, validateSpec, type ThemeSpec } from '../src/studio/spec.ts'
 import { compileSpec } from './studio.ts'
 import { themeFile } from './shapes.ts'
+import { blocks } from '../../../packages/ui/src/test/sass.ts'
 
 const themes = join(import.meta.dirname, '../../../packages/ui/themes')
 
@@ -25,14 +26,22 @@ const topLevel = (value: string): string[] => {
   return items
 }
 
+/** Each `@keyframes greese-*` in the CSS: its name and its steps, as data. */
+const keyframes = (css: string) => {
+  const found = new Map<string, Array<[string, Array<[string, string]>]>>()
+  for (const { within, prelude, declarations } of blocks(css)) {
+    const name = /^@keyframes greese-([a-z-]+)$/.exec(within.at(-1) ?? '')?.[1]
+    if (name) found.set(name, [...(found.get(name) ?? []), [prelude, declarations]])
+  }
+  return found
+}
+
 /** Every built-in entrance's keyframes, as @greese/ui's Motion styles write them. */
-const builtIn = new Map(
-  [
-    ...readFileSync(
-      join(import.meta.dirname, '../../../packages/ui/dist/css/Motion.css'),
-      'utf8'
-    ).matchAll(/@keyframes greese-([a-z-]+) (\{[\s\S]*?\n {4}\})/g),
-  ].map(([, name, body]) => [name!, body!])
+const builtIn = keyframes(
+  readFileSync(
+    join(import.meta.dirname, '../../../packages/ui/dist/css/Motion.css'),
+    'utf8'
+  )
 )
 
 describe('theme layers (ADR 0025)', () => {
@@ -185,12 +194,9 @@ describe('theme layers (ADR 0025)', () => {
       expect(css).toMatch(/--greese-motion-theme: greese-[a-z-]+;/)
       // It never redefines an effect or a token: the keyframes it carries are
       // the effects' own, and no duration or easing token changes.
-      const carried = [
-        ...css.matchAll(/@keyframes greese-([a-z-]+) (\{[\s\S]*?\n {4}\})/g),
-      ]
-      expect(carried.length).toBeGreaterThan(0)
-      for (const [, name, body] of carried)
-        expect(body!.replace(/\s+/g, ' ')).toBe(builtIn.get(name!)!.replace(/\s+/g, ' '))
+      const carried = keyframes(css)
+      expect(carried.size).toBeGreaterThan(0)
+      for (const [name, steps] of carried) expect(steps, name).toEqual(builtIn.get(name))
       expect(css).not.toMatch(/--greese-(duration|easing|radius)-[a-z]+:/)
       expect(css).not.toMatch(/--greese-color-/)
     }

@@ -6,6 +6,7 @@ import { familyOf } from '../src/studio/family.ts'
 import { blocks } from '../src/studio/manifest.ts'
 import { validateSpec, type ThemeSpec } from '../src/studio/spec.ts'
 import { compileSpec } from './studio.ts'
+import { rules } from '../../../packages/ui/src/test/sass.ts'
 
 const UI = join(process.cwd(), '../../packages/ui')
 
@@ -57,18 +58,21 @@ describe('the SCSS a Styles box starts with', () => {
   })
 
   it('compiles for every component with a family, inside its own component()', async () => {
-    const failures: string[] = []
+    const components: ThemeSpec['components'] = {}
     for (const name of ['Accordion', 'AccordionItem', 'Collapsible', 'Tabs', 'Field']) {
-      if (!blocks[name]) continue
-      const spec: ThemeSpec = {
-        tokens: {},
-        components: { [name]: { scss: await startingScss(name) } },
-      }
-      const errors = validateSpec(spec)
-      const result = errors.length ? { errors } : compileSpec(spec)
-      if ('errors' in result)
-        failures.push(`${name}: ${result.errors[0]!.split('\n')[0]}`)
+      if (blocks[name]) components[name] = { scss: await startingScss(name) }
     }
+    const compile = (only: ThemeSpec['components']) => {
+      const spec: ThemeSpec = { tokens: {}, components: only }
+      const errors = validateSpec(spec)
+      return errors.length ? { errors } : compileSpec(spec)
+    }
+    // All in one theme compiles the kit once; each alone only to name a failure.
+    if (!('errors' in compile(components))) return
+    const failures = Object.entries(components).flatMap(([name, component]) => {
+      const result = compile({ [name]: component })
+      return 'errors' in result ? [`${name}: ${result.errors[0]!.split('\n')[0]}`] : []
+    })
     expect(failures).toEqual([])
   }, 60_000)
 })
@@ -86,27 +90,33 @@ describe('editing a family in the theme', () => {
     },
   })
 
+  /** What encloses each rule for `selector` that carries the edit. */
+  const wrapping = (css: string, selector: string) =>
+    rules(css, selector)
+      .filter((r) =>
+        r.declarations.some(([p, v]) => p === 'min-block-size' && v === '5rem')
+      )
+      .map((r) => r.within)
+
   it('applies inside the component it was edited from, and nowhere else', async () => {
     const result = compileSpec(await edited())
     expect(result).not.toHaveProperty('errors')
     const out = (result as { css: string }).css
-    expect(out).toMatch(
-      /\.greese-Accordion \.greese-Collapsible-trigger \{\s+min-block-size: 5rem;/
-    )
-    expect(out).not.toMatch(
-      /(^|\n)\s*\.greese-Collapsible-trigger \{\s+min-block-size: 5rem/
-    )
-    expect(out.indexOf('min-block-size: 5rem')).toBeGreaterThan(
-      out.indexOf('@layer greese.overrides')
-    )
+    expect(wrapping(out, '.greese-Accordion .greese-Collapsible-trigger')).toEqual([
+      ['@layer greese.overrides'],
+    ])
+    expect(wrapping(out, '.greese-Collapsible-trigger')).toEqual([])
   })
 
   it('keeps a named theme’s scope, since the kit nests the rules itself', async () => {
     const out = (compileSpec({ ...(await edited()), name: 'brand' }) as { css: string })
       .css
-    expect(out).toMatch(
-      /\[data-greese-theme=brand\] \.greese-Accordion \.greese-Collapsible-trigger \{\s+min-block-size: 5rem;/
-    )
+    expect(
+      wrapping(
+        out,
+        '[data-greese-theme=brand] .greese-Accordion .greese-Collapsible-trigger'
+      )
+    ).toHaveLength(1)
   })
 
   it('reports scss it cannot use', () => {

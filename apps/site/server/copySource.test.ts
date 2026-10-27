@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { copySource } from '../src/studio/copySource.ts'
 import { blocks } from '../src/studio/manifest.ts'
-import { validateSpec } from '../src/studio/spec.ts'
+import { validateSpec, type ThemeSpec } from '../src/studio/spec.ts'
 import { compileSpec } from './studio.ts'
 
 const COMPONENTS = join(process.cwd(), '../../packages/ui/src/components')
@@ -93,19 +93,24 @@ describe('copying a component’s source into its SCSS box', () => {
   })
 
   it('compiles for every component the library styles, inside its own component()', () => {
-    const failures: string[] = []
+    const components: ThemeSpec['components'] = {}
     for (const name of readdirSync(COMPONENTS)) {
       if (NOT_COPYABLE.has(name) || !blocks[name]) continue
       const source = readFileSync(join(COMPONENTS, name, `${name}.scss`), 'utf8')
-      const spec = {
-        tokens: {},
-        components: { [name]: { scss: copySource(source, blocks[name]!.className) } },
-      }
-      const errors = validateSpec(spec)
-      const result = errors.length ? { errors } : compileSpec(spec)
-      if ('errors' in result)
-        failures.push(`${name}: ${result.errors[0]!.split('\n')[0]}`)
+      components[name] = { scss: copySource(source, blocks[name]!.className) }
     }
+    const compile = (only: ThemeSpec['components']) => {
+      const spec = { tokens: {}, components: only }
+      const errors = validateSpec(spec)
+      return errors.length ? { errors } : compileSpec(spec)
+    }
+    // One theme holding every component compiles the kit once; only when it
+    // fails is each compiled alone, to name the ones that break.
+    if (!('errors' in compile(components))) return
+    const failures = Object.entries(components).flatMap(([name, component]) => {
+      const result = compile({ [name]: component })
+      return 'errors' in result ? [`${name}: ${result.errors[0]!.split('\n')[0]}`] : []
+    })
     expect(failures).toEqual([])
   }, 60_000)
 })
