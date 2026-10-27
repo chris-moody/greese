@@ -1,17 +1,9 @@
-import { join } from 'node:path'
-import { compileString, NodePackageImporter } from 'sass-embedded'
+// @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import manifest from '../../package.json' with { type: 'json' }
+import { compileAsProject, rules } from '../test/sass.ts'
 
-/** The repository root (tests run from the package), where `@greese/ui` is installed as a project installs it. */
-const ROOT = join(process.cwd(), '../..')
-
-/** Compiles as a project does: by package URL, from outside the package. */
-const compile = (scss: string): string =>
-  compileString(scss, {
-    importers: [new NodePackageImporter(ROOT)],
-    url: new URL(`file://${ROOT}/theme.scss`),
-  }).css
+const compile = compileAsProject
 
 const AUTHORING = ['mixins', 'tones', 'floating', 'controls'] as const
 
@@ -40,7 +32,10 @@ describe('the SCSS entry points for theme authors (ADR 0021)', () => {
   color: list.nth(map.get(tones.$tones, primary), 1);
 }`)
     expect(css).toContain('@media (width >= 900px)')
-    expect(css).toMatch(/\.a:focus-visible \{\s+outline: 2px solid/)
+    expect(rules(css, '.a:focus-visible')[0]?.declarations).toContainEqual([
+      'outline',
+      expect.stringMatching(/^2px solid /),
+    ])
     expect(css).toContain('var(--greese-color-primary)')
   })
 

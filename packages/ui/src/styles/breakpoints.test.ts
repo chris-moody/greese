@@ -1,15 +1,10 @@
 // @vitest-environment node
 import { readFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
-import { compileString } from 'sass-embedded'
 import { describe, expect, it } from 'vitest'
-
-const STYLES = fileURLToPath(new URL('.', import.meta.url))
+import { compileScss, STYLES } from '../test/sass.ts'
 
 const build = (breakpoints: string): string =>
-  compileString(`@use 'index' with ($breakpoints: ${breakpoints});`, {
-    loadPaths: [STYLES],
-  }).css
+  compileScss(`@use 'index' with ($breakpoints: ${breakpoints});`)
 
 const DEFAULTS = 'xs: 0px, sm: 600px, md: 900px, lg: 1200px, xl: 1536px'
 const vars = (css: string) =>

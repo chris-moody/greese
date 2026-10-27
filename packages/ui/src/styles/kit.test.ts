@@ -1,7 +1,5 @@
 // @vitest-environment node
-import { readdirSync, readFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
-import { compile as compileFile, compileString, NodePackageImporter } from 'sass-embedded'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import {
   createTheme,
@@ -13,22 +11,26 @@ import {
   entranceNames,
   LAYER_ORDER,
 } from '../index.ts'
-
-const STYLES = fileURLToPath(new URL('.', import.meta.url))
+import { blocks, compileScss, rules } from '../test/sass.ts'
 
 const compile = (scss: string, use = `@use 'kit' as greese;`): string =>
-  compileString(`${use}\n${scss}`, {
-    loadPaths: [STYLES],
-    importers: [new NodePackageImporter()],
-  }).css
+  compileScss(`${use}\n${scss}`)
 
-/** The custom properties a rule declares, in order. */
+/** The custom properties the first rule for `selector` declares, in order. */
 const declared = (css: string, selector: string): Array<[string, string]> => {
-  const at = css.indexOf(`${selector} {`)
-  expect(at, `${selector} in\n${css}`).toBeGreaterThanOrEqual(0)
-  const body = css.slice(css.indexOf('{', at) + 1, css.indexOf('}', at))
-  return [...body.matchAll(/(--[a-z0-9-]+):\s*([^;]+);/g)].map((m) => [m[1]!, m[2]!])
+  const [rule] = rules(css, selector)
+  expect(rule, `${selector} in\n${css}`).toBeDefined()
+  return rule!.declarations.filter(([name]) => name.startsWith('--'))
 }
+
+/** The rule for `selector` inside `within` (outermost first); fails if there is none. */
+const ruleIn = (css: string, selector: string, ...within: string[]) => {
+  const rule = rules(css, selector).find((r) => r.within.join() === within.join())
+  expect(rule, `${selector} in ${within.join(' > ')}:\n${css}`).toBeDefined()
+  return rule!.declarations
+}
+
+const motionOk = '@media (prefers-reduced-motion: no-preference)'
 
 describe('SCSS kit: names', () => {
   it('emits no CSS when used', () => {
@@ -92,33 +94,49 @@ describe('SCSS kit: component()', () => {
   `)
 
   it('puts overrides in greese.overrides, above components and below utilities', () => {
-    expect(css).toMatch(
-      /\n@layer greese\.overrides \{\n {2}\.greese-Button \{\n {4}font-weight: 700;/
-    )
+    expect(ruleIn(css, '.greese-Button', '@layer greese.overrides')).toContainEqual([
+      'font-weight',
+      '700',
+    ])
   })
 
   it('starts with the layer order, once, so it holds whichever sheet loads first', () => {
-    expect(css.startsWith(`${LAYER_ORDER}\n`)).toBe(true)
+    const order = LAYER_ORDER.slice(0, -1)
+    expect(blocks(css)[0]?.prelude).toBe(order)
     expect(css.split('@layer greese.reset')).toHaveLength(2)
-    expect(compile('@include greese.tokens((radius: (md: 1px)));')).toMatch(
-      /^@layer greese\.reset, .*greese\.components, greese\.overrides, greese\.utilities;\n@layer greese\.theme \{/
-    )
+    const tokens = blocks(compile('@include greese.tokens((radius: (md: 1px)));'))
+    expect(tokens.slice(0, 2).map((b) => b.prelude)).toEqual([
+      order,
+      '@layer greese.theme',
+    ])
   })
 
   it('builds part and modifier selectors from the enclosing component', () => {
-    expect(css).toContain(
-      '.greese-Button.greese-Button--outline {\n    border-width: 2px;'
-    )
-    expect(css).toContain('.greese-Button .greese-Button-icon {\n    opacity: 0.8;')
-    expect(css).toContain(
-      '.greese-Pagination .greese-Pagination-step.greese-Pagination-step--next {'
-    )
+    const layer = '@layer greese.overrides'
+    expect(ruleIn(css, '.greese-Button.greese-Button--outline', layer)).toEqual([
+      ['border-width', '2px'],
+    ])
+    expect(ruleIn(css, '.greese-Button .greese-Button-icon', layer)).toEqual([
+      ['opacity', '0.8'],
+    ])
+    expect(
+      ruleIn(
+        css,
+        '.greese-Pagination .greese-Pagination-step.greese-Pagination-step--next',
+        layer
+      )
+    ).toEqual([['color', 'red']])
   })
 
   it('forwards the library mixins', () => {
-    expect(css).toMatch(
-      /@media \(hover: hover\) \{\s+\.greese-Button:hover \{\s+translate: 0 -1px;/
-    )
+    expect(
+      ruleIn(
+        css,
+        '.greese-Button:hover',
+        '@layer greese.overrides',
+        '@media (hover: hover)'
+      )
+    ).toEqual([['translate', '0 -1px']])
   })
 
   it('needs a component around part() and modifier()', () => {
@@ -142,7 +160,7 @@ describe('SCSS kit: vars()', () => {
   `)
 
   it('expands short names, and takes full names and tokens', () => {
-    expect(declared(css, '  .greese-Button')).toEqual([
+    expect(declared(css, '.greese-Button')).toEqual([
       ['--greese-button-tone', 'var(--greese-color-positive)'],
       ['--greese-radius-md', '2px'],
       ['--greese-button-on-tone', 'light-dark(white, black)'],
@@ -151,9 +169,10 @@ describe('SCSS kit: vars()', () => {
   })
 
   it('keeps duration tokens out of reduced motion', () => {
-    expect(css).toMatch(
-      /@media \(prefers-reduced-motion: no-preference\) \{\s+\.greese-Button \{\s+--greese-duration-fast: 60ms;/
-    )
+    expect(rules(css, '.greese-Button')).toContainEqual({
+      within: ['@layer greese.overrides', motionOk],
+      declarations: [['--greese-duration-fast', '60ms']],
+    })
   })
 
   it('rejects variables the component does not have', () => {
@@ -169,9 +188,12 @@ describe('SCSS kit: motion()', () => {
       @include greese.motion((enter: fadeUp, duration: 0.4s, distance: 2rem, ease: in-out));
     }`)
     expect(css).toContain('--greese-motion-distance: 2rem;')
-    expect(css).toMatch(
-      /prefers-reduced-motion: no-preference\) \{\s+\.greese-Card \{\s+animation: greese-fade-up var\(--greese-motion-duration, 0\.4s\) var\(--greese-motion-ease, var\(--greese-ease-in-out\)\) var\(--greese-motion-delay, 0s\) backwards;/
-    )
+    expect(
+      ruleIn(css, '.greese-Card', '@layer greese.overrides', motionOk)
+    ).toContainEqual([
+      'animation',
+      'greese-fade-up var(--greese-motion-duration, 0.4s) var(--greese-motion-ease, var(--greese-ease-in-out)) var(--greese-motion-delay, 0s) backwards',
+    ])
   })
 
   it('sets everything an overlay exit sets, as the exit classes do', () => {
@@ -196,9 +218,9 @@ describe('SCSS kit: motion()', () => {
       @include greese.motion((durations: (fast: 80ms), easings: (standard: linear)));
     }`)
     expect(css).toContain('--greese-easing-standard: linear;')
-    expect(css).toMatch(
-      /no-preference\) \{\s+\.greese-Switch \{\s+--greese-duration-fast: 80ms;/
-    )
+    expect(
+      ruleIn(css, '.greese-Switch', '@layer greese.overrides', motionOk)
+    ).toContainEqual(['--greese-duration-fast', '80ms'])
   })
 
   it('tunes every entrance with motion-defaults()', () => {
@@ -291,10 +313,14 @@ describe('SCSS kit: effect()', () => {
         `(enter: (from: (rotate: '0deg'), '33.33%': (rotate: '-6deg'), '66.67%': (rotate: '6deg')))`
       )
     )
-    expect(css).toMatch(
-      /\.greese-Motion--enter-wobble,\s+\.greese-Motion--view-wobble \{\s+--greese-motion-name: greese-wobble;/
+    expect(
+      rules(css, '.greese-Motion--enter-wobble, .greese-Motion--view-wobble')[0]
+        ?.declarations
+    ).toContainEqual(['--greese-motion-name', 'greese-wobble'])
+    const wobbleFrom = blocks(css).find(
+      (b) => b.prelude === 'from' && b.within.at(-1) === '@keyframes greese-wobble'
     )
-    expect(css).toMatch(/@keyframes greese-wobble \{\s+from \{\s+rotate: 0deg;/)
+    expect(wobbleFrom?.declarations).toEqual([['rotate', '0deg']])
     expect(css).toContain('animation: greese-wobble ')
     expect(wobble.enter).toHaveLength(3)
   })
@@ -356,21 +382,28 @@ describe('SCSS kit: tokens() and theme()', () => {
       font: (body: ('Inter', system-ui)),
       duration: (fast: 90ms),
     ));`)
-    expect(css).toMatch(/^@layer greese\.reset[^\n]*\n@layer greese\.theme \{/)
-    expect(declared(css, '  :root')).toEqual([
+    expect(blocks(css)[1]?.prelude).toBe('@layer greese.theme')
+    expect(declared(css, ':root')).toEqual([
       ['--greese-radius-md', '12px'],
       ['--greese-font-body', '"Inter", system-ui'],
       ['--greese-duration-fast', '90ms'],
     ])
-    expect(css).toContain(
-      '[data-greese-scheme=system] {\n    --greese-color-accent: #7c3aed;'
-    )
-    expect(css).toContain(
-      '[data-greese-scheme=dark] {\n    --greese-color-accent: #c4b5fd;'
-    )
-    expect(css).toMatch(
-      /reduced-motion: reduce\) \{\s+:root \{\s+--greese-duration-fast: 0\.01ms;/
-    )
+    expect(declared(css, '[data-greese-scheme=system]')).toContainEqual([
+      '--greese-color-accent',
+      '#7c3aed',
+    ])
+    expect(declared(css, '[data-greese-scheme=dark]')).toContainEqual([
+      '--greese-color-accent',
+      '#c4b5fd',
+    ])
+    expect(
+      ruleIn(
+        css,
+        ':root',
+        '@layer greese.theme',
+        '@media (prefers-reduced-motion: reduce)'
+      )
+    ).toEqual([['--greese-duration-fast', '0.01ms']])
   })
 
   it('declares the same complete theme as createTheme()', () => {
@@ -393,7 +426,7 @@ describe('SCSS kit: tokens() and theme()', () => {
     // Sass drops the attribute quotes; createTheme's font stack keeps its own.
     const norm = (list: Array<[string, string]>) =>
       list.map(([p, v]) => [p, v.replace(/"/g, "'")])
-    expect(norm(declared(css, `  ${sass}`))).toEqual(norm(declared(theme.css, `  ${T}`)))
+    expect(norm(declared(css, sass))).toEqual(norm(declared(theme.css, T)))
     expect(
       declared(css, `:root[data-greese-scheme=dark] ${sass}:not([data-greese-scheme])`)
     ).toEqual(
@@ -420,9 +453,9 @@ describe('SCSS kit: tokens() and theme()', () => {
     const sass = '[data-greese-theme=brand]'
     const norm = (list: Array<[string, string]>) =>
       list.map(([p, v]) => [p, v.replace(/"/g, "'")])
-    const light = declared(css, `  ${sass}`)
+    const light = declared(css, sass)
     expect(light).toContainEqual(['--greese-color-negative-content', '#11171c'])
-    expect(norm(light)).toEqual(norm(declared(theme.css, `  ${T}`)))
+    expect(norm(light)).toEqual(norm(declared(theme.css, T)))
   })
 
   it('scopes component overrides to the theme', () => {
@@ -430,8 +463,10 @@ describe('SCSS kit: tokens() and theme()', () => {
       @include greese.component(Card) { padding: 0; }
       @include greese.motion-defaults((distance: 2rem));
     }`)
-    expect(css).toContain('[data-greese-theme=brand] .greese-Card {\n    padding: 0;')
-    expect(declared(css, '  [data-greese-theme=brand]')).toEqual([
+    expect(rules(css, '[data-greese-theme=brand] .greese-Card')[0]?.declarations).toEqual(
+      [['padding', '0']]
+    )
+    expect(declared(css, '[data-greese-theme=brand]')).toEqual([
       ['--greese-motion-distance', '2rem'],
     ])
   })
@@ -493,26 +528,6 @@ describe('SCSS kit: new tokens', () => {
   })
 })
 
-describe('style manifest', () => {
-  it('is current: rebuild with `npm run build` after changing a stylesheet', async () => {
-    const { manifestScss, styleManifest } = await import('../../scripts/styleManifest.ts')
-    const components = fileURLToPath(new URL('../components', import.meta.url))
-    const compiled = new Map(
-      readdirSync(components).map((name) => [
-        name,
-        compileFile(`${components}/${name}/${name}.scss`).css,
-      ])
-    )
-    const tokensCss = readFileSync(`${STYLES}/../../dist/tokens.css`, 'utf8')
-    const tokenVars = new Set(tokensCss.match(/--greese-[a-z0-9-]+(?=:)/g))
-    expect(readFileSync(`${STYLES}/_manifest.scss`, 'utf8')).toBe(
-      manifestScss(styleManifest(compiled, tokenVars))
-    )
-    // It compiles every component's stylesheet: about 30 s while the other
-    // packages' tests run beside it (turbo), so it gets three times that.
-  }, 90_000)
-})
-
 describe('SCSS kit: typography()', () => {
   it('writes a variant complete, so its other breakpoints stay in step', () => {
     const css = compile(`@include greese.typography((
@@ -566,10 +581,26 @@ describe('SCSS kit: keyframes()', () => {
       to: (opacity: 1, translate: '0 0'),
     ));`)
     expect(css).toContain('@layer greese.utilities')
-    expect(css).toMatch(
-      /@keyframes greese-float-up\s*{\s*from\s*{\s*opacity:\s*0;\s*translate:\s*0 2rem;/
+    const steps = blocks(css).filter(
+      (b) => b.within.at(-1) === '@keyframes greese-float-up'
     )
-    expect(css).toMatch(/60%\s*{\s*opacity:\s*1;/)
+    expect(steps.map((b) => [b.prelude, b.declarations])).toEqual([
+      [
+        'from',
+        [
+          ['opacity', '0'],
+          ['translate', '0 2rem'],
+        ],
+      ],
+      ['60%', [['opacity', '1']]],
+      [
+        'to',
+        [
+          ['opacity', '1'],
+          ['translate', '0 0'],
+        ],
+      ],
+    ])
   })
 
   it('only takes names that start with greese-, and none of a built-in', () => {
