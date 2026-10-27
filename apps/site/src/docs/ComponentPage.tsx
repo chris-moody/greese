@@ -88,7 +88,7 @@ export const ComponentPage = ({ page }: { page: DocsPage }): JSX.Element => {
         </>
       )}
 
-      {primary && meta.component && (
+      {primary && meta.component && meta.parameters?.tryIt !== false && (
         <>
           <Section>Try it</Section>
           <Text tone="muted" className="docs-measure">

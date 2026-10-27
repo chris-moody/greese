@@ -164,7 +164,7 @@ export const DocsPageView = (): JSX.Element => {
       <Sidebar ref={sidebar} label="Docs pages" className="docs-sidebar">
         <Nav current={page} />
       </Sidebar>
-      <Container size="lg" className="docs-main">
+      <Container size="full" className="docs-main">
         {/* Below md, it sticks under the header, so the pages are a tap away
             wherever the page is scrolled to. */}
         <div className="docs-bar">

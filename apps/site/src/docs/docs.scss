@@ -228,7 +228,16 @@
   table {
     inline-size: 100%;
     font-size: var(--greese-type-p3-font-size);
+    // Prose may break anywhere; a cell breaks between words only, so a
+    // column is never narrower than its longest word.
+    overflow-wrap: normal;
     border-collapse: collapse;
+  }
+
+  caption {
+    padding-block-end: var(--greese-space-2);
+    font-weight: 600;
+    text-align: start;
   }
 
   th,
@@ -239,9 +248,27 @@
     border-block-end: 1px solid var(--greese-color-border);
   }
 
+  // The first column names the row: one line, however narrow the page.
+  tr > :first-child {
+    white-space: nowrap;
+  }
+
   th {
     font-weight: 600;
   }
+
+  thead th {
+    border-block-end-color: var(--greese-color-border-strong);
+  }
+
+  & + & {
+    margin-block-start: var(--greese-space-5);
+  }
+}
+
+// A list filtered as you type: its box above, the matches below.
+.docs-filter {
+  max-inline-size: 24rem;
 }
 
 .docs-required {
@@ -256,6 +283,8 @@
   contain: layout;
   padding: var(--greese-space-5);
   overflow: auto;
+  // A story inside prose doesn't take its word breaking.
+  overflow-wrap: normal;
   color: var(--greese-color-fg);
   background-color: var(--greese-color-canvas);
   border: 1px solid var(--greese-color-border);

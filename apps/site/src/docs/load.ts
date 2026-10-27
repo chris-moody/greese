@@ -58,6 +58,8 @@ export interface Meta {
   args?: Args
   render?: StoryAnnotation['render']
   decorators?: Decorator[]
+  /** `tryIt: false` leaves the page's Try it section out. */
+  parameters?: Record<string, unknown>
 }
 
 export interface LoadedStory {
