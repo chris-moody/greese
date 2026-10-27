@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
 
 const theme = (id: string) =>
@@ -203,3 +203,34 @@ for (const [path, bar, trigger, sidebar] of [
     await page.locator(bar).getByRole('button', { name: trigger }).click()
     await expect(page.locator(sidebar)).toBeVisible()
   })
+
+// Every guide (apps/docs/stories/guides), at the id its Meta title gives it.
+const guideIds = readdirSync(new URL('../../docs/stories/guides/', import.meta.url))
+  .filter((file) => file.endsWith('.mdx'))
+  .map((file) => {
+    const source = readFileSync(
+      new URL(`../../docs/stories/guides/${file}`, import.meta.url),
+      'utf8'
+    )
+    const title = /<Meta title="([^"]+)"/.exec(source)![1]!
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+  })
+
+test('every guide opens in the app with no errors', async ({ page }) => {
+  test.setTimeout(120_000)
+  const errors: string[] = []
+  page.on('pageerror', (error) => errors.push(error.message))
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text())
+  })
+  expect(guideIds.length).toBeGreaterThanOrEqual(10)
+  for (const id of guideIds) {
+    await page.goto(`/docs/${id}`)
+    await expect(page.locator('.docs-article h1'), id).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'No such page' }), id).toHaveCount(0)
+    expect(errors, id).toEqual([])
+  }
+})

@@ -104,6 +104,24 @@ and declarations) or `blocks(css)` (every block, in order), not regular
 expressions over the text: those break when Sass changes a line break or an
 indent, and say nothing about which `@media` or `@layer` a rule is in.
 
+**The guides** (`apps/docs/stories/guides/*.mdx`) are checked by
+`apps/site/src/docs/guides.test.ts`:
+
+- their links land on their own headings and on docs pages that exist;
+- every `@greese/*` path their samples import resolves;
+- every `greese-*` class and `--greese-*` property they name is in the built
+  CSS or the source (`greese-Name` and `--greese-motion-<role>` are patterns,
+  not names);
+- their `ts` and `tsx` samples type-check against the packages.
+
+Samples are sketches, so each is read the way a reader takes it: a run of
+top-level JSX becomes a fragment, `…` becomes a comment, and a `@greese/react`
+export used without its import is imported, so its props are checked too.
+Undeclared names of the app's own, and props left out where an element shows
+`…`, aren't errors. When a guide changes, run it with
+`cd apps/site && npx vitest run src/docs/guides.test.ts`.
+The site's `e2e/docs.spec.ts` opens every guide and fails on any error.
+
 **Coverage:** `@greese/react` runs with coverage, and
 `src/utils/responsive.ts` must stay at 100%.
 
