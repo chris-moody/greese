@@ -1,5 +1,5 @@
 /**
- * Extrude: solid, like keycaps. Buttons, chips, badges, keys and avatars stand out of the page on a thick lower edge and sink into it when pressed; cards and tiles are blocks with a deep lower edge; fields, tracks and the segmented control are pressed into the page. All of it drawn inside each box, so it survives every motion theme’s masks.
+ * Extrude: solid, like keycaps. Buttons, chips, badges, keys, avatars, collapsible headers and the chosen segment stand out of the page on a thick lower edge and sink into it when pressed; tabs stand up on a thick top edge and the current one is pressed in; cards, tiles and alerts are blocks with a deep lower edge, an alert’s in its tone; fields, code boxes, tracks and the segmented control are pressed into the page, and a progress bar’s fill stands up out of its track. All of it drawn inside each box, so it survives every motion theme’s masks.
  *
  * A greese ui shape theme (ADR 0025): radii, and components outlined with one
  * clip and one border ring each (ADR 0024), in @layer greese.overrides. It
@@ -25,7 +25,25 @@
   ),
 ));
 
+@include greese.component(Accordion) {
+  display: grid;
+  gap: var(--greese-space-2);
+  border-block-start: 0;
+}
+
+@include greese.component(AccordionItem) {
+  border-block-end: 0;
+}
+
+@include greese.component(Alert) {
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent),
+    inset 0 -0.25rem 0 0 color-mix(in oklab, var(--greese-alert-tone) 40%, transparent);
+  padding-block-end: calc(var(--greese-space-3) + 0.25rem);
+}
+
 @include greese.component(Avatar) {
+  border-radius: var(--greese-radius-md);
   box-shadow: inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * 0.1875rem) 0 0 color-mix(in oklab, black 24%, transparent);
 }
 
@@ -39,6 +57,16 @@
 
     &:active:not(:disabled, [aria-disabled='true']) {
       box-shadow: inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * 0.0625rem) 0 0 color-mix(in oklab, black 24%, transparent);
+    }
+
+    @supports (color: color(from red srgb-linear calc(r * 1) g b / calc(alpha * 1))) {
+      --greese-button-edge: color(from var(--greese-button-bg) srgb-linear calc(clamp(0, (alpha - 0.98) * 100, 1) * (clamp(0, (((0.2126 * r + 0.7152 * g + 0.0722 * b) + 0.05) / 3.1 - 0.05) * 1000000, 1) * r * max(0, (((0.2126 * r + 0.7152 * g + 0.0722 * b) + 0.05) / 3.1 - 0.05)) / max(0.0001, (0.2126 * r + 0.7152 * g + 0.0722 * b)) + (1 - clamp(0, (((0.2126 * r + 0.7152 * g + 0.0722 * b) + 0.05) / 3.1 - 0.05) * 1000000, 1)) * (r + (1 - r) * (min(1, 3.1 * ((0.2126 * r + 0.7152 * g + 0.0722 * b) + 0.05) - 0.05) - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.0001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b))))) calc(clamp(0, (alpha - 0.98) * 100, 1) * (clamp(0, (((0.2126 * r + 0.7152 * g + 0.0722 * b) + 0.05) / 3.1 - 0.05) * 1000000, 1) * g * max(0, (((0.2126 * r + 0.7152 * g + 0.0722 * b) + 0.05) / 3.1 - 0.05)) / max(0.0001, (0.2126 * r + 0.7152 * g + 0.0722 * b)) + (1 - clamp(0, (((0.2126 * r + 0.7152 * g + 0.0722 * b) + 0.05) / 3.1 - 0.05) * 1000000, 1)) * (g + (1 - g) * (min(1, 3.1 * ((0.2126 * r + 0.7152 * g + 0.0722 * b) + 0.05) - 0.05) - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.0001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b))))) calc(clamp(0, (alpha - 0.98) * 100, 1) * (clamp(0, (((0.2126 * r + 0.7152 * g + 0.0722 * b) + 0.05) / 3.1 - 0.05) * 1000000, 1) * b * max(0, (((0.2126 * r + 0.7152 * g + 0.0722 * b) + 0.05) / 3.1 - 0.05)) / max(0.0001, (0.2126 * r + 0.7152 * g + 0.0722 * b)) + (1 - clamp(0, (((0.2126 * r + 0.7152 * g + 0.0722 * b) + 0.05) / 3.1 - 0.05) * 1000000, 1)) * (b + (1 - b) * (min(1, 3.1 * ((0.2126 * r + 0.7152 * g + 0.0722 * b) + 0.05) - 0.05) - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.0001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b))))) / calc(0.24 + clamp(0, (alpha - 0.98) * 100, 1) * 0.76));
+
+      box-shadow: inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * 0.25rem) 0 0 var(--greese-button-edge);
+
+      &:active:not(:disabled, [aria-disabled='true']) {
+        box-shadow: inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * 0.0625rem) 0 0 var(--greese-button-edge);
+      }
     }
   }
 
@@ -77,6 +105,50 @@
   }
 }
 
+@include greese.component(Collapsible) {
+  > .greese-Collapsible-trigger {
+    padding-inline: var(--greese-space-4);
+    background-color: var(--greese-color-surface);
+    border: 1px solid var(--greese-collapsible-border, var(--greese-color-border));
+    border-radius: var(--greese-corner-control);
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: color-mix(in oklab, var(--greese-color-fg) 5%, var(--greese-color-surface));
+      }
+    }
+  }
+
+  &[open] > .greese-Collapsible-trigger {
+    margin-block-end: var(--greese-space-2);
+  }
+
+  > .greese-Collapsible-content {
+    padding-inline: var(--greese-space-4);
+  }
+
+  > .greese-Collapsible-trigger {
+    border-color: transparent;
+    box-shadow: inset 0 0 0 1px var(--greese-color-border), inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * 0.25rem) 0 0 color-mix(in oklab, black 24%, transparent);
+    @include greese.motion-safe {
+      transition:
+        transform var(--greese-duration-fast) var(--greese-easing-standard),
+        box-shadow var(--greese-duration-fast) var(--greese-easing-standard),
+        background-color var(--greese-duration-fast) var(--greese-easing-standard),
+        border-color var(--greese-duration-fast) var(--greese-easing-standard),
+        color var(--greese-duration-fast) var(--greese-easing-standard);
+    }
+    
+    &:active:not(:disabled, [aria-disabled='true']) {
+      transform: translateY(0.1875rem);
+    }
+  }
+
+  &[open] > .greese-Collapsible-trigger {
+    box-shadow: inset 0 0 0 1px var(--greese-color-border), inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * 0.0625rem) 0 0 color-mix(in oklab, black 24%, transparent);
+  }
+}
+
 @include greese.component(Input) {
   box-shadow: inset 0 0.1875rem 0 0 color-mix(in oklab, var(--greese-color-fg) 10%, transparent);
 }
@@ -85,16 +157,93 @@
   box-shadow: inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * 0.1875rem) 0 0 color-mix(in oklab, black 24%, transparent);
 }
 
+@include greese.component(OtpField) {
+  .greese-OtpField-slot {
+    box-shadow: inset 0 0.1875rem 0 0 color-mix(in oklab, var(--greese-color-fg) 10%, transparent);
+  }
+}
+
 @include greese.component(Progress) {
   box-shadow: inset 0 0.1875rem 0 0 color-mix(in oklab, var(--greese-color-fg) 10%, transparent);
+
+  &::-webkit-progress-value {
+    box-shadow: inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * max(1px, var(--greese-progress-height) / 3)) 0 0 color-mix(in oklab, black 24%, transparent);
+  }
+
+  &::-moz-progress-bar {
+    box-shadow: inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * max(1px, var(--greese-progress-height) / 3)) 0 0 color-mix(in oklab, black 24%, transparent);
+  }
+}
+
+@include greese.component(Segment) {
+  &:has(:checked) {
+    box-shadow:
+      inset 0 0 0 1.5px var(--greese-segment-current-ring, transparent),
+      inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * 0.1875rem) 0 0 color-mix(in oklab, black 24%, transparent);
+  }
+
+  @include greese.motion-safe {
+    transition:
+      transform var(--greese-duration-fast) var(--greese-easing-standard),
+      box-shadow var(--greese-duration-fast) var(--greese-easing-standard),
+      background-color var(--greese-duration-fast) var(--greese-easing-standard),
+      border-color var(--greese-duration-fast) var(--greese-easing-standard),
+      color var(--greese-duration-fast) var(--greese-easing-standard);
+  }
+
+  &:active:not(:disabled, [aria-disabled='true']) {
+    transform: translateY(0.125rem);
+  }
 }
 
 @include greese.component(SegmentedControl) {
-  box-shadow: inset 0 0.1875rem 0 0 color-mix(in oklab, var(--greese-color-fg) 10%, transparent);
+  .greese-SegmentedControl-track {
+    padding: 0.25rem;
+    box-shadow: inset 0 0.1875rem 0 0 color-mix(in oklab, var(--greese-color-fg) 10%, transparent);
+  }
 }
 
 @include greese.component(Select) {
   box-shadow: inset 0 0.1875rem 0 0 color-mix(in oklab, var(--greese-color-fg) 10%, transparent);
+}
+
+@include greese.component(SpeedDial) {
+  .greese-SpeedDial-trigger {
+    border-radius: var(--greese-radius-lg);
+  }
+
+  .greese-SpeedDialAction-icon {
+    border-radius: var(--greese-radius-md);
+  }
+}
+
+@include greese.component(Tab) {
+  background-color: var(--greese-color-surface);
+  border-radius: var(--greese-corner-control) var(--greese-corner-control) 0 0;
+  box-shadow: inset 0 -1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 0.25rem 0 0 color-mix(in oklab, black 22%, transparent);
+  padding-block-start: 0.25rem;
+
+  &[aria-selected='true'] {
+    background-color: var(--greese-tab-current-bg, color-mix(in oklab, var(--greese-color-primary) 12%, var(--greese-color-canvas)));
+    box-shadow:
+      inset 0 0 0 1.5px var(--greese-tab-current-ring, transparent),
+      inset 0 -2px 0 var(--greese-color-primary),
+      inset 0 0.1875rem 0 0 color-mix(in oklab, var(--greese-color-fg) 10%, transparent);
+    transform: translateY(0.125rem);
+  }
+
+  @include greese.motion-safe {
+    transition:
+      transform var(--greese-duration-fast) var(--greese-easing-standard),
+      box-shadow var(--greese-duration-fast) var(--greese-easing-standard),
+      background-color var(--greese-duration-fast) var(--greese-easing-standard),
+      border-color var(--greese-duration-fast) var(--greese-easing-standard),
+      color var(--greese-duration-fast) var(--greese-easing-standard);
+  }
+
+  &:active:not(:disabled, [aria-disabled='true']) {
+    transform: translateY(0.125rem);
+  }
 }
 
 @include greese.component(Textarea) {

@@ -31,14 +31,49 @@
 }
 @layer greese.overrides {
   .greese-AccordionItem {
-    padding-inline: var(--greese-space-4);
+    border-block-end: 0;
+  }
+  .greese-AccordionItem > .greese-Collapsible-content {
+    padding-block-start: var(--greese-space-3);
     border: 1px solid var(--greese-color-border);
     border-radius: var(--greese-corner-panel);
+  }
+}
+@layer greese.overrides {
+  .greese-Avatar {
+    border-radius: var(--greese-radius-lg);
+  }
+}
+@layer greese.overrides {
+  .greese-Collapsible > .greese-Collapsible-trigger {
+    padding-inline: var(--greese-space-4);
+    background-color: var(--greese-color-surface);
+    border: 1px solid var(--greese-collapsible-border, var(--greese-color-border));
+    border-radius: var(--greese-corner-control);
+  }
+  @media (hover: hover) {
+    .greese-Collapsible > .greese-Collapsible-trigger:hover {
+      background-color: color-mix(in oklab, var(--greese-color-fg) 5%, var(--greese-color-surface));
+    }
+  }
+  .greese-Collapsible[open] > .greese-Collapsible-trigger {
+    margin-block-end: var(--greese-space-2);
+  }
+  .greese-Collapsible > .greese-Collapsible-content {
+    padding-inline: var(--greese-space-4);
   }
 }
 @layer greese.overrides {
   .greese-Sidebar {
     border-start-end-radius: var(--greese-corner-surface);
     border-end-end-radius: var(--greese-corner-surface);
+  }
+}
+@layer greese.overrides {
+  .greese-SpeedDial .greese-SpeedDial-trigger {
+    border-radius: var(--greese-radius-xl);
+  }
+  .greese-SpeedDial .greese-SpeedDialAction-icon {
+    border-radius: var(--greese-radius-lg);
   }
 }

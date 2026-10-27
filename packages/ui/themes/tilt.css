@@ -23,6 +23,18 @@
   }
 }
 @layer greese.overrides {
+  .greese-Accordion {
+    display: grid;
+    gap: var(--greese-space-2);
+    border-block-start: 0;
+  }
+}
+@layer greese.overrides {
+  .greese-AccordionItem {
+    border-block-end: 0;
+  }
+}
+@layer greese.overrides {
   .greese-Button {
     transform-origin: 50% 100%;
   }
@@ -80,6 +92,25 @@
     .greese-Chip:active:not(:disabled, [aria-disabled=true]) {
       transform: perspective(20rem) translateZ(-0.5rem);
     }
+  }
+}
+@layer greese.overrides {
+  .greese-Collapsible > .greese-Collapsible-trigger {
+    padding-inline: var(--greese-space-4);
+    background-color: var(--greese-color-surface);
+    border: 1px solid var(--greese-collapsible-border, var(--greese-color-border));
+    border-radius: var(--greese-corner-control);
+  }
+  @media (hover: hover) {
+    .greese-Collapsible > .greese-Collapsible-trigger:hover {
+      background-color: color-mix(in oklab, var(--greese-color-fg) 5%, var(--greese-color-surface));
+    }
+  }
+  .greese-Collapsible[open] > .greese-Collapsible-trigger {
+    margin-block-end: var(--greese-space-2);
+  }
+  .greese-Collapsible > .greese-Collapsible-content {
+    padding-inline: var(--greese-space-4);
   }
 }
 @layer greese.overrides {

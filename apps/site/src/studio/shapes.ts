@@ -53,10 +53,10 @@ export interface ShapePreset {
 
 /** The roles a shape theme fills, and the components in each. */
 const ROLES = {
-  control: ['Button', 'SpeedDial'],
-  field: ['Input'],
+  control: ['Button'],
+  field: ['Input', 'Select', 'Textarea', 'OtpField'],
   container: ['Card', 'Dialog', 'Popover', 'Menu', 'Toast', 'Tile', 'AccordionItem'],
-  small: ['Alert', 'Tooltip'],
+  small: ['Alert', 'Tooltip', 'Collapsible'],
   indicator: ['Badge', 'Chip', 'Segment', 'SegmentedControl'],
   mark: ['Avatar', 'Status'],
   tab: ['Tab'],
@@ -91,10 +91,31 @@ const SQUARE = Object.fromEntries(
 /**
  * Knobs, thumbs and radios turned to diamonds: squared by the radius roles,
  * then a quarter turn, a little smaller so the points fit where the round
- * edge was.
+ * edge was. A switch's track comes to a point at each end too, its sides at
+ * the knob's angle, so the knob sits in the point. The track is drawn behind
+ * the input, not clipped from it, so the input keeps its focus ring and its
+ * touch target.
  */
 const DIAMOND_KNOBS = {
-  Switch: `.greese-Switch-thumb {
+  Switch: `.greese-Switch-track::before {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background-color: var(--greese-color-border-strong);
+  clip-path: polygon(0 50%, 0.625rem 0, calc(100% - 0.625rem) 0, 100% 50%, calc(100% - 0.625rem) 100%, 0.625rem 100%);
+  transition: background-color var(--greese-duration-fast) var(--greese-easing-standard);
+}
+
+.greese-Switch-track:has(.greese-Switch-input:checked)::before {
+  background-color: var(--greese-color-primary);
+}
+
+.greese-Switch-input,
+.greese-Switch-input:checked {
+  background-color: transparent;
+}
+
+.greese-Switch-thumb {
   rotate: 45deg;
   scale: 0.8;
 }`,
@@ -107,19 +128,113 @@ const DIAMOND_KNOBS = {
   rotate: 45deg;
   scale: 0.85;
 }`,
+  // A square turned a quarter is √2 as wide: at 0.7 its points stay inside
+  // the radio's box, so a scroller's edge never cuts them off.
   Radio: `.greese-Radio-input {
   rotate: 45deg;
-  scale: 0.85;
+  scale: 0.7;
 }`,
 }
 
-/** An accordion's items, each its own shape, with room between them. */
-const ACCORDION = {
+/**
+ * An accordion's items apart, its rules between them gone: the headers are
+ * bars of their own (COLLAPSIBLE), so the gap separates them. Where the
+ * panels aren't shaped, this is all an accordion takes.
+ */
+const SPACED_ACCORDION = {
   Accordion: `display: grid;
 gap: var(--greese-space-2);
 border-block-start: 0;`,
-  AccordionItem: `padding-inline: var(--greese-space-4);`,
+  AccordionItem: 'border-block-end: 0;',
 }
+
+/**
+ * An accordion's items apart, with room between them: each header is a
+ * Collapsible's bar, and each panel takes the item's shape. The <details>
+ * itself draws nothing, and its header and panel bring their own room.
+ */
+const ACCORDION = {
+  Accordion: SPACED_ACCORDION.Accordion,
+  AccordionItem: `border-block-end: 0;
+
+> .greese-Collapsible-content {
+  padding-block-start: var(--greese-space-3);
+}`,
+}
+
+/**
+ * A collapsible's header as a bar of its own, so a theme's shape has
+ * something to draw: a surface, a border, room inside, and a gap under it
+ * while open. Every shape theme has it; their shapes and depth go on top.
+ */
+const COLLAPSIBLE = `> .greese-Collapsible-trigger {
+  padding-inline: var(--greese-space-4);
+  background-color: var(--greese-color-surface);
+  border: 1px solid var(--greese-collapsible-border, var(--greese-color-border));
+  border-radius: var(--greese-corner-control);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: color-mix(in oklab, var(--greese-color-fg) 5%, var(--greese-color-surface));
+    }
+  }
+}
+
+&[open] > .greese-Collapsible-trigger {
+  margin-block-end: var(--greese-space-2);
+}
+
+> .greese-Collapsible-content {
+  padding-inline: var(--greese-space-4);
+}`
+
+/**
+ * A chat bubble's outline, its tail included (`t` out past the box at the
+ * bottom start, as the bubble draws it), so a clip keeps the tail: corners
+ * cut by `c` but the one the tail leaves from.
+ */
+const bubbleBevel = (c = 8, t = 11): ShapeDef => ({
+  points: [
+    { x: { pct: 0, param: 'c', k: 1 }, y: { pct: 0 } },
+    { x: { pct: 100, param: 'c', k: -1 }, y: { pct: 0 } },
+    { x: { pct: 100 }, y: { pct: 0, param: 'c', k: 1 } },
+    { x: { pct: 100 }, y: { pct: 100, param: 'c', k: -1 } },
+    { x: { pct: 100, param: 'c', k: -1 }, y: { pct: 100 } },
+    { x: { pct: 0, px: -t }, y: { pct: 100 } },
+    { x: { pct: 0 }, y: { pct: 100, px: -t } },
+    { x: { pct: 0 }, y: { pct: 0, param: 'c', k: 1 } },
+  ],
+  params: { c },
+  mirror: true,
+})
+
+/** A chat bubble with a dog-eared top end (`f`) and its tail. */
+const bubbleFolio = (f = 10, t = 11): ShapeDef => ({
+  points: [
+    { x: { pct: 0 }, y: { pct: 0 } },
+    { x: { pct: 100, param: 'f', k: -1 }, y: { pct: 0 } },
+    { x: { pct: 100 }, y: { pct: 0, param: 'f', k: 1 } },
+    { x: { pct: 100 }, y: { pct: 100 } },
+    { x: { pct: 0, px: -t }, y: { pct: 100 } },
+    { x: { pct: 0 }, y: { pct: 100, px: -t } },
+  ],
+  params: { f },
+  mirror: true,
+})
+
+/** A square with every corner cut by `pct` of its side: an avatar's bevel, whatever its size. */
+const octagon = (pct = 22): ShapeDef => ({
+  points: [
+    { x: { pct }, y: { pct: 0 } },
+    { x: { pct: 100 - pct }, y: { pct: 0 } },
+    { x: { pct: 100 }, y: { pct } },
+    { x: { pct: 100 }, y: { pct: 100 - pct } },
+    { x: { pct: 100 - pct }, y: { pct: 100 } },
+    { x: { pct }, y: { pct: 100 } },
+    { x: { pct: 0 }, y: { pct: 100 - pct } },
+    { x: { pct: 0 }, y: { pct } },
+  ],
+})
 
 /** Zigzag down both short sides: ridged ends, `teeth` a side, `z` deep. */
 const ridgedEnds = (z = 4, teeth = 3): ShapeDef => {
@@ -168,22 +283,29 @@ const ridgedTop = (z = 3, teeth = 6): ShapeDef => ({
   params: { z },
 })
 
+const bevelRoles = byRole('bevel', {
+  control: { ...bevel(8, 0), hover: { a: 0, b: 8 }, active: { a: 4, b: 4 } },
+  field: bevel(6, 0),
+  container: { ...bevel(16, 0), hover: { a: 0, b: 16 } },
+  small: bevel(8, 0),
+  indicator: hexagon(6),
+  mark: diamond(),
+  tab: tabTop(7),
+})
+
 const BEVEL: ShapePreset = {
   id: 'bevel',
   label: 'Bevel',
   description:
-    'Bevel: chamfered corners on two diagonals. Hovered, a control’s cuts slide to the other diagonal; pressed, all four close in. Marks are diamonds, indicators hexagons, tabs trapezoids.',
+    'Bevel: chamfered corners on two diagonals. Hovered, a control’s cuts slide to the other diagonal; pressed, all four close in. Avatars are squares with every corner cut, status dots diamonds, indicators hexagons, tabs trapezoids, and chat bubbles cut at every corner but their tail’s.',
   corner: SQUARE,
-  ...byRole('bevel', {
-    control: { ...bevel(8, 0), hover: { a: 0, b: 8 }, active: { a: 4, b: 4 } },
-    field: bevel(6, 0),
-    container: { ...bevel(16, 0), hover: { a: 0, b: 16 } },
-    small: bevel(8, 0),
-    indicator: hexagon(6),
-    mark: diamond(),
-    tab: tabTop(7),
-  }),
-  styles: { ...ACCORDION, ...DIAMOND_KNOBS },
+  shapes: {
+    ...bevelRoles.shapes,
+    'bevel-avatar': octagon(22),
+    'bevel-bubble': bubbleBevel(8),
+  },
+  assign: { ...bevelRoles.assign, Avatar: 'bevel-avatar', ChatBubble: 'bevel-bubble' },
+  styles: { ...ACCORDION, ...DIAMOND_KNOBS, Collapsible: COLLAPSIBLE },
 }
 
 const TICKET: ShapePreset = {
@@ -201,7 +323,7 @@ const TICKET: ShapePreset = {
     mark: notch(4),
     tab: ticket(4),
   }),
-  styles: ACCORDION,
+  styles: { ...ACCORDION, Collapsible: COLLAPSIBLE },
 }
 
 const RIDGE: ShapePreset = {
@@ -219,25 +341,34 @@ const RIDGE: ShapePreset = {
     mark: diamond(),
     tab: ridgedTop(3, 6),
   }),
-  styles: { ...ACCORDION, ...DIAMOND_KNOBS },
+  styles: { ...ACCORDION, ...DIAMOND_KNOBS, Collapsible: COLLAPSIBLE },
 }
+
+const folioRoles = byRole('folio', {
+  control: { ...slant(6), hover: { s: 2 }, active: { s: 0 } },
+  field: dogEar(8),
+  container: { ...dogEar(18), hover: { f: 28 } },
+  small: dogEar(10),
+  indicator: slant(4),
+  mark: dogEar(8),
+})
 
 const FOLIO: ShapePreset = {
   id: 'folio',
   label: 'Folio',
   description:
-    'Folio: paper, with square corners. Containers and fields have a dog-eared corner that folds further when a card is hovered; controls and indicators lean like italic type and straighten when hovered. Tab panels are folders, and the current tab opens into its folder.',
+    'Folio: paper, with square corners. Containers and fields have a dog-eared corner that folds further when a card is hovered; controls and indicators lean like italic type and straighten when hovered. Status dots have a fold to their size, chat bubbles a dog-ear opposite their tail. Tab panels are folders, and the current tab opens into its folder.',
   corner: SQUARE,
-  ...byRole('folio', {
-    control: { ...slant(6), hover: { s: 2 }, active: { s: 0 } },
-    field: dogEar(8),
-    container: { ...dogEar(18), hover: { f: 28 } },
-    small: dogEar(10),
-    indicator: slant(4),
-    mark: dogEar(8),
-  }),
+  shapes: {
+    ...folioRoles.shapes,
+    // A dot is a few pixels across: a mark's fold would eat it.
+    'folio-dot': dogEar(3),
+    'folio-bubble': bubbleFolio(10),
+  },
+  assign: { ...folioRoles.assign, Status: 'folio-dot', ChatBubble: 'folio-bubble' },
   styles: {
     ...ACCORDION,
+    Collapsible: COLLAPSIBLE,
     // Folder tabs: the panel is the folder (a frame on the canvas), the
     // list's rule is its top edge, drawn inside the list so the current tab,
     // on the same canvas, can cover it and open into the panel.
@@ -269,15 +400,26 @@ border-radius: 0;
 /** A radius role pointed at a step of the scale. */
 const r = (step: string) => `var(--greese-radius-${step})`
 
-/** An accordion whose items are separate rounded panels, with room between them. */
+/** As ACCORDION, each panel a rounded box of its own. */
 const ROUNDED_ACCORDION = (corner: string) => ({
-  Accordion: `display: grid;
-gap: var(--greese-space-2);
-border-block-start: 0;`,
-  AccordionItem: `padding-inline: var(--greese-space-4);
-border: 1px solid var(--greese-color-border);
-border-radius: ${corner};`,
+  ...ACCORDION,
+  AccordionItem: `border-block-end: 0;
+
+> .greese-Collapsible-content {
+  padding-block-start: var(--greese-space-3);
+  border: 1px solid var(--greese-color-border);
+  border-radius: ${corner};
+}`,
 })
+
+/** A speed dial's round buttons as rounded squares: the trigger's radius, then the actions'. */
+const ROUNDED_DIAL = (trigger: string, action: string) => `.greese-SpeedDial-trigger {
+  border-radius: ${trigger};
+}
+
+.greese-SpeedDialAction-icon {
+  border-radius: ${action};
+}`
 
 const SOFT: ShapePreset = {
   id: 'soft',
@@ -299,6 +441,10 @@ const SOFT: ShapePreset = {
     ...ROUNDED_ACCORDION('var(--greese-corner-panel)'),
     Sidebar: `border-start-end-radius: var(--greese-corner-surface);
 border-end-end-radius: var(--greese-corner-surface);`,
+    Collapsible: COLLAPSIBLE,
+    // Rounded squares, not circles.
+    Avatar: `border-radius: var(--greese-radius-lg);`,
+    SpeedDial: ROUNDED_DIAL('var(--greese-radius-xl)', 'var(--greese-radius-lg)'),
   },
   sample: { borderRadius: '6px' },
 }
@@ -323,6 +469,7 @@ const PEBBLE: ShapePreset = {
     ...ROUNDED_ACCORDION('var(--greese-corner-surface)'),
     // A pill on a box of several lines is a stadium that cuts into the text.
     Textarea: `border-radius: var(--greese-radius-xl);`,
+    Collapsible: COLLAPSIBLE,
   },
   sample: { borderRadius: '999px' },
 }
@@ -333,10 +480,41 @@ const PEBBLE: ShapePreset = {
  * moves the layout. Raised parts have a darker band along the bottom and a
  * highlight along the top; recessed ones a shadow along the top.
  */
-const RAISED = (depth: string) =>
-  `inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * ${depth}) 0 0 color-mix(in oklab, black 24%, transparent)`
+const RAISED = (depth: string, edge = 'color-mix(in oklab, black 24%, transparent)') =>
+  `inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 calc(-1 * ${depth}) 0 0 ${edge}`
+
+/**
+ * A raised part's lower edge in a shade of its own face that keeps 3:1
+ * against it (WCAG 1.4.11), so the depth shows on any face: darker where a
+ * darker shade can get there, lighter on a face too dark for that (a black
+ * button's edge was black on black). In linear sRGB the face's luminance is
+ * exact, and both moves stay in gamut and land on it: darker scales the
+ * channels, lighter mixes toward white. A face that isn't opaque (a soft or
+ * outline button over the page) keeps the plain darker band, which reads
+ * against the page through it. Relative colors with math are recent: the
+ * declaration sits behind @supports, the plain band stays the fallback.
+ */
+const FACE_EDGE = (face: string) => {
+  const ratio = 3.1
+  const y = '(0.2126 * r + 0.7152 * g + 0.0722 * b)'
+  const darker = `((${y} + 0.05) / ${ratio} - 0.05)`
+  const lighter = `min(1, ${ratio} * (${y} + 0.05) - 0.05)`
+  // 1 where a darker shade can reach the ratio, else 0.
+  const dark = `clamp(0, ${darker} * 1000000, 1)`
+  const scale = `max(0, ${darker}) / max(0.0001, ${y})`
+  const toWhite = `(${lighter} - ${y}) / max(0.0001, 1 - ${y})`
+  const opaque = 'clamp(0, (alpha - 0.98) * 100, 1)'
+  const channel = (c: string) =>
+    `calc(${opaque} * (${dark} * ${c} * ${scale} + (1 - ${dark}) * (${c} + (1 - ${c}) * ${toWhite})))`
+  return `color(from ${face} srgb-linear ${channel('r')} ${channel('g')} ${channel('b')} / calc(0.24 + ${opaque} * 0.76))`
+}
+const FACE_EDGE_SUPPORT =
+  '(color: color(from red srgb-linear calc(r * 1) g b / calc(alpha * 1)))'
 const RECESSED =
   'inset 0 0.1875rem 0 0 color-mix(in oklab, var(--greese-color-fg) 10%, transparent)'
+/** Raised the other way up: the thick edge along the top, as a tab stands up out of its list. */
+const RAISED_TOP = (depth: string) =>
+  `inset 0 -1px 0 0 color-mix(in oklab, white 22%, transparent), inset 0 ${depth} 0 0 color-mix(in oklab, black 22%, transparent)`
 /** What a pressed part does: sinks by most of its band (a transform, so it never fights an effect's translate). */
 const SINK = (by: string) => `@include greese.motion-safe {
   transition:
@@ -355,7 +533,7 @@ const EXTRUDE: ShapePreset = {
   id: 'extrude',
   label: 'Extrude',
   description:
-    'Extrude: solid, like keycaps. Buttons, chips, badges, keys and avatars stand out of the page on a thick lower edge and sink into it when pressed; cards and tiles are blocks with a deep lower edge; fields, tracks and the segmented control are pressed into the page. All of it drawn inside each box, so it survives every motion theme’s masks.',
+    'Extrude: solid, like keycaps. Buttons, chips, badges, keys, avatars, collapsible headers and the chosen segment stand out of the page on a thick lower edge and sink into it when pressed; tabs stand up on a thick top edge and the current one is pressed in; cards, tiles and alerts are blocks with a deep lower edge, an alert’s in its tone; fields, code boxes, tracks and the segmented control are pressed into the page, and a progress bar’s fill stands up out of its track. All of it drawn inside each box, so it survives every motion theme’s masks.',
   corner: {
     control: r('md'),
     field: r('sm'),
@@ -374,6 +552,16 @@ const EXTRUDE: ShapePreset = {
   &:active:not(:disabled, [aria-disabled='true']) {
     box-shadow: ${RAISED('0.0625rem')};
   }
+
+  @supports ${FACE_EDGE_SUPPORT} {
+    --greese-button-edge: ${FACE_EDGE('var(--greese-button-bg)')};
+
+    box-shadow: ${RAISED('0.25rem', 'var(--greese-button-edge)')};
+
+    &:active:not(:disabled, [aria-disabled='true']) {
+      box-shadow: ${RAISED('0.0625rem', 'var(--greese-button-edge)')};
+    }
+  }
 }
 
 ${SINK('0.1875rem')}`,
@@ -382,15 +570,76 @@ ${SINK('0.1875rem')}`,
 ${SINK('0.125rem')}`,
     Badge: `box-shadow: ${RAISED('0.125rem')};`,
     Key: `box-shadow: ${RAISED('0.1875rem')};`,
-    Avatar: `box-shadow: ${RAISED('0.1875rem')};`,
+    // Rounded squares, like the keys.
+    Avatar: `border-radius: var(--greese-radius-md);
+box-shadow: ${RAISED('0.1875rem')};`,
+    SpeedDial: ROUNDED_DIAL('var(--greese-radius-lg)', 'var(--greese-radius-md)'),
+    // A block whose lower edge is its tone, deeper.
+    Alert: `box-shadow:
+  inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent),
+  inset 0 -0.25rem 0 0 color-mix(in oklab, var(--greese-alert-tone) 40%, transparent);
+padding-block-end: calc(var(--greese-space-3) + 0.25rem);`,
+    // Keys standing up out of the list, the thick edge along the top; the
+    // current one is pressed in (and keeps a color variant's ring).
+    Tab: `background-color: var(--greese-color-surface);
+border-radius: var(--greese-corner-control) var(--greese-corner-control) 0 0;
+box-shadow: ${RAISED_TOP('0.25rem')};
+padding-block-start: 0.25rem;
+
+&[aria-selected='true'] {
+  background-color: var(--greese-tab-current-bg, color-mix(in oklab, var(--greese-color-primary) 12%, var(--greese-color-canvas)));
+  box-shadow:
+    inset 0 0 0 1.5px var(--greese-tab-current-ring, transparent),
+    inset 0 -2px 0 var(--greese-color-primary),
+    ${RECESSED};
+  transform: translateY(0.125rem);
+}
+
+${SINK('0.125rem')}`,
+    ...SPACED_ACCORDION,
+    Collapsible: `${COLLAPSIBLE}
+
+> .greese-Collapsible-trigger {
+  border-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--greese-color-border), ${RAISED('0.25rem')};
+  ${SINK('0.1875rem').split('\n').join('\n  ')}
+}
+
+&[open] > .greese-Collapsible-trigger {
+  box-shadow: inset 0 0 0 1px var(--greese-color-border), ${RAISED('0.0625rem')};
+}`,
     // Blocks: a deep lower edge, and the edge's outline drawn in, not cast.
     Card: `box-shadow: inset 0 0 0 1px var(--greese-color-border), ${RAISED('0.375rem')};`,
     Tile: `box-shadow: inset 0 0 0 1px var(--greese-color-border), ${RAISED('0.375rem')};`,
     Input: `box-shadow: ${RECESSED};`,
     Select: `box-shadow: ${RECESSED};`,
     Textarea: `box-shadow: ${RECESSED};`,
-    Progress: `box-shadow: ${RECESSED};`,
-    SegmentedControl: `box-shadow: ${RECESSED};`,
+    OtpField: `.greese-OtpField-slot {
+  box-shadow: ${RECESSED};
+}`,
+    // A recessed track, its fill standing up out of it.
+    Progress: `box-shadow: ${RECESSED};
+
+&::-webkit-progress-value {
+  box-shadow: ${RAISED('max(1px, var(--greese-progress-height) / 3)')};
+}
+
+&::-moz-progress-bar {
+  box-shadow: ${RAISED('max(1px, var(--greese-progress-height) / 3)')};
+}`,
+    // The track pressed in, the chosen segment a key standing in it (with a
+    // color variant's ring, if any). Room in the track for the key's edge.
+    SegmentedControl: `.greese-SegmentedControl-track {
+  padding: 0.25rem;
+  box-shadow: ${RECESSED};
+}`,
+    Segment: `&:has(:checked) {
+  box-shadow:
+    inset 0 0 0 1.5px var(--greese-segment-current-ring, transparent),
+    ${RAISED('0.1875rem')};
+}
+
+${SINK('0.125rem')}`,
   },
   sample: {
     borderRadius: '3px',
@@ -447,6 +696,8 @@ const TILT: ShapePreset = {
   shapes: {},
   assign: {},
   styles: {
+    ...SPACED_ACCORDION,
+    Collapsible: COLLAPSIBLE,
     Button: TURNS(
       'perspective(24rem) rotateX(18deg) translateZ(0.25rem)',
       'perspective(24rem) translateZ(-0.75rem)',

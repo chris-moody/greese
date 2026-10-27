@@ -32,9 +32,36 @@
 }
 
 @include greese.component(AccordionItem) {
-  padding-inline: var(--greese-space-4);
-  border: 1px solid var(--greese-color-border);
-  border-radius: var(--greese-corner-surface);
+  border-block-end: 0;
+
+  > .greese-Collapsible-content {
+    padding-block-start: var(--greese-space-3);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-corner-surface);
+  }
+}
+
+@include greese.component(Collapsible) {
+  > .greese-Collapsible-trigger {
+    padding-inline: var(--greese-space-4);
+    background-color: var(--greese-color-surface);
+    border: 1px solid var(--greese-collapsible-border, var(--greese-color-border));
+    border-radius: var(--greese-corner-control);
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: color-mix(in oklab, var(--greese-color-fg) 5%, var(--greese-color-surface));
+      }
+    }
+  }
+
+  &[open] > .greese-Collapsible-trigger {
+    margin-block-end: var(--greese-space-2);
+  }
+
+  > .greese-Collapsible-content {
+    padding-inline: var(--greese-space-4);
+  }
 }
 
 @include greese.component(Textarea) {

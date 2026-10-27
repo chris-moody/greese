@@ -73,12 +73,15 @@ const OUTLINE: ColorVariant = {
       modifiers: {
         solid: {
           color: 'var(--greese-badge-tone)',
-          'background-color': tint('--greese-badge-tone', 8),
+          // Opaque, so what a badge is pinned to doesn't show through it.
+          'background-color':
+            'color-mix(in oklab, var(--greese-badge-tone) 8%, var(--greese-badge-surface))',
           'border-color': 'var(--greese-badge-tone)',
         },
         soft: {
-          'background-color': 'transparent',
-          'border-color': tint('--greese-badge-tone', 55),
+          'background-color': 'var(--greese-badge-surface)',
+          'border-color':
+            'color-mix(in oklab, var(--greese-badge-tone) 55%, var(--greese-badge-surface))',
         },
         outline: {
           color: 'var(--greese-badge-tone-on)',
@@ -149,16 +152,20 @@ const OUTLINE: ColorVariant = {
     },
     // The current tab and the chosen segment: outlined in the primary color
     // (the library's hooks for them), not tinted or raised.
+    // The ring is the edge's color alone, for a shape theme that draws the
+    // current one its own way (a shape's border, depth).
     Tab: {
       styles: {
         '--greese-tab-current-bg': 'transparent',
         '--greese-tab-current-edge': 'inset 0 0 0 1.5px var(--greese-color-primary)',
+        '--greese-tab-current-ring': 'var(--greese-color-primary)',
       },
     },
     Segment: {
       styles: {
         '--greese-segment-current-bg': 'transparent',
         '--greese-segment-current-edge': 'inset 0 0 0 1.5px var(--greese-color-primary)',
+        '--greese-segment-current-ring': 'var(--greese-color-primary)',
       },
     },
     Tooltip: {
@@ -166,6 +173,7 @@ const OUTLINE: ColorVariant = {
         color: 'var(--greese-color-fg)',
         'background-color': 'var(--greese-color-surface-overlay)',
         border: '1px solid var(--greese-color-fg)',
+        '--greese-tooltip-border': 'var(--greese-color-fg)',
       },
     },
   },

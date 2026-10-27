@@ -1,5 +1,5 @@
 /**
- * Folio: paper, with square corners. Containers and fields have a dog-eared corner that folds further when a card is hovered; controls and indicators lean like italic type and straighten when hovered. Tab panels are folders, and the current tab opens into its folder.
+ * Folio: paper, with square corners. Containers and fields have a dog-eared corner that folds further when a card is hovered; controls and indicators lean like italic type and straighten when hovered. Status dots have a fold to their size, chat bubbles a dog-ear opposite their tail. Tab panels are folders, and the current tab opens into its folder.
  *
  * A greese ui shape theme (ADR 0025): radii, and components outlined with one
  * clip and one border ring each (ADR 0024), in @layer greese.overrides. It
@@ -32,7 +32,34 @@
 }
 
 @include greese.component(AccordionItem) {
-  padding-inline: var(--greese-space-4);
+  border-block-end: 0;
+
+  > .greese-Collapsible-content {
+    padding-block-start: var(--greese-space-3);
+  }
+}
+
+@include greese.component(Collapsible) {
+  > .greese-Collapsible-trigger {
+    padding-inline: var(--greese-space-4);
+    background-color: var(--greese-color-surface);
+    border: 1px solid var(--greese-collapsible-border, var(--greese-color-border));
+    border-radius: var(--greese-corner-control);
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: color-mix(in oklab, var(--greese-color-fg) 5%, var(--greese-color-surface));
+      }
+    }
+  }
+
+  &[open] > .greese-Collapsible-trigger {
+    margin-block-end: var(--greese-space-2);
+  }
+
+  > .greese-Collapsible-content {
+    padding-inline: var(--greese-space-4);
+  }
 }
 
 @include greese.component(Tab) {
@@ -132,7 +159,9 @@
   .greese-shape-folio-field,
   .greese-shape-folio-container,
   .greese-shape-folio-small,
-  .greese-shape-folio-mark {
+  .greese-shape-folio-mark,
+  .greese-shape-folio-dot,
+  .greese-shape-folio-bubble {
     --greese-shape-ring: var(--greese-color-border);
     position: relative;
     isolation: isolate;
@@ -142,7 +171,9 @@
   .greese-shape-folio-field::after,
   .greese-shape-folio-container::after,
   .greese-shape-folio-small::after,
-  .greese-shape-folio-mark::after {
+  .greese-shape-folio-mark::after,
+  .greese-shape-folio-dot::after,
+  .greese-shape-folio-bubble::after {
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -155,7 +186,9 @@
     .greese-shape-folio-field,
     .greese-shape-folio-container,
     .greese-shape-folio-small,
-    .greese-shape-folio-mark {
+    .greese-shape-folio-mark,
+    .greese-shape-folio-dot,
+    .greese-shape-folio-bubble {
       transition: --greese-shape-f var(--greese-duration-normal) var(--greese-easing-standard),
         --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
         --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
@@ -166,18 +199,22 @@
     .greese-shape-folio-field,
     .greese-shape-folio-container,
     .greese-shape-folio-small,
-    .greese-shape-folio-mark {
+    .greese-shape-folio-mark,
+    .greese-shape-folio-dot,
+    .greese-shape-folio-bubble {
       clip-path: none;
       border-color: CanvasText;
     }
     .greese-shape-folio-field::after,
     .greese-shape-folio-container::after,
     .greese-shape-folio-small::after,
-    .greese-shape-folio-mark::after {
+    .greese-shape-folio-mark::after,
+    .greese-shape-folio-dot::after,
+    .greese-shape-folio-bubble::after {
       display: none;
     }
   }
-  .greese-AccordionItem,
+  .greese-AccordionItem > .greese-Collapsible-content,
   .greese-Tile {
     --greese-shape-ring: var(--greese-color-border);
     position: relative;
@@ -185,7 +222,7 @@
     border-color: transparent;
     clip-path: var(--greese-shape-clip) padding-box;
   }
-  .greese-AccordionItem::after,
+  .greese-AccordionItem > .greese-Collapsible-content::after,
   .greese-Tile::after {
     position: absolute;
     inset: 0;
@@ -196,7 +233,7 @@
     clip-path: var(--greese-shape-ring-clip);
   }
   @media (prefers-reduced-motion: no-preference) {
-    .greese-AccordionItem,
+    .greese-AccordionItem > .greese-Collapsible-content,
     .greese-Tile {
       transition: --greese-shape-f var(--greese-duration-normal) var(--greese-easing-standard),
         --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
@@ -205,12 +242,12 @@
     }
   }
   @media (forced-colors: active) {
-    .greese-AccordionItem,
+    .greese-AccordionItem > .greese-Collapsible-content,
     .greese-Tile {
       clip-path: none;
       border-color: CanvasText;
     }
-    .greese-AccordionItem::after,
+    .greese-AccordionItem > .greese-Collapsible-content::after,
     .greese-Tile::after {
       display: none;
     }
@@ -249,11 +286,13 @@
     }
   }
   .greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar),
+  .greese-ChatBubble-bubble,
   .greese-Status:not(.greese-Status--pulse) {
     clip-path: var(--greese-shape-clip) border-box;
   }
   @media (forced-colors: active) {
     .greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar),
+    .greese-ChatBubble-bubble,
     .greese-Status:not(.greese-Status--pulse) {
       clip-path: none;
     }
@@ -422,13 +461,51 @@
       display: none;
     }
   }
-  .greese-Dialog {
+  .greese-Collapsible-trigger {
+    --greese-shape-ring: var(--greese-collapsible-border, var(--greese-color-border));
+    position: relative;
+    isolation: isolate;
+    border-color: transparent;
+    clip-path: var(--greese-shape-clip) padding-box;
+  }
+  .greese-Collapsible-trigger::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    content: '';
+    background: var(--greese-shape-ring);
+    clip-path: var(--greese-shape-ring-clip);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .greese-Collapsible-trigger {
+      transition: background-color var(--greese-duration-fast) var(--greese-easing-standard),
+        --greese-shape-f var(--greese-duration-normal) var(--greese-easing-standard),
+        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+        --greese-shape-bleed 0s linear;
+    }
+  }
+  @media (forced-colors: active) {
+    .greese-Collapsible-trigger {
+      clip-path: none;
+      border-color: CanvasText;
+    }
+    .greese-Collapsible-trigger::after {
+      display: none;
+    }
+  }
+  .greese-Dialog,
+  .greese-Menu,
+  .greese-Popover {
     --greese-shape-ring: var(--greese-color-border);
     isolation: isolate;
     border-color: transparent;
     clip-path: var(--greese-shape-clip) padding-box;
   }
-  .greese-Dialog::after {
+  .greese-Dialog::after,
+  .greese-Menu::after,
+  .greese-Popover::after {
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -438,22 +515,30 @@
     clip-path: var(--greese-shape-ring-clip);
   }
   @media (forced-colors: active) {
-    .greese-Dialog {
+    .greese-Dialog,
+    .greese-Menu,
+    .greese-Popover {
       clip-path: none;
       border-color: CanvasText;
     }
-    .greese-Dialog::after {
+    .greese-Dialog::after,
+    .greese-Menu::after,
+    .greese-Popover::after {
       display: none;
     }
   }
-  .greese-Input {
+  .greese-Input,
+  .greese-Select,
+  .greese-Textarea {
     --greese-shape-ring: var(--greese-color-border-strong);
     position: relative;
     isolation: isolate;
     border-color: transparent;
     clip-path: var(--greese-shape-clip) padding-box;
   }
-  .greese-Input::after {
+  .greese-Input::after,
+  .greese-Select::after,
+  .greese-Textarea::after {
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -462,14 +547,20 @@
     background: var(--greese-shape-ring);
     clip-path: var(--greese-shape-ring-clip);
   }
-  .greese-Input:hover {
+  .greese-Input:hover,
+  .greese-Select:hover,
+  .greese-Textarea:hover {
     --greese-shape-ring: var(--greese-color-fg-muted);
   }
-  .greese-Input[aria-invalid=true], .greese-Input[data-invalid] {
+  .greese-Input[aria-invalid=true], .greese-Input[data-invalid],
+  .greese-Select[aria-invalid=true], .greese-Select[data-invalid],
+  .greese-Textarea[aria-invalid=true], .greese-Textarea[data-invalid] {
     --greese-shape-ring: var(--greese-color-negative);
   }
   @media (prefers-reduced-motion: no-preference) {
-    .greese-Input {
+    .greese-Input,
+    .greese-Select,
+    .greese-Textarea {
       transition: box-shadow var(--greese-duration-fast) var(--greese-easing-standard),
         --greese-shape-f var(--greese-duration-normal) var(--greese-easing-standard),
         --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
@@ -478,24 +569,57 @@
     }
   }
   @media (forced-colors: active) {
-    .greese-Input {
+    .greese-Input,
+    .greese-Select,
+    .greese-Textarea {
       clip-path: none;
       border-color: CanvasText;
     }
-    .greese-Input::after {
+    .greese-Input::after,
+    .greese-Select::after,
+    .greese-Textarea::after {
       display: none;
     }
   }
-  .greese-Menu,
-  .greese-Popover,
-  .greese-Tooltip {
-    clip-path: var(--greese-shape-clip) border-box;
+  .greese-OtpField-slot {
+    --greese-shape-ring: var(--greese-color-border-strong);
+    position: relative;
+    isolation: isolate;
+    border-color: transparent;
+    clip-path: var(--greese-shape-clip) padding-box;
+  }
+  .greese-OtpField-slot::before {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    content: '';
+    background: var(--greese-shape-ring);
+    clip-path: var(--greese-shape-ring-clip);
+  }
+  .greese-OtpField[data-invalid] .greese-OtpField-slot {
+    --greese-shape-ring: var(--greese-color-negative);
+  }
+  .greese-OtpField-slot.greese-OtpField-slot--active {
+    --greese-shape-ring: var(--greese-color-focus-ring);
+    --greese-shape-border: 2px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .greese-OtpField-slot {
+      transition: box-shadow var(--greese-duration-fast) var(--greese-easing-standard),
+        --greese-shape-f var(--greese-duration-normal) var(--greese-easing-standard),
+        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+        --greese-shape-bleed 0s linear;
+    }
   }
   @media (forced-colors: active) {
-    .greese-Menu,
-    .greese-Popover,
-    .greese-Tooltip {
+    .greese-OtpField-slot {
       clip-path: none;
+      border-color: CanvasText;
+    }
+    .greese-OtpField-slot::before {
+      display: none;
     }
   }
   .greese-Segment {
@@ -513,6 +637,9 @@
     content: '';
     background: var(--greese-shape-ring);
     clip-path: var(--greese-shape-ring-clip);
+  }
+  .greese-Segment:has(:checked) {
+    --greese-shape-ring: var(--greese-segment-current-ring, transparent);
   }
   @media (prefers-reduced-motion: no-preference) {
     .greese-Segment {
@@ -566,31 +693,8 @@
       display: none;
     }
   }
-  .greese-SpeedDial-trigger {
-    clip-path: var(--greese-shape-clip) border-box;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-SpeedDial-trigger {
-      transition: background-color var(--greese-duration-fast) var(--greese-easing-standard),
-        --greese-shape-s var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
-    }
-  }
-  @media (pointer: coarse) {
-    .greese-SpeedDial-trigger {
-      min-block-size: 44px;
-      min-inline-size: 44px;
-    }
-  }
-  @media (forced-colors: active) {
-    .greese-SpeedDial-trigger {
-      clip-path: none;
-    }
-  }
   .greese-Toast {
-    --greese-shape-ring: var(--greese-color-border-strong);
+    --greese-shape-ring: color-mix(in oklab, var(--greese-toast-edge) 45%, var(--greese-color-border-strong));
     position: relative;
     isolation: isolate;
     border-color: transparent;
@@ -605,6 +709,12 @@
     background: var(--greese-shape-ring);
     clip-path: var(--greese-shape-ring-clip);
   }
+  .greese-Toast {
+    box-shadow: inset 3px 0 0 var(--greese-toast-edge);
+  }
+  .greese-Toast:dir(rtl) {
+    box-shadow: inset -3px 0 0 var(--greese-toast-edge);
+  }
   @media (forced-colors: active) {
     .greese-Toast {
       clip-path: none;
@@ -614,17 +724,39 @@
       display: none;
     }
   }
+  .greese-Tooltip {
+    --greese-shape-ring: var(--greese-tooltip-border, transparent);
+    isolation: isolate;
+    border-color: transparent;
+    clip-path: var(--greese-shape-clip) padding-box;
+  }
+  .greese-Tooltip::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    content: '';
+    background: var(--greese-shape-ring);
+    clip-path: var(--greese-shape-ring-clip);
+  }
+  @media (forced-colors: active) {
+    .greese-Tooltip {
+      clip-path: none;
+      border-color: CanvasText;
+    }
+    .greese-Tooltip::after {
+      display: none;
+    }
+  }
   .greese-shape-folio-control,
-  .greese-Button,
-  .greese-SpeedDial-trigger {
+  .greese-Button {
     --greese-shape-s: 6px;
     --greese-shape-border: 1px;
     --greese-shape-clip: polygon(calc(var(--greese-shape-s) - 0.967 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + 1.034 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-s) + 0.967 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * 1.034 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)));
     --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-s)) 0, 100% 0, calc(100% - var(--greese-shape-s)) 100%, 0 100%, calc(var(--greese-shape-s)) 0, calc(var(--greese-shape-s) + 0.967 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(1.034 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-s) - 0.967 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - 1.034 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-s) + 0.967 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
   }
   .greese-shape-folio-control:dir(rtl),
-  .greese-Button:dir(rtl),
-  .greese-SpeedDial-trigger:dir(rtl) {
+  .greese-Button:dir(rtl) {
     --greese-shape-clip: polygon(calc(100% + 1.034 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-s) - 0.967 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * 1.034 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-s) + 0.967 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)));
     --greese-shape-ring-clip: polygon(evenodd, 100% 100%, calc(var(--greese-shape-s)) 100%, 0 0, calc(100% - var(--greese-shape-s)) 0, 100% 100%, calc(100% - 1.034 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-s) - 0.967 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(1.034 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-s) + 0.967 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - 1.034 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)));
   }
@@ -639,8 +771,7 @@
   }
   @media (hover: hover) {
     .greese-shape-folio-control:hover,
-    .greese-Button:hover,
-    .greese-SpeedDial-trigger:hover {
+    .greese-Button:hover {
       --greese-shape-s: 2px;
     }
     .greese-Button.greese-Button--size-sm:hover {
@@ -652,8 +783,7 @@
     }
   }
   .greese-shape-folio-control:active,
-  .greese-Button:active,
-  .greese-SpeedDial-trigger:active {
+  .greese-Button:active {
     --greese-shape-s: 0px;
   }
   .greese-Button.greese-Button--size-sm:active {
@@ -673,24 +803,27 @@
     --greese-shape-bleed: 8px;
     transition-delay: 0s, 0s, 0s, 0s, 0s, 0s, var(--greese-duration-normal);
   }
-  .greese-SpeedDial-trigger:focus-visible {
-    --greese-shape-s: 0px;
-    --greese-shape-bleed: 8px;
-    transition-delay: 0s, 0s, 0s, 0s, var(--greese-duration-normal);
-  }
   .greese-shape-folio-field,
-  .greese-Input {
+  .greese-Input,
+  .greese-OtpField-slot,
+  .greese-Select,
+  .greese-Textarea {
     --greese-shape-f: 8px;
     --greese-shape-border: 1px;
     --greese-shape-clip: polygon(calc(-1 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-f) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)));
     --greese-shape-ring-clip: polygon(evenodd, 0 0, calc(100% - var(--greese-shape-f)) 0, 100% calc(var(--greese-shape-f)), 100% 100%, 0 100%, 0 0, calc(var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-f) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-border)));
   }
   .greese-shape-folio-field:dir(rtl),
-  .greese-Input:dir(rtl) {
+  .greese-Input:dir(rtl),
+  .greese-OtpField-slot:dir(rtl),
+  .greese-Select:dir(rtl),
+  .greese-Textarea:dir(rtl) {
     --greese-shape-clip: polygon(calc(100% + var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)), calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)));
     --greese-shape-ring-clip: polygon(evenodd, 100% 100%, 0 100%, 0 calc(var(--greese-shape-f)), calc(var(--greese-shape-f)) 0, 100% 0, 100% 100%, calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)));
   }
-  .greese-Input:has(:focus-visible) {
+  .greese-Input:has(:focus-visible),
+  .greese-Select:has(:focus-visible),
+  .greese-Textarea:has(:focus-visible) {
     --greese-shape-border: 3px;
     --greese-shape-ring: var(--greese-color-focus-ring);
     outline-color: transparent;
@@ -701,7 +834,7 @@
     transition-delay: 0s, 0s, 0s, var(--greese-duration-normal);
   }
   .greese-shape-folio-container,
-  .greese-AccordionItem,
+  .greese-AccordionItem > .greese-Collapsible-content,
   .greese-Card,
   .greese-Dialog,
   .greese-Menu,
@@ -714,7 +847,7 @@
     --greese-shape-ring-clip: polygon(evenodd, 0 0, calc(100% - var(--greese-shape-f)) 0, 100% calc(var(--greese-shape-f)), 100% 100%, 0 100%, 0 0, calc(var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-f) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-border)));
   }
   .greese-shape-folio-container:dir(rtl),
-  .greese-AccordionItem:dir(rtl),
+  .greese-AccordionItem > .greese-Collapsible-content:dir(rtl),
   .greese-Card:dir(rtl),
   .greese-Dialog:dir(rtl),
   .greese-Menu:dir(rtl),
@@ -731,7 +864,7 @@
     }
   }
   .greese-shape-folio-container:focus-visible,
-  .greese-AccordionItem:focus-visible,
+  .greese-AccordionItem > .greese-Collapsible-content:focus-visible,
   .greese-Card:focus-visible,
   .greese-Tile:focus-visible {
     --greese-shape-f: 0px;
@@ -747,6 +880,7 @@
   }
   .greese-shape-folio-small,
   .greese-Alert,
+  .greese-Collapsible-trigger,
   .greese-Tooltip {
     --greese-shape-f: 10px;
     --greese-shape-border: 1px;
@@ -755,6 +889,7 @@
   }
   .greese-shape-folio-small:dir(rtl),
   .greese-Alert:dir(rtl),
+  .greese-Collapsible-trigger:dir(rtl),
   .greese-Tooltip:dir(rtl) {
     --greese-shape-clip: polygon(calc(100% + var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)), calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)));
     --greese-shape-ring-clip: polygon(evenodd, 100% 100%, 0 100%, 0 calc(var(--greese-shape-f)), calc(var(--greese-shape-f)) 0, 100% 0, 100% 100%, calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)));
@@ -764,6 +899,11 @@
     --greese-shape-f: 0px;
     --greese-shape-bleed: 8px;
     transition-delay: 0s, 0s, 0s, var(--greese-duration-normal);
+  }
+  .greese-Collapsible-trigger:focus-visible {
+    --greese-shape-f: 0px;
+    --greese-shape-bleed: 8px;
+    transition-delay: 0s, 0s, 0s, 0s, var(--greese-duration-normal);
   }
   .greese-Tooltip:focus-visible {
     --greese-shape-f: 0px;
@@ -805,16 +945,14 @@
     transition-delay: 0s, 0s, 0s, 0s, 0s, var(--greese-duration-normal);
   }
   .greese-shape-folio-mark,
-  .greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar),
-  .greese-Status:not(.greese-Status--pulse) {
+  .greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar) {
     --greese-shape-f: 8px;
     --greese-shape-border: 1px;
     --greese-shape-clip: polygon(calc(-1 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-f) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)));
     --greese-shape-ring-clip: polygon(evenodd, 0 0, calc(100% - var(--greese-shape-f)) 0, 100% calc(var(--greese-shape-f)), 100% 100%, 0 100%, 0 0, calc(var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-f) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-border)));
   }
   .greese-shape-folio-mark:dir(rtl),
-  .greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar):dir(rtl),
-  .greese-Status:not(.greese-Status--pulse):dir(rtl) {
+  .greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar):dir(rtl) {
     --greese-shape-clip: polygon(calc(100% + var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)), calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)));
     --greese-shape-ring-clip: polygon(evenodd, 100% 100%, 0 100%, 0 calc(var(--greese-shape-f)), calc(var(--greese-shape-f)) 0, 100% 0, 100% 100%, calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)));
   }
@@ -823,9 +961,51 @@
     --greese-shape-bleed: 8px;
     transition-delay: 0s, 0s, 0s, var(--greese-duration-normal);
   }
-  .greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar):focus-visible,
+  .greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar):focus-visible {
+    --greese-shape-f: 0px;
+    --greese-shape-bleed: 8px;
+  }
+  .greese-shape-folio-dot,
+  .greese-Status:not(.greese-Status--pulse) {
+    --greese-shape-f: 3px;
+    --greese-shape-border: 1px;
+    --greese-shape-clip: polygon(calc(-1 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-f) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)));
+    --greese-shape-ring-clip: polygon(evenodd, 0 0, calc(100% - var(--greese-shape-f)) 0, 100% calc(var(--greese-shape-f)), 100% 100%, 0 100%, 0 0, calc(var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-f) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-border)));
+  }
+  .greese-shape-folio-dot:dir(rtl),
+  .greese-Status:not(.greese-Status--pulse):dir(rtl) {
+    --greese-shape-clip: polygon(calc(100% + var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)), calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)));
+    --greese-shape-ring-clip: polygon(evenodd, 100% 100%, 0 100%, 0 calc(var(--greese-shape-f)), calc(var(--greese-shape-f)) 0, 100% 0, 100% 100%, calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)));
+  }
+  .greese-shape-folio-dot:focus-visible {
+    --greese-shape-f: 0px;
+    --greese-shape-bleed: 8px;
+    transition-delay: 0s, 0s, 0s, var(--greese-duration-normal);
+  }
   .greese-Status:not(.greese-Status--pulse):focus-visible {
     --greese-shape-f: 0px;
     --greese-shape-bleed: 8px;
+  }
+  .greese-shape-folio-bubble,
+  .greese-ChatBubble-bubble {
+    --greese-shape-f: 10px;
+    --greese-shape-border: 1px;
+    --greese-shape-clip: polygon(calc(-1 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-f) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * 11px - 2.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - 11px - 0.414 * var(--greese-shape-bleed)));
+    --greese-shape-ring-clip: polygon(evenodd, 0 0, calc(100% - var(--greese-shape-f)) 0, 100% calc(var(--greese-shape-f)), 100% 100%, calc(-1 * 11px) 100%, 0 calc(100% - 11px), 0 0, calc(var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - 11px + 0.414 * var(--greese-shape-border)), calc(-1 * 11px + 2.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-f) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-border)));
+  }
+  .greese-shape-folio-bubble:dir(rtl),
+  .greese-ChatBubble-bubble:dir(rtl),
+  .greese-ChatBubble--end .greese-ChatBubble-bubble {
+    --greese-shape-clip: polygon(calc(100% + var(--greese-shape-bleed)) calc(100% - 11px - 0.414 * var(--greese-shape-bleed)), calc(100% + 11px + 2.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)), calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)));
+    --greese-shape-ring-clip: polygon(evenodd, 100% calc(100% - 11px), calc(100% + 11px) 100%, 0 100%, 0 calc(var(--greese-shape-f)), calc(var(--greese-shape-f)) 0, 100% 0, 100% calc(100% - 11px), calc(100% - var(--greese-shape-border)) calc(100% - 11px + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% + 11px - 2.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - 11px + 0.414 * var(--greese-shape-border)));
+  }
+  .greese-ChatBubble--end .greese-ChatBubble-bubble:dir(rtl) {
+    --greese-shape-clip: polygon(calc(-1 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-f) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-f) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * 11px - 2.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - 11px - 0.414 * var(--greese-shape-bleed)));
+    --greese-shape-ring-clip: polygon(evenodd, 0 0, calc(100% - var(--greese-shape-f)) 0, 100% calc(var(--greese-shape-f)), 100% 100%, calc(-1 * 11px) 100%, 0 calc(100% - 11px), 0 0, calc(var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - 11px + 0.414 * var(--greese-shape-border)), calc(-1 * 11px + 2.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-f) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-f) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-border)));
+  }
+  .greese-shape-folio-bubble:focus-visible {
+    --greese-shape-border: 3px;
+    --greese-shape-ring: var(--greese-color-focus-ring);
+    outline-color: transparent;
   }
 }

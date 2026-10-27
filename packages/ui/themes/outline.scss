@@ -34,12 +34,12 @@
 @include greese.component(Badge) {
   @include greese.modifier(solid) {
     color: var(--greese-badge-tone);
-    background-color: color-mix(in oklab, var(--greese-badge-tone) 8%, transparent);
+    background-color: color-mix(in oklab, var(--greese-badge-tone) 8%, var(--greese-badge-surface));
     border-color: var(--greese-badge-tone);
   }
   @include greese.modifier(soft) {
-    background-color: transparent;
-    border-color: color-mix(in oklab, var(--greese-badge-tone) 55%, transparent);
+    background-color: var(--greese-badge-surface);
+    border-color: color-mix(in oklab, var(--greese-badge-tone) 55%, var(--greese-badge-surface));
   }
   @include greese.modifier(outline) {
     color: var(--greese-badge-tone-on);
@@ -94,11 +94,13 @@
 @include greese.component(Segment) {
   --greese-segment-current-bg: transparent;
   --greese-segment-current-edge: inset 0 0 0 1.5px var(--greese-color-primary);
+  --greese-segment-current-ring: var(--greese-color-primary);
 }
 
 @include greese.component(Tab) {
   --greese-tab-current-bg: transparent;
   --greese-tab-current-edge: inset 0 0 0 1.5px var(--greese-color-primary);
+  --greese-tab-current-ring: var(--greese-color-primary);
 }
 
 @include greese.component(Tile) {
@@ -120,4 +122,5 @@
   color: var(--greese-color-fg);
   background-color: var(--greese-color-surface-overlay);
   border: 1px solid var(--greese-color-fg);
+  --greese-tooltip-border: var(--greese-color-fg);
 }

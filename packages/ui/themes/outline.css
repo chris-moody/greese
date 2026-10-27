@@ -32,12 +32,12 @@
 @layer greese.overrides {
   .greese-Badge.greese-Badge--solid {
     color: var(--greese-badge-tone);
-    background-color: color-mix(in oklab, var(--greese-badge-tone) 8%, transparent);
+    background-color: color-mix(in oklab, var(--greese-badge-tone) 8%, var(--greese-badge-surface));
     border-color: var(--greese-badge-tone);
   }
   .greese-Badge.greese-Badge--soft {
-    background-color: transparent;
-    border-color: color-mix(in oklab, var(--greese-badge-tone) 55%, transparent);
+    background-color: var(--greese-badge-surface);
+    border-color: color-mix(in oklab, var(--greese-badge-tone) 55%, var(--greese-badge-surface));
   }
   .greese-Badge.greese-Badge--outline {
     color: var(--greese-badge-tone-on);
@@ -90,12 +90,14 @@
   .greese-Segment {
     --greese-segment-current-bg: transparent;
     --greese-segment-current-edge: inset 0 0 0 1.5px var(--greese-color-primary);
+    --greese-segment-current-ring: var(--greese-color-primary);
   }
 }
 @layer greese.overrides {
   .greese-Tab {
     --greese-tab-current-bg: transparent;
     --greese-tab-current-edge: inset 0 0 0 1.5px var(--greese-color-primary);
+    --greese-tab-current-ring: var(--greese-color-primary);
   }
 }
 @layer greese.overrides {
@@ -120,5 +122,6 @@
     color: var(--greese-color-fg);
     background-color: var(--greese-color-surface-overlay);
     border: 1px solid var(--greese-color-fg);
+    --greese-tooltip-border: var(--greese-color-fg);
   }
 }
