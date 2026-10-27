@@ -35,24 +35,27 @@ Requires Node 24 (`nvm use`) and npm.
 
 ```bash
 npm install
-npx playwright install chromium   # once, for e2e
+npx playwright install chromium firefox webkit   # once, for e2e
 ```
 
 ## Commands
 
-| Command                                |                                                                                    |
-| -------------------------------------- | ---------------------------------------------------------------------------------- |
-| `npm run dev`                          | Storybook on :6006 and the playground dev server                                   |
-| `npm run build`                        | Builds every package and app (turbo, cached)                                       |
-| `npm test`                             | Unit tests (Vitest + jsdom)                                                        |
-| `npm run test:e2e`                     | Real-browser tests (Playwright, mobile and desktop) on :4310                       |
-| `npm run check-types` / `npm run lint` |                                                                                    |
-| `npm run size`                         | Fails if the bundle-size budgets in `packages/react/.size-limit.json` are exceeded |
-| `npm run test:visual`                  | Visual regression for every story (builds Storybook first)                         |
-| `npm run lighthouse -w playground`     | Lighthouse budgets on the playground pages (after `npm run build`)                 |
-| `npm run verify:packages`              | Packs both packages and checks them in a clean consumer project                    |
-| `npm run bench -w playground`          | Render benchmark (the numbers on the homepage)                                     |
-| `npm run changeset`                    | Records a release note for a change to a published package                         |
+| Command                                |                                                                                |
+| -------------------------------------- | ------------------------------------------------------------------------------ |
+| `npm run dev`                          | Storybook on :6006 and the playground dev server                               |
+| `npm run build`                        | Builds every package and app (turbo, cached)                                   |
+| `npm test`                             | Unit tests (Vitest + jsdom)                                                    |
+| `npm run test:e2e`                     | Real-browser tests (Playwright): the playground in five projects, and the site |
+| `npm run check-types` / `npm run lint` |                                                                                |
+| `npm run size`                         | Fails if a bundle-size budget (each package's `.size-limit.*`) is exceeded     |
+| `npm run test:visual`                  | Visual regression for every story (builds Storybook first)                     |
+| `npm run lighthouse -w playground`     | Lighthouse budgets on the playground pages (after `npm run build`)             |
+| `npm run test:dashboard`               | Local dashboard that runs the suites and reports their timings (:4410)         |
+| `npm run verify:packages`              | Packs both packages and checks them in a clean consumer project                |
+| `npm run bench -w playground`          | Render benchmark (the numbers on the homepage)                                 |
+| `npm run changeset`                    | Records a release note for a change to a published package                     |
+
+How the tests are organised, written and run: [docs/testing](docs/testing/README.md).
 
 ## Commits
 

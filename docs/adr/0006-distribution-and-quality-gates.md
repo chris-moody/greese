@@ -77,10 +77,13 @@ component's SCSS as a lazy chunk.
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------ |
 | Unit (Vitest + axe)      | Behaviour, ARIA, coverage gate on `resolveResponsive`                                                                                            | CI                       |
 | E2E (Playwright)         | Real layout, keyboard, top layer: Chromium, Pixel 7, Firefox, WebKit, iPhone 15                                                                  | CI                       |
-| **Visual regression**    | Every story × light/dark × phone/desktop (572 screenshots)                                                                                       | CI (Linux image) + local |
+| **Visual regression**    | Every story × light/dark × phone/desktop (1,192 screenshots as of 2026-10-26)                                                                    | CI (Linux image) + local |
 | **Lighthouse**           | Performance ≥ 0.95, accessibility ≥ 0.95, best practices ≥ 0.95, LCP < 2 s, TBT < 100 ms, CLS < 0.05 on every playground page, mobile throttled  | CI                       |
 | **Package verification** | The tarballs as a consumer installs them: Node ESM + SSR, types (bundler and nodenext), SCSS recompilation, per-component imports, Vite bundling | CI                       |
 | Size budgets             | Whole library and tree-shaken components                                                                                                         | CI                       |
+
+How each layer is written and run is in the testing guide,
+[`docs/testing/README.md`](../testing/README.md).
 
 **Visual baselines are per platform**, because font rendering differs. Local
 macOS baselines are committed. Linux baselines are recorded by the Visual

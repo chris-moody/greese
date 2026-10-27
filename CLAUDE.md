@@ -29,6 +29,7 @@ ADRs in `docs/adr/` that govern each area. Then use the skill for the task:
 | Styles, tokens, theming                 | `greese-styles`           | `greese-stylist`              |
 | Animation, greese.js, the `greese` prop | `greese-animation`        | —                             |
 | Size, dependencies, performance         | `greese-lightweight`      | `greese-size-guardian`        |
+| Tests: unit, e2e, visual, Lighthouse    | `greese-testing`          | `greese-test-engineer`        |
 | Checking work before calling it done    | `greese-verify`           | `greese-reviewer` (read-only) |
 | Docs, guides, ADRs                      | (conventions → Docs)      | `greese-docs-keeper`          |
 | Committing                              | `commit`                  | —                             |
@@ -47,3 +48,4 @@ ADRs in `docs/adr/` that govern each area. Then use the skill for the task:
 - **No new runtime dependencies** without an ADR.
 - **Budgets are only raised deliberately,** with the reason stated.
 - **Report gate results faithfully,** failures and skips included.
+- **Testing** is documented in one place: `docs/testing/README.md`.
