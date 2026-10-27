@@ -78,6 +78,48 @@ describe('Button', () => {
     expect(onSubmit).toHaveBeenCalledTimes(1)
   })
 
+  it('renders a link with href, as a server-safe <a> with no type', async () => {
+    const { container } = render(
+      <Button href="/docs" startIcon={<Icon />} variant="soft">
+        Docs
+      </Button>
+    )
+    const link = screen.getByRole('link', { name: 'Docs' })
+    expect(link.tagName).toBe('A')
+    expect(link).toHaveAttribute('href', '/docs')
+    expect(link).toHaveClass('greese-Button', 'greese-Button--soft')
+    expect(link).not.toHaveAttribute('type')
+    expect(link).not.toHaveAttribute('disabled')
+    expect(functionProps(<Button href="/docs">Docs</Button>, [Button] as never)).toEqual(
+      []
+    )
+    await expectNoAxeViolations(container)
+  })
+
+  it('takes a disabled href link out of the tab order', () => {
+    render(
+      <Button href="/docs" disabled>
+        Docs
+      </Button>
+    )
+    const link = screen.getByRole('link', { name: 'Docs' })
+    expect(link).toHaveAttribute('tabindex', '-1')
+    expect(link).toHaveAttribute('aria-disabled', 'true')
+  })
+
+  it('takes href or onClick, never both (types)', () => {
+    const go = () => {}
+    // @ts-expect-error a link has no onClick
+    void (<Button href="/docs" onClick={go} />)
+    // @ts-expect-error a link renders its own <a>, not your element
+    void (<Button href="/docs" asChild />)
+    const iconLink = { label: 'Docs', href: '/docs', children: 'x' }
+    // @ts-expect-error an icon link has no onClick either
+    void (<IconButton {...iconLink} onClick={go} />)
+    void (<IconButton {...iconLink} />)
+    expect(true).toBe(true)
+  })
+
   it('takes a disabled asChild link out of the tab order', () => {
     render(
       <Button asChild disabled>
@@ -161,6 +203,21 @@ describe('IconButton, ToggleButton, ButtonGroup', () => {
       'greese-IconButton',
       'greese-Button--ghost',
       'greese-Button--neutral'
+    )
+  })
+
+  it('renders an icon-only link with href, named from its label', () => {
+    render(
+      <IconButton label="GitHub" href="https://github.com" variant="soft">
+        <Icon />
+      </IconButton>
+    )
+    const link = screen.getByRole('link', { name: 'GitHub' })
+    expect(link).toHaveAttribute('href', 'https://github.com')
+    expect(link).toHaveClass('greese-IconButton', 'greese-Button--soft')
+    expect(link.querySelector('.greese-Button-icon')).toHaveAttribute(
+      'aria-hidden',
+      'true'
     )
   })
 

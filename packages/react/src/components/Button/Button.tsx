@@ -1,4 +1,11 @@
-import type { ComponentPropsWithoutRef, JSX, MouseEvent, ReactNode, Ref } from 'react'
+import type {
+  ComponentPropsWithoutRef,
+  JSX,
+  MouseEvent,
+  MouseEventHandler,
+  ReactNode,
+  Ref,
+} from 'react'
 import { cx } from '../../utils/cx.ts'
 import {
   mapResponsive,
@@ -14,9 +21,8 @@ export type ButtonVariant = 'solid' | 'soft' | 'outline' | 'ghost' | 'text'
 export type ButtonTone = BrandTone | 'neutral' | 'negative'
 export type ControlSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
-export interface ButtonProps extends GreeseProps, ComponentPropsWithoutRef<'button'> {
-  /** The rendered `<button>` (or your element, with `asChild`). */
-  ref?: Ref<HTMLButtonElement>
+/** What every button takes, whether it's a `<button>` or a link. */
+export interface ButtonOwnProps extends GreeseProps {
   /**
    * Visual weight: `solid` for the main action, `soft`, `outline`, then `ghost`
    * for the least. `text` drops the box and takes the surrounding text's color,
@@ -48,9 +54,43 @@ export interface ButtonProps extends GreeseProps, ComponentPropsWithoutRef<'butt
   startIcon?: ReactNode
   /** Decorative icon after the label. */
   endIcon?: ReactNode
+}
+
+/** A button that does something: a `<button>`, or your element with `asChild`. */
+export interface ButtonActionProps
+  extends ButtonOwnProps, Omit<ComponentPropsWithoutRef<'button'>, 'onClick'> {
+  /** The rendered `<button>` (or your element, with `asChild`). */
+  ref?: Ref<HTMLButtonElement>
+  /** Called when it's pressed; never while it's loading or disabled. */
+  onClick?: MouseEventHandler<HTMLButtonElement>
+  /** A button that goes somewhere takes `href` instead of `onClick`. */
+  href?: never
   /** Render your own element, e.g. a router `<Link>`, as the button. */
   asChild?: boolean
 }
+
+/** A button that goes somewhere: an `<a href>` that looks like a button. */
+export interface ButtonLinkProps
+  extends ButtonOwnProps, Omit<ComponentPropsWithoutRef<'a'>, 'onClick' | 'href'> {
+  /** The rendered `<a>`. */
+  ref?: Ref<HTMLAnchorElement>
+  /** Where it goes: renders an `<a>` instead of a `<button>`. */
+  href: string
+  /** A link goes to its `href`; it takes no `onClick`. */
+  onClick?: never
+  /** Takes the link out of the tab order and the pointer's reach. */
+  disabled?: boolean
+  /** An `href` renders the link itself; use `asChild` without one for your own. */
+  asChild?: never
+}
+
+/** A `<button>` with `onClick`, or a link with `href`, never both. */
+export type ButtonProps = ButtonActionProps | ButtonLinkProps
+
+/** `Omit` over each member of a union, so a props union keeps its either/or. */
+export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
+  ? Omit<T, K>
+  : never
 
 const FULL_WIDTH: ResponsiveConfig = { block: 'greese-Button', prop: 'width' }
 
@@ -63,7 +103,7 @@ const FULL_WIDTH: ResponsiveConfig = { block: 'greese-Button', prop: 'width' }
  * ```tsx
  * <Button startIcon={<PlusIcon />}>Add item</Button>
  * <Button variant="outline" tone="negative" loading={deleting}>Delete</Button>
- * <Button asChild variant="ghost"><a href="/docs">Docs</a></Button>
+ * <Button href="/docs" variant="ghost">Docs</Button>
  * ```
  */
 export const Button = ({
@@ -97,8 +137,11 @@ export const Button = ({
       style,
     }
   )
-  const inert = loading || (asChild && disabled)
-  const Root = (asChild ? Slot : 'button') as typeof Slot
+  // A link is an `<a>` of ours: it has no native `disabled`, as `asChild`.
+  const link = props.href !== undefined
+  const notButton = asChild || link
+  const inert = loading || (notButton && disabled)
+  const Root = (asChild ? Slot : link ? 'a' : 'button') as typeof Slot
   // A press is blocked with HTML and CSS, so a Server Component can render
   // this (it can't hand an element a function): a loading button is
   // `type="button"`, so it can't submit or reset its form, and a disabled
@@ -118,11 +161,12 @@ export const Button = ({
       className={resolved.className}
       style={resolved.style}
       // Native `disabled` only on real buttons and never while loading.
-      {...(!asChild && {
+      {...(!notButton && {
         type: loading ? 'button' : (type ?? 'button'),
         disabled: disabled && !loading,
       })}
-      {...(asChild && disabled && { tabIndex: -1 })}
+      {...(link && { type })}
+      {...(notButton && disabled && { tabIndex: -1 })}
       aria-disabled={inert || undefined}
       aria-busy={loading || undefined}
       data-loading={loading || undefined}

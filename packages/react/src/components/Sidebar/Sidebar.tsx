@@ -14,7 +14,7 @@ import type { Breakpoint } from '@greese/ui'
 import { getBreakpoints } from '../../utils/breakpoints.ts'
 import { cx } from '../../utils/cx.ts'
 import { MenuIcon } from '@greese/icons'
-import { IconButton, type IconButtonProps } from '../IconButton/IconButton.tsx'
+import { IconButton, type IconButtonActionProps } from '../IconButton/IconButton.tsx'
 import { composeRefs } from '../Slot/Slot.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
@@ -137,7 +137,7 @@ export const Sidebar = ({
 }
 
 export interface SidebarTriggerProps
-  extends GreeseProps, Omit<IconButtonProps, 'label' | 'children'> {
+  extends GreeseProps, Omit<IconButtonActionProps, 'label' | 'children'> {
   /** Accessible name of the button. @default 'Open navigation' */
   label?: string
   /** Your menu icon. A built-in one is used if omitted. */

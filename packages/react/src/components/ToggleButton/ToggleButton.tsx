@@ -2,10 +2,11 @@
 import type { JSX, MouseEvent } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
-import { Button, type ButtonProps } from '../Button/Button.tsx'
+import { Button, type ButtonActionProps } from '../Button/Button.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
-export interface ToggleButtonProps extends GreeseProps, Omit<ButtonProps, 'asChild'> {
+export interface ToggleButtonProps
+  extends GreeseProps, Omit<ButtonActionProps, 'asChild' | 'href'> {
   /** Controlled pressed state. */
   pressed?: boolean
   /** Initial pressed state when uncontrolled. */
