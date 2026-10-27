@@ -15,7 +15,7 @@ Load `greese-conventions` first.
 - Read the ADR for its area. If the change contradicts an ADR, stop and ask,
   or write a superseding ADR. Never silently diverge.
 - For a bug, reproduce it first: a failing unit test, or an e2e assertion
-  when it's layout or browser behaviour. GLOP ports and stories have found
+  when it's layout or browser behaviour. Ports and stories have found
   real bugs this way (Hide ranges, missing stylesheets).
 
 ## 2. Classify the change (semver)

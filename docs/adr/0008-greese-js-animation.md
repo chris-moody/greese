@@ -7,8 +7,8 @@
 
 GreeseUI needs animation that's simple, configurable and light, and that can
 later power a `greese` prop on components (see
-[ADR 0009](0009-greese-prop.md)). GLOP, the codebase this work comes
-from, uses two systems:
+[ADR 0009](0009-greese-prop.md)). The codebase this work comes
+from uses two systems:
 
 - **A third-party tween library** in the game engine, used lightly: `to`,
   `fromTo` and kill-all-tweens-of-a-target, with named eases
@@ -96,7 +96,7 @@ long-running decorative loops.
 - **From the engine's tween code** come `to`, `from`, `fromTo`, `set`, `add`, `call`, labels,
   the position syntax (`'<'`, `'>-0.2'`, `'+=0.5'`, `'label+=1'`), `stagger`,
   and named eases (`power2.out`, `back.out(2)`, `elastic.out(a, p)`,
-  `bounce`, `expo`…). GLOP's engine code ports directly. Times are in
+  `bounce`, `expo`…). Existing engine code ports directly. Times are in
   seconds.
 - **From WAAPI** come the keyframe forms: frame arrays with `offset` and
   per-frame `ease`, or property lists such as `{ opacity: [0, 1] }`.
@@ -152,7 +152,7 @@ readers read words, not letters.
 
 ## Addendum (2026-10-18): `fromPixels` and a `<script>` build
 
-- **`fromPixels(animation, targets, options)`** turns GLOP Pixels layer
+- **`fromPixels(animation, targets, options)`** turns Pixels layer
   timelines into one greese.js timeline:
   - frames become seconds at the document's fps;
   - channels map `rotation` → `rotate` (shortest arc, as in Pixels' angle
@@ -161,8 +161,8 @@ readers read words, not letters.
     elastic, bounce and back curves where Pixels' own renderer plays linear);
   - spans aren't read.
 
-  It's structurally typed, so GLOP documents pass straight in, with no
-  dependency on GLOP. It adds about 0.5 kB, tree-shaken away when unused.
+  It's structurally typed, so Pixels documents pass straight in, with no
+  dependency on their editor. It adds about 0.5 kB, tree-shaken away when unused.
 
 - **`dist/greese.global.js`** is an esbuild IIFE that defines
   `window.greese`, for pages with no bundler. It's exported as
@@ -234,7 +234,7 @@ greese.js read.
   `fromTo`, `set` and `animate`, may be a function
   `(index, target, targets) => value`. It's called once per target as the
   animation is built, never while it plays, so rendering stays a pure
-  function of time. GLOP's engine code has the same form.
+  function of time. The engine code it ports from has the same form.
 - **Function staggers.** `stagger` also takes a `PerTarget<number>`: each
   target's own offset, such as one ordered by position.
 - **`cubic-bezier()` strings** are eases, as easing tokens, motion themes and

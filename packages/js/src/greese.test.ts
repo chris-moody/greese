@@ -500,7 +500,7 @@ describe('splitText', () => {
 })
 
 describe('fromPixels', () => {
-  // Shaped like a GLOP Pixels symbol animation: 10 fps, keyframes + tweens.
+  // Shaped like a Pixels symbol animation: 10 fps, keyframes + tweens.
   const animation: PixelsAnimation = {
     fps: 10,
     layers: [

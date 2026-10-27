@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 
-/** Break and the components ported from GLOP, in real engines. */
+/** Break and the ported components (ADR 0007's addendum), in real engines. */
 test.beforeEach(async ({ page }) => {
   await page.goto('/?page=additions')
   await page.getByTestId('heading').waitFor()

@@ -11,7 +11,7 @@ A small keyframe and timeline animation library for the web: about 5.6 kB
   SVG attributes and plain objects**.
 - **Stagger**, an accessible **`splitText`**, named **eases** and
   **positions**.
-- **`fromPixels`** plays animation authored in GLOP's Pixels studio.
+- **`fromPixels`** plays animation authored in the Pixels studio.
 - **Respects `prefers-reduced-motion`** by default.
 
 ## Install: pick your form

@@ -52,8 +52,8 @@ export const parseColor = (input: string): Rgba | undefined => {
 }
 
 // sRGB <-> OKLab (Björn Ottosson). Mixing in OKLab keeps transitions
-// perceptually even and free of the muddy midpoints of sRGB mixing; GLOP's
-// Pixels mixes in OKLCH for the same reason.
+// perceptually even and free of the muddy midpoints of sRGB mixing; Pixels
+// mixes in OKLCH for the same reason.
 const toLinear = (c: number) => {
   const v = c / 255
   return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4

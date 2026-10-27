@@ -339,11 +339,11 @@ plain text; markup inside is flattened. `revert()` restores the original.
 | `'cubic-bezier(0.2, 0, 0, 1)'`                                              | CSS's form, as easing tokens and styles write it |
 | `[0.2, 0, 0, 1]` or a function                                              | Any cubic-bézier, or your own curve              |
 
-Named eases match the ones GLOP's engine code already uses, so it ports directly.
+Named eases use the common timeline names, so existing code ports directly.
 
-## Playing GLOP Pixels animations: `fromPixels`
+## Playing Pixels animations: `fromPixels`
 
-Animation authored in GLOP's Pixels studio can play on DOM elements, or any
+Animation authored in the Pixels studio can play on DOM elements, or any
 targets. `fromPixels` reads a symbol animation's layers:
 
 - keyframes and tweens become tracks on one timeline;
@@ -415,15 +415,15 @@ batch(() => {
 })
 ```
 
-## Coming from GLOP
+## Porting timeline code
 
-GLOP's engine code ports directly: `to`, `from`, `fromTo`, `set`, `add`,
+Timeline code ports directly: `to`, `from`, `fromTo`, `set`, `add`,
 `call` and labels, the position syntax, `stagger` (a number,
 `{ each, from }` or a function), function-based values and the named eases
 are all the same. Keep a timeline and
 call `kill()` to stop and restore what it animated. Plugins, scroll-driven
 triggers, path motion and morphing aren't included.
 
-The model follows GLOP's Pixels timeline: per-property keyframe tracks
+The model follows the Pixels timeline: per-property keyframe tracks
 sampled purely by time, nested timelines mapped through repeat and time scale
 (Pixels' spans), and OKLab color mixing (Pixels mixes in OKLCH).

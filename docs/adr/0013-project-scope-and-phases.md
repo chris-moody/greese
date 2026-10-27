@@ -56,7 +56,7 @@ The phase numbers other ADRs cite:
 | 5     | Overlays and navigation                               | 2026-10-17 | ADR 0005          |
 | 6     | Hardening, docs, quality gates, 1.0.0                 | 2026-10-17 | ADR 0006          |
 | 7     | Component gaps (1.1.0)                                | 2026-10-18 | ADR 0007          |
-| —     | Components ported from GLOP                           | 2026-10-18 | ADR 0007 addendum |
+| —     | Ported components                                     | 2026-10-18 | ADR 0007 addendum |
 | —     | greese.js                                             | 2026-10-18 | ADR 0008          |
 | —     | The `greese` prop                                     | 2026-10-18 | ADR 0009          |
 | —     | SCSS kit, style manifest, Theme Studio                | 2026-10-19 | ADR 0010          |

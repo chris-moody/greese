@@ -23,7 +23,7 @@ const Cell = ({ id, label }: { id: string; label: string }) => (
   </div>
 )
 
-/** Fixtures for e2e/additions.spec.ts: Break and the components ported from GLOP. */
+/** Fixtures for e2e/additions.spec.ts: Break and the ported components (ADR 0007's addendum). */
 export const Additions = (): JSX.Element => {
   const [raw, setRaw] = useState('')
   const [color, setColor] = useState('#ff0000')

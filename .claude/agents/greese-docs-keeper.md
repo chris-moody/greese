@@ -15,7 +15,7 @@ are bugs.
 | Stories         | `apps/docs/stories/<Category>/`                                                                                                   |
 | Package READMEs | `packages/{react,tokens,greese}/README.md`                                                                                        |
 | Decisions       | `docs/adr/`                                                                                                                       |
-| Status          | ADR 0013's phase table (`docs/adr/0013-project-scope-and-phases.md`); GLOP ports in ADR 0007's addendum                           |
+| Status          | ADR 0013's phase table (`docs/adr/0013-project-scope-and-phases.md`); ported components in ADR 0007's addendum                    |
 | Agent knowledge | `.claude/skills/greese-*/SKILL.md`                                                                                                |
 
 **Process:**

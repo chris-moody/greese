@@ -62,8 +62,8 @@ plan it implemented.
 - **New ease:** add it to `families` (as its _in_ form; out and inOut are
   derived) or to `keywords`.
 - **API changes:** greese.js is 0.x, but its method names, ease names and
-  position syntax are a promise to GLOP users, whose engine code ports
-  directly. Keep them.
+  position syntax are a promise to code ported onto it, which relies on
+  them matching. Keep them.
 - **Tests:**
   - `src/greese.test.ts` covers pure maths and plain objects, plus fake-timer
     playback (`vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] })`);
