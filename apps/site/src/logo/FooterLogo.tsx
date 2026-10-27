@@ -29,6 +29,22 @@ const glow = (className: string, mask: string, result?: string) => (
   </>
 )
 
+/**
+ * A mask that keeps everything but the letters, `grow` past their rims: the
+ * swoosh's effects stay under the letters, as the swoosh itself does.
+ */
+const under = (id: string, grow: number) => (
+  <mask id={id} maskUnits="userSpaceOnUse" x="-100" y="-100" width="1060" height="640">
+    <rect x="-100" y="-100" width="1060" height="640" fill="white" />
+    {letters({
+      stroke: 'black',
+      strokeWidth: STROKE + 12 + grow,
+      transform: 'translate(2 5)',
+    })}
+    {letters({ stroke: 'black', strokeWidth: STROKE + 8 + grow })}
+  </mask>
+)
+
 /** Custom properties as a style. */
 const vars = (props: Record<string, string | number>) => props as CSSProperties
 
@@ -89,8 +105,6 @@ export const FooterLogo = (): JSX.Element => {
             height="160%"
             colorInterpolationFilters="sRGB"
           >
-            <feGaussianBlur in="SourceAlpha" stdDeviation="16" result="blur" />
-            {glow('site-logo-glow', 'blur', 'halo')}
             {/* A thin bright band just outside the rims (drawn on the live layer). */}
             <feMorphology in="SourceAlpha" operator="dilate" radius="6" result="wide" />
             <feOffset in="wide" dx="2" dy="5" result="dropped" />
@@ -103,22 +117,11 @@ export const FooterLogo = (): JSX.Element => {
             <feComposite in="outer" in2="rim" operator="out" result="band" />
             <feGaussianBlur in="band" stdDeviation="1.2" result="soft" />
             {glow('site-logo-edge', 'soft', 'edge')}
-            <feMerge>
-              <feMergeNode in="halo" />
-              <feMergeNode in="edge" />
-            </feMerge>
           </filter>
-          <filter id={ref('swoosh-halo')} x="-15%" y="-30%" width="130%" height="160%">
-            <feGaussianBlur in="SourceAlpha" stdDeviation="9" result="blur" />
-            {glow('site-logo-glow site-logo-glow--soft', 'blur')}
-          </filter>
+          {/* Clear of the letters' own bright band too, so theirs is on top. */}
+          {under(ref('under-halo'), 16)}
         </defs>
-        <g className="site-logo-hexagons">
-          {HEXAGONS.map((d) => (
-            <path key={d} d={d} />
-          ))}
-        </g>
-        <path d={SWOOSH} filter={url('swoosh-halo')} />
+        <path d={SWOOSH} filter={url('halo')} mask={url('under-halo')} />
         {letters({ stroke: 'black', filter: url('halo') })}
       </svg>
 
@@ -164,6 +167,11 @@ export const FooterLogo = (): JSX.Element => {
             </feMerge>
           </filter>
         </defs>
+        <g className="site-logo-hexagons">
+          {HEXAGONS.map((d) => (
+            <path key={d} d={d} />
+          ))}
+        </g>
         <g className="site-logo-particles" filter={url('sparkle')}>
           {PARTICLES.map(([cx, cy, r, opacity], i) => (
             <circle
@@ -249,8 +257,9 @@ export const FooterLogo = (): JSX.Element => {
             {glow('site-logo-gloss site-logo-gloss--soft', 'upperSoft')}
             <feComposite in2="SourceAlpha" operator="in" />
           </filter>
+          {under(ref('under-gloss'), 0)}
         </defs>
-        <path d={SWOOSH} filter={url('swoosh-gloss')} />
+        <path d={SWOOSH} filter={url('swoosh-gloss')} mask={url('under-gloss')} />
         {letters({ stroke: 'black', filter: url('gloss') })}
       </svg>
     </div>
