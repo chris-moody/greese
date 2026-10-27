@@ -18,8 +18,12 @@ export const LETTERS = [
 /** The g on its own: the favicon. */
 export const G = LETTERS[0]!
 
-/** The letters' box, their strokes included, plus a little room. */
-export const LETTERS_BOX = '30 130 780 306'
+/** The swoosh over the letters: a filled shape, not a stroke. */
+export const SWOOSH =
+  'm419.25 143.72c0 0 32.47 28.27 106.17-30.73 20.21-16.17 97.2-85.38 150.28-46.19 20.88 15.41 27.31 47.78 10.47 72.31-18.89 27.53-62.72 46.53-62.72 46.53 0 0 16.62-25.53 22.78-30.82 45.96-39.49 12.97-102.7-61.01-68.58-28.74 13.25-86.16 53.51-86.16 53.51 0 0 15.9-8.6 21.07-11.17 18.25-9.06 28.93-15.61 53.36-27.63 44.81-22.04 77.03-8.38 80.22 13.32 2.04 13.87-9.73 27.16-9.73 27.16 0 0 23.42-58.71-49.58-41.43-43.19 10.23-91.13 57.78-150.46 56.82-20.23-0.33-24.69-13.1-24.69-13.1z'
+
+/** The letters and the swoosh over them, strokes and rims included, plus a little room: the header's wordmark. */
+export const WORDMARK_BOX = '30 44 780 392'
 
 /** The g's box: square, centred on it, with room for the favicon's tile. */
 export const G_BOX = '-37 134 320 320'

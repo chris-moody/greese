@@ -20,6 +20,8 @@ import '@greese/ui/css/Visibility.css'
 import '@greese/ui/css/Button.css'
 import '@greese/ui/css/IconButton.css'
 import '@greese/ui/css/Field.css'
+// The header's search box is an Input's frame.
+import '@greese/ui/css/Input.css'
 import '@greese/ui/css/Select.css'
 import '@greese/ui/css/ChoiceGroup.css'
 import '@greese/ui/css/Checkbox.css'

@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use 'pkg:@greese/ui/scss/kit' as greese;
 
 /*
@@ -172,39 +173,34 @@ body {
 }
 
 /* Search from md: a button dressed as a short field. */
-.site-search-box {
-  display: inline-flex;
-  gap: var(--greese-space-2);
-  align-items: center;
+.site-search-box.greese-Input {
+  position: relative;
+  inline-size: auto;
   min-inline-size: 7rem;
-  min-block-size: 2rem;
-  padding-inline: var(--greese-space-2) var(--greese-space-1);
-  font: inherit;
-  font-size: var(--greese-type-p2-font-size);
-  color: var(--greese-color-fg-muted);
+  padding-inline-end: var(--greese-space-1);
   cursor: pointer;
-  background-color: var(--greese-color-canvas);
-  border: 1px solid var(--greese-color-border-strong);
-  border-radius: var(--greese-corner-field);
-  transition: border-color var(--greese-duration-fast) var(--greese-easing-standard);
 
-  &:hover {
-    border-color: var(--greese-color-fg-muted);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--greese-color-focus-ring);
-    outline-offset: 1px;
-  }
-
-  .site-search-box-text {
-    flex: 1;
+  // The button fills the frame, so a click anywhere opens the dialog; the
+  // icon and the shortcut are drawn over it and let clicks through.
+  .greese-Input-control {
+    position: absolute;
+    inset: 0;
+    padding-inline-start: calc(
+      var(--greese-input-padding) + 1.25em + var(--greese-space-2)
+    );
+    color: var(--greese-color-fg-muted);
     text-align: start;
+    cursor: pointer;
+  }
+
+  .greese-Input-adornment {
+    pointer-events: none;
   }
 
   // The shortcut once the header has room for it beside the homepage's links.
-  .greese-Key {
+  .greese-Input-adornment:last-child {
     display: none;
+    margin-inline-start: auto;
 
     @include greese.up(xl) {
       display: inline-flex;
@@ -316,9 +312,9 @@ body {
   }
 }
 
-/* The header's links are pills: tinted when hovered, and the section the
-   page is on (ScrollSpy) or the page itself (Studio, Templates) in the
-   primary color on a primary tint, like the current tab. They follow the
+/* The header's links are pills: tinted when hovered, and the page itself
+   (Docs, Studio, Templates) in the primary color on a primary tint, like the
+   current tab. They follow the
    theme's radius, so a square shape theme squares them too. */
 .site-nav-links a {
   position: relative;
@@ -339,13 +335,6 @@ body {
     position: absolute;
     inset: -0.25rem 0 -0.75rem;
     content: '';
-  }
-}
-
-/* The homepage's sections in the row from lg; below, the wordmark's menu. */
-.site-nav-section {
-  @include greese.down(lg) {
-    display: none;
   }
 }
 
@@ -396,11 +385,16 @@ body {
   stroke: var(--site-logo-rim);
 }
 
+.site-logo-rim--fill {
+  fill: var(--site-logo-rim);
+}
+
 .site-wordmark-glyphs {
   display: block;
-  block-size: 2.25rem;
+  /* The letters keep their height; the swoosh adds the rest above them. */
+  block-size: 2.75rem;
   inline-size: auto;
-  aspect-ratio: 780 / 306;
+  aspect-ratio: 780 / 392;
 }
 
 /* The footer's logo, a row of its own under the legal line: three SVGs
@@ -508,6 +502,180 @@ body {
 
 .site-logo[data-motion='wipe'] :is(.site-logo-particles, .site-logo-sparkles) > * {
   transform-origin: center bottom;
+}
+
+/* The logo's loop, all CSS (logo/motion.ts picks the kind and each part's
+   place in it). The motion theme's pace, stagger and ease are its own custom
+   properties; the base theme's are the fallbacks. A loop is 16 paces, at
+   least 6s. Sparkles twinkle twice a loop, a stagger apart in their order;
+   particles drift once each, at their own phase, longer and subtler. The
+   gradients flow two lengths (they're reflected, so it's seamless). Off
+   screen it holds still; under reduced motion it doesn't move at all. */
+.site-logo {
+  --logo-pace: clamp(0.2s, var(--greese-motion-duration, 0.6s), 1.2s);
+  --logo-stagger: clamp(0.02s, var(--greese-motion-stagger, 0.06s), 0.12s);
+  --logo-ease: var(--greese-motion-enter-ease, cubic-bezier(0.33, 1, 0.68, 1));
+  --logo-period: max(6s, var(--logo-pace) * 16);
+}
+
+.site-logo-sparkles > * {
+  --k: 1;
+  --pop: 1.3;
+}
+
+.site-logo-particles > * {
+  --k: 0.6;
+  --pop: 1.6;
+}
+
+// Where each kind sends a part, leaving and arriving: `--far` is its own
+// distance in px, `--k` a particle's smaller share of it.
+$_logo-far: calc(var(--far) * var(--k) * 1px);
+$logo-kinds: (
+  float: (
+    leave: (
+      translate: 0 calc(-1 * #{$_logo-far}),
+    ),
+    from: (
+      translate: 0 $_logo-far,
+    ),
+  ),
+  pop: (
+    leave: (
+      scale: 0,
+    ),
+    from: (
+      scale: 0,
+    ),
+  ),
+  blur: (
+    leave: (
+      scale: calc(1 + 1.4 * var(--k)),
+    ),
+    from: (
+      scale: calc(1 + 1.4 * var(--k)),
+    ),
+  ),
+  wipe: (
+    leave: (
+      scale: 1 0,
+    ),
+    from: (
+      scale: 1 0,
+    ),
+  ),
+  pocket: (
+    leave: (
+      translate: 0 $_logo-far,
+    ),
+    from: (
+      translate: 0 $_logo-far,
+    ),
+  ),
+  depth: (
+    leave: (
+      scale: -1 0.5,
+    ),
+    from: (
+      scale: -1 0.5,
+    ),
+  ),
+);
+
+// One twinkle, `$length`% of the loop from `$start`%: out on an ease-in,
+// hidden a moment, back on the theme's ease (pop overshoots on the way).
+@mixin logo-twinkle($kind, $start, $length) {
+  $moves: map.get($logo-kinds, $kind);
+
+  #{$start * 1%} {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+    animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0);
+  }
+
+  #{($start + $length * 0.25) * 1%} {
+    opacity: 0;
+
+    @each $property, $value in map.get($moves, leave) {
+      #{$property}: $value;
+    }
+
+    animation-timing-function: step-end;
+  }
+
+  #{($start + $length * 0.4) * 1%} {
+    opacity: 0;
+
+    // Arriving takes the element's own easing, the theme's: a keyframe's
+    // can't be a var().
+    @each $property, $value in map.get($moves, from) {
+      #{$property}: $value;
+    }
+  }
+
+  @if $kind == pop {
+    #{($start + $length * 0.7) * 1%} {
+      opacity: 1;
+      scale: var(--pop);
+      animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+    }
+  }
+
+  #{($start + $length) * 1%} {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@each $kind, $_ in $logo-kinds {
+  @keyframes site-logo-sparkle-#{$kind} {
+    @include logo-twinkle($kind, 10, 25);
+    @include logo-twinkle($kind, 60, 25);
+  }
+
+  @keyframes site-logo-particle-#{$kind} {
+    @include logo-twinkle($kind, 0, 37.5);
+  }
+}
+
+@keyframes site-logo-flow {
+  to {
+    transform: translate(var(--flow));
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .site-logo-flow {
+    animation: site-logo-flow var(--logo-period) linear infinite;
+  }
+
+  @each $kind, $_ in $logo-kinds {
+    .site-logo[data-motion='#{$kind}'] {
+      .site-logo-sparkles > * {
+        animation: site-logo-sparkle-#{$kind}
+          var(--logo-period)
+          var(--logo-ease)
+          infinite;
+        animation-delay: calc(var(--rank) * var(--logo-stagger) * 4);
+      }
+
+      // A particle waits its phase's share of the loop's other 10 paces.
+      .site-logo-particles > * {
+        animation: site-logo-particle-#{$kind}
+          var(--logo-period)
+          var(--logo-ease)
+          infinite;
+        animation-delay: calc(var(--phase) * var(--logo-period) * 0.625);
+      }
+    }
+  }
+
+  .site-logo:not([data-playing])
+    :is(.site-logo-flow, .site-logo-particles > *, .site-logo-sparkles > *) {
+    animation-play-state: paused;
+  }
 }
 
 .site-measure {
@@ -835,6 +1003,9 @@ body {
 
 .studio-theme-scroll {
   max-block-size: min(34rem, 100dvh - 7rem);
+  /* Room for the radios' focus rings, which the scroller would cut off. */
+  padding-inline: 0.25rem;
+  margin-inline: -0.25rem;
   overflow: auto;
 }
 

@@ -1,10 +1,8 @@
 /* eslint-disable no-restricted-syntax -- Not icons: the footer's logo artwork, its gradients and filters. */
-import { useEffect, useId, useRef, type JSX } from 'react'
-import { useGreese } from '@greese/react'
-import type { Timeline } from '@greese/js'
+import { useEffect, useId, useRef, useState, type CSSProperties, type JSX } from 'react'
 import { useShell } from '../shell.ts'
 import { LETTERS, STROKE } from './glyphs.ts'
-import { buildLogoLoop, logoMotion } from './motion.ts'
+import { logoKind, particleTimings, sparkleTimings } from './motion.ts'
 import { HEXAGONS, PARTICLES, SPARKLES, SWOOSH, sparkle } from './scene.ts'
 
 const BOX = '0 0 860 440'
@@ -31,71 +29,56 @@ const glow = (className: string, mask: string, result?: string) => (
   </>
 )
 
+/** Custom properties as a style. */
+const vars = (props: Record<string, string | number>) => props as CSSProperties
+
 /**
  * The logo under the footer (docs/plans/logo/greese_final.svg) in the theme's
  * colors, looping in its motion: sparkles and particles leave and come back
  * the way the theme's entrances arrive, while the letters' and swoosh's
  * gradients flow (logo/motion.ts).
  *
- * Three stacked SVGs, so the costly filters don't run every frame: the glow
- * and edge underneath and the shading and gloss on top only read the
+ * The loop is CSS (site.scss): script sets each part's place in it once, and
+ * pauses it while the logo is off screen; nothing changes in the DOM as it
+ * plays. Three stacked SVGs, so the costly filters don't run every frame: the
+ * glow and edge underneath and the shading and gloss on top only read the
  * letters' shapes, so they're drawn once on layers of their own; between
  * them the animated layer has the fills, the dark rims (plain strokes
- * instead of filters) and the particles and sparkles. The loop runs only
- * while the logo is on screen.
+ * instead of filters) and the particles and sparkles.
  */
 export const FooterLogo = (): JSX.Element => {
   const id = useId()
   const ref = (name: string) => `${id}${name}`
   const url = (name: string) => `url(#${ref(name)})`
   const root = useRef<HTMLDivElement>(null)
-  const loop = useRef<Timeline>(undefined)
-  const inView = useRef(false)
+  const [playing, setPlaying] = useState(false)
   const { spec } = useShell()
-  const motion = spec.motionDefaults
-  const { kind } = logoMotion(motion)
-
-  useGreese(
-    (g) => {
-      const el = root.current
-      if (!el) return
-      const style = getComputedStyle(el)
-      const m = logoMotion(motion, (token) =>
-        style.getPropertyValue(`--greese-easing-${token}`)
-      )
-      const tl = buildLogoLoop(
-        g.timeline({ repeat: -1, paused: true }),
-        {
-          particles: g.select('.site-logo-particles > *'),
-          sparkles: g.select('.site-logo-sparkles > *'),
-          gradients: [
-            [el.querySelector(`#${ref('letters')}`)!, 'translate(600 300)'],
-            [el.querySelector(`#${ref('swoosh')}`)!, 'translate(600 -300)'],
-          ],
-        },
-        m
-      )
-      loop.current = tl
-      if (inView.current) tl.play()
-      return () => {
-        loop.current = undefined
-      }
-    },
-    { scope: root, dependencies: [JSON.stringify(motion ?? null)], revertOnUpdate: true }
+  const kind = logoKind(spec.motionDefaults)
+  const sparkles = sparkleTimings(
+    SPARKLES.map(([x]) => x),
+    kind
+  )
+  const particles = particleTimings(
+    PARTICLES.map(([cx]) => cx),
+    kind
   )
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      inView.current = !!entry?.isIntersecting
-      if (inView.current) loop.current?.play()
-      else loop.current?.pause()
-    })
+    const observer = new IntersectionObserver(([entry]) =>
+      setPlaying(!!entry?.isIntersecting)
+    )
     observer.observe(root.current!)
     return () => observer.disconnect()
   }, [])
 
   return (
-    <div ref={root} className="site-logo" data-motion={kind} aria-hidden="true">
+    <div
+      ref={root}
+      className="site-logo"
+      data-motion={kind}
+      data-playing={playing || undefined}
+      aria-hidden="true"
+    >
       <svg className="site-logo-layer site-logo-still" viewBox={BOX}>
         <defs>
           <filter
@@ -141,7 +124,7 @@ export const FooterLogo = (): JSX.Element => {
 
       <svg className="site-logo-layer" viewBox={BOX}>
         <defs>
-          {/* Reflected, so flowing two lengths along (motion.ts) loops seamlessly. */}
+          {/* Reflected, so flowing two lengths along (site.scss) loops seamlessly. */}
           <linearGradient
             id={ref('letters')}
             gradientUnits="userSpaceOnUse"
@@ -150,7 +133,8 @@ export const FooterLogo = (): JSX.Element => {
             y1="50"
             x2="700"
             y2="200"
-            gradientTransform="translate(0 0)"
+            className="site-logo-flow"
+            style={vars({ '--flow': '600px, 300px' })}
           >
             <stop offset="0" className="site-logo-stop-1" />
             <stop offset="0.38" className="site-logo-stop-2" />
@@ -165,7 +149,8 @@ export const FooterLogo = (): JSX.Element => {
             y1="200"
             x2="700"
             y2="50"
-            gradientTransform="translate(0 0)"
+            className="site-logo-flow"
+            style={vars({ '--flow': '600px, -300px' })}
           >
             <stop offset="0" className="site-logo-stop-1" />
             <stop offset="0.35" className="site-logo-stop-2" />
@@ -180,8 +165,15 @@ export const FooterLogo = (): JSX.Element => {
           </filter>
         </defs>
         <g className="site-logo-particles" filter={url('sparkle')}>
-          {PARTICLES.map(([cx, cy, r, opacity]) => (
-            <circle key={`${cx} ${cy}`} cx={cx} cy={cy} r={r} fillOpacity={opacity} />
+          {PARTICLES.map(([cx, cy, r, opacity], i) => (
+            <circle
+              key={`${cx} ${cy}`}
+              cx={cx}
+              cy={cy}
+              r={r}
+              fillOpacity={opacity}
+              style={vars({ '--phase': particles[i]!.phase, '--far': particles[i]!.far })}
+            />
           ))}
         </g>
         <path
@@ -199,8 +191,12 @@ export const FooterLogo = (): JSX.Element => {
         {letters({ className: 'site-logo-rim', strokeWidth: STROKE + 8 })}
         {letters({ stroke: url('letters') })}
         <g className="site-logo-sparkles" filter={url('sparkle')}>
-          {SPARKLES.map((s) => (
-            <path key={s.join()} d={sparkle(s)} />
+          {SPARKLES.map((s, i) => (
+            <path
+              key={s.join()}
+              d={sparkle(s)}
+              style={vars({ '--rank': sparkles[i]!.rank, '--far': sparkles[i]!.far })}
+            />
           ))}
         </g>
       </svg>

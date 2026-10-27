@@ -6,7 +6,6 @@ import {
   Icon,
   IconButton,
   Link,
-  ScrollSpy,
   Show,
   Stack,
   useMediaQuery,
@@ -20,7 +19,6 @@ import { SearchBox, SearchIconButton, useSearch } from '../search/Search.tsx'
 import { useShell } from '../shell.ts'
 import { SchemeControl, SchemeSelect } from './nav/ColorScheme.tsx'
 import { HomeMenu, Wordmark } from './nav/HomeMenu.tsx'
-import { SECTIONS, SPY_OFFSET } from './nav/links.ts'
 import { PhoneMenu } from './nav/PhoneMenu.tsx'
 
 // The header's theme menu is a chunk of its own: the homepage's first paint
@@ -47,10 +45,11 @@ const themePlaceholder = (
 )
 
 /**
- * The header, on every page: the wordmark and the links (the section the page
- * is on, or Docs, Studio or Templates, highlighted), then search, the theme menu,
+ * The header, on every page: the wordmark and the pages (Docs, Studio and
+ * Templates, the current one highlighted), then search, the theme menu,
  * Replay motion, the color scheme and GitHub. From md the wordmark goes home
- * and its arrow opens the homepage's sections. Below md search is an icon
+ * and its arrow opens the homepage's sections: they're not in the row, which
+ * has room for the pages alone beside the controls. Below md search is an icon
  * and the scheme a select, beside the theme menu, Replay and GitHub, and the
  * pages and their sections are in a full-screen menu.
  */
@@ -92,7 +91,7 @@ export const Nav = (): JSX.Element => {
   const docsCurrent = route === 'docs' ? 'page' : undefined
   const navLink = (
     key: string,
-    to: 'home' | 'studio' | 'templates' | 'docs',
+    to: 'studio' | 'templates' | 'docs',
     label: string,
     extra = {}
   ) => (
@@ -146,32 +145,21 @@ export const Nav = (): JSX.Element => {
       }
     >
       <Hide below="md">
-        {/* Remounted per route, so the homepage's highlight doesn't linger on the studio. */}
-        <ScrollSpy key={route} asChild offset={SPY_OFFSET}>
-          <Stack
-            asChild
-            direction="row"
-            gap={1}
-            className="site-nav-links"
-            greese={{ enter: 'fadeIn', stagger: 0.05, delay: 0.1 }}
-          >
-            <nav aria-label="Sections">
-              {/* Below lg they're in the wordmark's menu alone: the row has no room. */}
-              {home &&
-                SECTIONS.map(([id, label]) =>
-                  navLink(id, 'home', label, {
-                    hash: `#${id}`,
-                    className: 'site-nav-section',
-                  })
-                )}
-              {navLink('docs', 'docs', 'Docs', { 'aria-current': docsCurrent })}
-              {navLink('studio', 'studio', 'Studio', { 'aria-current': studioCurrent })}
-              {navLink('templates', 'templates', 'Templates', {
-                'aria-current': templatesCurrent,
-              })}
-            </nav>
-          </Stack>
-        </ScrollSpy>
+        <Stack
+          asChild
+          direction="row"
+          gap={1}
+          className="site-nav-links"
+          greese={{ enter: 'fadeIn', stagger: 0.05, delay: 0.1 }}
+        >
+          <nav aria-label="Pages">
+            {navLink('docs', 'docs', 'Docs', { 'aria-current': docsCurrent })}
+            {navLink('studio', 'studio', 'Studio', { 'aria-current': studioCurrent })}
+            {navLink('templates', 'templates', 'Templates', {
+              'aria-current': templatesCurrent,
+            })}
+          </nav>
+        </Stack>
       </Hide>
 
       <PhoneMenu open={menu} onOpenChange={setMenu} />

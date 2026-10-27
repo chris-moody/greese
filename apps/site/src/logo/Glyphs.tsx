@@ -1,9 +1,9 @@
 /* eslint-disable no-restricted-syntax -- Not an icon: the wordmark, a gradient over the logo's letters. */
 import { useId, type JSX } from 'react'
-import { LETTERS, LETTERS_BOX, STROKE } from './glyphs.ts'
+import { LETTERS, STROKE, SWOOSH, WORDMARK_BOX } from './glyphs.ts'
 
 /**
- * The wordmark as the logo's letters, in the theme's colors (site.scss),
+ * The wordmark as the logo's letters under its swoosh, in the theme's colors (site.scss),
  * which follow the theme and the color scheme as they change. favicon.ts
  * reads its colors back for the tab's icon.
  */
@@ -17,7 +17,7 @@ export const WordmarkGlyphs = (): JSX.Element => {
   return (
     <svg
       className="site-wordmark-glyphs"
-      viewBox={LETTERS_BOX}
+      viewBox={WORDMARK_BOX}
       role="img"
       aria-label="greese"
     >
@@ -36,6 +36,17 @@ export const WordmarkGlyphs = (): JSX.Element => {
           <stop offset="1" className="site-logo-stop-4" />
         </linearGradient>
       </defs>
+      {/* The swoosh behind the letters, on a rim of its own: the fill dropped
+          and outlined, like the letters' strokes. */}
+      <path
+        d={SWOOSH}
+        fillRule="evenodd"
+        className="site-logo-rim site-logo-rim--fill"
+        strokeWidth={8}
+        strokeLinejoin="round"
+        transform="translate(2 5)"
+      />
+      <path d={SWOOSH} fillRule="evenodd" fill={`url(#${id})`} />
       <g
         {...stroke}
         className="site-logo-rim"

@@ -6,7 +6,7 @@ import {
   useSyncExternalStore,
   type JSX,
 } from 'react'
-import { Icon, IconButton, Key } from '@greese/react'
+import { Icon, IconButton, Input, Key } from '@greese/react'
 import { icons } from '../icons.tsx'
 import { whenIdle } from '../idle.ts'
 
@@ -81,19 +81,24 @@ const triggerProps = ({ open, onOpen }: SearchTriggerProps, mac: boolean) => ({
 })
 
 /**
- * Search from md: a short box with a magnifying glass, "Search" where a
- * placeholder would be and the shortcut. A button (it opens the search
- * dialog), dressed as the field it leads to.
+ * Search from md: a short field with a magnifying glass, "Search" where a
+ * placeholder would be and the shortcut. It opens the search dialog, so it's a
+ * button, a native one, in greese ui's own field frame: it takes the field's
+ * shape and states in every theme.
  */
 export const SearchBox = (props: SearchTriggerProps): JSX.Element => {
   const mac = useMac()
   return (
-    // Named Search; the shortcut is aria-keyshortcuts, so the key isn't read out.
-    <button {...triggerProps(props, mac)} aria-label="Search" className="site-search-box">
-      <Icon>{icons.search}</Icon>
-      <span className="site-search-box-text">Search</span>
-      <Key size="sm">{mac ? '⌘' : 'Ctrl'} K</Key>
-    </button>
+    <Input
+      {...triggerProps(props, mac)}
+      size="sm"
+      // Named Search; the shortcut is aria-keyshortcuts, so the key isn't read out.
+      value="Search"
+      aria-label="Search"
+      className="site-search-box"
+      startAdornment={<Icon>{icons.search}</Icon>}
+      endAdornment={<Key size="sm">{mac ? '⌘' : 'Ctrl'} K</Key>}
+    />
   )
 }
 

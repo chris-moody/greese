@@ -1,11 +1,14 @@
 import { expect, test } from '@playwright/test'
 
-test('in-page links land with their section just below the sticky header', async ({
+test('section links land with their section just below the sticky header', async ({
   page,
 }) => {
   await page.goto('/')
+  const menu = page.getByRole('dialog', { name: 'Homepage sections' })
   for (const name of ['Why', 'Speed', 'Components']) {
-    await page.locator('.site-nav-links').getByRole('link', { name, exact: true }).click()
+    // The sections are in the wordmark's menu, not the row.
+    if (!(await menu.isVisible())) await page.locator('.site-home-toggle').click()
+    await menu.getByRole('link', { name, exact: true }).click()
     await expect
       .poll(() =>
         page.evaluate((id) => {

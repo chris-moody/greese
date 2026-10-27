@@ -19,7 +19,7 @@ export const Footer = (): JSX.Element => (
     }
     legal={
       <>
-        <span>MIT licensed.</span>
+        <span>MIT licensed &copy; Christopher C. Moody</span>
         <Link href="#top" tone="neutral" greese={{ hover: 'rise' }}>
           Back to top
         </Link>
