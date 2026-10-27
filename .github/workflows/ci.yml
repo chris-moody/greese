@@ -43,6 +43,10 @@ jobs:
       - run: npm ci --no-audit --no-fund
 
       - run: npm run build
+      # The build refreshes the SCSS kit's name list from the stylesheets; a
+      # change here means a stylesheet changed without committing the result.
+      - name: Generated files are committed
+        run: git diff --exit-code -- packages/ui/src/styles/_manifest.scss
       - name: Verify the packages as a consumer installs them
         run: npm run verify:packages
       - run: npm run check-types

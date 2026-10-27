@@ -31,7 +31,9 @@ variables excluded). `@greese/ui`'s build writes it two ways:
 - `dist/style-manifest.json`, exported as `@greese/ui/style-manifest.json`,
   for the docs and Theme Studio;
 - `src/styles/_manifest.scss`, committed, a Sass map for the kit's name
-  checks. A unit test fails if it's stale.
+  checks. CI fails if it's stale (2026-10-27: the build refreshes it, then
+  `git diff --exit-code`; a unit test that recompiled every stylesheet to
+  compare could never fail after that build).
 
 It comes from the CSS rather than annotations, so it can't drift from what
 ships.
