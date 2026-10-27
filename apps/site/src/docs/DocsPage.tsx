@@ -23,6 +23,7 @@ import { ChevronLeftIcon, ChevronRightIcon, MenuIcon } from '@greese/icons'
 import { RouteLink, useSubpage } from '../router.tsx'
 import { ComponentPage } from './ComponentPage.tsx'
 import { MdxPage } from './MdxPage.tsx'
+import { Footer } from '../sections/LazyFooter.tsx'
 import { neighbours, pageById, pageName, SECTIONS, type DocsPage } from './pages.ts'
 import './docs.scss'
 
@@ -164,48 +165,55 @@ export const DocsPageView = (): JSX.Element => {
       <Sidebar ref={sidebar} label="Docs pages" className="docs-sidebar">
         <Nav current={page} />
       </Sidebar>
-      <Container size="full" className="docs-main">
-        {/* Below md, it sticks under the header, so the pages are a tap away
+      {/* The page and, after it, the footer: beside the sidebar, which stays
+          in view to the end. */}
+      <div className="docs-column">
+        <Container size="full" className="docs-main">
+          {/* Below md, it sticks under the header, so the pages are a tap away
             wherever the page is scrolled to. */}
-        <div className="docs-bar">
-          {page && (
-            <Text variant="p3" tone="muted" className="docs-bar-path">
-              {page.title.split('/').slice(0, -1).join(' / ')}
-            </Text>
-          )}
-          <Button
-            size="sm"
-            variant="soft"
-            tone="neutral"
-            endIcon={<MenuIcon />}
-            popoverTarget={sidebarId}
-            aria-label="Docs pages"
-            className="docs-pages-trigger"
-          >
-            Pages
-          </Button>
-        </div>
-        <div className="docs-columns">
-          {page ? (
-            // The contents list reads the page's headings, so it waits with it.
-            <Suspense key={page.id} fallback={<Loading />}>
+          <div className="docs-bar">
+            {page && (
+              <Text variant="p3" tone="muted" className="docs-bar-path">
+                {page.title.split('/').slice(0, -1).join(' / ')}
+              </Text>
+            )}
+            <Button
+              size="sm"
+              variant="soft"
+              tone="neutral"
+              endIcon={<MenuIcon />}
+              popoverTarget={sidebarId}
+              aria-label="Docs pages"
+              className="docs-pages-trigger"
+            >
+              Pages
+            </Button>
+          </div>
+          <div className="docs-columns">
+            {page ? (
+              // The contents list reads the page's headings, so it waits with it.
+              <Suspense key={page.id} fallback={<Loading />}>
+                <article id="main" className="docs-article">
+                  {page.kind === 'mdx' ? (
+                    <MdxPage page={page} />
+                  ) : (
+                    <ComponentPage page={page} />
+                  )}
+                  <PageFoot page={page} />
+                </article>
+                <OnThisPage page={page} />
+              </Suspense>
+            ) : (
               <article id="main" className="docs-article">
-                {page.kind === 'mdx' ? (
-                  <MdxPage page={page} />
-                ) : (
-                  <ComponentPage page={page} />
-                )}
-                <PageFoot page={page} />
+                <NotFound />
               </article>
-              <OnThisPage page={page} />
-            </Suspense>
-          ) : (
-            <article id="main" className="docs-article">
-              <NotFound />
-            </article>
-          )}
-        </div>
-      </Container>
+            )}
+          </div>
+        </Container>
+        <Suspense>
+          <Footer />
+        </Suspense>
+      </div>
     </SidebarLayout>
   )
 }

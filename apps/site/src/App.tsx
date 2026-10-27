@@ -17,6 +17,7 @@ import { migrateSpec } from './studio/migrate.ts'
 import type { RenderedColors } from './studio/protocol.ts'
 import type { ThemeSpec } from './studio/spec.ts'
 import { applyEffects } from './effects-runtime.ts'
+import { Footer } from './sections/LazyFooter.tsx'
 import { useStable } from './useStable.ts'
 import { brand, GREESE_SPEC } from './theme.ts'
 
@@ -27,10 +28,6 @@ const StudioPage = lazy(() =>
 )
 const Templates = lazy(() =>
   import('./pages/Templates.tsx').then((m) => ({ default: m.Templates }))
-)
-// The footer, on every page; the homepage brings its own after its sections.
-const Footer = lazy(() =>
-  import('./sections/Footer.tsx').then((m) => ({ default: m.Footer }))
 )
 // The docs too: their pages, stories and props load only when one is opened.
 const Docs = lazy(() =>
@@ -185,14 +182,18 @@ export const App = (): JSX.Element => {
             {route === 'home' && <Home />}
             {route !== 'home' && (
               <Suspense>
+                {/* The studio and the docs end their main column with the
+                    footer, beside their sidebars. */}
                 {route === 'studio' ? (
                   <StudioPage />
                 ) : route === 'docs' ? (
                   <Docs />
                 ) : (
-                  <Templates />
+                  <>
+                    <Templates />
+                    <Footer />
+                  </>
                 )}
-                <Footer />
               </Suspense>
             )}
             <Toaster />

@@ -73,8 +73,18 @@
   color: var(--greese-color-fg-muted);
 }
 
+/* The main column: the page, then the footer. */
+.docs-column {
+  min-inline-size: 0;
+}
+
 .docs-main {
   padding-block: var(--greese-space-4) var(--greese-space-8);
+
+  // Below md the bar is the first thing under the header, flush with it.
+  @include greese.down(md) {
+    padding-block-start: 0;
+  }
 }
 
 .docs-bar {
