@@ -35,6 +35,8 @@ const meta = {
       <a href="#somewhere">A link with a trailing icon</a>
     </Action>
   ),
+  // The web app's Try it: the example's own component, in scope.
+  parameters: { tryIt: { scope: { Action } } },
 } satisfies Meta<typeof Slottable>
 export default meta
 

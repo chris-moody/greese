@@ -120,6 +120,8 @@ const meta = {
       />
     </Replay>
   ),
+  // The web app's Try it: the example's own helper, in scope.
+  parameters: { tryIt: { scope: { Replay } } },
 } satisfies Meta<typeof Motion>
 export default meta
 

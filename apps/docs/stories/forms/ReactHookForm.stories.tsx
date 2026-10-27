@@ -60,6 +60,8 @@ const SignUpForm = () => {
 const meta = {
   title: 'Forms/Recipes/React Hook Form',
   component: SignUpForm,
+  // The web app's Try it: the example's own component, in scope.
+  parameters: { tryIt: { scope: { SignUpForm } } },
 } satisfies Meta<typeof SignUpForm>
 export default meta
 
