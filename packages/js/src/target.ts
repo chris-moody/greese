@@ -114,6 +114,11 @@ const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
   const isAttr = (prop: string) =>
     typeof SVGElement !== 'undefined' && el instanceof SVGElement && el.hasAttribute(prop)
 
+  // As flush(): an attribute already at the value isn't written again.
+  const setAttr = (name: string, value: string) => {
+    if (el.getAttribute(name) !== value) el.setAttribute(name, value)
+  }
+
   const withUnit = (prop: string, value: Value, unit = 'px'): Value =>
     typeof value === 'number' && !UNITLESS.has(prop) && !prop.startsWith('--')
       ? `${value}${unit}`
@@ -152,7 +157,7 @@ const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
       } else if (prop === 'text') el.textContent = String(value)
       else if (isAttr(prop)) {
         rememberAttribute(prop)
-        el.setAttribute(prop, String(value))
+        setAttr(prop, String(value))
       } else if (prop.startsWith('--')) {
         rememberStyle(prop)
         styles.set(prop, String(value))
@@ -163,15 +168,19 @@ const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
         ;(el as unknown as Record<string, unknown>)[prop] = Number(value)
       } else {
         rememberAttribute(prop)
-        el.setAttribute(prop, String(value))
+        setAttr(prop, String(value))
       }
     },
     flush() {
       for (const property of dirty) styles.set(property, parts[property]!.join(' '))
       // An empty value removes the inline style (restore(), or an unset value).
+      // A value already in place isn't written again: a target holding still
+      // mid-timeline (between staggers, in a hold) costs no style change, and
+      // no mutation for observers (devtools among them) to process.
       for (const [property, value] of styles)
         if (value === '') el.style.removeProperty(property)
-        else el.style.setProperty(property, value)
+        else if (el.style.getPropertyValue(property) !== value)
+          el.style.setProperty(property, value)
       dirty.clear()
       styles.clear()
     },

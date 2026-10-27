@@ -407,6 +407,29 @@ describe('elements', () => {
     expect(svg.getAttribute('r')).toBe('10')
   })
 
+  it("doesn't write a style or attribute that's already at its value", async () => {
+    const el = document.createElement('div')
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+    svg.setAttribute('r', '0')
+    document.body.append(el, svg)
+    const tl = timeline({ paused: true })
+      .to(el, { x: 40, opacity: 0.5, duration: 1, ease: 'linear' })
+      .to(svg, { r: 20, duration: 1, ease: 'linear' }, 0)
+      // Both hold still while something else moves.
+      .to({ t: 0 }, { t: 1, duration: 1 })
+    tl.seek(1.2)
+    const mutations: MutationRecord[] = []
+    const observer = new MutationObserver((records) => mutations.push(...records))
+    observer.observe(document.body, { subtree: true, attributes: true })
+    tl.seek(1.5)
+    tl.seek(1.8)
+    await flushMicrotasks()
+    observer.disconnect()
+    expect(mutations).toEqual([])
+    expect(el.style.translate).toBe('40px')
+    expect(svg.getAttribute('r')).toBe('20')
+  })
+
   it('accepts selectors and lists', () => {
     document.body.innerHTML = '<i class="dot"></i><i class="dot"></i>'
     timeline({ paused: true }).set('.dot', { opacity: 0 }).seek(0)

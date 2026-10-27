@@ -3,7 +3,7 @@
     "name": "greese.js: everything",
     "path": "dist/index.js",
     "import": "*",
-    "limit": "6.6 kB"
+    "limit": "6.65 kB"
   },
   {
     "name": "greese.js: animate",
@@ -20,7 +20,7 @@
   {
     "name": "greese.js: <script> build (window.greese)",
     "path": "dist/greese.global.js",
-    "limit": "7 kB",
+    "limit": "7.05 kB",
     "rolldown": false
   }
 ]
