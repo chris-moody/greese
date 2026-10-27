@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type JSX, type PointerEvent } from 'react'
-import { IconButton, Link, Popover, ScrollSpy, Stack, Text } from '@greese/react'
+import { IconButton, Link, Popover, ScrollSpy, Stack } from '@greese/react'
 import { ChevronDownIcon } from '@greese/icons'
+import { WordmarkGlyphs } from '../../logo/Glyphs.tsx'
 import { RouteLink } from '../../router.tsx'
 import { SECTIONS, SPY_OFFSET } from './links.ts'
 
-/** The wordmark: a link home, or to the top of the homepage. */
+/** The wordmark: the logo's letters, a link home, or to the top of the homepage. */
 export const Wordmark = ({ home }: { home: boolean }): JSX.Element => (
   <Link
     asChild
@@ -14,9 +15,7 @@ export const Wordmark = ({ home }: { home: boolean }): JSX.Element => (
     greese={{ hover: 'wobble' }}
   >
     <RouteLink to="home" hash={home ? '#top' : ''}>
-      <Text asChild variant="s2" weight="bold">
-        <span>greese</span>
-      </Text>
+      <WordmarkGlyphs />
     </RouteLink>
   </Link>
 )

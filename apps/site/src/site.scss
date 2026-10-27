@@ -139,45 +139,35 @@ body {
   font-size: var(--greese-type-p2-font-size);
 }
 
-/* The scheme select on phones: an icon button's size, the select's own text
-   and chevron hidden under the scheme's icon. Colored as the wide header's
-   segmented control: its track, and the chosen segment's fill and edge
-   around the icon. */
+/* The scheme on phones: a soft icon button (ColorScheme.tsx) with the
+   native select over it, invisible. The select is a child, so hovering or
+   pressing it hovers and presses the button; it sits above the button's
+   touch-target ::after and covers the same 44px on touch. Its focus is
+   drawn on the button. */
 .site-scheme-select {
-  position: relative;
-  display: inline-grid;
-  place-items: center;
-
-  .greese-Select {
-    inline-size: 2rem;
-    background-color: var(--greese-color-surface);
-    border-color: var(--greese-color-border);
-    border-radius: var(--greese-corner-control);
-  }
-
-  .greese-Select-control {
-    padding: 0;
-    color: transparent;
-    cursor: pointer;
-  }
-
-  .greese-Select-chevron {
-    display: none;
-  }
-
-  > .greese-Icon {
+  > select {
     position: absolute;
-    inset: 3px;
-    display: grid;
-    place-items: center;
-    color: var(--greese-color-fg);
-    pointer-events: none;
-    background-color: var(
-      --greese-segment-current-bg,
-      var(--greese-color-surface-overlay)
-    );
-    border-radius: calc(var(--greese-corner-control) - 3px);
-    box-shadow: var(--greese-segment-current-edge, var(--greese-shadow-sm));
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    z-index: 1;
+    inline-size: 100%;
+    block-size: 100%;
+    margin: 0;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0;
+    appearance: none;
+    translate: -50% -50%;
+
+    @media (pointer: coarse) {
+      inline-size: max(100%, 44px);
+      block-size: max(100%, 44px);
+    }
+  }
+
+  &:has(> select:focus-visible) {
+    outline: 2px solid var(--greese-color-focus-ring);
+    outline-offset: 2px;
   }
 }
 
@@ -384,8 +374,140 @@ body {
   }
 }
 
-.site-wordmark {
-  letter-spacing: -0.02em;
+/* The logo's rim (logo/): the primary's deepest shade, under the gradient
+   (theme.ts). The header's wordmark, the footer's logo and the favicon (read
+   back from the wordmark) share them. */
+.site {
+  --site-logo-rim: color-mix(
+    in oklab,
+    var(--greese-color-primary) 22%,
+    var(--greese-color-black)
+  );
+}
+
+@each $i in 1, 2, 3, 4 {
+  .site-logo-stop-#{$i} {
+    stop-color: var(--greese-color-site-logo-#{$i});
+  }
+}
+
+.site-logo-rim {
+  fill: none;
+  stroke: var(--site-logo-rim);
+}
+
+.site-wordmark-glyphs {
+  display: block;
+  block-size: 2.25rem;
+  inline-size: auto;
+  aspect-ratio: 780 / 306;
+}
+
+/* The footer's logo, a row of its own under the legal line: three SVGs
+   stacked (FooterLogo.tsx). The still ones are layers of their own, so
+   their filters are drawn once, not every frame of the live one's loop. */
+.site-logo {
+  display: grid;
+  flex-basis: 100%;
+  order: 1;
+  justify-items: center;
+  padding-block-start: var(--greese-space-4);
+  background: radial-gradient(
+    min(50%, 20rem) 50%,
+    var(--greese-color-site-glow),
+    transparent
+  );
+}
+
+.site-logo-layer {
+  grid-area: 1 / 1;
+  inline-size: min(100%, 40rem);
+  block-size: auto;
+  aspect-ratio: 860 / 440;
+  overflow: visible;
+}
+
+.site-logo-still {
+  will-change: transform;
+}
+
+.site-logo-glow {
+  flood-color: var(--greese-color-site-logo-glow);
+}
+
+.site-logo-glow--soft {
+  flood-opacity: 0.7;
+}
+
+.site-logo-edge {
+  flood-color: color-mix(
+    in oklab,
+    var(--greese-color-site-logo-3) 60%,
+    var(--greese-color-white)
+  );
+  flood-opacity: 0.9;
+}
+
+.site-logo-shade {
+  flood-color: color-mix(
+    in oklab,
+    var(--greese-color-primary) 45%,
+    var(--greese-color-black)
+  );
+  flood-opacity: 0.85;
+}
+
+.site-logo-shine {
+  flood-color: var(--greese-color-white);
+  flood-opacity: 0.6;
+}
+
+.site-logo-gloss {
+  flood-color: var(--greese-color-white);
+  flood-opacity: 0.95;
+}
+
+.site-logo-gloss--soft {
+  flood-opacity: 0.85;
+}
+
+.site-logo-rim--soft {
+  fill: var(--site-logo-rim);
+  opacity: 0.85;
+}
+
+.site-logo-hexagons {
+  fill: none;
+  stroke: var(--greese-color-primary);
+  stroke-width: 1.5;
+  opacity: 0.28;
+}
+
+.site-logo-particles {
+  fill: color-mix(
+    in oklab,
+    var(--greese-color-site-logo-2) 50%,
+    var(--greese-color-white)
+  );
+}
+
+.site-logo-sparkles {
+  fill: color-mix(
+    in oklab,
+    var(--greese-color-site-logo-4) 60%,
+    var(--greese-color-white)
+  );
+}
+
+/* Each scales and turns about its own middle; a wipe grows up from its base. */
+.site-logo-particles > *,
+.site-logo-sparkles > * {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.site-logo[data-motion='wipe'] :is(.site-logo-particles, .site-logo-sparkles) > * {
+  transform-origin: center bottom;
 }
 
 .site-measure {
@@ -555,7 +677,14 @@ body {
   text-align: end;
 }
 
-/* Motion lab. */
+/* Motion lab. The compose card lists every effect: it scrolls past 60dvh
+   rather than stretching the section. */
+.site-compose {
+  max-block-size: 60dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .site-stage {
   display: grid;
 }

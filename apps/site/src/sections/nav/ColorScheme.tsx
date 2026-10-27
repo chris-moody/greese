@@ -1,9 +1,9 @@
 import type { JSX } from 'react'
 import {
+  Button,
   Icon,
   Segment,
   SegmentedControl,
-  Select,
   useColorScheme,
   type ColorScheme,
 } from '@greese/react'
@@ -35,27 +35,36 @@ export const SchemeControl = (): JSX.Element => {
 }
 
 /**
- * The scheme as a select on phones, the width of an icon button: the native
- * select (its menu, keyboard and screen-reader name) under the current
- * scheme's icon.
+ * The scheme on phones: a soft icon button showing the current scheme's
+ * icon, so themes style it as they style its peers. A native select fills it
+ * invisibly, giving the menu, keyboard and screen-reader name for free.
  */
 export const SchemeSelect = (): JSX.Element => {
   const { scheme, setScheme } = useColorScheme()
   return (
-    <span className="site-scheme-select">
-      <Select
-        size="sm"
-        aria-label="Color scheme"
-        value={scheme}
-        onChange={(e) => setScheme(e.currentTarget.value as ColorScheme)}
-      >
-        <option value="light">Light</option>
-        <option value="system">Auto</option>
-        <option value="dark">Dark</option>
-      </Select>
-      <Icon>
-        {scheme === 'light' ? icons.sun : scheme === 'dark' ? icons.moon : icons.auto}
-      </Icon>
-    </span>
+    <Button
+      asChild
+      size="sm"
+      variant="soft"
+      tone="neutral"
+      className="greese-IconButton site-scheme-select"
+      startIcon={
+        <Icon>
+          {scheme === 'light' ? icons.sun : scheme === 'dark' ? icons.moon : icons.auto}
+        </Icon>
+      }
+    >
+      <span>
+        <select
+          aria-label="Color scheme"
+          value={scheme}
+          onChange={(e) => setScheme(e.currentTarget.value as ColorScheme)}
+        >
+          <option value="light">Light</option>
+          <option value="system">Auto</option>
+          <option value="dark">Dark</option>
+        </select>
+      </span>
+    </Button>
   )
 }

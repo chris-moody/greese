@@ -77,10 +77,6 @@ const Chart = ({ setup }: { setup: Setup }): JSX.Element => (
     <Stack direction="row" gap={4} wrap="wrap" aria-hidden="true" className="site-legend">
       <span className="site-key site-key--greese">{SETUPS[setup].legend}</span>
       <span className="site-key site-key--mui">MUI</span>
-      <Text variant="p3" tone="muted">
-        Lower is better. Each row has its own scale, and the rows run from GreeseUI’s
-        biggest win to its smallest.
-      </Text>
     </Stack>
     <Stack gap={3} greese={{ inView: 'theme', stagger: 0.05, distance: '0.75rem' }}>
       {byWin(setup).map((m) => {

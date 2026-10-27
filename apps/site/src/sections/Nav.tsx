@@ -77,19 +77,15 @@ export const Nav = (): JSX.Element => {
     </IconButton>
   )
   const github = (
-    // IconButton can't be asChild (it wraps its child in the icon span), so the
-    // link is a Button with the same class.
-    <Button
-      asChild
+    <IconButton
+      href={REPO_URL}
       size="sm"
-      variant="ghost"
-      tone="neutral"
-      className="greese-IconButton"
-      startIcon={<Icon>{icons.github}</Icon>}
+      variant="soft"
+      label="GitHub"
       greese={{ enter: 'fadeIn', delay: 0.25, hover: 'rise' }}
     >
-      <a href={REPO_URL} aria-label="GitHub" />
-    </Button>
+      <Icon>{icons.github}</Icon>
+    </IconButton>
   )
   const studioCurrent = studio ? 'page' : undefined
   const templatesCurrent = route === 'templates' ? 'page' : undefined

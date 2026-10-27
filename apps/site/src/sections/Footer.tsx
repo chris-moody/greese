@@ -2,6 +2,7 @@ import '../styles/library.ts'
 import type { JSX } from 'react'
 import { Footer as Base, FooterSection, Link, Stack, Text } from '@greese/react'
 import { REPO_URL } from '../config.ts'
+import { FooterLogo } from '../logo/FooterLogo.tsx'
 import { RouteLink } from '../router.tsx'
 
 export const Footer = (): JSX.Element => (
@@ -22,6 +23,8 @@ export const Footer = (): JSX.Element => (
         <Link href="#top" tone="neutral" greese={{ hover: 'rise' }}>
           Back to top
         </Link>
+        {/* Under everything, on a row of its own (site.scss). */}
+        <FooterLogo />
       </>
     }
   >

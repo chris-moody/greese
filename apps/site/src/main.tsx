@@ -11,10 +11,14 @@ import 'virtual:greese-utilities.css'
 import './effects.ts'
 import './site.scss'
 import { App } from './App.tsx'
+import { whenIdle } from './idle.ts'
 
 // The rest of the library's styles, asked for now but not waited on: the
 // prerendered first screen paints without them (styles/library.ts).
 void import('./styles/library.ts')
+
+// The tab's icon follows the theme being worn, once the page is idle.
+whenIdle(() => void import('./logo/favicon.ts').then((m) => m.liveFavicon()))
 
 const root = document.getElementById('root')!
 const app = (

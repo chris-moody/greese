@@ -47,7 +47,7 @@ const Lab = (): JSX.Element => {
   }
   return (
     <Grid container columns={{ xs: 1, md: 2 }} gap={5} align="stretch">
-      <Card padding={5} greese={{ inView: 'fadeStart' }}>
+      <Card padding={5} className="site-compose" greese={{ inView: 'fadeStart' }}>
         <Stack gap={4}>
           <Heading level={3} variant="h5">
             Compose a sequence
