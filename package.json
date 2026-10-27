@@ -31,6 +31,7 @@
     "prepare": "husky",
     "commitlint": "commitlint",
     "test:visual": "turbo run test:visual",
+    "test:dashboard": "node tools/test-dashboard/server.mjs",
     "verify:packages": "node scripts/verify-packages.mjs"
   },
   "devDependencies": {

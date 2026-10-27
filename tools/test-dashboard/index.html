@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Test Dashboard</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f7f7f8;
+        --panel: #ffffff;
+        --text: #1b1b1f;
+        --muted: #62626d;
+        --line: #e2e2e7;
+        --accent: #4b5bdc;
+        --pass: #1f8a4c;
+        --fail: #c8312f;
+        --skip: #9a7b12;
+        --bar: #c9cdf5;
+        --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #121215;
+          --panel: #1b1b20;
+          --text: #ececf1;
+          --muted: #9a9aa6;
+          --line: #2d2d35;
+          --accent: #8b97ff;
+          --pass: #4cc483;
+          --fail: #ff6b67;
+          --skip: #e0bd4c;
+          --bar: #3a4180;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          14px/1.45 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0 0 4px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .mono {
+        font-family: var(--mono);
+        font-size: 12.5px;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-block: 12px;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 16px;
+      }
+      .controls label {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-top: 12px;
+      }
+      button,
+      select,
+      input[type='search'] {
+        font: inherit;
+        color: inherit;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 6px 12px;
+        min-height: 34px;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      button:disabled {
+        opacity: 0.5;
+      }
+      input[type='search'] {
+        flex: 1 1 260px;
+      }
+      .progress {
+        height: 8px;
+        background: var(--line);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress > div {
+        height: 100%;
+        background: var(--accent);
+        transition: width 0.2s;
+      }
+      .suite-progress {
+        display: grid;
+        grid-template-columns: minmax(140px, 1fr) 90px 2fr 170px;
+        gap: 4px 12px;
+        align-items: center;
+        margin-top: 10px;
+      }
+      @media (max-width: 640px) {
+        .suite-progress {
+          grid-template-columns: 1fr auto;
+        }
+        .suite-progress .progress {
+          grid-column: 1 / -1;
+        }
+      }
+      .badge {
+        display: inline-block;
+        padding: 0 7px;
+        border-radius: 999px;
+        font-size: 12px;
+        border: 1px solid currentColor;
+        white-space: nowrap;
+      }
+      .passed {
+        color: var(--pass);
+      }
+      .failed,
+      .error {
+        color: var(--fail);
+      }
+      .skipped,
+      .stopped,
+      .pending {
+        color: var(--skip);
+      }
+      .running,
+      .queued {
+        color: var(--accent);
+      }
+      details {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        margin-block: 6px;
+      }
+      details details {
+        background: transparent;
+      }
+      summary {
+        cursor: pointer;
+        padding: 8px 12px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      summary .grow {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+      details > .body {
+        padding: 0 12px 10px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: start;
+        padding: 4px 8px;
+        border-top: 1px solid var(--line);
+        vertical-align: top;
+      }
+      th {
+        font-weight: 600;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      td.num,
+      th.num {
+        text-align: end;
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+      }
+      .scroll {
+        overflow-x: auto;
+      }
+      .dur {
+        position: relative;
+        min-width: 90px;
+      }
+      .dur span {
+        position: absolute;
+        inset: 3px auto 3px 0;
+        background: var(--bar);
+        border-radius: 3px;
+        z-index: 0;
+      }
+      .dur b {
+        position: relative;
+        font-weight: 400;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+      }
+      .stat {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 12px;
+      }
+      .stat strong {
+        display: block;
+        font-size: 20px;
+        font-variant-numeric: tabular-nums;
+      }
+      pre.log {
+        max-height: 320px;
+        overflow: auto;
+        font-family: var(--mono);
+        font-size: 12px;
+        white-space: pre-wrap;
+        margin: 0;
+      }
+      ul.files {
+        margin: 4px 0;
+        padding-inline-start: 18px;
+      }
+      .hint {
+        margin: 4px 0 8px;
+      }
+      mark {
+        background: color-mix(in srgb, var(--accent) 30%, transparent);
+        color: inherit;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Test dashboard</h1>
+      <p class="muted">
+        Runs the repo's existing Vitest and Playwright suites in a separate process and
+        reports where the time goes. Local only; not part of any build.
+      </p>
+
+      <section class="panel" aria-label="Run">
+        <div class="controls" id="suites"></div>
+        <div class="row">
+          <label><input type="checkbox" id="build" /> Build packages first</label>
+          <button class="primary" id="run">Run tests</button>
+          <button id="stop" disabled>Stop</button>
+          <span class="muted" id="status"></span>
+          <span style="flex: 1"></span>
+          <label
+            >Report
+            <select id="reports">
+              <option value="">Current run</option>
+            </select></label
+          >
+          <button id="export">Export JSON</button>
+        </div>
+        <div id="progress" hidden>
+          <div class="row" style="justify-content: space-between">
+            <strong id="overall-label"></strong><span class="mono" id="elapsed"></span>
+          </div>
+          <div class="progress" style="margin-top: 6px"><div id="overall-bar"></div></div>
+          <div class="suite-progress" id="suite-progress"></div>
+        </div>
+      </section>
+
+      <div class="row">
+        <input
+          type="search"
+          id="filter"
+          placeholder="Filter by test name, file, imported file or status…"
+          aria-label="Filter"
+        />
+        <span class="muted" id="filter-count"></span>
+      </div>
+
+      <div id="report"></div>
+    </main>
+
+    <script type="module">
+      const $ = (id) => document.getElementById(id)
+      const esc = (s) =>
+        String(s ?? '').replace(
+          /[&<>"']/g,
+          (c) =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+        )
+      const ms = (n) =>
+        n == null
+          ? '–'
+          : n >= 60000
+            ? `${Math.floor(n / 60000)}m ${((n % 60000) / 1000).toFixed(0)}s`
+            : n >= 1000
+              ? `${(n / 1000).toFixed(2)}s`
+              : `${n.toFixed(n < 10 ? 1 : 0)}ms`
+      const sum = (xs, f = (x) => x) => xs.reduce((n, x) => n + (f(x) || 0), 0)
+      const badge = (s) => `<span class="badge ${esc(s)}">${esc(s)}</span>`
+
+      let suitesMeta = []
+      let run = null // the shown run: live, or a saved report
+      let live = true
+      let dirty = false
+      const open = new Set(['summary']) // which accordion sections are open, across re-renders
+
+      // ---------- run controls ----------
+      suitesMeta = await (await fetch('/api/suites')).json()
+      $('suites').innerHTML = suitesMeta
+        .map(
+          (s) =>
+            `<label><input type="checkbox" name="suite" value="${s.id}" ${s.default ? 'checked' : ''}/> ${esc(s.label)}</label>`
+        )
+        .join('')
+
+      $('run').onclick = async () => {
+        const suites = [...document.querySelectorAll('input[name=suite]:checked')].map(
+          (i) => i.value
+        )
+        const res = await fetch('/api/run', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ suites, build: $('build').checked }),
+        })
+        if (!res.ok) $('status').textContent = (await res.json()).error
+        $('reports').value = ''
+        live = true
+      }
+      $('stop').onclick = () => fetch('/api/stop', { method: 'POST' })
+      $('export').onclick = () => {
+        if (!run) return
+        const a = document.createElement('a')
+        a.href = URL.createObjectURL(
+          new Blob([JSON.stringify(run, null, 2)], { type: 'application/json' })
+        )
+        a.download = `test-report-${run.id}.json`
+        a.click()
+      }
+
+      async function loadReports() {
+        const ids = await (await fetch('/api/reports')).json()
+        const current = $('reports').value
+        $('reports').innerHTML =
+          '<option value="">Current run</option>' +
+          ids
+            .map(
+              (id) =>
+                `<option value="${id}">${id.replace(/T(\d\d)-(\d\d)-(\d\d).*/, ' $1:$2:$3')}</option>`
+            )
+            .join('')
+        $('reports').value = current
+      }
+      $('reports').onchange = async (e) => {
+        const id = e.target.value
+        if (!id) {
+          live = true
+          run = await (await fetch('/api/current')).json()
+        } else {
+          live = false
+          run = await (await fetch(`/api/reports/${id}`)).json()
+        }
+        render()
+      }
+
+      // ---------- live events ----------
+      const findSuite = (id) => run?.suites.find((s) => s.id === id)
+      const events = new EventSource('/api/events')
+      events.onmessage = (message) => {
+        const e = JSON.parse(message.data)
+        if (e.type === 'run-start') {
+          live = true
+          run = e.run
+          for (const s of run.suites) Object.assign(s, { files: {}, tests: [], log: '' })
+        } else if (!run || !live) {
+          if (e.type === 'run-end') loadReports()
+          return
+        } else if (e.type === 'suite-start' || e.type === 'suite-end') {
+          Object.assign(findSuite(e.suite), e.record)
+        } else if (e.type === 'log') {
+          const s = findSuite(e.suite)
+          if (s.log.length < 200000) s.log += e.line + '\n'
+        } else if (e.type === 'suite-event') {
+          applySuiteEvent(findSuite(e.suite), e.event)
+        } else if (e.type === 'run-end') {
+          run.status = e.status
+          run.finishedAt = Date.now()
+          run.wall = run.finishedAt - run.startedAt
+          loadReports()
+        }
+        dirty = true
+      }
+
+      function applySuiteEvent(suite, event) {
+        const file = (name) =>
+          (suite.files[name] ??= { file: name, tests: 0, imports: [], fixtures: [] })
+        if (event.type === 'file-collected') {
+          file(event.file).tests = event.tests
+          suite.expectedTests = sum(Object.values(suite.files), (f) => f.tests)
+        } else if (event.type === 'test') suite.tests.push(event)
+        else if (event.type === 'file-end') {
+          const f = file(event.file)
+          Object.assign(f, event, { tests: f.tests, fixtures: f.fixtures })
+        }
+      }
+
+      // Re-render at most a few times a second while a run streams in.
+      setInterval(() => {
+        if (run?.status === 'running') renderProgress()
+        if (dirty) {
+          dirty = false
+          render()
+        }
+      }, 400)
+
+      $('filter').addEventListener('input', () => render())
+      document.addEventListener(
+        'toggle',
+        (e) => {
+          const key = e.target.dataset?.key
+          if (key) e.target.open ? open.add(key) : open.delete(key)
+        },
+        true
+      )
+
+      // ---------- rendering ----------
+      function renderProgress() {
+        const running = run?.status === 'running'
+        $('run').disabled = running
+        $('stop').disabled = !running
+        $('progress').hidden = !run
+        if (!run) return
+        $('status').innerHTML = badge(run.status)
+        const elapsed = running ? Date.now() - run.startedAt : run.wall
+        $('elapsed').textContent = ms(elapsed)
+        const done = run.suites.filter(
+          (s) => !['queued', 'running'].includes(s.status)
+        ).length
+        const current = run.suites.find((s) => s.status === 'running')
+        const frac = (s) =>
+          s.status === 'running'
+            ? s.expectedTests
+              ? Math.min(1, (s.tests?.length ?? 0) / s.expectedTests)
+              : 0
+            : ['queued'].includes(s.status)
+              ? 0
+              : 1
+        const overall = sum(run.suites, frac) / run.suites.length
+        $('overall-bar').style.width = `${overall * 100}%`
+        $('overall-label').textContent = running
+          ? `Suite ${done + 1} of ${run.suites.length}: ${current?.label ?? ''}`
+          : `${run.suites.length} suites, ${run.status}`
+        $('suite-progress').innerHTML = run.suites
+          .map((s) => {
+            const n = s.tests?.length ?? 0
+            const wall = s.status === 'running' ? Date.now() - s.startedAt : s.wall
+            return `<span>${esc(s.label)}</span>${badge(s.status)}
+              <div class="progress"><div style="width:${frac(s) * 100}%"></div></div>
+              <span class="mono muted">${s.kind === 'build' ? '' : `${n}${s.expectedTests ? `/${s.expectedTests}` : ''} · `}${ms(wall || 0)}</span>`
+          })
+          .join('')
+      }
+
+      function section(key, summaryHtml, bodyHtml, { forceOpen = false } = {}) {
+        const isOpen = forceOpen || open.has(key)
+        return `<details data-key="${esc(key)}" ${isOpen ? 'open' : ''}><summary>${summaryHtml}</summary><div class="body">${bodyHtml}</div></details>`
+      }
+
+      function durCell(value, max) {
+        const width = max ? Math.max(1, (value / max) * 100) : 0
+        return `<td class="num dur mono"><span style="width:${width}%"></span><b>${ms(value)}</b></td>`
+      }
+
+      function testTable(tests, { showFile = false } = {}) {
+        if (!tests.length) return '<p class="muted">None.</p>'
+        const max = Math.max(...tests.map((t) => t.duration))
+        return `<div class="scroll"><table><thead><tr><th>Test</th>${showFile ? '<th>File</th>' : ''}<th>Project</th><th>Status</th><th class="num">Duration</th></tr></thead><tbody>${tests
+          .map(
+            (
+              t
+            ) => `<tr><td>${esc(t.fullName)}${t.errors?.length ? `<div class="mono failed">${esc(t.errors[0]).slice(0, 400)}</div>` : ''}</td>
+              ${showFile ? `<td class="mono">${esc(t.file)}${t.line ? `:${t.line}` : ''}</td>` : ''}
+              <td class="mono muted">${esc(t.project ?? '')}</td><td>${badge(t.status)}${t.flaky ? ' ' + badge('flaky') : ''}</td>${durCell(t.duration, max)}</tr>`
+          )
+          .join('')}</tbody></table></div>`
+      }
+
+      function matches(query, ...fields) {
+        return (
+          !query ||
+          fields.some((f) =>
+            String(f ?? '')
+              .toLowerCase()
+              .includes(query)
+          )
+        )
+      }
+
+      function render() {
+        renderProgress()
+        if (!run) {
+          $('report').innerHTML =
+            '<p class="muted panel">Pick suites and press <strong>Run tests</strong>, or open a saved report.</p>'
+          return
+        }
+        const q = $('filter').value.trim().toLowerCase()
+        const filtering = q.length > 0
+        const suites = run.suites.filter((s) => s.kind !== 'build')
+        const allTests = suites.flatMap((s) =>
+          (s.tests ?? []).map((t) => ({ ...t, suite: s.id, kind: s.kind }))
+        )
+        const allFiles = suites.flatMap((s) =>
+          Object.values(s.files ?? {}).map((f) => ({ ...f, suite: s.id, kind: s.kind }))
+        )
+        const fileMatches = (f) =>
+          matches(
+            q,
+            f.file,
+            ...(f.imports ?? []).map((i) => i.file),
+            ...(f.fixtures ?? [])
+          )
+        const testMatches = (t, f) =>
+          matches(q, t.fullName, t.file, t.status, t.project) || (f && fileMatches(f))
+        const fileOf = (t) => run.suites.find((s) => s.id === t.suite)?.files?.[t.file]
+        const shownTests = allTests.filter((t) => testMatches(t, fileOf(t)))
+        $('filter-count').textContent = filtering
+          ? `${shownTests.length} of ${allTests.length} tests`
+          : ''
+
+        let html = ''
+
+        // --- Summary ---
+        const byStatus = (s) => allTests.filter((t) => t.status === s).length
+        const testTime = sum(allTests, (t) => t.duration)
+        const statTile = (label, value) =>
+          `<div class="stat"><span class="muted">${label}</span><strong>${value}</strong></div>`
+        html += section(
+          'summary',
+          `<strong class="grow">Summary</strong>${badge(run.status)}<span class="mono">${ms(run.wall || (run.status === 'running' ? Date.now() - run.startedAt : 0))}</span>`,
+          `<div class="stats">
+            ${statTile('Full run (wall)', ms(run.wall || Date.now() - run.startedAt))}
+            ${statTile('Tests', allTests.length)}
+            ${statTile('Passed', byStatus('passed'))}
+            ${statTile('Failed', byStatus('failed'))}
+            ${statTile('Skipped', byStatus('skipped') + byStatus('pending'))}
+            ${statTile('Test files', allFiles.length)}
+            ${statTile('Time inside tests', ms(testTime))}
+          </div>
+          <div class="scroll" style="margin-top:12px"><table><thead><tr><th>Suite</th><th>Status</th><th class="num">Files</th><th class="num">Tests</th><th class="num">Wall</th><th class="num">In tests</th><th class="num">Overhead</th></tr></thead><tbody>
+          ${run.suites
+            .map((s) => {
+              const inTests = sum(s.tests ?? [], (t) => t.duration)
+              const parallel = s.kind === 'unit' || s.kind === 'e2e'
+              return `<tr><td>${esc(s.label)}<div class="mono muted">${esc(s.cwd)}</div></td><td>${badge(s.status)}</td>
+                <td class="num">${Object.keys(s.files ?? {}).length || ''}</td><td class="num">${s.tests?.length || ''}</td>
+                <td class="num mono">${ms(s.wall)}</td><td class="num mono">${parallel ? ms(inTests) : ''}</td>
+                <td class="num mono">${parallel && s.wall > inTests ? ms(s.wall - inTests) : parallel ? '<span class="muted" title="Workers ran in parallel">parallel</span>' : ''}</td></tr>`
+            })
+            .join('')}
+          </tbody></table></div>
+          <p class="muted hint">"In tests" sums each test's own duration; workers run in parallel, so it can exceed wall time. Overhead is wall time beyond that (startup, environments, imports, web servers), shown when the run was effectively serial.</p>`
+        )
+
+        // --- Audit ---
+        html += renderAudit(allTests, allFiles, q, testMatches, fileOf)
+
+        // --- Suites → files → tests ---
+        for (const s of run.suites) {
+          const files = Object.values(s.files ?? {})
+          const tests = s.tests ?? []
+          const shownFiles = files
+            .map((f) => ({
+              f,
+              tests: tests.filter((t) => t.file === f.file && testMatches(t, f)),
+            }))
+            .filter(({ f, tests }) => !filtering || tests.length || fileMatches(f))
+            .sort(
+              (a, b) => sum(b.tests, (t) => t.duration) - sum(a.tests, (t) => t.duration)
+            )
+          if (filtering && !shownFiles.length) continue
+          const maxFile = Math.max(
+            1,
+            ...shownFiles.map(({ tests }) => sum(tests, (t) => t.duration))
+          )
+          const body =
+            s.kind === 'build'
+              ? `<pre class="log">${esc(s.log ?? '')}</pre>`
+              : shownFiles
+                  .map(({ f, tests: ft }) => renderFile(s, f, ft, maxFile, filtering))
+                  .join('') +
+                (s.unhandledErrors?.length
+                  ? `<p class="failed">Unhandled errors: ${esc(s.unhandledErrors.join('\n'))}</p>`
+                  : '') +
+                section(
+                  `log:${s.id}`,
+                  '<span class="grow muted">Raw output</span>',
+                  `<p class="mono muted">${esc(s.command)}</p><pre class="log">${esc(s.log ?? '')}</pre>`
+                )
+          html += section(
+            `suite:${s.id}`,
+            `<strong class="grow">${esc(s.label)}</strong>${badge(s.status)}<span class="muted">${files.length} files · ${tests.length} tests</span><span class="mono">${ms(s.wall)}</span>`,
+            body || '<p class="muted">No results yet.</p>',
+            { forceOpen: filtering }
+          )
+        }
+
+        // Keep focus and scroll steady while live updates replace the DOM.
+        const y = window.scrollY
+        $('report').innerHTML = html
+        window.scrollTo(0, y)
+      }
+
+      function renderFile(s, f, tests, maxFile, filtering) {
+        const total = sum(tests, (t) => t.duration)
+        const failed = tests.some((t) => t.status === 'failed')
+        const timings =
+          s.kind === 'unit' && f.collect != null
+            ? `<p class="mono muted">environment ${ms(f.environment)} · prepare ${ms(f.prepare)} · setup ${ms(f.setup)} · import/collect ${ms(f.collect)} · tests ${ms(f.duration)}</p>`
+            : ''
+        const involved = [
+          ...(f.imports ?? []).map(
+            (i) =>
+              `<li><span class="mono">${esc(i.file)}</span> <span class="muted mono">${ms(i.total)}</span></li>`
+          ),
+          ...(f.fixtures ?? []).map(
+            (p) =>
+              `<li><span class="mono">${esc(p)}</span> <span class="muted">fixture</span></li>`
+          ),
+        ]
+        const involvedHtml = involved.length
+          ? section(
+              `files:${s.id}:${f.file}`,
+              `<span class="grow">Files involved</span><span class="muted">${involved.length}</span>`,
+              `<ul class="files">${involved.join('')}</ul>${s.kind === 'unit' ? '<p class="muted hint">Repo modules this test file imported (directly or not), with import time.</p>' : '<p class="muted hint">Found by scanning the spec for the pages it opens and the helpers it imports.</p>'}`
+            )
+          : ''
+        return section(
+          `file:${s.id}:${f.file}`,
+          `<span class="grow mono">${esc(f.file)}</span>${failed ? badge('failed') : ''}<span class="muted">${tests.length} tests</span><span class="dur mono" style="display:inline-block;min-width:110px;text-align:end;position:relative"><span style="width:${(total / maxFile) * 100}%"></span><b>${ms(total)}</b></span>`,
+          timings +
+            involvedHtml +
+            testTable([...tests].sort((a, b) => b.duration - a.duration)),
+          { forceOpen: filtering && tests.length < 30 }
+        )
+      }
+
+      function renderAudit(allTests, allFiles, q, testMatches, fileOf) {
+        const pick = (ts) => ts.filter((t) => testMatches(t, fileOf(t)))
+        const items = []
+
+        // Slowest tests.
+        const slow = pick([...allTests].sort((a, b) => b.duration - a.duration)).slice(
+          0,
+          25
+        )
+        items.push([
+          'slowest',
+          'Slowest tests',
+          slow.length,
+          'The 25 slowest. Speeding these up, or moving them to a cheaper layer, saves the most.',
+          testTable(slow, { showFile: true }),
+        ])
+
+        // The same test name in more than one file of a suite kind.
+        const groups = new Map()
+        for (const t of allTests) {
+          const key = `${t.kind}|${t.fullName.toLowerCase()}`
+          ;(groups.get(key) ?? groups.set(key, new Map()).get(key)).set(
+            `${t.file}:${t.line}`,
+            t
+          )
+        }
+        const dupes = [...groups.values()]
+          .filter((g) => g.size > 1)
+          .map((g) => [...g.values()])
+        const dupesShown = dupes.filter((g) => g.some((t) => testMatches(t, fileOf(t))))
+        items.push([
+          'dupes',
+          'Duplicate test names',
+          dupesShown.length,
+          'Tests with the same full name in different places (e2e projects counted once). Candidates for merging, or for clearer names.',
+          dupesShown.length
+            ? dupesShown
+                .map(
+                  (g) =>
+                    `<p><strong>${esc(g[0].fullName)}</strong></p><ul class="files">${g.map((t) => `<li class="mono">${esc(t.file)}:${t.line ?? ''}</li>`).join('')}</ul>`
+                )
+                .join('')
+            : '<p class="muted">None.</p>',
+        ])
+
+        // A unit test and an e2e test with the same title: possibly the same check twice.
+        const unitTitles = new Map(
+          allTests.filter((t) => t.kind === 'unit').map((t) => [t.title.toLowerCase(), t])
+        )
+        const overlap = new Map()
+        for (const t of allTests.filter((t) => t.kind === 'e2e')) {
+          const u = unitTitles.get(t.title.toLowerCase())
+          if (u) overlap.set(`${t.file}:${t.line}`, [u, t])
+        }
+        const overlapShown = [...overlap.values()].filter(
+          ([u, e]) => testMatches(u, fileOf(u)) || testMatches(e, fileOf(e))
+        )
+        items.push([
+          'overlap',
+          'Same title in unit and e2e',
+          overlapShown.length,
+          'A unit test and an e2e test share a title. If the e2e one checks nothing jsdom cannot, it may be redundant; e2e runs it in every browser project.',
+          overlapShown.length
+            ? `<div class="scroll"><table><thead><tr><th>Title</th><th>Unit</th><th>E2E</th></tr></thead><tbody>${overlapShown.map(([u, e]) => `<tr><td>${esc(e.title)}</td><td class="mono">${esc(u.file)}:${u.line ?? ''}</td><td class="mono">${esc(e.file)}:${e.line ?? ''}</td></tr>`).join('')}</tbody></table></div>`
+            : '<p class="muted">None.</p>',
+        ])
+
+        // Skipped and todo.
+        const skipped = pick(
+          allTests.filter((t) => t.status === 'skipped' || t.status === 'pending')
+        )
+        items.push([
+          'skipped',
+          'Skipped and todo',
+          skipped.length,
+          'Skipped in every run, these cost upkeep and prove nothing. Remove them or make them run.',
+          testTable(skipped, { showFile: true }),
+        ])
+
+        // Failing and flaky.
+        const bad = pick(allTests.filter((t) => t.status === 'failed' || t.flaky))
+        items.push([
+          'failing',
+          'Failing and flaky',
+          bad.length,
+          'Flaky tests passed only on retry.',
+          testTable(bad, { showFile: true }),
+        ])
+
+        // Files whose overhead dwarfs their tests.
+        const heavy = allFiles
+          .filter((f) => f.kind === 'unit' && f.collect != null)
+          .map((f) => ({
+            ...f,
+            overhead:
+              (f.environment ?? 0) + (f.collect ?? 0) + (f.setup ?? 0) + (f.prepare ?? 0),
+          }))
+          .filter((f) => f.overhead > 3 * (f.duration ?? 0) && f.overhead > 300)
+          .filter((f) => matches(q, f.file, ...(f.imports ?? []).map((i) => i.file)))
+          .sort((a, b) => b.overhead - a.overhead)
+        items.push([
+          'heavy',
+          'Setup outweighs the tests',
+          heavy.length,
+          'Test files that spend over 3× as long starting up (environment, imports, setup) as running tests. Merge small files, use the node environment where jsdom is not needed, or import less.',
+          heavy.length
+            ? `<div class="scroll"><table><thead><tr><th>File</th><th class="num">Tests</th><th class="num">Overhead</th><th class="num">Tests' time</th></tr></thead><tbody>${heavy.map((f) => `<tr><td class="mono">${esc(f.file)}</td><td class="num">${f.tests}</td><td class="num mono">${ms(f.overhead)}</td><td class="num mono">${ms(f.duration)}</td></tr>`).join('')}</tbody></table></div>`
+            : '<p class="muted">None.</p>',
+        ])
+
+        // Source files imported by many test files.
+        const importers = new Map()
+        for (const f of allFiles)
+          for (const i of f.imports ?? []) {
+            if (/\.test\.|\/test\/|vitest\.setup/.test(i.file)) continue
+            ;(importers.get(i.file) ?? importers.set(i.file, []).get(i.file)).push(f.file)
+          }
+        const shared = [...importers.entries()]
+          .filter(([file, users]) => users.length > 1 && matches(q, file, ...users))
+          .sort((a, b) => b[1].length - a[1].length)
+          .slice(0, 50)
+        items.push([
+          'shared',
+          'Source files exercised by many test files',
+          shared.length,
+          'Where test files overlap. A module loaded by many files is not necessarily over-tested, but these are the places to look for the same behaviour asserted twice.',
+          shared.length
+            ? `<div class="scroll"><table><thead><tr><th>Source file</th><th class="num">Test files</th><th>Imported by</th></tr></thead><tbody>${shared.map(([file, users]) => `<tr><td class="mono">${esc(file)}</td><td class="num">${users.length}</td><td class="mono muted">${users.map(esc).join('<br>')}</td></tr>`).join('')}</tbody></table></div>`
+            : '<p class="muted">None.</p>',
+        ])
+
+        // E2E cost per browser project.
+        const projects = new Map()
+        for (const t of allTests.filter((t) => t.kind === 'e2e')) {
+          const p = projects.get(t.project ?? '–') ?? { tests: 0, time: 0, skipped: 0 }
+          p.tests++
+          p.time += t.duration
+          if (t.status === 'skipped') p.skipped++
+          projects.set(t.project ?? '–', p)
+        }
+        items.push([
+          'projects',
+          'E2E cost per browser project',
+          projects.size,
+          'Every e2e test runs once per project. A test that only checks markup or logic pays this multiplier for nothing.',
+          projects.size
+            ? `<table><thead><tr><th>Project</th><th class="num">Tests</th><th class="num">Skipped</th><th class="num">Time in tests</th></tr></thead><tbody>${[...projects].map(([name, p]) => `<tr><td class="mono">${esc(name)}</td><td class="num">${p.tests}</td><td class="num">${p.skipped}</td><td class="num mono">${ms(p.time)}</td></tr>`).join('')}</tbody></table>`
+            : '<p class="muted">No e2e results in this run.</p>',
+        ])
+
+        const body = items
+          .map(([key, title, count, hint, content]) =>
+            section(
+              `audit:${key}`,
+              `<span class="grow">${title}</span><span class="badge">${count}</span>`,
+              `<p class="muted hint">${hint}</p>${content}`
+            )
+          )
+          .join('')
+        return section(
+          'audit',
+          '<strong class="grow">Audit</strong><span class="muted">signals for unnecessary or redundant tests</span>',
+          body,
+          { forceOpen: q.length > 0 }
+        )
+      }
+
+      run = await (await fetch('/api/current')).json()
+      if (run && run.status !== 'running') {
+        // The server's in-memory run is complete; its full data is in the report.
+        const full = await fetch(`/api/reports/${run.id}`)
+        if (full.ok) run = await full.json()
+      }
+      await loadReports()
+      render()
+    </script>
+  </body>
+</html>

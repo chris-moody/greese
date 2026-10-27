@@ -16,3 +16,6 @@ lighthouse-report/
 
 # Development plans stay local: never committed
 docs/plans/
+
+# The test dashboard's saved runs
+tools/test-dashboard/reports/
