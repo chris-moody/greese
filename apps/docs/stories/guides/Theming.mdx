@@ -511,7 +511,7 @@ on the component, a class, or any ancestor:
 /* Every button in this area uses the negative tone. */
 .danger-zone .greese-Button {
   --greese-button-tone: var(--greese-color-negative);
-  --greese-button-on-tone: var(--greese-color-on-negative);
+  --greese-button-on-tone: var(--greese-color-negative-content);
 }
 
 /* A wider sidebar and roomier cards. */
@@ -526,7 +526,7 @@ on the component, a class, or any ancestor:
 | Component                             | Variables                                                                                                                                                                                                                                |
 | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Button, IconButton                    | `--greese-button-tone`, `--greese-button-on-tone` (variants derive from these), `--greese-button-height`, `--greese-button-padding`                                                                                                      |
-| Input, Select, Textarea, FileInput    | `--greese-input-height`, `--greese-input-padding`, `--greese-select-height`, `--greese-select-padding`, `--greese-textarea-padding`, `--greese-file-height`, `--greese-file-padding`                                                     |
+| Input, Select, Textarea, FileInput    | `--greese-input-height`, `--greese-input-padding`, `--greese-select-height`, `--greese-select-padding`, `--greese-textarea-padding`, `--greese-file-font`                                                                                |
 | Card                                  | `--greese-card-padding`                                                                                                                                                                                                                  |
 | Dialog                                | `--greese-dialog-width`                                                                                                                                                                                                                  |
 | Sidebar                               | `--greese-sidebar-width`                                                                                                                                                                                                                 |
@@ -597,7 +597,7 @@ a theme with `typography` (see Foundations/Typography):
 ```ts
 createTheme({
   name: 'brand',
-  typography: { h1: { base: { size: '2rem' }, lg: { size: '4rem' } } },
+  typography: { h1: { base: { fontSize: '2rem' }, lg: { fontSize: '4rem' } } },
 })
 ```
 
