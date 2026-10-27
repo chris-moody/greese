@@ -62,6 +62,7 @@ export const Menu = ({
   style,
   ref,
   onKeyDown,
+  children,
   ...props
 }: MenuProps): JSX.Element => {
   const generated = useId()
@@ -140,7 +141,13 @@ export const Menu = ({
             focusLast.current = false
           }
         }}
-      />
+      >
+        {/* The items scroll in here, so the menu's own box (and a theme's
+            border along its shape) stays put. */}
+        <div role="none" className="greese-Menu-viewport">
+          {children}
+        </div>
+      </div>
     </MenuContext>,
     greese
   )

@@ -27,7 +27,10 @@ export interface TextareaProps extends GreeseProps, ComponentPropsWithRef<'texta
 }
 
 /**
- * A native `<textarea>`, Field-aware, that grows with its content.
+ * A native `<textarea>`, Field-aware, that grows with its content, in a
+ * styled frame like Input's (so a theme's field shape takes it too).
+ * `className` and `style` go to the frame; every other prop (and `ref`) goes
+ * to the textarea itself.
  *
  * ```tsx
  * <Field label="Message">
@@ -58,10 +61,7 @@ export const Textarea = ({
     'aria-describedby': describedBy,
   })
   return withGreese(
-    <textarea
-      {...props}
-      {...control}
-      rows={rows}
+    <div
       className={cx(
         'greese-Textarea',
         `greese-Textarea--size-${size}`,
@@ -75,7 +75,11 @@ export const Textarea = ({
           ...style,
         } as CSSProperties
       }
-    />,
+      data-invalid={control['aria-invalid']}
+      data-disabled={control.disabled || undefined}
+    >
+      <textarea {...props} {...control} rows={rows} className="greese-Textarea-control" />
+    </div>,
     greese
   )
 }

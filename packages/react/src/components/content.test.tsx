@@ -573,6 +573,14 @@ describe('feedback', () => {
     expect(lines.children).toHaveLength(3)
   })
 
+  it('Progress loading keeps its value, and is busy and striped', () => {
+    render(<Progress aria-label="Sync" value={30} loading />)
+    const bar = screen.getByRole('progressbar', { name: 'Sync' })
+    expect(bar).toHaveAttribute('value', '30')
+    expect(bar).toHaveAttribute('aria-busy', 'true')
+    expect(bar).toHaveClass('greese-Progress--loading')
+  })
+
   it('Skeleton passes sizes as variables', () => {
     render(<Skeleton data-testid="s" shape="circle" width="3rem" />)
     const s = screen.getByTestId('s')

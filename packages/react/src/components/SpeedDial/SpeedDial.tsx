@@ -16,6 +16,8 @@ import { useAnchoredPopover } from '../../utils/anchor.ts'
 import { cx } from '../../utils/cx.ts'
 import { PlusIcon } from '@greese/icons'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
+import { Button } from '../Button/Button.tsx'
+import { IconButton } from '../IconButton/IconButton.tsx'
 import { composeRefs } from '../Slot/Slot.tsx'
 
 const CloseContext = createContext<() => void>(() => {})
@@ -47,7 +49,9 @@ export interface SpeedDialProps
 /**
  * A floating action button that opens a short stack of related actions
  * (FAB, speed dial). The stack is a native popover: Escape and a click
- * outside close it, and Tab moves from the button into the actions.
+ * outside close it, and Tab moves from the button into the actions. The
+ * button and each action's icon are greese ui Buttons, so they take the
+ * theme's button shape, depth and states.
  *
  * ```tsx
  * <SpeedDial label="Create">
@@ -94,19 +98,19 @@ export const SpeedDial = ({
       className={cx('greese-SpeedDial', `greese-SpeedDial--${position}`, className)}
       style={style}
     >
-      <button
+      <IconButton
         ref={anchor.triggerRef}
-        type="button"
+        variant="solid"
+        tone="primary"
+        size="lg"
+        label={label}
         className="greese-SpeedDial-trigger"
-        aria-label={label}
         aria-expanded={open}
         popoverTarget={id}
         style={anchor.anchorStyle}
       >
-        <span className="greese-SpeedDial-icon" aria-hidden="true">
-          {icon}
-        </span>
-      </button>
+        <span className="greese-SpeedDial-icon">{icon}</span>
+      </IconButton>
       <div
         id={id}
         ref={composeRefs<HTMLDivElement>(actions, anchor.floatingRef)}
@@ -155,9 +159,15 @@ export const SpeedDialAction = ({
       }}
     >
       <span className="greese-SpeedDialAction-label">{label}</span>
-      <span className="greese-SpeedDialAction-icon" aria-hidden="true">
-        {icon}
-      </span>
+      {/* A Button's look only: the action itself is the button. */}
+      <Button
+        asChild
+        variant="outline"
+        tone="neutral"
+        className="greese-IconButton greese-SpeedDialAction-icon"
+      >
+        <span aria-hidden="true">{icon}</span>
+      </Button>
     </button>,
     greese
   )

@@ -9,7 +9,7 @@ import { Slot, Slottable } from './Slot/Slot.tsx'
 import { ButtonGroup } from './ButtonGroup/ButtonGroup.tsx'
 import { Checkbox, CheckboxGroup } from './Checkbox/Checkbox.tsx'
 import { Field } from './Field/Field.tsx'
-import { FileInput } from './FileInput/FileInput.tsx'
+import { FileInput, fileSummary } from './FileInput/FileInput.tsx'
 import { IconButton } from './IconButton/IconButton.tsx'
 import { Input } from './Input/Input.tsx'
 import { Radio, RadioGroup } from './Radio/Radio.tsx'
@@ -287,12 +287,16 @@ describe('Field and text controls', () => {
     expect(screen.getByLabelText('Price')).toHaveFocus()
   })
 
-  it('Textarea exposes rows to the autosize CSS', () => {
-    render(<Textarea aria-label="Bio" rows={4} maxRows={10} />)
+  it('Textarea exposes rows to the autosize CSS, on its frame', () => {
+    render(<Textarea aria-label="Bio" rows={4} maxRows={10} className="mine" invalid />)
     const textarea = screen.getByLabelText('Bio')
-    expect(textarea).toHaveClass('greese-Textarea--autosize')
-    expect(textarea.style.getPropertyValue('--greese-textarea-rows')).toBe('4')
-    expect(textarea.style.getPropertyValue('--greese-textarea-max-rows')).toBe('10')
+    const frame = textarea.parentElement!
+    expect(textarea).toHaveClass('greese-Textarea-control')
+    expect(textarea).toHaveAttribute('rows', '4')
+    expect(frame).toHaveClass('greese-Textarea', 'greese-Textarea--autosize', 'mine')
+    expect(frame).toHaveAttribute('data-invalid')
+    expect(frame.style.getPropertyValue('--greese-textarea-rows')).toBe('4')
+    expect(frame.style.getPropertyValue('--greese-textarea-max-rows')).toBe('10')
   })
 
   it('Select starts on its placeholder, which cannot be chosen', () => {
@@ -421,6 +425,30 @@ describe('Slider and FileInput', () => {
       </Field>
     )
     expect(screen.getByLabelText('Avatar')).toHaveAttribute('type', 'file')
+  })
+
+  it('FileInput labels its input with a Button and shows what was chosen', () => {
+    const onChange = vi.fn()
+    render(<FileInput aria-label="Receipt" onChange={onChange} className="mine" />)
+    const input = screen.getByLabelText<HTMLInputElement>(/Receipt/)
+    const button = screen.getByText('Choose file')
+    expect(button.tagName).toBe('LABEL')
+    expect(button).toHaveAttribute('for', input.id)
+    expect(button).toHaveClass('greese-Button', 'greese-Button--outline')
+    expect(input.parentElement).toHaveClass('greese-FileInput', 'mine')
+    expect(screen.getByText('No file chosen')).toBeInTheDocument()
+
+    const file = new File(['x'], 'receipt.pdf', { type: 'application/pdf' })
+    fireEvent.change(input, { target: { files: [file] } })
+    expect(screen.getByText('receipt.pdf')).toBeInTheDocument()
+    expect(onChange).toHaveBeenCalledOnce()
+  })
+
+  it('fileSummary names one file and counts several', () => {
+    expect(fileSummary(null)).toBeUndefined()
+    expect(fileSummary([])).toBeUndefined()
+    expect(fileSummary([{ name: 'a.png' }])).toBe('a.png')
+    expect(fileSummary([{ name: 'a.png' }, { name: 'b.png' }])).toBe('2 files')
   })
 
   it('FileInput has no axe violations in a Field', async () => {

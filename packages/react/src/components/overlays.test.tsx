@@ -606,4 +606,47 @@ describe('ScrollSpy', () => {
     unmount()
     placed.forEach((el) => el.remove())
   })
+
+  it('measures sections in a scrolling panel from its top, and follows its scroll', () => {
+    const panel = document.createElement('div')
+    panel.style.overflowY = 'auto'
+    Object.defineProperties(panel, {
+      scrollHeight: { value: 1000 },
+      clientHeight: { value: 300 },
+    })
+    panel.getBoundingClientRect = () => ({ top: 400 }) as DOMRect
+    const tops: Record<string, number> = { install: 400, usage: 900 }
+    for (const id of ['install', 'usage']) {
+      const el = document.createElement('section')
+      el.id = id
+      el.getBoundingClientRect = () => ({ top: tops[id]! }) as DOMRect
+      panel.append(el)
+    }
+    document.body.append(panel)
+    const { unmount } = render(
+      <ScrollSpy offset={50}>
+        <a href="#install">Install</a>
+        <a href="#usage">Usage</a>
+      </ScrollSpy>
+    )
+    // Install starts at the panel's top (400 - 400), within the offset: on
+    // the page's own measure it would be 400px down, below it.
+    const install = screen.getByRole('link', { name: 'Install' })
+    expect(install).toHaveAttribute('aria-current', 'location')
+
+    tops.install = -200
+    tops.usage = 420
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame'] })
+    act(() => {
+      panel.dispatchEvent(new Event('scroll'))
+      vi.advanceTimersToNextFrame()
+    })
+    vi.useRealTimers()
+    expect(screen.getByRole('link', { name: 'Usage' })).toHaveAttribute(
+      'aria-current',
+      'location'
+    )
+    unmount()
+    panel.remove()
+  })
 })

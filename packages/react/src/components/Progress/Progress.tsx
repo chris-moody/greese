@@ -11,6 +11,13 @@ export interface ProgressProps
   max?: number
   /** Bar thickness, from the shared control sizes. @default 'md' */
   size?: ControlSize
+  /**
+   * Still working on it: the filled part runs with diagonal stripes in the
+   * bar's two colors (still under reduced motion), and the bar is
+   * `aria-busy`. For a known value that's being updated; leave `value` out
+   * when there's no value at all.
+   */
+  loading?: boolean
 }
 
 /**
@@ -19,6 +26,7 @@ export interface ProgressProps
  *
  * ```tsx
  * <Progress value={40} aria-label="Uploading" />
+ * <Progress value={40} loading aria-label="Uploading" />
  * ```
  */
 export const Progress = ({
@@ -26,15 +34,22 @@ export const Progress = ({
   value,
   max = 100,
   size = 'md',
+  loading,
   className,
   ...props
 }: ProgressProps): JSX.Element =>
   withGreese(
     <progress
+      aria-busy={loading || undefined}
       {...props}
       max={max}
       value={value}
-      className={cx('greese-Progress', `greese-Progress--${size}`, className)}
+      className={cx(
+        'greese-Progress',
+        `greese-Progress--${size}`,
+        loading && 'greese-Progress--loading',
+        className
+      )}
     />,
     greese
   )

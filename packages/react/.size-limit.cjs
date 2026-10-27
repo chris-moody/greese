@@ -71,7 +71,12 @@ module.exports = [
     // toggle, without handlers of their own (28.88 kB).
     // 28.9 kB → 28.95 kB (2026-10-24): Accordion is a Server Component too,
     // handing its items their name and icons itself, not through context (28.9 kB).
-    limit: '28.95 kB',
+    // 28.95 kB → 29.4 kB (2026-10-27): shape themes reach more components:
+    // FileInput is a Button labelling a hidden native input, with dropped files
+    // and the chosen names (it was a bare input); Textarea and Menu render a
+    // frame and a viewport; ScrollSpy follows sections in a scrolling panel;
+    // Progress takes `loading` (29.38 kB).
+    limit: '29.4 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -94,7 +99,9 @@ module.exports = [
     // 34.1 kB → 34.15 kB (2026-10-24): the same Footer and AccordionItem fixes (34.12 kB).
     // 34.15 kB → 34.25 kB (2026-10-24): greese.js reads the colors browsers compute for color-mix() and the newer spaces (oklab(), oklch(), color(srgb)), which it switched halfway instead of blending (34.24 kB).
     // 34.25 kB → 34.4 kB (2026-10-26): greese.js takes per-target function values and function staggers, and reads CSS cubic-bezier() strings as eases (ADR 0008 addendum) (34.38 kB).
-    limit: '34.4 kB',
+    // 34.4 kB → 34.8 kB (2026-10-27): the same FileInput, Textarea, Menu, ScrollSpy and Progress changes (34.75 kB).
+    // 34.8 kB → 34.85 kB (2026-10-27): the same greese.js write-skip as the runtime's (34.8 kB).
+    limit: '34.85 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -186,7 +193,9 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ Menu, MenuItem }',
     ignore: ['react', 'react-dom'],
-    limit: '3.25 kB',
+    // 3.25 kB → 3.3 kB (2026-10-27): the items scroll in a viewport, so a
+    // shape theme can draw the menu's border along its shape (3.26 kB).
+    limit: '3.3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -374,7 +383,10 @@ module.exports = [
     // 0025 addendum): the overlay exits' names every component carries, the 32 that
     // follow a direction written as prefixes times directions (3313 B).
     // 3.35 kB → 3.4 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (3354 B).
-    limit: '3.4 kB',
+    // 3.4 kB → 4 kB (2026-10-27): the trigger is an IconButton and each action's
+    // icon a Button, so they take a theme's button shape, depth and states: it
+    // brings Button, which an app with a speed dial almost always has (3.98 kB).
+    limit: '4 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -387,7 +399,8 @@ module.exports = [
     // leaving (27 more effects, generated from one table of directions; ADR 0025
     // addendum): the entrance names the static part carries (2.25 kB).
     // 2.3 kB → 2.35 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (2310 B).
-    limit: '2.35 kB',
+    // 2.35 kB → 2.4 kB (2026-10-27): sections in a scrolling panel, measured from its top (2.37 kB).
+    limit: '2.4 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -467,6 +480,7 @@ module.exports = [
     // 10.55 kB → 10.75 kB (2026-10-24): the 10.53 kB above was measured against a stale greese.js build; rebuilt, the kill() fix measures 10.65 kB. A hover also keeps its resting box while it settles back, and ends when the pointer leaves the window or the page loses focus (10.74 kB).
     // 10.75 kB → 10.85 kB (2026-10-24): greese.js reads oklab(), oklch() and color(srgb) colors, as above (10.84 kB).
     // 10.85 kB → 10.95 kB (2026-10-26): greese.js takes per-target function values and function staggers, and reads CSS cubic-bezier() strings as eases (ADR 0008 addendum), as above (10.91 kB).
-    limit: '10.95 kB',
+    // 10.95 kB → 11 kB (2026-10-27): greese.js skips writing a style or attribute already at its value, so a target holding still costs no mutation (10.96 kB).
+    limit: '11 kB',
   },
 ]

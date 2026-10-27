@@ -6,9 +6,9 @@ import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface ScrollSpyProps extends GreeseProps, ComponentPropsWithRef<'div'> {
   /**
-   * How far below the top of the viewport, in pixels, a section has to start
-   * to be the current one: a sticky header's height, plus a little. Defaults
-   * to a third of the viewport's height.
+   * How far below the top of the viewport (or of the box the sections scroll
+   * in), in pixels, a section has to start to be the current one: a sticky
+   * header's height, plus a little. Defaults to a third of that height.
    */
   offset?: number
   /** Called with the id of the section the page is on, or undefined above the first. */
@@ -42,11 +42,21 @@ const spiedLinks = (root: HTMLElement) =>
 
 const idOf = (a: HTMLAnchorElement) => decodeURIComponent(a.hash.slice(1))
 
+/** The box an element scrolls in: its nearest scrolling ancestor, or the page. */
+const scrollerOf = (el: Element): Element => {
+  for (let box = el.parentElement; box; box = box.parentElement) {
+    const { overflowY } = getComputedStyle(box)
+    if (/auto|scroll/.test(overflowY) && box.scrollHeight > box.clientHeight) return box
+  }
+  return document.documentElement
+}
+
 /**
  * Marks the link to the section the page is scrolled to: every same-page
  * `#id` link inside gets `aria-current="location"` while its section is
  * current, so a table of contents or a header's links follow the reader.
- * The links can be anywhere inside, from any router.
+ * The links can be anywhere inside, from any router. Sections that scroll
+ * in a panel of their own are measured from the panel's top.
  *
  * ```tsx
  * <ScrollSpy asChild offset={80}>
@@ -82,14 +92,20 @@ export const ScrollSpy = ({
     const update = () => {
       frame = 0
       const links = spiedLinks(el)
-      const sections = links.flatMap((a) => {
-        const target = document.getElementById(idOf(a))
-        return target ? [{ id: target.id, top: target.getBoundingClientRect().top }] : []
-      })
+      const targets = links.flatMap((a) => document.getElementById(idOf(a)) ?? [])
+      // Measured from the top of the box they scroll in: the viewport, or a
+      // scrolling panel's own top.
+      const box = targets[0] ? scrollerOf(targets[0]) : document.documentElement
+      const page = box === document.documentElement
+      const boxTop = page ? 0 : box.getBoundingClientRect().top
+      const height = page ? innerHeight : box.clientHeight
+      const sections = targets.map((target) => ({
+        id: target.id,
+        top: target.getBoundingClientRect().top - boxTop,
+      }))
       const end =
-        scrollY > 0 &&
-        Math.ceil(scrollY + innerHeight) >= document.documentElement.scrollHeight
-      const id = currentSection(sections, offset ?? innerHeight / 3, end)
+        box.scrollTop > 0 && Math.ceil(box.scrollTop + height) >= box.scrollHeight
+      const id = currentSection(sections, offset ?? height / 3, end)
       for (const a of links) {
         if (idOf(a) === id) a.setAttribute('aria-current', 'location')
         else if (a.getAttribute('aria-current') === 'location')
@@ -104,14 +120,15 @@ export const ScrollSpy = ({
       frame ||= requestAnimationFrame(update)
     }
     update()
-    addEventListener('scroll', schedule, { passive: true })
+    // Captured, so a scrolling panel's scroll (which doesn't bubble) counts too.
+    addEventListener('scroll', schedule, { passive: true, capture: true })
     addEventListener('resize', schedule)
     // Links added or retargeted inside (a router re-rendering them).
     const observer = new MutationObserver(schedule)
     observer.observe(el, { subtree: true, childList: true, attributeFilter: ['href'] })
     return () => {
       cancelAnimationFrame(frame)
-      removeEventListener('scroll', schedule)
+      removeEventListener('scroll', schedule, { capture: true })
       removeEventListener('resize', schedule)
       observer.disconnect()
       for (const a of el.querySelectorAll('[aria-current="location"]'))
