@@ -2,6 +2,7 @@ import { useState, type JSX } from 'react'
 import * as icons from '@greese/icons'
 import { CheckIcon, PlusIcon } from '@greese/icons'
 import { Button, Grid, IconButton, Stack, Text, Tile } from '@greese/react'
+import { NameFilter, useNameFilter } from '../_shared/NameFilter.tsx'
 
 type Icon = (props: icons.IconProps) => JSX.Element
 
@@ -10,12 +11,16 @@ const names = Object.keys(icons).filter((name) => /^[A-Z]\w*Icon$/.test(name))
 const importOf = (list: string[]) => `import { ${list.join(', ')} } from '${PACKAGE}'`
 
 /**
- * Every icon in @greese/icons. Each tile copies its import or its name;
- * "+" collects icons into a list, copied as names or as one import.
+ * Every icon in @greese/icons, narrowed by a filter on the name. Each tile
+ * copies its import or its name; "+" collects icons into a list, copied as
+ * names or as one import.
  */
 export const IconGallery = (): JSX.Element => {
   const [selected, setSelected] = useState<string[]>([])
   const [status, setStatus] = useState('')
+  const { query, setQuery, matches } = useNameFilter()
+  // `Icon` ends every name, so "icon" alone shouldn't match them all.
+  const shown = names.filter((name) => matches(name.replace(/Icon$/, '')))
 
   const copy = async (text: string, what: string) => {
     try {
@@ -62,11 +67,18 @@ export const IconGallery = (): JSX.Element => {
           </Stack>
         </Tile>
       )}
+      <NameFilter
+        label="Filter icons"
+        query={query}
+        onQueryChange={setQuery}
+        shown={shown.length}
+        total={names.length}
+      />
       <p role="status" className="icon-gallery-status">
         {status}
       </p>
       <Grid container minChildWidth="10rem" gap={3}>
-        {names.map((name) => {
+        {shown.map((name) => {
           const Glyph = icons[name as keyof typeof icons] as Icon
           const chosen = selected.includes(name)
           return (
@@ -115,6 +127,7 @@ export const IconGallery = (): JSX.Element => {
           )
         })}
       </Grid>
+      {!shown.length && <Text tone="muted">No icon matches “{query}”.</Text>}
       <style>{`
         .icon-gallery-tile { position: relative; padding: var(--greese-space-2); }
         .icon-gallery-tile[data-selected] { border-color: var(--greese-color-primary); box-shadow: inset 0 0 0 1px var(--greese-color-primary); }
@@ -122,7 +135,7 @@ export const IconGallery = (): JSX.Element => {
         .icon-gallery-actions { display: flex; justify-content: space-between; }
         .icon-gallery-actions .greese-Button { font-size: var(--greese-type-caption-font-size); min-block-size: 1.75rem; padding-inline: var(--greese-space-2); }
         .icon-gallery-bar { position: sticky; inset-block-start: 0; z-index: 1; background: var(--greese-color-surface-overlay); box-shadow: var(--greese-shadow-md); }
-        .icon-gallery-status { min-block-size: 1lh; margin: 0; font-size: var(--greese-type-p3-font-size); color: var(--greese-color-fg-muted); }
+        p.icon-gallery-status { min-block-size: 1lh; margin: 0; font-size: var(--greese-type-p3-font-size); color: var(--greese-color-fg-muted); }
       `}</style>
     </Stack>
   )

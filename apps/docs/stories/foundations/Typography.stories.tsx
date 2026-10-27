@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Stack, Text } from '@greese/react'
-import { typeVariants, typography, type TypeVariant } from '@greese/ui'
+import { typeVariants, type TypeVariant } from '@greese/ui'
+import { TypeDefaults } from './TypeDefaults.tsx'
 
 const meta = { title: 'Foundations/Typography' } satisfies Meta
 export default meta
@@ -42,55 +43,8 @@ export const Variants: StoryObj = {
   ),
 }
 
-const POINTS = ['base', 'sm', 'md', 'lg', 'xl'] as const
-
 /** The default values: where a cell is empty, the variant keeps the value from the smaller breakpoint. */
 export const DefaultValues: StoryObj = {
   parameters: { layout: 'padded' },
-  render: () => (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ borderCollapse: 'collapse', fontSize: '0.875rem' }}>
-        <thead>
-          <tr>
-            <th style={cell}>variant</th>
-            {POINTS.map((point) => (
-              <th key={point} style={cell}>
-                {point}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {typeVariants.map((variant) => (
-            <tr key={variant}>
-              <th style={cell}>{variant}</th>
-              {POINTS.map((point) => {
-                const style = (
-                  typography[variant] as Record<string, Record<string, string>>
-                )[point]
-                return (
-                  <td key={point} style={cell}>
-                    {style && (
-                      <code>
-                        {Object.entries(style)
-                          .map(([prop, value]) => `${prop}: ${value}`)
-                          .join(', ')}
-                      </code>
-                    )}
-                  </td>
-                )
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  ),
-}
-
-const cell = {
-  padding: '0.375rem 0.75rem',
-  border: '1px solid var(--greese-color-border)',
-  textAlign: 'start' as const,
-  verticalAlign: 'top' as const,
+  render: () => <TypeDefaults />,
 }

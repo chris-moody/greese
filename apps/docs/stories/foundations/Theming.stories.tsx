@@ -26,6 +26,9 @@ const Card = ({ title }: { title: string }) => (
 const meta = {
   title: 'Foundations/Theming',
   component: ThemeProvider,
+  // Its story builds a theme's CSS, which reads as a wall of text in the app's
+  // live editor; the story above shows it better.
+  parameters: { tryIt: false },
 } satisfies Meta<typeof ThemeProvider>
 export default meta
 

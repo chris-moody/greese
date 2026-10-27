@@ -133,6 +133,7 @@ const preview: Preview = {
             'Getting started',
             'Theming',
             'Styling components',
+            'Component reference',
             'Responsive props',
             'Accessibility',
             'Animation',

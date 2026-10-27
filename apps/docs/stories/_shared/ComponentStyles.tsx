@@ -1,6 +1,6 @@
 /**
- * The Styling section of every component's docs page, and the reference in
- * Guides/Styling components. Everything comes from the library's style
+ * The Styling section of every component's docs page, and the blocks behind
+ * Guides/Component reference. Everything comes from the library's style
  * manifests (@greese/ui's style manifest and @greese/react's component styles), so it can't drift:
  * the blocks a component renders itself, its items' blocks, the blocks of the
  * components it's built on, and override examples written for it.
@@ -113,30 +113,59 @@ const ROWS: Array<[label: string, help: string, items: (b: BlockStyles) => strin
   ['Variables', 'Set on it or any ancestor', (b) => b.variables],
 ]
 
-/** One block's full styling API: every row, "None" where it has nothing. */
-export const BlockTable = ({ block }: { block: BlockStyles }): JSX.Element => (
-  <table style={{ inlineSize: '100%' }}>
-    <caption style={{ textAlign: 'start', fontWeight: 600 }}>
-      {block.name} <small>· css/{block.stylesheet}.css</small>
-    </caption>
-    <tbody>
-      {ROWS.map(([label, help, items]) => (
-        <tr key={label}>
-          <th
-            scope="row"
-            style={{ whiteSpace: 'nowrap', textAlign: 'start', inlineSize: '14rem' }}
-          >
-            {label}
-            <br />
-            <small style={{ fontWeight: 400, opacity: 0.7 }}>{help}</small>
+/**
+ * One block's full styling API: every row, "None" where it has nothing. In a
+ * `docs-table-scroll` box, as the app's docs style their tables.
+ */
+export const BlockTable = ({
+  block,
+  caption = true,
+}: {
+  block: BlockStyles
+  /** Whether to name the block above its rows; a list that names it already doesn't. */
+  caption?: boolean
+}): JSX.Element => (
+  <div
+    className="docs-table-scroll"
+    role="region"
+    aria-label={`${block.name} classes`}
+    tabIndex={0}
+  >
+    <table style={{ inlineSize: '100%' }}>
+      {caption && (
+        <caption style={{ textAlign: 'start', fontWeight: 600 }}>
+          {block.name} <small>· css/{block.stylesheet}.css</small>
+        </caption>
+      )}
+      <thead>
+        <tr>
+          <th scope="col" style={{ textAlign: 'start' }}>
+            Kind
           </th>
-          <td>
-            <Codes items={items(block)} />
-          </td>
+          <th scope="col" style={{ textAlign: 'start' }}>
+            Classes and names
+          </th>
         </tr>
-      ))}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {ROWS.map(([label, help, items]) => (
+          <tr key={label}>
+            <th
+              scope="row"
+              style={{ whiteSpace: 'nowrap', textAlign: 'start', inlineSize: '14rem' }}
+            >
+              {label}
+              <br />
+              <small style={{ fontWeight: 400, opacity: 0.7 }}>{help}</small>
+            </th>
+            <td>
+              <Codes items={items(block)} />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 )
 
 /** A variable that reads as a setting (tone, height, width…), not internal state. */
@@ -303,11 +332,9 @@ export const ComponentStyles = ({
   )
 }
 
-/** Every block, for the guide's reference section. */
-export const AllComponentStyles = (): JSX.Element => (
-  <>
-    {Object.values(blocks).map((block) => (
-      <BlockTable key={block.name} block={block} />
-    ))}
-  </>
+/** Every block, by name: the Component reference page's list. */
+export const ALL_BLOCKS: readonly BlockStyles[] = Object.values(blocks).sort((a, b) =>
+  a.name.localeCompare(b.name)
 )
+
+export type { BlockStyles }
