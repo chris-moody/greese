@@ -1,9 +1,9 @@
 ---
 name: greese-testing
-description: Procedure for testing a new GreeseUI feature or change at every layer - unit (Vitest, axe), e2e (Playwright, five projects), visual regression and Lighthouse - choosing the cheapest layer for each behaviour, writing outcome-based tests that don't flake, and running them. Use when adding or changing a feature that needs tests, when asked to write, fix or review tests, or when a test is flaky.
+description: Procedure for testing a new greese ui feature or change at every layer - unit (Vitest, axe), e2e (Playwright, five projects), visual regression and Lighthouse - choosing the cheapest layer for each behaviour, writing outcome-based tests that don't flake, and running them. Use when adding or changing a feature that needs tests, when asked to write, fix or review tests, or when a test is flaky.
 ---
 
-# Testing a GreeseUI feature
+# Testing a greese ui feature
 
 Load `greese-conventions` first. The reference for everything below is
 [`docs/testing/README.md`](../../../docs/testing/README.md); read it once per

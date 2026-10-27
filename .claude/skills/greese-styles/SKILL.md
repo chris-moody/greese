@@ -1,9 +1,9 @@
 ---
 name: greese-styles
-description: How to write and change GreeseUI SCSS - cascade layers, tokens, responsive-prop mixin, logical properties, states, touch, motion, RTL, theming variables and stylelint rules. Use for any edit to *.scss in packages/react or packages/ui, new tokens, theming changes, or visual bugs.
+description: How to write and change greese ui SCSS - cascade layers, tokens, responsive-prop mixin, logical properties, states, touch, motion, RTL, theming variables and stylelint rules. Use for any edit to *.scss in packages/react or packages/ui, new tokens, theming changes, or visual bugs.
 ---
 
-# Styling GreeseUI
+# Styling greese ui
 
 Load `greese-conventions` first. The SCSS lives in `packages/ui` (`@greese/ui`),
 not in the framework packages: paths below are relative to it. ADR 0001 (the styling model) and ADR 0002

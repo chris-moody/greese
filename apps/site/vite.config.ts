@@ -110,7 +110,7 @@ export default defineConfig({
   resolve: {
     alias: {
       // The docs' MDX and shared components use Storybook's blocks; in the app
-      // they're its own (src/docs/blocks.tsx), drawn with GreeseUI.
+      // they're its own (src/docs/blocks.tsx), drawn with greese ui.
       '@storybook/addon-docs/blocks': join(ROOT, 'src/docs/blocks.tsx'),
     },
   },
@@ -156,7 +156,7 @@ export default defineConfig({
       output: {
         // The homepage and the lazy studio share many small components, which
         // would each become a chunk, and each chunk a round trip on a slow
-        // connection: React, and GreeseUI's packages, are one chunk each.
+        // connection: React, and greese ui's packages, are one chunk each.
         advancedChunks: {
           groups: [
             {

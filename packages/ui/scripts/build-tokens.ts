@@ -218,7 +218,7 @@ $layer-order: '${LAYER_ORDER.replace(/^@layer |;$/g, '')}';
 `
 
 const scss = `${header}
-// Build-time values for GreeseUI's SCSS. Using this module also emits the layer
+// Build-time values for greese ui's SCSS. Using this module also emits the layer
 // order and the custom properties, exactly once, wherever it is first used.
 
 ${maps}

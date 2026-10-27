@@ -14,14 +14,14 @@ and `@greese/js`, for the `greese` prop. Requires React 19.
 Import the stylesheet once, at your app root:
 
 ```tsx
-import '@greese/react/base.css' // optional: reset + body defaults, if GreeseUI owns the page
+import '@greese/react/base.css' // optional: reset + body defaults, if greese ui owns the page
 import '@greese/react/styles.css' // tokens + every component
 ```
 
 Then use components anywhere. Layout and display components are server-component
 safe; interactive ones are marked `'use client'`.
 
-No provider is needed to use GreeseUI: the styles load once and every component works. `ThemeProvider` is optional (see Guides/Theming). Reach for it only to apply a `createTheme()` theme, or to force a color scheme, on all or part of the page.
+No provider is needed to use greese ui: the styles load once and every component works. `ThemeProvider` is optional (see Guides/Theming). Reach for it only to apply a `createTheme()` theme, or to force a color scheme, on all or part of the page.
 
 ```tsx
 import { Button, Stack, TextField } from '@greese/react'
@@ -39,7 +39,7 @@ export const SignIn = () => (
 ## Without a framework
 
 The CSS is its own package, `@greese/ui`, with no dependencies. Use it from
-plain HTML, or under a framework that has no GreeseUI package yet:
+plain HTML, or under a framework that has no greese ui package yet:
 
 ```bash
 npm install @greese/ui

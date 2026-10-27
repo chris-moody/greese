@@ -7,7 +7,7 @@
 
 **Icons.** The docs defined their icons, and a `Tile` placeholder, in a
 fixtures file. Readers copying a story got code that imported things
-GreeseUI doesn't ship. The library itself takes any icon (the conventions: "GreeseUI
+greese ui doesn't ship. The library itself takes any icon (the conventions: "greese ui
 ships no icons"), and that shouldn't change.
 
 **Props tables.** Every row should say what a prop does. Many said only
@@ -92,7 +92,7 @@ example as editable code that re-renders as you type.
 - **The seed** is Storybook's own generated snippet, collected from its
   `SNIPPET_RENDERED` event (`.storybook/snippets.ts`) and cleaned the same
   way.
-- **In scope:** every GreeseUI export, every icon, React's hooks, and the
+- **In scope:** every greese ui export, every icon, React's hooks, and the
   sample data.
 - **Behaviour:** syntax and runtime errors show under the code while the
   last good render stays. Reset restores the example.
@@ -101,7 +101,7 @@ example as editable code that re-renders as you type.
 - **Why 4.1.8, not 5:** 5.0 was two weeks old.
 
 **Icons sit inline in text.** `createIcon` gives each icon
-`display: inline-block` and `vertical-align: -0.125em`. GreeseUI's
+`display: inline-block` and `vertical-align: -0.125em`. greese ui's
 `base.css`, like most resets, makes every SVG a block, which stacked an icon
 on its own line in a sentence. `style` still overrides it. A tree-shaken
 icon went from 305 to 351 B (budget 400 B).

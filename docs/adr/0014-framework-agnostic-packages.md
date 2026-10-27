@@ -7,7 +7,7 @@
 
 ## Context
 
-GreeseUI began as a React library, and its stylesheets lived inside the React
+greese ui began as a React library, and its stylesheets lived inside the React
 package. But the styling is already framework-free: compiled CSS, `greese-*`
 classes, `--greese-*` variables, and state expressed in `aria-*` and
 `data-*` attributes. A plain HTML page, or a Svelte, Vue or Angular app,

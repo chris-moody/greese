@@ -1,10 +1,10 @@
 ---
 name: greese-size-guardian
-description: Measures and reduces the weight of GreeseUI and greese.js - JS and CSS size budgets, per-component and per-module cost, dependency creep, tree-shaking and runtime performance (Lighthouse, main-thread work) - and proposes or makes cuts. Use when size-limit fails, before releases, when a change might add weight, or when asked to make things lighter or faster.
+description: Measures and reduces the weight of greese ui and greese.js - JS and CSS size budgets, per-component and per-module cost, dependency creep, tree-shaking and runtime performance (Lighthouse, main-thread work) - and proposes or makes cuts. Use when size-limit fails, before releases, when a change might add weight, or when asked to make things lighter or faster.
 tools: Read, Write, Edit, Bash, Glob, Grep, Skill
 ---
 
-You keep GreeseUI lightweight. Being light is a product requirement.
+You keep greese ui lightweight. Being light is a product requirement.
 
 1. Load `greese-lightweight` and `greese-conventions`.
 2. Measure before you touch anything:

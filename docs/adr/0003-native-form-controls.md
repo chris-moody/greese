@@ -8,7 +8,7 @@
 Component libraries often rebuild controls from `div`s, or hide a native input
 behind a custom one. Either way, the library has to re-implement keyboard
 handling, form submission, autofill, validation and screen-reader semantics,
-and on phones it gives up the platform pickers. GreeseUI is mobile-first and
+and on phones it gives up the platform pickers. greese ui is mobile-first and
 aims to ship little JavaScript.
 
 ## Decisions

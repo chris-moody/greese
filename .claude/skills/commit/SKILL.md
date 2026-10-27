@@ -3,7 +3,7 @@ name: commit
 description: Create Conventional Commits for this repo. Use whenever committing changes, splitting work into commits, or writing a commit message. Groups changes into atomic commits, picks the type and scope, writes a one-line message that passes commitlint, and never adds co-author or other trailers.
 ---
 
-# Committing in GreeseUI
+# Committing in greese ui
 
 Every commit is a single [Conventional Commits](https://www.conventionalcommits.org)
 line. `commitlint.config.mjs` defines the rules. The `.husky/commit-msg` hook

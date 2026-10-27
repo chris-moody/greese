@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * GreeseUI (whole stylesheet, and per-component CSS) vs MUI: 2,000 responsive Stacks, production build, Chromium with 4x
+ * greese ui (whole stylesheet, and per-component CSS) vs MUI: 2,000 responsive Stacks, production build, Chromium with 4x
  * CPU throttling (roughly a mid-range phone). Runs alternate between libraries
  * so machine noise hits both equally; medians are reported.
  *
@@ -31,7 +31,7 @@ const TOGGLES = Number(args.toggles)
 const PORT = 4311
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 
-/** `greeseCss`: GreeseUI with per-component CSS (css/Stack.css). */
+/** `greeseCss`: greese ui with per-component CSS (css/Stack.css). */
 type Lib = 'greese' | 'greeseCss' | 'mui'
 const PAGE: Record<Lib, string> = {
   greese: 'bench-greese',
@@ -176,7 +176,7 @@ try {
   const fmt = (n: number) => (n >= 100 ? n.toFixed(0) : n.toFixed(1))
   console.log(
     `\n2,000 responsive Stacks, ${RUNS} runs, ${CPU}x CPU throttle, medians\n\n` +
-      `| Metric | GreeseUI | GreeseUI, per-component CSS | MUI | MUI / GreeseUI | MUI / per-component |\n|---|---:|---:|---:|---:|---:|\n` +
+      `| Metric | greese ui | greese ui, per-component CSS | MUI | MUI / greese ui | MUI / per-component |\n|---|---:|---:|---:|---:|---:|\n` +
       medians
         .map(({ label, unit, greese: s, greeseCss: c, mui: m }) => {
           const ratio = (x: number) => (x > 0 ? `${(m / x).toFixed(1)}x` : '-')

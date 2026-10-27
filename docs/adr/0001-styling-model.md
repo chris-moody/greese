@@ -5,7 +5,7 @@
 
 ## Context
 
-GreeseUI must support dynamic, per-breakpoint props, in the style of MUI's
+greese ui must support dynamic, per-breakpoint props, in the style of MUI's
 `<Stack direction={{ xs: 'column', md: 'row' }} />`. It must do this without
 the runtime cost of CSS-in-JS. Emotion-style libraries serialise style
 objects, hash them and insert rules on every render. Inserting a rule
@@ -79,16 +79,16 @@ alignment, since MUI 9 dropped Stack's system props). It uses production
 builds, Chromium at 4× CPU throttle, and reports medians of 5 interleaved
 runs. The results on the development machine (2026-10-17):
 
-| Metric                          | GreeseUI |     MUI | MUI / GreeseUI |
-| ------------------------------- | -------: | ------: | -------------: |
-| Render to first paint           |   375 ms |  450 ms |           1.2× |
-| Main-thread script (load)       |   202 ms |  437 ms |           2.2× |
-| Style recalculation (load)      |  29.6 ms | 21.1 ms |           0.7× |
-| Update: click to paint          |   105 ms |  242 ms |           2.3× |
-| Update: script per toggle       |  57.5 ms |  200 ms |           3.5× |
-| Update: style recalc per toggle |  18.0 ms | 13.9 ms |           0.8× |
-| Longest interaction (INP basis) |   200 ms |  344 ms |           1.7× |
-| `<style>` elements injected     |        0 |       1 |                |
+| Metric                          | greese ui |     MUI | MUI / greese ui |
+| ------------------------------- | --------: | ------: | --------------: |
+| Render to first paint           |    375 ms |  450 ms |            1.2× |
+| Main-thread script (load)       |    202 ms |  437 ms |            2.2× |
+| Style recalculation (load)      |   29.6 ms | 21.1 ms |            0.7× |
+| Update: click to paint          |    105 ms |  242 ms |            2.3× |
+| Update: script per toggle       |   57.5 ms |  200 ms |            3.5× |
+| Update: style recalc per toggle |   18.0 ms | 13.9 ms |            0.8× |
+| Longest interaction (INP basis) |    200 ms |  344 ms |            1.7× |
+| `<style>` elements injected     |         0 |       1 |                 |
 
 The thesis holds: scripting, which is what CSS-in-JS costs, is 2–3.5× lower,
 and interactions are about 2× faster end to end. Style recalculation is the
@@ -108,7 +108,7 @@ sides can't drift.
 
 ### Cascade layers
 
-Every stylesheet GreeseUI emits starts with the same statement:
+Every stylesheet greese ui emits starts with the same statement:
 
 `@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities`
 
@@ -124,7 +124,7 @@ first.
 
 `styles.css` only styles `.greese-*` classes and the token variables.
 `base.css` contains the reset, `body` colors and the focus ring, and is
-imported only when GreeseUI owns the page.
+imported only when greese ui owns the page.
 
 ## Consequences
 
@@ -149,7 +149,7 @@ stylesheet swapped in, forced style recalculation timed at 4× CPU
 throttling, medians of 7–11 runs. MUI's page measured about 24 ms on initial
 style and 29 ms for the toggle.
 
-| GreeseUI variant                                   | Initial style |  Toggle |
+| greese ui variant                                  | Initial style |  Toggle |
 | -------------------------------------------------- | ------------: | ------: |
 | Fallback chain, `@property`, uses classes (before) |       30.1 ms | 20.2 ms |
 | Direct classes, uses classes kept                  |       26.6 ms | 16.9 ms |
@@ -197,7 +197,7 @@ a per-component-CSS column):
 | Style recalculation (load)      | 37.4 ms |             34.8 ms |                29.5 ms | 25.3 ms |
 | Update: style recalc per toggle | 22.2 ms |             18.1 ms |                17.5 ms | 15.9 ms |
 
-GreeseUI leads MUI on 7 of 10 metrics, ties layout, and does 1.8× less
+greese ui leads MUI on 7 of 10 metrics, ties layout, and does 1.8× less
 main-thread work on load. The remaining style gap is structural: Emotion
 collapses each distinct style into one class at runtime, so an element
 matches one short rule; precompiled classes mean an element matches

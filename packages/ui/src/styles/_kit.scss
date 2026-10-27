@@ -1,4 +1,4 @@
-// GreeseUI's SCSS kit for themes and component overrides, compiled in your
+// greese ui's SCSS kit for themes and component overrides, compiled in your
 // build (docs/adr/0010-theme-kit-and-studio.md). For example:
 //   @use 'pkg:@greese/ui/scss/kit' as greese;
 //   @include greese.tokens((color: (primary: (light: lavender-600, dark: lavender-300))));
@@ -88,7 +88,7 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 
 @function _check($ok, $message) {
   @if not $ok and $strict {
-    @error 'GreeseUI kit: #{$message}';
+    @error 'greese ui kit: #{$message}';
   }
 
   @return $ok;
@@ -129,8 +129,8 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 }
 
 /// The layer order, once per stylesheet, before the first rule: every
-/// GreeseUI sheet starts with it, so whichever loads first the order holds.
-/// Without it, a theme loaded before GreeseUI's CSS would make
+/// greese ui sheet starts with it, so whichever loads first the order holds.
+/// Without it, a theme loaded before greese ui's CSS would make
 /// `greese.theme` the first, weakest layer.
 @mixin _layer-order {
   @if not $_ordered {

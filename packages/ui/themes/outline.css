@@ -1,11 +1,11 @@
 /**
  * Outline: drawn rather than filled. Solid and soft buttons and badges, soft alerts, filled and elevated cards and tiles, avatars, the current tab and segment, toasts and tooltips are outlined in their color, with text to match over a faint or neutral fill; what was outlined is filled instead.
  *
- * A GreeseUI color variant (ADR 0025): how any color theme's colors are worn,
+ * A greese ui color variant (ADR 0025): how any color theme's colors are worn,
  * reassigned per component variant in @layer greese.overrides. It sets no
  * color tokens, shapes or motion, so it goes with any color, shape or motion
  * theme.
- * Load it after GreeseUI's styles:
+ * Load it after greese ui's styles:
  *
  *   import '@greese/ui/themes/outline.css'
  *

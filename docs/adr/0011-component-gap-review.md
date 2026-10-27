@@ -6,11 +6,11 @@
 ## Context
 
 We listed the components applications commonly need and checked which ones
-GreeseUI lacked: common UI that people would otherwise build themselves.
+greese ui lacked: common UI that people would otherwise build themselves.
 
 Many were already covered under other names:
 
-| Component                                                                                                                                                                                 | GreeseUI                   |
+| Component                                                                                                                                                                                 | greese ui                  |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
 | Range                                                                                                                                                                                     | Slider                     |
 | Toggle                                                                                                                                                                                    | Switch                     |

@@ -6,7 +6,7 @@
 ## Context
 
 A theme could change tokens, component styles and motion (ADR 0010), but every
-preset only changed colors and radii, so a GreeseUI site always had the same
+preset only changed colors and radii, so a greese ui site always had the same
 rounded rectangles. CSS can draw far more than that:
 
 - `clip-path` polygons, circles and insets;
@@ -19,7 +19,7 @@ Shapes cost something, though. A clip or a mask also cuts off:
 - the hit area a touch target extends past the box;
 - the shadow.
 
-There was also no example of a whole page built with GreeseUI, to start a
+There was also no example of a whole page built with greese ui, to start a
 project from or to show a theme on.
 
 ## Decision
@@ -78,7 +78,7 @@ Pinked's hover splash is a `circle()` growing on a layer under the label.
 - saas;
 - store.
 
-Each is one file in `apps/site/src/templates`. It uses only GreeseUI
+Each is one file in `apps/site/src/templates`. It uses only greese ui
 components, `@greese/icons`, and the few `tpl-*` layout rules in
 `templates.scss`. There are no images: cover art is CSS gradients. Templates
 wear the visitor's theme, shapes included. `@greese/mcp` serves their source.

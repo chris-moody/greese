@@ -89,7 +89,7 @@ export const componentMarkdown = (c: ComponentDoc, example = true): string => {
 }
 
 /**
- * The GreeseUI MCP server: tools and resources over the data baked at build
+ * The greese ui MCP server: tools and resources over the data baked at build
  * time (ADR 0022). Connect it to any transport; the CLI uses stdio.
  */
 export const createGreeseServer = (data: GreeseData): McpServer => {
@@ -97,7 +97,7 @@ export const createGreeseServer = (data: GreeseData): McpServer => {
     { name: 'greese', version: data.version },
     {
       instructions:
-        'GreeseUI is a mobile-first React 19 component library (@greese/react) styled by framework-free CSS (@greese/ui), with icons in @greese/icons and motion via the `greese` prop. Before writing UI code, look components up with get_component instead of guessing props, use tokens (list_tokens) rather than raw values, and use icons from @greese/icons (list_icons) rather than inline SVG. Templates (list_templates) are complete pages to start from.',
+        'greese ui is a mobile-first React 19 component library (@greese/react) styled by framework-free CSS (@greese/ui), with icons in @greese/icons and motion via the `greese` prop. Before writing UI code, look components up with get_component instead of guessing props, use tokens (list_tokens) rather than raw values, and use icons from @greese/icons (list_icons) rather than inline SVG. Templates (list_templates) are complete pages to start from.',
     }
   )
 
@@ -108,7 +108,7 @@ export const createGreeseServer = (data: GreeseData): McpServer => {
     {
       title: 'List components',
       description:
-        'Every GreeseUI React component, by docs category, with a one-line summary.',
+        'Every greese ui React component, by docs category, with a one-line summary.',
       inputSchema: {
         category: z
           .string()
@@ -165,7 +165,7 @@ export const createGreeseServer = (data: GreeseData): McpServer => {
   server.registerTool(
     'search',
     {
-      title: 'Search GreeseUI',
+      title: 'Search greese ui',
       description:
         'Searches components, guides, templates and themes by keyword. Every word must match.',
       inputSchema: {
@@ -233,7 +233,7 @@ export const createGreeseServer = (data: GreeseData): McpServer => {
     {
       title: 'List icons',
       description:
-        'The icons in @greese/icons. Use these rather than inline <svg>: every GreeseUI icon lives in that package.',
+        'The icons in @greese/icons. Use these rather than inline <svg>: every greese ui icon lives in that package.',
       inputSchema: {
         query: z.string().optional().describe('Only icons whose name contains this.'),
       },
@@ -277,7 +277,7 @@ export const createGreeseServer = (data: GreeseData): McpServer => {
       try {
         const theme = createTheme({ ...(options as Omit<ThemeOptions, 'name'>), name })
         return text(
-          `\`\`\`css\n${theme.css}\n\`\`\`\n\nServe this after GreeseUI's styles and set \`data-greese-theme="${name}"\` on any element, or in React: \`<ThemeProvider theme={createTheme({ name: '${name}', … })}>\`.`
+          `\`\`\`css\n${theme.css}\n\`\`\`\n\nServe this after greese ui's styles and set \`data-greese-theme="${name}"\` on any element, or in React: \`<ThemeProvider theme={createTheme({ name: '${name}', … })}>\`.`
         )
       } catch (e) {
         return error(e instanceof Error ? e.message : String(e))
@@ -290,7 +290,7 @@ export const createGreeseServer = (data: GreeseData): McpServer => {
     {
       title: 'List templates',
       description:
-        'Complete page templates (finance, admin dashboard, email client, blog, SaaS, e-commerce…) built from GreeseUI components.',
+        'Complete page templates (finance, admin dashboard, email client, blog, SaaS, e-commerce…) built from greese ui components.',
       annotations: { readOnlyHint: true },
     },
     () =>
@@ -355,7 +355,7 @@ export const createGreeseServer = (data: GreeseData): McpServer => {
     {
       title: 'Get a shape theme',
       description:
-        "A shape theme's source: kit SCSS (compile after GreeseUI's styles, or read as a recipe) and its compiled CSS (@greese/ui/themes/<id>.css).",
+        "A shape theme's source: kit SCSS (compile after greese ui's styles, or read as a recipe) and its compiled CSS (@greese/ui/themes/<id>.css).",
       inputSchema: {
         id: z.string().describe('The theme, as list_themes names it.'),
         format: z
@@ -376,7 +376,7 @@ export const createGreeseServer = (data: GreeseData): McpServer => {
         )
       const want = format ?? 'scss'
       const parts = [
-        `# ${t.id}\n\n${t.description}\n\nUse it: \`import '@greese/ui/themes/${t.id}.css'\` after GreeseUI's styles.`,
+        `# ${t.id}\n\n${t.description}\n\nUse it: \`import '@greese/ui/themes/${t.id}.css'\` after greese ui's styles.`,
       ]
       if (want !== 'css') parts.push(`\`\`\`scss\n${t.scss.trim()}\n\`\`\``)
       if (want !== 'scss') parts.push(`\`\`\`css\n${t.css.trim()}\n\`\`\``)
@@ -397,7 +397,7 @@ export const createGreeseServer = (data: GreeseData): McpServer => {
       }),
     }),
     {
-      title: 'GreeseUI guides',
+      title: 'greese ui guides',
       description: 'Getting started, theming, styling, animation, utilities…',
       mimeType: 'text/markdown',
     },
@@ -428,7 +428,7 @@ export const createGreeseServer = (data: GreeseData): McpServer => {
       }),
     }),
     {
-      title: 'GreeseUI components',
+      title: 'greese ui components',
       description: 'One document per component: props, classes, example.',
       mimeType: 'text/markdown',
     },

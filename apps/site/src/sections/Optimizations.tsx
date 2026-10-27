@@ -75,7 +75,7 @@ export const Optimizations = (): JSX.Element => (
     id="optimizations"
     eyebrow="Optimizations"
     title="Fast because there’s less to do"
-    intro="Most of the speed comes from work GreeseUI doesn’t do at runtime."
+    intro="Most of the speed comes from work greese ui doesn’t do at runtime."
     tinted
   >
     <Accordion greese={{ inView: 'theme', stagger: 0.06 }}>

@@ -10,7 +10,7 @@ interface SignUp {
 }
 
 /**
- * GreeseUI controls are native elements and forward `ref` to them, so
+ * greese ui controls are native elements and forward `ref` to them, so
  * `register()` works with no adapters or Controller wrappers.
  */
 const SignUpForm = () => {

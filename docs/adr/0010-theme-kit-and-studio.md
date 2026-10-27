@@ -135,7 +135,7 @@ A Vite app, run with `npm run studio`, with three parts:
 - **A dev-server plugin.** It reads and writes one theme file
   (`GREESE_THEME`, resolved from where npm ran), compiles it through the
   real kit, and tells the page when the file changes on disk.
-- **An editor** built with GreeseUI itself. It has tabs for tokens,
+- **An editor** built with greese ui itself. It has tabs for tokens,
   components, motion and the generated code.
 - **A preview** in an iframe, so the theme never restyles the editor. Its
   Inspect mode reports a clicked element's classes and live variable values.

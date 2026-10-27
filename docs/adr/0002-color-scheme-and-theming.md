@@ -101,7 +101,7 @@ the default selectors. See [ADR 0010](0010-theme-kit-and-studio.md).
   so a theme that sets only `primary` rebrands every component, and one that
   sets `accent` too can separate the two. No component CSS changed.
 - **The palette** (`palette.ts`): 22 hues × 11 shades. The default roles are palette
-  colors (the greys stay GreeseUI's own), read from the palette in `tokens.ts`
+  colors (the greys stay greese ui's own), read from the palette in `tokens.ts`
   and `contrast.ts` (`steel[999]`), so a change to a palette value reaches
   every role. They were once written out as hex to keep the hues out of
   bundles; that duplicated every value, and it was replaced (2026-10-21).

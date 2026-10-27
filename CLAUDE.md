@@ -1,4 +1,4 @@
-# GreeseUI
+# greese ui
 
 A mobile-first, framework-agnostic component system: zero-runtime CSS (SCSS +
 CSS custom properties) in `@greese/ui` that works in plain HTML, a small

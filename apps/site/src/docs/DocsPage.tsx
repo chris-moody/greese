@@ -147,7 +147,7 @@ export const DocsPageView = (): JSX.Element => {
 
   useEffect(() => {
     const before = document.title
-    document.title = page ? `${pageName(page)} · GreeseUI docs` : 'GreeseUI docs'
+    document.title = page ? `${pageName(page)} · greese ui docs` : 'greese ui docs'
     return () => {
       document.title = before
     }

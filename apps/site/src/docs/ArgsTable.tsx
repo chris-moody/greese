@@ -1,6 +1,6 @@
 /**
  * A component's props, and with a story, a control for each one it can set:
- * Storybook's Controls block, built from GreeseUI's own components. The props
+ * Storybook's Controls block, built from greese ui's own components. The props
  * come from the library's TSDoc (server/docgen.ts); a story's `argTypes` add
  * or narrow controls as they do in Storybook.
  */

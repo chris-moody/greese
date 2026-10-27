@@ -1,4 +1,4 @@
-# Testing GreeseUI
+# Testing greese ui
 
 The one place that says how this repository is tested: what each layer
 proves, where its tests live, how to write and run them, and what CI runs.

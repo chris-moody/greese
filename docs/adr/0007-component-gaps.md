@@ -5,7 +5,7 @@
 
 ## Context
 
-After 1.0, the components people reach for most that GreeseUI lacked were a
+After 1.0, the components people reach for most that greese ui lacked were a
 searchable select, a number input, date input, a data table, a segmented
 control, and swipe-to-dismiss for bottom sheets.
 
@@ -114,12 +114,12 @@ browser is deterministic.
 
 An earlier app's UI package (`@beta/ui`, 14 component folders on MUI 9 and Emotion) was
 reviewed for components worth porting. Every port drops MUI and Emotion and
-follows GreeseUI's conventions (SCSS tokens, native elements, pointer events,
+follows greese ui's conventions (SCSS tokens, native elements, pointer events,
 `onValueChange`, Field wiring, tests in five engines, a docs page each).
 
 **Ported:**
 
-| Source               | GreeseUI                                               | Notes                                                                                                                                                                                |
+| Source               | greese ui                                              | Notes                                                                                                                                                                                |
 | -------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `colorPicker`        | `ColorPicker`                                          | Pointer events (touch and pen), native range inputs for hue and opacity, a hex value (`#rrggbb[aa]`). Dropped: RGB/HSL/LAB/CMYK tabs, swatch history, confirm buttons, eyedropper    |
 | `maskedInput`        | `MaskedInput`, `applyMask`, `unmask`, `isMaskComplete` | Same mask language, on `Input` inside `Field`. Fixed the original's literal-stripping and mid-value bugs; numeric keypad for digit masks. Dropped `component` and US-only formatters |
@@ -129,15 +129,15 @@ follows GreeseUI's conventions (SCSS tokens, native elements, pointer events,
 
 **Not ported:**
 
-| Source                           | Why                                                         | Instead                                                       |
-| -------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------- |
-| `span`                           | `<span>` already inherits font and color                    | `<span>` or `<Text asChild>`                                  |
-| `chart`                          | Needs Recharts, against the few-dependencies goal           | A separate package, or Recharts with GreeseUI tokens          |
-| `console`                        | The app's console color schemes: app-specific               | `createTheme` in the app                                      |
-| `documentPickerDialog`, `form`   | Tied to the app's Firestore types and validator             | `Dialog` + `Table`; `Field` for errors                        |
-| `editableField` (and its inputs) | An app-level switchboard over controls GreeseUI already has | An app-level `EditableField` over GreeseUI controls           |
-| `KnobInput`, `gradientEditor`    | Niche (design tools) or tied to the app's `GradientFill`    | Candidates for later, on ColorPicker's pointer model          |
-| `editableSelect`, `toggleSelect` | Narrow, one-toolbar controls                                | `Combobox`, `NumberField` + `Menu`, `ToggleButton` + `Select` |
+| Source                           | Why                                                          | Instead                                                       |
+| -------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------- |
+| `span`                           | `<span>` already inherits font and color                     | `<span>` or `<Text asChild>`                                  |
+| `chart`                          | Needs Recharts, against the few-dependencies goal            | A separate package, or Recharts with greese ui tokens         |
+| `console`                        | The app's console color schemes: app-specific                | `createTheme` in the app                                      |
+| `documentPickerDialog`, `form`   | Tied to the app's Firestore types and validator              | `Dialog` + `Table`; `Field` for errors                        |
+| `editableField` (and its inputs) | An app-level switchboard over controls greese ui already has | An app-level `EditableField` over greese ui controls          |
+| `KnobInput`, `gradientEditor`    | Niche (design tools) or tied to the app's `GradientFill`     | Candidates for later, on ColorPicker's pointer model          |
+| `editableSelect`, `toggleSelect` | Narrow, one-toolbar controls                                 | `Combobox`, `NumberField` + `Menu`, `ToggleButton` + `Select` |
 
 The same pass added **`Break`** (a responsive line break with a fallback) and
 made the build fail when a component stylesheet is missing from

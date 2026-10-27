@@ -6,7 +6,7 @@ import { createIcon } from './createIcon.tsx'
  * bundlers the calls have no side effects). Paths are drawn for a 1.75 stroke
  * with round caps and joins, or the stroke a call names. Sorted by name.
  *
- * Every icon GreeseUI or its apps draw lives here: add one to this file rather
+ * Every icon greese ui or its apps draw lives here: add one to this file rather
  * than inlining an `<svg>` or writing a one-off component (ADR 0020).
  */
 

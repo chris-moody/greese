@@ -1,7 +1,7 @@
 # Theme Studio
 
 The `/studio` route of the web app in `apps/site` (ADR 0018), which
-also holds the homepage. It's a local web app for building a GreeseUI theme: tokens, component overrides
+also holds the homepage. It's a local web app for building a greese ui theme: tokens, component overrides
 and theme-wide motion, previewed live on real components and saved to your
 project as files.
 
@@ -309,7 +309,7 @@ include a round trip: a theme the studio writes reads back unchanged.
   (serve) only and answers same-origin requests only, since it writes files.
 - **`src/spec.ts`:** the JSON format and its SCSS generator, shared by the
   server and the page.
-- **`src/App.tsx` and `src/panels/`:** the editor, built with GreeseUI.
+- **`src/App.tsx` and `src/panels/`:** the editor, built with greese ui.
 - **`src/preview/`:** the themed gallery, in an iframe so the theme never
   restyles the editor. Inspect mode reports a clicked element's classes and
   computed variables.

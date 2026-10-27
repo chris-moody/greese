@@ -120,7 +120,7 @@ export interface GreeseOptions {
  */
 export type GreeseProp = GreeseEffectName | GreeseSequence | GreeseOptions
 
-/** Every GreeseUI component that renders something visible accepts `greese`. */
+/** Every greese ui component that renders something visible accepts `greese`. */
 export interface GreeseProps {
   /** Motion: entrances, scroll reveals, interactions, text effects, timelines. */
   greese?: GreeseProp

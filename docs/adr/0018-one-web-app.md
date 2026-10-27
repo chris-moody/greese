@@ -26,7 +26,7 @@ file access in `apps/site/server`; `npm run studio` runs the app.
   site's own orange) sets a theme that the homepage wears, built with
   `createTheme` from the spec, and the studio edits. It starts as the site's
   theme, or the last one saved in the browser. The studio's editor and its
-  header controls stay on GreeseUI's defaults so editing a theme restyles only
+  header controls stay on greese ui's defaults so editing a theme restyles only
   its preview; its component and motion edits are the preview's (the page
   wears the tokens and typography).
 - **Replay motion** is app state: the homepage remounts, the studio's

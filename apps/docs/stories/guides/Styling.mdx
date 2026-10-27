@@ -58,7 +58,7 @@ of silently not matching.
 
 ## Where overrides land: cascade layers
 
-All GreeseUI CSS lives in cascade layers, in this order (later wins):
+All greese ui CSS lives in cascade layers, in this order (later wins):
 
 ```css
 @layer greese.reset, greese.tokens, greese.theme, greese.base,
@@ -122,7 +122,7 @@ export default defineConfig({
 })
 ```
 
-Then, in a stylesheet imported **after** GreeseUI's styles:
+Then, in a stylesheet imported **after** greese ui's styles:
 
 ```scss
 // theme.scss
@@ -289,7 +289,7 @@ add up).
 Unknown names are build errors:
 
 ```
-Error: GreeseUI kit: `Button` has no part `icn`. Parts: icon.
+Error: greese ui kit: `Button` has no part `icn`. Parts: icon.
 ```
 
 To target a class this version doesn't know (a part from a newer release, say),

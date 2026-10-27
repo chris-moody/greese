@@ -43,7 +43,7 @@ export const Why = (): JSX.Element => (
     id="why"
     eyebrow="Why greese"
     title="The platform does the heavy lifting"
-    intro="GreeseUI adds JavaScript only where the browser has nothing to offer, so pages stay fast on mid-range phones."
+    intro="greese ui adds JavaScript only where the browser has nothing to offer, so pages stay fast on mid-range phones."
   >
     <Grid
       container

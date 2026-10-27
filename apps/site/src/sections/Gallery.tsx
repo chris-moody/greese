@@ -454,7 +454,7 @@ export const Gallery = (): JSX.Element => {
       id="components"
       eyebrow="Components"
       title="Real components, animated"
-      intro="Everything below is GreeseUI itself, each with a greese prop. Use them: they work."
+      intro="Everything below is greese ui itself, each with a greese prop. Use them: they work."
       tinted
     >
       <Tabs value={tab} onValueChange={setTab} greese={{ inView: 'theme' }}>

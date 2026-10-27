@@ -15,7 +15,7 @@ export interface TemplateEntry {
 
 /**
  * The page templates, each a self-contained file here: a page made only of
- * GreeseUI components, `@greese/icons` and the few layout rules in
+ * greese ui components, `@greese/icons` and the few layout rules in
  * templates.scss. They wear whatever theme the header has picked, shapes
  * included. @greese/mcp serves their source too (get_template).
  */

@@ -26,7 +26,7 @@ npm install @greese/js
 import { animate, timeline } from '@greese/js'
 ```
 
-**With GreeseUI:** `@greese/react` depends on it and re-exports `animate`,
+**With greese ui:** `@greese/react` depends on it and re-exports `animate`,
 `timeline`, `ease`, `cubicBezier` and `splitText`. It also adds a `greese`
 prop on every component. There's nothing extra to install.
 
@@ -99,7 +99,7 @@ OKLab.
 | `ease` alone                                | 0.9 kB |
 | `greese.global.js` (`<script>`)             | 7 kB   |
 
-Full guide: **Guides/greese.js** in the GreeseUI docs. Design decisions:
+Full guide: **Guides/greese.js** in the greese ui docs. Design decisions:
 [ADR 0008](../../docs/adr/0008-greese-js-animation.md).
 
 MIT licensed.

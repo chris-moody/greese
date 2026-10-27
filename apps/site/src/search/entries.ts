@@ -41,7 +41,7 @@ const studio = (tab: string, title: string, hint: string): SearchEntry => ({
  * virtual:greese-docs) and the sections of the docs' guides. In the order shown when nothing is typed.
  */
 export const ENTRIES: SearchEntry[] = [
-  { group: 'Pages', title: 'Home', hint: 'GreeseUI', href: hrefOf('home') },
+  { group: 'Pages', title: 'Home', hint: 'greese ui', href: hrefOf('home') },
   {
     group: 'Pages',
     title: 'Theme Studio',
@@ -51,7 +51,7 @@ export const ENTRIES: SearchEntry[] = [
   {
     group: 'Pages',
     title: 'Templates',
-    hint: 'Whole pages made of GreeseUI',
+    hint: 'Whole pages made of greese ui',
     href: hrefOf('templates'),
   },
   {
@@ -61,13 +61,13 @@ export const ENTRIES: SearchEntry[] = [
     href: hrefOf('docs'),
     keywords: 'documentation api props storybook',
   },
-  home('why', 'Why', 'Why GreeseUI'),
+  home('why', 'Why', 'Why greese ui'),
   home('size', 'Size', 'Bundle size', 'weight bytes kb budget'),
   home('speed', 'Speed', 'Render speed', 'performance benchmark'),
   home('motion', 'Motion', 'The motion lab', 'animation greese.js'),
   home('components', 'Components', 'The component gallery', 'gallery'),
   home('optimizations', 'Optimizations', 'What keeps it light'),
-  home('start', 'Get started', 'Install GreeseUI', 'install npm setup'),
+  home('start', 'Get started', 'Install greese ui', 'install npm setup'),
   studio('tokens', 'Tokens', 'Colors, type, spacing and radii'),
   studio('components', 'Components', 'Per-component styles'),
   studio('shapes', 'Shapes', 'Corner and edge shapes'),

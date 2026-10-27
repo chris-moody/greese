@@ -1,4 +1,4 @@
-// The configurable part of GreeseUI's SCSS: the breakpoints. They're fixed
+// The configurable part of greese ui's SCSS: the breakpoints. They're fixed
 // when the stylesheet is built (media queries can't read variables), so you
 // change them by compiling with your own, smallest first. Values may change and
 // keys may be added, but xs/sm/md/lg/xl stay, because components use them:
@@ -21,14 +21,14 @@ $space-keys: defaults.$space-keys;
 
 @each $key in map.keys(defaults.$breakpoints) {
   @if not map.has-key($breakpoints, $key) {
-    @error 'GreeseUI $breakpoints must keep the key `#{$key}` (components use #{map.keys(defaults.$breakpoints)}); you can add keys and change values. Got #{map.keys($breakpoints)}.';
+    @error 'greese ui $breakpoints must keep the key `#{$key}` (components use #{map.keys(defaults.$breakpoints)}); you can add keys and change values. Got #{map.keys($breakpoints)}.';
   }
 }
 
 // 0 and 0px differ in Sass, and the unit is the point here.
 // stylelint-disable-next-line length-zero-no-unit
 @if map.get($breakpoints, xs) != 0px {
-  @error 'GreeseUI $breakpoints: `xs` must be 0, got #{map.get($breakpoints, xs)}.';
+  @error 'greese ui $breakpoints: `xs` must be 0, got #{map.get($breakpoints, xs)}.';
 }
 
 // Mobile-first rules are emitted in map order, so the map must run smallest
@@ -37,11 +37,11 @@ $_previous: -1px;
 
 @each $key, $min in $breakpoints {
   @if string.index('#{$key}', '-') {
-    @error 'GreeseUI $breakpoints: key `#{$key}` must be one word, without dashes, as it goes into class and variable names. Quote a key that starts with a digit (\'2xl\').';
+    @error 'greese ui $breakpoints: key `#{$key}` must be one word, without dashes, as it goes into class and variable names. Quote a key that starts with a digit (\'2xl\').';
   }
 
   @if $min <= $_previous {
-    @error 'GreeseUI $breakpoints must increase from the first key to the last, but `#{$key}` (#{$min}) does not exceed the one before it.';
+    @error 'greese ui $breakpoints must increase from the first key to the last, but `#{$key}` (#{$min}) does not exceed the one before it.';
   }
 
   $_previous: $min;

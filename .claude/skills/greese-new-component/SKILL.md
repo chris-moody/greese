@@ -3,7 +3,7 @@ name: greese-new-component
 description: Step-by-step procedure for adding a new component to @greese/react, from API design to story, tests, budgets and changeset. Use when the user asks to create, add, build or port a component (including from MUI or another codebase).
 ---
 
-# Adding a GreeseUI component
+# Adding a greese ui component
 
 Load `greese-conventions` first. Work through these steps in order; each one
 has a check.

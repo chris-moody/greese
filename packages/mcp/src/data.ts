@@ -40,7 +40,7 @@ export interface Guide {
 export interface ThemeDoc {
   id: string
   description: string
-  /** The kit source: compile it after GreeseUI's styles, or read it as a recipe. */
+  /** The kit source: compile it after greese ui's styles, or read it as a recipe. */
   scss: string
   /** The same, compiled. */
   css: string

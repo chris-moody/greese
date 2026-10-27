@@ -6,7 +6,7 @@
 import { duration, type ScalarGroup } from './tokens.ts'
 
 /**
- * Cascade layer order for everything GreeseUI emits. Every stylesheet we produce
+ * Cascade layer order for everything greese ui emits. Every stylesheet we produce
  * (tokens, components, themes) starts with this statement, so the order holds
  * no matter which sheet the browser sees first. Unlayered consumer CSS beats
  * all of it.

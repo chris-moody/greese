@@ -1,10 +1,10 @@
 /**
  * Ticket: square corners, with a round notch punched in each side of containers, fields and tabs; controls and indicators are tags that point onward, and a control’s point stretches when hovered. Marks are notched like stamps.
  *
- * A GreeseUI shape theme (ADR 0025): radii, and components outlined with one
+ * A greese ui shape theme (ADR 0025): radii, and components outlined with one
  * clip and one border ring each (ADR 0024), in @layer greese.overrides. It
  * sets no colors and no motion, so it goes with any color or motion theme.
- * Load it after GreeseUI's styles:
+ * Load it after greese ui's styles:
  *
  *   import '@greese/ui/themes/ticket.css'
  *

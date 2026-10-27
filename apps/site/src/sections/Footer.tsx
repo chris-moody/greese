@@ -13,7 +13,7 @@ export const Footer = (): JSX.Element => (
       <Stack gap={2}>
         <Text weight="bold">greese</Text>
         <Text tone="muted" variant="p3">
-          GreeseUI and greese.js. Built with GreeseUI.
+          greese ui and greese.js. Built with greese ui.
         </Text>
       </Stack>
     }

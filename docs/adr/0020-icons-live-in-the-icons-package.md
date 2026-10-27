@@ -6,7 +6,7 @@
 
 ## Context
 
-GreeseUI drew its own few icons inline: `utils/glyphs.tsx` (close, menu,
+greese ui drew its own few icons inline: `utils/glyphs.tsx` (close, menu,
 chevron, plus, minus, sort, star, check), an `<svg>` in `Checkbox` and in
 `Collapsible`, and the site's own `Svg` wrapper with thirteen more. Fixtures in
 the playground added two. The same shapes existed twice (a close ×, a menu, a
@@ -67,7 +67,7 @@ glyphs are the icons that already existed.
   change.
 - **Overriding the display (2026-10-24 audit).** The inline style is what keeps
   an icon inline under resets that make every `<svg>` a block: Tailwind's
-  preflight is unlayered, so it beats any rule GreeseUI ships in its layers,
+  preflight is unlayered, so it beats any rule greese ui ships in its layers,
   and only an inline style (or `!important`) wins over it. The cost is the
   other side of that: a stylesheet can't change an icon's `display` either.
   Hide or re-display one with its `style` prop, which is applied last, or on an

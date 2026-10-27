@@ -39,7 +39,7 @@ export interface FieldControlProps {
 /**
  * Wires a control to its Field: shared id (for the label), description and
  * error via `aria-describedby`, `aria-invalid`, `required` and `disabled`.
- * Every GreeseUI control calls it; use it to make your own controls Field-aware.
+ * Every greese ui control calls it; use it to make your own controls Field-aware.
  */
 export const useFieldControl = ({
   id,

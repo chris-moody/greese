@@ -40,7 +40,7 @@ there (outer scopes are resolved first).
 - **Cost on every page.** Registering a timeline in every parent needs a
   client boundary in each, which ends server-component use of Box, Stack and
   Card, and adds script, style work and update work to every render: the
-  metrics GreeseUI wins against MUI. Scopes leave the default path untouched.
+  metrics greese ui wins against MUI. Scopes leave the default path untouched.
 - **First paint.** Members must be hidden until their time comes; the held
   state is JavaScript-only on purpose, so content never stays hidden for
   visitors without it.

@@ -3,7 +3,7 @@ import { Icon, Slot, Slottable } from '@greese/react'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { ArrowRightIcon } from '@greese/icons'
 
-/** A component with an `asChild` prop, built on Slot, the way GreeseUI's own are. */
+/** A component with an `asChild` prop, built on Slot, the way greese ui's own are. */
 const Action = ({
   asChild,
   icon,

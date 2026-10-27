@@ -17,7 +17,7 @@ import '@greese/react/styles.css' // @greese/ui: tokens + component styles
 ```
 
 Requires React 19. `styles.css` styles only `.greese-*` classes. Import
-`base.css` too if GreeseUI owns the whole page.
+`base.css` too if greese ui owns the whole page.
 
 To ship only the CSS you use, import per-component stylesheets instead of
 `styles.css`. Each one pulls in the shared core and the components it builds
@@ -45,7 +45,7 @@ setScheme('dark') // 'light' | 'dark' | 'system'
 
 ## Themes
 
-No provider is needed to use GreeseUI: the styles load once and every component works. `ThemeProvider` is optional. Reach for it only to apply a `createTheme()` theme, or to force a color scheme, on all or part of the page.
+No provider is needed to use greese ui: the styles load once and every component works. `ThemeProvider` is optional. Reach for it only to apply a `createTheme()` theme, or to force a color scheme, on all or part of the page.
 
 ```tsx
 import { createTheme, ThemeProvider } from '@greese/react'

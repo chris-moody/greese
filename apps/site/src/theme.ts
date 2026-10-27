@@ -47,7 +47,7 @@ export const siteColors = {
 } as const
 
 /**
- * Greese, the official theme: GreeseUI with a warm orange primary, as a
+ * Greese, the official theme: greese ui with a warm orange primary, as a
  * studio spec. It's the page's own theme until a visitor picks another, the
  * first entry in the header's theme menu, and where `brand` below comes from.
  * Only the primary is set, by palette name: createTheme derives its readable

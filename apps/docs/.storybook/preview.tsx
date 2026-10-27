@@ -46,7 +46,7 @@ const channel = addons.getChannel()
 channel.on(SET_GLOBALS, applyScheme)
 channel.on(GLOBALS_UPDATED, applyScheme)
 
-/** Storybook's docs chrome, built from GreeseUI's own tokens per scheme. */
+/** Storybook's docs chrome, built from greese ui's own tokens per scheme. */
 const docsTheme = (mode: 'light' | 'dark') =>
   create({
     base: mode,

@@ -15,8 +15,8 @@ scale time, repeat, yoyo and nest. It animates:
 - SVG attributes;
 - plain objects.
 
-This page covers greese.js **on its own, without GreeseUI**. For motion in
-GreeseUI components (the `greese` prop), see **Guides/Animation**. Live demos
+This page covers greese.js **on its own, without greese ui**. For motion in
+greese ui components (the `greese` prop), see **Guides/Animation**. Live demos
 are under **Motion/greese.js**.
 
 ## Install and import: every supported form
@@ -24,7 +24,7 @@ are under **Motion/greese.js**.
 | Form                                                  | Use it when                                               |
 | ----------------------------------------------------- | --------------------------------------------------------- |
 | [npm + a bundler (ESM)](#npm-and-a-bundler)           | Most apps: Vite, webpack, Next.js, Remix, Astro…          |
-| [Inside GreeseUI](#inside-greeseui)                   | You already use `@greese/react`                           |
+| [Inside greese ui](#inside-greese-ui)                 | You already use `@greese/react`                           |
 | [CDN, as an ES module](#cdn-as-an-es-module)          | A page or prototype with no build step                    |
 | [CDN, as a classic `<script>`](#a-classic-script-tag) | CMS templates and legacy pages; gives you `window.greese` |
 | [Node and server rendering](#node-and-servers)        | Tests, server-side frame generation, SSR-safe imports     |
@@ -45,7 +45,7 @@ animate('.card', { opacity: [0, 1], y: [16, 0] }, { duration: 0.4, stagger: 0.05
   don't import: `ease` alone is under 1 kB.
 - Types are included; there's no `@types` package.
 
-### Inside GreeseUI
+### Inside greese ui
 
 `@greese/react` depends on greese.js and re-exports `animate`,
 `timeline`, `Timeline`, `ease`, `cubicBezier`, `splitText` and their types:
@@ -54,7 +54,7 @@ animate('.card', { opacity: [0, 1], y: [16, 0] }, { duration: 0.4, stagger: 0.05
 import { animate, timeline } from '@greese/react'
 ```
 
-GreeseUI also adds the `greese` prop and the `useGreese()` hook; see
+greese ui also adds the `greese` prop and the `useGreese()` hook; see
 **Guides/Animation**.
 
 ### CDN, as an ES module
@@ -108,7 +108,7 @@ for (let frame = 0; frame <= 30; frame++) {
 }
 ```
 
-## In frameworks (without GreeseUI)
+## In frameworks (without greese ui)
 
 The rules are the same everywhere:
 
@@ -294,7 +294,7 @@ through its own `repeat`, `yoyo` and `timeScale`.
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `x`, `y`, `z`, `rotate`, `scale`, `scaleX`, `scaleY` | Written to the individual `translate`, `rotate` and `scale` properties: they compose without a matrix and don't fight a `transform` from your CSS. Numbers mean px or deg |
 | CSS properties, camelCase                            | `opacity`, `width`, `backgroundColor`, `filter`, `clipPath`, `boxShadow`… Bare numbers mean px, except unitless properties such as `opacity`                              |
-| `'--custom-properties'`                              | Including GreeseUI tokens: animate `--greese-color-primary` and every component that reads it follows                                                                     |
+| `'--custom-properties'`                              | Including greese ui tokens: animate `--greese-color-primary` and every component that reads it follows                                                                    |
 | `text`                                               | Counts between numbers (`'0'` → `'12480'`), types on or deletes, or retypes                                                                                               |
 | SVG attributes the element has                       | `r`, `cx`, `d` (when point counts match)…                                                                                                                                 |
 | Numeric element properties                           | `scrollTop`, `scrollLeft`                                                                                                                                                 |

@@ -125,7 +125,7 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** `<Motion>` gives any element the prop; every GreeseUI component has it already. */
+/** `<Motion>` gives any element the prop; every greese ui component has it already. */
 export const Playground: Story = {}
 
 const presets: GreeseEffectName[] = [

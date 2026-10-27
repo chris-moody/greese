@@ -1,9 +1,9 @@
 ---
 name: greese-lightweight
-description: Keeping GreeseUI and greese.js small - dependency policy, size budgets, how to measure JS/CSS cost per component and module, and tactics for cutting bytes. Use when adding dependencies or features, when size-limit fails, when reviewing a change for weight, or when asked to make something lighter or faster.
+description: Keeping greese ui and greese.js small - dependency policy, size budgets, how to measure JS/CSS cost per component and module, and tactics for cutting bytes. Use when adding dependencies or features, when size-limit fails, when reviewing a change for weight, or when asked to make something lighter or faster.
 ---
 
-# Keeping GreeseUI light
+# Keeping greese ui light
 
 Being lightweight is a product requirement, not a nicety. ADR 0006 sets the
 budgets and ADR 0008 covers greese.js.

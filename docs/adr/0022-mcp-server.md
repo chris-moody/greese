@@ -1,4 +1,4 @@
-# ADR 0022: An MCP server for GreeseUI, `@greese/mcp`
+# ADR 0022: An MCP server for greese ui, `@greese/mcp`
 
 - **Status:** Accepted
 - **Date:** 2026-10-23
@@ -6,7 +6,7 @@
 ## Context
 
 Coding assistants write a lot of the UI code people ship. Without help they
-guess at GreeseUI: prop names from other libraries, class names that don't
+guess at greese ui: prop names from other libraries, class names that don't
 exist, tokens by memory, inline `<svg>` icons. Everything they need is already
 in the repository, but spread out:
 

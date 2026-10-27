@@ -1,9 +1,9 @@
 ---
 name: greese-update-component
-description: Procedure for changing an existing GreeseUI component (props, behaviour, a11y, styles) without breaking consumers, and for keeping stories, tests, baselines, docs and ADRs in sync. Use when the user asks to fix, extend, refactor or restyle a component, or reports a component bug.
+description: Procedure for changing an existing greese ui component (props, behaviour, a11y, styles) without breaking consumers, and for keeping stories, tests, baselines, docs and ADRs in sync. Use when the user asks to fix, extend, refactor or restyle a component, or reports a component bug.
 ---
 
-# Changing an existing GreeseUI component
+# Changing an existing greese ui component
 
 Load `greese-conventions` first.
 

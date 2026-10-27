@@ -2,9 +2,9 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 <Meta title="Guides/Animation" />
 
-# Animation in GreeseUI
+# Animation in greese ui
 
-GreeseUI animates on three levels, from least to most code:
+greese ui animates on three levels, from least to most code:
 
 | Level                            | What                                                                                                            | Costs                                                                          |
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -25,7 +25,7 @@ someone follow what changed, not everywhere.
 
 ## The `greese` prop
 
-Every GreeseUI component that draws something accepts `greese`. That's all of
+Every greese ui component that draws something accepts `greese`. That's all of
 them except Slot, VisuallyHidden, Break, Spacer, Show/Hide, ThemeProvider and
 Toaster; a type check in the build enforces it.
 
@@ -309,7 +309,7 @@ Without it, everything still works; the runtime simply loads on first use.
 
 **Prefer CSS presets on the first screen instead.** Attaching the runtime
 before the first paint means the first full style calculation happens inside
-a JavaScript task. On the GreeseUI homepage, with a few dozen animated
+a JavaScript task. On the greese ui homepage, with a few dozen animated
 elements above the fold, that was most of 650 ms of blocking time on a
 throttled phone. With CSS presets (`fadeUp`, `scaleIn`, `pop` and so on, with
 `delay` and `stagger`) up top and the runtime left lazy, Total Blocking Time
@@ -459,7 +459,7 @@ const tl = useTimeline(
 
 ## greese.js directly
 
-Everything in **Guides/greese.js** works with GreeseUI components and
+Everything in **Guides/greese.js** works with greese ui components and
 tokens. Animate a token and every component that reads it follows:
 
 ```ts

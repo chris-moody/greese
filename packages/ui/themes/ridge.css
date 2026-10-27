@@ -1,10 +1,10 @@
 /**
  * Ridge: edges cut in ridges, like pinking shears. Containers have a zigzag hem that deepens when a card is hovered, controls and indicators zigzag ends, fields and alerts a zigzag start edge, tabs a zigzag top.
  *
- * A GreeseUI shape theme (ADR 0025): radii, and components outlined with one
+ * A greese ui shape theme (ADR 0025): radii, and components outlined with one
  * clip and one border ring each (ADR 0024), in @layer greese.overrides. It
  * sets no colors and no motion, so it goes with any color or motion theme.
- * Load it after GreeseUI's styles:
+ * Load it after greese ui's styles:
  *
  *   import '@greese/ui/themes/ridge.css'
  *

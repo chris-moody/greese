@@ -89,7 +89,7 @@ const call = async (name: string, args: Record<string, unknown> = {}) => {
   return { text: result.content.map((c) => c.text).join('\n'), isError: !!result.isError }
 }
 
-describe('the GreeseUI MCP server', () => {
+describe('the greese ui MCP server', () => {
   it('offers its tools, with instructions for the assistant', async () => {
     const { tools } = await client.listTools()
     expect(tools.map((t) => t.name).sort()).toEqual([

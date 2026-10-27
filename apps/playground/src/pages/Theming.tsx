@@ -60,7 +60,7 @@ const SchemeControls = () => {
 /** Smoke and theming fixtures for e2e/smoke.spec.ts and e2e/theming.spec.ts. */
 export const Theming = (): JSX.Element => (
   <main>
-    <h1>GreeseUI playground</h1>
+    <h1>greese ui playground</h1>
     <button type="button" data-testid="icon-button">
       <span aria-hidden="true">×</span>
       <VisuallyHidden>Close</VisuallyHidden>

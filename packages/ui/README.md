@@ -1,6 +1,6 @@
 # @greese/ui
 
-GreeseUI's CSS and design tokens, with no framework attached. Use it from
+greese ui's CSS and design tokens, with no framework attached. Use it from
 plain HTML, or under any framework: `@greese/react` renders the same markup,
 and the Svelte, Vue and Angular packages will too (ADR 0014).
 

@@ -87,14 +87,14 @@ export interface Metric {
   label: string
   key: string
   unit: string
-  /** GreeseUI with the whole stylesheet (`styles.css`). */
+  /** greese ui with the whole stylesheet (`styles.css`). */
   greese: number
-  /** GreeseUI with per-component CSS (`css/Stack.css`). */
+  /** greese ui with per-component CSS (`css/Stack.css`). */
   greeseCss: number
   mui: number
 }
 
-/** Which GreeseUI build a comparison uses. */
+/** Which greese ui build a comparison uses. */
 export type Setup = 'greese' | 'greeseCss'
 
 export const benchmark = {
@@ -117,7 +117,7 @@ export const outcome = (m: Metric, setup: Setup = 'greese'): 'win' | 'loss' | 'e
 }
 
 /**
- * The metrics from GreeseUI's biggest win over MUI to its smallest, then the
+ * The metrics from greese ui's biggest win over MUI to its smallest, then the
  * ties, then the losses: the order the homepage shows them in.
  */
 export const byWin = (setup: Setup = 'greese'): Metric[] =>

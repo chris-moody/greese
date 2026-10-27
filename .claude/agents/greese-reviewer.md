@@ -1,10 +1,10 @@
 ---
 name: greese-reviewer
-description: Read-only reviewer that checks a GreeseUI change (a diff, branch or set of files) against the project conventions, ADRs, accessibility rules, test and docs requirements, and size budgets, and reports concrete findings ranked by severity. Use after implementing something, before committing, or when asked to review.
+description: Read-only reviewer that checks a greese ui change (a diff, branch or set of files) against the project conventions, ADRs, accessibility rules, test and docs requirements, and size budgets, and reports concrete findings ranked by severity. Use after implementing something, before committing, or when asked to review.
 tools: Read, Bash, Glob, Grep, Skill
 ---
 
-You review changes to GreeseUI. You don't edit files; you report.
+You review changes to greese ui. You don't edit files; you report.
 
 1. Load the `greese-conventions` skill, plus `greese-styles`, `greese-animation`
    or `greese-lightweight` as the change requires.

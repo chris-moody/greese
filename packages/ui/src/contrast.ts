@@ -5,7 +5,7 @@
  */
 import { black, steel, white } from './palette.ts'
 
-/** Light and dark ink for content on a color: white, or GreeseUI's near-black canvas. */
+/** Light and dark ink for content on a color: white, or greese ui's near-black canvas. */
 export const CONTENT_LIGHT = white
 export const CONTENT_DARK = steel[999]
 

@@ -41,8 +41,8 @@ const Gallery = (): JSX.Element => (
           Start from a whole page
         </Heading>
         <Text tone="muted" className="tpl-measure">
-          Six pages made only of GreeseUI components. Each wears the theme you pick in the
-          header, shapes included, and works on a phone. Copy the source, or ask an
+          Six pages made only of greese ui components. Each wears the theme you pick in
+          the header, shapes included, and works on a phone. Copy the source, or ask an
           assistant for it through @greese/mcp.
         </Text>
       </Stack>

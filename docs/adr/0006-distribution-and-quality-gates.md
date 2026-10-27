@@ -111,7 +111,7 @@ Storybook with `@storybook/addon-docs`:
   need a page of their own too: see ADR 0010.)
 - **Color scheme:** the toolbar's scheme is applied from the globals channel,
   so it reaches docs pages too, and the docs container uses a Storybook theme
-  built from GreeseUI's tokens for the resolved scheme. Storybook's default
+  built from greese ui's tokens for the resolved scheme. Storybook's default
   docs theme is static light, which left dark-mode text on a white page.
 
 The site is hosted on GitHub Pages at `/storybook/`, beside the homepage and

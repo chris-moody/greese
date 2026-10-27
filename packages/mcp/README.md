@@ -1,7 +1,7 @@
 # @greese/mcp
 
-An [MCP](https://modelcontextprotocol.io) server for GreeseUI. It gives a
-coding assistant the facts it needs to write GreeseUI code instead of guessing
+An [MCP](https://modelcontextprotocol.io) server for greese ui. It gives a
+coding assistant the facts it needs to write greese ui code instead of guessing
 them:
 
 - the components;
@@ -12,7 +12,7 @@ them:
 - the shape themes;
 - complete page templates.
 
-It answers for the GreeseUI version it was built with.
+It answers for the greese ui version it was built with.
 
 ## Set up
 

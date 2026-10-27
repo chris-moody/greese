@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 
 /**
  * `?page=<name>` picks a page; each is its own chunk and imports its own CSS,
- * so the MUI benchmark never loads GreeseUI's stylesheet (or vice versa).
+ * so the MUI benchmark never loads greese ui's stylesheet (or vice versa).
  */
 const pages: Record<string, () => Promise<{ default: ComponentType }>> = {
   theming: () => import('./pages/Theming.tsx').then((m) => ({ default: m.Theming })),

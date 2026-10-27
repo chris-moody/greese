@@ -38,7 +38,7 @@ export const neutrals = (hue: string): Record<string, SchemeValue> => ({
 })
 
 export const PRESETS: Preset[] = [
-  // The official theme (theme.ts): GreeseUI with a warm orange primary.
+  // The official theme (theme.ts): greese ui with a warm orange primary.
   { id: 'greese', label: 'Greese', color: GREESE_SPEC.tokens!.color! },
   { id: 'default', label: 'Default', color: {} },
   {

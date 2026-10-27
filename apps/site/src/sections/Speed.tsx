@@ -31,15 +31,15 @@ import {
 import { Section } from '../Section.tsx'
 
 const SETUPS: Record<Setup, { label: string; legend: string }> = {
-  greese: { label: 'Whole stylesheet', legend: 'GreeseUI (whole stylesheet)' },
-  greeseCss: { label: 'Per-component CSS', legend: 'GreeseUI (per-component CSS)' },
+  greese: { label: 'Whole stylesheet', legend: 'greese ui (whole stylesheet)' },
+  greeseCss: { label: 'Per-component CSS', legend: 'greese ui (per-component CSS)' },
 }
 
 const verdict = (m: Metric, setup: Setup) => {
   const r = ratio(m, setup)
   switch (outcome(m, setup)) {
     case 'win':
-      return { tone: 'positive' as const, text: `GreeseUI ${r.toFixed(1)}× lower` }
+      return { tone: 'positive' as const, text: `greese ui ${r.toFixed(1)}× lower` }
     case 'loss':
       return { tone: 'warning' as const, text: `MUI ${(1 / r).toFixed(1)}× lower` }
     default:
@@ -86,7 +86,7 @@ const Chart = ({ setup }: { setup: Setup }): JSX.Element => (
         return (
           <Tooltip
             key={m.label}
-            content={`GreeseUI ${fmt(value, m.unit)}, MUI ${fmt(m.mui, m.unit)}`}
+            content={`greese ui ${fmt(value, m.unit)}, MUI ${fmt(m.mui, m.unit)}`}
           >
             <div className="site-metric" tabIndex={0}>
               <Stack direction="row" justify="between" align="baseline" gap={2}>
@@ -109,7 +109,7 @@ const Chart = ({ setup }: { setup: Setup }): JSX.Element => (
 
 const DataTable = (): JSX.Element => (
   <Table
-    caption="GreeseUI vs MUI benchmark medians"
+    caption="greese ui vs MUI benchmark medians"
     hideCaption
     stackBelow="sm"
     greese={{ inView: 'theme' }}
@@ -117,8 +117,8 @@ const DataTable = (): JSX.Element => (
     <TableHead>
       <TableRow>
         <TableHeaderCell>Metric</TableHeaderCell>
-        <TableHeaderCell align="end">GreeseUI</TableHeaderCell>
-        <TableHeaderCell align="end">GreeseUI, per-component CSS</TableHeaderCell>
+        <TableHeaderCell align="end">greese ui</TableHeaderCell>
+        <TableHeaderCell align="end">greese ui, per-component CSS</TableHeaderCell>
         <TableHeaderCell align="end">MUI</TableHeaderCell>
       </TableRow>
     </TableHead>
@@ -126,10 +126,10 @@ const DataTable = (): JSX.Element => (
       {byWin().map((m) => (
         <TableRow key={m.label}>
           <TableCell label="Metric">{m.label}</TableCell>
-          <TableCell label="GreeseUI" align="end">
+          <TableCell label="greese ui" align="end">
             {fmt(m.greese, m.unit)}
           </TableCell>
-          <TableCell label="GreeseUI, per-component CSS" align="end">
+          <TableCell label="greese ui, per-component CSS" align="end">
             {fmt(m.greeseCss, m.unit)}
           </TableCell>
           <TableCell label="MUI" align="end">
@@ -158,7 +158,7 @@ const Summary = ({ setup }: { setup: Setup }): JSX.Element => {
           {tally.win} of {benchmark.metrics.length}
         </Text>
         <Text variant="p3" tone="muted">
-          metrics where GreeseUI is ahead
+          metrics where greese ui is ahead
           {tally.even ? `, ${tally.even} even` : ''}
           {tally.loss ? `, ${tally.loss} where MUI is` : ''}
         </Text>
@@ -208,7 +208,7 @@ export const Speed = (): JSX.Element => {
             </SegmentedControl>
             {view === 'chart' && (
               <SegmentedControl
-                label="GreeseUI CSS"
+                label="greese ui CSS"
                 size="sm"
                 value={setup}
                 onValueChange={(v) => setSetup(v as Setup)}
@@ -227,12 +227,12 @@ export const Speed = (): JSX.Element => {
       </Card>
       <Text tone="muted" className="site-measure" greese={{ inView: 'theme' }}>
         Where MUI still comes out ahead: style recalculation. MUI generates one class per
-        distinct style at runtime, so each element matches a single short rule; GreeseUI’s
-        classes are compiled ahead of time, so an element matches several, inside cascade
-        layers that let your CSS win. That costs the browser a little more, and saves the
-        JavaScript that generating styles takes, which is the script time above.
+        distinct style at runtime, so each element matches a single short rule; greese
+        ui’s classes are compiled ahead of time, so an element matches several, inside
+        cascade layers that let your CSS win. That costs the browser a little more, and
+        saves the JavaScript that generating styles takes, which is the script time above.
         Per-component CSS, which ships only the stylesheets you import, narrows the gap.
-        GreeseUI adds {benchmark.styleElements.greese} &lt;style&gt; elements at runtime;
+        greese ui adds {benchmark.styleElements.greese} &lt;style&gt; elements at runtime;
         MUI adds {benchmark.styleElements.mui}. Run it yourself with{' '}
         <Code>npm run bench -w playground</Code>.
       </Text>

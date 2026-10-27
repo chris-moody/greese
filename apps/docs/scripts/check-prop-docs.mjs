@@ -1,5 +1,5 @@
 /**
- * Fails when a prop GreeseUI declares has no description: every row of every
+ * Fails when a prop greese ui declares has no description: every row of every
  * props table should say what the prop does, not just its type. Props React
  * or the DOM declare (onClick, aria-*) are left to their own docs.
  *
@@ -51,8 +51,10 @@ for (const doc of parser.parse(files).filter((d) => exported.has(d.displayName))
 }
 
 if (missing.length) {
-  console.error(`Props without a description (${missing.length}): add TSDoc saying what each does.`)
+  console.error(
+    `Props without a description (${missing.length}): add TSDoc saying what each does.`
+  )
   console.error([...new Set(missing)].join('\n'))
   process.exit(1)
 }
-console.log('Prop docs: every prop GreeseUI declares has a description.')
+console.log('Prop docs: every prop greese ui declares has a description.')

@@ -1,7 +1,7 @@
 /**
  * One story on a docs page: rendered in the page itself (it wears the page's
  * theme, scheme and motion), framed by its `layout`, with its code a click
- * away. Storybook's Canvas block, built from GreeseUI's own components.
+ * away. Storybook's Canvas block, built from greese ui's own components.
  */
 import { Component, useState, type JSX, type ReactNode } from 'react'
 import { Button, Stack, Text } from '@greese/react'

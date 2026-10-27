@@ -81,7 +81,7 @@ CSS presets never do.
 ### 4. Static cost: about 0.75 kB, shared once
 
 The resolver plus the island add about 0.75 kB (brotli) to an app that uses
-any GreeseUI component. It's shared, not per component.
+any greese ui component. It's shared, not per component.
 
 - **Per-component budgets** rose by that amount: Button 1.25 → 2.25 kB,
   Dialog 2.5 → 3.25 kB, and so on. All components 20 → 22 kB.
@@ -267,7 +267,7 @@ strings matched the whole document.
     engines.
   - **Visual:** the suite runs with `prefers-reduced-motion: reduce`, so
     every story snapshots its final state. Existing baselines were unchanged.
-- **Docs:** **Guides/Animation** (with GreeseUI), **Guides/greese.js**
+- **Docs:** **Guides/Animation** (with greese ui), **Guides/greese.js**
   (standalone, every install form), and **Motion/greese prop** stories.
 
 ## Addendum (2026-10-19): reveals wait until an element is clear

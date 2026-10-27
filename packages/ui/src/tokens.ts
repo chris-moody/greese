@@ -1,5 +1,5 @@
 /**
- * Design tokens. The single source of truth for every visual value in GreeseUI.
+ * Design tokens. The single source of truth for every visual value in greese ui.
  *
  * `scripts/build-css.ts` turns this module into dist/tokens.css and
  * dist/_tokens.scss; `createTheme()` overrides any of it at runtime-free cost.

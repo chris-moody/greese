@@ -5,7 +5,7 @@ import { UtilityClasses } from '../_shared/UtilityClasses.tsx'
 
 # Utility classes
 
-Single-purpose classes for markup, and for anything a GreeseUI component doesn't
+Single-purpose classes for markup, and for anything a greese ui component doesn't
 render: `<div class="display-flex justify-content-between p-4">`. Each class sets
 one property (a few set a small, named group, like `truncate`), and every value
 comes from the tokens, so themes and dark mode apply to them.
@@ -134,7 +134,7 @@ On the command: `--content`, `--out`, `--all` (every class, no scan),
   unlayered CSS still beats them.
 - **Style props** (`<Box p={4}>`, `<Stack gap={{ md: 6 }}>`) and utilities
   overlap on purpose. Props are typed and live inline on React components;
-  utilities are plain classes, for markup and for anything GreeseUI doesn't
+  utilities are plain classes, for markup and for anything greese ui doesn't
   render.
 - Colors are the theme's: `bg-primary` follows a `ThemeProvider` theme
   or `data-greese-theme`, and dark mode, like a component does.

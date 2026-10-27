@@ -5,7 +5,7 @@
 
 ## Context
 
-GreeseUI needs animation that's simple, configurable and light, and that can
+greese ui needs animation that's simple, configurable and light, and that can
 later power a `greese` prop on components (see
 [ADR 0009](0009-greese-prop.md)). The codebase this work comes
 from uses two systems:
@@ -25,7 +25,7 @@ choices of which time to sample.
 
 ## Decisions
 
-### 1. A separate package, bundled with GreeseUI
+### 1. A separate package, bundled with greese ui
 
 The package is `@greese/js`, branded greese.js. The unscoped `greese.js`
 name is taken on npm. It has no dependencies and no React; it works on any
@@ -70,7 +70,7 @@ long-running decorative loops.
   property.
 - **CSS properties** take camelCase names; bare numbers mean px except for
   unitless properties. Custom properties are supported too, including
-  GreeseUI tokens, so animating `--greese-color-accent` restyles every
+  greese ui tokens, so animating `--greese-color-accent` restyles every
   component.
 - **Text** counts between numbers, types on or deletes, or retypes.
 - **SVG attributes** the element already has (an attribute wins over a
@@ -134,7 +134,7 @@ readers read words, not letters.
   - `ease` alone: 0.85 kB.
   - The timeline core is about 2.5 kB, value mixing (colors, units, text)
     1.3 kB, easing 0.9 kB and targets 0.9 kB.
-- **GreeseUI's whole-library budget** is split in two: components only
+- **greese ui's whole-library budget** is split in two: components only
   (20 kB, greese.js excluded) and with greese.js (26 kB). The cost stays
   visible either way.
 - **Tests:**
@@ -175,7 +175,7 @@ readers read words, not letters.
 
 ## Addendum (2026-10-19): writes wait for reads, and `batch()`
 
-The GreeseUI homepage profiled at hundreds of milliseconds of main-thread
+The greese ui homepage profiled at hundreds of milliseconds of main-thread
 work starting a few dozen animations. `transformParts`, which reads computed
 style, accounted for most of it. Writes went out as each track was sampled,
 so every later computed-style read forced a style recalculation.
@@ -205,7 +205,7 @@ so every later computed-style read forced a style recalculation.
   their budgets, raised to 5.5 and 6.85 kB for this change.
 - **Amended 2026-10-24: computed colors.** Browsers compute `color-mix()` and
   the newer color spaces to `oklab()`, `oklch()` and `color(srgb …)`, which
-  `parseColor` didn't read, so an animation from a GreeseUI token (built
+  `parseColor` didn't read, so an animation from a greese ui token (built
   with `color-mix(in oklab, …)`) switched halfway instead of blending. It
   reads them now (other `color()` spaces still switch). Cost: everything
   6.42 → 6.52 kB, `animate` 5.49 → 5.61 kB and the `<script>` build 6.8 →

@@ -10,7 +10,7 @@
 
 ## Context
 
-GreeseUI was built in phases from a development plan. Other ADRs refer to
+greese ui was built in phases from a development plan. Other ADRs refer to
 those phases ("Phase 2's e2e tests…"), and the plan's goals and project-wide
 decisions (React floor, browser baseline, licence) were recorded nowhere
 else. Plans now stay local, so the parts with lasting value live here.

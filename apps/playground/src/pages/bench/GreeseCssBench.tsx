@@ -3,7 +3,7 @@ import '@greese/react/css/Stack.css'
 import { GreeseStacks } from './GreeseStacks.tsx'
 
 /**
- * GreeseUI with per-component CSS: only Stack's stylesheet (and the core it
+ * greese ui with per-component CSS: only Stack's stylesheet (and the core it
  * imports), as an app that imports `css/<Name>.css` ships. MUI likewise only
  * ever has the styles the page uses.
  */

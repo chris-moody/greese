@@ -1,9 +1,9 @@
 ---
 name: greese-animation
-description: Working on greese.js (packages/js) or adding motion to GreeseUI - the timeline/track model and its invariants, value mixing, adapters, tests, size budget, and when to use CSS instead. Use for any change to packages/js, for animation features, or for the `greese` prop (utils/greese.ts, components/Motion).
+description: Working on greese.js (packages/js) or adding motion to greese ui - the timeline/track model and its invariants, value mixing, adapters, tests, size budget, and when to use CSS instead. Use for any change to packages/js, for animation features, or for the `greese` prop (utils/greese.ts, components/Motion).
 ---
 
-# greese.js and motion in GreeseUI
+# greese.js and motion in greese ui
 
 Read ADR 0008 (`docs/adr/0008-greese-js-animation.md`) and, for component
 motion, ADR 0009 (`docs/adr/0009-greese-prop.md`), which also summarises the

@@ -92,7 +92,7 @@ export const ComponentPage = ({ page }: { page: DocsPage }): JSX.Element => {
         <>
           <Section>Try it</Section>
           <Text tone="muted" className="docs-measure">
-            Edit the code; the result updates as you type. Every GreeseUI component and
+            Edit the code; the result updates as you type. Every greese ui component and
             icon, and React&apos;s hooks, are in scope.
           </Text>
           <LiveCode story={primary.Story} meta={meta} annotation={primary.annotation} />

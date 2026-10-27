@@ -1,6 +1,6 @@
 /**
  * "Try it": the page's main example as editable code, rendered live as you
- * type (react-live transpiles the JSX in the browser). Everything GreeseUI
+ * type (react-live transpiles the JSX in the browser). Everything greese ui
  * exports, every icon, React's hooks and the docs' sample data are in scope,
  * so a visitor can change props, add components or wire up state.
  */
@@ -47,7 +47,7 @@ export const LiveCode = (): JSX.Element | null => {
     <>
       <Subheading>Try it</Subheading>
       <p>
-        Edit the code; the result updates as you type. Every GreeseUI component and icon,
+        Edit the code; the result updates as you type. Every greese ui component and icon,
         and React&apos;s hooks, are in scope.
       </p>
       <LiveProvider

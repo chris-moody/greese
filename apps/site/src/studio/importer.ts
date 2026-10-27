@@ -321,7 +321,7 @@ const cssOf = (rule: Rule, decls = rule.decls) => {
 /**
  * Reads a theme's CSS into a spec.
  *
- * @param css    any GreeseUI theme CSS: createTheme's, the kit's, hand-written
+ * @param css    any greese ui theme CSS: createTheme's, the kit's, hand-written
  * @param prefer the theme to take when the CSS holds several
  */
 export const importCss = (css: string, prefer?: string): ImportResult => {

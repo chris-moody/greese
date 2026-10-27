@@ -5,7 +5,7 @@
 
 ## Context
 
-GreeseUI styles through components and, for layout, typed style props on `Box`.
+greese ui styles through components and, for layout, typed style props on `Box`.
 Those props go inline (`var(--greese-space-N)`) because a class for every
 spacing prop at every breakpoint would be about 600 classes (ADR 0001). That
 leaves a gap against utility-first frameworks (Tailwind, Bootstrap utilities):
@@ -112,7 +112,7 @@ set it wants. A project's own classes or values are added in its own CSS in
   frameworks can use it through `className`.
 - Utilities and style props overlap on purpose: props are typed and inline for
   components in React; utilities are classes for markup and for anything not
-  rendered by a GreeseUI component.
+  rendered by a greese ui component.
 - `greese.css` does not include them. The full set is 7 kB brotli; the purged
   one is whatever a page uses.
 - Dynamically built class names must be safelisted. The tool cannot see them.

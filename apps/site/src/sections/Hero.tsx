@@ -102,7 +102,7 @@ export const Hero = (): JSX.Element => (
             // The page's largest paint: no delay, so it isn't held invisible.
             greese={{ enter: 'theme' }}
           >
-            GreeseUI is a mobile-first React library with zero-runtime CSS, native
+            greese ui is a mobile-first React library with zero-runtime CSS, native
             elements underneath, and an animation prop on every component. The whole
             library is {kB(facts.library.size)} of JavaScript; a Button alone is{' '}
             {kB(facts.button.size)}.

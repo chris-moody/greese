@@ -10,7 +10,7 @@ export interface MotionProps extends ComponentPropsWithRef<'div'>, GreeseProps {
 
 /**
  * The `greese` prop for any element: wrap it, or pass it as the child with
- * `asChild`. Every GreeseUI component already accepts `greese` directly.
+ * `asChild`. Every greese ui component already accepts `greese` directly.
  *
  * ```tsx
  * <Motion greese="fadeUp"><img src={hero} alt="" /></Motion>

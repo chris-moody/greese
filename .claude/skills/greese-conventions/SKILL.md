@@ -1,11 +1,11 @@
 ---
 name: greese-conventions
-description: The canonical rule set for GreeseUI code, styles, tests, docs and size. Load it before writing, changing or reviewing anything in packages/react, packages/ui, packages/js, apps/docs or apps/playground. The other greese-* skills and agents build on it.
+description: The canonical rule set for greese ui code, styles, tests, docs and size. Load it before writing, changing or reviewing anything in packages/react, packages/ui, packages/js, apps/docs or apps/playground. The other greese-* skills and agents build on it.
 ---
 
-# GreeseUI conventions
+# greese ui conventions
 
-GreeseUI is a mobile-first, TypeScript-first React 19 component library:
+greese ui is a mobile-first, TypeScript-first React 19 component library:
 
 - zero-runtime CSS: SCSS compiled at build time, plus CSS custom properties;
 - native elements first;

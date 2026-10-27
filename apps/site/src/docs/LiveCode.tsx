@@ -1,6 +1,6 @@
 /**
  * "Try it": a page's main example as editable code, rendered live as you type
- * (react-live transpiles the JSX in the browser). Everything GreeseUI exports,
+ * (react-live transpiles the JSX in the browser). Everything greese ui exports,
  * every icon, React's hooks and the docs' sample data are in scope, so a
  * visitor can change props, add components or wire up state. It starts from
  * the main story with the args its controls set.

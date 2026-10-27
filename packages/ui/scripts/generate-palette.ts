@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Writes src/palette.ts: GreeseUI's palette, 22 hues in 11 shades from 50
+ * Writes src/palette.ts: greese ui's palette, 22 hues in 11 shades from 50
  * (lightest) to 999 (darkest), generated from the curves below. The values are
  * this project's own: each shade is an OKLCH color (a lightness from the
  * shared curve, a chroma from the hue's peak, a hue angle), pulled into the sRGB

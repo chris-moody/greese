@@ -63,7 +63,7 @@ export const CodePanel = ({
           This studio keeps the theme in your browser. Download{' '}
           <code>greese-theme.json</code> to keep editing it locally with{' '}
           <code>npm run studio</code>, and use the SCSS in an app that compiles Sass, or
-          import the CSS after GreeseUI’s styles.
+          import the CSS after greese ui’s styles.
         </Text>
         <div>
           <Button
@@ -81,8 +81,8 @@ export const CodePanel = ({
     ) : (
       <Text variant="p3" tone="muted">
         Saving writes {outputs.length ? outputs.join(' and ') : 'these'} next to the theme
-        file. Use the SCSS in an app that compiles Sass, or import the CSS after
-        GreeseUI’s styles.
+        file. Use the SCSS in an app that compiles Sass, or import the CSS after greese
+        ui’s styles.
       </Text>
     )}
     {breakpoints && (

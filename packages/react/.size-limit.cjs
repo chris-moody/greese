@@ -173,7 +173,7 @@ module.exports = [
     import: '{ Dialog }',
     ignore: ['react', 'react-dom'],
     // 3.25 kB → 3.3 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    // 3.3 kB → 3.45 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 3.3 kB → 3.45 kB (2026-10-21): greese ui's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
     // 3.45 kB → 3.55 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.
@@ -196,7 +196,7 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 3.25 → 3.3 kB (2026-10-21): the resolver lists the CSS entrances from @greese/ui (generated from src/effects.ts) instead of keeping a regex of its own, about 15 B.
     // 3.3 kB → 3.35 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    // 3.35 kB → 3.5 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 3.35 kB → 3.5 kB (2026-10-21): greese ui's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
     // 3.5 kB → 3.6 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.
@@ -221,7 +221,7 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 3.25 → 3.3 kB (2026-10-21): the resolver lists the CSS entrances from @greese/ui (generated from src/effects.ts) instead of keeping a regex of its own, about 15 B.
     // 3.3 kB → 3.35 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    // 3.35 kB → 3.5 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 3.35 kB → 3.5 kB (2026-10-21): greese ui's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
     // 3.5 kB → 3.6 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.
@@ -236,7 +236,7 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 2.25 → 2.3 kB (2026-10-20): the `scope` option's static part (ADR 0017)
     // 2.3 kB → 2.35 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    // 2.35 kB → 2.55 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 2.35 kB → 2.55 kB (2026-10-21): greese ui's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
     // 2.55 kB → 2.6 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.
@@ -301,7 +301,7 @@ module.exports = [
     // (suspend snapping, check arrival, skip its own index echoes), about
     // 90 B; see the ADR 0011 ScrollCarousel addendum.
     // 3.5 kB → 3.55 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    // 3.55 kB → 3.7 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 3.55 kB → 3.7 kB (2026-10-21): greese ui's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
     // 3.7 kB → 3.8 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.
@@ -316,7 +316,7 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 2.5 → 2.75 kB (2026-10-19): half and quarter stars (`step`), with
     // pointer preview and drag-to-scrub, about 280 B (ADR 0011 addendum).
-    // 2.75 kB → 3 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 2.75 kB → 3 kB (2026-10-21): greese ui's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
     // 3 kB → 3.05 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.
@@ -366,7 +366,7 @@ module.exports = [
     import: '{ SpeedDial, SpeedDialAction }',
     ignore: ['react', 'react-dom'],
     // 3 kB → 3.05 kB (2026-10-21): the resolver lists the built-in exit effects (generated from @greese/ui's effects.ts) so an overlay can leave with any effect: a built-in's is CSS, one from defineGreeseEffect() needs the runtime. Tens of bytes.
-    // 3.05 kB → 3.25 kB (2026-10-21): GreeseUI's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
+    // 3.05 kB → 3.25 kB (2026-10-21): greese ui's own glyphs are now @greese/icons' (ADR 0020), made by createIcon, which every icon shares: about 0.13 kB once, and each icon a little more than the bare svg it replaces.
     // 3.25 kB → 3.3 kB (2026-10-23): the 15 built-in wipes and pockets (ADR 0025): the
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.

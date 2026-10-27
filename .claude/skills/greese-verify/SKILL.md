@@ -1,9 +1,9 @@
 ---
 name: greese-verify
-description: The full GreeseUI quality gate list with exact commands, what each proves, how to read failures, and the visual-baseline workflow. Use before declaring any change done, before committing, and when a CI gate fails.
+description: The full greese ui quality gate list with exact commands, what each proves, how to read failures, and the visual-baseline workflow. Use before declaring any change done, before committing, and when a CI gate fails.
 ---
 
-# Verifying GreeseUI changes
+# Verifying greese ui changes
 
 Writing the tests is `greese-testing`; this is the gate list for afterwards.
 Run from the repo root. Scale the gates to the change, but never skip one
