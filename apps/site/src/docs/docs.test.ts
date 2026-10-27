@@ -31,6 +31,13 @@ describe('toJsx', () => {
     )
   })
 
+  it('keeps the fragment round several elements passed in one prop', () => {
+    const footer = h(Fragment, null, h(Button, null, 'Cancel'), h(Button, null, 'Save'))
+    expect(toJsx(h(Stack, { footer } as never))).toBe(
+      '<Stack\n  footer={<>\n    <Button>Cancel</Button>\n    <Button>Save</Button>\n  </>}\n/>'
+    )
+  })
+
   it("names a story file's own component by its displayName, not its minified name", () => {
     const e = () => null
     ;(e as { displayName?: string }).displayName = 'Swatch'

@@ -1,7 +1,8 @@
 /**
  * "Try it": a page's main example as editable code, rendered live as you type
  * (react-live transpiles the JSX in the browser). Everything greese ui exports,
- * every icon, React's hooks and the docs' sample data are in scope, so a
+ * every icon, React's hooks, the docs' sample data and the story file's own
+ * helpers (`parameters.tryIt.scope`) are in scope, so a
  * visitor can change props, add components or wire up state. It starts from
  * the main story with the args its controls set.
  */
@@ -14,7 +15,7 @@ import { art, countries } from '../../../docs/stories/_shared/fixtures.tsx'
 import { useStoryArgs } from './args.ts'
 import type { ComposedStory, Meta, StoryAnnotation } from './load.ts'
 import { storyContext } from './StoryCanvas.tsx'
-import { storySnippet } from './toJsx.ts'
+import { storyScope, storySnippet } from './toJsx.ts'
 
 // react-live turns each key into a function parameter, so only plain
 // identifiers: a namespace import's `default` would be a syntax error.
@@ -40,6 +41,7 @@ export const LiveCode = ({
   annotation: StoryAnnotation
 }): JSX.Element | null => {
   const { args } = useStoryArgs(story)
+  const helpers = storyScope(meta.parameters)
   const snippet = storySnippet(
     annotation.render ?? meta.render,
     meta.component,
@@ -64,7 +66,7 @@ export const LiveCode = ({
   return (
     <LiveProvider
       code={code}
-      scope={scope}
+      scope={{ ...scope, ...helpers }}
       transformCode={transformCode}
       theme={THEME}
       enableTypeScript

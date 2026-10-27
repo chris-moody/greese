@@ -41,6 +41,16 @@ const nameOf = (type: unknown): string => {
   return component.displayName || component.name || component.render?.name || 'Component'
 }
 
+/**
+ * A story file's own helpers the live editor needs in scope
+ * (`parameters.tryIt.scope`: `{ Replay }`). Their names in its code come from
+ * their `displayName`s (server/storyNames.ts).
+ */
+export const storyScope = (parameters: Record<string, unknown> | undefined): Context => {
+  const tryIt = parameters?.tryIt as { scope?: Context } | false | undefined
+  return (tryIt && tryIt.scope) || {}
+}
+
 /** A component's name, as the library exports it: `Button`, `SearchIcon`. */
 export const componentName = (type: unknown): string => nameOf(type)
 
@@ -50,7 +60,12 @@ const quote = (text: string) => JSON.stringify(text)
 const valueOf = (value: unknown, indent: string): string | undefined => {
   if (value === undefined) return undefined
   if (typeof value === 'function') return '() => {}'
-  if (isValidElement(value)) return toJsx(value as AnyElement, indent).trim()
+  if (isValidElement(value)) {
+    // Several elements in one prop need their fragment back, or they aren't one expression.
+    if (value.type === Fragment && flatten(value).length > 1)
+      return `<>\n${toJsx(value, `${indent}  `)}\n${indent}</>`
+    return toJsx(value as AnyElement, indent).trim()
+  }
   if (Array.isArray(value))
     return `[${value.map((v) => valueOf(v, indent) ?? 'undefined').join(', ')}]`
   if (value && typeof value === 'object') {
@@ -112,7 +127,8 @@ export const toJsx = (element: ReactNode, indent = ''): string => {
 
   const oneLine = attrs.length ? ` ${attrs.join(' ')}` : ''
   const open =
-    `${indent}<${name}${oneLine}`.length + 1 > WIDTH && attrs.length > 1
+    (`${indent}<${name}${oneLine}`.length + 1 > WIDTH && attrs.length > 1) ||
+    attrs.some((a) => a.includes('\n'))
       ? `${indent}<${name}\n${attrs.map((a) => `${inner}${a}`).join('\n')}\n${indent}`
       : `${indent}<${name}${oneLine}`
   if (!kids.length) return `${open}${open.endsWith('\n' + indent) ? '' : ' '}/>`

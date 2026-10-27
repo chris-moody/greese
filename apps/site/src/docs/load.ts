@@ -58,7 +58,11 @@ export interface Meta {
   args?: Args
   render?: StoryAnnotation['render']
   decorators?: Decorator[]
-  /** `tryIt: false` leaves the page's Try it section out. */
+  /**
+   * `tryIt: false` leaves the page's Try it section out; `tryIt: { scope }`
+   * names the story file's own helpers the example uses (`{ Replay }`), for
+   * its code and the live editor.
+   */
   parameters?: Record<string, unknown>
 }
 
