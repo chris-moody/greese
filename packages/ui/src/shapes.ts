@@ -94,7 +94,10 @@ export interface ShapeTarget {
   variantTransitions?: Record<string, string[]>
   /** Don't animate parameters (the element's transitions are its own, e.g. a dialog's). */
   still?: boolean
-  /** Interactive: at least 44px on touch screens, since the shape clips the hit area too. */
+  /**
+   * At least 44px on touch screens, since the shape clips the hit area too.
+   * It changes the element's size, so the library's own targets don't use it.
+   */
   touch?: boolean
   /**
    * Draw a border along the shape (a pseudo-element). Off for elements with
@@ -492,6 +495,12 @@ export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): s
         rule(sels.map((s) => `${s}${pseudo}`).join(',\n'), {
           position: 'absolute',
           inset: '0',
+          // The pseudo-element may be the component's touch target (Button's
+          // ::after on coarse pointers), centred by a translate and sized past
+          // the box: undone, or the ring draws offset across the element.
+          'inline-size': 'auto',
+          'block-size': 'auto',
+          translate: 'none',
           'z-index': '1',
           'pointer-events': 'none',
           content: "''",
@@ -696,11 +705,11 @@ const FIELD: Omit<ShapeTarget, 'selector'> = {
  * entry also says what replaces them.
  */
 export const SHAPE_TARGETS: Record<string, Omit<ShapeTarget, 'selector'>> = {
-  // ::before draws the loading spinner and ::after the touch target, which a
-  // shaped button doesn't need: it is 44px on touch screens anyway.
+  // ::before draws the loading spinner, so the border takes ::after, the
+  // touch target: the clip would cut that off anyway. A shaped button keeps
+  // its size on touch screens, as every theme's does (ADR 0024 addendum).
   Button: {
     pseudo: '::after',
-    touch: true,
     borderColor: 'var(--greese-button-border, transparent)',
     transitions: fast('background-color', 'border-color', 'color'),
     scale: {
@@ -743,7 +752,6 @@ export const SHAPE_TARGETS: Record<string, Omit<ShapeTarget, 'selector'>> = {
   },
   Chip: {
     borderColor: 'var(--greese-color-border)',
-    touch: true,
     transitions: fast('background-color', 'color'),
   },
   Tile: { hover: false, active: false, borderColor: 'var(--greese-color-border)' },

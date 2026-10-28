@@ -130,11 +130,22 @@ describe('shapes', () => {
     ])
     expect(css.match(/--greese-shape-clip: polygon/g)).toHaveLength(1)
     expect(css).toMatch(/\.greese-shape-cut,\n\.greese-Button \{\n {2}--greese-shape-a/)
-    // Buttons keep 44px touch targets; their transitions are restated.
-    expect(css).toMatch(
-      /@media \(pointer: coarse\) \{\n {2}\.greese-Button \{\n {4}min-block-size: 44px;/
-    )
+    // Buttons keep their size on touch screens; their transitions are restated.
+    expect(css).not.toMatch(/min-block-size: 44px/)
     expect(css).toMatch(/\.greese-Button \{[^}]*transition: background-color/)
+  })
+
+  it('draw the border layer in place over a centred touch target', () => {
+    const css = shapeCss(bevel(), { selector: '.b' })
+    expect(css).toMatch(
+      /\.b::after \{\n {2}position: absolute;\n {2}inset: 0;\n {2}inline-size: auto;\n {2}block-size: auto;\n {2}translate: none;/
+    )
+  })
+
+  it('size a touch target only when asked', () => {
+    expect(shapeCss(bevel(), { selector: '.b', touch: true })).toMatch(
+      /@media \(pointer: coarse\) \{\n {2}\.b \{\n {4}min-block-size: 44px;/
+    )
   })
 
   it('show focus as a ring when the shape never becomes its box', () => {

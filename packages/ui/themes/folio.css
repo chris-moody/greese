@@ -124,6 +124,9 @@
   .greese-shape-folio-indicator::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -167,6 +170,9 @@
   .greese-shape-folio-bubble::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -214,6 +220,9 @@
   .greese-Tile::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -247,6 +256,9 @@
   .greese-Alert::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -289,6 +301,9 @@
   .greese-Badge::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -319,6 +334,9 @@
   .greese-Button::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -328,12 +346,6 @@
   @media (prefers-reduced-motion: no-preference) {
     .greese-Button {
       transition: background-color var(--greese-duration-fast) var(--greese-easing-standard), border-color var(--greese-duration-fast) var(--greese-easing-standard), color var(--greese-duration-fast) var(--greese-easing-standard), --greese-shape-s var(--greese-duration-normal) var(--greese-easing-standard), --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard), --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard), --greese-shape-bleed 0s linear;
-    }
-  }
-  @media (pointer: coarse) {
-    .greese-Button {
-      min-block-size: 44px;
-      min-inline-size: 44px;
     }
   }
   @media (forced-colors: active) {
@@ -355,6 +367,9 @@
   .greese-Card::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -394,6 +409,9 @@
   .greese-Chip::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -403,12 +421,6 @@
   @media (prefers-reduced-motion: no-preference) {
     .greese-Chip {
       transition: background-color var(--greese-duration-fast) var(--greese-easing-standard), color var(--greese-duration-fast) var(--greese-easing-standard), --greese-shape-s var(--greese-duration-normal) var(--greese-easing-standard), --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard), --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard), --greese-shape-bleed 0s linear;
-    }
-  }
-  @media (pointer: coarse) {
-    .greese-Chip {
-      min-block-size: 44px;
-      min-inline-size: 44px;
     }
   }
   @media (forced-colors: active) {
@@ -430,6 +442,9 @@
   .greese-Collapsible-trigger::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -463,6 +478,9 @@
   .greese-Popover::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -496,6 +514,9 @@
   .greese-Textarea::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -542,6 +563,9 @@
   .greese-OtpField-slot::before {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -579,6 +603,9 @@
   .greese-Segment::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -612,6 +639,9 @@
   .greese-SegmentedControl-track::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -642,6 +672,9 @@
   .greese-Toast::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
@@ -672,6 +705,9 @@
   .greese-Tooltip::after {
     position: absolute;
     inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
     z-index: 1;
     pointer-events: none;
     content: "";
