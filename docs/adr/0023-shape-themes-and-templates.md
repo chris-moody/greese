@@ -54,7 +54,8 @@ three:
    `clip-path` to them.
 4. **Touch targets stay 44px.** A shaped button is at least 44 × 44px on
    coarse pointers, because the clip also clips the hit area. Elevated cards
-   get a border instead of their shadow.
+   get a border instead of their shadow. _Amended by
+   [ADR 0024's addendum](0024-shapes.md): a shaped button keeps its size._
 
 **Animation interpolates between shapes of the same kind.** The transitions
 and keyframes go between polygons with the same number of points, or between

@@ -93,7 +93,7 @@ clipped element whole.
 - **Motion:** parameter transitions are inside
   `prefers-reduced-motion: no-preference`.
 - **Touch:** shaped interactive components are at least 44px on coarse
-  pointers.
+  pointers. _Superseded by the addendum below: they keep their size._
 - **Forced colors:** shapes switch off, and the system's borders and outlines
   show.
 
@@ -137,3 +137,23 @@ properties to tweak per instance. Theme Studio's Shapes tab edits all of it:
 - A component not in `SHAPE_TARGETS` takes the defaults (`::after`, the border
   token). Adding one means checking which pseudo-element is free and which
   transitions it has.
+
+## Addendum (2026-10-28): shaped buttons keep their size
+
+Shaped buttons and chips were at least 44 × 44px on coarse pointers (the
+Touch rule above, and ADR 0023's rule 4). That made themes change layout:
+on a phone a small icon button grew from 32px to 44px under Bevel, Ticket,
+Ridge and Folio but not under Soft, Pebble, Extrude or Tilt, and the site's
+header ran off the screen. A shape theme sets shapes, not sizes (ADR 0025),
+so the library's targets no longer set `touch`: a shaped button is the size
+it is in every theme.
+
+The cost: the clip also clips the hit area, so a shaped button's tap area is
+its shape, not the 44px that an unshaped one's `::after` reaches. `touch`
+stays on `ShapeTarget` for a theme or app that would rather grow the
+element.
+
+The same pass fixed the border layer on touch screens. The ring takes
+Button's `::after`, which on coarse pointers is the touch target, centred
+with `translate: -50% -50%` and sized past the box. The ring now resets
+`translate` and its size, so it no longer draws offset across the button.
