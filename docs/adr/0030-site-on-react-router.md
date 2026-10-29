@@ -116,5 +116,16 @@ No budget was raised.
   forward, hash links, and the studio's tab in the query string. The e2e
   suite runs on the dev server, which doesn't prerender, so the deferred boot
   is covered by Lighthouse and the build's prerender check.
-- The site's React Router adapter for page transitions (ADR 0029 §6) lives
-  here, in `src/router.tsx`'s neighbourhood.
+- The site's React Router adapter for page transitions (ADR 0029 §6) is in
+  `src/router.tsx`: `useSitePageNavigate` (React Router's navigate behind
+  `usePageNavigate`, taking app hrefs) and `PageNavigateContext`, which
+  `RouteLink` and `useNavigateTo` use. It's under 30 lines and relies on no
+  React Router internals, so by ADR 0029 §6 it stays a recipe.
+- **Total Blocking Time is over budget again (open):** 112–130 ms against
+  100 ms, after Phases 2–7 (Phase 1 measured 85–92 ms).
+  - Two experiments ruled out `PageTransition` itself (108–123 ms without
+    it) and the motion presets now imported at boot (114–174 ms without
+    them).
+  - The growth is spread across the library's stylesheet (+1.5 kB) and its
+    JavaScript.
+  - FCP and LCP (1.21 s) and performance (0.97–0.99) pass.

@@ -328,6 +328,40 @@ duration, delay, ease }`, in kebab-case and CSS times.
   greese.js, from `PageTransition`'s `exit`, which is code, not CSS.
   A theme assigns effects by name.
 
+### Addendum: the web app (Phase 7, 2026-10-29)
+
+- **The site changes pages with `PageTransition`** around its outlet; the
+  header stays put, outside it.
+  - The shell makes one `usePageNavigate` and shares it.
+  - `RouteLink` and search navigate through it, with app hrefs, base
+    included, so a navigation's depth comes from the URL as it is. React
+    Router gets its own path.
+- **Live on the homepage, snapshots elsewhere.** The homepage's hero is a
+  choreography of entrances, so it leaves live (`auto`): its members go in
+  turn, then the page changes. On other pages the only members on screen
+  are the footer's. `auto` made a docs page's "next" link (beside the
+  footer) leave live, fading the footer alone, so those pages are
+  `snapshot`.
+- **A live page starts no view transition.** Every greese boundary
+  resolves to `none` (`greese-live`), so React doesn't call
+  `startViewTransition` at all. The site's e2e checks the members' exit
+  styles instead.
+- **A template's title morphs** from its gallery card into its page's bar
+  (`PageShare`, `['template', id]`). The page itself loads lazily behind a
+  spinner, so the title is what's on screen on both sides.
+- **Scrolling happens before the snapshot.** `ScrollOnRoute` scrolls in
+  layout effects, so a pushed page's snapshot is taken at the top. It skips
+  the first render, where the browser has already placed the page.
+- **Tested** in the site's e2e:
+  - leaving the homepage plays its members' exits and no snapshot;
+  - a card to its template is deeper, with the title's shared group;
+  - the bar back is back and shallower;
+  - docs page to docs page is a sibling;
+  - a Studio tab changes in place.
+
+  A production probe found no hydration errors; the markers' `useId` matches
+  through the static router.
+
 ## Consequences
 
 - New size budgets: the view-transition CSS, `PageTransition` and the live
