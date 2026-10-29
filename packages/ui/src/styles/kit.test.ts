@@ -263,10 +263,131 @@ describe('SCSS kit: motion()', () => {
     ).toThrow(/no exit `fade-up`/)
   })
 
+  it('assigns page transition roles with motion-defaults() (ADR 0029)', () => {
+    const css = compile(`@include greese.motion-defaults((
+      page: pocket-up,
+      page-exit: pocket-out-down,
+      page-back: none,
+      page-duration: slow,
+      page-ease: enter,
+      share-duration: 300ms,
+      page-stagger: 0.04s,
+      page-exit-order: together,
+      page-mode: live,
+    ));`)
+    expect(Object.fromEntries(declared(css, ':root'))).toMatchObject({
+      '--greese-motion-page': 'greese-pocket-up',
+      '--greese-motion-page-exit': 'greese-pocket-out-down',
+      '--greese-motion-page-back': 'none',
+      '--greese-motion-page-duration': 'var(--greese-duration-slow)',
+      '--greese-motion-page-ease': 'var(--greese-easing-enter)',
+      '--greese-motion-share-duration': '300ms',
+      '--greese-motion-page-stagger': '0.04s',
+      '--greese-motion-page-exit-order': 'together',
+      '--greese-motion-page-mode': 'live',
+    })
+    // The keyframes its snapshots play come with it, the exit's included.
+    expect(css).toMatch(/@keyframes greese-pocket-up/)
+    expect(css).toMatch(/@keyframes greese-pocket-out-down/)
+    expect(() =>
+      compile('@include greese.motion-defaults((page-exit: fade-up));')
+    ).toThrow(/no exit `fade-up` for `page-exit`/)
+    expect(() => compile('@include greese.motion-defaults((page: fade-out));')).toThrow(
+      /no entrance `fade-out` for `page`/
+    )
+    expect(() =>
+      compile('@include greese.motion-defaults((page-mode: sometimes));')
+    ).toThrow(/`page-mode` is one of auto, snapshot, live/)
+  })
+
+  it('names selector rules only during a greese page change, with page-transitions()', () => {
+    const css = compile(`@include greese.page-transitions((
+      'header, footer': still,
+      '.greese-Card': (exit: scale-out, enter: pop-in, duration: fast, delay: 0.05s),
+    ));`)
+    const during = ':root:active-view-transition-type(greese-page)'
+    expect(declared(css, `${during} :is(header, footer)`)).toEqual([])
+    expect(css).toMatch(
+      /:is\(header, footer\) \{\s*view-transition-name: match-element;\s*view-transition-class: greese-PageTransition greese-PageTransition--still;/
+    )
+    expect(css).toMatch(
+      /:is\(\.greese-Card\) \{\s*view-transition-name: match-element;\s*view-transition-class: greese-PageTransition greese-PageTransition--theme greese-page-base-2;/
+    )
+    expect(
+      ruleIn(
+        css,
+        '::view-transition-old(*.greese-page-base-2)',
+        '@layer greese.overrides',
+        motionOk
+      )
+    ).toEqual([
+      ['animation-name', 'greese-scale-out'],
+      ['animation-duration', 'var(--greese-duration-fast)'],
+      ['animation-delay', '0.05s'],
+    ])
+    expect(
+      ruleIn(
+        css,
+        '::view-transition-new(*.greese-page-base-2)',
+        '@layer greese.overrides',
+        motionOk
+      )
+    ).toEqual([
+      ['animation-name', 'greese-pop-in'],
+      ['animation-duration', 'var(--greese-duration-fast)'],
+      ['animation-delay', '0.05s'],
+    ])
+    expect(css).toMatch(/@keyframes greese-scale-out/)
+    expect(() =>
+      compile(`@include greese.page-transitions(('main': (exit: fade-up)));`)
+    ).toThrow(/`main` has no exit `fade-up`/)
+    expect(() =>
+      compile(`@include greese.page-transitions(('main': (speed: 2)));`)
+    ).toThrow(/`main` has no option `speed`/)
+  })
+
+  it('scopes selector rules to the theme they belong to', () => {
+    const css = compile(`@include greese.theme(ocean) {
+      @include greese.page-transitions(('main': (exit: fade-out)));
+    }`)
+    expect(css).toContain(
+      ':root:active-view-transition-type(greese-page) [data-greese-theme=ocean] :is(main)'
+    )
+    expect(css).toContain('greese-page-ocean-1')
+  })
+
   it('keeps a built-in effect’s plan: effect() refuses its name', () => {
     expect(() =>
       compile('@include greese.effect(fade-up, (enter: (from: (opacity: 0))));')
     ).toThrow(/built-in effect/)
+  })
+
+  it('gives every effect a page transition form: entrances arrive, exits leave', () => {
+    const built = readFileSync(
+      new URL('../../dist/css/PageTransition.css', import.meta.url),
+      'utf8'
+    ).replace(/\s+/g, ' ')
+    const entrances = new Set(entranceNames())
+    for (const effect of effectNames) {
+      const name = effectClass(effect)
+      if (entrances.has(effect)) {
+        // The new snapshot plays the entrance's own keyframes (Motion.css).
+        expect(built, name).toContain(
+          `::view-transition-new(*.greese-PageTransition--enter-${name}) { animation-name: greese-${name};`
+        )
+      } else {
+        // The old snapshot plays the exit, from rest to where it ends.
+        expect(effectPlan(effect).leave?.[0]?.[0], name).toBe('from')
+        expect(built, name).toContain(
+          `::view-transition-old(*.greese-PageTransition--exit-${name}) { animation-name: greese-${name};`
+        )
+        expect(built, name).toContain(`@keyframes greese-${name} {`)
+      }
+    }
+    // Reduced motion: greese snapshots don't animate at all.
+    expect(built).toContain(
+      '@media (prefers-reduced-motion: reduce) { ::view-transition-group(*.greese-PageTransition), ::view-transition-old(*.greese-PageTransition), ::view-transition-new(*.greese-PageTransition) { animation: none;'
+    )
   })
 
   it('accepts every entrance src/effects.ts defines, and the built CSS has its keyframes', () => {
@@ -342,9 +463,11 @@ describe('SCSS kit: effect()', () => {
         `(${Object.entries(values)
           .map(([p, v]) => `'${p}': '${v}'`)
           .join(', ')})`
+      const steps = (list: NonNullable<typeof plan.enter>) =>
+        `(${list.map(([at, d]) => `'${at}': ${decl(d)}`).join(', ')})`
       return plan.enter
-        ? `(enter: (${plan.enter.map(([at, d]) => `'${at}': ${decl(d)}`).join(', ')}))`
-        : `(exit: ${Object.keys(plan.exit).length ? decl(plan.exit) : '()'})`
+        ? `(enter: ${steps(plan.enter)})`
+        : `(exit: ${Object.keys(plan.exit).length ? decl(plan.exit) : '()'}, leave: ${steps(plan.leave!)})`
     }
     // One compile for every effect (one each took seconds with 66 of them).
     const css = squash(

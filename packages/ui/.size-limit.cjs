@@ -38,7 +38,20 @@ module.exports = [
     // engine's fill pseudo-element, which can't share a selector list), and the
     // frames Textarea, FileInput and Menu's viewport gained so shape themes reach
     // them (23.53 kB).
-    limit: '23.6 kB',
+    // 23.6 kB → 24.9 kB (2026-10-29): page transitions (ADR 0029): the 44 exits'
+    // keyframes from rest (an overlay's exit only transitions to its end values,
+    // so they didn't exist), a view-transition class per effect, and the theme's
+    // page roles (24.84 kB). Per-component CSS keeps it off pages that don't use
+    // it: css/PageTransition.css, budgeted below.
+    limit: '24.9 kB',
+  },
+  {
+    name: 'CSS: css/PageTransition.css',
+    path: 'dist/css/PageTransition.css',
+    rolldown: false,
+    // Page transitions alone (ADR 0029), without core.css: exit keyframes and
+    // the view-transition rules (1.74 kB).
+    limit: '1.8 kB',
   },
   {
     name: 'CSS: utilities.css (the whole set)',

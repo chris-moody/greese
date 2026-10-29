@@ -586,6 +586,19 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 ///              `normal`, `slow`) or a time
 ///   enter-ease, exit-ease                      an easing token (`standard`,
 ///              `enter`, `exit`), an ease name or a curve
+///   page, page-back                            a page transition's entrance,
+///              going forward and back (ADR 0029; base: fade-in)
+///   page-exit, page-back-exit                  how the old page leaves: an exit
+///              by name (base: fade-out)
+///   page-duration, share-duration              a duration token or a time:
+///              the page's, and a shared element's morph
+///   page-ease, share-ease                      an easing, as above
+///   page-stagger                               seconds between a live exit's
+///              members (base: the entrance stagger)
+///   page-exit-order                            `reverse` (base), `document` or
+///              `together`: the order a live exit's members leave in
+///   page-mode                                  `auto` (base), `snapshot` or
+///              `live`: how a page change plays
 ///
 /// `motion-defaults((content: wipe-open-x, dialog: iris-in, dialog-exit: iris-out,
 /// content-duration: slow))`. A role points at an effect or a token: the
@@ -605,18 +618,44 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
     drawer
   );
   $exits: (overlay-exit, dialog-exit, popover-exit, tooltip-exit, drawer-exit);
+
+  // A page transition's roles (ADR 0029): its entrances and exits are
+  // `@keyframes` names, played on the view transition's snapshots.
+  $page-entrances: (page, page-back);
+  $page-exits: (page-exit, page-back-exit);
+  $page-keywords: (
+    page-exit-order: (
+      reverse,
+      document,
+      together,
+    ),
+    page-mode: (
+      auto,
+      snapshot,
+      live,
+    ),
+  );
   $durations: (
     content-duration,
     rows-duration,
     overlay-duration,
     toast-duration,
     backdrop-duration,
-    exit-duration
+    exit-duration,
+    page-duration,
+    share-duration
   );
-  $eases: (enter-ease, exit-ease);
+  $eases: (enter-ease, exit-ease, page-ease, share-ease);
   $known: list.join(
     list.join(list.join($pacing, $entrances), $exits),
     list.join($durations, $eases)
+  );
+  $known: list.join(
+    $known,
+    list.join(
+      list.join($page-entrances, $page-exits),
+      list.join((page-stagger), map.keys($page-keywords))
+    )
   );
   $root: ':root';
 
@@ -634,7 +673,37 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
           'motion-defaults() has no option `#{$key}`. Options: #{_join($known)}.'
         );
 
-        @if _in($exits, $key) {
+        @if _in($page-entrances, $key) or _in($page-exits, $key) {
+          // A page role names the keyframes its snapshot plays.
+          $name: _kebab($value);
+          $kind: enter;
+          $what: 'entrance';
+          $ends: 'at rest';
+
+          @if _in($page-exits, $key) {
+            $kind: exit;
+            $what: 'exit';
+            $ends: 'away from rest';
+          }
+
+          @if $name != none {
+            $checked: _check(
+              _in(_effects-with($kind), $name),
+              'motion-defaults(): no #{$what} `#{$name}` for `#{$key}`. Effects that end #{$ends}: #{_join(_effects-with($kind))}.'
+            );
+            $name: greese-#{$name};
+          }
+
+          --greese-motion-#{$key}: #{$name};
+        } @else if map.has-key($page-keywords, $key) {
+          $allowed: map.get($page-keywords, $key);
+          $checked: _check(
+            _in($allowed, $value),
+            'motion-defaults(): `#{$key}` is one of #{_join($allowed)}, not `#{$value}`.'
+          );
+
+          --greese-motion-#{$key}: #{$value};
+        } @else if _in($exits, $key) {
           // An exit by name: everything it sets, under the role's prefix.
           $name: _kebab($value);
           $checked: _check(
@@ -679,7 +748,9 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
   $played: ();
 
   @each $key, $value in $options {
-    @if _in($entrances, $key) and _kebab($value) != none {
+    $role: _in($entrances, $key) or _in($page-entrances, $key) or _in($page-exits, $key);
+
+    @if $role and _kebab($value) != none {
       $played: map.set($played, _kebab($value), true);
     }
   }
@@ -688,7 +759,157 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
     @layer greese.utilities {
       @media (prefers-reduced-motion: no-preference) {
         @each $name, $unused in $played {
-          @include effect.keyframes($name, map.get(_effects(), $name));
+          @include effect.keyframes($name, map.get(_effects(), $name), $leave: true);
+        }
+      }
+    }
+  }
+}
+
+/// Selector rules for page transitions (ADR 0029): during a greese page
+/// change, each selector's elements get a snapshot of their own, with their
+/// own effects, rather than moving with the page.
+///
+///   page-transitions((
+///     'header, footer': still,
+///     '.greese-Card': (exit: scale-out, enter: pop-in, duration: fast),
+///     '[data-hero]': (exit: fade-out-up, delay: 0.1s),
+///   ))
+///
+/// A rule is `still` (kept in place, not animated) or a map of `enter` (an
+/// entrance), `exit` (an exit), `duration` (a token or a time), `delay` and
+/// `ease`. What a rule leaves out follows the theme's page roles. The elements
+/// are named only while a greese page change runs
+/// (`:active-view-transition-type(greese-page)`), so other view transitions
+/// never capture them; where that selector or `match-element` isn't supported
+/// they move with the page. Every named element is a snapshot of its own:
+/// name sections, not every item of a long list.
+@mixin page-transitions($rules) {
+  $known: (enter, exit, duration, delay, ease);
+  $during: ':root:active-view-transition-type(greese-page)';
+  $prefix: base;
+  $played: ();
+  $i: 0;
+
+  @if $_theme {
+    $prefix: $_theme;
+  }
+
+  @include _layer-order;
+
+  @layer greese.overrides {
+    @each $selector, $rule in $rules {
+      $i: $i + 1;
+      $class: greese-page-#{$prefix}-#{$i};
+      $classes: string.unquote(
+        'greese-PageTransition greese-PageTransition--theme #{$class}'
+      );
+
+      @if $rule == still {
+        $classes: string.unquote('greese-PageTransition greese-PageTransition--still');
+      } @else {
+        $checked: _check(
+          meta.type-of($rule) == map,
+          'page-transitions(): the rule for `#{$selector}` is `still` or a map of #{_join($known)}.'
+        );
+
+        @each $key, $unused in $rule {
+          $checked: _check(
+            _in($known, $key),
+            'page-transitions(): `#{$selector}` has no option `#{$key}`. Options: #{_join($known)}.'
+          );
+        }
+      }
+
+      // Named only while a greese page change runs; under a theme, only
+      // inside it (the attribute may be on the root itself).
+      @if $_theme {
+        #{$during} [#{$_theme-attr}='#{$_theme}'] :is(#{$selector}),
+        :root[#{$_theme-attr}='#{$_theme}']:active-view-transition-type(greese-page)
+          :is(#{$selector}) {
+          view-transition-name: match-element;
+          view-transition-class: $classes;
+        }
+      } @else {
+        #{$during} :is(#{$selector}) {
+          view-transition-name: match-element;
+          view-transition-class: $classes;
+        }
+      }
+
+      @if $rule != still {
+        $pacing: ();
+
+        @if map.has-key($rule, duration) {
+          $duration: map.get($rule, duration);
+
+          @if _in((fast, normal, slow), $duration) {
+            $duration: var(--greese-duration-#{$duration});
+          }
+
+          $pacing: map.set($pacing, animation-duration, $duration);
+        }
+
+        @if map.has-key($rule, delay) {
+          $pacing: map.set($pacing, animation-delay, map.get($rule, delay));
+        }
+
+        @if map.has-key($rule, ease) {
+          $pacing: map.set(
+            $pacing,
+            animation-timing-function,
+            _ease(map.get($rule, ease))
+          );
+        }
+
+        @each $side, $kind in (enter: enter, exit: exit) {
+          $name: null;
+
+          @if map.has-key($rule, $side) {
+            $name: _kebab(map.get($rule, $side));
+
+            @if $name != none {
+              $checked: _check(
+                _in(_effects-with($kind), $name),
+                'page-transitions(): `#{$selector}` has no #{$side} `#{$name}`. Effects that #{$side}: #{_join(_effects-with($kind))}.'
+              );
+              $played: map.set($played, $name, true);
+            }
+          }
+
+          $pseudo: new;
+
+          @if $side == exit {
+            $pseudo: old;
+          }
+
+          @if $name or $pacing != () {
+            @media (prefers-reduced-motion: no-preference) {
+              ::view-transition-#{$pseudo}(*.#{$class}) {
+                @if $name == none {
+                  animation-name: none;
+                } @else if $name {
+                  animation-name: greese-#{$name};
+                }
+
+                @each $property, $value in $pacing {
+                  #{$property}: #{_css($value)};
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // The keyframes the rules play, so they work without PageTransition's
+  // stylesheet: the effects' own, unchanged.
+  @if list.length($played) > 0 {
+    @layer greese.utilities {
+      @media (prefers-reduced-motion: no-preference) {
+        @each $name, $unused in $played {
+          @include effect.keyframes($name, map.get(_effects(), $name), $leave: true);
         }
       }
     }
@@ -754,7 +975,7 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
     @include effect.classes($name, $plan);
 
     @media (prefers-reduced-motion: no-preference) {
-      @include effect.keyframes($name, $plan);
+      @include effect.keyframes($name, $plan, $leave: true);
     }
   }
 }

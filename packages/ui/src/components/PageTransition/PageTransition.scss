@@ -1,0 +1,119 @@
+// Page transitions (ADR 0029): greese effects played on the snapshots of a
+// view transition. React's <ViewTransition> (or a page's own
+// `view-transition-class`) names the classes below; the browser snapshots
+// the old and new page, and these rules animate `::view-transition-old`
+// (the page leaving) and `::view-transition-new` (the page arriving):
+//   greese-PageTransition                 every greese snapshot: the timing
+//   greese-PageTransition--theme          the motion theme's page roles
+//   greese-PageTransition--theme-back     the same, going back
+//   greese-PageTransition--enter-<name>   an entrance on the new snapshot
+//   greese-PageTransition--exit-<name>    an exit on the old snapshot
+//   greese-PageTransition--share          a shared element's morph (its group)
+//   greese-PageTransition--still          not animated at all
+// Transition types (`greese-back`, …) pick between these classes in React's
+// <ViewTransition> props, which works wherever React does; the CSS doesn't
+// depend on `:active-view-transition-type()`. Entrances play the effects' own
+// `@keyframes` (Motion.scss); exits play the `leave` keyframes written here.
+// Every rule sits behind `prefers-reduced-motion: no-preference`, and under
+// `reduce` greese snapshots don't animate: React doesn't honour it for view
+// transitions, so this does.
+
+@use 'sass:map';
+@use '../../../dist/maps' as defaults;
+@use '../../styles/effect';
+
+@layer greese.utilities {
+  @media (prefers-reduced-motion: no-preference) {
+    // The page's pacing: the theme's `page-duration` and `page-ease`, or a
+    // normal duration on the library's ease out. `both`: the old snapshot holds
+    // where its exit ends until the transition is over.
+    ::view-transition-old(*.greese-PageTransition),
+    ::view-transition-new(*.greese-PageTransition) {
+      animation-fill-mode: both;
+    }
+
+    // The group (where the pair moves and resizes) keeps the same pace as its
+    // snapshots, or it would morph at the browser's own 250 ms.
+    ::view-transition-group(*.greese-PageTransition),
+    ::view-transition-old(*.greese-PageTransition),
+    ::view-transition-new(*.greese-PageTransition) {
+      animation-duration: var(
+        --greese-motion-page-duration,
+        var(--greese-duration-normal)
+      );
+      animation-timing-function: var(--greese-motion-page-ease, var(--greese-ease-out));
+    }
+
+    // The theme's page roles (`motion-defaults()`), a cross-fade without them.
+    ::view-transition-new(*.greese-PageTransition--theme) {
+      animation-name: var(--greese-motion-page, greese-fade-in);
+    }
+
+    ::view-transition-old(*.greese-PageTransition--theme) {
+      animation-name: var(--greese-motion-page-exit, greese-fade-out);
+    }
+
+    ::view-transition-new(*.greese-PageTransition--theme-back) {
+      animation-name: var(
+        --greese-motion-page-back,
+        var(--greese-motion-page, greese-fade-in)
+      );
+    }
+
+    ::view-transition-old(*.greese-PageTransition--theme-back) {
+      animation-name: var(
+        --greese-motion-page-back-exit,
+        var(--greese-motion-page-exit, greese-fade-out)
+      );
+    }
+
+    // A named effect, after the theme's rules so it wins where both are set.
+    @each $name, $plan in defaults.$effects {
+      @if map.get($plan, enter) {
+        ::view-transition-new(*.greese-PageTransition--enter-#{$name}) {
+          animation-name: greese-#{$name};
+        }
+      } @else {
+        ::view-transition-old(*.greese-PageTransition--exit-#{$name}) {
+          animation-name: greese-#{$name};
+        }
+      }
+    }
+
+    // A shared element morphs from where it was to where it is: its group
+    // moves and resizes, at the theme's `share-duration` and `share-ease`.
+    ::view-transition-group(*.greese-PageTransition--share) {
+      animation-duration: var(
+        --greese-motion-share-duration,
+        var(--greese-motion-page-duration, var(--greese-duration-normal))
+      );
+      animation-timing-function: var(
+        --greese-motion-share-ease,
+        var(--greese-motion-page-ease, var(--greese-ease-out))
+      );
+    }
+
+    // The exits' keyframes, from rest to where each ends (src/effects.ts).
+    @each $name, $plan in defaults.$effects {
+      @if not map.get($plan, enter) {
+        @include effect.keyframes($name, $plan, $leave: true);
+      }
+    }
+  }
+
+  // Kept in place: a header or footer the page change leaves alone, and every
+  // greese snapshot under reduced motion, where the page simply changes.
+  ::view-transition-group(*.greese-PageTransition--still),
+  ::view-transition-old(*.greese-PageTransition--still),
+  ::view-transition-new(*.greese-PageTransition--still) {
+    animation: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*.greese-PageTransition),
+    ::view-transition-old(*.greese-PageTransition),
+    ::view-transition-new(*.greese-PageTransition) {
+      animation: none;
+    }
+  }
+}

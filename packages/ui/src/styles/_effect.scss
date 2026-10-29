@@ -26,11 +26,20 @@
   }
 }
 
-/// Its `@keyframes`, ending at the element's own styles.
-@mixin keyframes($name, $plan) {
-  @if map.get($plan, enter) {
+/// Its `@keyframes`, ending at the element's own styles. With `$leave`, an
+/// effect that ends away from rest gets its too, from rest to where it ends:
+/// what a page transition's old snapshot plays (ADR 0029). Motion.scss leaves
+/// them out, so pages without page transitions don't carry them.
+@mixin keyframes($name, $plan, $leave: false) {
+  $steps: map.get($plan, enter);
+
+  @if not $steps and $leave {
+    $steps: map.get($plan, leave);
+  }
+
+  @if $steps {
     @keyframes greese-#{$name} {
-      @each $at, $declarations in map.get($plan, enter) {
+      @each $at, $declarations in $steps {
         #{$at} {
           @each $property, $value in $declarations {
             #{$property}: #{string.unquote($value)};

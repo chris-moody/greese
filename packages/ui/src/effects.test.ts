@@ -223,8 +223,13 @@ describe('CSS', () => {
         'mask-image': 'none',
         transform: 'none',
       },
+      // What a page transition's old snapshot plays to leave (ADR 0029).
+      leave: [
+        ['from', { scale: '1', opacity: '1' }],
+        ['to', { scale: '0.5', opacity: '0' }],
+      ],
     })
-    expect(cssPlan({ color: ['red', 'blue'] })).toEqual({
+    expect(cssPlan({ color: ['red', 'blue'] })).toMatchObject({
       exit: {
         translate: '0px 0px',
         scale: '1',

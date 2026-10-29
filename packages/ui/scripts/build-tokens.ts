@@ -197,18 +197,22 @@ $type-props: (${typeProps.map(cssProperty).join(', ')});
 
 // The greese prop effects, from src/effects.ts: name -> (enter: step -> (property:
 // value)) for those that end at rest (Motion.scss writes their @keyframes), or
-// (exit: (property: value)) for those that end away from it (the custom
-// properties an overlay's exit sets). The kit's motion() takes these names.
+// (exit: (property: value), leave: step -> (property: value)) for those that
+// end away from it (the custom properties an overlay's exit sets, and the
+// keyframes a page transition's old snapshot plays). The kit's motion() takes
+// these names.
 $effects: ${scssMap(
   effectNames.map((name) => {
-    const { enter, exit } = effectPlan(name)
+    const { enter, exit, leave } = effectPlan(name)
     const declarations = (values: Record<string, string>) =>
       scssMap(Object.entries(values).map(([property, value]) => [property, q(value)]))
     return [
       effectClass(name),
       enter
         ? `(enter: ${scssMap(enter.map(([at, values]) => [at, declarations(values)])).replace(/\n/g, '\n  ')})`
-        : `(exit: ${Object.keys(exit).length ? declarations(exit) : '()'})`,
+        : `(exit: ${Object.keys(exit).length ? declarations(exit) : '()'}, leave: ${scssMap(
+            (leave ?? []).map(([at, values]) => [at, declarations(values)])
+          ).replace(/\n/g, '\n  ')})`,
     ]
   })
 )};

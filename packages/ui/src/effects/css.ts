@@ -136,6 +136,13 @@ export interface CssPlan {
    * theme assigns around it.
    */
   exit: Record<string, string>
+  /**
+   * When it ends away from rest, its whole `@keyframes`, from the element's
+   * resting state to where it ends: what a page transition's old snapshot
+   * plays to leave (ADR 0029). An overlay's exit doesn't use them; it
+   * transitions to `exit`'s values.
+   */
+  leave?: CssStep[]
 }
 
 /**
@@ -178,6 +185,7 @@ export const cssPlan = (frames: Parameters<typeof toCssSteps>[0]): CssPlan => {
       // iris starts just past the far corner, at 142%).
       ...(masked && { 'mask-from': steps[0]?.[1]['mask-size'] ?? '100% 100%' }),
     },
+    leave: steps,
   }
 }
 
@@ -204,11 +212,12 @@ export const effectCss = (name: string, plan: CssPlan): string => {
         exit.map(([property, value]) => `--greese-motion-exit-${property}: ${value};`)
       )
     )
-  if (plan.enter)
+  const keyframes = plan.enter ?? plan.leave
+  if (keyframes)
     rules.push(
       `@media (prefers-reduced-motion: no-preference) {\n${block(
         `@keyframes greese-${kebabName}`,
-        plan.enter.map(([at, declarations]) =>
+        keyframes.map(([at, declarations]) =>
           block(
             at,
             Object.entries(declarations).map(
