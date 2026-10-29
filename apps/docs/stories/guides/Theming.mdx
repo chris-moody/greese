@@ -397,9 +397,16 @@ name, durations and easings by token name or as values:
 | `overlay-exit`, `dialog-exit`, `popover-exit`, `tooltip-exit`, `drawer-exit`                                    | how they leave                                  | a fade toward the origin                             |
 | `content-duration`, `rows-duration`, `overlay-duration`, `toast-duration`, `backdrop-duration`, `exit-duration` | how long                                        | `normal`, `slow`, `fast`, `normal`, `normal`, `fast` |
 | `enter-ease`, `exit-ease`                                                                                       | the curves                                      | `enter`, `exit`                                      |
+| `page`, `page-back`                                                                                             | a page transition's new page, forward and back  | a fade in                                            |
+| `page-exit`, `page-back-exit`                                                                                   | how the old page leaves                         | a fade out                                           |
+| `page-duration`, `share-duration`, `page-ease`, `share-ease`                                                    | a page change's pace, a shared element's morph  | `normal`, the library's ease out                     |
+| `page-stagger`, `page-exit-order`, `page-mode`                                                                  | a live exit's spacing and order, the mode       | the entrance stagger, `reverse`, `auto`              |
 
 Each is a custom property, `--greese-motion-<role>` (an exit role's are
-`--greese-motion-<role>-<property>`), so plain CSS can assign one too. A
+`--greese-motion-<role>-<property>`), so plain CSS can assign one too. The
+page roles drive page transitions (ADR 0029): a page role's value is the
+`@keyframes` its snapshot plays, and the kit's `page-transitions()` gives parts
+of a page effects of their own. A
 component's `motion()` in the kit, or an instance's `greese` prop, overrides
 its role.
 
