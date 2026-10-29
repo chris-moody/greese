@@ -17,6 +17,8 @@ const pages: Record<string, () => Promise<{ default: ComponentType }>> = {
     import('./pages/Additions.tsx').then((m) => ({ default: m.Additions })),
   catalogue: () =>
     import('./pages/Catalogue.tsx').then((m) => ({ default: m.Catalogue })),
+  pages: () =>
+    import('./pages/PageTransitions.tsx').then((m) => ({ default: m.PageTransitions })),
   'bench-greese': () =>
     import('./pages/bench/GreeseBench.tsx').then((m) => ({ default: m.GreeseBench })),
   'bench-greese-css': () =>
