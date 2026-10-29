@@ -169,6 +169,49 @@ CSS and runtime turn every page transition into an instant swap under
   - groups take the page's duration;
   - under reduced motion, greese snapshots don't animate.
 
+### Addendum: React (Phase 3, 2026-10-29)
+
+- **One direction type per navigation.** React joins the classes of every
+  active type it finds in a `<ViewTransition>` map (and `none` wins). A back
+  navigation carrying both a forward and a back class would leave the
+  winning effect to stylesheet order. So `usePageNavigate` adds exactly one
+  of `greese-forward`, `greese-back` or `greese-replace`, and
+  `PageTransition` maps only those (plus your own types), with
+  `default: 'none'`. Anything else that updates the page in a transition,
+  like a tab or filter kept in the URL, changes it in place.
+- **Back is going back in the history or up the URL** (`greese-shallower`),
+  so "up" plays the theme's back roles. A change of hash or query alone isn't
+  a page change, and gets no greese types.
+- **Types reach a router's own commit.** `usePageNavigate` adds them inside
+  an async transition and awaits the router's navigate in it. React
+  entangles the router's later `startTransition` with the pending action.
+  Checked with React Router's data router and an async loader: one view
+  transition, carrying the types.
+- **`share` is a component, `PageShare`, not a `greese` prop option.** In
+  the prop, its name and class helpers ship with every component's static
+  part, about 0.2 kB each, for a feature few pages use (Stack went from 2.44
+  to 2.64 kB). As a component, only pages that share pay. Keys, names and
+  groups are as in §7. The duplicate-name check is React's own development
+  warning, which names the derived `greese-share-<group>-<id>`.
+- **The root is the browser's.** React starts a view transition when
+  `Suspense` reveals content while a `<ViewTransition>` is mounted (a lazy
+  route arriving), and the browser cross-fades the document root, everything
+  outside a named boundary. greese leaves that to the browser, and its own
+  boundaries resolve to `none` outside greese navigations.
+- **Server Components:** `PageTransition` and `PageShare` take only data
+  (React's server build exports `ViewTransition`). `usePageNavigate` is the
+  client part. Before React 19.3 both render their children unchanged; the
+  peer range stays `^19.0.0`.
+- **Budgets:** `{ PageTransition, PageShare, usePageNavigate }` is 1.53 kB.
+  The whole library went 29.4 → 30.6 kB, and 34.85 → 36 kB with greese.js.
+- **Tested in five engines** (Chromium, Firefox, WebKit, Pixel 7, iPhone):
+  - a link plays the named exit and the theme's entrance, with the
+    navigation's types;
+  - going up plays the back entrance;
+  - a link to the current page starts nothing;
+  - under reduced motion, no greese animation plays;
+  - without `startViewTransition`, the page still changes.
+
 ## Consequences
 
 - New size budgets: the view-transition CSS, `PageTransition` and the live
