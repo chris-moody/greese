@@ -1,0 +1,133 @@
+import { expect, test, type Page } from '@playwright/test'
+
+/**
+ * The site's page transitions (ADR 0029): every route change goes through
+ * PageTransition, typed by its direction. Each view transition is recorded
+ * as it starts: its types, then (once ready) the pseudo-elements it animates.
+ */
+type Recorded = { types: string[]; played: string[] | null }
+
+const record = (page: Page) =>
+  page.addInitScript(() => {
+    const w = window as Window & { transitions?: Recorded[] }
+    w.transitions = []
+    const start = document.startViewTransition?.bind(document)
+    if (!start) return
+    document.startViewTransition = ((arg: StartViewTransitionOptions) => {
+      const transition = start(arg)
+      const entry: Recorded = { types: [...(arg.types ?? [])], played: null }
+      w.transitions!.push(entry)
+      void transition.ready
+        .then(() => {
+          entry.played = document
+            .getAnimations()
+            .map((a) => {
+              const effect = a.effect as KeyframeEffect | null
+              return `${effect?.pseudoElement ?? ''} ${(a as CSSAnimation).animationName ?? ''}`
+            })
+            .filter((s) => s.startsWith('::'))
+        })
+        .catch(() => {})
+      return transition
+    }) as typeof document.startViewTransition
+  })
+
+/** The last page change's view transition, once it's ready. */
+const last = (page: Page) =>
+  page.evaluate(() => {
+    const t = (window as Window & { transitions?: Recorded[] })
+      .transitions!.filter((e) => e.types.includes('greese-page'))
+      .at(-1)
+    return t?.played ? t : null
+  })
+
+const count = (page: Page) =>
+  page.evaluate(
+    () => (window as Window & { transitions?: Recorded[] }).transitions!.length
+  )
+
+test.beforeEach(({ page }) => record(page))
+
+test('leaving the homepage leaves live: its members go, the last first, then the page changes', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.locator('.greese-Header').waitFor()
+  // The homepage's entrances, settled.
+  await page.waitForTimeout(1500)
+  const before = await count(page)
+  await page.locator('.site-nav-links').getByRole('link', { name: 'Templates' }).click()
+  // The hero's members play their exits on the real page (no snapshot).
+  const exits = await page.evaluate(() =>
+    [
+      ...document.querySelectorAll<HTMLElement>(
+        'main ~ * .greese-Motion--enter, .greese-Motion--enter'
+      ),
+    ]
+      .map((el) => el.style.animation)
+      .filter((a) => a.includes('greese-motion-page-exit'))
+  )
+  expect(exits.length).toBeGreaterThan(0)
+  await expect(page).toHaveURL(/\/templates$/)
+  await expect(page.locator('#main a[href$="/templates/finance"]')).toBeVisible()
+  // A live exit plays no snapshot over it.
+  expect(await count(page)).toBe(before)
+})
+
+test('a template card morphs into its page’s title, going deeper; its bar goes back', async ({
+  page,
+}) => {
+  await page.goto('/templates')
+  const card = page.locator('#main a[href$="/templates/finance"]')
+  await card.waitFor()
+  await card.click()
+  await expect(page).toHaveURL(/\/templates\/finance$/)
+  await expect.poll(() => last(page)).not.toBeNull()
+  const forward = (await last(page))!
+  expect(forward.types).toEqual(
+    expect.arrayContaining(['greese-page', 'greese-forward', 'greese-deeper'])
+  )
+  expect(forward.played!.join('\n')).toContain(
+    '::view-transition-group(greese-share-template-finance)'
+  )
+
+  const before = await count(page)
+  await page.locator('.tpl-bar').getByRole('link', { name: 'Templates' }).click()
+  await expect(page).toHaveURL(/\/templates$/)
+  await expect.poll(() => count(page)).toBeGreaterThan(before)
+  await expect
+    .poll(async () => (await last(page))?.types)
+    .toEqual(expect.arrayContaining(['greese-back', 'greese-shallower']))
+})
+
+test('one docs page to the next is a sibling', async ({ page }) => {
+  await page.goto('/docs/forms-button')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Button')
+  await page.locator('a[rel="next"]').click()
+  await expect(page.getByRole('heading', { level: 1 })).not.toHaveText('Button')
+  await expect
+    .poll(async () => (await last(page))?.types)
+    .toEqual(expect.arrayContaining(['greese-page', 'greese-forward', 'greese-sibling']))
+})
+
+test('a studio tab changes in place', async ({ page }) => {
+  await page.goto('/studio')
+  await page.getByRole('tab', { name: 'Tokens' }).waitFor()
+  const before = await page.evaluate(
+    () =>
+      (window as Window & { transitions?: Recorded[] }).transitions!.filter((t) =>
+        t.types.includes('greese-page')
+      ).length
+  )
+  await page.getByRole('tab', { name: 'Motion' }).click()
+  await expect(page).toHaveURL(/\?tab=motion$/)
+  await page.waitForTimeout(300)
+  expect(
+    await page.evaluate(
+      () =>
+        (window as Window & { transitions?: Recorded[] }).transitions!.filter((t) =>
+          t.types.includes('greese-page')
+        ).length
+    )
+  ).toBe(before)
+})
