@@ -265,6 +265,40 @@ CSS and runtime turn every page transition into an instant swap under
 - **Budgets:** page transitions 1.6 → 3 kB (2.94 kB), the whole library
   30.6 → 31.8 kB and 36 → 37.2 kB, and the lazy runtime 11 → 11.05 kB.
 
+### Addendum: motion themes (Phase 5, 2026-10-29)
+
+- **Every motion theme assigns page roles** in keeping with its description,
+  forward and back:
+
+  | Theme  | Forward: enter / exit           | Back: enter / exit              | Pace                     |
+  | ------ | ------------------------------- | ------------------------------- | ------------------------ |
+  | Snappy | `pop-in` / `pop-out`            | the same                        | 0.25 s, exits `together` |
+  | Gentle | `blur-in` / `fade-out`          | the same                        | 0.7 s                    |
+  | Wipe   | `wipe-left` / `none`            | `wipe-right` / `none`           | 0.6 s                    |
+  | Pocket | `pocket-up` / `pocket-out-down` | `pocket-down` / `pocket-out-up` | 0.55 s                   |
+  | Depth  | `flip-right` / `flip-out-left`  | `flip-left` / `flip-out-right`  | 0.6 s                    |
+
+  Each takes its theme's stagger and enter ease. Wipe's old page doesn't
+  move: the new one wipes over it. Depth's flips continue one rotation, so
+  a page turns like a cube's face, the other way going back. Gentle's
+  `blur-in` keeps its opacity, so the old page fades out beneath it.
+
+- **Checked in Chromium** on a plain page with each theme's CSS. Every
+  theme's snapshots play its roles, forward and back, and screenshots at
+  45% show the intended motion.
+- **Page roles reach snapshots only from `:root`.** View-transition
+  pseudo-elements inherit from the document element. The motion theme files
+  write their roles on `:root`, so they apply. A theme scoped to an element
+  (`ThemeProvider`, the kit's `theme(name)`) can't reach the snapshots,
+  though its live exits still follow it, since members inherit from their
+  own ancestors.
+- **Stored themes migrate.** A theme worn or saved whose motion is exactly a
+  preset's from before page transitions wears that preset as it is now, so
+  the motion menu still knows it. Motion of your own is left as it is.
+- **The Studio's importer** reads the page roles back from a theme's CSS,
+  and every effect's keyframes, entrances and exits, count as implied by
+  the roles that play them.
+
 ## Consequences
 
 - New size budgets: the view-transition CSS, `PageTransition` and the live
