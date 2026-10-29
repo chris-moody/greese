@@ -300,6 +300,23 @@ describe('SCSS kit: motion()', () => {
     ).toThrow(/`page-mode` is one of auto, snapshot, live/)
   })
 
+  it('puts a named theme’s page roles on the root too, where snapshots inherit from', () => {
+    const css = compile(`@include greese.theme(ocean) {
+      @include greese.motion-defaults((theme: fade-up, page: pocket-up, page-exit: pocket-out-down, share-duration: slow));
+    }`)
+    const scoped = Object.fromEntries(declared(css, '[data-greese-theme=ocean]'))
+    expect(scoped).toMatchObject({
+      '--greese-motion-theme': 'greese-fade-up',
+      '--greese-motion-page': 'greese-pocket-up',
+    })
+    // Only the page roles reach the root, and only while the theme is on the page.
+    expect(declared(css, ':root:has([data-greese-theme=ocean])')).toEqual([
+      ['--greese-motion-page', 'greese-pocket-up'],
+      ['--greese-motion-page-exit', 'greese-pocket-out-down'],
+      ['--greese-motion-share-duration', 'var(--greese-duration-slow)'],
+    ])
+  })
+
   it('names selector rules only during a greese page change, with page-transitions()', () => {
     const css = compile(`@include greese.page-transitions((
       'header, footer': still,

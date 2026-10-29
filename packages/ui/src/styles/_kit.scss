@@ -568,6 +568,92 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
   @return $out;
 }
 
+/// The custom properties `motion-defaults()` writes for `$options`, checked.
+@mixin _role-declarations($options, $lists) {
+  $known: map.get($lists, known);
+  $entrances: map.get($lists, entrances);
+  $exits: map.get($lists, exits);
+  $page-entrances: map.get($lists, page-entrances);
+  $page-exits: map.get($lists, page-exits);
+  $page-keywords: map.get($lists, page-keywords);
+  $durations: map.get($lists, durations);
+  $eases: map.get($lists, eases);
+
+  @each $key, $value in $options {
+    $checked: _check(
+      _in($known, $key),
+      'motion-defaults() has no option `#{$key}`. Options: #{_join($known)}.'
+    );
+
+    @if _in($page-entrances, $key) or _in($page-exits, $key) {
+      // A page role names the keyframes its snapshot plays.
+      $name: _kebab($value);
+      $kind: enter;
+      $what: 'entrance';
+      $ends: 'at rest';
+
+      @if _in($page-exits, $key) {
+        $kind: exit;
+        $what: 'exit';
+        $ends: 'away from rest';
+      }
+
+      @if $name != none {
+        $checked: _check(
+          _in(_effects-with($kind), $name),
+          'motion-defaults(): no #{$what} `#{$name}` for `#{$key}`. Effects that end #{$ends}: #{_join(_effects-with($kind))}.'
+        );
+        $name: greese-#{$name};
+      }
+
+      --greese-motion-#{$key}: #{$name};
+    } @else if map.has-key($page-keywords, $key) {
+      $allowed: map.get($page-keywords, $key);
+      $checked: _check(
+        _in($allowed, $value),
+        'motion-defaults(): `#{$key}` is one of #{_join($allowed)}, not `#{$value}`.'
+      );
+
+      --greese-motion-#{$key}: #{$value};
+    } @else if _in($exits, $key) {
+      // An exit by name: everything it sets, under the role's prefix.
+      $name: _kebab($value);
+      $checked: _check(
+        _in(_effects-with(exit), $name),
+        'motion-defaults(): no exit `#{$name}` for `#{$key}`. Effects that end away from rest: #{_join(_effects-with(exit))}.'
+      );
+
+      @each $property, $v in map.get(map.get(_effects(), $name), exit) {
+        --greese-motion-#{$key}-#{$property}: #{string.unquote($v)};
+      }
+    } @else {
+      @if $key == ease {
+        $value: _ease($value);
+      } @else if _in($entrances, $key) {
+        $name: _kebab($value);
+
+        @if $name == none {
+          $value: none;
+        } @else {
+          $checked: _check(
+            _in(_effects-with(enter), $name),
+            'motion-defaults(): no entrance `#{$name}` for `#{$key}`. Effects that end at rest: #{_join(_effects-with(enter))}.'
+          );
+          $value: greese-#{$name};
+        }
+      } @else if _in($durations, $key) and _in((fast, normal, slow), $value) {
+        $value: var(--greese-duration-#{$value});
+      } @else if _in($eases, $key) and _in((standard, enter, exit), $value) {
+        $value: var(--greese-easing-#{$value});
+      } @else if _in($eases, $key) {
+        $value: _ease($value);
+      }
+
+      --greese-motion-#{$key}: #{_css($value)};
+    }
+  }
+}
+
 /// Tunes every `greese` prop entrance on the page (or in the theme), and
 /// assigns the theme's motion roles (ADR 0025):
 ///
@@ -665,79 +751,39 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
     $root: "[#{$_theme-attr}='#{$_theme}']";
   }
 
+  $lists: (
+    known: $known,
+    entrances: $entrances,
+    exits: $exits,
+    page-entrances: $page-entrances,
+    page-exits: $page-exits,
+    page-keywords: $page-keywords,
+    durations: $durations,
+    eases: $eases,
+  );
+
   @layer greese.overrides {
     #{$root} {
+      @include _role-declarations($options, $lists);
+    }
+
+    // A theme scoped to an element: its page roles go on the root as well,
+    // while that element is on the page, because a view transition's
+    // snapshots inherit from the root, not from anything inside the page
+    // (ADR 0029).
+    @if $_theme {
+      $page: ();
+
       @each $key, $value in $options {
-        $checked: _check(
-          _in($known, $key),
-          'motion-defaults() has no option `#{$key}`. Options: #{_join($known)}.'
-        );
+        @if string.index('#{$key}', 'page') == 1 or string.index('#{$key}', 'share') == 1
+        {
+          $page: map.set($page, $key, $value);
+        }
+      }
 
-        @if _in($page-entrances, $key) or _in($page-exits, $key) {
-          // A page role names the keyframes its snapshot plays.
-          $name: _kebab($value);
-          $kind: enter;
-          $what: 'entrance';
-          $ends: 'at rest';
-
-          @if _in($page-exits, $key) {
-            $kind: exit;
-            $what: 'exit';
-            $ends: 'away from rest';
-          }
-
-          @if $name != none {
-            $checked: _check(
-              _in(_effects-with($kind), $name),
-              'motion-defaults(): no #{$what} `#{$name}` for `#{$key}`. Effects that end #{$ends}: #{_join(_effects-with($kind))}.'
-            );
-            $name: greese-#{$name};
-          }
-
-          --greese-motion-#{$key}: #{$name};
-        } @else if map.has-key($page-keywords, $key) {
-          $allowed: map.get($page-keywords, $key);
-          $checked: _check(
-            _in($allowed, $value),
-            'motion-defaults(): `#{$key}` is one of #{_join($allowed)}, not `#{$value}`.'
-          );
-
-          --greese-motion-#{$key}: #{$value};
-        } @else if _in($exits, $key) {
-          // An exit by name: everything it sets, under the role's prefix.
-          $name: _kebab($value);
-          $checked: _check(
-            _in(_effects-with(exit), $name),
-            'motion-defaults(): no exit `#{$name}` for `#{$key}`. Effects that end away from rest: #{_join(_effects-with(exit))}.'
-          );
-
-          @each $property, $v in map.get(map.get(_effects(), $name), exit) {
-            --greese-motion-#{$key}-#{$property}: #{string.unquote($v)};
-          }
-        } @else {
-          @if $key == ease {
-            $value: _ease($value);
-          } @else if _in($entrances, $key) {
-            $name: _kebab($value);
-
-            @if $name == none {
-              $value: none;
-            } @else {
-              $checked: _check(
-                _in(_effects-with(enter), $name),
-                'motion-defaults(): no entrance `#{$name}` for `#{$key}`. Effects that end at rest: #{_join(_effects-with(enter))}.'
-              );
-              $value: greese-#{$name};
-            }
-          } @else if _in($durations, $key) and _in((fast, normal, slow), $value) {
-            $value: var(--greese-duration-#{$value});
-          } @else if _in($eases, $key) and _in((standard, enter, exit), $value) {
-            $value: var(--greese-easing-#{$value});
-          } @else if _in($eases, $key) {
-            $value: _ease($value);
-          }
-
-          --greese-motion-#{$key}: #{_css($value)};
+      @if list.length($page) > 0 {
+        :root:has(#{$root}) {
+          @include _role-declarations($page, $lists);
         }
       }
     }
