@@ -8,6 +8,7 @@
 //   greese-PageTransition--theme-back     the same, going back
 //   greese-PageTransition--enter-<name>   an entrance on the new snapshot
 //   greese-PageTransition--exit-<name>    an exit on the old snapshot
+//   greese-PageTransition--enter-none, --exit-none   that side doesn't animate
 //   greese-PageTransition--share          a shared element's morph (its group)
 //   greese-PageTransition--still          not animated at all
 // Transition types (`greese-back`, …) pick between these classes in React's
@@ -78,6 +79,12 @@
           animation-name: greese-#{$name};
         }
       }
+    }
+
+    // One side still while the other plays (`enter: 'none'` or `exit: 'none'`).
+    ::view-transition-new(*.greese-PageTransition--enter-none),
+    ::view-transition-old(*.greese-PageTransition--exit-none) {
+      animation-name: none;
     }
 
     // A shared element morphs from where it was to where it is: its group
