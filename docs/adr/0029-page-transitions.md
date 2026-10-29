@@ -212,6 +212,59 @@ CSS and runtime turn every page transition into an instant swap under
   - under reduced motion, no greese animation plays;
   - without `startViewTransition`, the page still changes.
 
+### Addendum: live exits and timelines (Phase 4, 2026-10-29)
+
+- **Live exits are CSS, chosen by script, as scopes are.**
+  - A page's members are its outermost on-screen elements with greese
+    entrances.
+  - Each gets an inline `animation`: its own exit, else the theme's
+    `page-exit` (`page-back-exit` going back), at the page's pace, delayed by
+    its position in `reverse` order (the default), `document` order, or
+    `together`.
+  - No greese.js loads. Under reduced motion the keyframes don't exist, so
+    nothing plays.
+  - The hook waits for those animations, capped at 2 s.
+- **The commit waits for the exit.** `usePageNavigate` starts the router's
+  navigate inside its async transition, so the next page loads during the
+  exit, and React commits the router's update when both are done. Measured
+  in five engines: the old page stays until its exit ends.
+- **The exit's styles come off after the commit.** React keeps an element
+  that's in the same place on both pages, and it would keep the exit's last
+  frame and stay hidden. Two frames after the exit, the styles are removed,
+  so a kept element plays its entrance again. The e2e test caught this.
+- **Deciding at the click.** Transition types must be added before anything
+  is awaited, so whether a page leaves live is decided synchronously:
+  - the navigation's `mode`, else the page's, else the theme's `page-mode`,
+    else `auto`;
+  - `auto` is live when the page has members on screen or a timeline.
+
+  That code ships with the hook. A live page adds `greese-live`, which maps
+  to `none`, so no snapshot plays over it.
+
+- **A page is found by markers, not a wrapper.** `PageTransition` renders two
+  empty `<template>`s around its page, the first carrying its live settings
+  as data. A wrapper element would break a layout's `parent > page`
+  selectors. A Server Component has no context to share them through.
+- **Timelines play live, through greese.js.** A sequence, or a map of
+  selector → sequence whose entries start together, goes to the lazy runtime
+  (`playPageExit`, built on the `greese` prop's `addMotion`).
+- **No pseudo-element adapter for greese.js.** §5 planned to play
+  timelines on view-transition pseudo-elements. greese.js renders by
+  writing inline styles each frame, which pseudo-elements can't take. So
+  snapshots play named effects in CSS, and anything needing greese.js
+  plays live, on the real elements.
+- **Back and forward are held where the browser can.** The Navigation API's
+  `precommitHandler` defers a same-document traversal's commit. During it the
+  URL and the page are still the old ones, and `popstate` fires after, so
+  routers that listen for it need no changes.
+  - **Support:** every engine in the test matrix supports it (Chromium,
+    Firefox, WebKit, both phones). Elsewhere, back and forward change the
+    page at once.
+  - **Focus:** `focusReset: 'manual'`, since a plain traversal never moved
+    focus.
+- **Budgets:** page transitions 1.6 → 3 kB (2.94 kB), the whole library
+  30.6 → 31.8 kB and 36 → 37.2 kB, and the lazy runtime 11 → 11.05 kB.
+
 ## Consequences
 
 - New size budgets: the view-transition CSS, `PageTransition` and the live
