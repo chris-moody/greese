@@ -8,6 +8,13 @@ import { functionProps } from '../test/serverProps.ts'
 import { Card } from './Card/Card.tsx'
 import { PageShare } from './PageTransition/PageShare.tsx'
 import {
+  exitPage,
+  leavesLive,
+  membersOf,
+  pagesOnScreen,
+} from './PageTransition/pageExit.ts'
+import { isTimeline } from './PageTransition/pageMotion.ts'
+import {
   pageClasses,
   pageClassMap,
   pageRulesCss,
@@ -26,7 +33,9 @@ describe('PageTransition classes', () => {
   })
 
   it('names an effect on the side that has one, and keeps the theme on the other', () => {
-    expect(pageClasses({ enter: 'slideLeft' })).toBe(`${T} ${T}--theme ${T}--enter-slide-left`)
+    expect(pageClasses({ enter: 'slideLeft' })).toBe(
+      `${T} ${T}--theme ${T}--enter-slide-left`
+    )
     expect(pageClasses({ enter: 'popIn', exit: 'scaleOut' })).toBe(
       `${T} ${T}--enter-pop-in ${T}--exit-scale-out`
     )
@@ -47,6 +56,8 @@ describe('PageTransition classes', () => {
     ).toEqual({
       'greese-forward': `${T} ${T}--theme ${T}--enter-fade-up`,
       'greese-back': `${T} ${T}--theme-back ${T}--enter-slide-right`,
+      // A page that left live plays no snapshot over it.
+      'greese-live': 'none',
       checkout: `${T} ${T}--theme ${T}--enter-pop-in`,
       quiet: 'none',
       // A tab kept in the URL, a filter: the page changes in place.
@@ -82,7 +93,9 @@ describe('PageTransition selector rules', () => {
 
   it('refuses a selector that could close its style element', () => {
     expect(() => pageRulesCss({ 'main } body {': 'still' })).toThrow(/isn't a selector/)
-    expect(() => pageRulesCss({ '</style><script>': 'still' })).toThrow(/isn't a selector/)
+    expect(() => pageRulesCss({ '</style><script>': 'still' })).toThrow(
+      /isn't a selector/
+    )
   })
 })
 
@@ -95,7 +108,9 @@ describe('shared elements', () => {
     const b = shareName(['template', 'a/b'])
     expect(a).toMatch(/^greese-share-template-a-b-[a-z0-9]+$/)
     expect(a).not.toBe(b)
-    expect(shareClasses(['template', 'finance'])).toBe(`${T} ${T}--share greese-share-template`)
+    expect(shareClasses(['template', 'finance'])).toBe(
+      `${T} ${T}--share greese-share-template`
+    )
   })
 
   it('renders its child as usual, and hands the DOM no function, so a Server Component can share', () => {
@@ -144,12 +159,9 @@ describe('navigation types', () => {
       'greese-shallower',
     ])
     expect(pageTransitionTypes(from, -1)).toEqual(['greese-page', 'greese-back'])
-    expect(pageTransitionTypes(from, '/docs/card', { direction: 'back', types: ['x'] })).toEqual([
-      'greese-page',
-      'greese-back',
-      'greese-sibling',
-      'x',
-    ])
+    expect(
+      pageTransitionTypes(from, '/docs/card', { direction: 'back', types: ['x'] })
+    ).toEqual(['greese-page', 'greese-back', 'greese-sibling', 'x'])
   })
 
   it('replaces in place, and treats a new hash or query as no page change', () => {
@@ -247,9 +259,114 @@ describe('PageTransition', () => {
     window.history.replaceState(null, '', '/a')
     render(<App />)
     const link = screen.getByRole('link', { name: 'Deeper' })
-    const click = new MouseEvent('click', { bubbles: true, cancelable: true, metaKey: true })
+    const click = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      metaKey: true,
+    })
     link.dispatchEvent(click)
     expect(click.defaultPrevented).toBe(false)
     expect(screen.getByRole('main')).toHaveTextContent('Page /a')
+  })
+})
+
+describe('live exits', () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  /** Every element on screen, as jsdom lays nothing out. */
+  const onScreen = () =>
+    vi
+      .spyOn(Element.prototype, 'getBoundingClientRect')
+      .mockReturnValue({
+        top: 0,
+        bottom: 100,
+        left: 0,
+        right: 100,
+        width: 100,
+        height: 100,
+      } as DOMRect)
+
+  const Page = ({
+    mode,
+    exit,
+  }: {
+    mode?: 'live' | 'snapshot'
+    exit?: 'fadeOut' | 'fadeOut,scaleIn'
+  }) => (
+    <div>
+      <header className="greese-Motion greese-Motion--enter">
+        Header, outside the page
+      </header>
+      <PageTransition mode={mode} exit={exit} order="document" stagger={0.1}>
+        <main>
+          <section className="greese-Motion greese-Motion--enter" data-testid="first">
+            <p className="greese-Motion greese-Motion--enter">Inside the first</p>
+          </section>
+          <section
+            className="greese-Motion greese-Motion--view greese-Motion--exit-scale-out"
+            data-testid="second"
+          >
+            Second
+          </section>
+        </main>
+      </PageTransition>
+    </div>
+  )
+
+  it('marks the page with its live settings, drawing nothing', () => {
+    const html = renderToString(<Page mode="live" />)
+    expect(html).toMatch(
+      /<template data-greese-page="[^"]+" data-greese-config="\{&quot;mode&quot;:&quot;live&quot;,&quot;order&quot;:&quot;document&quot;,&quot;stagger&quot;:0.1\}"><\/template>/
+    )
+    expect(html).toMatch(/<template data-greese-page-end="[^"]+"><\/template>/)
+  })
+
+  it("finds the page's outermost members on screen, not what's outside it", () => {
+    onScreen()
+    render(<Page />)
+    const [page] = pagesOnScreen()
+    expect(membersOf(page!).map((el) => el.dataset.testid)).toEqual(['first', 'second'])
+  })
+
+  it('leaves live by its mode, the theme’s, or when it has members or a timeline', () => {
+    onScreen()
+    const { unmount } = render(<Page mode="snapshot" />)
+    expect(leavesLive(pagesOnScreen()[0]!, 'live')).toBe(false)
+    unmount()
+    const { unmount: again } = render(<Page />)
+    expect(leavesLive(pagesOnScreen()[0]!, '')).toBe(true)
+    expect(leavesLive(pagesOnScreen()[0]!, 'snapshot')).toBe(false)
+    again()
+    render(<Page exit="fadeOut,scaleIn" />)
+    expect(pagesOnScreen()[0]!.config.timeline).toBe('fadeOut,scaleIn')
+    expect(isTimeline('fadeOut')).toBe(false)
+    expect(isTimeline({ main: 'fadeOut' })).toBe(true)
+  })
+
+  it('plays each member’s exit (its own, else the theme’s), spaced in order, and puts them back', async () => {
+    onScreen()
+    render(<Page />)
+    const page = pagesOnScreen()[0]!
+    const { done, restore } = exitPage(page, false, 'reverse', 0.1)
+    await done
+    const first = screen.getByTestId('first')
+    const second = screen.getByTestId('second')
+    // Reverse: the second leaves first, with its own exit.
+    expect(second.style.animation).toMatch(
+      /^greese-scale-out .* calc\(0 \* 0\.1s\) both$/
+    )
+    expect(first.style.animation).toMatch(
+      /^var\(--greese-motion-page-exit, greese-fade-out\) .* calc\(1 \* 0\.1s\) both$/
+    )
+    restore()
+    expect(first.style.animation).toBe('')
+    exitPage(page, true, 'together')
+    expect(first.style.animation).toMatch(
+      /^var\(--greese-motion-page-back-exit, .* 0s both$/
+    )
+  })
+
+  it('plays nothing over a live page: its snapshot is none', () => {
+    expect(pageClassMap({})['greese-live']).toBe('none')
   })
 })

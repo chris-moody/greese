@@ -9,6 +9,15 @@ export interface GreeseRuntime {
   ): void
   /** The built-in effects as plain keyframes. */
   describeEffects(distance?: string): Record<string, Keyframes>
+  /**
+   * A page's live exit as greese.js: a sequence on the page's elements, or a
+   * timeline map (selector → sequence) whose entries start together.
+   */
+  playPageExit(
+    motion: string | Record<string, string>,
+    page: Element[],
+    targets: (selector: string) => Element[]
+  ): { done: Promise<void>; cancel: () => void }
 }
 
 /** The lazy half of the `scope` option: see scope.ts. */

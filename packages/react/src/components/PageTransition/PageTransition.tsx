@@ -1,10 +1,14 @@
-import { ViewTransition, type JSX, type ReactNode } from 'react'
+import { useId, ViewTransition, type JSX, type ReactNode } from 'react'
+import type { LivePage } from './pageExit.ts'
 import {
+  isTimeline,
   pageClassMap,
   pageRulesCss,
   pageRulesId,
+  type PageEffect,
   type PageMotion,
   type PageRule,
+  type PageTimeline,
 } from './pageMotion.ts'
 
 export {
@@ -22,14 +26,23 @@ export {
   type PageRule,
 } from './pageMotion.ts'
 
-export interface PageTransitionProps extends PageMotion {
+export interface PageTransitionProps {
+  /** How the new page arrives. @default 'theme' */
+  enter?: PageEffect
+  /**
+   * How the old page leaves: an effect (played on its snapshot, or on its
+   * members when it leaves live), or a timeline, a sequence or a map of
+   * selector → sequence, which greese.js plays on the live page.
+   * @default 'theme'
+   */
+  exit?: PageEffect | PageTimeline
   /** The page: a router's outlet, or the routes themselves. */
   children?: ReactNode
   /**
    * Going back (in the history, or up the URL): what changes from `enter` and
    * `exit`. Where a side follows the theme, it plays the theme's back roles.
    */
-  back?: PageMotion
+  back?: { enter?: PageEffect; exit?: PageEffect | PageTimeline }
   /**
    * Transition types of your own (added with `usePageNavigate`'s `types`, or
    * React's `addTransitionType`): how each plays, or `'none'`.
@@ -48,6 +61,24 @@ export interface PageTransitionProps extends PageMotion {
    * @default 'auto'
    */
   name?: string
+  /**
+   * `snapshot`: the browser animates images of both pages. `live`: the old
+   * page's members (its elements with greese entrances) play their exits on
+   * the real page, one after another, while the next page loads; then the new
+   * page's own entrances play. `auto` leaves live when the page has members on
+   * screen or a timeline, and as a snapshot otherwise. The theme's
+   * `page-mode` decides when this doesn't.
+   * @default 'auto'
+   */
+  mode?: 'auto' | 'snapshot' | 'live'
+  /**
+   * The order a live page's members leave in: `reverse` (the last first, so
+   * the page empties back towards its top), `document` or `together`.
+   * @default 'reverse'
+   */
+  order?: 'reverse' | 'document' | 'together'
+  /** Seconds between a live page's members (the theme's `page-stagger`). */
+  stagger?: number
 }
 
 /**
@@ -75,7 +106,11 @@ export const PageTransition = ({
   types,
   rules,
   name,
+  mode,
+  order,
+  stagger,
 }: PageTransitionProps): JSX.Element => {
+  const id = useId()
   // The entrances play the effects' own keyframes, which come with the
   // greese-Motion stylesheet: naming it here makes this component's
   // stylesheet (css/PageTransition.css) import it.
@@ -85,20 +120,36 @@ export const PageTransition = ({
       {pageRulesCss(rules)}
     </style>
   )
-  // React before 19.3 has no ViewTransition: the page changes as before.
-  if (!ViewTransition)
-    return (
-      <>
-        {rulesStyle}
-        {children}
-      </>
-    )
+  // What usePageNavigate needs to make the page leave live: data on a marker,
+  // since a Server Component has no context to share it through. Two empty
+  // templates mark where the page starts and ends; they draw nothing and
+  // wrap nothing, so the page's own layout and selectors are untouched.
+  const live: LivePage = {
+    mode,
+    order,
+    stagger,
+    timeline: isTimeline(exit) ? exit : undefined,
+    back: isTimeline(back?.exit) ? back.exit : undefined,
+  }
+  const snapshot: PageMotion = { enter, exit: isTimeline(exit) ? undefined : exit }
+  const snapshotBack: PageMotion | undefined = back && {
+    enter: back.enter,
+    exit: isTimeline(back.exit) ? undefined : back.exit,
+  }
+  const page = ViewTransition ? (
+    <ViewTransition name={name} default={pageClassMap(snapshot, snapshotBack, types)}>
+      {children}
+    </ViewTransition>
+  ) : (
+    // React before 19.3 has no ViewTransition: the page changes as before.
+    children
+  )
   return (
     <>
+      <template data-greese-page={id} data-greese-config={JSON.stringify(live)} />
       {rulesStyle}
-      <ViewTransition name={name} default={pageClassMap({ enter, exit }, back, types)}>
-        {children}
-      </ViewTransition>
+      {page}
+      <template data-greese-page-end={id} />
     </>
   )
 }

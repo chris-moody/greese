@@ -80,7 +80,10 @@ module.exports = [
     // PageTransition, PageShare and usePageNavigate, with their class maps,
     // rules CSS and navigation types (30.55 kB). Tree-shaken, they are 1.53 kB,
     // budgeted on their own below; apps that don't import them don't pay.
-    limit: '30.6 kB',
+    // 30.6 kB → 31.8 kB (2026-10-29): page transitions' live exits (ADR 0029,
+    // phase 4): the exit pass, the mode decision and back and forward held
+    // through the Navigation API (31.74 kB).
+    limit: '31.8 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -106,7 +109,8 @@ module.exports = [
     // 34.4 kB → 34.8 kB (2026-10-27): the same FileInput, Textarea, Menu, ScrollSpy and Progress changes (34.75 kB).
     // 34.8 kB → 34.85 kB (2026-10-27): the same greese.js write-skip as the runtime's (34.8 kB).
     // 34.85 kB → 36 kB (2026-10-29): the same page transitions (35.97 kB).
-    limit: '36 kB',
+    // 36 kB → 37.2 kB (2026-10-29): their live exits, as above (37.18 kB).
+    limit: '37.2 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -415,7 +419,11 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // Page transitions (ADR 0029): the components, the hook, the class maps,
     // the rules' CSS and the navigation types (1.53 kB).
-    limit: '1.6 kB',
+    // 1.6 kB → 3 kB (2026-10-29): live exits (phase 4): finding a page and its
+    // members, the CSS exit pass, the mode and order from the theme, and back
+    // and forward held through the Navigation API (2.94 kB). Timelines load
+    // greese.js lazily, with the runtime.
+    limit: '3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -496,6 +504,7 @@ module.exports = [
     // 10.75 kB → 10.85 kB (2026-10-24): greese.js reads oklab(), oklch() and color(srgb) colors, as above (10.84 kB).
     // 10.85 kB → 10.95 kB (2026-10-26): greese.js takes per-target function values and function staggers, and reads CSS cubic-bezier() strings as eases (ADR 0008 addendum), as above (10.91 kB).
     // 10.95 kB → 11 kB (2026-10-27): greese.js skips writing a style or attribute already at its value, so a target holding still costs no mutation (10.96 kB).
-    limit: '11 kB',
+    // 11 kB → 11.05 kB (2026-10-29): playPageExit, a page's live exit timeline (ADR 0029, 11.03 kB).
+    limit: '11.05 kB',
   },
 ]

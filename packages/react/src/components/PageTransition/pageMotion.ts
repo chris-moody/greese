@@ -7,6 +7,7 @@
 import type { ViewTransitionClassPerType } from 'react'
 import type { BuiltInEffect } from '@greese/ui/effects'
 import type { Ease } from '@greese/js'
+import type { GreeseSequence } from '../../utils/greese.ts'
 import { cssEase } from '../../utils/ease.ts'
 import { hash } from '../../utils/share.ts'
 
@@ -18,6 +19,18 @@ export { shareClasses, shareName, type ShareKey } from '../../utils/share.ts'
  * or `'none'` to change without animating.
  */
 export type PageEffect = BuiltInEffect | 'theme' | 'none'
+
+/**
+ * A live exit played by greese.js: a sequence for the whole page
+ * (`'fadeOut(0.2),+0.1,scaleOut'`), or a timeline map, selector → sequence,
+ * whose entries start together, each keeping its own pauses and overlaps. A
+ * single effect of your own is written as a call: `'wobble()'`.
+ */
+export type PageTimeline = GreeseSequence | Record<string, GreeseSequence | BuiltInEffect>
+
+/** Whether an exit is a timeline (played live by greese.js) rather than an effect (CSS). */
+export const isTimeline = (exit: unknown): exit is PageTimeline =>
+  typeof exit === 'object' || (typeof exit === 'string' && /[+,(]/.test(exit))
 
 /** How a page change plays: the new page's entrance and the old page's exit. */
 export interface PageMotion {
@@ -47,6 +60,8 @@ export const PAGE = 'greese-page'
 export const FORWARD = 'greese-forward'
 export const BACK = 'greese-back'
 export const REPLACE = 'greese-replace'
+/** A page that left live: its exit has played, so no snapshot plays over it. */
+export const LIVE = 'greese-live'
 
 const BASE = 'greese-PageTransition'
 
@@ -88,6 +103,7 @@ export const pageClassMap = (
 ): ViewTransitionClassPerType => ({
   [FORWARD]: pageClasses(motion),
   [BACK]: pageClasses({ ...motion, ...back }, true),
+  [LIVE]: 'none',
   ...Object.fromEntries(
     Object.entries(types).map(([type, m]) => [type, m === 'none' ? 'none' : pageClasses(m)])
   ),
@@ -146,6 +162,8 @@ export interface PageNavigateOptions {
   direction?: 'forward' | 'back'
   /** Types of your own, for a `PageTransition`'s `types`. */
   types?: readonly string[]
+  /** How this navigation plays, over the page's and the theme's `mode`. */
+  mode?: 'snapshot' | 'live'
 }
 
 const depth = (path: string) => path.split('/').filter(Boolean).length

@@ -302,6 +302,16 @@ const page = usePageNavigate(useNavigate()) // any router's navigate
 
 - **The motion theme decides by default** (its `page` roles), a cross-fade
   without one; name effects to override it, per direction or per type.
+- **Live exits:** with `mode="live"` (or `auto`, when the page has elements
+  with greese entrances), the old page's elements leave on the real page,
+  the last first, while the next page loads, and back and forward wait for
+  them where the browser can hold a traversal. `exit` also takes a sequence
+  or a timeline map, selector → sequence, played by greese.js:
+
+  ```tsx
+  <PageTransition exit={{ '.hero': 'fadeOut', '.card': 'scaleOut(0.2),+0.1,fadeOut' }}>
+  ```
+
 - **Only greese navigations animate:** a tab or filter kept in the URL changes
   in place.
 - **Server Components:** `PageTransition` and `PageShare` take only data;

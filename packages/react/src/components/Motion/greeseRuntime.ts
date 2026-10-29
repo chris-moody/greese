@@ -491,3 +491,30 @@ export const attachAll: GreeseRuntime['attachAll'] = (items) =>
   batch(() => {
     for (const item of items) item.detach = attach(item.el, item.options)
   })
+
+/**
+ * A page's live exit as greese.js (ADR 0029): a sequence for the whole page,
+ * or a timeline map, selector → sequence, whose entries start together (each
+ * sequence keeps its own pauses and overlaps). `targets` finds a selector's
+ * elements in the leaving page; a lone sequence plays on `page`. Resolves
+ * when it's over; `cancel` puts every element back, for a navigation that
+ * fails. Under reduced motion every effect is a cut.
+ */
+export const playPageExit: GreeseRuntime['playPageExit'] = (motion, page, targets) => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+  const tl = timeline({ paused: true })
+  const entries = typeof motion === 'string' ? [[undefined, motion] as const] : Object.entries(motion)
+  for (const [selector, sequence] of entries) {
+    const els = selector === undefined ? page : targets(selector)
+    if (!els.length) continue
+    addMotion(
+      tl,
+      els,
+      sequence as GreeseMotion,
+      { distance: '1rem', rtl: document.documentElement.dir === 'rtl' },
+      { duration: 0.5, options: {}, instant: reduce }
+    )
+  }
+  tl.play()
+  return { done: Promise.resolve(tl), cancel: () => tl.kill() }
+}
