@@ -7,6 +7,7 @@ import {
   Grid,
   Heading,
   Link,
+  PageShare,
   Spinner,
   Stack,
   Text,
@@ -72,9 +73,12 @@ const Gallery = (): JSX.Element => (
                     )
                 )}
               </div>
-              <Heading level={2} variant="h5">
-                {t.title}
-              </Heading>
+              {/* Morphs into the template's title in the bar on its page (ADR 0029). */}
+              <PageShare id={['template', t.id]}>
+                <Heading level={2} variant="h5">
+                  {t.title}
+                </Heading>
+              </PageShare>
               <Text variant="p3" tone="muted">
                 {t.summary}
               </Text>
@@ -108,9 +112,11 @@ const TemplateView = ({ template }: { template: TemplateEntry }): JSX.Element =>
         >
           <RouteLink to="templates">Templates</RouteLink>
         </Button>
-        <Text variant="p3" weight="semibold">
-          {template.title}
-        </Text>
+        <PageShare id={['template', template.id]}>
+          <Text variant="p3" weight="semibold">
+            {template.title}
+          </Text>
+        </PageShare>
         <Link href={sourceUrl(template)} underline="hover" className="tpl-source">
           <GithubIcon /> Source
         </Link>

@@ -1,4 +1,12 @@
-import { useEffect, type ComponentProps, type JSX } from 'react'
+import {
+  createContext,
+  use,
+  useLayoutEffect,
+  useRef,
+  type ComponentProps,
+  type JSX,
+} from 'react'
+import { usePageNavigate, type PageNavigate } from '@greese/react'
 import {
   Link,
   useLocation,
@@ -66,31 +74,53 @@ const scrollToHash = (hash: string) => {
   }, 100)
 }
 
+/** The router's own path for an app href (`hrefOf`'s, base included). */
+const routerPath = (href: string): string => {
+  const url = new URL(href, location.href)
+  const path = url.pathname.startsWith(BASE)
+    ? `/${url.pathname.slice(BASE.length)}`
+    : url.pathname
+  return path + url.search + url.hash
+}
+
+/**
+ * Page transitions' navigate (ADR 0029), made once by the app's shell and
+ * shared: it takes app hrefs, so the direction and depth a navigation's types
+ * say come from the URL as it is, base included, and hands React Router its
+ * own path.
+ */
+export const PageNavigateContext = createContext<PageNavigate | null>(null)
+
+/** The shell's page navigate, for `PageNavigateContext`. */
+export const useSitePageNavigate = (): PageNavigate => {
+  const navigate = useNavigate()
+  return usePageNavigate((to, options) =>
+    typeof to === 'number' ? navigate(to) : navigate(routerPath(to), options)
+  )
+}
+
 /**
  * Navigates to an app href (`hrefOf`'s, base included): what search results
  * hold. A link should be a `RouteLink`; this is for code that has an href.
  */
 export const useNavigateTo = (): ((href: string) => void) => {
+  const page = use(PageNavigateContext)
   const navigate = useNavigate()
-  return (href) => {
-    const url = new URL(href, location.href)
-    const path = url.pathname.startsWith(BASE)
-      ? `/${url.pathname.slice(BASE.length)}`
-      : url.pathname
-    void navigate(path + url.search + url.hash)
-  }
+  return (href) => (page ? page.navigate(href) : void navigate(routerPath(href)))
 }
 
 /**
  * An anchor that changes route without a page load: React Router's `Link`,
- * addressed by route. Modified clicks, other targets and links off the app
- * are left to the browser.
+ * addressed by route, through page transitions when the shell provides them.
+ * Modified clicks, other targets and links off the app are left to the
+ * browser.
  */
 export const RouteLink = ({
   to,
   hash,
   page,
   search,
+  onClick,
   ...props
 }: Omit<ComponentProps<typeof Link>, 'to'> & {
   to: Route
@@ -99,27 +129,46 @@ export const RouteLink = ({
   page?: string
   /** A query string: `?tab=code`. */
   search?: string
-}): JSX.Element => <Link {...props} to={pathOf(to, hash, page, search)} />
+}): JSX.Element => {
+  const pages = use(PageNavigateContext)
+  return (
+    <Link
+      {...props}
+      to={pathOf(to, hash, page, search)}
+      onClick={(event) => {
+        onClick?.(event)
+        // A plain click goes through page transitions (Link then leaves it).
+        pages?.onLinkClick(hrefOf(to, hash, page, search))(event)
+      }}
+    />
+  )
+}
 
 /**
  * Scrolls as the old router did, which React Router leaves to the app: a
  * new route or page starts at the top, and a link with a hash goes to its
  * section once it has mounted. Back and forward leave the browser's own
- * scroll restoration alone, unless the route changed.
+ * scroll restoration alone, unless the route changed. Layout effects: a page
+ * transition's snapshot of the new page is taken after them, so it's already
+ * at the top rather than jumping there after (ADR 0029).
  */
 export const ScrollOnRoute = (): null => {
   const { key, hash } = useLocation()
   const type = useNavigationType()
   const route = useRoute()
   const page = useSubpage()
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (type === 'PUSH') {
       if (hash) scrollToHash(hash)
       else scrollTo({ top: 0 })
     }
   }, [key, hash, type])
-  useEffect(() => {
-    if (!location.hash) scrollTo({ top: 0 })
+  // Not on the first render: a page that has just loaded is where the
+  // browser put it, and scrolling there would force a layout during hydration.
+  const first = useRef(true)
+  useLayoutEffect(() => {
+    if (first.current) first.current = false
+    else if (!location.hash) scrollTo({ top: 0 })
   }, [route, page])
   return null
 }

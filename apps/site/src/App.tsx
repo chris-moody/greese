@@ -6,10 +6,21 @@ import {
   useSyncExternalStore,
   type JSX,
 } from 'react'
-import { ThemeProvider, Toaster, useStoredState, type Theme } from '@greese/react'
+import {
+  PageTransition,
+  ThemeProvider,
+  Toaster,
+  useStoredState,
+  type Theme,
+} from '@greese/react'
 import { Outlet } from 'react-router'
 import { Nav } from './sections/Nav.tsx'
-import { ScrollOnRoute, useRoute } from './router.tsx'
+import {
+  PageNavigateContext,
+  ScrollOnRoute,
+  useRoute,
+  useSitePageNavigate,
+} from './router.tsx'
 import { ShellContext, type Shell } from './shell.ts'
 import { isSpec, stored, WORN } from './studio/storage.ts'
 import { migrateSpec } from './studio/migrate.ts'
@@ -122,6 +133,7 @@ const useLayerCss = (spec: ThemeSpec): void => {
 export const App = (): JSX.Element => {
   const route = useRoute()
   const hydrated = useHydrated()
+  const pageNavigate = useSitePageNavigate()
   // The theme being worn, kept between visits: every pick in the theme menu.
   const [worn, setSpec] = useStoredState<ThemeSpec | null>(WORN, null, {
     // A theme worn before themes reassigned roles loses what its old layers overwrote.
@@ -157,26 +169,34 @@ export const App = (): JSX.Element => {
 
   return (
     <ShellContext value={shell}>
-      <ThemeProvider theme={theme} asChild>
-        <div className={`site site--${route}`}>
-          <a href="#main" className="site-skip">
-            Skip to content
-          </a>
-          <ScrollOnRoute />
-          <Nav />
-          {/* The page (src/routes.tsx). Every page but the homepage is a
-              chunk of its own; the studio and the docs end their main
-              column with the footer, beside their sidebars. */}
-          {route === 'home' ? (
-            <Outlet />
-          ) : (
-            <Suspense>
-              <Outlet />
-            </Suspense>
-          )}
-          <Toaster />
-        </div>
-      </ThemeProvider>
+      <PageNavigateContext value={pageNavigate}>
+        <ThemeProvider theme={theme} asChild>
+          <div className={`site site--${route}`}>
+            <a href="#main" className="site-skip">
+              Skip to content
+            </a>
+            <ScrollOnRoute />
+            <Nav />
+            {/* The page (src/routes.tsx), changed with page transitions as the
+                worn motion theme says (ADR 0029); the header stays put. The
+                homepage's hero is a choreography of entrances, so it leaves
+                live, its members in turn; elsewhere the members are the
+                footer's, and the page changes as a snapshot. Every page but
+                the homepage is a chunk of its own; the studio and the docs end
+                their main column with the footer, beside their sidebars. */}
+            <PageTransition mode={route === 'home' ? 'auto' : 'snapshot'}>
+              {route === 'home' ? (
+                <Outlet />
+              ) : (
+                <Suspense>
+                  <Outlet />
+                </Suspense>
+              )}
+            </PageTransition>
+            <Toaster />
+          </div>
+        </ThemeProvider>
+      </PageNavigateContext>
     </ShellContext>
   )
 }
