@@ -16,6 +16,9 @@
  *   motion says otherwise. Drawers take their own role, which these leave be,
  *   so they keep sliding from their edge.
  * - **durations and eases** for those, as tokens (`slow`, `enter`) or values.
+ * - **page, page-exit** and their **back** forms: how a page change plays
+ *   (ADR 0029), in keeping with the theme's story, with its pace, stagger and
+ *   exit order.
  *
  * It sets no colors and no shapes. Wipes, irises and pockets are masks, and
  * flips, swings and depth a `transform` with its own perspective: never
@@ -40,7 +43,7 @@ const SNAPPY: MotionPreset = {
   id: 'snappy',
   label: 'Snappy',
   description:
-    'Snappy: quick and decisive. Short durations, a sharp curve, a tight stagger; things pop in from a short distance, and overlays scale in and away.',
+    'Snappy: quick and decisive. Short durations, a sharp curve, a tight stagger; things pop in from a short distance, and overlays scale in and away. Pages pop: the old one pops away all at once and the new one pops in.',
   defaults: {
     duration: '0.25s',
     distance: '0.5rem',
@@ -58,6 +61,13 @@ const SNAPPY: MotionPreset = {
     'exit-duration': 'fast',
     'enter-ease': 'cubic-bezier(0, 0, 0, 1)',
     'exit-ease': 'exit',
+    // How pages change (ADR 0029).
+    page: 'pop-in',
+    'page-exit': 'pop-out',
+    'page-duration': '0.25s',
+    'page-ease': 'cubic-bezier(0, 0, 0, 1)',
+    'page-stagger': '0.03s',
+    'page-exit-order': 'together',
   },
 }
 
@@ -65,7 +75,7 @@ const GENTLE: MotionPreset = {
   id: 'gentle',
   label: 'Gentle',
   description:
-    'Gentle: unhurried and soft. Long durations that ease out and a wide stagger; things come into focus out of a blur, and overlays sink away.',
+    'Gentle: unhurried and soft. Long durations that ease out and a wide stagger; things come into focus out of a blur, and overlays sink away. Pages change softly: the old one fades away while the new one comes into focus.',
   defaults: {
     duration: '0.8s',
     distance: '1.5rem',
@@ -83,6 +93,12 @@ const GENTLE: MotionPreset = {
     'exit-duration': 'normal',
     'enter-ease': 'cubic-bezier(0.16, 1, 0.3, 1)',
     'exit-ease': 'cubic-bezier(0.7, 0, 0.84, 0)',
+    // How pages change (ADR 0029).
+    page: 'blur-in',
+    'page-exit': 'fade-out',
+    'page-duration': '0.7s',
+    'page-ease': 'cubic-bezier(0.16, 1, 0.3, 1)',
+    'page-stagger': '0.09s',
   },
 }
 
@@ -90,7 +106,7 @@ const WIPE: MotionPreset = {
   id: 'wipe',
   label: 'Wipe',
   description:
-    'Wipe: things are revealed in place rather than moved. Reveals wipe up, panels and toasts open from the middle, table rows wipe across, menus wipe down from their trigger and back up, tooltips open and close from the middle, and dialogs open and close as a circle.',
+    'Wipe: things are revealed in place rather than moved. Reveals wipe up, panels and toasts open from the middle, table rows wipe across, menus wipe down from their trigger and back up, tooltips open and close from the middle, and dialogs open and close as a circle. The next page wipes over the last one, which stays where it is: in from the right going forward, from the left going back.',
   defaults: {
     duration: '0.6s',
     distance: '0.75rem',
@@ -112,6 +128,14 @@ const WIPE: MotionPreset = {
     'exit-duration': 'normal',
     'enter-ease': 'cubic-bezier(0.65, 0, 0.35, 1)',
     'exit-ease': 'cubic-bezier(0.65, 0, 0.35, 1)',
+    // How pages change (ADR 0029).
+    page: 'wipe-left',
+    'page-exit': 'none',
+    'page-back': 'wipe-right',
+    'page-back-exit': 'none',
+    'page-duration': '0.6s',
+    'page-ease': 'cubic-bezier(0.65, 0, 0.35, 1)',
+    'page-stagger': '0.06s',
   },
 }
 
@@ -119,7 +143,7 @@ const POCKET: MotionPreset = {
   id: 'pocket',
   label: 'Pocket',
   description:
-    'Pocket: things rise out of an invisible slot at one of their own edges, as if from a pocket, rather than fading in. Reveals, panels, table rows and toasts rise out of theirs; menus drop out of a slot under their trigger and go back up into it; dialogs and tooltips rise out of a slot and sink back into it.',
+    'Pocket: things rise out of an invisible slot at one of their own edges, as if from a pocket, rather than fading in. Reveals, panels, table rows and toasts rise out of theirs; menus drop out of a slot under their trigger and go back up into it; dialogs and tooltips rise out of a slot and sink back into it. Pages sink into a slot at their foot and the next rises out of it; going back, they go up into a slot at their head and the last drops out of it.',
   defaults: {
     duration: '0.55s',
     distance: '1.25rem',
@@ -141,6 +165,14 @@ const POCKET: MotionPreset = {
     'exit-duration': 'fast',
     'enter-ease': 'cubic-bezier(0.2, 0.9, 0.1, 1)',
     'exit-ease': 'exit',
+    // How pages change (ADR 0029).
+    page: 'pocket-up',
+    'page-exit': 'pocket-out-down',
+    'page-back': 'pocket-down',
+    'page-back-exit': 'pocket-out-up',
+    'page-duration': '0.55s',
+    'page-ease': 'cubic-bezier(0.2, 0.9, 0.1, 1)',
+    'page-stagger': '0.05s',
   },
 }
 
@@ -148,7 +180,7 @@ const DEPTH: MotionPreset = {
   id: 'depth',
   label: 'Depth',
   description:
-    'Depth: things turn into place in three dimensions. Reveals, panels, table rows and toasts flip up into place, menus swing down from their top edge like a sign and back up, tooltips flip up and back, and dialogs rise out of the page from behind it and sink back in.',
+    'Depth: things turn into place in three dimensions. Reveals, panels, table rows and toasts flip up into place, menus swing down from their top edge like a sign and back up, tooltips flip up and back, and dialogs rise out of the page from behind it and sink back in. Pages turn like the faces of a cube, one way going forward and the other going back.',
   defaults: {
     duration: '0.6s',
     distance: '1rem',
@@ -170,6 +202,14 @@ const DEPTH: MotionPreset = {
     'exit-duration': 'normal',
     'enter-ease': 'cubic-bezier(0.2, 0.8, 0.2, 1)',
     'exit-ease': 'exit',
+    // How pages change (ADR 0029).
+    page: 'flip-right',
+    'page-exit': 'flip-out-left',
+    'page-back': 'flip-left',
+    'page-back-exit': 'flip-out-right',
+    'page-duration': '0.6s',
+    'page-ease': 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+    'page-stagger': '0.06s',
   },
 }
 

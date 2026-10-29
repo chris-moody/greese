@@ -1,4 +1,5 @@
 import { isBuiltInEffect } from '@greese/ui'
+import { MOTIONS } from './motions.ts'
 import type { ThemeSpec } from './spec.ts'
 
 /**
@@ -57,6 +58,25 @@ const LEGACY_DEFAULTS = new Set(['duration', 'delay', 'ease', 'distance', 'stagg
 
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 
+/** The page roles motion themes gained with page transitions (ADR 0029). */
+const PAGE_ROLE = /^(page|share)(-|$)/
+
+/**
+ * A motion theme as it was before page transitions: its roles without the
+ * page's. A theme worn or saved then wears it as it is now, page roles and
+ * all, so the motion menu still knows it.
+ */
+const currentMotion = (defaults: Record<string, string> | undefined) =>
+  defaults &&
+  MOTIONS.find((preset) =>
+    same(
+      defaults,
+      Object.fromEntries(
+        Object.entries(preset.defaults).filter(([k]) => !PAGE_ROLE.test(k))
+      )
+    )
+  )?.defaults
+
 /** A stored theme without what the old layer presets overwrote; any other theme as it is. */
 export const migrateSpec = (spec: ThemeSpec): ThemeSpec => {
   const tokens = { ...spec.tokens }
@@ -84,7 +104,7 @@ export const migrateSpec = (spec: ThemeSpec): ThemeSpec => {
   const defaults =
     timing && Object.keys(spec.motionDefaults ?? {}).every((k) => LEGACY_DEFAULTS.has(k))
       ? undefined
-      : spec.motionDefaults
+      : (currentMotion(spec.motionDefaults) ?? spec.motionDefaults)
   const { effects: _e, motionDefaults: _m, ...rest } = spec
   return {
     ...rest,

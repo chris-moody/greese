@@ -182,6 +182,11 @@ const SCHEME = /\[data-greese-scheme=['"]?(light|dark|system)['"]?\]/
 // Read from src/effects.ts in @greese/ui, which the kit writes from, so
 // anything the kit writes reads back.
 const PRESETS = new Set(entranceNames().map(effectClass))
+/**
+ * Every built-in effect's keyframes, which the kit writes beside the roles
+ * that play them (entrances, and exits for a page transition's old page).
+ */
+const BUILT_IN_KEYFRAMES = new Set([...entranceNames(), ...exitNames()].map(effectClass))
 /** An exit's declarations, as one key: an exit sets all of them, so the set names it. */
 const exitKey = (decls: Array<[string, string]>) =>
   decls
@@ -207,7 +212,15 @@ const ENTRANCE_ROLES = new Set([
   'popover',
   'tooltip',
   'drawer',
+  // A page transition's entrances (ADR 0029).
+  'page',
+  'page-back',
 ])
+// A page transition's exits name the keyframes the old page plays.
+const PAGE_EXIT_ROLES = new Set(['page-exit', 'page-back-exit'])
+const EXIT_NAMES = new Set(exitNames().map(effectClass))
+// Taken as written: a time, or one of a few keywords.
+const PAGE_RAW_ROLES = new Set(['page-stagger', 'page-exit-order', 'page-mode'])
 const EXIT_ROLES = [
   'overlay-exit',
   'dialog-exit',
@@ -222,11 +235,19 @@ const DURATION_ROLES = new Set([
   'toast-duration',
   'backdrop-duration',
   'exit-duration',
+  'page-duration',
+  'share-duration',
 ])
-const EASE_ROLES = new Set(['enter-ease', 'exit-ease'])
+const EASE_ROLES = new Set(['enter-ease', 'exit-ease', 'page-ease', 'share-ease'])
 
 /** A role's value as the spec writes it: an effect or a token by name. */
 const roleValue = (role: string, value: string): string | undefined => {
+  if (PAGE_EXIT_ROLES.has(role)) {
+    if (value === 'none') return value
+    const name = value.replace(/^greese-/, '')
+    return value.startsWith('greese-') && EXIT_NAMES.has(name) ? name : undefined
+  }
+  if (PAGE_RAW_ROLES.has(role)) return value
   if (ENTRANCE_ROLES.has(role)) {
     if (value === 'none') return value
     const name = value.replace(/^greese-/, '')
@@ -354,7 +375,9 @@ export const importCss = (css: string, prefer?: string): ImportResult => {
     // A built-in effect's own keyframes, which the kit writes beside the roles
     // that play it: implied by the role.
     if (
-      contexts.some((c) => PRESETS.has(/^@keyframes greese-([\w-]+)$/.exec(c)?.[1] ?? ''))
+      contexts.some((c) =>
+        BUILT_IN_KEYFRAMES.has(/^@keyframes greese-([\w-]+)$/.exec(c)?.[1] ?? '')
+      )
     )
       continue
     const calm = contexts.some((c) => /prefers-reduced-motion:\s*no-preference/.test(c))

@@ -37,11 +37,17 @@ const keyframes = (css: string) => {
 }
 
 /** Every built-in entrance's keyframes, as @greese/ui's Motion styles write them. */
+// Every effect's own keyframes: entrances (Motion.css), and the exits a page
+// transition's old page plays (PageTransition.css, ADR 0029).
 const builtIn = keyframes(
-  readFileSync(
-    join(import.meta.dirname, '../../../packages/ui/dist/css/Motion.css'),
-    'utf8'
-  )
+  ['Motion', 'PageTransition']
+    .map((name) =>
+      readFileSync(
+        join(import.meta.dirname, `../../../packages/ui/dist/css/${name}.css`),
+        'utf8'
+      )
+    )
+    .join('\n')
 )
 
 describe('theme layers (ADR 0025)', () => {

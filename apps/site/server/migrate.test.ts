@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { migrateSpec } from '../src/studio/migrate.ts'
+import { MOTIONS, motionIn } from '../src/studio/motions.ts'
 
 describe('stored themes from before themes reassigned roles', () => {
   it('drop what the old layer presets overwrote, and keep the rest', () => {
@@ -40,5 +41,26 @@ describe('stored themes from before themes reassigned roles', () => {
       motionDefaults: { theme: 'pocket-up' },
     }
     expect(migrateSpec(today)).toEqual(today)
+  })
+})
+
+describe('stored themes from before page transitions (ADR 0029)', () => {
+  it('wear a motion theme as it is now, page roles and all', () => {
+    for (const preset of MOTIONS) {
+      const before = Object.fromEntries(
+        Object.entries(preset.defaults).filter(
+          ([role]) => !/^(page|share)(-|$)/.test(role)
+        )
+      )
+      const migrated = migrateSpec({ motionDefaults: before })
+      expect(migrated.motionDefaults, preset.id).toEqual(preset.defaults)
+      expect(motionIn(migrated), preset.id).toBe(preset)
+    }
+  })
+
+  it('keep motion of your own as it is', () => {
+    const own = { ...MOTIONS[0]!.defaults, theme: 'fade-in' }
+    delete (own as Record<string, string>).page
+    expect(migrateSpec({ motionDefaults: own }).motionDefaults).toEqual(own)
   })
 })
