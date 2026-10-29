@@ -14,6 +14,8 @@ import {
   effectNames,
   effectPlan,
   cssPlan,
+  entranceNames,
+  exitNames,
   isBuiltInEffect,
   scalarTokens,
   type CssPlan,
@@ -92,6 +94,19 @@ export interface EffectSpec {
   duration?: number
 }
 
+/**
+ * A selector rule for page transitions (ADR 0029; the kit's
+ * `page-transitions()`): `'still'` keeps the elements in place, or their own
+ * `enter` (an entrance) and `exit` (an exit) by kebab-case name or `none`,
+ * `duration` (a token or a time), `delay` and `ease`. What it leaves out
+ * follows the theme's page roles.
+ */
+export type PageRuleSpec =
+  'still' | Partial<Record<'enter' | 'exit' | 'duration' | 'delay' | 'ease', string>>
+
+/** What a page rule can set. */
+export const PAGE_RULE_KEYS = ['enter', 'exit', 'duration', 'delay', 'ease'] as const
+
 export interface ThemeSpec {
   /**
    * Scope to `data-greese-theme="<name>"` (a complete theme, as
@@ -114,6 +129,8 @@ export interface ThemeSpec {
   typography?: Record<string, Record<string, Record<string, string>>>
   /** Tunes every `greese` prop entrance: duration, delay, ease, distance. */
   motionDefaults?: Record<string, string>
+  /** Parts of a page with page-transition motion of their own, by selector. */
+  pageRules?: Record<string, PageRuleSpec>
   /**
    * Effects by camelCase name. A built-in's name retunes it (a preset's
    * `@keyframes` are overridden in the theme's CSS, and every effect is
@@ -223,6 +240,31 @@ export const validateSpec = (spec: ThemeSpec): string[] => {
   for (const [k, v] of Object.entries(spec.motionDefaults ?? {})) {
     key('motionDefaults', k)
     value(`motionDefaults.${k}`, v)
+  }
+  const entrances = new Set(entranceNames().map(effectClass))
+  const exits = new Set(exitNames().map(effectClass))
+  for (const [selector, rule] of Object.entries(spec.pageRules ?? {})) {
+    const where = `pageRules[${JSON.stringify(selector)}]`
+    // It's written into a stylesheet: nothing that could end a rule.
+    if (!selector.trim() || /[<>{};]/.test(selector)) {
+      errors.push(`${where}: not a selector`)
+      continue
+    }
+    if (rule === 'still') continue
+    if (typeof rule !== 'object' || rule === null) {
+      errors.push(`${where}: \`still\`, or ${PAGE_RULE_KEYS.join(', ')}`)
+      continue
+    }
+    for (const [k, v] of Object.entries(rule)) {
+      if (!(PAGE_RULE_KEYS as readonly string[]).includes(k))
+        errors.push(`${where}.${k}: a rule takes ${PAGE_RULE_KEYS.join(', ')}`)
+      value(`${where}.${k}`, v)
+      const names = k === 'enter' ? entrances : k === 'exit' ? exits : undefined
+      if (names && v && v !== 'none' && !names.has(v))
+        errors.push(
+          `${where}.${k}: ${JSON.stringify(v)} is not ${k === 'enter' ? 'an entrance' : 'an exit'}`
+        )
+    }
   }
   for (const [name, effect] of Object.entries(spec.effects ?? {})) {
     if (!EFFECT_NAME.test(name))
@@ -597,6 +639,27 @@ export const specToScssWithLines = (
         indent
       )});`
     )
+
+  // Selector rules for page transitions; a rule with nothing set says nothing.
+  const pageRules = Object.entries(spec.pageRules ?? {}).flatMap(
+    ([selector, rule]): Array<[string, string]> => {
+      if (rule === 'still') return [[str(selector), 'still']]
+      const set = filled(rule as Record<string, string>)
+      return set.length
+        ? [
+            [
+              str(selector),
+              map(
+                set.map(([k, v]) => [k, str(v)]),
+                `${indent}  `
+              ),
+            ],
+          ]
+        : []
+    }
+  )
+  if (pageRules.length)
+    blocks.push(`${indent}@include greese.page-transitions(${map(pageRules, indent)});`)
 
   for (const name of Object.keys(spec.components ?? {}).sort()) {
     const block = componentScss(name, spec.components![name]!, indent, mark)

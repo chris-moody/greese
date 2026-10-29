@@ -5,6 +5,7 @@ import { ValueRow } from '../fields.tsx'
 import type { GreeseLab } from '../greeseLab.ts'
 import type { ThemeSpec } from '../spec.ts'
 import { EffectsSection } from './EffectsSection.tsx'
+import { PagesSection } from './PagesSection.tsx'
 
 interface MotionPanelProps {
   spec: ThemeSpec
@@ -94,6 +95,7 @@ export const MotionPanel = ({ spec, onChange, lab }: MotionPanelProps): JSX.Elem
           />
         ))}
       </Stack>
+      <PagesSection spec={spec} onChange={onChange} />
       <Stack gap={2}>
         <Heading level={3} variant="h6">
           Scopes

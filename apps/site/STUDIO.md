@@ -75,6 +75,17 @@ writes them through:
 Delete removes one of yours.
 Replay motion in the header plays the stage again.
 
+**Pages** (ADR 0029) sets how a page change plays: the page roles (`page`,
+`page-exit` and their `back` forms, the pace, stagger, exit order and mode,
+written into `motion-defaults()`), and **parts of a page**, selector rules
+with motion of their own (`pageRules` in `greese-theme.json`, written with the
+kit's `page-transitions()`): a rule keeps its elements still, or gives them
+their own entrance, exit, duration, delay and ease. The stage's "Change pages"
+plays them, forward and back. It sets the page roles on the editor's root
+while it's shown, since a view transition's snapshots inherit from the root.
+The preview's "Page transition" tile plays them in the compiled theme. Both
+import back from a theme's CSS.
+
 ### Where effects are defined
 
 One file defines them: [`packages/ui/src/effects.ts`](../../packages/ui/src/effects.ts).

@@ -68,6 +68,59 @@ describe('importCss: round trip through the kit', () => {
   })
 })
 
+describe('importCss: page transitions (ADR 0029)', () => {
+  const pages: ThemeSpec = {
+    tokens: {},
+    components: {},
+    motionDefaults: {
+      page: 'pocket-up',
+      'page-exit': 'pocket-out-down',
+      'page-duration': 'slow',
+      'page-exit-order': 'together',
+    },
+    pageRules: {
+      'header, footer': 'still',
+      '.greese-Card': {
+        exit: 'scale-out',
+        enter: 'pop-in',
+        duration: 'fast',
+        delay: '0.05s',
+      },
+      '[data-hero]': { exit: 'fade-out' },
+    },
+  }
+
+  it('reads back the page roles and the selector rules', () => {
+    const result = importCss(css(pages))
+    expect(result.spec).toEqual(pages)
+    expect(result.skipped).toEqual([])
+  })
+
+  it('reads them back from a named theme, the root’s copy of its roles included', () => {
+    const named = { ...pages, name: 'brand' }
+    const compiled = css(named)
+    expect(compiled).toContain(':root:has([data-greese-theme=brand])')
+    const result = importCss(compiled)
+    expect(result.spec).toEqual(named)
+    expect(result.skipped).toEqual([])
+  })
+
+  it('refuses a rule that isn’t one', () => {
+    expect(compileSpec({ pageRules: { 'main } body {': 'still' } })).toEqual({
+      errors: ['pageRules["main } body {"]: not a selector'],
+    })
+    // `speed` isn't a rule's: as a stored or imported spec could hold it.
+    expect(
+      compileSpec({ pageRules: { main: { exit: 'fade-up', speed: '2' } as never } })
+    ).toEqual({
+      errors: [
+        'pageRules["main"].exit: "fade-up" is not an exit',
+        'pageRules["main"].speed: a rule takes enter, exit, duration, delay, ease',
+      ],
+    })
+  })
+})
+
 describe('importCss: theme layers', () => {
   it.each(MOTIONS.map((m) => [m.id, m] as const))(
     'reads back the %s motion theme as its role assignments',

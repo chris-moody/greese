@@ -204,7 +204,7 @@ export const StudioPage = (): JSX.Element => {
             Editor
           </Button>
         </div>
-        {tab === 'motion' && <GreeseStage lab={lab} />}
+        {tab === 'motion' && <GreeseStage lab={lab} spec={spec} />}
         <iframe
           hidden={tab === 'motion'}
           ref={frame}

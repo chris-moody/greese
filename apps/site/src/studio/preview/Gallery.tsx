@@ -1,4 +1,4 @@
-import type { JSX, ReactNode } from 'react'
+import { useState, type JSX, type ReactNode } from 'react'
 import {
   Accordion,
   AutoLayout,
@@ -19,6 +19,7 @@ import {
   Heading,
   Menu,
   MenuItem,
+  PageTransition,
   Pagination,
   Popover,
   Progress,
@@ -45,6 +46,7 @@ import {
   Text,
   TextField,
   Tooltip,
+  usePageNavigate,
   type Responsive,
 } from '@greese/react'
 
@@ -193,6 +195,51 @@ const ScopeTile = (): JSX.Element => (
   </Group>
 )
 
+const PAGES = [
+  { title: 'Overview', body: 'Where you start: the page that leaves.' },
+  { title: 'Details', body: 'One step deeper: the page that arrives.' },
+] as const
+
+/**
+ * Two pages and a page change between them, played as the theme says
+ * (Pages, under Motion): its page roles, forward and back, and its rules for
+ * parts of a page. The pages share a URL, so each change names its own
+ * direction.
+ */
+const PageTile = (): JSX.Element => {
+  const [at, setAt] = useState(0)
+  const page = usePageNavigate((to) => {
+    if (typeof to === 'string') setAt(Number(to.slice(1)))
+  })
+  const go = (to: number) =>
+    page.navigate(`#${to}`, {
+      types: ['greese-page', to < at ? 'greese-back' : 'greese-forward'],
+    })
+  const current = PAGES[at]!
+  return (
+    <Group title="Page transition">
+      <PageTransition>
+        <Card padding={4} variant="outline">
+          <Stack gap={2}>
+            <Text variant="h6">{current.title}</Text>
+            <Text variant="p3" tone="muted">
+              {current.body}
+            </Text>
+          </Stack>
+        </Card>
+      </PageTransition>
+      <Stack direction="row" gap={2}>
+        <Button size="sm" variant="soft" disabled={at === 0} onClick={() => go(0)}>
+          Back
+        </Button>
+        <Button size="sm" disabled={at === 1} onClick={() => go(1)}>
+          Next
+        </Button>
+      </Stack>
+    </Group>
+  )
+}
+
 const people = [
   { name: 'Ada Lovelace', role: 'Analyst', commits: 128 },
   { name: 'Grace Hopper', role: 'Compiler', commits: 342 },
@@ -213,6 +260,7 @@ export const Gallery = (): JSX.Element => (
       <TypeVariants />
       <Typography />
       <ScopeTile />
+      <PageTile />
       <Group title="Buttons">
         <Stack direction="row" gap={2} wrap="wrap">
           <Button>Solid</Button>
