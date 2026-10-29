@@ -282,6 +282,33 @@ and use them by name, alone or in sequences.
 - **greese.js** (`@greese/js`) is re-exported (`animate`, `timeline`,
   `ease`, `splitText`) for full keyframe timelines.
 
+### Page transitions
+
+`<PageTransition>` around your router's outlet animates page changes with
+React 19.3's `<ViewTransition>` (ADR 0029): the old page leaves, the new one
+arrives, played by the browser on snapshots with greese's effects. Navigate
+with `usePageNavigate`, which says which way each navigation went:
+
+```tsx
+const page = usePageNavigate(useNavigate()) // any router's navigate
+<Link to="/docs" onClick={page.onLinkClick('/docs')}>Docs</Link>
+
+<PageTransition exit="scaleOut" back={{ enter: 'slideRight' }} rules={{ 'header, footer': 'still' }}>
+  <Outlet />
+</PageTransition>
+
+<PageShare id={['template', id]}><Card>…</Card></PageShare> // morphs into its twin on the next page
+```
+
+- **The motion theme decides by default** (its `page` roles), a cross-fade
+  without one; name effects to override it, per direction or per type.
+- **Only greese navigations animate:** a tab or filter kept in the URL changes
+  in place.
+- **Server Components:** `PageTransition` and `PageShare` take only data;
+  `usePageNavigate` is the client part.
+- **Without view transitions, before React 19.3, and under reduced motion,**
+  the page simply changes.
+
 ## Responsive values
 
 Every responsive prop takes one value, or a value per breakpoint,

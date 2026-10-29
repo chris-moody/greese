@@ -76,7 +76,11 @@ module.exports = [
     // and the chosen names (it was a bare input); Textarea and Menu render a
     // frame and a viewport; ScrollSpy follows sections in a scrolling panel;
     // Progress takes `loading` (29.38 kB).
-    limit: '29.4 kB',
+    // 29.4 kB → 30.6 kB (2026-10-29): page transitions (ADR 0029):
+    // PageTransition, PageShare and usePageNavigate, with their class maps,
+    // rules CSS and navigation types (30.55 kB). Tree-shaken, they are 1.53 kB,
+    // budgeted on their own below; apps that don't import them don't pay.
+    limit: '30.6 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -101,7 +105,8 @@ module.exports = [
     // 34.25 kB → 34.4 kB (2026-10-26): greese.js takes per-target function values and function staggers, and reads CSS cubic-bezier() strings as eases (ADR 0008 addendum) (34.38 kB).
     // 34.4 kB → 34.8 kB (2026-10-27): the same FileInput, Textarea, Menu, ScrollSpy and Progress changes (34.75 kB).
     // 34.8 kB → 34.85 kB (2026-10-27): the same greese.js write-skip as the runtime's (34.8 kB).
-    limit: '34.85 kB',
+    // 34.85 kB → 36 kB (2026-10-29): the same page transitions (35.97 kB).
+    limit: '36 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -401,6 +406,16 @@ module.exports = [
     // 2.3 kB → 2.35 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (2310 B).
     // 2.35 kB → 2.4 kB (2026-10-27): sections in a scrolling panel, measured from its top (2.37 kB).
     limit: '2.4 kB',
+    modifyRolldownConfig: external,
+  },
+  {
+    name: 'JS: tree-shaken { PageTransition, PageShare, usePageNavigate }',
+    path: 'dist/index.js',
+    import: '{ PageTransition, PageShare, usePageNavigate }',
+    ignore: ['react', 'react-dom'],
+    // Page transitions (ADR 0029): the components, the hook, the class maps,
+    // the rules' CSS and the navigation types (1.53 kB).
+    limit: '1.6 kB',
     modifyRolldownConfig: external,
   },
   {

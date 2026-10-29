@@ -4,6 +4,9 @@ import { GreeseIsland } from '../components/Motion/GreeseIsland.tsx'
 import { effectClass, entranceNames, exitNames } from '@greese/ui/effect-classes'
 import type { BuiltInEffect } from '@greese/ui/effects'
 import { cx } from './cx.ts'
+import { cssEase } from './ease.ts'
+
+export { cssEase } from './ease.ts'
 
 /** Text effects, for elements whose content is plain text. */
 export type GreeseTextEffect = 'type' | 'count' | 'split'
@@ -133,20 +136,6 @@ const cssPreset = (motion: GreeseMotion | undefined, css: string | undefined) =>
   (motion === 'theme' || (entranceNames as readonly string[]).includes(motion))
     ? effectClass(motion)
     : undefined
-
-/** Eases CSS can play: named ones resolve to `--greese-ease-*` (Motion.scss). */
-const NAMED_EASES = /^(linear|ease|ease-in|ease-out|ease-in-out|in|out|inOut)$/
-
-/** The CSS form of an ease, or undefined when only greese.js can play it. */
-export const cssEase = (ease: Ease | undefined): string | undefined => {
-  if (ease === undefined) return 'var(--greese-ease-out)'
-  if (typeof ease === 'string')
-    return NAMED_EASES.test(ease)
-      ? `var(--greese-ease-${ease.replace('O', '-o')})`
-      : undefined
-  if (Array.isArray(ease)) return `cubic-bezier(${ease.join(', ')})`
-  return undefined
-}
 
 /** A bare effect or sequence is shorthand for `{ enter }`. */
 export const normalizeGreese = (prop: GreeseProp): GreeseOptions =>
