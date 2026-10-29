@@ -80,9 +80,9 @@ export const prerenderHome = async (root: string, dist: string): Promise<void> =
   })
   try {
     const { renderHome } = (await server.ssrLoadModule('/src/prerender.tsx')) as {
-      renderHome: () => string
+      renderHome: () => Promise<string>
     }
-    const html = renderHome()
+    const html = await renderHome()
     const missing = missingBlocks(
       html,
       criticalBlocks(readFileSync(join(root, 'src/styles/firstScreen.ts'), 'utf8')),

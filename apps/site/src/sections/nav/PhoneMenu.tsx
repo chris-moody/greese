@@ -1,7 +1,7 @@
 import { lazy, Suspense, useId, useState, type JSX, type ReactNode } from 'react'
 import { Drawer, ScrollSpy, Stack } from '@greese/react'
 import { ChevronDownIcon } from '@greese/icons'
-import { RouteLink, useCurrentRoute, type Route } from '../../router.tsx'
+import { RouteLink, useRoute, type Route } from '../../router.tsx'
 import { TEMPLATES } from '../../templates/index.ts'
 import { SECTIONS, SPY_OFFSET, STUDIO_TABS } from './links.ts'
 
@@ -75,7 +75,7 @@ export const PhoneMenu = ({
   open: boolean
   onOpenChange: (open: boolean) => void
 }): JSX.Element => {
-  const route = useCurrentRoute()
+  const route = useRoute()
   const close = () => onOpenChange(false)
   const section = (to: Route, title: string, children: ReactNode) => (
     <MenuSection

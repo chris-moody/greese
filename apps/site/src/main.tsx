@@ -10,8 +10,11 @@ import 'virtual:greese-utilities.css'
 // JavaScript task and blocked the main thread.
 import './effects.ts'
 import './site.scss'
-import { App } from './App.tsx'
+import { createBrowserRouter } from 'react-router'
+import { RouterProvider } from 'react-router/dom'
 import { whenIdle } from './idle.ts'
+import { BASE } from './router.tsx'
+import { routes } from './routes.tsx'
 
 // The rest of the library's styles, asked for now but not waited on: the
 // prerendered first screen paints without them (styles/library.ts).
@@ -21,9 +24,10 @@ void import('./styles/library.ts')
 whenIdle(() => void import('./logo/favicon.ts').then((m) => m.liveFavicon()))
 
 const root = document.getElementById('root')!
+const router = createBrowserRouter(routes, { basename: BASE })
 const app = (
   <StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </StrictMode>
 )
 // The built homepage arrives rendered (server/prerender.ts), so it paints

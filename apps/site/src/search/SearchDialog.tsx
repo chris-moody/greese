@@ -11,7 +11,7 @@ import {
 } from 'react'
 import { Button, Dialog, Icon, Input, Key, Text, useStoredState } from '@greese/react'
 import { icons } from '../icons.tsx'
-import { navigate } from '../router.tsx'
+import { useNavigateTo } from '../router.tsx'
 import { ENTRIES, grouped, highlight, search, type SearchEntry } from './entries.ts'
 
 /** The last few entries opened, newest first, by href. */
@@ -38,6 +38,7 @@ interface SearchDialogProps {
  */
 export const SearchDialog = ({ open, onOpenChange }: SearchDialogProps): JSX.Element => {
   const id = useId()
+  const navigate = useNavigateTo()
   const input = useRef<HTMLInputElement>(null)
   const list = useRef<HTMLDivElement>(null)
   const [query, setQuery] = useState('')

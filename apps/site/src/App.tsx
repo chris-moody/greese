@@ -1,5 +1,4 @@
 import {
-  lazy,
   Suspense,
   useEffect,
   useMemo,
@@ -8,31 +7,17 @@ import {
   type JSX,
 } from 'react'
 import { ThemeProvider, Toaster, useStoredState, type Theme } from '@greese/react'
-import { Home } from './pages/Home.tsx'
+import { Outlet } from 'react-router'
 import { Nav } from './sections/Nav.tsx'
-import { RouteContext, ScrollOnRoute, useRoute } from './router.tsx'
+import { ScrollOnRoute, useRoute } from './router.tsx'
 import { ShellContext, type Shell } from './shell.ts'
 import { isSpec, stored, WORN } from './studio/storage.ts'
 import { migrateSpec } from './studio/migrate.ts'
 import type { RenderedColors } from './studio/protocol.ts'
 import type { ThemeSpec } from './studio/spec.ts'
 import { applyEffects } from './effects-runtime.ts'
-import { Footer } from './sections/LazyFooter.tsx'
 import { useStable } from './useStable.ts'
 import { brand, GREESE_SPEC } from './theme.ts'
-
-// The studio is its own chunk: the homepage never loads its editor, the
-// compiler or the importer.
-const StudioPage = lazy(() =>
-  import('./studio/StudioPage.tsx').then((m) => ({ default: m.StudioPage }))
-)
-const Templates = lazy(() =>
-  import('./pages/Templates.tsx').then((m) => ({ default: m.Templates }))
-)
-// The docs too: their pages, stories and props load only when one is opened.
-const Docs = lazy(() =>
-  import('./docs/DocsPage.tsx').then((m) => ({ default: m.DocsPageView }))
-)
 
 const GREESE_JSON = JSON.stringify(GREESE_SPEC)
 
@@ -128,8 +113,9 @@ const useLayerCss = (spec: ThemeSpec): void => {
 }
 
 /**
- * The web app: the homepage at `/`, Theme Studio at `/studio`, the
- * templates at `/templates` and the docs at `/docs`, under one header. Every page wears the theme
+ * The web app's shell, the root route (src/routes.tsx): the homepage at `/`,
+ * Theme Studio at `/studio`, the templates at `/templates` and the docs at
+ * `/docs`, under one header. Every page wears the theme
  * being chosen, the studio's editor included, and keeps it between visits;
  * the studio's preview shows the theme with your edits as well.
  */
@@ -171,35 +157,26 @@ export const App = (): JSX.Element => {
 
   return (
     <ShellContext value={shell}>
-      <RouteContext value={route}>
-        <ThemeProvider theme={theme} asChild>
-          <div className={`site site--${route}`}>
-            <a href="#main" className="site-skip">
-              Skip to content
-            </a>
-            <ScrollOnRoute />
-            <Nav />
-            {route === 'home' && <Home />}
-            {route !== 'home' && (
-              <Suspense>
-                {/* The studio and the docs end their main column with the
-                    footer, beside their sidebars. */}
-                {route === 'studio' ? (
-                  <StudioPage />
-                ) : route === 'docs' ? (
-                  <Docs />
-                ) : (
-                  <>
-                    <Templates />
-                    <Footer />
-                  </>
-                )}
-              </Suspense>
-            )}
-            <Toaster />
-          </div>
-        </ThemeProvider>
-      </RouteContext>
+      <ThemeProvider theme={theme} asChild>
+        <div className={`site site--${route}`}>
+          <a href="#main" className="site-skip">
+            Skip to content
+          </a>
+          <ScrollOnRoute />
+          <Nav />
+          {/* The page (src/routes.tsx). Every page but the homepage is a
+              chunk of its own; the studio and the docs end their main
+              column with the footer, beside their sidebars. */}
+          {route === 'home' ? (
+            <Outlet />
+          ) : (
+            <Suspense>
+              <Outlet />
+            </Suspense>
+          )}
+          <Toaster />
+        </div>
+      </ThemeProvider>
     </ShellContext>
   )
 }

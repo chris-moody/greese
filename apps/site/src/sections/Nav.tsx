@@ -14,7 +14,7 @@ import { breakpoints } from '@greese/ui'
 import { REPO_URL } from '../config.ts'
 import { icons } from '../icons.tsx'
 import { whenIdle } from '../idle.ts'
-import { RouteLink, useCurrentRoute } from '../router.tsx'
+import { RouteLink, useRoute } from '../router.tsx'
 import { SearchBox, SearchIconButton, useSearch } from '../search/Search.tsx'
 import { useShell } from '../shell.ts'
 import { SchemeControl, SchemeSelect } from './nav/ColorScheme.tsx'
@@ -54,7 +54,7 @@ const themePlaceholder = (
  * pages and their sections are in a full-screen menu.
  */
 export const Nav = (): JSX.Element => {
-  const route = useCurrentRoute()
+  const route = useRoute()
   const { replayMotion } = useShell()
   const idle = useIdle()
   const [menu, setMenu] = useState(false)
