@@ -22,17 +22,18 @@ animation library, greese.js (`@greese/js`), and framework packages such as
 Load the **`greese-conventions`** skill. It's the rule set, and it links the
 ADRs in `docs/adr/` that govern each area. Then use the skill for the task:
 
-| Task                                    | Skill                     | Agent                         |
-| --------------------------------------- | ------------------------- | ----------------------------- |
-| New or ported component                 | `greese-new-component`    | `greese-component-builder`    |
-| Change or fix a component               | `greese-update-component` | `greese-component-builder`    |
-| Styles, tokens, theming                 | `greese-styles`           | `greese-stylist`              |
-| Animation, greese.js, the `greese` prop | `greese-animation`        | —                             |
-| Size, dependencies, performance         | `greese-lightweight`      | `greese-size-guardian`        |
-| Tests: unit, e2e, visual, Lighthouse    | `greese-testing`          | `greese-test-engineer`        |
-| Checking work before calling it done    | `greese-verify`           | `greese-reviewer` (read-only) |
-| Docs, guides, ADRs                      | (conventions → Docs)      | `greese-docs-keeper`          |
-| Committing                              | `commit`                  | —                             |
+| Task                                    | Skill                      | Agent                         |
+| --------------------------------------- | -------------------------- | ----------------------------- |
+| New or ported component                 | `greese-new-component`     | `greese-component-builder`    |
+| Change or fix a component               | `greese-update-component`  | `greese-component-builder`    |
+| Styles, tokens, theming                 | `greese-styles`            | `greese-stylist`              |
+| Animation, greese.js, the `greese` prop | `greese-animation`         | —                             |
+| Size, dependencies, performance         | `greese-lightweight`       | `greese-size-guardian`        |
+| Server Components, `'use client'`, SSR  | `greese-server-components` | `greese-server-components`    |
+| Tests: unit, e2e, visual, Lighthouse    | `greese-testing`           | `greese-test-engineer`        |
+| Checking work before calling it done    | `greese-verify`            | `greese-reviewer` (read-only) |
+| Docs, guides, ADRs                      | (conventions → Docs)       | `greese-docs-keeper`          |
+| Committing                              | `commit`                   | —                             |
 
 ## House rules
 
