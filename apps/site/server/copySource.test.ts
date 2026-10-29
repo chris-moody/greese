@@ -8,8 +8,12 @@ import { compileSpec } from './studio.ts'
 
 const COMPONENTS = join(process.cwd(), '../../packages/ui/src/components')
 
-/** Motion writes the greese prop's presets with a partial that isn't public (`effect`); copying it into a theme would be meaningless. */
-const NOT_COPYABLE = new Set(['Motion'])
+/**
+ * Motion and PageTransition write the effects' CSS with a partial that isn't
+ * public (`effect`) from the build's maps; copying them into a theme would be
+ * meaningless (a theme assigns effects with `motion-defaults()`).
+ */
+const NOT_COPYABLE = new Set(['Motion', 'PageTransition'])
 
 describe('copying a component’s source into its SCSS box', () => {
   it('makes library paths pkg: URLs, drops the layer, and turns the component’s class into &', () => {
