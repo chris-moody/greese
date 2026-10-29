@@ -167,6 +167,15 @@ export default defineConfig({
         advancedChunks: {
           groups: [
             {
+              // Vite's dynamic-import helper, which the entry (main.tsx) needs
+              // to load the app after the first paint. Left to the bundler it
+              // lands in the greese chunk, and importing it would pull that
+              // chunk, and React, back in front of the first paint.
+              name: 'preload',
+              test: /vite\/preload-helper/,
+              priority: 1,
+            },
+            {
               name: 'react',
               test: /node_modules\/(react|react-dom|scheduler)\//,
               minShareCount: 1,

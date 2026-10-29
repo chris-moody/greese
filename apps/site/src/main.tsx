@@ -1,37 +1,62 @@
-import { StrictMode } from 'react'
-import { createRoot, hydrateRoot } from 'react-dom/client'
+/**
+ * The page's entry: the first screen's CSS, render-blocking, and nothing
+ * else that runs before the first paint. Module scripts run before the
+ * browser first paints, so the app's JavaScript imported here was on the way
+ * to the homepage's first paint: about 120 kB before it, and 150 kB once the
+ * router came (ADR 0030). On the prerendered homepage it's requested once
+ * the first screen has painted instead (boot.tsx), while its CSS entrances
+ * play.
+ */
 import '@greese/react/base.css'
 // Render-blocking: only what the first screen uses. The rest is library.ts.
 import './styles/firstScreen.ts'
 import 'virtual:greese-utilities.css'
-// No `import '@greese/react/greese'`: the first screen animates with CSS
-// presets, so the greese prop's runtime can load lazily, after first paint.
-// Loading it up front forced the page's first style calculation into a
-// JavaScript task and blocked the main thread.
-import './effects.ts'
 import './site.scss'
-import { createBrowserRouter } from 'react-router'
-import { RouterProvider } from 'react-router/dom'
-import { whenIdle } from './idle.ts'
-import { BASE } from './router.tsx'
-import { routes } from './routes.tsx'
 
-// The rest of the library's styles, asked for now but not waited on: the
-// prerendered first screen paints without them (styles/library.ts).
-void import('./styles/library.ts')
+let started = false
+const boot = () => {
+  if (started) return
+  started = true
+  void import('./boot.tsx')
+}
 
-// The tab's icon follows the theme being worn, once the page is idle.
-whenIdle(() => void import('./logo/favicon.ts').then((m) => m.liveFavicon()))
+/** A few frames after `fn`'s turn comes, then a task: the frames are presented. */
+const afterFrames = (frames: number, fn: () => void) => {
+  const tick = () => (--frames > 0 ? requestAnimationFrame(tick) : setTimeout(fn))
+  requestAnimationFrame(tick)
+}
 
-const root = document.getElementById('root')!
-const router = createBrowserRouter(routes, { basename: BASE })
-const app = (
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>
-)
-// The built homepage arrives rendered (server/prerender.ts), so it paints
-// before this script runs; it's hydrated. Other routes, and the dev server,
-// start from an empty root.
-if (root.firstElementChild) hydrateRoot(root, app)
-else createRoot(root).render(app)
+/**
+ * The first screen's entrances that start at once (the hero's text, which is
+ * the page's largest paint), finished. A browser counts a fading element's
+ * paint only once it has faded part of the way in, so script that arrives
+ * before then competes with it. Delayed and endless animations don't count;
+ * under reduced motion the durations collapse and this is at once.
+ */
+const entrancesDone = (): Promise<unknown> =>
+  Promise.all(
+    document
+      .getAnimations()
+      .filter((a) => {
+        const timing = a.effect?.getComputedTiming()
+        return timing && !timing.delay && timing.iterations !== Infinity
+      })
+      .map((a) => a.finished.catch(() => {}))
+  )
+
+// Only the prerendered homepage has a first screen to wait for: a route
+// that arrives empty (the studio, the docs) starts at once.
+if (!document.getElementById('root')?.firstElementChild) boot()
+else if (PerformanceObserver.supportedEntryTypes?.includes('paint')) {
+  // After the first contentful paint has been presented (a frame callback
+  // alone runs before its frame is: on a slow phone the scripts were then
+  // requested before the paint they should follow), and its entrances.
+  new PerformanceObserver((list, observer) => {
+    if (!list.getEntriesByName('first-contentful-paint').length) return
+    observer.disconnect()
+    void entrancesDone().then(() => afterFrames(1, boot))
+  }).observe({ type: 'paint', buffered: true })
+} else afterFrames(1, boot)
+// A tab opened in the background paints no frames, and nothing waits
+// longer than this: start anyway.
+setTimeout(boot, 1000)
