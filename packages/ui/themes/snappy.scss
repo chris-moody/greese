@@ -1,5 +1,5 @@
 /**
- * Snappy: quick and decisive. Short durations, a sharp curve, a tight stagger; things pop in from a short distance, and overlays scale in and away.
+ * Snappy: quick and decisive. Short durations, a sharp curve, a tight stagger; things pop in from a short distance, and overlays scale in and away. Pages pop: the old one pops away all at once and the new one pops in.
  *
  * A greese ui motion theme (ADR 0025): it assigns the motion roles (which
  * built-in effect plays where, and which duration and easing it takes) and
@@ -31,4 +31,10 @@
   exit-duration: "fast",
   enter-ease: "cubic-bezier(0, 0, 0, 1)",
   exit-ease: "exit",
+  page: "pop-in",
+  page-exit: "pop-out",
+  page-duration: "0.25s",
+  page-ease: "cubic-bezier(0, 0, 0, 1)",
+  page-stagger: "0.03s",
+  page-exit-order: "together",
 ));

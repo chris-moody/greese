@@ -1,5 +1,5 @@
 /**
- * Depth: things turn into place in three dimensions. Reveals, panels, table rows and toasts flip up into place, menus swing down from their top edge like a sign and back up, tooltips flip up and back, and dialogs rise out of the page from behind it and sink back in.
+ * Depth: things turn into place in three dimensions. Reveals, panels, table rows and toasts flip up into place, menus swing down from their top edge like a sign and back up, tooltips flip up and back, and dialogs rise out of the page from behind it and sink back in. Pages turn like the faces of a cube, one way going forward and the other going back.
  *
  * A greese ui motion theme (ADR 0025): it assigns the motion roles (which
  * built-in effect plays where, and which duration and easing it takes) and
@@ -35,4 +35,11 @@
   exit-duration: "normal",
   enter-ease: "cubic-bezier(0.2, 0.8, 0.2, 1)",
   exit-ease: "exit",
+  page: "flip-right",
+  page-exit: "flip-out-left",
+  page-back: "flip-left",
+  page-back-exit: "flip-out-right",
+  page-duration: "0.6s",
+  page-ease: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+  page-stagger: "0.06s",
 ));
