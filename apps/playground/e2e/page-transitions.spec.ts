@@ -51,7 +51,9 @@ const last = (page: Page) =>
 
 /** The animations snapshots of `kind` played, by name: `old` or `new`. */
 const names = (t: Recorded, kind: 'old' | 'new') =>
-  t.played!.filter(([pseudo]) => pseudo.startsWith(`::view-transition-${kind}(`)).map(([, n]) => n)
+  t
+    .played!.filter(([pseudo]) => pseudo.startsWith(`::view-transition-${kind}(`))
+    .map(([, n]) => n)
 
 const supports = (page: Page) =>
   page.evaluate(() => ({
@@ -128,4 +130,126 @@ test('without view transitions the page simply changes', async ({ page }) => {
   await expect(page.getByRole('heading')).toHaveText('/pt/two/deeper')
   await expect(page).toHaveURL(/\/pt\/two\/deeper\?page=pages$/)
   expect(errors).toEqual([])
+})
+
+/** Milliseconds from the next click on a link to the heading changing (the commit). */
+const timeCommit = (page: Page) =>
+  page.evaluate(() => {
+    const w = window as Window & { clickAt?: number; committedAt?: number }
+    addEventListener('click', () => (w.clickAt = performance.now()), {
+      capture: true,
+      once: true,
+    })
+    new MutationObserver((_, observer) => {
+      w.committedAt = performance.now()
+      observer.disconnect()
+    }).observe(document.querySelector('h1')!, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+    })
+  })
+const commitDelay = (page: Page) =>
+  page.evaluate(() => {
+    const w = window as Window & { clickAt?: number; committedAt?: number }
+    return w.committedAt! - w.clickAt!
+  })
+
+test.describe('live exits', () => {
+  test('members leave in reverse order on the real page, before the new page commits', async ({
+    page,
+  }) => {
+    await page.goto('/pt/one?page=pages&variant=live')
+    await page.getByTestId('member-b').waitFor()
+    // Let the members' entrances finish first.
+    await page.waitForTimeout(700)
+    await timeCommit(page)
+    await page.getByRole('link', { name: 'Two' }).click()
+    // The old page is still there, its members leaving: the last first.
+    await expect(page.getByRole('heading')).toHaveText('/pt/one')
+    const animation = (id: string) =>
+      page.getByTestId(id).evaluate((el) => (el as HTMLElement).style.animation)
+    expect(await animation('member-b')).toMatch(/greese-fade-out.*calc\(0 \* 0\.1s\)/)
+    expect(await animation('member-a')).toMatch(/greese-fade-out.*calc\(1 \* 0\.1s\)/)
+    await expect(page.getByRole('heading')).toHaveText('/pt/two')
+    // 0.6 s each, the second 0.1 s later: the commit waited for both.
+    expect(await commitDelay(page)).toBeGreaterThanOrEqual(650)
+    // The new page's members (React kept the same elements) arrive again,
+    // rather than keeping the exit's last frame.
+    for (const id of ['member-a', 'member-b']) {
+      await expect.poll(() => animation(id)).toBe('')
+      await expect
+        .poll(() =>
+          page.getByTestId(id).evaluate((el) => Number(getComputedStyle(el).opacity))
+        )
+        .toBe(1)
+    }
+  })
+
+  test('a timeline map plays its sequences together on their own targets, then commits', async ({
+    page,
+  }) => {
+    await page.goto('/pt/one?page=pages&variant=timeline')
+    await page.getByTestId('member-b').waitFor()
+    await page.waitForTimeout(700)
+    await timeCommit(page)
+    await page.getByRole('link', { name: 'Two' }).click()
+    // greese.js writes the real elements: member-a fades while member-b scales.
+    await expect
+      .poll(() =>
+        page
+          .getByTestId('member-a')
+          .evaluate((el) => Number(getComputedStyle(el).opacity))
+      )
+      .toBeLessThan(1)
+    await expect
+      .poll(() =>
+        page.getByTestId('member-b').evaluate((el) => getComputedStyle(el).scale)
+      )
+      .not.toBe('none')
+    await expect(page.getByRole('heading')).toHaveText('/pt/two')
+    // member-b's sequence is the longest: 0.2 + 0.2 + 0.2 s.
+    expect(await commitDelay(page)).toBeGreaterThanOrEqual(550)
+    // greese.js puts the elements back once the new page is in.
+    await expect
+      .poll(() =>
+        page.getByTestId('member-a').evaluate((el) => Number(getComputedStyle(el).opacity))
+      )
+      .toBe(1)
+  })
+
+  test('back is held while the live page leaves, where the browser can hold it', async ({
+    page,
+  }) => {
+    await page.goto('/pt/one?page=pages&variant=live')
+    await page.getByTestId('member-b').waitFor()
+    await page.waitForTimeout(700)
+    await page.getByRole('link', { name: 'Two' }).click()
+    await expect(page.getByRole('heading')).toHaveText('/pt/two')
+    await page.waitForTimeout(800)
+    const holds = await page.evaluate(
+      () => 'navigation' in window && 'NavigationPrecommitController' in window
+    )
+    await timeCommit(page)
+    await page.evaluate(() => {
+      ;(window as Window & { clickAt?: number }).clickAt = performance.now()
+      history.back()
+    })
+    await expect(page.getByRole('heading')).toHaveText('/pt/one')
+    const delay = await commitDelay(page)
+    if (holds) expect(delay).toBeGreaterThanOrEqual(650)
+    else expect(delay).toBeLessThan(400)
+  })
+
+  test('under reduced motion a live page changes at once', async ({ browser }) => {
+    const context = await browser.newContext({ reducedMotion: 'reduce' })
+    const page = await context.newPage()
+    await page.goto('/pt/one?page=pages&variant=live')
+    await page.getByTestId('member-b').waitFor()
+    await timeCommit(page)
+    await page.getByRole('link', { name: 'Two' }).click()
+    await expect(page.getByRole('heading')).toHaveText('/pt/two')
+    expect(await commitDelay(page)).toBeLessThan(400)
+    await context.close()
+  })
 })
