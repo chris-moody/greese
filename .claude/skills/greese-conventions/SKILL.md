@@ -48,6 +48,8 @@ the ADR wins: fix this file in the same change.
 | 0026 header, footer and anchors     | Header/Footer; sticky header sets scroll padding; hovers measured at rest      |
 | 0027 client boundaries              | what forces `'use client'`; pure parts in their own files; Field keeps context |
 | 0028 docs in the web app            | `/docs` renders the stories and MDX; which Storybook APIs they may use         |
+| 0029 page transitions               | React's `ViewTransition` layer, greese types, two modes, config cascade, share |
+| 0030 site on React Router           | the web app's router: Data mode, `src/router.tsx` as its vocabulary            |
 
 ## Workspace
 
