@@ -8,6 +8,7 @@ import {
   Stack,
   Text,
   usePageNavigate,
+  type PageEffect,
   type PageTransitionProps,
 } from '@greese/react'
 
@@ -23,8 +24,9 @@ const Pages = (props: Omit<PageTransitionProps, 'children'>): JSX.Element => {
     if (typeof to === 'string') setIndex(Number(to.slice(1)))
   })
   // The story stays on one URL, so a navigation here is its own type,
-  // `story`, which the PageTransition below plays like a page change.
-  const go = (i: number) => page.navigate(`#${i}`, { types: ['story'] })
+  // `story`, which the PageTransition below plays like a page change, and
+  // says it's a page change (`greese-page`), so a live page leaves live.
+  const go = (i: number) => page.navigate(`#${i}`, { types: ['greese-page', 'story'] })
   return (
     <Stack gap={4}>
       <Stack direction="row" gap={2}>
@@ -42,17 +44,32 @@ const Pages = (props: Omit<PageTransitionProps, 'children'>): JSX.Element => {
       </Stack>
       <PageTransition
         {...props}
-        types={{ story: { enter: props.enter, exit: props.exit } }}
+        types={{ story: { enter: props.enter, exit: props.exit as PageEffect } }}
       >
-        <Card p={5}>
-          <Heading level={2} variant="h3">
-            {PAGES[index]}
-          </Heading>
-          <Text tone="muted">
-            Page {index + 1} of {PAGES.length}. Pick another to see this one leave and the
-            next arrive.
-          </Text>
-        </Card>
+        {props.mode === 'live' ? (
+          // Live: each card has a greese entrance, which makes it a member;
+          // members leave one after another (the last first), then the next
+          // page's play their entrances.
+          <Stack gap={3}>
+            {[1, 2, 3].map((n) => (
+              <Card key={`${index}-${n}`} p={4} greese="fadeUp">
+                <Text>
+                  {PAGES[index]}, part {n}
+                </Text>
+              </Card>
+            ))}
+          </Stack>
+        ) : (
+          <Card p={5}>
+            <Heading level={2} variant="h3">
+              {PAGES[index]}
+            </Heading>
+            <Text tone="muted">
+              Page {index + 1} of {PAGES.length}. Pick another to see this one leave and
+              the next arrive.
+            </Text>
+          </Card>
+        )}
       </PageTransition>
     </Stack>
   )
@@ -102,4 +119,12 @@ export const NamedEffects: Story = {
 /** Pockets: the old page sinks into a slot and the new one rises out of it. */
 export const Pockets: Story = {
   args: { enter: 'pocketUp', exit: 'pocketOutDown' },
+}
+
+/**
+ * Live: the page's cards leave on the real page, the last first, while the
+ * next page loads; then the next page's cards play their entrances.
+ */
+export const Live: Story = {
+  args: { mode: 'live', stagger: 0.08 },
 }
