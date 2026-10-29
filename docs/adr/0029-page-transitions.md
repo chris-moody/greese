@@ -289,15 +289,44 @@ CSS and runtime turn every page transition into an instant swap under
 - **Page roles reach snapshots only from `:root`.** View-transition
   pseudo-elements inherit from the document element. The motion theme files
   write their roles on `:root`, so they apply. A theme scoped to an element
-  (`ThemeProvider`, the kit's `theme(name)`) can't reach the snapshots,
-  though its live exits still follow it, since members inherit from their
-  own ancestors.
+  (`ThemeProvider`, the kit's `theme(name)`) couldn't reach the snapshots,
+  though its live exits still followed it. Phase 6 fixes this: see below.
 - **Stored themes migrate.** A theme worn or saved whose motion is exactly a
   preset's from before page transitions wears that preset as it is now, so
   the motion menu still knows it. Motion of your own is left as it is.
 - **The Studio's importer** reads the page roles back from a theme's CSS,
   and every effect's keyframes, entrances and exits, count as implied by
   the roles that play them.
+
+### Addendum: Theme Studio (Phase 6, 2026-10-29)
+
+- **A named theme's page roles go on the root too.** Inside `theme(name)`,
+  `motion-defaults()` also writes its page and share roles on
+  `:root:has([data-greese-theme='<name>'])`. While the themed element is on
+  the page, the root, which the snapshots inherit from, carries them. Only
+  those roles go there, so a named theme's other motion doesn't leak into
+  the rest of the page. `:has()` is within the Baseline 2024 target.
+- **The spec gains `pageRules`:** selector → `'still'`, or `{ enter, exit,
+duration, delay, ease }`, in kebab-case and CSS times.
+  - It's validated: a selector that could end a rule is refused, and so are
+    an entrance or exit that isn't one, and keys a rule doesn't take.
+  - It's written with the kit's `page-transitions()`.
+  - It's additive, so stored themes need no migration.
+- **The importer reads both back:** the page roles, and the
+  `page-transitions()` output, whose naming rule gives the selector and
+  whose snapshot rules give its effects and pace. The root's copy of a named
+  theme's page roles counts as implied.
+- **The Motion tab has a Pages section**, with the page roles and the parts
+  of a page.
+  - The tab's stage plays them on "Change pages", forward and back. The
+    stage is in the editor's document, so it sets the edited page roles on
+    the editor's root while it's shown, since snapshots inherit from there.
+    It hands the rules to its `PageTransition`.
+  - The preview's "Page transition" tile plays the compiled theme on the
+    other tabs.
+- **Not in a theme:** timeline maps and sequences. They play live, through
+  greese.js, from `PageTransition`'s `exit`, which is code, not CSS.
+  A theme assigns effects by name.
 
 ## Consequences
 
