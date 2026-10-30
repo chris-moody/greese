@@ -9,12 +9,12 @@ const reasons: Array<{ icon: ReactNode; title: string; body: string }> = [
   {
     icon: icons.layers,
     title: 'Zero-runtime CSS',
-    body: 'Styles are SCSS compiled at build time and themed with CSS custom properties. No CSS-in-JS, no style injection, no <style> tags at runtime.',
+    body: 'Build time SCSS styles are themed with CSS custom properties. No CSS-in-JS, no style injection, no <style> tags at runtime.',
   },
   {
     icon: icons.feather,
-    title: 'Light by budget',
-    body: `Every component has a size budget that fails CI when exceeded. A Button is ${kB(facts.button.size)}; the full stylesheet is ${kB(facts.css.size)}.`,
+    title: 'Light by design',
+    body: `A Button is ${kB(facts.button.size)}; the full stylesheet is ${kB(facts.css.size)}.`,
   },
   {
     icon: icons.server,
@@ -24,17 +24,17 @@ const reasons: Array<{ icon: ReactNode; title: string; body: string }> = [
   {
     icon: icons.access,
     title: 'Native and accessible',
-    body: 'Real <dialog>, the Popover API, <details> and native inputs underneath, so focus, keyboard and autofill work as the platform intends.',
+    body: 'Semantic markup with native elements and inputs.',
   },
   {
     icon: icons.phone,
     title: 'Mobile first',
-    body: 'Touch targets of at least 44px, 16px control text so iOS never zooms, bottom-sheet drawers and responsive props on every layout.',
+    body: 'Layouts, touch targets, spacing, font-sizes and more optimized for small screens',
   },
   {
     icon: icons.motion,
     title: 'Motion on every component',
-    body: 'One greese prop for entrances, scroll reveals, hover and press, text effects and composed sequences, all respecting reduced motion.',
+    body: 'The `greese` prop manages entrance animations, scroll reveals, hover, press, and text effects and composed sequences.',
   },
 ]
 
@@ -42,8 +42,8 @@ export const Why = (): JSX.Element => (
   <Section
     id="why"
     eyebrow="Why greese"
-    title="The platform does the heavy lifting"
-    intro="greese ui adds JavaScript only where the browser has nothing to offer, so pages stay fast on mid-range phones."
+    title="Its smooth"
+    intro="greese is lightweight and keeps pages fast across devices."
   >
     <Grid
       container

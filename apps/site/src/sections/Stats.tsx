@@ -12,8 +12,8 @@ const script = metric('Main-thread script (load)')
 
 const stats: Stat[] = [
   { value: String(facts.components), label: 'exported components' },
-  { value: kB(facts.library.size), label: 'all of them, minified + brotli' },
-  { value: kB(facts.greese.size), label: 'greese.js, the whole animation library' },
+  { value: kB(facts.libraryWithGreese.size), label: 'full library, minified + brotli' },
+  //{ value: kB(facts.greese.size), label: 'greese.js, the whole animation library' },
   {
     value: String(facts.thirdPartyDependencies),
     label: 'third-party runtime dependencies',

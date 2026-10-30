@@ -89,10 +89,10 @@ export const Hero = (): JSX.Element => (
           </div>
           <Heading level={1} variant="h1" className="site-hero-title">
             <Text asChild greese={{ enter: 'theme', delay: 0.1 }}>
-              <span>Components that move,</span>
+              <span>Animated components that</span>
             </Text>{' '}
             <Text asChild tone="primary" greese={{ enter: 'theme', delay: 0.5 }}>
-              <span>weigh almost nothing.</span>
+              <span>cost almost nothing.</span>
             </Text>
           </Heading>
           <Text
@@ -102,8 +102,8 @@ export const Hero = (): JSX.Element => (
             // The page's largest paint: no delay, so it isn't held invisible.
             greese={{ enter: 'theme' }}
           >
-            greese ui is a mobile-first React library with zero-runtime CSS, native
-            elements underneath, and an animation prop on every component. The whole
+            greese ui is a mobile-first component library built with native elements and zero-runtime CSS that
+            supports animation out of the box. The whole
             library is {kB(facts.library.size)} of JavaScript; a Button alone is{' '}
             {kB(facts.button.size)}.
           </Text>
