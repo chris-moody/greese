@@ -541,6 +541,17 @@ module.exports = [
     // the Depth theme's page change; ADR 0029): more of the effect names this carries (11.11 kB).
     limit: '11.15 kB',
   },
+  // @greese/react/svg (ADR 0031) is an add-on, not part of the library: the
+  // whole library with greese.js, as above, plus every SVG component and all
+  // of @greese/svg, what an app that uses everything bundles.
+  {
+    name: 'JS: whole library, with greese.js and @greese/react/svg',
+    // Two `import *`s in one entry collide in size-limit, so a file of its own.
+    path: 'size/library-and-svg.js',
+    ignore: ['react', 'react-dom'],
+    modifyRolldownConfig: external,
+    limit: '47.45 kB', // 47.39 kB
+  },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.
   {
