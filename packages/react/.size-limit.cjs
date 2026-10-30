@@ -197,7 +197,8 @@ module.exports = [
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.
     // 3.55 kB → 3.6 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (3585 B).
-    limit: '3.6 kB',
+    // 3.6 kB → 3.65 kB (2026-10-30): the `greese` prop's island waits for an IntersectionObserver to tell which scroll reveals start out of view, where it measured each one in the commit: that forced a layout of the whole page in every commit with an island, a fifth of the homepage's script after it boots (ADR 0009 addendum) (3.61 kB).
+    limit: '3.65 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -232,7 +233,8 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 4.75 kB → 4.8 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (4785 B).
     // 4.8 kB → 4.85 kB (2026-10-24): option ids looked up in a map, once per options list, where indexOf made long lists render in quadratic time (4.81 kB).
-    limit: '4.85 kB',
+    // 4.85 kB → 4.9 kB (2026-10-30): the same island (4851 B).
+    limit: '4.9 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -398,7 +400,8 @@ module.exports = [
     // 3.4 kB → 4 kB (2026-10-27): the trigger is an IconButton and each action's
     // icon a Button, so they take a theme's button shape, depth and states: it
     // brings Button, which an app with a speed dial almost always has (3.98 kB).
-    limit: '4 kB',
+    // 4 kB → 4.05 kB (2026-10-30): the same island (4.01 kB).
+    limit: '4.05 kB',
     modifyRolldownConfig: external,
   },
   {

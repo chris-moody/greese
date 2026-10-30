@@ -208,9 +208,11 @@ describe('the runtime', () => {
       </Card>
     )
     const card = screen.getByTestId('c')
-    // Marked in a microtask after the commit, before paint. jsdom lays
-    // nothing out, so everything counts as out of view.
+    // Nothing is decided until the island's observer first reports.
     await act(async () => {})
+    expect(card.dataset.greeseView).toBeUndefined()
+    // Out of view: hidden until it scrolls in.
+    scrollIntoView(false)
     expect(card.dataset.greeseView).toBe('pending')
     expect(card).toHaveClass('greese-Motion--view-fade-up')
     await attached()
@@ -253,22 +255,17 @@ describe('the runtime', () => {
 
   it('leaves an inView text effect already in view as written', async () => {
     // In view at mount: a reveal would only flash it, so nothing may change.
-    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockReturnValue({
-      top: 10,
-      bottom: 50,
-      left: 10,
-      right: 50,
-    } as DOMRect)
     render(
       <Text data-testid="t" greese={{ text: 'count', inView: 'fadeIn' }}>
         480
       </Text>
     )
+    await act(async () => {})
+    scrollIntoView(true)
     await attached()
     const t = screen.getByTestId('t')
     expect(t.dataset.greeseView).toBe('in')
     expect(t.innerHTML).toBe('480')
-    vi.restoreAllMocks()
   })
 
   it('does nothing interactive under reduced motion, and reveals at once', async () => {
@@ -278,6 +275,8 @@ describe('the runtime', () => {
         Card
       </Card>
     )
+    await act(async () => {})
+    scrollIntoView(false)
     await attached()
     const card = screen.getByTestId('c')
     expect(card.dataset.greeseView).toBe('in')

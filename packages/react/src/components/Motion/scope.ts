@@ -110,11 +110,6 @@ export const holdUntilVisible = (el: HTMLElement, inViewport: boolean): (() => v
 }
 
 /** Above the fold right now? Then holding a scope would only flash it. */
-const inViewport = (el: Element): boolean => {
-  const r = el.getBoundingClientRect()
-  return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth
-}
-
 /**
  * The lazy half of the `scope` option (see the island): orders the scopes,
  * then releases their entrances, which the island held at their first frame
@@ -134,7 +129,9 @@ export const attachScopes = (
       if (replays.has(el) && replays.get(el) !== replay) restartScope(el)
       replays.set(el, replay)
     }
-    const stop = wait ? holdUntilVisible(el, inViewport(el)) : () => {}
+    // Held until its observer first reports, a frame later: no measuring here,
+    // which would force a layout in the commit (see the island).
+    const stop = wait ? holdUntilVisible(el, false) : () => {}
     if (!wait) delete el.dataset.greeseScope
     const detach = item.detach
     item.detach = () => {
