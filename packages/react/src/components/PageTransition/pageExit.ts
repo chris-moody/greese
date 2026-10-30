@@ -37,7 +37,7 @@ const START = 'template[data-greese-page]'
 export const MEMBER = '.greese-Motion--enter, .greese-Motion--view'
 
 /** Between the markers, in document order. */
-const inside = ({ start, end }: PageRegion, el: Element) =>
+export const inside = ({ start, end }: PageRegion, el: Element) =>
   !!(start.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) &&
   !!(end.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_PRECEDING)
 

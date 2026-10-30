@@ -86,7 +86,12 @@ module.exports = [
     // 31.8 kB → 32.15 kB (2026-10-30): `<PageShare link>`, shared elements paired
     // by the link followed (ADR 0029 addendum), about 0.3 kB, and the
     // `greese` prop's island waits for an IntersectionObserver to tell which scroll reveals start out of view, where it measured each one in the commit: that forced a layout of the whole page in every commit with an island, a fifth of the homepage's script after it boots (ADR 0009 addendum) (32.09 kB).
-    limit: '32.15 kB',
+    // 32.15 kB → 32.4 kB (2026-10-30): a live exit's styles come off when the
+    // commit is seen (a MutationObserver), not two frames after the exit,
+    // which put the members back on the old page while a heavy next page
+    // rendered; a page that left live still plays the new page in; a page's
+    // snapshots show only the screenful in view (ADR 0029 addendum) (32.33 kB).
+    limit: '32.4 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -117,7 +122,10 @@ module.exports = [
     // with `html`, so the browser tries them on the root only, not on every
     // element (37.21 kB; ADR 0029).
     // 37.25 kB → 37.6 kB (2026-10-30): the same link pairing and island (37.56 kB).
-    limit: '37.6 kB',
+    // 37.6 kB → 37.8 kB (2026-10-30): the commit seen, as above (37.7 kB).
+    // 37.8 kB → 37.85 kB (2026-10-30): the half turns' effect names and the
+    // redrawn icons' paths, landed together with the above (37.8 kB + 2 B).
+    limit: '37.85 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -187,7 +195,9 @@ module.exports = [
     // to know when the runtime is needed, about 40 B.
     // 2.6 kB → 2.65 kB (2026-10-23): irises in eight directions (ADR 0025): eight more
     // of those names (2604 B).
-    limit: '2.65 kB',
+    // 2.65 kB → 2.7 kB (2026-10-30): eight half turns (`flipOver<Dir>`, `flipOverOut<Dir>`,
+    // the Depth theme's page change; ADR 0029): more of the effect names this carries (2.66 kB).
+    limit: '2.7 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -212,7 +222,9 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     // 3.25 kB → 3.3 kB (2026-10-27): the items scroll in a viewport, so a
     // shape theme can draw the menu's border along its shape (3.26 kB).
-    limit: '3.3 kB',
+    // 3.3 kB → 3.35 kB (2026-10-30): eight half turns (`flipOver<Dir>`, `flipOverOut<Dir>`,
+    // the Depth theme's page change; ADR 0029): more of the effect names this carries (3.33 kB).
+    limit: '3.35 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -227,7 +239,9 @@ module.exports = [
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.
     // 3.6 kB → 3.65 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (3632 B).
-    limit: '3.65 kB',
+    // 3.65 kB → 3.7 kB (2026-10-30): eight half turns (`flipOver<Dir>`, `flipOverOut<Dir>`,
+    // the Depth theme's page change; ADR 0029): more of the effect names this carries (3.66 kB).
+    limit: '3.7 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -419,7 +433,9 @@ module.exports = [
     // addendum): the entrance names the static part carries (2.25 kB).
     // 2.3 kB → 2.35 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (2310 B).
     // 2.35 kB → 2.4 kB (2026-10-27): sections in a scrolling panel, measured from its top (2.37 kB).
-    limit: '2.4 kB',
+    // 2.4 kB → 2.45 kB (2026-10-30): eight half turns (`flipOver<Dir>`, `flipOverOut<Dir>`,
+    // the Depth theme's page change; ADR 0029): more of the effect names this carries (2.41 kB).
+    limit: '2.45 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -436,7 +452,10 @@ module.exports = [
     // 3 kB → 3.4 kB (2026-10-30): `<PageShare link>` (ADR 0029 addendum):
     // naming the old page's end of a link at the click and the new page's as
     // it's inserted, through a MutationObserver (3.35 kB).
-    limit: '3.4 kB',
+    // 3.4 kB → 3.6 kB (2026-10-30): a live exit's styles come off when the
+    // commit is seen, not two frames after the exit; a live page still plays
+    // the new page in; snapshots show the screenful in view (3.56 kB).
+    limit: '3.6 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -518,6 +537,8 @@ module.exports = [
     // 10.85 kB → 10.95 kB (2026-10-26): greese.js takes per-target function values and function staggers, and reads CSS cubic-bezier() strings as eases (ADR 0008 addendum), as above (10.91 kB).
     // 10.95 kB → 11 kB (2026-10-27): greese.js skips writing a style or attribute already at its value, so a target holding still costs no mutation (10.96 kB).
     // 11 kB → 11.05 kB (2026-10-29): playPageExit, a page's live exit timeline (ADR 0029, 11.03 kB).
-    limit: '11.05 kB',
+    // 11.05 kB → 11.15 kB (2026-10-30): eight half turns (`flipOver<Dir>`, `flipOverOut<Dir>`,
+    // the Depth theme's page change; ADR 0029): more of the effect names this carries (11.11 kB).
+    limit: '11.15 kB',
   },
 ]

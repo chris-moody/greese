@@ -55,11 +55,12 @@ describe('PageTransition classes', () => {
         { checkout: { enter: 'popIn' }, quiet: 'none' }
       )
     ).toEqual({
-      'greese-forward': `${T} ${T}--theme ${T}--enter-fade-up`,
-      'greese-back': `${T} ${T}--theme-back ${T}--enter-slide-right`,
-      // A page that left live plays no snapshot over it.
-      'greese-live': 'none',
-      checkout: `${T} ${T}--theme ${T}--enter-pop-in`,
+      // A whole page: only its screenful shows.
+      'greese-forward': `${T} ${T}--theme ${T}--enter-fade-up ${T}--page`,
+      'greese-back': `${T} ${T}--theme-back ${T}--enter-slide-right ${T}--page`,
+      // A page that left live: joined with its direction's, its rest fades.
+      'greese-live': `${T}--left`,
+      checkout: `${T} ${T}--theme ${T}--enter-pop-in ${T}--page`,
       quiet: 'none',
       // A tab kept in the URL, a filter: the page changes in place.
       default: 'none',
@@ -452,7 +453,10 @@ describe('live exits', () => {
     )
   })
 
-  it('plays nothing over a live page: its snapshot is none', () => {
-    expect(pageClassMap({})['greese-live']).toBe('none')
+  it('still plays the new page in after a live exit, and fades what the exit left', () => {
+    const map = pageClassMap({})
+    expect(map['greese-live']).toBe(`${T}--left`)
+    // Where neither side animates, `none` still wins: React stops at it.
+    expect(pageClassMap({ enter: 'none', exit: 'none' })['greese-forward']).toBe('none')
   })
 })

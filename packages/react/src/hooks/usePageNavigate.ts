@@ -9,7 +9,9 @@ import {
 import { loadGreeseRuntime } from '../components/Motion/registry.ts'
 import {
   elementsOf,
+  EXIT_CAP,
   exitPage,
+  inside,
   leavesLive,
   pagesOnScreen,
   query,
@@ -21,6 +23,7 @@ import {
   LIVE,
   PAGE,
   pageTransitionTypes,
+  REPLACE,
   type PageNavigateOptions,
 } from '../components/PageTransition/pageMotion.ts'
 import { pairByLink } from '../components/PageTransition/shareLink.ts'
@@ -43,13 +46,55 @@ const leave = (page: PageRegion, back: boolean) => {
 }
 
 /**
- * After the new page has committed (it follows the exit's end by a task or
- * so; two frames are past it): the exit's styles come off. React keeps an
+ * Once the new page has committed: the exit's styles come off. React keeps an
  * element that's in the same place on both pages, and without this it would
  * keep the exit's last frame, hidden; with its exit gone, its own entrance
- * plays again, as a new element's would.
+ * plays again, as a new element's would. The commit is seen, not guessed:
+ * React commits when the next page has rendered, which can be frames after
+ * the exit ends, and members put back before it flash in on the old page.
+ * A page change changes the page (its elements, text or attributes, but not
+ * the `style` the exit sets); once its exit has played, nothing else does,
+ * and a page that didn't change lets go after `EXIT_CAP`. The observer's
+ * callback is a microtask after the commit, before the browser's snapshot
+ * of the new page.
  */
-const afterCommit = (fn: () => void) => requestAnimationFrame(() => requestAnimationFrame(fn))
+const afterCommit = (pages: PageRegion[], fn: () => void) => {
+  const observer = new MutationObserver((records) => {
+    for (const r of records)
+      if (r.attributeName !== 'style')
+        for (const page of pages) {
+          // A child of the markers' parent is between them if the node before it is.
+          const at = r.target === page.start.parentElement ? r.previousSibling : r.target
+          if (at && (at === page.start || inside(page, at as Element))) return finish()
+        }
+  })
+  const finish = () => {
+    observer.disconnect()
+    clearTimeout(timer)
+    fn()
+  }
+  for (const { start } of pages)
+    observer.observe(start.parentElement!, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true,
+    })
+  const timer = setTimeout(finish, EXIT_CAP)
+}
+
+/**
+ * How far the screen is into the leaving pages, for their snapshots, which
+ * show only the screenful that was in view (`--greese-page-scrolled`). Read
+ * before the snapshot is taken, so at the click.
+ */
+const measureScrolled = () => {
+  const tops = pagesOnScreen().flatMap((page) =>
+    elementsOf(page).map((el) => el.getBoundingClientRect().top)
+  )
+  const scrolled = tops.length ? Math.max(0, -Math.min(...tops)) : 0
+  document.documentElement.style.setProperty('--greese-page-scrolled', `${scrolled}px`)
+}
 
 /** A theme role that decides something at the click, as the whole page has it. */
 const role = (name: string) =>
@@ -78,13 +123,14 @@ const holdTraversal = (event: Event) => {
   const back = e.destination.index < current
   const live = pagesOnScreen().filter((page) => leavesLive(page, themeMode(), back))
   if (!live.length) return
+  measureScrolled()
   e.intercept({
     focusReset: 'manual',
     precommitHandler: async () => {
       const exits = live.map((page) => leave(page, back))
       e.signal.addEventListener('abort', () => exits.forEach((exit) => exit.restore()))
       await Promise.all(exits.map((exit) => exit.done))
-      afterCommit(() => exits.forEach((exit) => exit.restore()))
+      afterCommit(live, () => exits.forEach((exit) => exit.restore()))
     },
   } as NavigationInterceptOptions)
 }
@@ -146,7 +192,10 @@ export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
       const back = types.includes(BACK)
       // `<PageShare link>`: the old page's end is named now, before React's
       // snapshot of it; the new page's as it's inserted.
-      if (types.includes(PAGE)) pairByLink(link ?? null, back)
+      if (types.includes(PAGE)) {
+        pairByLink(link ?? null, back)
+        measureScrolled()
+      }
       // Which pages leave live, decided now: the types must be added before
       // anything is awaited. The navigation's own mode, else each page's,
       // else the theme's `page-mode`.
@@ -154,7 +203,8 @@ export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
       const live = types.includes(PAGE)
         ? pagesOnScreen().filter((page) => leavesLive(page, options.mode ?? theme, back))
         : []
-      if (live.length) types.push(LIVE)
+      // A replace changes the page in place: it has no entrance to play.
+      if (live.length && !types.includes(REPLACE)) types.push(LIVE)
       startTransition(async () => {
         for (const type of types) addTransitionType(type)
         // The router starts at once, so the next page loads while the old one
@@ -163,13 +213,16 @@ export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
         const navigation =
           typeof to === 'number' ? history.go(to) : navigate(to, { replace: options.replace })
         const exits = live.map((page) => leave(page, back))
+        const restore = () => exits.forEach((exit) => exit.restore())
         try {
           await Promise.all([navigation, ...exits.map((exit) => exit.done)])
-        } finally {
-          // A navigation that failed puts the page back at once; one that
-          // succeeded, once the new page is in.
-          afterCommit(() => exits.forEach((exit) => exit.restore()))
+        } catch (error) {
+          // A navigation that failed puts the page back at once.
+          restore()
+          throw error
         }
+        // One that succeeded, once the new page is in.
+        if (exits.length) afterCommit(live, restore)
       })
     }
     return {

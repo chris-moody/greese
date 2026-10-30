@@ -90,22 +90,30 @@ export const pageClasses = (
 }
 
 /**
+ * A whole page's classes, not a rule's part: its snapshots show only the
+ * screenful in view (`--page`).
+ */
+const whole = (classes: string) => (classes === 'none' ? 'none' : `${classes} ${BASE}--page`)
+
+/**
  * The class map for React's `<ViewTransition>`, by transition type. Only a
  * greese navigation's direction types animate: anything else that updates
  * the page in a transition (a tab kept in the URL, a filter) changes it in
  * place. React joins the classes of every active type it finds, so each
- * navigation carries exactly one direction type.
+ * navigation carries exactly one direction type. A page that left live adds
+ * `--left` to its direction's classes: the new page still arrives, and what
+ * the exit left of the old one fades beneath it.
  */
 export const pageClassMap = (
   motion: PageMotion,
   back?: PageMotion,
   types: Record<string, PageMotion | 'none'> = {}
 ): ViewTransitionClassPerType => ({
-  [FORWARD]: pageClasses(motion),
-  [BACK]: pageClasses({ ...motion, ...back }, true),
-  [LIVE]: 'none',
+  [FORWARD]: whole(pageClasses(motion)),
+  [BACK]: whole(pageClasses({ ...motion, ...back }, true)),
+  [LIVE]: `${BASE}--left`,
   ...Object.fromEntries(
-    Object.entries(types).map(([type, m]) => [type, m === 'none' ? 'none' : pageClasses(m)])
+    Object.entries(types).map(([type, m]) => [type, m === 'none' ? 'none' : whole(pageClasses(m))])
   ),
   default: 'none',
 })

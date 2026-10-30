@@ -65,7 +65,7 @@ export interface PageTransitionProps {
    * `snapshot`: the browser animates images of both pages. `live`: the old
    * page's members (its elements with greese entrances) play their exits on
    * the real page, one after another, while the next page loads; then the new
-   * page's own entrances play. `auto` leaves live when the page has members on
+   * page arrives as in a snapshot, over what the exit left of the old one. `auto` leaves live when the page has members on
    * screen or a timeline, and as a snapshot otherwise. The theme's
    * `page-mode` decides when this doesn't.
    * @default 'auto'
