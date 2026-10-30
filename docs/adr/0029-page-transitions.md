@@ -362,6 +362,34 @@ duration, delay, ease }`, in kebab-case and CSS times.
   A production probe found no hydration errors; the markers' `useId` matches
   through the static router.
 
+### Addendum: pairing by the link, and what the routers do (2026-10-30)
+
+- **`<PageShare link>` pairs by the link followed** (option C of the plan's
+  shared-element question), in both directions: the item around the clicked
+  link with the next page's hero (its one `link` element with no link
+  inside), and going back, the hero with the item linking to the page left.
+  An end that isn't found leaves the page's own exit and entrance.
+- **greese names both ends in the DOM, not React.** A spike showed React
+  names, on a page that enters, only the outermost `<ViewTransition>`; a
+  nested one is named only as half of a pair with a React one of the same
+  name leaving. So `usePageNavigate` names the old end at the click, and a
+  MutationObserver names the new end as it's inserted: its callback is a
+  microtask inside React's view-transition update, before the browser's
+  snapshot of the new page. Both names come off two frames later. It needs
+  the navigation to go through `usePageNavigate`, so it's client-only;
+  `PageShare` itself stays a Server Component (it only marks its child).
+- **Tested** in all five engines, both directions (30 runs of the spike,
+  then the playground's `?variant=link`).
+- **Next.js 16.4 and TanStack Router 1.170** were run in apps of their own in
+  Chromium, Firefox and WebKit. Next.js works as the recipe says (its own
+  React, 19.3 canary, has `ViewTransition`). TanStack Router works, back
+  included, with a `types` function comparing `state.__TSR_index` and
+  returning `false` on the first load; the guide shows it.
+- **The browser's back and forward buttons play no snapshot** with React
+  routers: the router's update carries no greese types, and
+  `PageTransition`'s classes default to `none`. Live exits are held through
+  the Navigation API, as before. The guide now says so.
+
 ## Consequences
 
 - New size budgets: the view-transition CSS, `PageTransition` and the live

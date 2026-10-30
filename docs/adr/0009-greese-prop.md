@@ -311,3 +311,28 @@ about 470 B, is the list of effect names CSS plays (`effect-classes`, from
 which lets the resolver tell a CSS preset from one that needs the runtime
 without loading it; the island's batching (reads before writes across
 islands) and its scope loading; and the resolver's newer options.
+
+## Addendum (2026-10-30): which reveals start out of view, without measuring
+
+The island decided which `inView` targets start out of view by measuring
+each one (`getBoundingClientRect`) in a microtask after the commit, so it
+could hide them before they painted. Reads were batched across islands, but
+every commit that mounted one still forced a layout of the whole page inside
+React's task. On the homepage, which mounts its sections one commit at a
+time, that was about a fifth of the script after it boots.
+
+- **Now an IntersectionObserver decides,** a frame later, from the layout
+  that frame computes anyway. Out-of-view targets are marked `pending`, then
+  the runtime attaches, as before. `scope.ts` holds an `inView` scope until
+  its own observer reports, instead of measuring it.
+- **Why it's safe:** a reveal animates only once it's marked `in`, and
+  `pending` only hides it. Until the observer reports, a target shows as it
+  ends; one out of view does so off screen, and one in view is never hidden.
+- **Measured:** the homepage's blocking time after its first paint, from
+  its own trace at 4× CPU, interleaving the two builds: 978 → 825, 832 →
+  513 and 612 → 392 ms (the machine was busy, so only each pair compares).
+  Moving the measuring to a frame callback, tried first, was worse (406–453
+  → 505–615 ms): the next reader in React's task paid for the layout instead.
+- **Cost:** the island no longer falls back to measuring where there's no
+  IntersectionObserver; the runtime and scopes already required one. A few
+  bytes on three components' budgets.

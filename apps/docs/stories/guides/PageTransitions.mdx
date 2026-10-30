@@ -166,6 +166,35 @@ view-transition class, `greese-share-template`, so CSS can style every
 template's morph at once. React warns, in development, when two elements
 share an id.
 
+For a list and its items' pages there's no need for ids: **`link` pairs by
+the link followed.** Mark each item and the item page's hero:
+
+```tsx
+export const List = () =>
+  templates.map((t) => (
+    <PageShare key={t.id} link>
+      <Card>
+        <a href={`/templates/${t.id}`} onClick={page.onLinkClick(`/templates/${t.id}`)}>
+          {t.name}
+        </a>
+      </Card>
+    </PageShare>
+  ))
+
+export const TemplatePage = () => (
+  <PageShare link>
+    <Heading level={1}>{template.name}</Heading>
+  </PageShare>
+)
+```
+
+The item whose link was clicked morphs into the hero, the page's one `link`
+element with no link inside it. Going back, the hero morphs into the item
+linking to the page left. The navigation has to go through
+`usePageNavigate`, which names both ends while the page changes, so this is
+the client's work. An end it can't find (an item the list hasn't rendered)
+leaves the page's own exit and entrance. Its class is `greese-share-link`.
+
 ## Themes
 
 A motion theme sets how pages change with the page roles of
@@ -200,10 +229,20 @@ and Depth turns them like a cube's faces. A theme scoped to an element
 
 ## Back and forward
 
-The browser's back and forward buttons play a live page's exit before the
-page changes, where the browser can hold a history traversal (the Navigation
-API's precommit handler). Routers that follow `popstate` need nothing more.
-Elsewhere they change the page at once.
+`page.navigate(-1)`, and links that go back up the URL, play as back: the
+`greese-back` type, and the theme's `page-back` roles.
+
+The browser's own back and forward buttons are another matter, because your
+router, not greese, makes that change:
+
+- **A page that leaves live** plays its exit before the page changes, where
+  the browser can hold a history traversal (the Navigation API's precommit
+  handler). Routers that follow `popstate` need nothing more.
+- **A snapshot doesn't play.** The router's update carries no greese types,
+  so the page changes at once, as it does in browsers that can't hold a
+  traversal.
+- **A router that starts view transitions itself,** such as TanStack Router
+  (below), plays them for back and forward too.
 
 ## Server Components
 
@@ -214,7 +253,10 @@ client part: use it in the client component that renders your links.
 ## Recipes
 
 The web app uses React Router, so that recipe is tested on every change. The
-others follow the platform's APIs, and greese's own tests don't run them.
+Next.js (16.4) and TanStack Router (1.170) recipes were run in apps of their
+own, in Chromium, Firefox and WebKit, but greese's tests don't run them, so
+they're as good as those versions. Pages without a router follow the
+platform's own API.
 
 ### React Router
 
@@ -266,8 +308,31 @@ main {
 }
 ```
 
-Then set its `viewTransition` option's `types` to `['greese-page']`, adding
-`'greese-back'` when the history index went down.
+Then give the router its types: `greese-page` on every page change, and
+`greese-back` when the history index went down. The first load has no
+`fromLocation`; `false` keeps it from fading in.
+
+```tsx
+import { createRouter } from '@tanstack/react-router'
+import { routeTree } from './routeTree.gen'
+
+const index = (state: unknown) => (state as { __TSR_index?: number }).__TSR_index ?? 0
+
+export const router = createRouter({
+  routeTree,
+  defaultViewTransition: {
+    types: ({ fromLocation, toLocation }) =>
+      !fromLocation
+        ? false
+        : index(toLocation.state) < index(fromLocation.state)
+          ? ['greese-page', 'greese-back']
+          : ['greese-page'],
+  },
+})
+```
+
+Because the router starts the transition itself, the browser's back and
+forward buttons play it too.
 
 ### Pages without a router
 

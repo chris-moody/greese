@@ -136,3 +136,32 @@ No budget was raised.
     single runs).
   - An experiment measuring the `greese` prop island's positions in a frame
     callback instead of a microtask showed no clear gain, and was dropped.
+
+## Addendum (2026-10-30): the boot, measured again
+
+- **LCP failed in half of Lighthouse's runs** (1.87 s FCP, 3.1 s LCP). In
+  those runs Chrome presented no frame for about 1.1 s: the page painted at
+  85 ms, but no screenshot followed until 1.1 s, whatever the page did. It
+  never happened in Playwright (52 loads), so it's how Lighthouse captures.
+  The loader's 1 s fallback then started the boot before the recorded first
+  paint, and Lighthouse counted the app's 160 kB of script on the way to it.
+  The fallback is now 3 s, with a background tab booting when it's shown:
+  1.21 s FCP and LCP in every run since, stalls included.
+- **Those runs also hid blocking time:** with the boot before the late first
+  paint, its tasks weren't counted. Measured honestly, the homepage was over
+  budget (118–132 ms).
+- **The boot is staged:** React, then React Router, then greese ui and the
+  app, each in a task of its own. Evaluating them together was one task of
+  about 23 ms (90 ms at 4× CPU); staged, the largest is about 12 ms.
+- **Mounting sections in batches was worse** (two, three or all at once:
+  264–473 ms against 214–227 ms one per step, from the trace at 4× CPU),
+  so it stays one per task.
+- **MotionLab's effect chips** lost their hover and press: 80-odd islands,
+  each attached by the runtime, for buttons whose effect plays on the
+  stage. The Play and example buttons keep theirs.
+- **The `greese` prop's island no longer measures in the commit** (ADR 0009
+  addendum, the same day).
+- **Now:** Lighthouse's blocking time is 76–131 ms on a busy machine, with
+  no task in its window over about 24 ms real. It doesn't reliably pass:
+  what's left is the staged evaluation, React's renders and commits of the
+  first screen, and the style recalculation as the library's CSS arrives.
