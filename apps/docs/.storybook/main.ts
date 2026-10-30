@@ -6,6 +6,7 @@ import { NodePackageImporter } from 'sass-embedded'
 const reactSrc = fileURLToPath(new URL('../../../packages/react/src', import.meta.url))
 const uiSrc = fileURLToPath(new URL('../../../packages/ui/src', import.meta.url))
 const iconsSrc = fileURLToPath(new URL('../../../packages/icons/src', import.meta.url))
+const svgSrc = fileURLToPath(new URL('../../../packages/svg/src', import.meta.url))
 
 const config: StorybookConfig = {
   framework: '@storybook/react-vite',
@@ -59,6 +60,8 @@ const config: StorybookConfig = {
           replacement: `${uiSrc}/styles/base.scss`,
         },
         { find: /^@greese\/react$/, replacement: `${reactSrc}/index.ts` },
+        { find: /^@greese\/react\/svg$/, replacement: `${reactSrc}/svg/index.ts` },
+        { find: /^@greese\/svg$/, replacement: `${svgSrc}/index.ts` },
         // The icons from source too, so their props tables read their TSDoc.
         { find: /^@greese\/icons$/, replacement: `${iconsSrc}/index.ts` },
       ],

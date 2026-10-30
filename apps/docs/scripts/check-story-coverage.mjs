@@ -1,6 +1,6 @@
 /**
- * Fails when a component exported from @greese/react has no page of its
- * own: every PascalCase export must be some story meta's `component`, so it
+ * Fails when a component exported from @greese/react (or @greese/react/svg)
+ * has no page of its own: every PascalCase export must be some story meta's `component`, so it
  * gets a docs page with its props table and Styling section. Being listed in
  * a parent's `subcomponents` (AccordionItem under Accordion) isn't enough;
  * parents keep listing them for the props tabs.
@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const componentsDir = join(here, '../../../packages/react/src/components')
+const svgDir = join(here, '../../../packages/react/src/svg')
 const storiesDir = join(here, '../stories')
 
 const barrel = readFileSync(join(componentsDir, 'index.ts'), 'utf8')
@@ -31,6 +32,16 @@ const documented = new Set()
 for (const file of storyFiles) {
   const source = readFileSync(join(storiesDir, file), 'utf8')
   for (const [, name] of source.matchAll(/\bcomponent: (\w+)\b/g)) documented.add(name)
+}
+
+// @greese/react/svg names its files in its barrel: `export { Path } from './Path.tsx'`.
+const svgBarrel = readFileSync(join(svgDir, 'index.ts'), 'utf8')
+for (const [, names, file] of svgBarrel.matchAll(
+  /export \{([^}]+)\} from '\.\/(.+\.tsx)'/g
+)) {
+  for (const name of names.split(',').map((n) => n.trim()))
+    if (/^[A-Z]/.test(name) && !name.startsWith('type '))
+      exported.set(name, join('../svg', file))
 }
 
 const missing = [...exported].filter(([name]) => !documented.has(name))

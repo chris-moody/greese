@@ -1,0 +1,334 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/SVG" />
+
+# SVG drawing and animation
+
+`@greese/svg` is a type-safe toolkit for drawing and animating SVG. It has no
+dependencies and needs no framework. It covers:
+
+- building paths and shapes;
+- converting shapes to paths and back;
+- morphing one shape into another;
+- drawing, filling, draining and running strokes as marquees;
+- moving things along a path;
+- gradients, filters, clip paths and masks.
+
+`@greese/react/svg` puts React components on top of it. Live demos are under
+**SVG** in the sidebar.
+
+## Install and import
+
+```sh
+npm install @greese/svg      # plain JavaScript, any framework
+```
+
+```ts
+import { morph, strokeControl, linearGradient } from '@greese/svg'
+```
+
+With React, `@greese/react` already depends on it. Its `svg` entry has the
+components and re-exports every `@greese/svg` function, so one import covers
+both:
+
+```tsx
+import { Drawing, Path, Morph, DrawPath, url, glow } from '@greese/react/svg'
+```
+
+Everything is tree-shaken. Approximate sizes, brotli:
+
+| Import                                 | Size   |
+| -------------------------------------- | ------ |
+| `dashes` (stroke slices, no measuring) | 0.5 kB |
+| gradients and filters                  | 1 kB   |
+| `path` builder                         | 1.7 kB |
+| `morph`                                | 2.8 kB |
+| all of `@greese/svg`                   | 9.2 kB |
+| `@greese/react/svg`, `Path` alone      | 1.9 kB |
+| `@greese/react/svg`, `Morph` alone     | 3.7 kB |
+
+## Paths and shapes
+
+Anything that takes a path takes a **`PathInput`**, which is one of:
+
+- path data (`'M0 0H10'`);
+- an array of typed segments (`[['M', 0, 0], ['H', 10]]`);
+- a builder;
+- a **shape spec**: `circle`, `ellipse`, `rect` (with `rx`/`ry`), `line`,
+  `polyline`, `polygon`, `regularPolygon`, `star`, `arc` or `path`.
+
+```ts
+import { path, toPath } from '@greese/svg'
+
+toPath({ type: 'star', cx: 50, cy: 50, r: 40, innerRadius: 18, points: 5 })
+
+const d = path()
+  .moveTo(10, 80)
+  .curveTo(30, 10, 70, 10, 90, 80)
+  .arc({ cx: 50, cy: 80, r: 40, start: 90, length: 180 })
+  .close()
+  .toString()
+```
+
+Two conventions apply to every shape:
+
+- **Angles are degrees, clockwise from the top** (12 o'clock). A star's first
+  point is at the top, and an `arc` with `start: 0, length: 90` runs from 12
+  to 3 o'clock.
+- **Circles and ellipses start at the top and run clockwise**, so strokes on
+  them draw the way a clock hand moves.
+
+The builder has SVG's commands under readable names (`moveTo`, `lineTo`,
+`curveTo`, `smoothCurveTo`, `quadTo`, `arcTo`, `close`) and the shapes
+(`circle`, `rect`, `star`…). Pass `{ relative: true }` to write relative
+commands.
+
+### Path data in, path data out
+
+| Function                         | Does                                                                    |
+| -------------------------------- | ----------------------------------------------------------------------- |
+| `parsePath(d)`                   | Typed segments, following SVG's grammar (`1.5.5`, packed arc flags…)    |
+| `serializePath(segments)`        | Path data, rounded (3 decimals by default)                              |
+| `absolutize(d)`                  | Every command absolute                                                  |
+| `toCubics(d)`                    | Every subpath as cubic Béziers only: what morphing and measuring use    |
+| `reversePath(d)`                 | The same path, drawn the other way                                      |
+| `transformPath(d, { … })`        | Scaled, rotated, translated or `matrix`-ed geometry (arcs stay exact)   |
+| `pathLength(d)`, `pointAt(d, %)` | Length, and a point with its direction, with no DOM (in Node, in tests) |
+| `pathSampler(d)`                 | `pointAt` measured once, for every frame of an animation                |
+| `bounds(d)`                      | The bounding box                                                        |
+
+### Shapes to paths, and back
+
+- **Shape to path:** `toPath(spec)` gives path data. `elementToPath(el)`
+  reads a `<circle>`, `<rect>`, `<polygon>` or other shape element's geometry
+  into path data.
+- **Path to shape:** `pathToShape(d)` gives the simple shape a path draws
+  _exactly_ (a `rect`, `circle`, `polygon`…), or `undefined`.
+  `pathToPolygons(d, { tolerance })` approximates any path with straight
+  lines.
+- **In the DOM:** `convertElement(el, 'path')` swaps an element for a
+  `<path>`, and `convertElement(el, 'shape')` swaps it back. Its other
+  attributes (class, fill, stroke) come along.
+
+## Morphing
+
+`morph(from, to)` returns a function from progress to path data: 0 gives the
+source, 1 the target. Values past either end extrapolate, for eases that
+overshoot.
+
+```ts
+import { morph } from '@greese/svg'
+
+const mixer = morph({ type: 'star', r: 40 }, { type: 'circle', r: 40 })
+pathEl.setAttribute('d', mixer(0.5))
+```
+
+The shapes don't need the same points first. The morph matches them up:
+
+- **Parts:** a shape with fewer subpaths grows the missing ones from the
+  center of their partners.
+- **Points:** curves are split until both sides have as many. Splitting
+  leaves a shape exactly as it was.
+- **Alignment:** a closed target is turned, and reversed if that's closer, to
+  the starting point where the points travel least, so the shape doesn't
+  twist. Turn this off with `{ align: false }`.
+
+`morphSequence([a, b, c])` runs through a list: progress 1.5 is halfway from
+`b` to `c`.
+
+To morph with an animation library that tweens numbers inside strings,
+`matchPaths(a, b)` returns both shapes with the same commands. With
+greese.js:
+
+```ts
+import { animate } from '@greese/js'
+import { matchPaths } from '@greese/svg'
+
+animate(pathEl, { d: matchPaths(star, circle) }, { duration: 0.6 })
+```
+
+## Strokes: draw, fill, drain, marquee
+
+A **slice** is the part of a stroke that's drawn, in percent of its length:
+
+| Slice                     | Draws                                        |
+| ------------------------- | -------------------------------------------- |
+| `{ end: 60 }`             | the first 60%                                |
+| `{ start: 30, end: 70 }`  | the middle 40%                               |
+| `{ end: 20, offset: 90 }` | 90% to 100%, then 0% to 10%: it wraps around |
+| `{ end: 5, repeat: 8 }`   | eight 5% dashes, evenly spaced               |
+
+`dashes(slice, length)` turns a slice into `stroke-dasharray` and
+`stroke-dashoffset`. Measuring is optional: with `pathLength="100"` on the
+element and the default `length` of 100, the result works in CSS and on the
+server.
+
+A simple slice is written as one dash and one gap, so a CSS `transition` on
+those two properties, or Web Animations, interpolates between slices
+exactly. A slice that wraps or repeats can't be written that way, so
+`strokeKeyframes(from, to)` samples it.
+
+Zero-length dashes still draw a dot under round or square caps. An empty
+slice at either end is therefore moved just off the path.
+
+**Animating.** A control is an object whose properties write to the element:
+
+```ts
+import { strokeControl } from '@greese/svg'
+import { animate } from '@greese/js'
+
+const stroke = strokeControl(pathEl, { end: 0 })
+animate(stroke, { end: 100 }, { duration: 1 }) // fill
+animate(stroke, { start: 100 }, { duration: 1 }) // then drain
+stroke.set({ end: 8, repeat: 6 })
+animate(stroke, { offset: [0, 100 / 6] }, { repeat: -1, ease: 'linear' }) // marquee
+```
+
+Any library that tweens plain object properties drives controls the same way.
+There's one for each kind of motion:
+
+| Control                               | Its properties                                       |
+| ------------------------------------- | ---------------------------------------------------- |
+| `strokeControl(el, slice)`            | `start`, `end`, `offset`, `repeat`                   |
+| `morphControl(el, from, to)`          | `progress` (0–1)                                     |
+| `followControl(el, path, { rotate })` | `progress` (0–100); moves the element along the path |
+| `gradientControl(el)`                 | `angle`; each stop's `offset`, `color`, `opacity`    |
+
+**Without an animation library**, `tween(update, options)` calls `update`
+each frame with eased progress. It respects `prefers-reduced-motion`, and you
+can await it. These helpers are built on it:
+
+- `drawStroke(el, from, to)`;
+- `fillStroke(el, { start, end })`;
+- `drainStroke(el, { start, end })`;
+- `marqueeStroke(el, { count, size })`;
+- `morphPath(el, to)`.
+
+## Gradients, filters, clip paths and masks
+
+The builders return elements as data (`SvgNode`). From there:
+
+- `toMarkup(node)` writes SVG markup (servers, `innerHTML`);
+- `toElement(node)` builds DOM;
+- `define(svg, ...nodes)` adds them to an `<svg>`'s `<defs>`, replacing any
+  with the same id;
+- the React components render the same nodes.
+
+```ts
+import { define, filter, glow, linearGradient, url } from '@greese/svg'
+
+define(
+  svgEl,
+  linearGradient({
+    id: 'sky',
+    angle: 135,
+    stops: ['#38bdf8', { color: '#6366f1', offset: 80 }],
+  }),
+  filter({
+    id: 'glow',
+    effects: glow({ color: 'gold', blur: 6 }),
+    x: '-50%',
+    y: '-50%',
+    width: '200%',
+    height: '200%',
+  })
+)
+shapeEl.setAttribute('fill', url('sky'))
+```
+
+- **Gradients:** `linearGradient` takes a CSS-style `angle` (180 runs top to
+  bottom) or its points. `radialGradient` takes a circle and a focal point.
+  Stops without an `offset` are spaced evenly.
+- **Filter primitives:** `blur`, `offset`, `flood`, `dropShadow`,
+  `composite`, `blend`, `merge`, `colorMatrix`, `turbulence`,
+  `displacementMap` and `morphology`, each typed. Their options name what
+  the attributes mean: `flood({ color, opacity })` for `flood-color` and
+  `flood-opacity`, `blur({ deviation })` for `stdDeviation`,
+  `offset({ x, y })`, `turbulence({ frequency, octaves, stitch })`,
+  `displacementMap({ xChannel, yChannel })`.
+- **Filter presets:** `glow`, `goo` (shapes that merge like liquid), `grain`
+  and `distort`.
+- **Clip paths and masks:** `clipPath` and `mask` take shapes as their
+  content. A mask fills its shapes white, so they reveal.
+
+## React: `@greese/react/svg`
+
+| Component                          | Renders on the server | What it does                                                                                   |
+| ---------------------------------- | :-------------------: | ---------------------------------------------------------------------------------------------- |
+| `Drawing`                          |          yes          | The `<svg>`: an image named by `label`, or hidden from screen readers; takes the `greese` prop |
+| `Path`                             |          yes          | `d` is path data or a shape spec; `slice` draws part of the stroke                             |
+| `DrawPath`                         |        client         | Draws its stroke from `from` to `to`, and on to each new `to`, from where it is                |
+| `MarqueePath`                      |        client         | Dashes running along the path without end                                                      |
+| `Morph`                            |        client         | Morphs to `shapes[index]`, in from `from` on mount; or follow `progress` (server-safe)         |
+| `LinearGradient`, `RadialGradient` |          yes          | Gradients by angle or points                                                                   |
+| `Filter`                           |          yes          | A `<filter>` whose children are its primitives, in order                                       |
+| `FeGaussianBlur`, `FeFlood`…       |          yes          | Each primitive, with the builders' prop names; native props pass through                       |
+| `Glow`, `Goo`, `Grain`, `Distort`  |          yes          | The presets, as the primitives they make                                                       |
+| `ClipPath`, `Mask`                 |          yes          | `content` shapes, plus any children                                                            |
+
+```tsx
+<Drawing viewBox="0 0 100 100" label="Saved">
+  <defs>
+    <LinearGradient id="ok" angle={135} stops={['#22c55e', '#16a34a']} />
+  </defs>
+  <Path d={{ type: 'circle', cx: 50, cy: 50, r: 44 }} fill={url('ok')} />
+  <DrawPath
+    d="M30 52l14 14 26-30"
+    to={{ end: 100 }}
+    duration={0.5}
+    delay={0.2}
+    fill="none"
+    stroke="white"
+    strokeWidth={8}
+    strokeLinecap="round"
+  />
+</Drawing>
+```
+
+A filter is its primitives as children, in order. Each `Fe…` component is
+the native element with plain names for its attributes: `FeFlood` takes
+`color` and `opacity` (`flood-color`, `flood-opacity`), `FeGaussianBlur`
+takes `deviation`, `FeOffset` takes `x` and `y`. Anything else passes
+through, and native `<fe…>` elements mix in freely.
+
+```tsx
+<defs>
+  <Filter id="halo" x="-50%" y="-50%" width="200%" height="200%">
+    <FeFlood color="gold" opacity={0.8} result="tint" />
+    <FeComposite in="tint" in2="SourceAlpha" operator="in" result="shape" />
+    <FeGaussianBlur in="shape" deviation={6} result="glow" />
+    <FeMerge>
+      <FeMergeNode in="glow" />
+      <FeMergeNode in="SourceGraphic" />
+    </FeMerge>
+  </Filter>
+  <Filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+    <Glow color="gold" blur={6} />
+  </Filter>
+</defs>
+```
+
+`DrawPath` and `MarqueePath` run on Web Animations with `pathLength="100"`,
+so nothing is measured.
+
+`DrawPath` renders its `to` slice. Before JavaScript runs, and under reduced
+motion, it shows its final state; it then plays from `from` before the first
+paint.
+
+`Morph` animates with `tween()` and writes `d` directly: no React render per
+frame.
+
+## Accessibility and motion
+
+- Give a meaningful drawing a `label` (on `Drawing`). One without a label is
+  decorative and hidden from screen readers.
+- Every animation here respects `prefers-reduced-motion`:
+  - `tween()`, and the helpers on it, skip to the end;
+  - `DrawPath` shows its target;
+  - `MarqueePath` holds still;
+  - `Morph` jumps to its shape.
+
+  `tween()`'s `reducedMotion: 'ignore'` opts out, for motion that carries
+  meaning.
+
+Design decisions: [ADR 0031](https://github.com/chris-moody/greese/blob/main/docs/adr/0031-svg-package.md).

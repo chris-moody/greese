@@ -14,6 +14,7 @@ import docgen from 'react-docgen-typescript'
 const here = dirname(fileURLToPath(import.meta.url))
 const react = join(here, '../../../packages/react')
 const componentsDir = join(react, 'src/components')
+const svgDir = join(react, 'src/svg')
 
 const files = readdirSync(componentsDir, { withFileTypes: true })
   .filter((d) => d.isDirectory())
@@ -21,6 +22,11 @@ const files = readdirSync(componentsDir, { withFileTypes: true })
     readdirSync(join(componentsDir, d.name))
       .filter((f) => /\.tsx$/.test(f) && !f.includes('.test.'))
       .map((f) => join(componentsDir, d.name, f))
+  )
+  .concat(
+    readdirSync(svgDir)
+      .filter((f) => /^[A-Z]\w*\.tsx$/.test(f))
+      .map((f) => join(svgDir, f))
   )
 
 // Only what the library exports: internal helpers have no props table.
@@ -31,6 +37,11 @@ for (const [, file] of barrel.matchAll(/export \* from '\.\/(.+)'/g)) {
   for (const [, name] of source.matchAll(/^export (?:const|function) ([A-Z]\w*)/gm))
     exported.add(name)
 }
+
+const svgBarrel = readFileSync(join(svgDir, 'index.ts'), 'utf8')
+for (const [, names] of svgBarrel.matchAll(/export \{([^}]+)\} from '\.\/.+\.tsx'/g))
+  for (const name of names.split(',').map((n) => n.trim()))
+    if (/^[A-Z]/.test(name)) exported.add(name)
 
 const parser = docgen.withCustomConfig(join(react, 'tsconfig.json'), {
   savePropValueAsString: true,

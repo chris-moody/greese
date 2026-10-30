@@ -78,6 +78,7 @@ The phase numbers other ADRs cite:
 | —     | The docs as pages of the web app                      | 2026-10-25 | ADR 0028          |
 | —     | Page transitions: snapshots, live exits, themes       | 2026-10-29 | ADR 0029          |
 | —     | The web app on React Router                           | 2026-10-29 | ADR 0030          |
+| —     | `@greese/svg` and `@greese/react/svg`                 | 2026-10-30 | ADR 0031          |
 
 When a new body of work lands, add a row here; that's the status record the
 skills and agents keep up to date.

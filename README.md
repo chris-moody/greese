@@ -3,12 +3,13 @@
 Mobile-first, TypeScript-first React components with zero-runtime styling:
 static CSS compiled at build time, themed with CSS custom properties.
 
-| Package                           |                                                                                                                |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| [`@greese/ui`](packages/ui)       | The CSS and design tokens: the stylesheet, per-component CSS, custom properties, Sass kit. No framework needed |
-| [`@greese/react`](packages/react) | React components, styled by `@greese/ui`                                                                       |
-| [`@greese/js`](packages/js)       | greese.js, the animation library behind the `greese` prop                                                      |
-| [`@greese/icons`](packages/icons) | Optional line icons; greese ui takes any icons                                                                 |
+| Package                           |                                                                                                                              |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| [`@greese/ui`](packages/ui)       | The CSS and design tokens: the stylesheet, per-component CSS, custom properties, Sass kit. No framework needed               |
+| [`@greese/react`](packages/react) | React components, styled by `@greese/ui`                                                                                     |
+| [`@greese/js`](packages/js)       | greese.js, the animation library behind the `greese` prop                                                                    |
+| [`@greese/icons`](packages/icons) | Optional line icons; greese ui takes any icons                                                                               |
+| [`@greese/svg`](packages/svg)     | SVG drawing and animation: paths, shapes, morphs, stroke slices, gradients, filters; React components in `@greese/react/svg` |
 
 `@greese/react` depends on `@greese/ui` and `@greese/js`, so one install is
 enough. `@greese/ui` works in plain HTML, and is what the planned Svelte, Vue
@@ -20,14 +21,14 @@ Scope, phases and standing decisions: [ADR 0013](docs/adr/0013-project-scope-and
 
 ## Workspace
 
-| Path                                                   |                                                                                                                                                                                                                                                                                                          |
-| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/ui`                                          | `@greese/ui`: the CSS, tokens and Sass kit, framework-free. Component styles are edited here                                                                                                                                                                                                             |
-| `packages/react`, `packages/js`, `packages/icons`      | The other published packages                                                                                                                                                                                                                                                                             |
-| `packages/eslint-config`, `packages/typescript-config` | Internal shared config                                                                                                                                                                                                                                                                                   |
-| `apps/docs`                                            | The docs' source: stories and MDX guides, run by Storybook (`npm run dev -w docs`) for authoring and visual tests. Uses the library **source**, so edits hot-reload                                                                                                                                      |
-| `apps/playground`                                      | Vite app that uses the **built** `dist/`, the same way a real consumer does. Playwright e2e and perf benchmarks run against it                                                                                                                                                                           |
-| `apps/site`                                            | The web app, built with greese ui from the **built** `dist/`: the homepage at `/`, the docs at `/docs` (rendered from `apps/docs`' stories and MDX), Theme Studio at `/studio` (`npm run studio`; edits a theme file) and the templates. Its numbers come from `npm run stats -w site` and the benchmark |
+| Path                                                              |                                                                                                                                                                                                                                                                                                          |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/ui`                                                     | `@greese/ui`: the CSS, tokens and Sass kit, framework-free. Component styles are edited here                                                                                                                                                                                                             |
+| `packages/react`, `packages/js`, `packages/icons`, `packages/svg` | The other published packages                                                                                                                                                                                                                                                                             |
+| `packages/eslint-config`, `packages/typescript-config`            | Internal shared config                                                                                                                                                                                                                                                                                   |
+| `apps/docs`                                                       | The docs' source: stories and MDX guides, run by Storybook (`npm run dev -w docs`) for authoring and visual tests. Uses the library **source**, so edits hot-reload                                                                                                                                      |
+| `apps/playground`                                                 | Vite app that uses the **built** `dist/`, the same way a real consumer does. Playwright e2e and perf benchmarks run against it                                                                                                                                                                           |
+| `apps/site`                                                       | The web app, built with greese ui from the **built** `dist/`: the homepage at `/`, the docs at `/docs` (rendered from `apps/docs`' stories and MDX), Theme Studio at `/studio` (`npm run studio`; edits a theme file) and the templates. Its numbers come from `npm run stats -w site` and the benchmark |
 
 ## Setup
 

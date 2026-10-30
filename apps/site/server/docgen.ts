@@ -1,7 +1,8 @@
 /**
  * Every component's description and props, for the docs' pages:
  *
- *   virtual:greese-docgen  react-docgen-typescript over packages/react and
+ *   virtual:greese-docgen  react-docgen-typescript over packages/react (its
+ *                          components and @greese/react/svg) and
  *                          packages/icons, as Storybook reads them (same
  *                          parser, same filter), keyed by component name
  *
@@ -16,6 +17,7 @@ import type { Plugin } from 'vite'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../../..')
 const COMPONENTS = join(ROOT, 'packages/react/src/components')
+const SVG = join(ROOT, 'packages/react/src/svg')
 const ICONS = join(ROOT, 'packages/icons/src')
 const ID = 'virtual:greese-docgen'
 
@@ -39,6 +41,9 @@ const sources = (): string[] => [
   ...readdirSync(COMPONENTS, { recursive: true, encoding: 'utf8' })
     .filter((f) => /^[A-Z]\w*\/[A-Z]\w*\.tsx$/.test(f))
     .map((f) => join(COMPONENTS, f)),
+  ...readdirSync(SVG)
+    .filter((f) => /^[A-Z]\w*\.tsx$/.test(f))
+    .map((f) => join(SVG, f)),
   join(ICONS, 'icons.tsx'),
   join(ICONS, 'createIcon.tsx'),
 ]
@@ -95,10 +100,10 @@ export const docgenDocs = (): Plugin => {
     },
     // A component edited: the next load parses again.
     watchChange(file) {
-      if (file.startsWith(COMPONENTS) || file.startsWith(ICONS)) cached = undefined
+      if ([COMPONENTS, SVG, ICONS].some((dir) => file.startsWith(dir))) cached = undefined
     },
     handleHotUpdate({ file, server }) {
-      if (!file.startsWith(COMPONENTS) && !file.startsWith(ICONS)) return
+      if (![COMPONENTS, SVG, ICONS].some((dir) => file.startsWith(dir))) return
       cached = undefined
       const module = server.moduleGraph.getModuleById(`\0${ID}`)
       if (module) server.moduleGraph.invalidateModule(module)

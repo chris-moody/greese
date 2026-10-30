@@ -50,6 +50,7 @@ the ADR wins: fix this file in the same change.
 | 0028 docs in the web app            | `/docs` renders the stories and MDX; which Storybook APIs they may use         |
 | 0029 page transitions               | React's `ViewTransition` layer, greese types, two modes, config cascade, share |
 | 0030 site on React Router           | the web app's router: Data mode, `src/router.tsx` as its vocabulary            |
+| 0031 svg package                    | `@greese/svg` (pure geometry, controls, nodes) and `@greese/react/svg`         |
 
 ## Workspace
 
@@ -59,6 +60,7 @@ the ADR wins: fix this file in the same change.
 | `packages/react`  | `@greese/react`: components in `src/components/<Name>/<Name>.tsx`; styled by `@greese/ui`                                                                                                 |
 | `packages/js`     | `@greese/js` (greese.js): animation; no dependencies, no React                                                                                                                            |
 | `packages/icons`  | `@greese/icons`: every icon (`createIcon`); `@greese/react` depends on it (ADR 0020)                                                                                                      |
+| `packages/svg`    | `@greese/svg`: SVG paths, shapes, morphs, stroke slices and definitions; no dependencies. Its React components are `packages/react/src/svg` (`@greese/react/svg`, ADR 0031)               |
 | `packages/mcp`    | `@greese/mcp`: the MCP server for coding assistants (ADR 0022)                                                                                                                            |
 | `apps/docs`       | The docs' source: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`. Storybook runs them for authoring and visual tests; the web app renders them at `/docs`      |
 | `apps/playground` | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                                                                                                                     |
@@ -196,6 +198,18 @@ the procedure for writing them. In short:
   saying what to target instead.
 - Stories must render deterministically: no autoplaying animation, no
   randomness, no dates. Visual tests snapshot them.
+- **Every animation a story or docs demo shows can be replayed.**
+  - An animation that plays once (an entrance on mount, a draw-on, a morph
+    in) sits in `Replay` from `stories/_shared/Replay.tsx`. `Replay` adds a
+    button that remounts its children. Wrap the story's render, or use a
+    decorator for a whole file.
+  - A component that only animates on a change needs a way to play on mount
+    (`DrawPath`'s and `Morph`'s `from`), so remounting replays it.
+  - Timelines use `stories/motion/Player.tsx` instead.
+  - Exempt: endless loops, and motion the visitor drives (sliders, buttons,
+    navigation). A file-wide decorator skips them with
+    `parameters: { replay: false }`.
+  - The web app's "Try it" editor has `Replay` in scope, so snippets keep it.
 - Update `packages/react/README.md` (the component lists), and the guides,
   when behaviour or setup changes.
 - Record decisions that constrain future work in a new ADR, and add a row to
