@@ -36,9 +36,9 @@ jobs:
       - uses: changesets/action@v1
         with:
           version: npm run version-packages
-          publish: npm run release
-          commit: 'chore: version packages'
-          title: 'chore: version packages'
+          publish: npm run publish-packages
+          commit: 'chore(release): version packages'
+          title: 'chore(release): version packages'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
