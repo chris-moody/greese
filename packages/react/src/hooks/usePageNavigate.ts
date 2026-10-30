@@ -91,11 +91,13 @@ const holdTraversal = (event: Event) => {
 /** Hook instances listening, so the one listener goes when the last does. */
 let holding = 0
 
-/** Your router's navigate: a path (or a history step), and whether to replace. */
-export type RouterNavigate = (
-  to: string | number,
-  options?: { replace?: boolean }
-) => unknown
+/**
+ * Your router's navigate, by path: React Router's `useNavigate()`, Next.js's
+ * `router.push`. Every router's takes this form; a history step
+ * (`page.navigate(-1)`) goes to the browser's history instead, which routers
+ * follow.
+ */
+export type RouterNavigate = (to: string, options?: { replace?: boolean }) => unknown
 
 export interface PageNavigate {
   /**
@@ -154,7 +156,7 @@ export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
         // leaves; React commits the router's update with this transition,
         // once both are done.
         const navigation =
-          typeof to === 'number' ? navigate(to) : navigate(to, { replace: options.replace })
+          typeof to === 'number' ? history.go(to) : navigate(to, { replace: options.replace })
         const exits = live.map((page) => leave(page, back))
         try {
           await Promise.all([navigation, ...exits.map((exit) => exit.done)])

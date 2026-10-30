@@ -138,6 +138,20 @@ describe('shared elements', () => {
   })
 })
 
+/**
+ * A router's navigate with overloads, as React Router's `useNavigate()` is (a
+ * path, or a history step): `usePageNavigate` takes it as it is. Checked by
+ * the type check; never called.
+ */
+declare const routerNavigate: {
+  (
+    to: string | { pathname?: string },
+    options?: { replace?: boolean }
+  ): void | Promise<void>
+  (delta: number): void | Promise<void>
+}
+export const useTakesARoutersNavigate = () => usePageNavigate(routerNavigate)
+
 describe('navigation types', () => {
   const from = 'https://example.com/docs/button'
 
@@ -275,16 +289,14 @@ describe('live exits', () => {
 
   /** Every element on screen, as jsdom lays nothing out. */
   const onScreen = () =>
-    vi
-      .spyOn(Element.prototype, 'getBoundingClientRect')
-      .mockReturnValue({
-        top: 0,
-        bottom: 100,
-        left: 0,
-        right: 100,
-        width: 100,
-        height: 100,
-      } as DOMRect)
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockReturnValue({
+      top: 0,
+      bottom: 100,
+      left: 0,
+      right: 100,
+      width: 100,
+      height: 100,
+    } as DOMRect)
 
   const Page = ({
     mode,
