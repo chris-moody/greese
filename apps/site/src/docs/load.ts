@@ -9,6 +9,7 @@ import { composeStories, composeStory } from '@storybook/react'
 import { storyNameFromExport } from 'storybook/internal/csf'
 import type { MDXComponents } from 'mdx/types'
 import type { Decorator } from './toJsx.ts'
+import { once } from '../pages/chunks.ts'
 
 type StoryModule = Parameters<typeof composeStories>[0]
 type MdxModule = {
@@ -152,3 +153,24 @@ export const composeOne = (annotation: StoryAnnotation, meta: Meta): ComposedSto
 /** An MDX page, `guides/Theming.mdx`, compiled. */
 export const loadMdx = async (file: string): Promise<MdxModule['default']> =>
   (await mdxFiles[STORIES + file]!()).default
+
+/**
+ * A loader, once per file: the promise React's `use` reads a page's content
+ * from, settled as pages/chunks.ts's `once`, so a page whose content a page
+ * change fetched first (`preloadDocsPage`) renders at once instead of
+ * showing its spinner.
+ */
+const cached = <T>(load: (file: string) => Promise<T>) => {
+  const loaders = new Map<string, () => Promise<T>>()
+  return (file: string): Promise<T> => {
+    let loader = loaders.get(file)
+    if (!loader) loaders.set(file, (loader = once(() => load(file))))
+    return loader()
+  }
+}
+
+/** A component page's stories, loaded once. */
+export const pageStories = cached(loadStories)
+
+/** An MDX page, loaded once. */
+export const pageMdx = cached(loadMdx)

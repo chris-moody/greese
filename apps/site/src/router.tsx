@@ -7,6 +7,7 @@ import {
   type JSX,
 } from 'react'
 import { usePageNavigate, type PageNavigate } from '@greese/react'
+import { preloadPage } from './pages/chunks.ts'
 import {
   Link,
   useLocation,
@@ -91,10 +92,18 @@ const routerPath = (href: string): string => {
  */
 export const PageNavigateContext = createContext<PageNavigate | null>(null)
 
-/** The shell's page navigate, for `PageNavigateContext`. */
+/**
+ * The shell's page navigate, for `PageNavigateContext`. The next page's
+ * chunk and content load while the old page leaves, and the page change
+ * waits for them: a page that commits still loading shows an empty fallback,
+ * or a spinner with the footer under it, and that's what its entrance plays.
+ */
 export const useSitePageNavigate = (): PageNavigate => {
   const navigate = useNavigate()
-  return usePageNavigate((to, options) => navigate(routerPath(to), options))
+  return usePageNavigate((to, options) => {
+    const path = routerPath(to)
+    return Promise.all([navigate(path, options), preloadPage(path)])
+  })
 }
 
 /**

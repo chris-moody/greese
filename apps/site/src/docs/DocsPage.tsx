@@ -23,6 +23,7 @@ import { ChevronLeftIcon, ChevronRightIcon, MenuIcon } from '@greese/icons'
 import { RouteLink, useSubpage } from '../router.tsx'
 import { ComponentPage } from './ComponentPage.tsx'
 import { MdxPage } from './MdxPage.tsx'
+import { pageMdx, pageStories } from './load.ts'
 import { Footer } from '../sections/LazyFooter.tsx'
 import { neighbours, pageById, pageName, SECTIONS, type DocsPage } from './pages.ts'
 import './docs.scss'
@@ -57,6 +58,13 @@ const Nav = ({ current }: { current?: DocsPage }): JSX.Element => (
     ))}
   </nav>
 )
+
+/** Fetches a docs page's content, for a page change to wait on (pages/chunks.ts). */
+export const preloadDocsPage = (id: string | undefined): Promise<unknown> | undefined => {
+  const page = pageById(id)
+  if (!page) return undefined
+  return page.kind === 'mdx' ? pageMdx(page.file) : pageStories(page.file)
+}
 
 /** The page's sections, read from what it rendered, for the "On this page" list. */
 const useSections = (page: DocsPage): Array<[string, string, number]> => {

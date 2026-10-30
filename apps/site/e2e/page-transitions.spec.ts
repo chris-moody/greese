@@ -56,8 +56,28 @@ test('leaving the homepage leaves live: its members go, the last first, then the
   // The homepage's entrances, settled.
   await page.waitForTimeout(1500)
   const before = await count(page)
+  // Counts exits taken off while the homepage is still there: a member that
+  // flashes back in before the next page commits.
+  await page.evaluate(() => {
+    const w = window as Window & { early?: number }
+    w.early = 0
+    new MutationObserver((records) => {
+      for (const r of records)
+        if (
+          r.oldValue?.includes('greese-motion-page-exit') &&
+          !(r.target as HTMLElement).style.animation &&
+          document.querySelector('.site--home')
+        )
+          w.early!++
+    }).observe(document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style'],
+      attributeOldValue: true,
+    })
+  })
   await page.locator('.site-nav-links').getByRole('link', { name: 'Templates' }).click()
-  // The hero's members play their exits on the real page (no snapshot).
+  // The hero's members play their exits on the real page.
   const exits = await page.evaluate(() =>
     [
       ...document.querySelectorAll<HTMLElement>(
@@ -70,8 +90,14 @@ test('leaving the homepage leaves live: its members go, the last first, then the
   expect(exits.length).toBeGreaterThan(0)
   await expect(page).toHaveURL(/\/templates$/)
   await expect(page.locator('#main a[href$="/templates/finance"]')).toBeVisible()
-  // A live exit plays no snapshot over it.
-  expect(await count(page)).toBe(before)
+  // They stayed gone until the commit.
+  expect(await page.evaluate(() => (window as Window & { early?: number }).early)).toBe(0)
+  // Then the new page arrives as a snapshot, and what the exit left fades.
+  await expect.poll(() => count(page)).toBeGreaterThan(before)
+  await expect.poll(() => last(page)).not.toBeNull()
+  const live = (await last(page))!
+  expect(live.types).toEqual(expect.arrayContaining(['greese-forward', 'greese-live']))
+  expect(live.played!.join('\n')).toMatch(/::view-transition-old\(.*\) greese-fade-out/)
 })
 
 test('a template card morphs into its page’s title, going deeper; its bar goes back', async ({

@@ -33,6 +33,12 @@ describe('prerender', () => {
     ).toEqual([])
   })
 
+  it("skips the classes a <style> names: they're for later, not the first paint", () => {
+    const html =
+      '<style href="r" precedence="greese">.greese-PageTransition--still{}</style><button class="greese-Button">'
+    expect(missingBlocks(html, ['Button'], (block) => [block])).toEqual([])
+  })
+
   it("reads a block's needs from the library's per-component stylesheets", () => {
     expect(blockNeeds('Switch')).toEqual(['ChoiceGroup', 'Field', 'Switch'])
     expect(blockNeeds('Type')).toEqual(['Type'])

@@ -33,7 +33,9 @@ export const withRoot = (page: string, html: string): string => {
 /**
  * The stylesheets the HTML's blocks need, each with the ones it depends on
  * (`needs`), that the render-blocking list leaves out: they'd paint unstyled
- * until the rest of the library's CSS arrives.
+ * until the rest of the library's CSS arrives. Only elements count: a
+ * `<style>` the page renders (PageTransition's rules) names classes for
+ * later, not for the first paint.
  */
 export const missingBlocks = (
   html: string,
@@ -42,7 +44,11 @@ export const missingBlocks = (
 ): string[] =>
   [
     ...new Set(
-      [...html.matchAll(/greese-([A-Z][A-Za-z]+)/g)].flatMap((m) => needs(m[1]!))
+      [
+        ...html
+          .replace(/<style\b[^>]*>[^<]*<\/style>/g, '')
+          .matchAll(/greese-([A-Z][A-Za-z]+)/g),
+      ].flatMap((m) => needs(m[1]!))
     ),
   ]
     .filter((sheet) => !critical.includes(sheet))

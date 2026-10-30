@@ -1,5 +1,12 @@
 import '../styles/library.ts'
-import { lazy, Suspense, useMemo, type CSSProperties, type JSX } from 'react'
+import {
+  createElement,
+  Suspense,
+  use,
+  type ComponentType,
+  type CSSProperties,
+  type JSX,
+} from 'react'
 import {
   Button,
   Card,
@@ -17,6 +24,7 @@ import { REPO_URL } from '../config.ts'
 import { useShell } from '../shell.ts'
 import { RouteLink, useSubpage } from '../router.tsx'
 import { TEMPLATES, type TemplateEntry } from '../templates/index.ts'
+import { once } from './chunks.ts'
 import '../templates/templates.scss'
 
 // Each template's screenshots, light and dark (`npm run shots -w site`).
@@ -93,11 +101,25 @@ const Gallery = (): JSX.Element => (
   </Container>
 )
 
+/** Each template's page, fetched once: the view's and a page change's (`preloadTemplate`). */
+const loaders = new Map<string, () => Promise<ComponentType>>()
+const loadTemplate = (template: TemplateEntry) => {
+  let load = loaders.get(template.id)
+  if (!load) loaders.set(template.id, (load = once(template.load)))
+  return load()
+}
+
+/** A template's page, once it's loaded. */
+const TemplatePage = ({ template }: { template: TemplateEntry }): JSX.Element =>
+  createElement(use(loadTemplate(template)))
+
+/** Fetches a template's page, for a page change to wait on (pages/chunks.ts). */
+export const preloadTemplate = (id: string): Promise<unknown> | undefined => {
+  const template = TEMPLATES.find((t) => t.id === id)
+  return template && loadTemplate(template)
+}
+
 const TemplateView = ({ template }: { template: TemplateEntry }): JSX.Element => {
-  const Page = useMemo(
-    () => lazy(() => template.load().then((c) => ({ default: c }))),
-    [template]
-  )
   // "Replay motion" remounts the page, so every entrance plays again.
   const { replay } = useShell()
   return (
@@ -128,7 +150,7 @@ const TemplateView = ({ template }: { template: TemplateEntry }): JSX.Element =>
           </Stack>
         }
       >
-        <Page key={replay} />
+        <TemplatePage key={replay} template={template} />
       </Suspense>
     </div>
   )

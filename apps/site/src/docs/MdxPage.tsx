@@ -16,7 +16,7 @@ import { Code, Heading } from '@greese/react'
 import type { MDXComponents } from 'mdx/types'
 import { CodeBlock } from './CodeBlock.tsx'
 import { DocsLink } from './DocsLink.tsx'
-import { loadMdx } from './load.ts'
+import { pageMdx } from './load.ts'
 import type { DocsPage } from './pages.ts'
 import { slug } from './slug.ts'
 
@@ -91,15 +91,8 @@ export const MDX_COMPONENTS: MDXComponents = {
   table: Table,
 }
 
-const loaded = new Map<string, ReturnType<typeof loadMdx>>()
-const mdx = (file: string) => {
-  let promise = loaded.get(file)
-  if (!promise) loaded.set(file, (promise = loadMdx(file)))
-  return promise
-}
-
 export const MdxPage = ({ page }: { page: DocsPage }): JSX.Element => {
-  const Content = use(mdx(page.file))
+  const Content = use(pageMdx(page.file))
   return (
     <div className="docs-prose">
       <Content components={MDX_COMPONENTS} />

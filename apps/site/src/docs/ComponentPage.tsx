@@ -12,19 +12,12 @@ import {
 } from '../../../docs/stories/_shared/ComponentStyles.tsx'
 import { ArgsTable } from './ArgsTable.tsx'
 import { LiveCode } from './LiveCode.tsx'
-import { loadStories, type LoadedStories } from './load.ts'
+import { pageStories } from './load.ts'
 import { Markdown } from './Markdown.tsx'
 import { pageName, type DocsPage } from './pages.ts'
 import { slug } from './slug.ts'
 import { StoryCanvas } from './StoryCanvas.tsx'
 import { componentName } from './toJsx.ts'
-
-const loaded = new Map<string, Promise<LoadedStories>>()
-const stories = (file: string) => {
-  let promise = loaded.get(file)
-  if (!promise) loaded.set(file, (promise = loadStories(file)))
-  return promise
-}
 
 /** A section's heading, with the id the page's contents link to. */
 const Section = ({ children }: { children: string }): JSX.Element => (
@@ -41,7 +34,7 @@ const Section = ({ children }: { children: string }): JSX.Element => (
 )
 
 export const ComponentPage = ({ page }: { page: DocsPage }): JSX.Element => {
-  const { meta, description, stories: all } = use(stories(page.file))
+  const { meta, description, stories: all } = use(pageStories(page.file))
   // The component's name, as the library exports it; a story file of
   // examples (no component) goes by its title.
   const named = meta.component ? componentName(meta.component) : undefined

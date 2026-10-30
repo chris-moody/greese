@@ -33,6 +33,12 @@ import { brand, GREESE_SPEC } from './theme.ts'
 const GREESE_JSON = JSON.stringify(GREESE_SPEC)
 
 const never = () => () => {}
+
+/**
+ * The header stays put while the page changes, and on top of it: the page
+ * moves beneath it, as it scrolls beneath it (ADR 0029).
+ */
+const PAGE_RULES = { '.site-nav': 'still' } as const
 /**
  * False while the page hydrates the prerendered homepage, true after: what
  * the browser alone knows (a theme saved in the hosted studio) waits for it,
@@ -178,13 +184,17 @@ export const App = (): JSX.Element => {
             <ScrollOnRoute />
             <Nav />
             {/* The page (src/routes.tsx), changed with page transitions as the
-                worn motion theme says (ADR 0029); the header stays put. The
+                worn motion theme says (ADR 0029); the header stays put, over
+                it. The
                 homepage's hero is a choreography of entrances, so it leaves
                 live, its members in turn; elsewhere the members are the
                 footer's, and the page changes as a snapshot. Every page but
                 the homepage is a chunk of its own; the studio and the docs end
                 their main column with the footer, beside their sidebars. */}
-            <PageTransition mode={route === 'home' ? 'auto' : 'snapshot'}>
+            <PageTransition
+              mode={route === 'home' ? 'auto' : 'snapshot'}
+              rules={PAGE_RULES}
+            >
               {route === 'home' ? (
                 <Outlet />
               ) : (
