@@ -33,6 +33,35 @@
       "cache": false,
       "persistent": true
     },
+    "watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "@greese/icons#watch": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "@greese/js#watch": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "@greese/react#watch": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "@greese/svg#watch": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "@greese/ui#watch": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
     "test:visual": {
       "dependsOn": ["^build", "docs#build"],
       "outputs": ["playwright-report/**", "test-results/**"],

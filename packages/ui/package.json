@@ -110,6 +110,7 @@
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
     "build": "npm run clean && tsc -p tsconfig.build.json && node scripts/build-tokens.ts && node scripts/build-utilities.ts && node scripts/build-styles.ts",
+    "watch": "node scripts/watch.ts",
     "check-types": "tsc --noEmit",
     "lint": "eslint src scripts --max-warnings 0 && stylelint \"src/**/*.scss\" --max-warnings 0",
     "test": "vitest run",
