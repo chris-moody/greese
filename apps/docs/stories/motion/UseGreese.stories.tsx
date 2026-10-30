@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useRef, useState } from 'react'
 import { Button, Card, Grid, Stack, Text, useGreese } from '@greese/react'
+import { Replay } from '../_shared/Replay.tsx'
 
 const meta = {
   title: 'Motion/useGreese',
@@ -59,10 +60,12 @@ const Tiles = ({ label }: { label: string }) => {
  */
 export const Scoped: Story = {
   render: () => (
-    <Grid container minChildWidth="16rem" gap={3}>
-      <Tiles label="First instance" />
-      <Tiles label="Second instance" />
-    </Grid>
+    <Replay>
+      <Grid container minChildWidth="16rem" gap={3}>
+        <Tiles label="First instance" />
+        <Tiles label="Second instance" />
+      </Grid>
+    </Replay>
   ),
 }
 

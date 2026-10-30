@@ -79,6 +79,8 @@ plan it implemented.
   - `stories/guides/Animation.mdx` (the API tables);
   - `stories/motion/Greese.stories.tsx` (demos through `Player`, which opens
     paused on the last frame so snapshots are deterministic);
+  - every demo that plays once gets a Replay button: `Replay` from
+    `stories/_shared/Replay.tsx` (see `greese-conventions`, Docs);
   - `packages/js/README.md`;
   - ADR 0008 for decisions.
 - **Changeset:** `'@greese/js': minor | patch`. Commit scope `greese`.
@@ -123,7 +125,9 @@ plan it implemented.
     then advance a frame), or a frame left pending when real timers return
     stalls the loop for every later test;
   - visual snapshots run with reduced motion, so stories show final
-    states.
+    states;
+  - a story whose motion plays once wraps it in `Replay`
+    (`stories/_shared/Replay.tsx`), so visitors can watch it again.
 
 ## Page transitions (ADR 0029)
 

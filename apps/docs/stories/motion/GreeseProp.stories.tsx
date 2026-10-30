@@ -15,26 +15,7 @@ import {
   type GreeseEffectName,
 } from '@greese/react'
 import { art } from '../_shared/fixtures.tsx'
-
-/** Remounts its children so entrances can be watched again. */
-const Replay = ({ children }: { children: ReactNode }) => {
-  const [key, setKey] = useState(0)
-  return (
-    <Stack gap={4}>
-      <div>
-        <Button
-          size="sm"
-          variant="outline"
-          tone="neutral"
-          onClick={() => setKey((k) => k + 1)}
-        >
-          Replay
-        </Button>
-      </div>
-      <div key={key}>{children}</div>
-    </Stack>
-  )
-}
+import { Replay } from '../_shared/Replay.tsx'
 
 /**
  * Mounts its child without motion, then with it on each click: for effects
@@ -121,7 +102,6 @@ const meta = {
     </Replay>
   ),
   // The web app's Try it: the example's own helper, in scope.
-  parameters: { tryIt: { scope: { Replay } } },
 } satisfies Meta<typeof Motion>
 export default meta
 
