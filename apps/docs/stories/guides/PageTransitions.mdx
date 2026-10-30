@@ -1,0 +1,276 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/Page transitions" />
+
+# Page transitions
+
+When the page changes, the old page leaves and the new one arrives, with
+greese's effects, paced and themed like everything else that moves. greese
+builds on React's own transition layer (`<ViewTransition>` and
+`addTransitionType`, stable since React 19.3), so it works with any router
+whose navigations are React transitions. The decisions behind it are ADR 0029.
+
+| Piece                           | What it does                                                         | Where it runs    |
+| ------------------------------- | -------------------------------------------------------------------- | ---------------- |
+| `PageTransition`                | Wraps your router's outlet; says how a page change plays             | Server or client |
+| `usePageNavigate`               | Wraps your router's navigate; says which way each navigation went    | Client           |
+| `PageShare`                     | An element that morphs into its twin on the next page                | Server or client |
+| The page roles                  | How the motion theme changes pages: `page`, `page-exit` and the rest | CSS              |
+| `page-transitions()` (SCSS kit) | Parts of a page with motion of their own, by selector, in a theme    | CSS              |
+
+The live demos are **Motion/PageTransition** and **Motion/PageShare**.
+
+## Quick start
+
+With React Router (the web app you're reading uses exactly this):
+
+```tsx
+import { Link, Outlet, useNavigate } from 'react-router'
+import { PageTransition, usePageNavigate } from '@greese/react'
+
+export const Layout = () => {
+  const page = usePageNavigate(useNavigate())
+  return (
+    <>
+      <header>
+        <Link to="/docs" onClick={page.onLinkClick('/docs')}>
+          Docs
+        </Link>
+      </header>
+      <PageTransition>
+        <Outlet />
+      </PageTransition>
+    </>
+  )
+}
+```
+
+That's a cross-fade, or whatever the motion theme you wear says. Without
+view transitions in the browser, before React 19.3, and for visitors who
+reduce motion, the page simply changes.
+
+## How a page change plays
+
+There are two ways, and `mode` picks one:
+
+- **`snapshot`:** the browser takes a picture of the old page and of the new
+  one and animates the pictures: the old one plays an exit, the new one an
+  entrance. Nothing on the page moves while it happens, and it costs almost
+  no script.
+- **`live`:** the old page's **members**, its elements with greese entrances,
+  play their exits on the real page, one after another (the last first, so
+  the page empties back towards its top), while your router loads the next
+  page. Then the page changes and the new page's members play their own
+  entrances.
+- **`auto`** (the default) leaves live when the page has members on screen,
+  and as a snapshot otherwise. The motion theme's `page-mode` decides when
+  `PageTransition` doesn't.
+
+```tsx
+<PageTransition exit="scaleOut" back={{ enter: 'slideRight' }}>…</PageTransition>
+<PageTransition mode="live" order="document" stagger={0.06}>…</PageTransition>
+```
+
+Pick live for pages whose arrival is choreographed (a hero of entrances) and
+snapshots elsewhere. The web app's homepage leaves live; its other pages,
+where the only members on screen are a footer's, change as snapshots.
+
+## Which way it went: transition types
+
+`usePageNavigate` adds React transition types to each navigation, and
+`PageTransition` plays by them:
+
+| Type                                                  | When                                                            |
+| ----------------------------------------------------- | --------------------------------------------------------------- |
+| `greese-page`                                         | Every page change it makes                                      |
+| `greese-forward`, `greese-back`                       | Its direction: back is going back in the history, or up the URL |
+| `greese-replace`                                      | A replace: the page changes in place                            |
+| `greese-deeper`, `greese-shallower`, `greese-sibling` | How it moved in the URL                                         |
+| `greese-live`                                         | The page left live, so no snapshot plays over it                |
+
+A change of hash or query alone isn't a page change and gets none of them:
+a tab kept in the URL, or a filter, changes the page in place. Add your own
+types with `types`, and say how they play in `PageTransition`'s `types`:
+
+```tsx
+page.navigate('/checkout', { types: ['checkout'] })
+
+<PageTransition types={{ checkout: { enter: 'pocketUp', exit: 'fadeOut' } }}>…</PageTransition>
+```
+
+## Effects, sequences and timelines
+
+`enter` and `exit` take any built-in effect by name, `'theme'` (the motion
+theme's choice, the default) or `'none'`. In a snapshot, the new page plays
+the entrance and the old page the exit, as CSS.
+
+A live page's `exit` also takes what greese.js plays: a sequence, in the
+`greese` prop's own syntax, or a **timeline map** of selector to sequence,
+whose entries start together and each keep their own pauses and overlaps:
+
+```tsx
+export const Page = () => (
+  <PageTransition
+    exit={{
+      '.hero': 'fadeOut(duration: 0.3)',
+      '.card': 'scaleOut(0.2),+0.1,fadeOut',
+      'nav a': 'fadeOutUp',
+    }}
+  >
+    …
+  </PageTransition>
+)
+```
+
+greese.js loads the first time a page leaves with one, as its own chunk.
+
+## Parts of a page
+
+`rules` gives parts of the page motion of their own while it changes: kept
+`'still'` (a sidebar the change leaves alone), or their own `enter`, `exit`,
+`duration`, `delay` and `ease`:
+
+```tsx
+export const Page = () => (
+  <PageTransition
+    rules={{
+      aside: 'still',
+      '.greese-Card': { exit: 'scaleOut', duration: 'fast', delay: 0.05 },
+    }}
+  >
+    …
+  </PageTransition>
+)
+```
+
+The matched elements are named only while a greese page change runs, so
+other view transitions never capture them. **Each one is a snapshot of its
+own:** name sections, not every item of a long list. A theme sets rules too,
+with the kit's `page-transitions()`, or under Pages in Theme Studio's Motion
+tab.
+
+## Shared elements
+
+`PageShare` pairs an element with its twin on the next page, by an `id` that
+means the same thing on both, and the browser morphs one into the other: a
+card into a page's hero, a thumbnail into a photo.
+
+```tsx
+<PageShare id={['template', template.id]}>
+  <Card>…</Card>
+</PageShare>
+```
+
+An id is unique on each page. Its group (`template`, above) is a
+view-transition class, `greese-share-template`, so CSS can style every
+template's morph at once. React warns, in development, when two elements
+share an id.
+
+## Themes
+
+A motion theme sets how pages change with the page roles of
+`motion-defaults()`, each a custom property, `--greese-motion-<role>`:
+
+| Role                              | Sets                                      | Base theme                       |
+| --------------------------------- | ----------------------------------------- | -------------------------------- |
+| `page`, `page-back`               | The new page's entrance, forward and back | A fade in                        |
+| `page-exit`, `page-back-exit`     | How the old page leaves                   | A fade out                       |
+| `page-duration`, `page-ease`      | The page change's pace                    | `normal`, the library's ease out |
+| `page-stagger`, `page-exit-order` | A live page's members' spacing and order  | The entrance stagger, `reverse`  |
+| `page-mode`                       | `auto`, `snapshot` or `live`              | `auto`                           |
+| `share-duration`, `share-ease`    | A shared element's morph                  | The page's                       |
+
+```scss
+@include greese.motion-defaults(
+  (
+    page: pocket-up,
+    page-exit: pocket-out-down,
+    page-back: pocket-down,
+    page-back-exit: pocket-out-up,
+    page-duration: 0.55s,
+  )
+);
+```
+
+Every motion theme has its own: Snappy pops pages away and in, Gentle fades
+the old page while the new one comes into focus, Wipe wipes the next page
+over the last, Pocket sinks pages into a slot and raises the next out of it,
+and Depth turns them like a cube's faces. A theme scoped to an element
+(`ThemeProvider`, `theme(name)`) reaches the page change too.
+
+## Back and forward
+
+The browser's back and forward buttons play a live page's exit before the
+page changes, where the browser can hold a history traversal (the Navigation
+API's precommit handler). Routers that follow `popstate` need nothing more.
+Elsewhere they change the page at once.
+
+## Server Components
+
+`PageTransition` and `PageShare` take only data, so a Server Component, such
+as a layout, can render them around its children. `usePageNavigate` is the
+client part: use it in the client component that renders your links.
+
+## Recipes
+
+The web app uses React Router, so that recipe is tested on every change. The
+others follow the platform's APIs, and greese's own tests don't run them.
+
+### React Router
+
+As in the quick start. Hand it the router's `useNavigate()`, and give every
+`Link` the hook's `onLinkClick(to)`, or make a link component of your own that
+does. With a `basename`, give `usePageNavigate` app hrefs and strip the base
+when you call React Router, so the URL's depth stays right.
+
+### Next.js (App Router)
+
+Its navigations are React transitions, so the same pattern applies:
+`PageTransition` around `children` in a layout, and a client link that goes
+through `usePageNavigate` with the router's `push`:
+
+```tsx
+'use client'
+import NextLink from 'next/link'
+import { useRouter } from 'next/navigation'
+import type { ReactNode } from 'react'
+import { usePageNavigate } from '@greese/react'
+
+export const PageLink = ({ href, children }: { href: string; children: ReactNode }) => {
+  const router = useRouter()
+  const page = usePageNavigate((to, options) =>
+    options?.replace ? router.replace(to) : router.push(to)
+  )
+  return (
+    <NextLink href={href} onClick={page.onLinkClick(href)}>
+      {children}
+    </NextLink>
+  )
+}
+```
+
+### TanStack Router
+
+TanStack Router can start view transitions itself (`viewTransition`), which
+greese's CSS plays without `PageTransition`: name the page's element and give
+it greese's classes, by type.
+
+```css
+main {
+  view-transition-name: page;
+  view-transition-class: greese-PageTransition greese-PageTransition--theme;
+}
+
+:root:active-view-transition-type(greese-back) main {
+  view-transition-class: greese-PageTransition greese-PageTransition--theme-back;
+}
+```
+
+Then set its `viewTransition` option's `types` to `['greese-page']`, adding
+`'greese-back'` when the history index went down.
+
+### Pages without a router
+
+Between real page loads, the browser plays the same CSS when both pages opt
+in with `@view-transition { navigation: auto; }` and name the page as above.
+greese's stylesheet is all it needs.

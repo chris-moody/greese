@@ -171,6 +171,24 @@ docs page first, so the first test doesn't time out.
 `cd apps/playground && npx playwright test e2e/<area>.spec.ts`, or one project
 with `--project=webkit`.
 
+### Page transitions
+
+Page transitions (ADR 0029) are tested at three layers:
+
+- **Unit:** `packages/react/src/components/pageTransitions.test.tsx`, with a
+  mocked `document.startViewTransition` that React calls with each
+  navigation's types.
+- **e2e, five engines:** `apps/playground/e2e/page-transitions.spec.ts`
+  records every view transition's types and the animations its snapshots
+  play. It covers snapshots, live exits, timeline maps, held back
+  navigation, reduced motion, and engines without view transitions.
+- **e2e, the web app:** `apps/site/e2e/page-transitions.spec.ts` (types,
+  live exit, a shared title) and `e2e/pages.spec.ts` (Theme Studio's Pages).
+
+A live exit starts no view transition. Assert the members' inline
+`animation` and when the page commits instead. The `greese-testing` skill
+has the details.
+
 ## Visual regression
 
 Every Storybook story is captured in light and dark, at phone and desktop

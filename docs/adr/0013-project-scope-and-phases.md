@@ -76,6 +76,8 @@ The phase numbers other ADRs cite:
 | —     | Header, Footer, anchors and steady hovers             | 2026-10-24 | ADR 0026          |
 | —     | Client boundaries: server Table, Pagination links     | 2026-10-24 | ADR 0027          |
 | —     | The docs as pages of the web app                      | 2026-10-25 | ADR 0028          |
+| —     | Page transitions: snapshots, live exits, themes       | 2026-10-29 | ADR 0029          |
+| —     | The web app on React Router                           | 2026-10-29 | ADR 0030          |
 
 When a new body of work lands, add a row here; that's the status record the
 skills and agents keep up to date.

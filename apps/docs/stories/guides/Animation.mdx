@@ -457,6 +457,13 @@ const tl = useTimeline(
 <Button onClick={() => tl?.restart()}>Try again</Button>
 ```
 
+## Page transitions
+
+When the page changes, `PageTransition` plays the old page's exit and the new
+page's entrance with the same effects, paced by the motion theme. A page
+leaves as a snapshot, or live, its members' exits playing in turn. See
+[Page transitions](?path=/docs/guides-page-transitions--docs).
+
 ## greese.js directly
 
 Everything in **Guides/greese.js** works with greese ui components and
