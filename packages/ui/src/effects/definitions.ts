@@ -159,6 +159,41 @@ export const turn = (axis: 'X' | 'Y', start: number, end: number, origin?: strin
     ...(origin && { fixed: { transformOrigin: origin } }),
   })
 
+/** The flips' directions: the axis each turns about, and which way. */
+export const FLIPS = {
+  Up: ['X', 1],
+  Down: ['X', -1],
+  Left: ['Y', 1],
+  Right: ['Y', -1],
+} as const
+
+/**
+ * A flip over: a panel turned half a turn about its middle, its two faces
+ * the old and the new: arriving, it turns from its back (180 degrees) to its
+ * front; leaving, from its front to its back, the same way, so a pair played
+ * together turns as one panel. The back face is hidden, so each shows only
+ * while it faces the viewer, and the switch is at the quarter turn. A longer
+ * perspective than a flip's, so a panel as wide as the screen doesn't swing
+ * through the viewer at the quarter turn.
+ */
+export const FLIP_OVER_PERSPECTIVE = 'perspective(2000px)'
+const flipOver = (axis: 'X' | 'Y', start: number, end: number) =>
+  base({
+    property: 'transform',
+    params: { start, end },
+    format: (v: Value) => `${FLIP_OVER_PERSPECTIVE} rotate${axis}(${v}deg)`,
+    fixed: { backfaceVisibility: 'hidden' },
+  })
+export const flipOvers = Object.fromEntries(
+  Object.entries(FLIPS).flatMap(([name, [axis, sign]]) => [
+    [`flipOver${name}`, flipOver(axis, sign * 180, 0)],
+    [`flipOverOut${name}`, flipOver(axis, 0, sign * 180)],
+  ])
+) as unknown as Record<
+  `flipOver${keyof typeof FLIPS}` | `flipOverOut${keyof typeof FLIPS}`,
+  BaseDefinition
+>
+
 export const baseEffects = {
   fadeIn: base({ property: 'opacity', params: { start: 0, end: 1 } }),
   fadeOut: base({ property: 'opacity', params: { start: 1, end: 0 } }),
@@ -211,6 +246,8 @@ export const baseEffects = {
   }),
   // A hinge along the top edge, like a sign swinging down into place.
   hinge: turn('X', 0, 0, '50% 0%'),
+  // Half turns, a panel's two faces (`flipOverRight`, `flipOverOutLeft`…).
+  ...flipOvers,
 } as const satisfies Record<string, BaseDefinition>
 
 export type BaseEffect = keyof typeof baseEffects
@@ -302,12 +339,6 @@ export const pockets = Object.fromEntries(
  * bottom edge leading; `flipRight` swings in from the left. Leaving, it turns
  * back out the same way.
  */
-export const FLIPS = {
-  Up: ['X', 1],
-  Down: ['X', -1],
-  Left: ['Y', 1],
-  Right: ['Y', -1],
-} as const
 export const flips = Object.fromEntries(
   Object.entries(FLIPS).flatMap(([name, [axis, sign]]) => {
     const effect = `turn${axis}` as const

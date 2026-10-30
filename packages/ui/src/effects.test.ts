@@ -25,7 +25,7 @@ describe('effects', () => {
       ...Object.keys(comboEffects),
     ])
     expect(effectNames).toHaveLength(Object.keys(builtInEffects).length)
-    expect(effectNames).toHaveLength(94)
+    expect(effectNames).toHaveLength(102)
     expect(effectFrames('fadeIn')).toEqual({ opacity: [0, 1] })
   })
 
@@ -150,8 +150,8 @@ describe('sequences', () => {
 
 describe('CSS', () => {
   it('plays an effect as CSS exactly when it ends at the resting state', () => {
-    expect(entranceNames()).toHaveLength(50)
-    expect(exitNames()).toHaveLength(44)
+    expect(entranceNames()).toHaveLength(54)
+    expect(exitNames()).toHaveLength(48)
     for (const name of entranceNames()) expect(effectPlan(name).enter, name).toBeDefined()
     expect(exitNames()).toEqual(
       expect.arrayContaining([
@@ -422,6 +422,30 @@ describe('three-dimensional effects', () => {
   it('leave the way they came: an exit is its entrance reversed', () => {
     for (const dir of ['Up', 'Down', 'Left', 'Right'])
       expect(ends(`flipOut${dir}`), dir).toEqual([...ends(`flip${dir}`)].reverse())
+  })
+
+  it('flip over by half a turn, a pair turning one way as one panel, its back hidden', () => {
+    expect(ends('flipOverRight')).toEqual([
+      'perspective(2000px) rotateY(-180deg)',
+      'perspective(2000px) rotateY(0deg)',
+    ])
+    for (const dir of ['Up', 'Down', 'Left', 'Right']) {
+      const name = `flipOver${dir}` as Parameters<typeof effectPlan>[0]
+      expect(effectPlan(name).enter, dir).toBeDefined()
+      expect(effectPlan(`flipOverOut${dir}` as typeof name).leave, dir).toBeDefined()
+      expect(ends(`flipOverOut${dir}`), dir).toEqual(
+        [...ends(`flipOver${dir}`)].reverse()
+      )
+    }
+    // The page themes' pair: the new page turns from -180 as the old one turns
+    // to 180, so they stay half a turn apart, back to back.
+    expect(ends('flipOverOutLeft')).toEqual([
+      'perspective(2000px) rotateY(0deg)',
+      'perspective(2000px) rotateY(180deg)',
+    ])
+    expect(
+      (effectFrames('flipOverRight') as Record<string, unknown[]>).backfaceVisibility
+    ).toEqual(['hidden', 'hidden'])
   })
 
   it('swing about their top edge, and an overlay leaving with one pivots there too', () => {

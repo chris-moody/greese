@@ -412,7 +412,7 @@ describe('SCSS kit: motion()', () => {
       new URL('../../dist/css/Motion.css', import.meta.url),
       'utf8'
     )
-    expect(entranceNames()).toHaveLength(50)
+    expect(entranceNames()).toHaveLength(54)
     // One compile for all of them: one each is seconds of Sass.
     const names = entranceNames().map(effectClass)
     const css = compile(

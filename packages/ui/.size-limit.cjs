@@ -43,7 +43,13 @@ module.exports = [
     // so they didn't exist), a view-transition class per effect, and the theme's
     // page roles (24.84 kB). Per-component CSS keeps it off pages that don't use
     // it: css/PageTransition.css, budgeted below.
-    limit: '24.9 kB',
+    // 24.9 kB → 25 kB (2026-10-30): a page's snapshots show only the screenful
+    // in view, and a page that left live fades beneath the next (24.97 kB).
+    // 25 kB → 25.2 kB (2026-10-30): eight half-turn effects (`flipOver<Dir>`,
+    // `flipOverOut<Dir>`, the Depth theme's page change), their keyframes,
+    // classes and snapshot rules, and a still header stacked over the page
+    // (25.18 kB).
+    limit: '25.2 kB',
   },
   {
     name: 'CSS: css/PageTransition.css',
@@ -51,7 +57,11 @@ module.exports = [
     rolldown: false,
     // Page transitions alone (ADR 0029), without core.css: exit keyframes and
     // the view-transition rules (1.74 kB).
-    limit: '1.8 kB',
+    // 1.8 kB → 1.9 kB (2026-10-30): the screenful window and the live fade, as
+    // above (1.85 kB).
+    // 1.9 kB → 2 kB (2026-10-30): the half turns' exit keyframes and snapshot
+    // rules, hidden backs, and still groups on top, as above (1.98 kB).
+    limit: '2 kB',
   },
   {
     name: 'CSS: utilities.css (the whole set)',

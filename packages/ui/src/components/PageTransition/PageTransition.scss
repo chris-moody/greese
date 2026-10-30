@@ -11,6 +11,8 @@
 //   greese-PageTransition--enter-none, --exit-none   that side doesn't animate
 //   greese-PageTransition--share          a shared element's morph (its group)
 //   greese-PageTransition--still          not animated at all
+//   greese-PageTransition--page           a whole page: only its screenful shows
+//   greese-PageTransition--left           a page that left live: its rest fades
 // Transition types (`greese-back`, …) pick between these classes in React's
 // <ViewTransition> props, which works wherever React does; the CSS doesn't
 // depend on `:active-view-transition-type()`. Entrances play the effects' own
@@ -104,6 +106,35 @@
       );
     }
 
+    // A page left live: its exit has played on the real page, so what's left
+    // of it (backgrounds, anything that isn't a member) fades beneath the new
+    // page's entrance. After the effects, so it wins over any exit it's
+    // joined with.
+    html::view-transition-old(*.greese-PageTransition--left) {
+      animation-name: greese-fade-out;
+    }
+
+    // A whole page is snapshotted whole, however tall, and an effect sized by
+    // its box (a pocket's 100%, a pop about its middle, a flip's axis) would
+    // play mostly off screen. Its snapshots show only the screenful in view,
+    // so the effects are sized by that: the new page from its top (it's
+    // scrolled there first), the old one from where the screen was on it
+    // (`--greese-page-scrolled`, which usePageNavigate measures at the click).
+    // Hidden from behind: a page turned half over (`flipOver…`) shows the
+    // other page on its back, not its own mirror image.
+    html::view-transition-old(*.greese-PageTransition--page),
+    html::view-transition-new(*.greese-PageTransition--page) {
+      backface-visibility: hidden;
+      block-size: min(100%, 100dvh);
+      object-fit: none;
+      object-position: 50% 0;
+    }
+
+    html::view-transition-old(*.greese-PageTransition--page) {
+      inset-block-start: var(--greese-page-scrolled, 0);
+      object-position: 50% calc(-1 * var(--greese-page-scrolled, 0px));
+    }
+
     // The exits' keyframes, from rest to where each ends (src/effects.ts).
     @each $name, $plan in defaults.$effects {
       @if not map.get($plan, enter) {
@@ -118,6 +149,13 @@
   html::view-transition-old(*.greese-PageTransition--still),
   html::view-transition-new(*.greese-PageTransition--still) {
     animation: none;
+  }
+
+  // And on top: the page moves beneath what stays, as it scrolls beneath a
+  // sticky header, rather than over it. Groups otherwise stack in the
+  // document's order, which puts the page over a header that comes first.
+  html::view-transition-group(*.greese-PageTransition--still) {
+    z-index: 1;
   }
 
   @media (prefers-reduced-motion: reduce) {

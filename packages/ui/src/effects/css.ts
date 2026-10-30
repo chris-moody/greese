@@ -91,8 +91,8 @@ export const atRest = (property: string, value: string): boolean => {
   // arrives, one that ends with the element masked away leaves.
   if (property === 'mask-size') return whole(value)
   if (transient(property)) return true
-  // Where a turn pivots moves nothing by itself.
-  if (property === 'transform-origin') return true
+  // Where a turn pivots, and whether its back shows, move nothing by themselves.
+  if (property === 'transform-origin' || property === 'backface-visibility') return true
   const numbers = (text: string) => text.match(/-?[\d.]+/g)?.map(Number) ?? []
   switch (property) {
     case 'opacity':
