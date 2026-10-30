@@ -51,6 +51,7 @@ how you get there without tripping either.
 | `react`                              | `packages/react`                                                         |
 | `js`                                 | `packages/js` (greese.js)                                                |
 | `icons`                              | `packages/icons`                                                         |
+| `svg`                                | `packages/svg`                                                           |
 | `mcp`                                | `packages/mcp` (the MCP server)                                          |
 | `docs`                               | `apps/docs` (Storybook) and `docs/`                                      |
 | `playground`                         | `apps/playground`                                                        |

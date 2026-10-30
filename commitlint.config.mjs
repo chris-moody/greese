@@ -37,6 +37,7 @@ export default {
         'react',
         'js',
         'icons',
+        'svg',
         'mcp',
         'docs',
         'playground',
