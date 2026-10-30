@@ -110,7 +110,10 @@ module.exports = [
     // 34.8 kB → 34.85 kB (2026-10-27): the same greese.js write-skip as the runtime's (34.8 kB).
     // 34.85 kB → 36 kB (2026-10-29): the same page transitions (35.97 kB).
     // 36 kB → 37.2 kB (2026-10-29): their live exits, as above (37.18 kB).
-    limit: '37.2 kB',
+    // 37.2 kB → 37.25 kB (2026-10-30): selector rules' snapshot rules start
+    // with `html`, so the browser tries them on the root only, not on every
+    // element (37.21 kB; ADR 0029).
+    limit: '37.25 kB',
     modifyRolldownConfig: external,
   },
   {

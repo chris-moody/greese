@@ -147,7 +147,7 @@ export const pageRulesCss = (rules: Record<string, PageRule>): string => {
     ].filter(Boolean)
     if (pace.length)
       paced.push(
-        `::view-transition-old(*.${own}), ::view-transition-new(*.${own}) { ${pace.join(' ')} }`
+        `html::view-transition-old(*.${own}), html::view-transition-new(*.${own}) { ${pace.join(' ')} }`
       )
   })
   if (paced.length)

@@ -81,7 +81,7 @@ describe('PageTransition selector rules', () => {
       `:is(.greese-Card) { view-transition-name: match-element; view-transition-class: ${T} ${T}--theme ${T}--exit-scale-out ${own}; }`
     )
     expect(css).toContain(
-      `@media (prefers-reduced-motion: no-preference) { ::view-transition-old(*.${own}), ::view-transition-new(*.${own}) { animation-duration: var(--greese-duration-fast); animation-delay: 0.05s; animation-timing-function: var(--greese-ease-in); } }`
+      `@media (prefers-reduced-motion: no-preference) { html::view-transition-old(*.${own}), html::view-transition-new(*.${own}) { animation-duration: var(--greese-duration-fast); animation-delay: 0.05s; animation-timing-function: var(--greese-ease-in); } }`
     )
   })
 
