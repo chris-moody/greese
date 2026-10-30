@@ -62,8 +62,10 @@ const stats = {
   react: measure('react'),
   ui: measure('ui'),
   js: measure('js'),
+  // An add-on (ADR 0031): its own table, never in the library's numbers.
+  svg: measure('svg'),
 }
 writeFileSync(out, `${JSON.stringify(stats, null, 2)}\n`)
 console.log(
-  `wrote ${out}: ${components} components, ${stats.react.length + stats.ui.length + stats.js.length} measurements`
+  `wrote ${out}: ${components} components, ${stats.react.length + stats.ui.length + stats.js.length + stats.svg.length} measurements`
 )

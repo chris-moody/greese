@@ -36,6 +36,12 @@ const panels: Array<{ value: keyof typeof sizeTables; label: string; caption: st
       label: 'Motion',
       caption: 'greese.js and the greese prop’s lazy runtime',
     },
+    {
+      value: 'svg',
+      label: 'SVG',
+      caption:
+        'The @greese/react/svg add-on, which the library’s totals leave out: its components (with @greese/svg), and @greese/svg’s features on their own, without React',
+    },
   ]
 
 const SizeTable = ({ rows, caption }: { rows: Row[]; caption: string }): JSX.Element => {
@@ -92,8 +98,8 @@ export const Size = (): JSX.Element => (
     title="Every byte is measured"
     intro={
       <>
-        Measured minified + brotli sizes. Each entry includes the
-        shared core it needs, which an app bundles only once.
+        Measured minified + brotli sizes. Each entry includes the shared core it needs,
+        which an app bundles only once.
       </>
     }
     tinted

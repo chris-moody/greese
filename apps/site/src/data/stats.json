@@ -1,21 +1,22 @@
 {
-  "date": "2026-10-25",
-  "components": 119,
+  "date": "2026-10-30",
+  "components": 121,
   "dependencies": [
     "@greese/icons",
     "@greese/js",
+    "@greese/svg",
     "@greese/ui"
   ],
   "react": [
     {
       "name": "JS: whole library (components)",
-      "size": 28836,
-      "sizeLimit": 28950
+      "size": 32365,
+      "sizeLimit": 32400
     },
     {
       "name": "JS: whole library, with greese.js",
-      "size": 34240,
-      "sizeLimit": 34250
+      "size": 37802,
+      "sizeLimit": 37850
     },
     {
       "name": "JS: tree-shaken { VisuallyHidden }",
@@ -24,52 +25,52 @@
     },
     {
       "name": "JS: tree-shaken { Stack }",
-      "size": 2444,
+      "size": 2481,
       "sizeLimit": 2500
     },
     {
       "name": "JS: tree-shaken { Button }",
-      "size": 2375,
+      "size": 2438,
       "sizeLimit": 2450
     },
     {
       "name": "JS: tree-shaken { TextField }",
-      "size": 2409,
+      "size": 2456,
       "sizeLimit": 2500
     },
     {
       "name": "JS: tree-shaken { Tabs, TabList, Tab, TabPanel }",
-      "size": 2617,
-      "sizeLimit": 2650
+      "size": 2663,
+      "sizeLimit": 2700
     },
     {
       "name": "JS: tree-shaken { Dialog }",
-      "size": 3556,
-      "sizeLimit": 3600
-    },
-    {
-      "name": "JS: tree-shaken { Menu, MenuItem }",
-      "size": 3235,
-      "sizeLimit": 3250
-    },
-    {
-      "name": "JS: tree-shaken { toast, Toaster }",
-      "size": 3604,
+      "size": 3632,
       "sizeLimit": 3650
     },
     {
+      "name": "JS: tree-shaken { Menu, MenuItem }",
+      "size": 3326,
+      "sizeLimit": 3350
+    },
+    {
+      "name": "JS: tree-shaken { toast, Toaster }",
+      "size": 3655,
+      "sizeLimit": 3700
+    },
+    {
       "name": "JS: tree-shaken { Combobox }",
-      "size": 4823,
-      "sizeLimit": 4850
+      "size": 4883,
+      "sizeLimit": 4900
     },
     {
       "name": "JS: tree-shaken { NumberField }",
-      "size": 3581,
+      "size": 3631,
       "sizeLimit": 3650
     },
     {
       "name": "JS: tree-shaken { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell }",
-      "size": 2539,
+      "size": 2578,
       "sizeLimit": 2650
     },
     {
@@ -84,48 +85,53 @@
     },
     {
       "name": "ColorPicker",
-      "size": 4214,
+      "size": 4272,
       "sizeLimit": 4300
     },
     {
       "name": "MaskedInput",
-      "size": 2857,
+      "size": 2910,
       "sizeLimit": 2950
     },
     {
       "name": "JS: tree-shaken { ScrollCarousel, ScrollCarouselSlide }",
-      "size": 3791,
+      "size": 3824,
       "sizeLimit": 3850
     },
     {
       "name": "JS: tree-shaken { Rating }",
-      "size": 3071,
+      "size": 3110,
       "sizeLimit": 3150
     },
     {
       "name": "JS: tree-shaken { OtpField }",
-      "size": 2585,
+      "size": 2632,
       "sizeLimit": 2650
     },
     {
       "name": "JS: tree-shaken { Diff }",
-      "size": 2178,
+      "size": 2223,
       "sizeLimit": 2250
     },
     {
       "name": "JS: tree-shaken { Countdown }",
-      "size": 2253,
+      "size": 2288,
       "sizeLimit": 2300
     },
     {
       "name": "JS: tree-shaken { SpeedDial, SpeedDialAction }",
-      "size": 3296,
-      "sizeLimit": 3400
+      "size": 4039,
+      "sizeLimit": 4050
     },
     {
       "name": "JS: tree-shaken { ScrollSpy }",
-      "size": 2253,
-      "sizeLimit": 2350
+      "size": 2411,
+      "sizeLimit": 2450
+    },
+    {
+      "name": "JS: tree-shaken { PageTransition, PageShare, usePageNavigate }",
+      "size": 3557,
+      "sizeLimit": 3600
     },
     {
       "name": "JS: tree-shaken { useStoredState }",
@@ -134,30 +140,60 @@
     },
     {
       "name": "JS: tree-shaken { Swap }",
-      "size": 2091,
+      "size": 2129,
       "sizeLimit": 2150
     },
     {
       "name": "JS: tree-shaken { useGreese } (with greese.js)",
-      "size": 5974,
-      "sizeLimit": 6000
+      "size": 6048,
+      "sizeLimit": 6100
     },
     {
       "name": "JS: scope option (lazy chunk)",
-      "size": 851,
+      "size": 800,
       "sizeLimit": 1000
     },
     {
       "name": "JS: greese prop runtime (lazy chunk, with greese.js)",
-      "size": 10837,
-      "sizeLimit": 10850
+      "size": 11108,
+      "sizeLimit": 11150
+    },
+    {
+      "name": "JS: whole library, with greese.js and @greese/react/svg",
+      "size": 47393,
+      "sizeLimit": 47450
+    },
+    {
+      "name": "JS: @greese/react/svg { Path } (server-safe; slices without measuring)",
+      "size": 1862,
+      "sizeLimit": 1900
+    },
+    {
+      "name": "JS: @greese/react/svg { DrawPath, MarqueePath }",
+      "size": 2751,
+      "sizeLimit": 2800
+    },
+    {
+      "name": "JS: @greese/react/svg { Morph }",
+      "size": 3748,
+      "sizeLimit": 3800
+    },
+    {
+      "name": "JS: @greese/react/svg (everything)",
+      "size": 12024,
+      "sizeLimit": 12200
     }
   ],
   "ui": [
     {
       "name": "CSS: greese.css",
-      "size": 23385,
-      "sizeLimit": 23400
+      "size": 25183,
+      "sizeLimit": 25200
+    },
+    {
+      "name": "CSS: css/PageTransition.css",
+      "size": 1975,
+      "sizeLimit": 2000
     },
     {
       "name": "CSS: utilities.css (the whole set)",
@@ -173,23 +209,55 @@
   "js": [
     {
       "name": "greese.js: everything",
-      "size": 6524,
-      "sizeLimit": 6550
+      "size": 6606,
+      "sizeLimit": 6650
     },
     {
       "name": "greese.js: animate",
-      "size": 5610,
-      "sizeLimit": 5650
+      "size": 5688,
+      "sizeLimit": 5700
     },
     {
       "name": "greese.js: ease",
-      "size": 847,
+      "size": 879,
       "sizeLimit": 1000
     },
     {
       "name": "greese.js: <script> build (window.greese)",
-      "size": 6899,
-      "sizeLimit": 6900
+      "size": 7019,
+      "sizeLimit": 7050
+    }
+  ],
+  "svg": [
+    {
+      "name": "@greese/svg: everything",
+      "size": 9152,
+      "sizeLimit": 9400
+    },
+    {
+      "name": "@greese/svg: path builder",
+      "size": 1701,
+      "sizeLimit": 1800
+    },
+    {
+      "name": "@greese/svg: morph",
+      "size": 2824,
+      "sizeLimit": 2950
+    },
+    {
+      "name": "@greese/svg: dashes (no measuring)",
+      "size": 526,
+      "sizeLimit": 600
+    },
+    {
+      "name": "@greese/svg: strokeControl",
+      "size": 3460,
+      "sizeLimit": 3600
+    },
+    {
+      "name": "@greese/svg: gradients and filters",
+      "size": 988,
+      "sizeLimit": 1050
     }
   ]
 }

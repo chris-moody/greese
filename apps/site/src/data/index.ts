@@ -46,8 +46,19 @@ const label = (name: string): string => {
   return [first, ...rest.filter((n) => /^[a-z]/.test(n))].join(' + ')
 }
 
-const rows = (list: Measurement[]): Row[] =>
-  list.map((m) => ({ label: label(m.name), size: m.size, limit: m.sizeLimit }))
+const rows = (list: Measurement[], name = label): Row[] =>
+  list.map((m) => ({ label: name(m.name), size: m.size, limit: m.sizeLimit }))
+
+/** `@greese/react/svg` (ADR 0031): an add-on, measured apart from the library. */
+const SVG = '@greese/react/svg'
+const isSvg = (m: Measurement) => m.name.includes(SVG)
+
+/**
+ * An SVG component entry by every name it imports (`DrawPath + MarqueePath`),
+ * or `@greese/react/svg (everything)`.
+ */
+const svgLabel = (name: string): string =>
+  /\{ ([^}]+) \}/.exec(name)?.[1]?.split(', ').join(' + ') ?? name.replace(/^JS: /, '')
 
 export const facts = {
   date: stats.date,
@@ -74,13 +85,22 @@ export const sizeTables = {
   motion: rows([
     ...stats.js,
     ...stats.react.filter(
-      (m) => /greese/.test(m.name) && !m.name.startsWith('JS: whole')
+      (m) => /greese/.test(m.name) && !m.name.startsWith('JS: whole') && !isSvg(m)
     ),
   ]),
   bundles: rows([
     ...stats.react.filter((m) => m.name.startsWith('JS: whole')),
     ...stats.ui,
   ]),
+  // The components (with @greese/svg, as an app bundles them), then
+  // @greese/svg's features on their own, without React.
+  svg: [
+    ...rows(
+      stats.react.filter((m) => isSvg(m) && !m.name.startsWith('JS: whole')),
+      svgLabel
+    ),
+    ...rows(stats.svg, (name) => name),
+  ],
 }
 
 export interface Metric {
