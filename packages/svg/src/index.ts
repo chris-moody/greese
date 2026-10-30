@@ -1,0 +1,170 @@
+/**
+ * @greese/svg: type-safe SVG drawing and animation, with no dependencies and
+ * no framework. Build paths and shapes and convert between them; morph one
+ * shape into another; draw, fill, drain and run strokes as marquees; move
+ * things along paths; and build gradients, filters, clip paths and masks.
+ *
+ * Animations are plain properties on small "control" objects (a stroke's
+ * `end`, a morph's `progress`), so any library that tweens object properties
+ * drives them, greese.js included; `tween()` drives them on its own.
+ */
+export {
+  drainStroke,
+  drawStroke,
+  fillStroke,
+  FollowControl,
+  followControl,
+  marqueeStroke,
+  MorphControl,
+  morphControl,
+  morphPath,
+  type FollowOptions,
+  type MarqueeOptions,
+  type StrokeRange,
+} from './animate.ts'
+export { path, PathBuilder, type PathBuilderOptions } from './builder.ts'
+export { clipPath, mask, shape, type ClipPathOptions, type MaskOptions } from './clip.ts'
+export { convertElement, shapeElement } from './convert.ts'
+export {
+  blend,
+  blur,
+  colorMatrix,
+  composite,
+  displacementMap,
+  distort,
+  dropShadow,
+  filter,
+  flood,
+  glow,
+  goo,
+  grain,
+  merge,
+  morphology,
+  offset,
+  turbulence,
+  type BlendMode,
+  type BlendOptions,
+  type BlurOptions,
+  type Channel,
+  type ColorMatrixOptions,
+  type CompositeOptions,
+  type DisplacementMapOptions,
+  type DistortOptions,
+  type DropShadowOptions,
+  type FilterInput,
+  type FilterOptions,
+  type FloodOptions,
+  type GlowOptions,
+  type GooOptions,
+  type GrainOptions,
+  type MorphologyOptions,
+  type OffsetOptions,
+  type PerAxis,
+  type PrimitiveBase,
+  type TurbulenceOptions,
+} from './filter.ts'
+export {
+  angleToPoints,
+  GradientControl,
+  gradientControl,
+  gradientStops,
+  linearGradient,
+  radialGradient,
+  StopControl,
+  type GradientBase,
+  type GradientStop,
+  type LinearGradientOptions,
+  type RadialGradientOptions,
+} from './gradient.ts'
+export {
+  bounds,
+  centroid,
+  flatten,
+  pathLength,
+  pathSampler,
+  pointAt,
+  splitCubic,
+  type Box,
+  type FlattenOptions,
+  type PathPoint,
+  type Polyline,
+} from './measure.ts'
+export {
+  matchCubics,
+  matchPaths,
+  morph,
+  morphSequence,
+  type MorphOptions,
+  type PathMixer,
+} from './morph.ts'
+export {
+  define,
+  node,
+  toElement,
+  toMarkup,
+  url,
+  type AttributeValue,
+  type SvgNode,
+} from './node.ts'
+export {
+  absolutize,
+  arcToCubics,
+  cubicsToPath,
+  parsePath,
+  reversePath,
+  serializePath,
+  toCubics,
+  transformPath,
+  type AbsoluteCommand,
+  type AbsoluteSegment,
+  type Command,
+  type Cubic,
+  type CubicSubpath,
+  type Matrix,
+  type PathData,
+  type Point,
+  type Segment,
+  type TransformOptions,
+} from './path.ts'
+export {
+  elementToPath,
+  elementToShape,
+  formatPoints,
+  parsePoints,
+  pathToPolygons,
+  pathToShape,
+  shapeSegments,
+  toPath,
+  type ArcSpec,
+  type CircleSpec,
+  type EllipseSpec,
+  type LineSpec,
+  type PathInput,
+  type PathSpec,
+  type PointsSpec,
+  type RectSpec,
+  type RegularPolygonSpec,
+  type ShapeSpec,
+  type StarSpec,
+} from './shapes.ts'
+export {
+  dashes,
+  measure,
+  mixSlices,
+  sliceIntervals,
+  StrokeControl,
+  strokeControl,
+  strokeKeyframes,
+  type Dashes,
+  type Slice,
+  type StrokeElement,
+  type StrokeKeyframesOptions,
+} from './stroke.ts'
+export {
+  toEase,
+  tween,
+  type Ease,
+  type EaseFunction,
+  type Tween,
+  type TweenOptions,
+} from './tween.ts'

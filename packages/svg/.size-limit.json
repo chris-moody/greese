@@ -1,0 +1,38 @@
+[
+  {
+    "name": "@greese/svg: everything",
+    "path": "dist/index.js",
+    "import": "*",
+    "limit": "9.4 kB"
+  },
+  {
+    "name": "@greese/svg: path builder",
+    "path": "dist/index.js",
+    "import": "{ path }",
+    "limit": "1.8 kB"
+  },
+  {
+    "name": "@greese/svg: morph",
+    "path": "dist/index.js",
+    "import": "{ morph }",
+    "limit": "2.95 kB"
+  },
+  {
+    "name": "@greese/svg: dashes (no measuring)",
+    "path": "dist/index.js",
+    "import": "{ dashes }",
+    "limit": "0.6 kB"
+  },
+  {
+    "name": "@greese/svg: strokeControl",
+    "path": "dist/index.js",
+    "import": "{ strokeControl }",
+    "limit": "3.6 kB"
+  },
+  {
+    "name": "@greese/svg: gradients and filters",
+    "path": "dist/index.js",
+    "import": "{ linearGradient, radialGradient, filter, glow, toMarkup }",
+    "limit": "1.05 kB"
+  }
+]

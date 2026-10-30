@@ -1,0 +1,61 @@
+{
+  "name": "@greese/svg",
+  "version": "0.0.0",
+  "description": "Type-safe SVG drawing and animation: build paths and shapes, convert between them, morph one into another, draw, fill, drain and run strokes as marquees, and build gradients, filters, clip paths and masks. No dependencies, no framework.",
+  "keywords": [
+    "svg",
+    "path",
+    "morph",
+    "stroke",
+    "dasharray",
+    "gradient",
+    "filter",
+    "animation"
+  ],
+  "author": "Chris Moody",
+  "license": "MIT",
+  "homepage": "https://chris-moody.github.io/greese/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chris-moody/greese.git",
+    "directory": "packages/svg"
+  },
+  "bugs": {
+    "url": "https://github.com/chris-moody/greese/issues"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "LICENSE",
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "watch": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src --max-warnings 0",
+    "test": "vitest run",
+    "size": "size-limit"
+  },
+  "devDependencies": {
+    "@greese/eslint-config": "*",
+    "@greese/typescript-config": "*",
+    "@size-limit/preset-small-lib": "^14.2.0",
+    "eslint": "^9.39.0",
+    "jsdom": "^30.1.3",
+    "size-limit": "^14.2.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.5"
+  }
+}
