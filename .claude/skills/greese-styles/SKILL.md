@@ -119,6 +119,22 @@ whose rules browsers that pass the test never match.
 - **Overlays:** see ADR 0005 for the top layer, anchor positioning and
   `position-try-fallbacks`.
 
+### View transitions (ADR 0029)
+
+- **Start every `::view-transition-*` selector with `html`.** A selector
+  with nothing before the pseudo-element is tried against every element at
+  every style recalculation. About 100 of them cost the homepage about
+  15 ms of blocking time.
+- **Snapshots inherit from the root, not from the page.** A role a snapshot
+  reads must be on `:root`. `motion-defaults()` inside `theme(name)` copies
+  the page roles to `:root:has([data-greese-theme='<name>'])` for that
+  reason.
+- **A shape that cuts a component's corners cuts its inset box-shadows
+  too.** A "current" edge a color variant draws (`--greese-tab-current-edge`,
+  `--greese-segment-current-edge`) must also be drawn along the shape, with
+  its `-ring` hook and the shape's ring (`shapes.ts`: `ring` and `variants`),
+  or the cut corners lose it.
+
 ## Theming hooks
 
 - **Brand colors:** components use `--greese-color-primary` for emphasis,

@@ -44,3 +44,8 @@ real regression without failing for any other reason.
 - any layer skipped and why;
 - bugs found in the code under test;
 - baselines that still need recording on Linux.
+
+**Page transitions:** follow `greese-testing`'s "Page transitions": record
+`startViewTransition` calls and snapshot animations in real engines, and
+assert a live exit through the members' styles and the commit's timing,
+not through a view transition, which it never starts.

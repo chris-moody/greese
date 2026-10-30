@@ -105,6 +105,24 @@ times. Before writing a test, search for an existing one
 one with `--project=webkit` and `--headed`). Site features:
 `apps/site/e2e/`, same commands in `apps/site`.
 
+### Page transitions (ADR 0029)
+
+- **Unit (jsdom):** mock `document.startViewTransition` as
+  `({ update, types }) => …`, calling `update()` and returning
+  `ready`/`finished` promises. React calls it with the navigation's types,
+  so assert on them. jsdom has no `getAnimations`; the exit pass guards it.
+- **Real engines:** wrap `startViewTransition` in an init script and record
+  each call's `types`. Once `ready`, record
+  `document.getAnimations()`'s `effect.pseudoElement` and
+  `animationName`: that's what each snapshot plays.
+- **A live exit starts no view transition** (every greese boundary is
+  `none`). Assert the members' inline `animation` instead, and the commit's
+  delay (a `MutationObserver` on the heading, timed from the click).
+- **Back and forward:** feature-detect `NavigationPrecommitController`. Where
+  it exists, the commit after `history.back()` waits for the exit.
+- **Lazily loaded pages:** a navigation whose commit changes nothing visible
+  inside the boundary starts no view transition. That's not a failure.
+
 ## 4. Visual regression
 
 Every story is captured automatically, so the work is the story itself

@@ -124,3 +124,40 @@ plan it implemented.
     stalls the loop for every later test;
   - visual snapshots run with reduced motion, so stories show final
     states.
+
+## Page transitions (ADR 0029)
+
+Read ADR 0029 and its addenda, and the guide `stories/guides/PageTransitions.mdx`.
+
+| File                                                         | Role                                                                                                                                                                       |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `components/PageTransition/PageTransition.tsx`               | Wraps React's `<ViewTransition>`. A Server Component: everything it takes is data. Renders two empty `<template>` markers around the page (its live settings on the first) |
+| `components/PageTransition/pageMotion.ts`                    | Pure: the class map by transition type, selector rules as CSS, navigation types                                                                                            |
+| `components/PageTransition/pageExit.ts`                      | The live exit: finds the page and its members, decides the mode, plays the members' exits in CSS                                                                           |
+| `components/PageTransition/PageShare.tsx`                    | A shared element, named from a key (`utils/share.ts`)                                                                                                                      |
+| `hooks/usePageNavigate.ts`                                   | The client part: adds the types, holds the commit for a live exit, holds back and forward (Navigation API)                                                                 |
+| `components/Motion/greeseRuntime.ts` `playPageExit`          | Timelines (sequences, selector maps) for a live exit, through greese.js                                                                                                    |
+| `@greese/ui` `components/PageTransition/PageTransition.scss` | The snapshot rules and the exits' keyframes (`cssPlan().leave`)                                                                                                            |
+
+**Rules:**
+
+- **Exactly one direction type per navigation** (`greese-forward`,
+  `greese-back` or `greese-replace`). React joins the classes of every active
+  type in a `<ViewTransition>` map, so two directions would leave the effect to
+  stylesheet order. Unmapped updates resolve to `none`.
+- **Types before any `await`:** `addTransitionType` only reaches the
+  transition it's called in, so whatever decides them (the mode included)
+  runs synchronously at the click.
+- **Start the router inside the async transition:** React entangles its
+  update with the action and commits when both are done. That's how a live
+  exit holds the commit while the next page loads.
+- **Remove what a live exit sets, after the commit:** React keeps an
+  element that's in the same place on both pages, and it would keep the
+  exit's last frame.
+- **No greese.js on snapshots:** pseudo-elements take no inline styles.
+  Snapshots play named effects in CSS; sequences and maps play live.
+- **Snapshot selectors start with `html`** (`html::view-transition-new(…)`):
+  without it, the browser tries each rule against every element (see
+  `greese-styles`).
+- **Reduced motion:** greese snapshots don't animate, and a live exit's
+  keyframes don't exist, so the page changes at once.

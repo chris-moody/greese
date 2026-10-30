@@ -47,3 +47,9 @@ React 19 component library. You work in the repository at its root.
 - the API, in one example;
 - the gates you ran and their results (failures and skips included);
 - any decision the owner should review.
+
+**Page transitions:** an element with a greese entrance is a member of a
+live page and plays an exit when the page leaves (ADR 0029). A component
+that a shape theme cuts, and that has a "current" edge a variant draws,
+draws that edge along its shape (`shapes.ts` `ring` and `variants`), as
+`Segment` and `Tab` do.

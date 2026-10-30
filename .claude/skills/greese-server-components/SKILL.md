@@ -141,6 +141,20 @@ similar):
 - **Use Server Actions for form posts:** `<Button type="submit" formAction={action}>`
   works from a Server Component, because a Server Action serializes.
 
+## Page transitions (ADR 0029)
+
+- **`PageTransition` and `PageShare` are Server Components.** They render
+  React's `<ViewTransition>` (exported by React's server build) with data only.
+  `PageTransition` finds its page with two empty `<template>` markers, not a
+  wrapper element (which would break `parent > page` selectors) and not
+  context (which a Server Component can't provide).
+- **`usePageNavigate` is the client part.** Put it in the client component
+  that renders the links, and leave the layout around `PageTransition` on the
+  server.
+- **Hydration:** the markers' ids come from `useId`, so the server and the
+  client must render the same tree above them (the site's static router
+  prerender does).
+
 ## Testing
 
 | Check                                                               | Proves                                                                                         | Doesn't prove                                                                                              |

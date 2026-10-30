@@ -38,3 +38,11 @@ You keep greese ui lightweight. Being light is a product requirement.
 - the cause of any growth;
 - the cuts made or proposed, with bytes and risk;
 - the gate results.
+
+**Page transitions (ADR 0029):** they have budgets of their own: React's
+`{ PageTransition, PageShare, usePageNavigate }` and `css/PageTransition.css`.
+On the site, measure blocking time on the homepage too. Universal
+`::view-transition-*` selectors cost every page; they must start with
+`html`. To find a regression's commit, build past commits in a worktree
+inside the repository, with `@greese/*` linked to the worktree's own
+packages, and run Lighthouse on each.
