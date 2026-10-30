@@ -38,7 +38,7 @@ export type IconComponent = ((props: IconProps) => JSX.Element) & { displayName:
 export const createIcon = (
   name: string,
   d: string,
-  { viewBox = 16, strokeWidth: drawn = 1.75, filled = false }: IconOptions = {}
+  { viewBox = 16, strokeWidth: drawn = 1.5, filled = false }: IconOptions = {}
 ): IconComponent => {
   const paths = d.split('|')
   const Icon = ({

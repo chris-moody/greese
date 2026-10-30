@@ -64,7 +64,7 @@ export const DotsIcon = /* @__PURE__ */ createIcon(
 )
 export const FeatherIcon = /* @__PURE__ */ createIcon(
   'Feather',
-  'M20 4c-8 0-14 5-15 15l3-3|M8 16c5 0 9-3 12-12|M12 12H7',
+  'M15.5 0.5c-8.4 3.3-12 4.3-12 11.3l-3.2 3.5 M3.6 12.4 c5 0 9-3 12-12 M3.7 11.6 c0.5 1 2-5 8-7 M7 8 L 8 4',
   { viewBox: 24, strokeWidth: 1.8 }
 )
 export const FolderIcon = /* @__PURE__ */ createIcon(
@@ -96,10 +96,10 @@ export const InfoIcon = /* @__PURE__ */ createIcon(
   'Info',
   'M8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z|M8 7.5V11|M8 5h.01'
 )
-// Text lines with a magnifier over their middle: inspecting what's on the page.
+// Lines of text inside a magnifier's lens: inspecting what's on the page.
 export const InspectIcon = /* @__PURE__ */ createIcon(
   'Inspect',
-  'M2 3h12|M1.5 8h2|M12.5 8h2|M2 13h7|M8 11a3 3 0 1 0 0-6a3 3 0 0 0 0 6z|M10.2 10.2l2.8 2.8'
+  'M7 12A5 5 0 1 0 7 2a5 5 0 0 0 0 10z|M14 14l-3.5-3.5|M4.25 4.5h5|M3.25 7h7|M4.25 9.5h5'
 )
 export const LayersIcon = /* @__PURE__ */ createIcon(
   'Layers',
@@ -148,14 +148,17 @@ export const ServerIcon = /* @__PURE__ */ createIcon(
   'M5.5 4h13a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1 -1.5 1.5h-13a1.5 1.5 0 0 1 -1.5 -1.5v-3a1.5 1.5 0 0 1 1.5 -1.5z|M5.5 14h13a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1 -1.5 1.5h-13a1.5 1.5 0 0 1 -1.5 -1.5v-3a1.5 1.5 0 0 1 1.5 -1.5z|M8 7h.01M8 17h.01',
   { viewBox: 24, strokeWidth: 1.8 }
 )
-// Shape themes: a square and a circle, outlined, or solid when one is chosen.
+// Shape themes: a circle and a square side by side over a triangle, outlined,
+// or solid when one is chosen.
 export const ShapesIcon = /* @__PURE__ */ createIcon(
   'Shapes',
-  'M2 2h7v7H2z|M10.5 14a3.5 3.5 0 1 0 0-7a3.5 3.5 0 1 0 0 7z'
+  'M4.375 8.125a3.5 3.5 0 1 0 0-7a3.5 3.5 0 1 0 0 7z|M8.125 1.125h7v7h-7z|M3.75 15l3.5-7 3.5 7z'
 )
+// The same shapes solid, each a quarter unit inside the outline's line rather
+// than out to its stroke: grown to the stroke, they'd run into one another.
 export const ShapesFilledIcon = /* @__PURE__ */ createIcon(
   'ShapesFilled',
-  'M1.5 1.5h8v8h-8z|M10.5 14.5a4 4 0 1 0 0-8a4 4 0 1 0 0 8z',
+  'M4.375 7.875a3.25 3.25 0 1 0 0-6.5a3.25 3.25 0 1 0 0 6.5z|M8.375 1.375h6.5v6.5h-6.5z|M4.16 14.75l3.09-6.19 3.09 6.19z',
   { filled: true }
 )
 export const SlidersIcon = /* @__PURE__ */ createIcon(
