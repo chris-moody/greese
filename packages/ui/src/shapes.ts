@@ -807,10 +807,19 @@ export const SHAPE_TARGETS: Record<string, Omit<ShapeTarget, 'selector'>> = {
     },
     transitions: fast('background-color', 'color'),
   },
+  // The current tab's edge, like the chosen segment's, is a hook a color
+  // variant sets (Outline draws it in the primary): drawn along the shape,
+  // as thick as the variant's own edge, so a cut corner doesn't cut it.
   Tab: {
-    ring: false,
     focus: 'keep',
     active: false,
+    borderColor: 'transparent',
+    variants: {
+      "&[aria-selected='true']": {
+        '--greese-shape-ring': 'var(--greese-tab-current-ring, transparent)',
+        '--greese-shape-border': '1.5px',
+      },
+    },
     transitions: fast('color', 'background-color', 'box-shadow'),
   },
   // An item's panel takes the shape, not the <details> around it: its header

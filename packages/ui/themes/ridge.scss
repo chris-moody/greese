@@ -696,7 +696,27 @@
     }
   }
   .greese-Tab {
-    clip-path: var(--greese-shape-clip) border-box;
+    --greese-shape-ring: transparent;
+    position: relative;
+    isolation: isolate;
+    border-color: transparent;
+    clip-path: var(--greese-shape-clip) padding-box;
+  }
+  .greese-Tab::after {
+    position: absolute;
+    inset: 0;
+    inline-size: auto;
+    block-size: auto;
+    translate: none;
+    z-index: 1;
+    pointer-events: none;
+    content: '';
+    background: var(--greese-shape-ring);
+    clip-path: var(--greese-shape-ring-clip);
+  }
+  .greese-Tab[aria-selected='true'] {
+    --greese-shape-ring: var(--greese-tab-current-ring, transparent);
+    --greese-shape-border: 1.5px;
   }
   @media (prefers-reduced-motion: no-preference) {
     .greese-Tab {
@@ -712,6 +732,10 @@
   @media (forced-colors: active) {
     .greese-Tab {
       clip-path: none;
+      border-color: CanvasText;
+    }
+    .greese-Tab::after {
+      display: none;
     }
   }
   .greese-Toast {
