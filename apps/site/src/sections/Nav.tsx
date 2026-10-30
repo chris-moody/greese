@@ -104,7 +104,9 @@ export const Nav = (): JSX.Element => {
 
   return (
     <Header
-      size={home ? 'lg' : 'full'}
+      // The homepage's width on every page, so the header never moves
+      // between them.
+      size="lg"
       greese={{ enter: 'fadeDown', distance: '0.5rem' }}
       className="site-nav"
       brand={

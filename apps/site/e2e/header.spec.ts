@@ -174,3 +174,23 @@ test.describe('on a phone', () => {
     await expect(menu).toBeHidden()
   })
 })
+
+test('the header sits in the same place on every page, as on the homepage', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  const place = async (url: string) => {
+    await page.goto(url)
+    await page.locator('.site-nav-links').waitFor()
+    // Its entrance moves it: measure once it has settled.
+    await page.waitForTimeout(800)
+    return page.evaluate(() =>
+      ['.site-home', '.site-nav-links'].map((s) =>
+        Math.round(document.querySelector(s)!.getBoundingClientRect().x)
+      )
+    )
+  }
+  const home = await place('/')
+  for (const url of ['/docs/forms-button', '/templates', '/studio'])
+    expect(await place(url), url).toEqual(home)
+})
