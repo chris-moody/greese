@@ -298,6 +298,7 @@ const page = usePageNavigate(useNavigate()) // any router's navigate
 </PageTransition>
 
 <PageShare id={['template', id]}><Card>…</Card></PageShare> // morphs into its twin on the next page
+<PageShare link><Card>…</Card></PageShare> // or pairs by the link followed: an item and its page's hero
 ```
 
 - **The motion theme decides by default** (its `page` roles), a cross-fade

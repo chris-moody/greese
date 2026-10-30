@@ -14,6 +14,7 @@ import {
   pagesOnScreen,
 } from './PageTransition/pageExit.ts'
 import { isTimeline } from './PageTransition/pageMotion.ts'
+import { pairByLink } from './PageTransition/shareLink.ts'
 import {
   pageClasses,
   pageClassMap,
@@ -135,6 +136,79 @@ describe('shared elements', () => {
         [PageShare, Card] as never
       )
     ).toEqual([])
+  })
+})
+
+describe('shared elements paired by the link followed', () => {
+  const named = () =>
+    [...document.querySelectorAll<HTMLElement>('*')]
+      .filter((el) => el.style.getPropertyValue('view-transition-name'))
+      .map((el) => el.dataset.testid)
+  /** Two frames: past both snapshots. */
+  const frames = () =>
+    new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+  /** Swaps the page, as a router's commit does. */
+  const show = (html: string) => {
+    document.body.innerHTML = html
+    // The observer's microtask, before the browser's snapshot.
+    return Promise.resolve()
+  }
+  const list = `
+    <main>
+      <div data-greese-share-link data-testid="card-1"><a href="/item/1">One</a></div>
+      <div data-greese-share-link data-testid="card-2"><a href="/item/2">Two</a></div>
+    </main>`
+  const item = `
+    <main>
+      <a href="/list" data-testid="back">Back</a>
+      <h1 data-greese-share-link data-testid="hero">Two</h1>
+    </main>`
+  afterEach(() => {
+    document.body.innerHTML = ''
+    history.replaceState(null, '', '/')
+  })
+
+  it('marks its child, and renders nothing more, on the server too', () => {
+    expect(
+      renderToString(
+        <PageShare link>
+          <p>Hero</p>
+        </PageShare>
+      )
+    ).toBe('<p data-greese-share-link="">Hero</p>')
+  })
+
+  it('names the clicked item, then the new page’s hero as it arrives, and lets both go', async () => {
+    history.replaceState(null, '', '/list')
+    document.body.innerHTML = list
+    pairByLink(document.querySelector('a[href="/item/2"]'), false)
+    expect(named()).toEqual(['card-2'])
+    await show(item)
+    expect(named()).toEqual(['hero'])
+    expect(
+      screen.getByTestId('hero').style.getPropertyValue('view-transition-class')
+    ).toBe(`${T} ${T}--share greese-share-link`)
+    await frames()
+    expect(named()).toEqual([])
+  })
+
+  it('going back, names the hero, then the item linking to the page left', async () => {
+    history.replaceState(null, '', '/item/2')
+    document.body.innerHTML = item
+    pairByLink(screen.getByTestId('back'), true)
+    expect(named()).toEqual(['hero'])
+    await show(list)
+    expect(named()).toEqual(['card-2'])
+  })
+
+  it('does nothing on a page with nothing marked, or with no end to pair', async () => {
+    document.body.innerHTML = '<main><a href="/x">X</a></main>'
+    pairByLink(document.querySelector('a'), false)
+    expect(named()).toEqual([])
+    // Two items and no hero: a link outside them has no end on this page.
+    document.body.innerHTML = list + '<a href="/elsewhere" data-testid="nav">Nav</a>'
+    pairByLink(screen.getByTestId('nav'), false)
+    expect(named()).toEqual([])
   })
 })
 

@@ -23,6 +23,7 @@ import {
   pageTransitionTypes,
   type PageNavigateOptions,
 } from '../components/PageTransition/pageMotion.ts'
+import { pairByLink } from '../components/PageTransition/shareLink.ts'
 
 /**
  * Plays a page's live exit: its timeline through greese.js (a lazy chunk),
@@ -139,9 +140,13 @@ export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
     }
   }, [])
   return useMemo(() => {
-    const go: PageNavigate['navigate'] = (to, options = {}) => {
+    /** Navigates; `link` is the link followed, when one was. */
+    const go = (to: string | number, options: PageNavigateOptions = {}, link?: Element) => {
       const types = pageTransitionTypes(location.href, to, options)
       const back = types.includes(BACK)
+      // `<PageShare link>`: the old page's end is named now, before React's
+      // snapshot of it; the new page's as it's inserted.
+      if (types.includes(PAGE)) pairByLink(link ?? null, back)
       // Which pages leave live, decided now: the types must be added before
       // anything is awaited. The navigation's own mode, else each page's,
       // else the theme's `page-mode`.
@@ -184,7 +189,7 @@ export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
         )
           return
         event.preventDefault()
-        go(to, options)
+        go(to, options, link)
       },
     }
   }, [navigate])

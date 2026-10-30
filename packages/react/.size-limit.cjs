@@ -83,7 +83,10 @@ module.exports = [
     // 30.6 kB → 31.8 kB (2026-10-29): page transitions' live exits (ADR 0029,
     // phase 4): the exit pass, the mode decision and back and forward held
     // through the Navigation API (31.74 kB).
-    limit: '31.8 kB',
+    // 31.8 kB → 32.15 kB (2026-10-30): `<PageShare link>`, shared elements paired
+    // by the link followed (ADR 0029 addendum), about 0.3 kB, and the
+    // `greese` prop's island waits for an IntersectionObserver to tell which scroll reveals start out of view, where it measured each one in the commit: that forced a layout of the whole page in every commit with an island, a fifth of the homepage's script after it boots (ADR 0009 addendum) (32.09 kB).
+    limit: '32.15 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -113,7 +116,8 @@ module.exports = [
     // 37.2 kB → 37.25 kB (2026-10-30): selector rules' snapshot rules start
     // with `html`, so the browser tries them on the root only, not on every
     // element (37.21 kB; ADR 0029).
-    limit: '37.25 kB',
+    // 37.25 kB → 37.6 kB (2026-10-30): the same link pairing and island (37.56 kB).
+    limit: '37.6 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -429,7 +433,10 @@ module.exports = [
     // members, the CSS exit pass, the mode and order from the theme, and back
     // and forward held through the Navigation API (2.94 kB). Timelines load
     // greese.js lazily, with the runtime.
-    limit: '3 kB',
+    // 3 kB → 3.4 kB (2026-10-30): `<PageShare link>` (ADR 0029 addendum):
+    // naming the old page's end of a link at the click and the new page's as
+    // it's inserted, through a MutationObserver (3.35 kB).
+    limit: '3.4 kB',
     modifyRolldownConfig: external,
   },
   {
