@@ -94,9 +94,7 @@ export const PageNavigateContext = createContext<PageNavigate | null>(null)
 /** The shell's page navigate, for `PageNavigateContext`. */
 export const useSitePageNavigate = (): PageNavigate => {
   const navigate = useNavigate()
-  return usePageNavigate((to, options) =>
-    typeof to === 'number' ? navigate(to) : navigate(routerPath(to), options)
-  )
+  return usePageNavigate((to, options) => navigate(routerPath(to), options))
 }
 
 /**
