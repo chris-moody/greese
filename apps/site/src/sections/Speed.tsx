@@ -184,13 +184,6 @@ export const Speed = (): JSX.Element => {
       id="speed"
       eyebrow="Speed"
       title="Faster than MUI where users feel it"
-      intro={
-        <>
-          {benchmark.stacks.toLocaleString('en')} responsive Stacks, a production build,
-          Chromium at {benchmark.cpu}× CPU throttling (roughly a mid-range phone). Medians
-          of {benchmark.runs} rotating runs, measured {benchmark.date}.
-        </>
-      }
     >
       <Summary setup={setup} />
       <Card padding={{ xs: 4, md: 6 }} greese={{ inView: 'theme' }}>
@@ -228,12 +221,10 @@ export const Speed = (): JSX.Element => {
       <Text tone="muted" className="site-measure" greese={{ inView: 'theme' }}>
         Where MUI still comes out ahead: style recalculation. MUI generates one class per
         distinct style at runtime, so each element matches a single short rule; greese
-        ui’s classes are compiled ahead of time, so an element matches several, inside
+        ui&rsquo;s classes are compiled ahead of time, so an element matches several, inside
         cascade layers that let your CSS win. That costs the browser a little more, and
         saves the JavaScript that generating styles takes, which is the script time above.
-        Per-component CSS, which ships only the stylesheets you import, narrows the gap.
-        greese ui adds {benchmark.styleElements.greese} &lt;style&gt; elements at runtime;
-        MUI adds {benchmark.styleElements.mui}. Run it yourself with{' '}
+        Per-component CSS, which ships only the stylesheets you import, narrows the gap. Run the bencmark tests yourself with{' '}
         <Code>npm run bench -w playground</Code>.
       </Text>
     </Section>

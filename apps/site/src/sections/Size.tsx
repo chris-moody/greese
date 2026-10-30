@@ -92,9 +92,8 @@ export const Size = (): JSX.Element => (
     title="Every byte is measured"
     intro={
       <>
-        Measured by size-limit (minified, brotli) on every build. Each entry includes the
-        shared core it needs, which an app bundles only once however many components it
-        uses. Bars are relative to one another: the largest in each table fills the track.
+        Measured minified + brotli sizes. Each entry includes the
+        shared core it needs, which an app bundles only once.
       </>
     }
     tinted
