@@ -106,7 +106,7 @@ const WIPE: MotionPreset = {
   id: 'wipe',
   label: 'Wipe',
   description:
-    'Wipe: things are revealed in place rather than moved. Reveals wipe up, panels and toasts open from the middle, table rows wipe across, menus wipe down from their trigger and back up, tooltips open and close from the middle, and dialogs open and close as a circle. The next page wipes over the last one, which stays where it is: in from the right going forward, from the left going back.',
+    'Wipe: things are revealed in place rather than moved. Reveals wipe up, panels and toasts open from the middle, table rows wipe across, menus wipe down from their trigger and back up, tooltips open and close from the middle, and dialogs open and close as a circle. Pages change along one edge, the whole page at once: the next wipes in as the last wipes away, from the right going forward and from the left going back.',
   defaults: {
     duration: '0.6s',
     distance: '0.75rem',
@@ -130,9 +130,10 @@ const WIPE: MotionPreset = {
     'exit-ease': 'cubic-bezier(0.65, 0, 0.35, 1)',
     // How pages change (ADR 0029).
     page: 'wipe-left',
-    'page-exit': 'none',
+    'page-exit': 'wipe-out-left',
     'page-back': 'wipe-right',
-    'page-back-exit': 'none',
+    'page-back-exit': 'wipe-out-right',
+    'page-mode': 'snapshot',
     'page-duration': '0.6s',
     'page-ease': 'cubic-bezier(0.65, 0, 0.35, 1)',
     'page-stagger': '0.06s',
@@ -180,7 +181,7 @@ const DEPTH: MotionPreset = {
   id: 'depth',
   label: 'Depth',
   description:
-    'Depth: things turn into place in three dimensions. Reveals, panels, table rows and toasts flip up into place, menus swing down from their top edge like a sign and back up, tooltips flip up and back, and dialogs rise out of the page from behind it and sink back in. Pages turn like the faces of a cube, one way going forward and the other going back.',
+    'Depth: things turn into place in three dimensions. Reveals, panels, table rows and toasts flip up into place, menus swing down from their top edge like a sign and back up, tooltips flip up and back, and dialogs rise out of the page from behind it and sink back in. Pages are the two faces of a panel that turns half over, the whole page at once: one way going forward and the other going back.',
   defaults: {
     duration: '0.6s',
     distance: '1rem',
@@ -203,12 +204,13 @@ const DEPTH: MotionPreset = {
     'enter-ease': 'cubic-bezier(0.2, 0.8, 0.2, 1)',
     'exit-ease': 'exit',
     // How pages change (ADR 0029).
-    page: 'flip-right',
-    'page-exit': 'flip-out-left',
-    'page-back': 'flip-left',
-    'page-back-exit': 'flip-out-right',
-    'page-duration': '0.6s',
-    'page-ease': 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+    page: 'flip-over-right',
+    'page-exit': 'flip-over-out-left',
+    'page-back': 'flip-over-left',
+    'page-back-exit': 'flip-over-out-right',
+    'page-mode': 'snapshot',
+    'page-duration': '0.8s',
+    'page-ease': 'cubic-bezier(0.65, 0, 0.35, 1)',
     'page-stagger': '0.06s',
   },
 }

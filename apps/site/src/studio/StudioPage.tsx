@@ -59,6 +59,8 @@ export const StudioPage = (): JSX.Element => {
   const frame = useRef<HTMLIFrameElement>(null)
   // Wide, the frame is as tall as what it shows, and the page scrolls.
   const [previewHeight, setPreviewHeight] = useState<number>()
+  // Whether the preview has painted with the theme: its first colors follow it.
+  const [previewReady, setPreviewReady] = useState(false)
   const lab = useGreeseLab(spec, setSpec)
   const theme = useThemeFile(spec, setSpec)
   const { file, loadError, dirty, changedOnDisk, savedNote } = theme
@@ -74,7 +76,10 @@ export const StudioPage = (): JSX.Element => {
     highlight: inspect && tab === 'components',
     replay,
     onReplay: lab.play,
-    onColors: setRendered,
+    onColors: (colors) => {
+      setRendered(colors)
+      setPreviewReady(true)
+    },
     onPick: (pick) => {
       setPicked(pick)
       setComponent(pick.block)
@@ -211,6 +216,7 @@ export const StudioPage = (): JSX.Element => {
           src={`${import.meta.env.BASE_URL}preview.html`}
           title="Theme preview"
           className="studio-preview-frame"
+          data-ready={previewReady || undefined}
           style={
             previewHeight
               ? ({ '--studio-preview-height': `${previewHeight}px` } as CSSProperties)

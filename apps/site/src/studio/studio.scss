@@ -91,6 +91,27 @@ $below-header: calc(
   border: 0;
 }
 
+/* The preview is a page of its own, blank (and, in a dark scheme, white)
+   until it has loaded and taken the theme: hidden till then, then it arrives
+   with the motion theme's pace. */
+.studio-preview-frame:not([data-ready]) {
+  visibility: hidden;
+}
+
+@include greese.motion-safe {
+  .studio-preview-frame[data-ready] {
+    animation: studio-preview-in
+      var(--greese-motion-duration, var(--greese-duration-normal))
+      var(--greese-motion-enter-ease, var(--greese-ease-out)) backwards;
+  }
+}
+
+@keyframes studio-preview-in {
+  from {
+    opacity: 0;
+  }
+}
+
 .studio-main > .studio-stage {
   min-block-size: $below-header;
   overflow: visible;
