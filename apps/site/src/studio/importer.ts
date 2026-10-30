@@ -380,7 +380,7 @@ export const pageRulesOf = (
     }
   }
   for (const rule of rules) {
-    const m = /^::view-transition-(old|new)\(\*\.(greese-page-[\w-]+-\d+)\)/.exec(
+    const m = /^(?:html)?::view-transition-(old|new)\(\*\.(greese-page-[\w-]+-\d+)\)/.exec(
       rule.selector
     )
     const fields = m && byClass.get(m[2]!)
