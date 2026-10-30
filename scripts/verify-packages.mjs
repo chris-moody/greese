@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Proves the packages work as published: packs @greese/ui,
- * @greese/js (greese.js), @greese/react and @greese/icons, installs the tarballs into an empty project, and checks
+ * @greese/js (greese.js), @greese/react, @greese/icons and @greese/svg, installs the tarballs into an empty project, and checks
  * what a consumer would do with them.
  *
  *   npm run build && npm run verify:packages
@@ -38,6 +38,8 @@ try {
       '@greese/react',
       '-w',
       '@greese/icons',
+      '-w',
+      '@greese/svg',
       '--pack-destination',
       work,
     ],
@@ -52,7 +54,7 @@ try {
       type: 'module',
       dependencies: Object.fromEntries(
         tarballs.map((t) => [
-          `@greese/${/^greese-(ui|js|react|icons)-\d/.exec(t)[1]}`,
+          `@greese/${/^greese-(ui|js|react|icons|svg)-\d/.exec(t)[1]}`,
           `file:./${t}`,
         ])
       ),
@@ -182,7 +184,9 @@ if (!authored.includes('@media (width >= 700px)') || !authored.includes('.greese
 `
   )
   run('node', ['kit.mjs'], work)
-  ok('pkg:@greese/ui/scss/kit compiles and checks names; the authoring partials resolve; style-manifest.json resolves')
+  ok(
+    'pkg:@greese/ui/scss/kit compiles and checks names; the authoring partials resolve; style-manifest.json resolves'
+  )
 
   // 4c. The icons render on the server, and the library depends on them (it
   // draws its own glyphs with them: ADR 0020).
@@ -201,6 +205,28 @@ if (!react.dependencies?.['@greese/icons']) throw new Error('@greese/react must 
   )
   run('node', ['icons.mjs'], work)
   ok('@greese/icons renders on the server, and @greese/react depends on it')
+
+  // 4d. @greese/svg's geometry runs in Node with no DOM, and @greese/react/svg
+  // renders on the server from the published entry point (ADR 0031).
+  writeFileSync(
+    join(work, 'svg.mjs'),
+    `import { createElement } from 'react'
+import { renderToString } from 'react-dom/server'
+import { dashes, matchPaths, pathLength, toPath } from '@greese/svg'
+import { Drawing, Path, Morph, LinearGradient } from '@greese/react/svg'
+if (Math.round(pathLength('M0 0H10V10')) !== 20) throw new Error('pathLength')
+const [a, b] = matchPaths({ type: 'star', r: 10 }, { type: 'circle', r: 10 })
+if (a.replace(/[\\d.-]+/g, '#') !== b.replace(/[\\d.-]+/g, '#')) throw new Error('matchPaths')
+if (dashes({ start: 10, end: 30 }).strokeDasharray !== '20 101') throw new Error('dashes')
+const html = renderToString(createElement(Drawing, { label: 'Art' },
+  createElement(LinearGradient, { id: 'g', stops: ['red', 'blue'] }),
+  createElement(Path, { d: { type: 'circle', r: 5 }, slice: { end: 50 } }),
+  createElement(Morph, { shapes: ['M0 0H1', 'M0 0H2'], progress: 0.5 })))
+if (!html.includes('role="img"') || !html.includes('stop-color="red"') || !html.includes('pathLength="100"') || !html.includes(toPath({ type: 'circle', r: 5 }))) throw new Error('svg html: ' + html)
+`
+  )
+  run('node', ['svg.mjs'], work)
+  ok('@greese/svg runs without a DOM; @greese/react/svg renders on the server')
 
   // 5. Every per-component @import points at a shipped file: React's
   // stylesheets import @greese/ui's, which import core.

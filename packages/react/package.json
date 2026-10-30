@@ -43,6 +43,10 @@
       "types": "./dist/greese.d.ts",
       "default": "./dist/greese.js"
     },
+    "./svg": {
+      "types": "./dist/svg/index.d.ts",
+      "default": "./dist/svg/index.js"
+    },
     "./styles.css": "./dist/styles.css",
     "./base.css": "./dist/base.css",
     "./css/*": "./dist/css/*",
@@ -57,6 +61,7 @@
     "build": "npm run clean && npm run build:js && npm run build:css",
     "build:js": "tsc -p tsconfig.build.json",
     "build:css": "node scripts/build-css.ts",
+    "watch": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
     "check-types": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
     "lint": "eslint src --max-warnings 0",
     "test": "vitest run --coverage",
@@ -66,6 +71,7 @@
   "dependencies": {
     "@greese/icons": "0.0.0",
     "@greese/js": "0.0.0",
+    "@greese/svg": "0.0.0",
     "@greese/ui": "1.0.0"
   },
   "peerDependencies": {

@@ -541,4 +541,42 @@ module.exports = [
     // the Depth theme's page change; ADR 0029): more of the effect names this carries (11.11 kB).
     limit: '11.15 kB',
   },
+  // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
+  // since it is what the components cost an app.
+  {
+    name: 'JS: @greese/react/svg { Path } (server-safe; slices without measuring)',
+    path: 'dist/svg/index.js',
+    import: '{ Path }',
+    ignore: ['react', 'react-dom'],
+    modifyRolldownConfig: external,
+    limit: '1.9 kB', // 1.86 kB
+  },
+  {
+    name: 'JS: @greese/react/svg { DrawPath, MarqueePath }',
+    path: 'dist/svg/index.js',
+    import: '{ DrawPath, MarqueePath }',
+    ignore: ['react', 'react-dom'],
+    modifyRolldownConfig: external,
+    limit: '2.8 kB', // 2.75 kB
+  },
+  {
+    name: 'JS: @greese/react/svg { Morph }',
+    path: 'dist/svg/index.js',
+    import: '{ Morph }',
+    ignore: ['react', 'react-dom'],
+    modifyRolldownConfig: external,
+    limit: '3.8 kB', // 3.72 kB
+  },
+  {
+    name: 'JS: @greese/react/svg (everything)',
+    path: 'dist/svg/index.js',
+    import: '*',
+    ignore: ['react', 'react-dom'],
+    modifyRolldownConfig: external,
+    // Includes Drawing's `greese` prop static part (shared with the
+    // components) and all of @greese/svg (9.15 kB on its own).
+    // 12.2 kB → 12.5 kB (2026-11-01): a component per filter primitive and preset
+    // (ADR 0031 §7), sixteen thin wrappers over the builders (12.45 kB).
+    limit: '12.5 kB',
+  },
 ]

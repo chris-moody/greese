@@ -320,6 +320,36 @@ const page = usePageNavigate(useNavigate()) // any router's navigate
 - **Without view transitions, before React 19.3, and under reduced motion,**
   the page simply changes.
 
+## SVG: `@greese/react/svg`
+
+Drawing and animation for SVG, powered by `@greese/svg`, from a separate
+entry point:
+
+- `Drawing`, `Path` and the definitions (`LinearGradient`, `RadialGradient`,
+  `Filter` with its `Fe…` primitives and the `Glow`, `Goo`, `Grain` and
+  `Distort` presets, `ClipPath`, `Mask`) render on the server;
+- `DrawPath` draws a stroke on, fills it or drains it;
+- `MarqueePath` runs dashes along a path;
+- `Morph` morphs between shapes.
+
+Every `@greese/svg` function is re-exported, so one import covers both.
+
+```tsx
+import { Drawing, Morph } from '@greese/react/svg'
+
+;<Drawing viewBox="0 0 100 100" label="Shape">
+  <Morph
+    shapes={[
+      { type: 'star', cx: 50, cy: 50, r: 40 },
+      { type: 'circle', cx: 50, cy: 50, r: 40 },
+    ]}
+    index={on ? 1 : 0}
+  />
+</Drawing>
+```
+
+See **Guides/SVG** and ADR 0031.
+
 ## Responsive values
 
 Every responsive prop takes one value, or a value per breakpoint,
