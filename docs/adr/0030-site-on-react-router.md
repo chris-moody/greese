@@ -121,11 +121,18 @@ No budget was raised.
   `usePageNavigate`, taking app hrefs) and `PageNavigateContext`, which
   `RouteLink` and `useNavigateTo` use. It's under 30 lines and relies on no
   React Router internals, so by ADR 0029 §6 it stays a recipe.
-- **Total Blocking Time is over budget again (open):** 112–130 ms against
-  100 ms, after Phases 2–7 (Phase 1 measured 85–92 ms).
-  - Two experiments ruled out `PageTransition` itself (108–123 ms without
-    it) and the motion presets now imported at boot (114–174 ms without
-    them).
-  - The growth is spread across the library's stylesheet (+1.5 kB) and its
-    JavaScript.
-  - FCP and LCP (1.21 s) and performance (0.97–0.99) pass.
+- **Total Blocking Time: mostly recovered, still borderline.** After Phases
+  2–7 it measured 112–130 ms against 100 ms. Bisecting by building past
+  commits today: Phase 1 measured 88–93 ms, and Phase 2's page-transition
+  stylesheet alone took it to 105–121 ms.
+  - **The cause:** its rules began `::view-transition-*` with nothing
+    before them, so the browser tried them against every element at every
+    style recalculation.
+  - **The fix:** they now begin `html::view-transition-*`, so only the root
+    is tested. Phase 2 with the fix measured 89–106 ms.
+  - **Now:** 99–113 ms (median 107). Lighthouse passes on its best run, but
+    two of the three runs that time had a slow first paint.
+  - The rest is spread across Phases 3–7 (a few ms each, within the noise of
+    single runs).
+  - An experiment measuring the `greese` prop island's positions in a frame
+    callback instead of a microtask showed no clear gain, and was dropped.
