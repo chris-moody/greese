@@ -105,6 +105,53 @@ test.describe('with view transitions', () => {
   })
 })
 
+test.describe('shared elements paired by the link followed', () => {
+  /** Whether the last page change morphed the link's pair: a group with both snapshots. */
+  const paired = async (page: Page) => {
+    const t = (await last(page))!
+    return t.played!.some(
+      ([pseudo, n]) =>
+        pseudo === '::view-transition-group(greese-share-link)' &&
+        n === '-ua-view-transition-group-anim-greese-share-link'
+    )
+  }
+  const count = (page: Page) => page.evaluate(() => window.transitions!.length)
+
+  test.beforeEach(async ({ page }) => {
+    await record(page)
+    await page.goto('/pt/list?page=pages&variant=link')
+    await page.getByTestId('page').waitFor()
+    test.skip(!(await supports(page)).transitions, 'no view transitions in this engine')
+  })
+
+  test('the clicked item morphs into the page’s hero, and back into the same item', async ({
+    page,
+  }) => {
+    await page.getByRole('link', { name: 'Item 2' }).click()
+    await expect(page.getByTestId('hero')).toHaveText('/pt/item/2')
+    await expect.poll(() => last(page)).not.toBeNull()
+    expect(await paired(page)).toBe(true)
+
+    const before = await count(page)
+    await page.getByRole('link', { name: 'Back to the list' }).click()
+    await expect(page.getByTestId('card-2')).toBeVisible()
+    await expect.poll(() => count(page)).toBeGreaterThan(before)
+    await expect.poll(() => last(page)).not.toBeNull()
+    expect(await paired(page)).toBe(true)
+    // Named only for the change: nothing keeps the name afterwards.
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            [...document.querySelectorAll<HTMLElement>('[data-greese-share-link]')].filter(
+              (el) => el.style.viewTransitionName
+            ).length
+        )
+      )
+      .toBe(0)
+  })
+})
+
 test('under reduced motion, greese snapshots do not animate', async ({ browser }) => {
   const context = await browser.newContext({ reducedMotion: 'reduce' })
   const page = await context.newPage()

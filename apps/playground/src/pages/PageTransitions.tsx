@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties, type JSX } from 'react'
-import { Card, PageTransition, Text, usePageNavigate } from '@greese/react'
+import { Card, PageShare, PageTransition, Text, usePageNavigate } from '@greese/react'
 import '@greese/react/base.css'
 import '@greese/react/styles.css'
 
@@ -11,8 +11,9 @@ const query = `?page=pages${variant === 'snapshot' ? '' : `&variant=${variant}`}
  * is the path, which it writes to the URL, so a navigation's direction comes
  * from the URL as it would in an app. `?variant=live` leaves live (members
  * with greese entrances, a slow page so the exit can be watched);
- * `?variant=timeline` leaves with a timeline map. e2e/page-transitions.spec.ts
- * drives it.
+ * `?variant=timeline` leaves with a timeline map; `?variant=link` is a list
+ * and its items' pages, paired by the link followed (`<PageShare link>`).
+ * e2e/page-transitions.spec.ts drives it.
  */
 export const PageTransitions = (): JSX.Element => {
   const [path, setPath] = useState(location.pathname)
@@ -32,6 +33,32 @@ export const PageTransitions = (): JSX.Element => {
       {label}
     </a>
   )
+  if (variant === 'link')
+    return (
+      <PageTransition>
+        {path.startsWith('/pt/item/') ? (
+          <main data-testid="page">
+            {link('/pt/list', 'Back to the list')}
+            <PageShare link>
+              <h1 data-testid="hero" style={{ fontSize: '3rem' }}>
+                {path}
+              </h1>
+            </PageShare>
+          </main>
+        ) : (
+          <main data-testid="page">
+            <h1>/pt/list</h1>
+            {['1', '2', '3'].map((n) => (
+              <PageShare key={n} link>
+                <Card p={4} data-testid={`card-${n}`}>
+                  {link(`/pt/item/${n}`, `Item ${n}`)}
+                </Card>
+              </PageShare>
+            ))}
+          </main>
+        )}
+      </PageTransition>
+    )
   const body =
     variant === 'snapshot' ? (
       <main data-testid="page">
