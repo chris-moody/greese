@@ -401,3 +401,82 @@ duration, delay, ease }`, in kebab-case and CSS times.
 - Docs: a "Page transitions" guide, a story page per new export, and
   recipes for React Router, Next.js, TanStack Router and cross-document CSS.
 - The plan and its phases are in `docs/plans/PAGE_TRANSITIONS.md` (local).
+
+### Addendum: what a page change shows while it happens (2026-10-30)
+
+Found on the web app with the Pocket motion theme, then checked under every
+theme in Chromium, frame by frame:
+
+- **A live exit's styles come off when the commit is seen.** Two frames
+  after the exit was a guess. React commits when the next page has
+  rendered, and a heavy one (the Studio) committed three frames later, so
+  the hero's members came back on the old page and the page flashed.
+  `usePageNavigate` now watches the leaving page with a MutationObserver
+  from the end of the exit. A page change changes the page: its elements,
+  its text or their attributes, but not the `style` the exit sets. Once the
+  exit has played nothing else does, and a page that didn't change lets go
+  after `EXIT_CAP`. The callback is a microtask after the commit, before
+  the browser's snapshot of the new page.
+- **A page that left live still plays the new page in.** `greese-live` was
+  `none`, so after a live exit the new page simply appeared, with only its
+  members' entrances. It now maps to `greese-PageTransition--left`, joined
+  with the direction's classes: the new page plays the theme's entrance,
+  and what the exit left of the old page (backgrounds, anything that isn't
+  a member) fades beneath it. `none` from the direction still wins, and a
+  replace adds no `greese-live`, so it still changes in place. This
+  reverses "a live page starts no view transition" (Phase 7).
+- **A page's snapshots show only the screenful in view.** A page
+  `PageTransition` names is snapshotted whole, 9,500 px for the homepage.
+  Effects sized by the element (a pocket slides its own height into a slot
+  at its foot, a pop scales about its middle, a flip turns about its axis)
+  played almost wholly off screen, so the Studio's exit couldn't be seen.
+  - The page's classes carry `greese-PageTransition--page` (rules' parts
+    don't). Its old and new snapshots are `min(100%, 100dvh)` tall, the
+    image at its natural size (`object-fit: none`), so effects are sized
+    by the screen.
+  - The new page shows from its top, since it's scrolled there first. The
+    old page shows from `--greese-page-scrolled`, how far the screen was
+    into it, which `usePageNavigate` measures at the click, before the
+    snapshot.
+- **A page that commits still loading plays its fallback.** The web app's
+  pages are chunks; leaving the homepage mounted a new Suspense boundary,
+  which showed its empty fallback, and the snapshot played that. A docs
+  page's content is behind a boundary keyed by the page, so each docs
+  navigation snapshotted a spinner with the footer under it. The app's
+  navigate now returns a promise for the next page's chunk, the footer and
+  its content (a docs page's stories or MDX, a template), capped at 3 s.
+  Those promises are marked fulfilled when they resolve, so `use` reads
+  them at once where `React.lazy` would suspend for a microtask. The
+  guide tells apps to do the same.
+- **The Studio's preview is hidden until it has painted with the theme**
+  (its first measured colors), then fades in. An iframe is blank, and in a
+  dark scheme white, until its own app loads.
+- **What's still stays on top.** View-transition groups stack in the
+  document's order, so a still header that comes before the page was
+  painted under it, and the page moved over the header. Still groups now
+  take `z-index: 1`: the page moves beneath what stays, as it scrolls
+  beneath a sticky header. The web app names its header still.
+- **Wipe: both pages wipe, along one edge.** Its page exit was `none`, so
+  the old page stayed whole under the new one wiping in, showing through
+  wherever the new page has no background, then vanished at the end. The
+  old page now wipes out the same way (`wipe-out-left`, `wipe-out-right`),
+  so the two masks meet at one moving edge. The theme's `page-mode` is
+  `snapshot`: the homepage changes the same way, as one page, not its
+  members in turn.
+- **Depth: a half turn.** The page turned 75 degrees with a fade, like
+  the faces of a cube. Eight new effects, `flipOver<Dir>` (from 180 degrees
+  to 0) and `flipOverOut<Dir>` (from 0 to 180), turn a half turn with
+  `backface-visibility: hidden` and a 2000 px perspective (a screen-wide
+  panel at 800 px swung through the viewer). Depth plays `flipOverRight`
+  over `flipOverOutLeft` (and the mirror going back): both turn the same
+  way half a turn apart, so the old page is the front of a panel and the
+  new one its back, and each shows only while it faces the viewer. Whole
+  pages' snapshots hide their backs too, in case a browser ignores the
+  property in keyframes. Its pace is 0.8 s on an ease in and out, and its
+  `page-mode` is `snapshot`, so the homepage turns as one panel too.
+- **Budgets:** page transitions 3.4 → 3.6 kB (3.56 kB), the whole library
+  32.15 → 32.4 kB and 37.6 → 37.8 kB, PageTransition.css 1.8 → 2 kB (1.98
+  kB), greese.css 24.9 → 25.2 kB (25.18 kB). The half turns' names, which
+  every component's static part carries: Tabs 2.65 → 2.7 kB, Menu 3.3 →
+  3.35 kB, toast 3.65 → 3.7 kB, ScrollSpy 2.4 → 2.45 kB, the greese prop
+  runtime 11.05 → 11.15 kB.

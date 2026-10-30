@@ -60,8 +60,10 @@ There are two ways, and `mode` picks one:
 - **`live`:** the old page's **members**, its elements with greese entrances,
   play their exits on the real page, one after another (the last first, so
   the page empties back towards its top), while your router loads the next
-  page. Then the page changes and the new page's members play their own
-  entrances.
+  page. Then the page changes: the new page plays its entrance, what the
+  exit left of the old one fades beneath it, and the new page's members
+  play their own entrances. The exit's styles come off once the new page
+  has committed, so nothing it hid shows again on the old page.
 - **`auto`** (the default) leaves live when the page has members on screen,
   and as a snapshot otherwise. The motion theme's `page-mode` decides when
   `PageTransition` doesn't.
@@ -72,7 +74,18 @@ There are two ways, and `mode` picks one:
 ```
 
 Pick live for pages whose arrival is choreographed (a hero of entrances) and
-snapshots elsewhere. The web app's homepage leaves live; its other pages,
+snapshots elsewhere.
+
+A page taller than the screen is snapshotted whole, so its snapshots show
+only the screenful in view: the new page's from its top, the old page's
+from where the screen was on it. Effects sized by the element (a pocket's
+slot, a pop's middle, a flip's axis) play where you can see them.
+
+A page change commits when the next page has rendered. A page that loads
+lazily (a route's chunk, a `use` of its data) and commits still loading
+shows its fallback, and that's what the snapshot plays: give your router's
+navigate a promise for what the next page needs, and the change waits for
+it (the web app fetches the next page's chunk and content in its navigate). The web app's homepage leaves live; its other pages,
 where the only members on screen are a footer's, change as snapshots.
 
 ## Which way it went: transition types
@@ -80,13 +93,13 @@ where the only members on screen are a footer's, change as snapshots.
 `usePageNavigate` adds React transition types to each navigation, and
 `PageTransition` plays by them:
 
-| Type                                                  | When                                                            |
-| ----------------------------------------------------- | --------------------------------------------------------------- |
-| `greese-page`                                         | Every page change it makes                                      |
-| `greese-forward`, `greese-back`                       | Its direction: back is going back in the history, or up the URL |
-| `greese-replace`                                      | A replace: the page changes in place                            |
-| `greese-deeper`, `greese-shallower`, `greese-sibling` | How it moved in the URL                                         |
-| `greese-live`                                         | The page left live, so no snapshot plays over it                |
+| Type                                                  | When                                                               |
+| ----------------------------------------------------- | ------------------------------------------------------------------ |
+| `greese-page`                                         | Every page change it makes                                         |
+| `greese-forward`, `greese-back`                       | Its direction: back is going back in the history, or up the URL    |
+| `greese-replace`                                      | A replace: the page changes in place                               |
+| `greese-deeper`, `greese-shallower`, `greese-sibling` | How it moved in the URL                                            |
+| `greese-live`                                         | The page left live: the new page arrives, the old one's rest fades |
 
 A change of hash or query alone isn't a page change and gets none of them:
 a tab kept in the URL, or a filter, changes the page in place. Add your own
@@ -145,7 +158,11 @@ export const Page = () => (
 
 The matched elements are named only while a greese page change runs, so
 other view transitions never capture them. **Each one is a snapshot of its
-own:** name sections, not every item of a long list. A theme sets rules too,
+own:** name sections, not every item of a long list. **What's still stays on
+top:** the page moves beneath it, as a page scrolls beneath a sticky header,
+so a header outside the page is worth a rule of its own
+(`rules={{ header: 'still' }}`); without one, it's part of the root snapshot
+and the page moves over it. A theme sets rules too,
 with the kit's `page-transitions()`, or under Pages in Theme Studio's Motion
 tab.
 
