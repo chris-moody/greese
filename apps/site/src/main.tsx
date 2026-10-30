@@ -13,11 +13,21 @@ import './styles/firstScreen.ts'
 import 'virtual:greese-utilities.css'
 import './site.scss'
 
+/** A task of its own for what follows. */
+const nextTask = () => new Promise((resolve) => setTimeout(resolve))
+
 let started = false
 const boot = () => {
   if (started) return
   started = true
-  void import('./boot.tsx')
+  // Evaluating the app's modules is a long task (about 90 ms on a slow
+  // phone, 23 ms here) if it all happens at once: React, then React Router,
+  // then greese ui and the app, each in a task of its own, stay short.
+  void import('react-dom/client')
+    .then(nextTask)
+    .then(() => import('react-router'))
+    .then(nextTask)
+    .then(() => import('./boot.tsx'))
 }
 
 /** A few frames after `fn`'s turn comes, then a task: the frames are presented. */
@@ -57,6 +67,11 @@ else if (PerformanceObserver.supportedEntryTypes?.includes('paint')) {
     void entrancesDone().then(() => afterFrames(1, boot))
   }).observe({ type: 'paint', buffered: true })
 } else afterFrames(1, boot)
-// A tab opened in the background paints no frames, and nothing waits
-// longer than this: start anyway.
-setTimeout(boot, 1000)
+// A tab opened in the background paints no frames: it starts when it's
+// shown. Otherwise nothing waits longer than this. It was 1 s, but a first
+// frame can take that long to be presented (Lighthouse's runs did, half the
+// time), and booting before the first paint put the app's script in front of
+// it (ADR 0030).
+if (document.visibilityState === 'hidden')
+  document.addEventListener('visibilitychange', boot, { once: true })
+setTimeout(boot, 3000)

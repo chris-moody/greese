@@ -110,7 +110,6 @@ const Lab = (): JSX.Element => {
                 variant="soft"
                 tone="neutral"
                 onClick={() => play(name)}
-                greese={{ hover: 'rise', press: 'squish' }}
               >
                 {name}
               </Button>
