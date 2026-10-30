@@ -931,7 +931,7 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 
           @if $name or $pacing != () {
             @media (prefers-reduced-motion: no-preference) {
-              ::view-transition-#{$pseudo}(*.#{$class}) {
+              html::view-transition-#{$pseudo}(*.#{$class}) {
                 @if $name == none {
                   animation-name: none;
                 } @else if $name {

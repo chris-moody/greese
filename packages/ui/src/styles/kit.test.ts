@@ -333,7 +333,7 @@ describe('SCSS kit: motion()', () => {
     expect(
       ruleIn(
         css,
-        '::view-transition-old(*.greese-page-base-2)',
+        'html::view-transition-old(*.greese-page-base-2)',
         '@layer greese.overrides',
         motionOk
       )
@@ -345,7 +345,7 @@ describe('SCSS kit: motion()', () => {
     expect(
       ruleIn(
         css,
-        '::view-transition-new(*.greese-page-base-2)',
+        'html::view-transition-new(*.greese-page-base-2)',
         '@layer greese.overrides',
         motionOk
       )
@@ -390,20 +390,20 @@ describe('SCSS kit: motion()', () => {
       if (entrances.has(effect)) {
         // The new snapshot plays the entrance's own keyframes (Motion.css).
         expect(built, name).toContain(
-          `::view-transition-new(*.greese-PageTransition--enter-${name}) { animation-name: greese-${name};`
+          `html::view-transition-new(*.greese-PageTransition--enter-${name}) { animation-name: greese-${name};`
         )
       } else {
         // The old snapshot plays the exit, from rest to where it ends.
         expect(effectPlan(effect).leave?.[0]?.[0], name).toBe('from')
         expect(built, name).toContain(
-          `::view-transition-old(*.greese-PageTransition--exit-${name}) { animation-name: greese-${name};`
+          `html::view-transition-old(*.greese-PageTransition--exit-${name}) { animation-name: greese-${name};`
         )
         expect(built, name).toContain(`@keyframes greese-${name} {`)
       }
     }
     // Reduced motion: greese snapshots don't animate at all.
     expect(built).toContain(
-      '@media (prefers-reduced-motion: reduce) { ::view-transition-group(*.greese-PageTransition), ::view-transition-old(*.greese-PageTransition), ::view-transition-new(*.greese-PageTransition) { animation: none;'
+      '@media (prefers-reduced-motion: reduce) { html::view-transition-group(*.greese-PageTransition), html::view-transition-old(*.greese-PageTransition), html::view-transition-new(*.greese-PageTransition) { animation: none;'
     )
   })
 
