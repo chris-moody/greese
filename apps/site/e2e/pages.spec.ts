@@ -7,21 +7,21 @@ import { expect, test } from '@playwright/test'
 test('the Motion tab edits page transitions, its stage plays them, and the code has them', async ({
   page,
 }) => {
-  // Each view transition's snapshot animations, recorded once it's ready.
+  // The snapshot animations view transitions play, as each starts: on a busy
+  // machine, `getAnimations()` at `ready` runs after the short ones are gone.
   await page.addInitScript(() => {
     const w = window as Window & { played?: string[] }
-    const start = document.startViewTransition?.bind(document)
-    if (!start) return
-    document.startViewTransition = ((arg: StartViewTransitionOptions) => {
-      const transition = start(arg)
-      void transition.ready.then(() => {
-        w.played = document
-          .getAnimations()
-          .map((a) => (a as CSSAnimation).animationName)
-          .filter((name) => name?.startsWith('greese-'))
-      })
-      return transition
-    }) as typeof document.startViewTransition
+    document.addEventListener(
+      'animationstart',
+      (e) => {
+        if (
+          e.pseudoElement.startsWith('::view-transition') &&
+          e.animationName.startsWith('greese-')
+        )
+          (w.played ??= []).push(e.animationName)
+      },
+      true
+    )
   })
   await page.goto('/studio?tab=motion')
   await expect(page.getByRole('heading', { name: 'Pages', exact: true })).toBeVisible()

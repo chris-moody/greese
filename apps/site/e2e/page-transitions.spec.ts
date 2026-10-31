@@ -3,7 +3,10 @@ import { expect, test, type Page } from '@playwright/test'
 /**
  * The site's page transitions (ADR 0029): every route change goes through
  * PageTransition, typed by its direction. Each view transition is recorded
- * as it starts: its types, then (once ready) the pseudo-elements it animates.
+ * as it starts: its types, then (once it's finished) the pseudo-elements it
+ * animated, as their animations started. Not `getAnimations()` at `ready`:
+ * on a busy machine that runs late, after the short ones have finished and
+ * gone.
  */
 type Recorded = { types: string[]; played: string[] | null }
 
@@ -13,21 +16,22 @@ const record = (page: Page) =>
     w.transitions = []
     const start = document.startViewTransition?.bind(document)
     if (!start) return
+    let started: string[] | null = null
+    document.addEventListener(
+      'animationstart',
+      (e) => {
+        if (e.pseudoElement.startsWith('::view-transition'))
+          started?.push(`${e.pseudoElement} ${e.animationName}`)
+      },
+      true
+    )
     document.startViewTransition = ((arg: StartViewTransitionOptions) => {
       const transition = start(arg)
       const entry: Recorded = { types: [...(arg.types ?? [])], played: null }
       w.transitions!.push(entry)
-      void transition.ready
-        .then(() => {
-          entry.played = document
-            .getAnimations()
-            .map((a) => {
-              const effect = a.effect as KeyframeEffect | null
-              return `${effect?.pseudoElement ?? ''} ${(a as CSSAnimation).animationName ?? ''}`
-            })
-            .filter((s) => s.startsWith('::'))
-        })
-        .catch(() => {})
+      const seen: string[] = []
+      started = seen
+      void transition.finished.then(() => (entry.played = seen)).catch(() => {})
       return transition
     }) as typeof document.startViewTransition
   })
@@ -47,6 +51,14 @@ const count = (page: Page) =>
   )
 
 test.beforeEach(({ page }) => record(page))
+
+/**
+ * A page that has finished loading: its chunks, content and footer in. A
+ * page change started while the page is still settling, within a few frames
+ * of its content arriving, can commit without a view transition: on the dev
+ * server, under load, a click comes that soon.
+ */
+const settled = (page: Page) => page.waitForLoadState('networkidle')
 
 test('leaving the homepage leaves live: its members go, the last first, then the page changes', async ({
   page,
@@ -106,6 +118,7 @@ test('a template card morphs into its page’s title, going deeper; its bar goes
   await page.goto('/templates')
   const card = page.locator('#main a[href$="/templates/finance"]')
   await card.waitFor()
+  await settled(page)
   await card.click()
   await expect(page).toHaveURL(/\/templates\/finance$/)
   await expect.poll(() => last(page)).not.toBeNull()
@@ -129,6 +142,7 @@ test('a template card morphs into its page’s title, going deeper; its bar goes
 test('one docs page to the next is a sibling', async ({ page }) => {
   await page.goto('/docs/forms-button')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Button')
+  await settled(page)
   await page.locator('a[rel="next"]').click()
   await expect(page.getByRole('heading', { level: 1 })).not.toHaveText('Button')
   await expect
