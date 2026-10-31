@@ -1,0 +1,87 @@
+/**
+ * Mono: near-black (near-white in dark mode) and grays, with taupe and a single red accent, on gray neutrals.
+ *
+ * A greese ui color theme (ADR 0025): the brand colors and the neutrals
+ * (canvas, surfaces, text, borders) in both schemes, in @layer greese.theme;
+ * content and strong shades are derived for contrast (WCAG AA). It sets no
+ * shapes and no motion, so it goes with any shape or motion theme.
+ * Load it after greese ui's styles:
+ *
+ *   import '@greese/ui/themes/mono.css'
+ *
+ * Generated from apps/site/src/studio/presets.ts (npm run themes -w site).
+ */
+@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities;
+@layer greese.theme {
+  :root,
+  [data-greese-scheme=light],
+  [data-greese-scheme=system] {
+    --greese-color-canvas: #f7f7f7;
+    --greese-color-surface: #ededed;
+    --greese-color-surface-overlay: #ffffff;
+    --greese-color-fg: #161616;
+    --greese-color-fg-muted: #5c5c5c;
+    --greese-color-border: #dedede;
+    --greese-color-border-strong: #b1b1b1;
+    --greese-color-track: #dedede;
+    --greese-color-primary: #2e3335;
+    --greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 80%, #000);
+    --greese-color-primary-content: #ffffff;
+    --greese-color-secondary: #6f777c;
+    --greese-color-secondary-strong: color-mix(in oklab, var(--greese-color-secondary) 80%, #000);
+    --greese-color-secondary-content: #ffffff;
+    --greese-color-tertiary: #67594f;
+    --greese-color-tertiary-strong: color-mix(in oklab, var(--greese-color-tertiary) 80%, #000);
+    --greese-color-tertiary-content: #ffffff;
+    --greese-color-accent: #d52727;
+    --greese-color-accent-strong: color-mix(in oklab, var(--greese-color-accent) 80%, #000);
+    --greese-color-accent-content: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-greese-scheme=light]),
+    [data-greese-scheme=system] {
+      --greese-color-canvas: #161616;
+      --greese-color-surface: #323232;
+      --greese-color-surface-overlay: #464646;
+      --greese-color-fg: #ededed;
+      --greese-color-fg-muted: #cacaca;
+      --greese-color-border: #464646;
+      --greese-color-border-strong: #5c5c5c;
+      --greese-color-track: #767676;
+      --greese-color-primary: #ebedee;
+      --greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 70%, #fff);
+      --greese-color-primary-content: #11171c;
+      --greese-color-secondary: #aab3b7;
+      --greese-color-secondary-strong: color-mix(in oklab, var(--greese-color-secondary) 70%, #fff);
+      --greese-color-secondary-content: #11171c;
+      --greese-color-tertiary: #d3c7be;
+      --greese-color-tertiary-strong: color-mix(in oklab, var(--greese-color-tertiary) 70%, #fff);
+      --greese-color-tertiary-content: #11171c;
+      --greese-color-accent: #ff8b7f;
+      --greese-color-accent-strong: color-mix(in oklab, var(--greese-color-accent) 70%, #fff);
+      --greese-color-accent-content: #11171c;
+    }
+  }
+  [data-greese-scheme=dark] {
+    --greese-color-canvas: #161616;
+    --greese-color-surface: #323232;
+    --greese-color-surface-overlay: #464646;
+    --greese-color-fg: #ededed;
+    --greese-color-fg-muted: #cacaca;
+    --greese-color-border: #464646;
+    --greese-color-border-strong: #5c5c5c;
+    --greese-color-track: #767676;
+    --greese-color-primary: #ebedee;
+    --greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 70%, #fff);
+    --greese-color-primary-content: #11171c;
+    --greese-color-secondary: #aab3b7;
+    --greese-color-secondary-strong: color-mix(in oklab, var(--greese-color-secondary) 70%, #fff);
+    --greese-color-secondary-content: #11171c;
+    --greese-color-tertiary: #d3c7be;
+    --greese-color-tertiary-strong: color-mix(in oklab, var(--greese-color-tertiary) 70%, #fff);
+    --greese-color-tertiary-content: #11171c;
+    --greese-color-accent: #ff8b7f;
+    --greese-color-accent-strong: color-mix(in oklab, var(--greese-color-accent) 70%, #fff);
+    --greese-color-accent-content: #11171c;
+  }
+}

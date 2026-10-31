@@ -1,0 +1,87 @@
+/**
+ * Grape: a lavender primary with magenta, royal blue and a jade accent, on neutrals tinted lavender.
+ *
+ * A greese ui color theme (ADR 0025): the brand colors and the neutrals
+ * (canvas, surfaces, text, borders) in both schemes, in @layer greese.theme;
+ * content and strong shades are derived for contrast (WCAG AA). It sets no
+ * shapes and no motion, so it goes with any shape or motion theme.
+ * Load it after greese ui's styles:
+ *
+ *   import '@greese/ui/themes/grape.css'
+ *
+ * Generated from apps/site/src/studio/presets.ts (npm run themes -w site).
+ */
+@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities;
+@layer greese.theme {
+  :root,
+  [data-greese-scheme=light],
+  [data-greese-scheme=system] {
+    --greese-color-canvas: #f7f5ff;
+    --greese-color-surface: #edeaff;
+    --greese-color-surface-overlay: #ffffff;
+    --greese-color-fg: #190c33;
+    --greese-color-fg-muted: #6443ab;
+    --greese-color-border: #dfd8ff;
+    --greese-color-border-strong: #b69fff;
+    --greese-color-track: #dfd8ff;
+    --greese-color-primary: #7e5bd0;
+    --greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 80%, #000);
+    --greese-color-primary-content: #ffffff;
+    --greese-color-secondary: #bb32a3;
+    --greese-color-secondary-strong: color-mix(in oklab, var(--greese-color-secondary) 80%, #000);
+    --greese-color-secondary-content: #ffffff;
+    --greese-color-tertiary: #5963e5;
+    --greese-color-tertiary-strong: color-mix(in oklab, var(--greese-color-tertiary) 80%, #000);
+    --greese-color-tertiary-content: #ffffff;
+    --greese-color-accent: #008e68;
+    --greese-color-accent-strong: color-mix(in oklab, var(--greese-color-accent) 80%, #000);
+    --greese-color-accent-content: #000000;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-greese-scheme=light]),
+    [data-greese-scheme=system] {
+      --greese-color-canvas: #190c33;
+      --greese-color-surface: #362361;
+      --greese-color-surface-overlay: #4c3285;
+      --greese-color-fg: #edeaff;
+      --greese-color-fg-muted: #cdbfff;
+      --greese-color-border: #4c3285;
+      --greese-color-border-strong: #6443ab;
+      --greese-color-track: #7e5bd0;
+      --greese-color-primary: #b69fff;
+      --greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 70%, #fff);
+      --greese-color-primary-content: #11171c;
+      --greese-color-secondary: #f97cde;
+      --greese-color-secondary-strong: color-mix(in oklab, var(--greese-color-secondary) 70%, #fff);
+      --greese-color-secondary-content: #11171c;
+      --greese-color-tertiary: #9aaaff;
+      --greese-color-tertiary-strong: color-mix(in oklab, var(--greese-color-tertiary) 70%, #fff);
+      --greese-color-tertiary-content: #11171c;
+      --greese-color-accent: #54cea1;
+      --greese-color-accent-strong: color-mix(in oklab, var(--greese-color-accent) 70%, #fff);
+      --greese-color-accent-content: #11171c;
+    }
+  }
+  [data-greese-scheme=dark] {
+    --greese-color-canvas: #190c33;
+    --greese-color-surface: #362361;
+    --greese-color-surface-overlay: #4c3285;
+    --greese-color-fg: #edeaff;
+    --greese-color-fg-muted: #cdbfff;
+    --greese-color-border: #4c3285;
+    --greese-color-border-strong: #6443ab;
+    --greese-color-track: #7e5bd0;
+    --greese-color-primary: #b69fff;
+    --greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 70%, #fff);
+    --greese-color-primary-content: #11171c;
+    --greese-color-secondary: #f97cde;
+    --greese-color-secondary-strong: color-mix(in oklab, var(--greese-color-secondary) 70%, #fff);
+    --greese-color-secondary-content: #11171c;
+    --greese-color-tertiary: #9aaaff;
+    --greese-color-tertiary-strong: color-mix(in oklab, var(--greese-color-tertiary) 70%, #fff);
+    --greese-color-tertiary-content: #11171c;
+    --greese-color-accent: #54cea1;
+    --greese-color-accent-strong: color-mix(in oklab, var(--greese-color-accent) 70%, #fff);
+    --greese-color-accent-content: #11171c;
+  }
+}

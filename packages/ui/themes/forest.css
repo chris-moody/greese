@@ -1,0 +1,87 @@
+/**
+ * Forest: a jade primary with lime, aqua and an orange accent, on neutrals tinted jade.
+ *
+ * A greese ui color theme (ADR 0025): the brand colors and the neutrals
+ * (canvas, surfaces, text, borders) in both schemes, in @layer greese.theme;
+ * content and strong shades are derived for contrast (WCAG AA). It sets no
+ * shapes and no motion, so it goes with any shape or motion theme.
+ * Load it after greese ui's styles:
+ *
+ *   import '@greese/ui/themes/forest.css'
+ *
+ * Generated from apps/site/src/studio/presets.ts (npm run themes -w site).
+ */
+@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities;
+@layer greese.theme {
+  :root,
+  [data-greese-scheme=light],
+  [data-greese-scheme=system] {
+    --greese-color-canvas: #eefaf4;
+    --greese-color-surface: #daf4e8;
+    --greese-color-surface-overlay: #ffffff;
+    --greese-color-fg: #001c11;
+    --greese-color-fg-muted: #006f51;
+    --greese-color-border: #baedd6;
+    --greese-color-border-strong: #54cea1;
+    --greese-color-track: #baedd6;
+    --greese-color-primary: #006f51;
+    --greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 80%, #000);
+    --greese-color-primary-content: #ffffff;
+    --greese-color-secondary: #517600;
+    --greese-color-secondary-strong: color-mix(in oklab, var(--greese-color-secondary) 80%, #000);
+    --greese-color-secondary-content: #ffffff;
+    --greese-color-tertiary: #00707b;
+    --greese-color-tertiary-strong: color-mix(in oklab, var(--greese-color-tertiary) 80%, #000);
+    --greese-color-tertiary-content: #ffffff;
+    --greese-color-accent: #c05d00;
+    --greese-color-accent-strong: color-mix(in oklab, var(--greese-color-accent) 80%, #000);
+    --greese-color-accent-content: #000000;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-greese-scheme=light]),
+    [data-greese-scheme=system] {
+      --greese-color-canvas: #001c11;
+      --greese-color-surface: #003c2a;
+      --greese-color-surface-overlay: #00553d;
+      --greese-color-fg: #daf4e8;
+      --greese-color-fg-muted: #8ee1be;
+      --greese-color-border: #00553d;
+      --greese-color-border-strong: #006f51;
+      --greese-color-track: #008e68;
+      --greese-color-primary: #54cea1;
+      --greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 70%, #fff);
+      --greese-color-primary-content: #11171c;
+      --greese-color-secondary: #a6dc51;
+      --greese-color-secondary-strong: color-mix(in oklab, var(--greese-color-secondary) 70%, #fff);
+      --greese-color-secondary-content: #11171c;
+      --greese-color-tertiary: #64d0de;
+      --greese-color-tertiary-strong: color-mix(in oklab, var(--greese-color-tertiary) 70%, #fff);
+      --greese-color-tertiary-content: #11171c;
+      --greese-color-accent: #ff9d5e;
+      --greese-color-accent-strong: color-mix(in oklab, var(--greese-color-accent) 70%, #fff);
+      --greese-color-accent-content: #11171c;
+    }
+  }
+  [data-greese-scheme=dark] {
+    --greese-color-canvas: #001c11;
+    --greese-color-surface: #003c2a;
+    --greese-color-surface-overlay: #00553d;
+    --greese-color-fg: #daf4e8;
+    --greese-color-fg-muted: #8ee1be;
+    --greese-color-border: #00553d;
+    --greese-color-border-strong: #006f51;
+    --greese-color-track: #008e68;
+    --greese-color-primary: #54cea1;
+    --greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 70%, #fff);
+    --greese-color-primary-content: #11171c;
+    --greese-color-secondary: #a6dc51;
+    --greese-color-secondary-strong: color-mix(in oklab, var(--greese-color-secondary) 70%, #fff);
+    --greese-color-secondary-content: #11171c;
+    --greese-color-tertiary: #64d0de;
+    --greese-color-tertiary-strong: color-mix(in oklab, var(--greese-color-tertiary) 70%, #fff);
+    --greese-color-tertiary-content: #11171c;
+    --greese-color-accent: #ff9d5e;
+    --greese-color-accent-strong: color-mix(in oklab, var(--greese-color-accent) 70%, #fff);
+    --greese-color-accent-content: #11171c;
+  }
+}

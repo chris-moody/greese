@@ -1,0 +1,36 @@
+/**
+ * Greese: the official theme. A warm orange primary on greese ui's own neutrals.
+ *
+ * A greese ui color theme (ADR 0025): the brand colors and the neutrals
+ * (canvas, surfaces, text, borders) in both schemes, in @layer greese.theme;
+ * content and strong shades are derived for contrast (WCAG AA). It sets no
+ * shapes and no motion, so it goes with any shape or motion theme.
+ * Load it after greese ui's styles:
+ *
+ *   import '@greese/ui/themes/greese.css'
+ *
+ * Generated from apps/site/src/studio/presets.ts (npm run themes -w site).
+ */
+@layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities;
+@layer greese.theme {
+  :root,
+  [data-greese-scheme=light],
+  [data-greese-scheme=system] {
+    --greese-color-primary: #964700;
+    --greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 80%, #000);
+    --greese-color-primary-content: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-greese-scheme=light]),
+    [data-greese-scheme=system] {
+      --greese-color-primary: #ff9d5e;
+      --greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 70%, #fff);
+      --greese-color-primary-content: #11171c;
+    }
+  }
+  [data-greese-scheme=dark] {
+    --greese-color-primary: #ff9d5e;
+    --greese-color-primary-strong: color-mix(in oklab, var(--greese-color-primary) 70%, #fff);
+    --greese-color-primary-content: #11171c;
+  }
+}
