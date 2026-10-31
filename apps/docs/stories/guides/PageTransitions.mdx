@@ -166,6 +166,105 @@ and the page moves over it. A theme sets rules too,
 with the kit's `page-transitions()`, or under Pages in Theme Studio's Motion
 tab.
 
+## Page by page: route rules
+
+A page can decide how a change plays by where it goes or where it came from:
+"wipe out when leaving for `/settings/*`", "turn in like Depth when arriving
+from `/user/*`". Declare them as data on the route (React Router's
+`handle.greese`), and hand `usePageNavigate` a function that finds a path's
+config. It is called at the click, for both pages, so it answers
+synchronously:
+
+```tsx
+import { matchRoutes, useNavigate } from 'react-router'
+import type { PageRoute } from '@greese/react'
+
+export const routes = [
+  {
+    path: 'user/:id',
+    Component: User,
+    handle: {
+      greese: {
+        to: { '/settings/*': { exit: 'wipeOutLeft', mode: 'snapshot' } },
+      } satisfies PageRoute,
+    },
+  },
+  {
+    path: 'settings/*',
+    Component: Settings,
+    handle: {
+      greese: {
+        from: { '/user/*': { enter: 'flipOverRight', duration: 0.8 } },
+      } satisfies PageRoute,
+    },
+  },
+]
+
+// Module level, as the routes are.
+const route = (path: string) => matchRoutes(routes, path)?.at(-1)?.route.handle?.greese
+
+const page = usePageNavigate(useNavigate(), { route })
+```
+
+A rule takes `enter`, `exit`, `duration`, `ease`, `mode` and `back` (what
+changes going back). `to` rules match the path the page is leaving for,
+`from` rules the one it came from, by a pattern:
+
+| Pattern        | Matches                                               |
+| -------------- | ----------------------------------------------------- |
+| `/settings`    | That path only (a trailing slash is ignored)          |
+| `/user/:id`    | One segment of any value                              |
+| `/docs/*/edit` | A `*` in the middle: exactly one segment              |
+| `/settings/*`  | A trailing `/*`: the page itself and everything below |
+| `*`            | Any path                                              |
+
+The most specific pattern wins, then source order. A pattern with a `?` or a
+`#` is refused: a change of query or hash isn't a page change. With a
+`basename`, pass `{ route, base }` so patterns see paths without it.
+
+Each side has an owner. The exit and `mode` come from the leaving page's
+`to` rule first, then the arriving page's `from` rule; the entrance from the
+arriving page's rule first; `duration` and `ease` from either, the entrance's
+owner first. A route's effects beat the theme's and the app's
+(`PageTransition`'s own `enter` and `exit`), but not a live member's own
+`greese={{ exit }}`. Rules in `rules` (parts of a page) are more specific and
+keep their own motion.
+
+Give the route its `handle` up front: a route whose `handle` arrives with a
+lazy chunk is unknown at the click, so its rules don't apply to the first
+navigation. History steps (`navigate(-1)`) use the entry they land on where
+the Navigation API can say; elsewhere they skip `to` rules.
+
+## One navigation
+
+A single navigation can name its own effects, over every route and the theme:
+
+```tsx
+page.navigate('/settings/billing', { exit: 'wipeOutLeft', enter: 'wipeLeft' })
+
+const link = (
+  <a
+    href="/compare"
+    onClick={page.onLinkClick('/compare', { enter: 'pocketUp', duration: 'fast' })}
+  >
+    Compare
+  </a>
+)
+```
+
+Beside `mode`, `replace`, `direction` and `types`, it takes `enter`, `exit`,
+`duration` and `ease`. On a live page its `exit` also beats the members' own.
+
+Everything, from last to first to win:
+
+| Level      | Where                              | Plays                                          |
+| ---------- | ---------------------------------- | ---------------------------------------------- |
+| Navigation | `navigate` / `onLinkClick` options | Over every other level; forced on live members |
+| Element    | `greese={{ exit }}`                | A live member's own exit (live only)           |
+| Route      | `handle.greese` through `route`    | Owner per side; the rule's `mode`              |
+| App        | `PageTransition` props             | Effects and timelines; `mode`                  |
+| Theme      | the motion theme's page roles      | `page-mode`                                    |
+
 ## Shared elements
 
 `PageShare` pairs an element with its twin on the next page, by an `id` that
@@ -280,7 +379,8 @@ platform's own API.
 As in the quick start. Hand it the router's `useNavigate()`, and give every
 `Link` the hook's `onLinkClick(to)`, or make a link component of your own that
 does. With a `basename`, give `usePageNavigate` app hrefs and strip the base
-when you call React Router, so the URL's depth stays right.
+when you call React Router, so the URL's depth stays right. For route rules,
+`matchRoutes(routes, path, basename)` finds a route's `handle`, as above.
 
 ### Next.js (App Router)
 
@@ -308,9 +408,14 @@ export const PageLink = ({ href, children }: { href: string; children: ReactNode
 }
 ```
 
+For route rules, Next.js has no route `handle`: key a module-level table by
+app path (`matchPagePath(pattern, path)` is exported for it) and hand
+`usePageNavigate` `{ route: (path) => table.find((r) => matchPagePath(r.path, path))?.greese }`.
+
 ### TanStack Router
 
-TanStack Router can start view transitions itself (`viewTransition`), which
+With route rules, `router.matchRoutes(path)` finds a route, and a route's
+`staticData` can carry the `PageRoute`. TanStack Router can start view transitions itself (`viewTransition`), which
 greese's CSS plays without `PageTransition`: name the page's element and give
 it greese's classes, by type.
 

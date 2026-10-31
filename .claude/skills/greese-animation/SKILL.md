@@ -133,15 +133,15 @@ plan it implemented.
 
 Read ADR 0029 and its addenda, and the guide `stories/guides/PageTransitions.mdx`.
 
-| File                                                         | Role                                                                                                                                                                       |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `components/PageTransition/PageTransition.tsx`               | Wraps React's `<ViewTransition>`. A Server Component: everything it takes is data. Renders two empty `<template>` markers around the page (its live settings on the first) |
-| `components/PageTransition/pageMotion.ts`                    | Pure: the class map by transition type, selector rules as CSS, navigation types                                                                                            |
-| `components/PageTransition/pageExit.ts`                      | The live exit: finds the page and its members, decides the mode, plays the members' exits in CSS                                                                           |
-| `components/PageTransition/PageShare.tsx`                    | A shared element, named from a key (`utils/share.ts`)                                                                                                                      |
-| `hooks/usePageNavigate.ts`                                   | The client part: adds the types, holds the commit for a live exit, holds back and forward (Navigation API)                                                                 |
-| `components/Motion/greeseRuntime.ts` `playPageExit`          | Timelines (sequences, selector maps) for a live exit, through greese.js                                                                                                    |
-| `@greese/ui` `components/PageTransition/PageTransition.scss` | The snapshot rules and the exits' keyframes (`cssPlan().leave`)                                                                                                            |
+| File                                                         | Role                                                                                                                                                                                         |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `components/PageTransition/PageTransition.tsx`               | Wraps React's `<ViewTransition>`. A Server Component: everything it takes is data. Renders two empty `<template>` markers around the page (its live settings on the first)                   |
+| `components/PageTransition/pageMotion.ts`                    | Pure: the class map by transition type, selector rules as CSS, navigation types, route patterns and `resolvePageRoute` (route and navigation overrides)                                      |
+| `components/PageTransition/pageExit.ts`                      | The live exit: finds the page and its members, decides the mode, plays the members' exits in CSS                                                                                             |
+| `components/PageTransition/PageShare.tsx`                    | A shared element, named from a key (`utils/share.ts`)                                                                                                                                        |
+| `hooks/usePageNavigate.ts`                                   | The client part: adds the types, resolves route rules at the click into root variables and `greese-route-*` types, holds the commit for a live exit, holds back and forward (Navigation API) |
+| `components/Motion/greeseRuntime.ts` `playPageExit`          | Timelines (sequences, selector maps) for a live exit, through greese.js                                                                                                                      |
+| `@greese/ui` `components/PageTransition/PageTransition.scss` | The snapshot rules and the exits' keyframes (`cssPlan().leave`)                                                                                                                              |
 
 **Rules:**
 

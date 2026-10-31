@@ -520,3 +520,58 @@ Two findings left as they are:
   about 60 ms after a docs page appeared, 3 times in 24); a second's wait
   never lost one. The site's e2e tests wait for the network to go idle
   before such clicks.
+
+### Addendum: routes and navigations (2026-10-31)
+
+Levels 3 (route) and 5 (navigation) of §4's cascade, built.
+
+- **Page config is route metadata, resolved at the click.** `usePageNavigate`
+  takes an optional `{ route, base }`: `route(path)` returns a page's
+  `PageRoute` (`to` and `from` rules by path pattern), each router's recipe
+  supplies it (React Router's `matchRoutes` over `handle.greese`), and the
+  core stays router-free (§6). The page being left is mounted at the click
+  but the one being reached isn't, and types must be added before anything
+  is awaited, so the rules can't be props of a page's own `PageTransition`.
+- **Rejected:** `from` / `to` props on a page's `PageTransition` (the arriving
+  page's rules can't be read at the click; nesting a `ViewTransition` per
+  page doesn't animate, since React names only the outermost boundary that
+  enters); path-derived transition types (prefix globs only, and React joins
+  the classes of every matching type, leaving two rules to stylesheet
+  order); writing the theme's own roles at the click (it would not beat an
+  app's explicit class, level 2).
+- **Patterns** (`matchPagePath`, no `URLPattern`, which is newer than
+  Baseline 2024): literals, `:param`, a middle `*` (one segment), a trailing
+  `/*` (the page and everything below it) and `*`. Specificity is per
+  segment, left to right; source order breaks a tie. A `?` or `#` is refused.
+- **Resolution** (`resolvePageRoute`, pure): the leaving page's `to` rule for
+  the arriving path, the arriving page's `from` rule for the leaving one,
+  `back` merged over a rule going back, each side from its owner (exit and
+  `mode`: the leaving page first; entrance: the arriving page first;
+  `duration` and `ease`: the entrance's owner first), the navigation's own
+  options over all of it. `'theme'` names nothing.
+- **Applying it:** every greese navigation's click writes or removes
+  `--greese-page-enter`, `-exit`, `-duration` and `-ease` on the root, and
+  adds `greese-route-enter`, `-exit` and `-pace` for each part it overrides
+  (none on a replace). `PageTransition` maps them to three fixed classes, so
+  it stays a Server Component, and `@greese/ui`'s `--route-*` rules, after the
+  named effects, read the variables. The variables stay until the next click
+  (the snapshot animates after the commit) and are inert meanwhile.
+- **Live exits:** `roleExit` is `var(--greese-page-exit, <the theme's chain>)`
+  and the pace reads `--greese-page-duration` / `-ease` first. A member's own
+  `greese={{ exit }}` beats a route's exit; a navigation's `exit` is forced
+  over it (`exitPage`'s `force`). A route's or navigation's exit also beats
+  the app's `PageTransition` timeline: the members' CSS exits play instead.
+- **A precedence bug fixed:** the code let a page's `mode` beat the
+  navigation's, against the comment and the Phase 4 addendum. The order is
+  now navigation, route, page, theme (`leavesLive`'s `override`).
+- **History steps and traversals:** a step (`navigate(-1)`) and a held
+  back/forward resolve the destination from the Navigation API's entries
+  where it can say, and skip `to` rules elsewhere. Their snapshots are not
+  routed (§ the browser's buttons play none); live exits are. The latest hook
+  with a `route` is what held traversals resolve with.
+- **Left open:** a lazy route's `handle` is unknown at the first click
+  (documented, no dev warning yet); route-level selector `rules`.
+- **Budgets:** page transitions 3.8 → 4.55 kB (4.5 kB, the plan estimated
+  0.3-0.45 kB and it cost 0.75 kB), the whole library 32.6 → 33.4 kB, with
+  greese.js 38.05 → 38.8 kB, with `@greese/react/svg` 47.7 → 48.3 kB, and
+  `css/PageTransition.css` 2 → 2.05 kB (2.02 kB).
