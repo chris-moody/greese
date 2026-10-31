@@ -285,7 +285,7 @@ A shape outlines an element with one clip and a border that follows it, and
 animates by its parameters. A 12px corner stays 12px at any size, and the
 border never comes apart from the shape, mid-animation included.
 
-### Shape and motion themes
+### Color, shape and motion themes
 
 A theme composes three layers: colors, shapes and motion (ADR 0025). Each
 layer's themes change only that layer, so they mix freely.
@@ -296,6 +296,25 @@ radius scale, and a motion theme points the motion roles at effects and timing
 tokens. The palette, the radius scale, the duration and easing tokens and every
 effect keep their own values under every theme: `--greese-radius-md` is 8px and
 `fadeUp` fades up, whatever the page wears.
+
+**Color themes** set the brand colors and the neutrals (canvas, surfaces,
+text, borders), tinted from one hue, in both schemes. Content and strong
+shades are derived from each color, so text stays readable (WCAG AA). They set
+no shapes and no motion.
+
+| Theme    | Colors                                                                        |
+| -------- | ----------------------------------------------------------------------------- |
+| `greese` | The official theme: a warm orange primary on the library's own neutrals       |
+| `ocean`  | Deep azure, royal blue, turquoise and a gold accent, on azure-tinted neutrals |
+| `sunset` | Burnt orange, ruby, gold and a magenta accent, on orange-tinted neutrals      |
+| `forest` | Jade, lime, aqua and an orange accent, on jade-tinted neutrals                |
+| `grape`  | Lavender, magenta, royal blue and a jade accent, on lavender-tinted neutrals  |
+| `mono`   | Near-black and grays, taupe and a single red accent                           |
+| `candy`  | Pink, azure, lavender and a yellow accent, on pink-tinted neutrals            |
+
+```ts
+import '@greese/ui/themes/ocean.css'
+```
 
 **Shape themes** reassign the radius roles and outline every kind of component
 (controls, fields, containers, indicators, avatars, tabs), with smaller
@@ -348,6 +367,7 @@ Load one of each after greese ui's styles:
 
 ```ts
 import '@greese/react/styles.css'
+import '@greese/ui/themes/ocean.css'
 import '@greese/ui/themes/bevel.css'
 import '@greese/ui/themes/wipe.css'
 ```
