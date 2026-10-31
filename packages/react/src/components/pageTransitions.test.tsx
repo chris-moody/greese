@@ -453,6 +453,108 @@ describe('live exits', () => {
     )
   })
 
+  it('keeps the exit until the navigation commits, whatever the old page does meanwhile', async () => {
+    onScreen()
+    // A router whose next page takes its time to render.
+    let arrive = () => {}
+    const Leave = () => {
+      const page = usePageNavigate(() => new Promise<void>((r) => (arrive = r)))
+      return <button onClick={() => page.navigate('/next')}>Go</button>
+    }
+    render(
+      <>
+        <Page />
+        <Leave />
+      </>
+    )
+    await act(async () => screen.getByRole('button', { name: 'Go' }).click())
+    const first = screen.getByTestId('first')
+    expect(first.style.animation).not.toBe('')
+    // The old page grows and updates as it leaves (a homepage mounting its
+    // sections in turn): not the commit.
+    const late = document.createElement('section')
+    late.innerHTML = '<input>'
+    await act(async () => {
+      first.parentElement!.append(late)
+      late.querySelector('input')!.setAttribute('name', 'x')
+      screen.getByTestId('second').remove()
+    })
+    expect(first.style.animation).not.toBe('')
+    // The navigation commits: the exit comes off.
+    await act(async () => arrive())
+    expect(first.style.animation).toBe('')
+  })
+
+  it('going back, sees the commit in the page, and waits past the cap while the URL has moved', async () => {
+    onScreen()
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] })
+    try {
+      const Leave = () => {
+        const page = usePageNavigate(() => {})
+        return <button onClick={() => page.navigate(-1)}>Back</button>
+      }
+      const go = vi.spyOn(history, 'go')
+      // The browser's history moves the URL at once; the router commits later.
+      go.mockImplementation(() => history.replaceState(null, '', '/before'))
+      const { unmount } = render(
+        <>
+          <Page />
+          <Leave />
+        </>
+      )
+      const back = async () => {
+        await act(async () => screen.getByRole('button', { name: 'Back' }).click())
+        await act(async () => vi.advanceTimersByTime(0))
+      }
+      await back()
+      const first = () => screen.getByTestId('first')
+      expect(first().style.animation).not.toBe('')
+      // The old page grows, and updates its attributes: not the commit.
+      await act(async () => {
+        first().append(document.createElement('span'))
+        first().setAttribute('aria-busy', 'true')
+        vi.advanceTimersByTime(5000)
+      })
+      expect(first().style.animation).not.toBe('')
+      // The page changes: something the old page had goes.
+      await act(async () => screen.getByTestId('second').remove())
+      expect(first().style.animation).toBe('')
+
+      // No page change, and the URL moved: held until the longer cap.
+      unmount()
+      history.replaceState(null, '', '/next')
+      const second = render(
+        <>
+          <Page />
+          <Leave />
+        </>
+      )
+      await back()
+      await act(async () => vi.advanceTimersByTime(5000))
+      expect(first().style.animation).not.toBe('')
+      await act(async () => vi.advanceTimersByTime(6000))
+      expect(first().style.animation).toBe('')
+
+      // No page change, and the URL stayed: let go at the exit's cap.
+      second.unmount()
+      go.mockImplementation(() => {})
+      render(
+        <>
+          <Page />
+          <Leave />
+        </>
+      )
+      await back()
+      expect(first().style.animation).not.toBe('')
+      await act(async () => vi.advanceTimersByTime(2500))
+      expect(first().style.animation).toBe('')
+      go.mockRestore()
+    } finally {
+      vi.useRealTimers()
+      history.replaceState(null, '', '/')
+    }
+  })
+
   it('still plays the new page in after a live exit, and fades what the exit left', () => {
     const map = pageClassMap({})
     expect(map['greese-live']).toBe(`${T}--left`)

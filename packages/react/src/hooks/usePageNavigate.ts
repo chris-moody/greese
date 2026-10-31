@@ -3,7 +3,10 @@ import {
   addTransitionType,
   startTransition,
   useEffect,
+  useLayoutEffect,
   useMemo,
+  useRef,
+  useState,
   type MouseEvent,
 } from 'react'
 import { loadGreeseRuntime } from '../components/Motion/registry.ts'
@@ -34,8 +37,7 @@ import { pairByLink } from '../components/PageTransition/shareLink.ts'
  */
 const leave = (page: PageRegion, back: boolean) => {
   const timeline = timelineOf(page, back)
-  if (!timeline)
-    return exitPage(page, back, page.config.order ?? themeOrder())
+  if (!timeline) return exitPage(page, back, page.config.order ?? themeOrder())
   let cancel = () => {}
   const done = loadGreeseRuntime().then((runtime) => {
     const played = runtime.playPageExit(timeline, elementsOf(page), (s) => query(page, s))
@@ -49,24 +51,44 @@ const leave = (page: PageRegion, back: boolean) => {
  * Once the new page has committed: the exit's styles come off. React keeps an
  * element that's in the same place on both pages, and without this it would
  * keep the exit's last frame, hidden; with its exit gone, its own entrance
- * plays again, as a new element's would. The commit is seen, not guessed:
- * React commits when the next page has rendered, which can be frames after
+ * plays again, as a new element's would. The commit must be the new page's:
+ * React commits when the next page has rendered, which can be seconds after
  * the exit ends, and members put back before it flash in on the old page.
- * A page change changes the page (its elements, text or attributes, but not
- * the `style` the exit sets); once its exit has played, nothing else does,
- * and a page that didn't change lets go after `EXIT_CAP`. The observer's
- * callback is a microtask after the commit, before the browser's snapshot
- * of the new page.
+ *
+ * A navigation through `usePageNavigate` knows its commit from React (the
+ * hook's own update, in the same transition as the router's). Back and
+ * forward (and `navigate(-1)`) don't: the router hears `popstate`, outside
+ * that transition, so the commit is seen in the DOM, here. A page change
+ * removes what the old page had, or changes its text. The old page can still
+ * grow and update while it leaves (a homepage that mounts its sections in
+ * turn, clicked before it has; React re-rendering its inputs), and that isn't
+ * the commit: what it adds, and anything inside it, doesn't count, nor any
+ * attribute. A page that didn't change lets go after `EXIT_CAP`,
+ * unless the URL has moved on from `from` (the page before): the router has
+ * changed it and the commit is coming, however slowly the next page renders
+ * (a slow phone, a dev server), up to `COMMIT_CAP`.
+ * The observer's callback is a microtask after the commit, before the
+ * browser's snapshot of the new page.
  */
-const afterCommit = (pages: PageRegion[], fn: () => void) => {
+const afterCommit = (pages: PageRegion[], from: string, fn: () => void) => {
+  const grown = new Set<Node>()
+  const isGrown = (node: Node) => [...grown].some((g) => g.contains(node))
   const observer = new MutationObserver((records) => {
-    for (const r of records)
-      if (r.attributeName !== 'style')
+    // What a batch adds first: a record inside an insertion can come before
+    // the insertion's own.
+    for (const r of records) r.addedNodes.forEach((node) => grown.add(node))
+    for (const r of records) {
+      if (isGrown(r.target)) continue
+      // Text that changed, or something the old page had, removed.
+      const changed =
+        r.type === 'characterData' || [...r.removedNodes].some((node) => !isGrown(node))
+      if (changed)
         for (const page of pages) {
           // A child of the markers' parent is between them if the node before it is.
           const at = r.target === page.start.parentElement ? r.previousSibling : r.target
           if (at && (at === page.start || inside(page, at as Element))) return finish()
         }
+    }
   })
   const finish = () => {
     observer.disconnect()
@@ -78,10 +100,18 @@ const afterCommit = (pages: PageRegion[], fn: () => void) => {
       subtree: true,
       childList: true,
       characterData: true,
-      attributes: true,
     })
-  const timer = setTimeout(finish, EXIT_CAP)
+  const started = Date.now()
+  const page = (href: string) => href.split('#')[0]
+  const cap = () =>
+    page(location.href) !== page(from) && Date.now() - started < COMMIT_CAP
+      ? (timer = setTimeout(cap, EXIT_CAP))
+      : finish()
+  let timer = setTimeout(cap, EXIT_CAP)
 }
+
+/** The longest a moved URL waits for its page to commit. */
+const COMMIT_CAP = 10_000
 
 /**
  * How far the screen is into the leaving pages, for their snapshots, which
@@ -98,15 +128,18 @@ const measureScrolled = () => {
 
 /** A theme role that decides something at the click, as the whole page has it. */
 const role = (name: string) =>
-  getComputedStyle(document.documentElement).getPropertyValue(`--greese-motion-${name}`).trim()
+  getComputedStyle(document.documentElement)
+    .getPropertyValue(`--greese-motion-${name}`)
+    .trim()
 
 /** The theme's `page-mode`. */
 const themeMode = () => role('page-mode')
 
 /** The theme's `page-exit-order`, else `reverse`. */
 const themeOrder = () =>
-  (['reverse', 'document', 'together'] as const).find((o) => o === role('page-exit-order')) ??
-  'reverse'
+  (['reverse', 'document', 'together'] as const).find(
+    (o) => o === role('page-exit-order')
+  ) ?? 'reverse'
 
 /**
  * Back and forward, held while a live page leaves: the Navigation API's
@@ -119,6 +152,7 @@ const themeOrder = () =>
 const holdTraversal = (event: Event) => {
   const e = event as NavigateEvent
   if (e.navigationType !== 'traverse' || !e.canIntercept || e.hashChange) return
+  const from = location.href
   const current = navigation.currentEntry?.index ?? 0
   const back = e.destination.index < current
   const live = pagesOnScreen().filter((page) => leavesLive(page, themeMode(), back))
@@ -130,7 +164,7 @@ const holdTraversal = (event: Event) => {
       const exits = live.map((page) => leave(page, back))
       e.signal.addEventListener('abort', () => exits.forEach((exit) => exit.restore()))
       await Promise.all(exits.map((exit) => exit.done))
-      afterCommit(live, () => exits.forEach((exit) => exit.restore()))
+      afterCommit(live, from, () => exits.forEach((exit) => exit.restore()))
     },
   } as NavigationInterceptOptions)
 }
@@ -185,10 +219,25 @@ export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
       if (--holding === 0) navigation.removeEventListener('navigate', holdTraversal)
     }
   }, [])
+  // The exits to take off when this hook's navigation commits: its update
+  // (`setCommits`) is in the navigation's transition, with the router's, so
+  // React commits them together, and this layout effect runs in that commit,
+  // before the browser's snapshot of the new page. If the component goes in
+  // the commit, its cleanup does it.
+  const [commits, setCommits] = useState(0)
+  const pending = useRef<Array<() => void>>([])
+  const release = () => pending.current.splice(0).forEach((fn) => fn())
+  useLayoutEffect(release, [commits])
+  useLayoutEffect(() => release, [])
   return useMemo(() => {
     /** Navigates; `link` is the link followed, when one was. */
-    const go = (to: string | number, options: PageNavigateOptions = {}, link?: Element) => {
-      const types = pageTransitionTypes(location.href, to, options)
+    const go = (
+      to: string | number,
+      options: PageNavigateOptions = {},
+      link?: Element
+    ) => {
+      const from = location.href
+      const types = pageTransitionTypes(from, to, options)
       const back = types.includes(BACK)
       // `<PageShare link>`: the old page's end is named now, before React's
       // snapshot of it; the new page's as it's inserted.
@@ -207,11 +256,16 @@ export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
       if (live.length && !types.includes(REPLACE)) types.push(LIVE)
       startTransition(async () => {
         for (const type of types) addTransitionType(type)
+        // Commits with the router's update: before anything is awaited, so
+        // it's in this transition.
+        const step = typeof to === 'number'
+        if (live.length && !step) setCommits((n) => n + 1)
         // The router starts at once, so the next page loads while the old one
         // leaves; React commits the router's update with this transition,
         // once both are done.
-        const navigation =
-          typeof to === 'number' ? history.go(to) : navigate(to, { replace: options.replace })
+        const navigation = step
+          ? history.go(to)
+          : navigate(to, { replace: options.replace })
         const exits = live.map((page) => leave(page, back))
         const restore = () => exits.forEach((exit) => exit.restore())
         try {
@@ -222,7 +276,9 @@ export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
           throw error
         }
         // One that succeeded, once the new page is in.
-        if (exits.length) afterCommit(live, restore)
+        if (!exits.length) return
+        if (step) afterCommit(live, from, restore)
+        else pending.current.push(restore)
       })
     }
     return {

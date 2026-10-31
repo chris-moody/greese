@@ -91,7 +91,8 @@ module.exports = [
     // which put the members back on the old page while a heavy next page
     // rendered; a page that left live still plays the new page in; a page's
     // snapshots show only the screenful in view (ADR 0029 addendum) (32.33 kB).
-    limit: '32.4 kB',
+    // 32.4 kB → 32.6 kB (2026-10-30): a live exit's styles come off at React's commit of the navigation (the hook's own update, in its transition), not at the first change the old page makes, which put members back on a homepage still mounting its sections; back and forward wait while the URL has moved (ADR 0029 addendum) (32.56 kB).
+    limit: '32.6 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -125,7 +126,8 @@ module.exports = [
     // 37.6 kB → 37.8 kB (2026-10-30): the commit seen, as above (37.7 kB).
     // 37.8 kB → 37.85 kB (2026-10-30): the half turns' effect names and the
     // redrawn icons' paths, landed together with the above (37.8 kB + 2 B).
-    limit: '37.85 kB',
+    // 37.85 kB → 37.95 kB (2026-10-30): the commit seen from React, as above (37.89 kB).
+    limit: '37.95 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -455,7 +457,8 @@ module.exports = [
     // 3.4 kB → 3.6 kB (2026-10-30): a live exit's styles come off when the
     // commit is seen, not two frames after the exit; a live page still plays
     // the new page in; snapshots show the screenful in view (3.56 kB).
-    limit: '3.6 kB',
+    // 3.6 kB → 3.8 kB (2026-10-30): a live exit's styles come off at React's commit of the navigation (the hook's own update, in its transition), not at the first change the old page makes, which put members back on a homepage still mounting its sections; back and forward wait while the URL has moved (ADR 0029 addendum) (3.75 kB).
+    limit: '3.8 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -550,7 +553,8 @@ module.exports = [
     path: 'size/library-and-svg.js',
     ignore: ['react', 'react-dom'],
     modifyRolldownConfig: external,
-    limit: '47.45 kB', // 47.39 kB
+    // 47.45 kB → 47.6 kB (2026-10-30): the commit seen from React, as above (47.53 kB).
+    limit: '47.6 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.
