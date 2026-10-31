@@ -480,3 +480,43 @@ theme in Chromium, frame by frame:
   every component's static part carries: Tabs 2.65 → 2.7 kB, Menu 3.3 →
   3.35 kB, toast 3.65 → 3.7 kB, ScrollSpy 2.4 → 2.45 kB, the greese prop
   runtime 11.05 → 11.15 kB.
+
+### Addendum: the commit, from React (2026-10-30)
+
+The e2e suite, under load, showed the commit seen in the DOM was wrong in
+both directions:
+
+- **The old page changes while it leaves.** "Once the exit has played
+  nothing else does" was false. The homepage mounts its sections in turn,
+  so a click before they're all in adds a section mid-exit, and React
+  re-renders the hero's switches (their `name`, `type` and `checked`). Both
+  read as the commit, and eight members came back on the homepage.
+- **The commit comes late.** `EXIT_CAP` (2 s) from the exit's end let go
+  before a slow next page rendered, the same flash.
+
+So a navigation through `usePageNavigate` now takes its commit from React:
+the hook sets a state of its own inside the navigation's transition,
+before anything is awaited, so React commits it with the router's update,
+and a layout effect on it takes the exits off in that commit, before the
+browser's snapshot (a cleanup does it if the component goes in the
+commit). Back and forward, and `navigate(-1)`, can't: the router hears
+`popstate`, outside that transition. They still watch the DOM, counting
+only removals of what the old page had and text changes, never what it
+adds or any attribute, and at `EXIT_CAP` they wait on while the URL has
+moved from the page before (the router changed it; the commit is coming),
+up to 10 s. Budgets: page transitions 3.6 → 3.8 kB (3.75 kB), the whole
+library 32.4 → 32.6 kB (32.56 kB), with greese.js 37.85 → 37.95 kB (37.89
+kB), with `@greese/react/svg` 47.45 → 47.6 kB (47.53 kB).
+
+Two findings left as they are:
+
+- **A page change slower than the web app's preload cap plays no view
+  transition.** The site's navigate waits up to 3 s for the next page's
+  chunk and content. When that runs out, the page changes without one: not
+  over a loading state, not at all. The dev server, which compiles a page
+  on its first request, now waits 15 s. Why React starts none isn't known.
+- **A page change within a few frames of a page's content arriving can
+  play none either.** Seen only on the dev server under load (a click
+  about 60 ms after a docs page appeared, 3 times in 24); a second's wait
+  never lost one. The site's e2e tests wait for the network to go idle
+  before such clicks.
