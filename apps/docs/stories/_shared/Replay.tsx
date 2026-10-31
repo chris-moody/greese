@@ -9,10 +9,13 @@ import { Button, Stack } from '@greese/react'
  */
 export const Replay = ({
   children,
-  align = 'start',
+  align,
 }: {
   children: ReactNode
-  /** Where the button and the demo sit across the canvas. */
+  /**
+   * Where the button and the demo sit across the canvas: by default the demo
+   * fills its width, as a grid of examples needs.
+   */
   align?: 'start' | 'center'
 }): JSX.Element => {
   const [key, setKey] = useState(0)
