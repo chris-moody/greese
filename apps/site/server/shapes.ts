@@ -1,9 +1,12 @@
 import { compileSpec } from './studio.ts'
+import { colorOnlySpec, type Preset } from '../src/studio/presets.ts'
 import { motionOnlySpec, type MotionPreset } from '../src/studio/motions.ts'
 import { shapeOnlySpec, type ShapePreset } from '../src/studio/shapes.ts'
 import { variantOnlySpec, type ColorVariant } from '../src/studio/variants.ts'
 
 const KINDS = {
+  color:
+    'A greese ui color theme (ADR 0025): the brand colors and the neutrals\n * (canvas, surfaces, text, borders) in both schemes, in @layer greese.theme;\n * content and strong shades are derived for contrast (WCAG AA). It sets no\n * shapes and no motion, so it goes with any shape or motion theme.',
   shape:
     'A greese ui shape theme (ADR 0025): radii, and components outlined with one\n * clip and one border ring each (ADR 0024), in @layer greese.overrides. It\n * sets no colors and no motion, so it goes with any color or motion theme.',
   motion:
@@ -12,7 +15,12 @@ const KINDS = {
     "A greese ui color variant (ADR 0025): how any color theme's colors are worn,\n * reassigned per component variant in @layer greese.overrides. It sets no\n * color tokens, shapes or motion, so it goes with any color, shape or motion\n * theme.",
 }
 
-const SOURCES = { shape: 'shapes', motion: 'motions', variant: 'variants' }
+const SOURCES = {
+  color: 'presets',
+  shape: 'shapes',
+  motion: 'motions',
+  variant: 'variants',
+}
 
 /** What a theme's files start with: what it is, and how to use it. */
 const header = (
@@ -27,21 +35,24 @@ const header = (
       : `Compile it with Sass's package importer, after greese ui's\n * styles, or use the compiled ${id}.css.`
   }\n *\n * Generated from apps/site/src/studio/${SOURCES[kind]}.ts (npm run themes -w site).\n */\n`
 
-/** A shape or motion theme's, or a color variant's, kit SCSS and compiled CSS: that alone. */
+/** A color, shape or motion theme's, or a color variant's, kit SCSS and compiled CSS: that alone. */
 export const themeFile = (
-  preset: ShapePreset | MotionPreset | ColorVariant,
+  preset: Preset | ShapePreset | MotionPreset | ColorVariant,
   kind: keyof typeof KINDS = 'shape'
 ): { scss: string; css: string } => {
   const spec =
-    kind === 'shape'
-      ? shapeOnlySpec(preset as ShapePreset)
-      : kind === 'motion'
-        ? motionOnlySpec(preset as MotionPreset)
-        : variantOnlySpec(preset as ColorVariant)
+    kind === 'color'
+      ? colorOnlySpec(preset as Preset)
+      : kind === 'shape'
+        ? shapeOnlySpec(preset as ShapePreset)
+        : kind === 'motion'
+          ? motionOnlySpec(preset as MotionPreset)
+          : variantOnlySpec(preset as ColorVariant)
   const compiled = compileSpec(spec)
   if ('errors' in compiled) throw new Error(`${preset.id}: ${compiled.errors.join('\n')}`)
+  const description = preset.description ?? preset.id
   return {
-    scss: header(preset.id, preset.description, kind, 'scss') + compiled.scss,
-    css: header(preset.id, preset.description, kind, 'css') + compiled.css,
+    scss: header(preset.id, description, kind, 'scss') + compiled.scss,
+    css: header(preset.id, description, kind, 'css') + compiled.css,
   }
 }

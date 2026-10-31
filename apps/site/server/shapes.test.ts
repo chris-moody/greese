@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { applyMotion, MOTIONS, motionIn } from '../src/studio/motions.ts'
-import { applyPreset, PRESETS } from '../src/studio/presets.ts'
+import { applyPreset, COLOR_THEMES, PRESETS } from '../src/studio/presets.ts'
 import { applyShape, SHAPES, shapeIn } from '../src/studio/shapes.ts'
 import { applyVariant, VARIANTS, variantIn } from '../src/studio/variants.ts'
 import { bevel } from '@greese/ui/shapes'
@@ -52,6 +52,7 @@ const builtIn = keyframes(
 
 describe('theme layers (ADR 0025)', () => {
   it.each([
+    ...COLOR_THEMES.map((p) => [p.id, p, 'color'] as const),
     ...SHAPES.map((p) => [p.id, p, 'shape'] as const),
     ...MOTIONS.map((p) => [p.id, p, 'motion'] as const),
     ...VARIANTS.map((p) => [p.id, p, 'variant'] as const),

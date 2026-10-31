@@ -13,6 +13,11 @@ import type { SchemeValue, ThemeSpec } from './spec.ts'
 export interface Preset {
   id: string
   label: string
+  /**
+   * What it looks like, in a sentence: the header of its files in
+   * `@greese/ui/themes`. Only presets with one ship there (`COLOR_THEMES`).
+   */
+  description?: string
   color: Record<string, SchemeValue>
 }
 
@@ -39,11 +44,19 @@ export const neutrals = (hue: string): Record<string, SchemeValue> => ({
 
 export const PRESETS: Preset[] = [
   // The official theme (theme.ts): greese ui with a warm orange primary.
-  { id: 'greese', label: 'Greese', color: GREESE_SPEC.tokens!.color! },
+  {
+    id: 'greese',
+    label: 'Greese',
+    description:
+      "Greese: the official theme. A warm orange primary on greese ui's own neutrals.",
+    color: GREESE_SPEC.tokens!.color!,
+  },
   { id: 'default', label: 'Default', color: {} },
   {
     id: 'ocean',
     label: 'Ocean',
+    description:
+      'Ocean: a deep azure primary with royal blue, turquoise and a gold accent, on neutrals tinted azure.',
     color: {
       primary: pair('azure', 700),
       secondary: pair('royal'),
@@ -55,6 +68,8 @@ export const PRESETS: Preset[] = [
   {
     id: 'sunset',
     label: 'Sunset',
+    description:
+      'Sunset: a burnt orange primary with ruby, gold and a magenta accent, on neutrals tinted orange.',
     color: {
       primary: pair('orange', 700),
       secondary: pair('ruby'),
@@ -66,6 +81,8 @@ export const PRESETS: Preset[] = [
   {
     id: 'forest',
     label: 'Forest',
+    description:
+      'Forest: a jade primary with lime, aqua and an orange accent, on neutrals tinted jade.',
     color: {
       primary: pair('jade', 700),
       secondary: pair('lime', 700),
@@ -77,6 +94,8 @@ export const PRESETS: Preset[] = [
   {
     id: 'grape',
     label: 'Grape',
+    description:
+      'Grape: a lavender primary with magenta, royal blue and a jade accent, on neutrals tinted lavender.',
     color: {
       primary: pair('lavender'),
       secondary: pair('magenta'),
@@ -88,6 +107,8 @@ export const PRESETS: Preset[] = [
   {
     id: 'mono',
     label: 'Mono',
+    description:
+      'Mono: near-black (near-white in dark mode) and grays, with taupe and a single red accent, on gray neutrals.',
     color: {
       primary: pair('silver', 900, 100),
       secondary: pair('silver', 600, 400),
@@ -99,6 +120,8 @@ export const PRESETS: Preset[] = [
   {
     id: 'candy',
     label: 'Candy',
+    description:
+      'Candy: a pink primary with azure, lavender and a yellow accent, on neutrals tinted pink.',
     color: {
       primary: pair('pink', 600),
       secondary: pair('azure', 700),
@@ -108,6 +131,15 @@ export const PRESETS: Preset[] = [
     },
   },
 ]
+
+/**
+ * The color themes `npm run themes -w site` writes to `@greese/ui/themes`:
+ * every named preset (not Default, which sets nothing, nor Random).
+ */
+export const COLOR_THEMES = PRESETS.filter((p) => p.description)
+
+/** A color theme's spec: its colors alone, as `@greese/ui/themes/<id>` ships it. */
+export const colorOnlySpec = (preset: Preset): ThemeSpec => applyPreset({}, preset)
 
 /** Hues with enough color to carry a brand. */
 const HUES = [
