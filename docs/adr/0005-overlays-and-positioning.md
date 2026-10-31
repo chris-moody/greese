@@ -76,8 +76,13 @@ md: 'end' }` for a bottom sheet on phones and a side panel on desktop. Each
 - **Tooltip** is `popover="manual"` with `role="tooltip"` and
   `aria-describedby`. It opens on mouse hover after a delay and immediately on
   keyboard focus, stays open while hovered, and closes with Escape, meeting
-  WCAG 1.4.13. Tooltips are mouse and keyboard only, so they must never carry
-  essential information.
+  WCAG 1.4.13. On touch and pen, a tap on the trigger opens it as well as
+  doing what the trigger does; a tap on it again, a tap anywhere else or
+  Escape closes it (`openOnTap`, on by default). A manual popover has no light
+  dismiss, and iOS doesn't focus a tapped button, so the outside tap is a
+  document `pointerdown` listener. A touch user only sees a tooltip after
+  using the control, so tooltips must still never carry essential
+  information. (Amended 2026-10-31: tooltips were mouse and keyboard only.)
 - **Sidebar** is one element. Below the breakpoint it's an off-canvas
   `popover="auto"`, and following a link inside closes it. From the
   breakpoint up, author CSS overrides the browser's

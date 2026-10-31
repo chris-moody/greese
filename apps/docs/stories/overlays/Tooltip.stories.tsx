@@ -33,7 +33,7 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** Opens on hover after a delay and at once on keyboard focus. Never put essential information in one. */
+/** Opens on hover after a delay, at once on keyboard focus, and on a tap on touch screens. Never put essential information in one. */
 export const Playground: Story = {}
 
 export const Placements: Story = {
