@@ -302,3 +302,119 @@ test.describe('live exits', () => {
     await context.close()
   })
 })
+
+test.describe('route rules and navigation options', () => {
+  const open = async (page: Page, path: string) => {
+    await page.goto(`${path}?page=pages&variant=routes`)
+    await page.getByTestId('page').waitFor()
+  }
+
+  /** The animation names the last transition's old and new snapshots played. */
+  const played = async (page: Page) => {
+    await expect.poll(() => last(page)).not.toBeNull()
+    const t = (await last(page))!
+    return { types: t.types, old: names(t, 'old'), new: names(t, 'new') }
+  }
+
+  test.beforeEach(async ({ page }) => {
+    await record(page)
+    await page.goto('/pt/one?page=pages')
+    test.skip(!(await supports(page)).transitions, 'no view transitions in this engine')
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+  })
+
+  test('leaving for a matching path plays the leaving page’s exit; arriving plays its entrance', async ({
+    page,
+  }) => {
+    await open(page, '/pt/user/1')
+    await page.getByRole('link', { name: 'Settings profile' }).click()
+    await expect(page.getByRole('heading')).toHaveText('/pt/settings/profile')
+    const t = await played(page)
+    expect(t.types).toEqual(
+      expect.arrayContaining([
+        'greese-route-enter',
+        'greese-route-exit',
+        'greese-route-pace',
+      ])
+    )
+    expect(t.old).toContain('greese-wipe-out-left')
+    expect(t.new).toContain('greese-depth')
+  })
+
+  test('a path no rule names keeps the theme’s roles', async ({ page }) => {
+    await open(page, '/pt/user/1')
+    await page.getByRole('link', { name: 'Other' }).click()
+    await expect(page.getByRole('heading')).toHaveText('/pt/other')
+    const t = await played(page)
+    expect(t.types.filter((type) => type.startsWith('greese-route'))).toEqual([])
+    expect(t.old).not.toContain('greese-wipe-out-left')
+  })
+
+  test('a navigation’s own options beat the route’s', async ({ page }) => {
+    await open(page, '/pt/user/1')
+    await page.getByRole('link', { name: 'Settings own' }).click()
+    await expect(page.getByRole('heading')).toHaveText('/pt/settings/profile')
+    const t = await played(page)
+    expect(t.old).toContain('greese-fade-out')
+    expect(t.new).toContain('greese-pocket-up')
+    expect(t.new).not.toContain('greese-depth')
+  })
+
+  test('the next navigation clears the previous one’s variables', async ({ page }) => {
+    await open(page, '/pt/user/1')
+    await page.getByRole('link', { name: 'Settings profile' }).click()
+    await expect(page.getByRole('heading')).toHaveText('/pt/settings/profile')
+    await page.getByRole('link', { name: 'Other' }).click()
+    await expect(page.getByRole('heading')).toHaveText('/pt/other')
+    expect(
+      await page.evaluate(() =>
+        document.documentElement.style.getPropertyValue('--greese-page-exit')
+      )
+    ).toBe('')
+  })
+
+  test('plays nothing under reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await open(page, '/pt/user/1')
+    await page.getByRole('link', { name: 'Settings profile' }).click()
+    await expect(page.getByRole('heading')).toHaveText('/pt/settings/profile')
+    const t = await played(page)
+    expect([...t.old, ...t.new].filter((n) => n.startsWith('greese-'))).toEqual([])
+  })
+
+  test.describe('live members', () => {
+    const animation = (page: Page, id: string) =>
+      page.getByTestId(id).evaluate((el) => (el as HTMLElement).style.animation)
+
+    const leaving = async (page: Page, link: string) => {
+      await page.goto('/pt/user/1?page=pages&variant=routes-live')
+      await page.getByTestId('member-own').waitFor()
+      // Let the entrances finish first.
+      await page.waitForTimeout(700)
+      await page.getByRole('link', { name: link, exact: true }).click()
+      // The old page is still there while its members leave.
+      await expect(page.getByRole('heading')).toHaveText('/pt/user/1')
+    }
+
+    test('a route’s exit reaches the member with none, and the member’s own exit wins', async ({
+      page,
+    }) => {
+      await leaving(page, 'Settings profile')
+      expect(await animation(page, 'member-plain')).toContain('--greese-page-exit')
+      expect(await animation(page, 'member-own')).toMatch(/^greese-scale-out /)
+      expect(
+        await page
+          .getByTestId('member-plain')
+          .evaluate((el) => getComputedStyle(el).animationName)
+      ).toBe('greese-wipe-out-left')
+      await expect(page.getByRole('heading')).toHaveText('/pt/settings/profile')
+    })
+
+    test('a navigation’s own exit beats the member’s own', async ({ page }) => {
+      await leaving(page, 'Settings own')
+      for (const id of ['member-plain', 'member-own'])
+        expect(await animation(page, id)).toMatch(/^greese-fade-out /)
+      await expect(page.getByRole('heading')).toHaveText('/pt/settings/profile')
+    })
+  })
+})
