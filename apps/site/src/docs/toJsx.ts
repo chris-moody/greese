@@ -13,10 +13,13 @@ import {
   type ReactNode,
 } from 'react'
 import * as Greese from '@greese/react'
+import * as Svg from '@greese/react/svg'
 import * as Icons from '@greese/icons'
 
+// Every module the live editor's scope draws components from (LiveCode.tsx):
+// one left out is named by its minified function name (`W` for `Drawing`).
 const NAMES = new Map<unknown, string>(
-  Object.entries({ ...Greese, ...Icons })
+  Object.entries({ ...Greese, ...Svg, ...Icons })
     .filter(([name, value]) => /^[A-Z]/.test(name) && value)
     .map(([name, value]) => [value, name])
 )

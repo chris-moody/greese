@@ -2,6 +2,7 @@ import { createElement as h, Fragment, type ReactNode } from 'react'
 import { describe, expect, it } from 'vitest'
 import { Button, Stack, Table, TableBody, type ButtonProps } from '@greese/react'
 import { PlusIcon } from '@greese/icons'
+import { Drawing, LinearGradient } from '@greese/react/svg'
 import { declaredComponents, nameDeclarations } from '../../server/storyNames.ts'
 import { controlKind, defaultValue } from './ArgsTable.tsx'
 import { docsTarget } from './DocsLink.tsx'
@@ -35,6 +36,22 @@ describe('toJsx', () => {
     const footer = h(Fragment, null, h(Button, null, 'Cancel'), h(Button, null, 'Save'))
     expect(toJsx(h(Stack, { footer } as never))).toBe(
       '<Stack\n  footer={<>\n    <Button>Cancel</Button>\n    <Button>Save</Button>\n  </>}\n/>'
+    )
+  })
+
+  it('names @greese/react/svg components by their exports, not their minified names', () => {
+    // A production build renames them (`W`); the test build doesn't, so force it.
+    Object.defineProperty(Drawing, 'name', { value: 'W' })
+    expect(
+      toJsx(
+        h(
+          Drawing,
+          { viewBox: '0 0 10 10' },
+          h(LinearGradient, { id: 'g', stops: ['red', 'blue'] })
+        )
+      )
+    ).toBe(
+      '<Drawing viewBox="0 0 10 10">\n  <LinearGradient id="g" stops={["red", "blue"]} />\n</Drawing>'
     )
   })
 
