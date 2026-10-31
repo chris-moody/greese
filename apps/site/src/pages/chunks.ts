@@ -42,8 +42,13 @@ export const loadTemplates = once(() => import('./Templates.tsx'))
 export const loadDocs = once(() => import('../docs/DocsPage.tsx'))
 export const loadFooter = once(() => import('../sections/Footer.tsx'))
 
-/** The longest a page change waits for the next page: after it, it commits loading. */
-const PRELOAD_CAP = 3000
+/**
+ * The longest a page change waits for the next page: after it, it commits
+ * loading, and plays no view transition. The dev server compiles a page on
+ * its first request, far slower than fetching a built chunk, so there it
+ * waits longer, and page changes play while you work (and in the e2e tests).
+ */
+const PRELOAD_CAP = import.meta.env.DEV ? 15_000 : 3000
 
 /**
  * Fetches what the page at a router path renders, its chunk, the footer and
