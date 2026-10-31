@@ -9,7 +9,7 @@ them:
 - the classes a theme can target;
 - tokens and icons;
 - the guides;
-- the shape themes;
+- the color, shape and motion themes;
 - complete page templates.
 
 It answers for the greese ui version it was built with.

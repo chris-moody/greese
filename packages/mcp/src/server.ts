@@ -335,9 +335,9 @@ export const createGreeseServer = (data: GreeseData): McpServer => {
   server.registerTool(
     'list_themes',
     {
-      title: 'List shape themes',
+      title: 'List themes',
       description:
-        'Themes that reshape containers and buttons with clip-path and masks, and animate them.',
+        "greese ui's theme files, one layer each (ADR 0025): color themes (brand colors and neutrals), shape themes (clip-path outlines and radii), motion themes and color variants.",
       annotations: { readOnlyHint: true },
     },
     () =>

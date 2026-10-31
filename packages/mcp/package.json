@@ -1,7 +1,7 @@
 {
   "name": "@greese/mcp",
   "version": "0.1.0",
-  "description": "An MCP server for greese ui: components and their props, classes and examples, tokens, icons, guides, shape themes and page templates, for coding assistants.",
+  "description": "An MCP server for greese ui: components and their props, classes and examples, tokens, icons, guides, themes and page templates, for coding assistants.",
   "keywords": [
     "mcp",
     "model-context-protocol",

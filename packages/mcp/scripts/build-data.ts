@@ -8,7 +8,7 @@
  * - tokens: imported from @greese/ui, so they are the real values;
  * - icons: the exports of packages/icons/src/icons.tsx;
  * - guides: apps/docs/stories/guides/*.mdx;
- * - themes: the shape themes' kit SCSS and CSS (packages/ui/themes);
+ * - themes: the color, shape and motion themes' kit SCSS and CSS (packages/ui/themes);
  * - templates: the site's templates (apps/site/src/templates).
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -126,7 +126,7 @@ const icons = [
   ...read(at('packages/icons/src/icons.tsx')).matchAll(/^export const (\w+Icon)\b/gm),
 ].map((m) => m[1]!)
 
-// Shape themes: <id>.scss (the kit source) and <id>.css (compiled), with the
+// Themes: <id>.scss (the kit source) and <id>.css (compiled), with the
 // first comment as the description.
 const themes: ThemeDoc[] = files(at('packages/ui/themes'), /\.scss$/).map((file) => {
   const scss = read(file)
