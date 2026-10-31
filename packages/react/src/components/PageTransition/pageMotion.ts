@@ -93,7 +93,8 @@ export const pageClasses = (
  * A whole page's classes, not a rule's part: its snapshots show only the
  * screenful in view (`--page`).
  */
-const whole = (classes: string) => (classes === 'none' ? 'none' : `${classes} ${BASE}--page`)
+const whole = (classes: string) =>
+  classes === 'none' ? 'none' : `${classes} ${BASE}--page`
 
 /**
  * The class map for React's `<ViewTransition>`, by transition type. Only a
@@ -113,7 +114,10 @@ export const pageClassMap = (
   [BACK]: whole(pageClasses({ ...motion, ...back }, true)),
   [LIVE]: `${BASE}--left`,
   ...Object.fromEntries(
-    Object.entries(types).map(([type, m]) => [type, m === 'none' ? 'none' : whole(pageClasses(m))])
+    Object.entries(types).map(([type, m]) => [
+      type,
+      m === 'none' ? 'none' : whole(pageClasses(m)),
+    ])
   ),
   default: 'none',
 })
@@ -138,7 +142,9 @@ export const pageRulesCss = (rules: Record<string, PageRule>): string => {
   const paced: string[] = []
   Object.entries(rules).forEach(([selector, rule], i) => {
     if (/[<>{};]/.test(selector))
-      throw new Error(`PageTransition: the rule selector \`${selector}\` isn't a selector.`)
+      throw new Error(
+        `PageTransition: the rule selector \`${selector}\` isn't a selector.`
+      )
     const own = `${prefix}-${i + 1}`
     const classes =
       rule === 'still'
@@ -151,7 +157,9 @@ export const pageRulesCss = (rules: Record<string, PageRule>): string => {
     const pace = [
       rule.duration !== undefined && `animation-duration: ${duration(rule.duration)};`,
       rule.delay !== undefined && `animation-delay: ${rule.delay}s;`,
-      rule.ease !== undefined && cssEase(rule.ease) && `animation-timing-function: ${cssEase(rule.ease)};`,
+      rule.ease !== undefined &&
+        cssEase(rule.ease) &&
+        `animation-timing-function: ${cssEase(rule.ease)};`,
     ].filter(Boolean)
     if (pace.length)
       paced.push(
@@ -194,7 +202,8 @@ export const pageTransitionTypes = (
   const after = new URL(to, from)
   if (before.pathname === after.pathname) return [...types]
   const moved = Math.sign(depth(after.pathname) - depth(before.pathname))
-  const way = moved > 0 ? 'greese-deeper' : moved < 0 ? 'greese-shallower' : 'greese-sibling'
+  const way =
+    moved > 0 ? 'greese-deeper' : moved < 0 ? 'greese-shallower' : 'greese-sibling'
   const dir = replace
     ? REPLACE
     : (direction ?? (moved < 0 ? 'back' : 'forward')) === 'back'

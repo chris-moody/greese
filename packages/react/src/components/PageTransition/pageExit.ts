@@ -47,13 +47,15 @@ export const inside = ({ start, end }: PageRegion, el: Element) =>
  * out when an inner one is inside it.
  */
 export const pagesOnScreen = (doc: Document = document): PageRegion[] => {
-  const regions = [...doc.querySelectorAll<HTMLTemplateElement>(START)].flatMap((start) => {
-    const end = start.parentElement?.querySelector(
-      `template[data-greese-page-end="${start.dataset.greesePage ?? ''}"]`
-    )
-    const config = JSON.parse(start.dataset.greeseConfig ?? '{}') as LivePage
-    return end ? [{ config, start, end }] : []
-  })
+  const regions = [...doc.querySelectorAll<HTMLTemplateElement>(START)].flatMap(
+    (start) => {
+      const end = start.parentElement?.querySelector(
+        `template[data-greese-page-end="${start.dataset.greesePage ?? ''}"]`
+      )
+      const config = JSON.parse(start.dataset.greeseConfig ?? '{}') as LivePage
+      return end ? [{ config, start, end }] : []
+    }
+  )
   return regions.filter(
     (outer) => !regions.some((inner) => inner !== outer && inside(outer, inner.start))
   )
@@ -61,7 +63,13 @@ export const pagesOnScreen = (doc: Document = document): PageRegion[] => {
 
 const onScreen = (el: Element) => {
   const r = el.getBoundingClientRect()
-  return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth && r.width > 0
+  return (
+    r.bottom > 0 &&
+    r.top < innerHeight &&
+    r.right > 0 &&
+    r.left < innerWidth &&
+    r.width > 0
+  )
 }
 
 /** A page's members on screen, outermost only (a member's own members leave with it). */

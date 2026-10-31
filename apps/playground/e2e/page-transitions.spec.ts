@@ -143,9 +143,9 @@ test.describe('shared elements paired by the link followed', () => {
       .poll(() =>
         page.evaluate(
           () =>
-            [...document.querySelectorAll<HTMLElement>('[data-greese-share-link]')].filter(
-              (el) => el.style.viewTransitionName
-            ).length
+            [
+              ...document.querySelectorAll<HTMLElement>('[data-greese-share-link]'),
+            ].filter((el) => el.style.viewTransitionName).length
         )
       )
       .toBe(0)
@@ -260,7 +260,9 @@ test.describe('live exits', () => {
     // greese.js puts the elements back once the new page is in.
     await expect
       .poll(() =>
-        page.getByTestId('member-a').evaluate((el) => Number(getComputedStyle(el).opacity))
+        page
+          .getByTestId('member-a')
+          .evaluate((el) => Number(getComputedStyle(el).opacity))
       )
       .toBe(1)
   })

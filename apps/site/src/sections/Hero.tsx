@@ -102,9 +102,9 @@ export const Hero = (): JSX.Element => (
             // The page's largest paint: no delay, so it isn't held invisible.
             greese={{ enter: 'theme' }}
           >
-            greese ui is a mobile-first component library built with native elements and zero-runtime CSS that
-            supports animation out of the box. The whole
-            library is {kB(facts.library.size)} of JavaScript; a Button alone is{' '}
+            greese ui is a mobile-first component library built with native elements and
+            zero-runtime CSS that supports animation out of the box. The whole library is{' '}
+            {kB(facts.library.size)} of JavaScript; a Button alone is{' '}
             {kB(facts.button.size)}.
           </Text>
           <Stack

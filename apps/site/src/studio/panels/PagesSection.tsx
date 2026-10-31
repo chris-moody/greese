@@ -55,12 +55,11 @@ export const PagesSection = ({ spec, onChange }: PagesSectionProps): JSX.Element
         Pages
       </Heading>
       <Text variant="p3" tone="muted">
-        How a page change plays (<code>PageTransition</code>): the new page’s entrance
-        and the old page’s exit, going forward and back, by effect name or{' '}
-        <code>none</code>. A live page’s members leave one after another, in{' '}
-        <code>page-exit-order</code>, <code>page-stagger</code> apart;{' '}
-        <code>page-mode</code> is <code>auto</code>, <code>snapshot</code> or{' '}
-        <code>live</code>.
+        How a page change plays (<code>PageTransition</code>): the new page’s entrance and
+        the old page’s exit, going forward and back, by effect name or <code>none</code>.
+        A live page’s members leave one after another, in <code>page-exit-order</code>,{' '}
+        <code>page-stagger</code> apart; <code>page-mode</code> is <code>auto</code>,{' '}
+        <code>snapshot</code> or <code>live</code>.
       </Text>
       {PAGE_ROLES.map(([key, placeholder]) => (
         <ValueRow
@@ -75,9 +74,9 @@ export const PagesSection = ({ spec, onChange }: PagesSectionProps): JSX.Element
         Parts of a page
       </Heading>
       <Text variant="p3" tone="muted">
-        A selector’s elements get motion of their own while the page changes: kept
-        still (a header the change leaves alone), or their own entrance, exit and pace.
-        Each is a snapshot of its own, so name sections, not every item of a list.
+        A selector’s elements get motion of their own while the page changes: kept still
+        (a header the change leaves alone), or their own entrance, exit and pace. Each is
+        a snapshot of its own, so name sections, not every item of a list.
       </Text>
       {rules.map(([selector, rule]) => (
         <Stack key={selector} gap={2} className="studio-page-rule">
@@ -87,7 +86,9 @@ export const PagesSection = ({ spec, onChange }: PagesSectionProps): JSX.Element
               <Switch
                 label="Still"
                 checked={rule === 'still'}
-                onChange={(e) => setRule(selector, e.currentTarget.checked ? 'still' : {})}
+                onChange={(e) =>
+                  setRule(selector, e.currentTarget.checked ? 'still' : {})
+                }
               />
               <Button
                 size="sm"
@@ -111,7 +112,9 @@ export const PagesSection = ({ spec, onChange }: PagesSectionProps): JSX.Element
                   // A field emptied leaves the rule, even an empty one, in place.
                   setRule(
                     selector,
-                    v ? { ...rule, [key]: v } : (({ [key]: _gone, ...rest }) => rest)(rule)
+                    v
+                      ? { ...rule, [key]: v }
+                      : (({ [key]: _gone, ...rest }) => rest)(rule)
                   )
                 }
               />

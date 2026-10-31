@@ -380,9 +380,10 @@ export const pageRulesOf = (
     }
   }
   for (const rule of rules) {
-    const m = /^(?:html)?::view-transition-(old|new)\(\*\.(greese-page-[\w-]+-\d+)\)/.exec(
-      rule.selector
-    )
+    const m =
+      /^(?:html)?::view-transition-(old|new)\(\*\.(greese-page-[\w-]+-\d+)\)/.exec(
+        rule.selector
+      )
     const fields = m && byClass.get(m[2]!)
     if (!fields) continue
     read.add(rule)

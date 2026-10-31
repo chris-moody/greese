@@ -503,7 +503,8 @@ export const attachAll: GreeseRuntime['attachAll'] = (items) =>
 export const playPageExit: GreeseRuntime['playPageExit'] = (motion, page, targets) => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
   const tl = timeline({ paused: true })
-  const entries = typeof motion === 'string' ? [[undefined, motion] as const] : Object.entries(motion)
+  const entries =
+    typeof motion === 'string' ? [[undefined, motion] as const] : Object.entries(motion)
   for (const [selector, sequence] of entries) {
     const els = selector === undefined ? page : targets(selector)
     if (!els.length) continue
