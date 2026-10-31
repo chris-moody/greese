@@ -67,7 +67,11 @@
           opacity: 1;
           translate: none;
           scale: none;
-          transform: none;
+
+          // `initial`, not `none`: lightningcss (Vite's CSS minifier) folds
+          // `translate: none; scale: none; transform: none` into `transform`
+          // alone, and the off-canvas `translate` comes back.
+          transform: initial;
           mask-image: none;
 
           &[data-collapsed] {
