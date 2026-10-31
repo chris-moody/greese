@@ -127,7 +127,9 @@ module.exports = [
     // 37.8 kB → 37.85 kB (2026-10-30): the half turns' effect names and the
     // redrawn icons' paths, landed together with the above (37.8 kB + 2 B).
     // 37.85 kB → 37.95 kB (2026-10-30): the commit seen from React, as above (37.89 kB).
-    limit: '37.95 kB',
+    // 37.95 kB → 38.05 kB (2026-10-31): Tooltip opens on a tap, and a tap elsewhere
+    // closes it (ADR 0005 amendment), about 60-90 B (37.98 kB).
+    limit: '38.05 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -554,7 +556,8 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     modifyRolldownConfig: external,
     // 47.45 kB → 47.6 kB (2026-10-30): the commit seen from React, as above (47.53 kB).
-    limit: '47.6 kB',
+    // 47.6 kB → 47.7 kB (2026-10-31): the same Tooltip taps (47.56-47.62 kB).
+    limit: '47.7 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.

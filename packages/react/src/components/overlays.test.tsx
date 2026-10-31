@@ -200,6 +200,76 @@ describe('Popover and Tooltip', () => {
       vi.useRealTimers()
     }
   })
+
+  const tap = (element: Element, pointerType = 'touch') => {
+    fireEvent.pointerDown(element, { pointerType })
+    fireEvent.pointerUp(element, { pointerType })
+    fireEvent.click(element)
+  }
+
+  it('Tooltip opens on a tap, keeps the child working, and closes on a tap again or elsewhere', async () => {
+    const onClick = vi.fn()
+    const { container } = render(
+      <>
+        <Tooltip content="Copies the link">
+          <Button onClick={onClick}>Share</Button>
+        </Tooltip>
+        <p>Elsewhere</p>
+      </>
+    )
+    const tip = screen.getByRole('tooltip', { hidden: true })
+    const trigger = screen.getByRole('button', { name: 'Share' })
+    vi.useFakeTimers()
+    try {
+      tap(trigger)
+      act(() => vi.runAllTimers())
+      expect(tip.matches(':popover-open')).toBe(true)
+      expect(onClick).toHaveBeenCalledTimes(1)
+      // A finger leaving as it lifts doesn't hide it, nor does a tap on the tip.
+      fireEvent.pointerLeave(trigger, { pointerType: 'touch' })
+      fireEvent.pointerDown(tip, { pointerType: 'touch' })
+      act(() => vi.runAllTimers())
+      expect(tip.matches(':popover-open')).toBe(true)
+      tap(trigger)
+      act(() => vi.runAllTimers())
+      expect(tip.matches(':popover-open')).toBe(false)
+
+      tap(trigger, 'pen')
+      act(() => vi.runAllTimers())
+      expect(tip.matches(':popover-open')).toBe(true)
+      fireEvent.pointerDown(screen.getByText('Elsewhere'), { pointerType: 'touch' })
+      act(() => vi.runAllTimers())
+      expect(tip.matches(':popover-open')).toBe(false)
+    } finally {
+      vi.useRealTimers()
+    }
+    await expectNoAxeViolations(container)
+  })
+
+  it('Tooltip ignores mouse and keyboard clicks, and taps with openOnTap off', () => {
+    render(
+      <>
+        <Tooltip content="Copies the link">
+          <Button>Share</Button>
+        </Tooltip>
+        <Tooltip content="Deletes it" openOnTap={false}>
+          <Button>Delete</Button>
+        </Tooltip>
+      </>
+    )
+    const [share, remove] = screen.getAllByRole('tooltip', { hidden: true })
+    vi.useFakeTimers()
+    try {
+      tap(screen.getByRole('button', { name: 'Share' }), 'mouse')
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+      tap(screen.getByRole('button', { name: 'Delete' }))
+      act(() => vi.runAllTimers())
+      expect(share!.matches(':popover-open')).toBe(false)
+      expect(remove!.matches(':popover-open')).toBe(false)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
 })
 
 describe('Menu', () => {
