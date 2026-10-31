@@ -1,6 +1,6 @@
 {
   "name": "@greese/js",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "greese.js: a tiny keyframe and timeline animation library for CSS, transforms, text and objects. Seekable, reversible, time-scaled and nestable.",
   "keywords": [
     "animation",
