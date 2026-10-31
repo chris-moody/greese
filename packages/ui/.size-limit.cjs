@@ -61,7 +61,9 @@ module.exports = [
     // above (1.85 kB).
     // 1.9 kB → 2 kB (2026-10-30): the half turns' exit keyframes and snapshot
     // rules, hidden backs, and still groups on top, as above (1.98 kB).
-    limit: '2 kB',
+    // 2 kB → 2.05 kB (2026-10-31): the three `--route-*` rules a route's or a
+    // navigation's own effects and pace play by (ADR 0029 addendum) (2.02 kB).
+    limit: '2.05 kB',
   },
   {
     name: 'CSS: utilities.css (the whole set)',

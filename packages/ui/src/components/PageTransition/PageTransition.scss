@@ -13,6 +13,11 @@
 //   greese-PageTransition--still          not animated at all
 //   greese-PageTransition--page           a whole page: only its screenful shows
 //   greese-PageTransition--left           a page that left live: its rest fades
+//   greese-PageTransition--route-enter, --route-exit, --route-pace
+//                                         a route's or navigation's own effects
+//                                         and pace, read from the root's
+//                                         --greese-page-enter / -exit /
+//                                         -duration / -ease (usePageNavigate)
 // Transition types (`greese-back`, …) pick between these classes in React's
 // <ViewTransition> props, which works wherever React does; the CSS doesn't
 // depend on `:active-view-transition-type()`. Entrances play the effects' own
@@ -91,6 +96,30 @@
     html::view-transition-new(*.greese-PageTransition--enter-none),
     html::view-transition-old(*.greese-PageTransition--exit-none) {
       animation-name: none;
+    }
+
+    // A route's or a navigation's own effects (usePageNavigate writes the
+    // variables at the click): after the named effects and the theme's roles,
+    // so they win; `--left` below still wins, since a live exit already played.
+    html::view-transition-new(*.greese-PageTransition--route-enter) {
+      animation-name: var(--greese-page-enter);
+    }
+
+    html::view-transition-old(*.greese-PageTransition--route-exit) {
+      animation-name: var(--greese-page-exit);
+    }
+
+    html::view-transition-group(*.greese-PageTransition--route-pace),
+    html::view-transition-old(*.greese-PageTransition--route-pace),
+    html::view-transition-new(*.greese-PageTransition--route-pace) {
+      animation-duration: var(
+        --greese-page-duration,
+        var(--greese-motion-page-duration, var(--greese-duration-normal))
+      );
+      animation-timing-function: var(
+        --greese-page-ease,
+        var(--greese-motion-page-ease, var(--greese-ease-out))
+      );
     }
 
     // A shared element morphs from where it was to where it is: its group
