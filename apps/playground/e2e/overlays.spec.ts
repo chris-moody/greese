@@ -146,6 +146,22 @@ test('tooltip: appears after a hover delay, flipping below when there is no room
   await expect(tip).toBeHidden()
 })
 
+test('tooltip: a tap shows it, and a tap again or elsewhere hides it', async ({
+  page,
+}) => {
+  test.skip(!isTouch(), 'tap to open is for touch')
+  const trigger = page.getByRole('button', { name: 'Help' })
+  const tip = page.getByRole('tooltip')
+  await trigger.tap()
+  await expect(tip).toBeVisible()
+  await trigger.tap()
+  await expect(tip).toBeHidden()
+  await trigger.tap()
+  await expect(tip).toBeVisible()
+  await page.getByTestId('outside').tap()
+  await expect(tip).toBeHidden()
+})
+
 test('toasts appear above an open modal and stay usable (not inert)', async ({
   page,
 }) => {
