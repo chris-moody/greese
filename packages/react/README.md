@@ -313,6 +313,10 @@ const page = usePageNavigate(useNavigate()) // any router's navigate
   <PageTransition exit={{ '.hero': 'fadeOut', '.card': 'scaleOut(0.2),+0.1,fadeOut' }}>
   ```
 
+- **Routes and navigations:** `usePageNavigate(navigate, { route })` takes a
+  function that returns a page's `PageRoute` (React Router's `handle.greese`)
+  with `to` / `from` rules by path pattern (`/settings/*`), and a navigation
+  names its own `enter`, `exit`, `duration` and `ease`, over everything else.
 - **Only greese navigations animate:** a tab or filter kept in the URL changes
   in place.
 - **Server Components:** `PageTransition` and `PageShare` take only data;

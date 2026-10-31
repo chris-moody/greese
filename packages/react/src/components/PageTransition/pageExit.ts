@@ -94,16 +94,20 @@ const ownExit = (el: Element) => {
 
 /** The theme's exit role for the direction, as a `var()` animation-name. */
 const roleExit = (back: boolean) =>
-  back
-    ? 'var(--greese-motion-page-back-exit, var(--greese-motion-page-exit, greese-fade-out))'
-    : 'var(--greese-motion-page-exit, greese-fade-out)'
+  `var(--greese-page-exit, ${
+    back
+      ? 'var(--greese-motion-page-back-exit, var(--greese-motion-page-exit, greese-fade-out))'
+      : 'var(--greese-motion-page-exit, greese-fade-out)'
+  })`
 
 /** The longest an exit holds a navigation, whatever its animations say. */
 export const EXIT_CAP = 2000
 
 /**
  * Plays a page's members' exits and resolves when they're over (or after
- * `EXIT_CAP`). Order: `reverse` (the last member leaves first, so the page
+ * `EXIT_CAP`). `force` is a navigation's own exit (keyframes' name): it beats
+ * a member's own; a route's exit reaches the members that have none, through
+ * `--greese-page-exit`. Order: `reverse` (the last member leaves first, so the page
  * empties back towards its top), `document`, or `together`. Returns the
  * promise and a way to put the members back, for a navigation that fails.
  */
@@ -111,7 +115,8 @@ export const exitPage = (
   page: PageRegion,
   back: boolean,
   order = page.config.order ?? 'reverse',
-  stagger = page.config.stagger
+  stagger = page.config.stagger,
+  force?: string
 ): { done: Promise<void>; restore: () => void } => {
   const members = membersOf(page)
   if (order === 'reverse') members.reverse()
@@ -121,7 +126,7 @@ export const exitPage = (
       : 'var(--greese-motion-page-stagger, var(--greese-motion-stagger, 0.05s))'
   members.forEach((el, i) => {
     const delay = order === 'together' ? '0s' : `calc(${i} * ${gap})`
-    el.style.animation = `${ownExit(el) ?? roleExit(back)} var(--greese-motion-page-duration, var(--greese-duration-normal)) var(--greese-motion-page-ease, var(--greese-ease-out)) ${delay} both`
+    el.style.animation = `${force ?? ownExit(el) ?? roleExit(back)} var(--greese-page-duration, var(--greese-motion-page-duration, var(--greese-duration-normal))) var(--greese-page-ease, var(--greese-motion-page-ease, var(--greese-ease-out))) ${delay} both`
   })
   // Reading the animations applies the styles just set, in one pass.
   const animations = members.flatMap((el) => el.getAnimations?.() ?? [])
@@ -137,13 +142,20 @@ export const exitPage = (
 }
 
 /**
- * Whether a page leaves live: its own mode, else the theme's `page-mode`,
- * else `auto`, which is live when it has a timeline to play or members on
- * screen to leave, and a snapshot otherwise.
+ * Whether a page leaves live: the navigation's or the route's `mode`
+ * (`override`), else the page's own, else the theme's `page-mode`, else
+ * `auto`, which is live when it has a timeline to play or members on screen
+ * to leave, and a snapshot otherwise.
  */
-export const leavesLive = (page: PageRegion, theme: string, back = false): boolean => {
+export const leavesLive = (
+  page: PageRegion,
+  theme: string,
+  back = false,
+  override?: 'snapshot' | 'live'
+): boolean => {
   const mode =
-    page.config.mode && page.config.mode !== 'auto' ? page.config.mode : theme || 'auto'
+    override ??
+    (page.config.mode && page.config.mode !== 'auto' ? page.config.mode : theme || 'auto')
   if (mode === 'live') return true
   if (mode === 'snapshot') return false
   return timelineOf(page, back) !== undefined || membersOf(page).length > 0

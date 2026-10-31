@@ -17,13 +17,18 @@ export {
   pageRulesCss,
   pageRulesId,
   pageTransitionTypes,
+  matchPagePath,
+  resolvePageRoute,
   shareClasses,
   shareName,
   type PageEffect,
   type ShareKey,
   type PageMotion,
   type PageNavigateOptions,
+  type PageRoute,
+  type PageRouteRule,
   type PageRule,
+  type ResolvedPageRoute,
 } from './pageMotion.ts'
 
 export interface PageTransitionProps {

@@ -27,7 +27,13 @@ import {
   PAGE,
   pageTransitionTypes,
   REPLACE,
+  resolvePageRoute,
+  keyframes,
+  routeTypes,
+  stripBase,
   type PageNavigateOptions,
+  type PageRoute,
+  type ResolvedPageRoute,
 } from '../components/PageTransition/pageMotion.ts'
 import { pairByLink } from '../components/PageTransition/shareLink.ts'
 
@@ -35,9 +41,11 @@ import { pairByLink } from '../components/PageTransition/shareLink.ts'
  * Plays a page's live exit: its timeline through greese.js (a lazy chunk),
  * or its members' exits in CSS. Returns when it's over, and how to undo it.
  */
-const leave = (page: PageRegion, back: boolean) => {
-  const timeline = timelineOf(page, back)
-  if (!timeline) return exitPage(page, back, page.config.order ?? themeOrder())
+const leave = (page: PageRegion, back: boolean, routed?: boolean, force?: string) => {
+  // A route's or a navigation's exit beats the page's timeline (level 2).
+  const timeline = routed ? undefined : timelineOf(page, back)
+  if (!timeline)
+    return exitPage(page, back, page.config.order ?? themeOrder(), undefined, force)
   let cancel = () => {}
   const done = loadGreeseRuntime().then((runtime) => {
     const played = runtime.playPageExit(timeline, elementsOf(page), (s) => query(page, s))
@@ -155,19 +163,77 @@ const holdTraversal = (event: Event) => {
   const from = location.href
   const current = navigation.currentEntry?.index ?? 0
   const back = e.destination.index < current
-  const live = pagesOnScreen().filter((page) => leavesLive(page, themeMode(), back))
+  const resolved = resolveRoute(routing, from, e.destination.url, back)
+  writeRoute(resolved)
+  const live = pagesOnScreen().filter((page) =>
+    leavesLive(page, themeMode(), back, resolved.mode)
+  )
   if (!live.length) return
   measureScrolled()
   e.intercept({
     focusReset: 'manual',
     precommitHandler: async () => {
-      const exits = live.map((page) => leave(page, back))
+      const exits = live.map((page) => leave(page, back, !!resolved.exit))
       e.signal.addEventListener('abort', () => exits.forEach((exit) => exit.restore()))
       await Promise.all(exits.map((exit) => exit.done))
       afterCommit(live, from, () => exits.forEach((exit) => exit.restore()))
     },
   } as NavigationInterceptOptions)
 }
+
+/**
+ * Where page transitions come from and go to: the router's config of the
+ * latest hook that has one, which back and forward (heard outside any hook)
+ * resolve their routes with.
+ */
+let routing: PageNavigateConfig | undefined
+
+/**
+ * Resolves a page change's routes (ADR 0029): both pages' route config at the
+ * click, synchronously, and the navigation's own options over them.
+ */
+const resolveRoute = (
+  config: PageNavigateConfig | undefined,
+  from: string,
+  to: string | undefined,
+  back: boolean,
+  options?: PageNavigateOptions
+): ResolvedPageRoute => {
+  const path = (url: string) =>
+    stripBase(new URL(url, location.href).pathname, config?.base)
+  const fromPath = path(from)
+  const toPath = to === undefined ? undefined : path(to)
+  const route = (p: string | undefined) =>
+    p === undefined ? undefined : config?.route?.(p)
+  return resolvePageRoute(
+    { from: route(fromPath), to: route(toPath) },
+    fromPath,
+    toPath,
+    back,
+    options
+  )
+}
+
+/**
+ * The root variables the snapshots' route rules read (and live exits): this
+ * click's, or removed, so a stale value is never left for the next
+ * navigation. They stay until the next click, since the snapshot animates
+ * after the commit.
+ */
+const writeRoute = (resolved: ResolvedPageRoute) => {
+  for (const key of ['enter', 'exit', 'duration', 'ease'] as const) {
+    const name = `--greese-page-${key}`
+    if (resolved[key]) document.documentElement.style.setProperty(name, resolved[key])
+    else document.documentElement.style.removeProperty(name)
+  }
+}
+
+/** Where a history step lands, where the Navigation API can say. */
+const stepUrl = (step: number): string | undefined =>
+  'navigation' in window
+    ? (navigation.entries()[(navigation.currentEntry?.index ?? 0) + step]?.url ??
+      undefined)
+    : undefined
 
 /** Hook instances listening, so the one listener goes when the last does. */
 let holding = 0
@@ -179,6 +245,17 @@ let holding = 0
  * follow.
  */
 export type RouterNavigate = (to: string, options?: { replace?: boolean }) => unknown
+
+export interface PageNavigateConfig {
+  /**
+   * A page's route config (`handle.greese` in React Router), by its path with
+   * the base stripped. Called at the click for both pages, so it must answer
+   * synchronously. Define it at module level, as you do the routes.
+   */
+  route?: (path: string) => PageRoute | undefined
+  /** The app's base, stripped from paths before `route` and the patterns see them. @default '' */
+  base?: string
+}
 
 export interface PageNavigate {
   /**
@@ -211,7 +288,20 @@ export interface PageNavigate {
  * <Link to="/docs" onClick={page.onLinkClick('/docs')}>Docs</Link>
  * ```
  */
-export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
+export const usePageNavigate = (
+  navigate: RouterNavigate,
+  config?: PageNavigateConfig
+): PageNavigate => {
+  const route = config?.route
+  const base = config?.base
+  useEffect(() => {
+    if (!route) return
+    const mine = { route, base }
+    routing = mine
+    return () => {
+      if (routing === mine) routing = undefined
+    }
+  }, [route, base])
   useEffect(() => {
     if (!('navigation' in window && 'NavigationPrecommitController' in window)) return
     if (holding++ === 0) navigation.addEventListener('navigate', holdTraversal)
@@ -249,16 +339,24 @@ export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
       // anything is awaited. The navigation's own mode, else each page's,
       // else the theme's `page-mode`.
       const theme = themeMode()
-      const live = types.includes(PAGE)
-        ? pagesOnScreen().filter((page) => leavesLive(page, options.mode ?? theme, back))
+      const step = typeof to === 'number'
+      const isPage = types.includes(PAGE)
+      const resolved = isPage
+        ? resolveRoute({ route, base }, from, step ? stepUrl(to) : to, back, options)
+        : {}
+      if (isPage) writeRoute(resolved)
+      const forced = options.exit !== 'theme' ? keyframes(options.exit) : undefined
+      const live = isPage
+        ? pagesOnScreen().filter((page) => leavesLive(page, theme, back, resolved.mode))
         : []
       // A replace changes the page in place: it has no entrance to play.
       if (live.length && !types.includes(REPLACE)) types.push(LIVE)
+      // A replace changes in place: it has no snapshot for a route to shape.
+      if (!types.includes(REPLACE)) types.push(...routeTypes(resolved))
       startTransition(async () => {
         for (const type of types) addTransitionType(type)
         // Commits with the router's update: before anything is awaited, so
         // it's in this transition.
-        const step = typeof to === 'number'
         if (live.length && !step) setCommits((n) => n + 1)
         // The router starts at once, so the next page loads while the old one
         // leaves; React commits the router's update with this transition,
@@ -266,7 +364,7 @@ export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
         const navigation = step
           ? history.go(to)
           : navigate(to, { replace: options.replace })
-        const exits = live.map((page) => leave(page, back))
+        const exits = live.map((page) => leave(page, back, !!resolved.exit, forced))
         const restore = () => exits.forEach((exit) => exit.restore())
         try {
           await Promise.all([navigation, ...exits.map((exit) => exit.done)])
@@ -301,5 +399,5 @@ export const usePageNavigate = (navigate: RouterNavigate): PageNavigate => {
         go(to, options, link)
       },
     }
-  }, [navigate])
+  }, [navigate, route, base])
 }

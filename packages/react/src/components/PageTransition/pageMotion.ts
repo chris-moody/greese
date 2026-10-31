@@ -55,6 +55,33 @@ export type PageRule =
       ease?: Ease
     })
 
+/**
+ * How a page change plays when one route rule matches (ADR 0029, routes and
+ * navigations): a page's `to` and `from` rules, and a navigation's own options.
+ */
+export type PageRouteRule = PageMotion & {
+  /** Seconds, or a duration token. */
+  duration?: number | 'fast' | 'normal' | 'slow'
+  /** Any ease CSS can play (a named ease or a cubic Bézier). */
+  ease?: Ease
+  /** Whether the page being left leaves live or as a snapshot. */
+  mode?: 'snapshot' | 'live'
+  /** What changes going back (in the history, or up the URL). */
+  back?: PageMotion
+}
+
+/**
+ * A route's page transitions, by the path at the other end. Patterns are
+ * `/settings`, `/user/:id`, a middle `*` (one segment), `/settings/*` (the page and
+ * everything below it) and `*`.
+ */
+export interface PageRoute {
+  /** Leaving this page for a matching path. */
+  to?: Record<string, PageRouteRule>
+  /** Arriving at this page from a matching path. */
+  from?: Record<string, PageRouteRule>
+}
+
 /** Every greese navigation's type; the direction types say which way it went. */
 export const PAGE = 'greese-page'
 export const FORWARD = 'greese-forward'
@@ -113,6 +140,9 @@ export const pageClassMap = (
   [FORWARD]: whole(pageClasses(motion)),
   [BACK]: whole(pageClasses({ ...motion, ...back }, true)),
   [LIVE]: `${BASE}--left`,
+  [ROUTE_ENTER]: `${BASE}--route-enter`,
+  [ROUTE_EXIT]: `${BASE}--route-exit`,
+  [ROUTE_PACE]: `${BASE}--route-pace`,
   ...Object.fromEntries(
     Object.entries(types).map(([type, m]) => [
       type,
@@ -172,6 +202,14 @@ export const pageRulesCss = (rules: Record<string, PageRule>): string => {
 }
 
 export interface PageNavigateOptions {
+  /** How the new page arrives on this navigation, over every route and the theme. */
+  enter?: PageEffect
+  /** How the old page leaves on this navigation, over every route and the theme. */
+  exit?: PageEffect
+  /** Seconds, or a duration token, for this navigation. */
+  duration?: PageRouteRule['duration']
+  /** The ease of this navigation. */
+  ease?: Ease
   /** Replace the history entry: the page changes in place, without a transition. */
   replace?: boolean
   /** Force the direction: `'back'` plays the theme's back transition. */
@@ -211,3 +249,131 @@ export const pageTransitionTypes = (
       : FORWARD
   return [PAGE, dir, way, ...types]
 }
+
+/** Types of the sides a route or a navigation overrides, each only when it does. */
+export const ROUTE_ENTER = 'greese-route-enter'
+export const ROUTE_EXIT = 'greese-route-exit'
+export const ROUTE_PACE = 'greese-route-pace'
+
+/** The options of a navigation that shape its route. */
+export type PageRouteOptions = Pick<
+  PageNavigateOptions,
+  'enter' | 'exit' | 'duration' | 'ease' | 'mode'
+>
+
+/** What a route and a navigation settle for one page change, ready for CSS. */
+export interface ResolvedPageRoute {
+  /** An entrance's keyframes name (`greese-wipe-left`), or `none`. */
+  enter?: string
+  /** An exit's keyframes name, or `none`. */
+  exit?: string
+  /** A CSS time. */
+  duration?: string
+  /** A CSS easing. */
+  ease?: string
+  /** How the old page leaves. */
+  mode?: 'snapshot' | 'live'
+}
+
+/** The path without the app's base. */
+export const stripBase = (path: string, base = ''): string =>
+  base && path.startsWith(base) && !/[^/]/.test(path[base.length] ?? '/')
+    ? path.slice(base.length) || '/'
+    : path
+
+/**
+ * How well a pattern matches a path, or `undefined` when it doesn't: each
+ * segment counts less than the one before (literal 3, `:param` or a middle
+ * `*` 2, a trailing `*` 1), so the most specific pattern scores highest and
+ * a longer one wins a tie. A trailing `*` takes the page itself and
+ * everything below it.
+ */
+const score = (pattern: string, path: string): number | undefined => {
+  if (/[?#]/.test(pattern))
+    throw new Error(`usePageNavigate: \`${pattern}\` isn't a page pattern.`)
+  const parts = pattern.split('/').filter(Boolean)
+  const have = path.split('/').filter(Boolean)
+  const tail = parts.at(-1) === '*'
+  if (tail ? have.length < parts.length - 1 : have.length !== parts.length) return
+  let total = 0
+  for (const [i, part] of parts.entries()) {
+    const w = part === '*' ? (i === parts.length - 1 ? 1 : 2) : part[0] === ':' ? 2 : 3
+    if (w === 3 && part !== have[i]) return
+    total += w / 4 ** i
+  }
+  return total
+}
+
+/** Whether a route pattern matches a path (a trailing slash is ignored). */
+export const matchPagePath = (pattern: string, path: string): boolean =>
+  score(pattern, path) !== undefined
+
+/** The most specific rule matching the path; source order breaks a tie. */
+export const matchPageRule = (
+  rules: Record<string, PageRouteRule> | undefined,
+  path: string
+): PageRouteRule | undefined => {
+  let best: PageRouteRule | undefined
+  let top = -1
+  for (const [pattern, rule] of Object.entries(rules ?? {})) {
+    const s = score(pattern, path)
+    if (s !== undefined && s > top) [best, top] = [rule, s]
+  }
+  return best
+}
+
+/** An effect as the keyframes it plays; `theme` and nothing leave the side alone. */
+export const keyframes = (effect?: PageEffect) =>
+  effect && (effect === 'none' ? effect : `greese-${effectClass(effect)}`)
+
+const time = (value: NonNullable<PageRouteRule['duration']>) =>
+  typeof value === 'number' ? `${value}s` : `var(--greese-duration-${value})`
+
+/**
+ * What a page change plays (ADR 0029): the leaving page's `to` rule for the
+ * arriving path and the arriving page's `from` rule for the leaving one,
+ * each side taken from its owner (the exit and `mode` from the leaving
+ * page's rule first, the entrance from the arriving page's first), then the
+ * navigation's own options over both. Paths come without the app's base.
+ */
+export const resolvePageRoute = (
+  { from, to }: { from: PageRoute | undefined; to: PageRoute | undefined },
+  fromPath: string,
+  toPath: string | undefined,
+  back = false,
+  options: PageRouteOptions = {}
+): ResolvedPageRoute => {
+  // Going back merges the rule's `back` over it.
+  const rule = (r: PageRouteRule | undefined) =>
+    back && r?.back ? { ...r, ...r.back } : r
+  const leaving = rule(toPath === undefined ? undefined : matchPageRule(from?.to, toPath))
+  const arriving = rule(matchPageRule(to?.from, fromPath))
+  // The first rule that names the side; `theme` names nothing.
+  const first = <K extends keyof PageRouteRule>(
+    key: K,
+    ...rules: Array<PageRouteRule | undefined>
+  ) =>
+    rules.map((r) => r?.[key]).find((v) => v !== undefined && v !== 'theme') as
+      PageRouteRule[K] | undefined
+  const duration = first('duration', options, arriving, leaving)
+  const ease = first('ease', options, arriving, leaving)
+  return {
+    enter: keyframes(first('enter', options, arriving, leaving)),
+    exit: keyframes(first('exit', options, leaving, arriving)),
+    duration: duration === undefined ? undefined : time(duration),
+    ease: ease === undefined ? undefined : cssEase(ease),
+    mode: first('mode', options, leaving, arriving),
+  }
+}
+
+/** The types a resolved route adds: one for each part it overrides. */
+export const routeTypes = ({
+  enter,
+  exit,
+  duration,
+  ease,
+}: ResolvedPageRoute): string[] => [
+  ...(enter ? [ROUTE_ENTER] : []),
+  ...(exit ? [ROUTE_EXIT] : []),
+  ...(duration || ease ? [ROUTE_PACE] : []),
+]

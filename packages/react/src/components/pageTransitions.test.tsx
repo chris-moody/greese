@@ -13,7 +13,15 @@ import {
   membersOf,
   pagesOnScreen,
 } from './PageTransition/pageExit.ts'
-import { isTimeline } from './PageTransition/pageMotion.ts'
+import {
+  isTimeline,
+  matchPageRule,
+  matchPagePath,
+  resolvePageRoute,
+  routeTypes,
+  stripBase,
+  type PageRoute,
+} from './PageTransition/pageMotion.ts'
 import { pairByLink } from './PageTransition/shareLink.ts'
 import {
   pageClasses,
@@ -26,6 +34,134 @@ import {
 } from './PageTransition/PageTransition.tsx'
 
 const T = 'greese-PageTransition'
+
+describe('route patterns', () => {
+  it('matches literals, params, middle and trailing wildcards', () => {
+    expect(matchPagePath('/settings', '/settings/')).toBe(true)
+    expect(matchPagePath('/settings', '/settings/a')).toBe(false)
+    expect(matchPagePath('/user/:id', '/user/7')).toBe(true)
+    expect(matchPagePath('/user/:id', '/user/7/x')).toBe(false)
+    expect(matchPagePath('/docs/*/edit', '/docs/a/edit')).toBe(true)
+    expect(matchPagePath('/docs/*/edit', '/docs/a/b/edit')).toBe(false)
+    expect(matchPagePath('/settings/*', '/settings')).toBe(true)
+    expect(matchPagePath('/settings/*', '/settings/a/b')).toBe(true)
+    expect(matchPagePath('/settings/*', '/other')).toBe(false)
+    expect(matchPagePath('*', '/anything/at/all')).toBe(true)
+    expect(matchPagePath('*', '/')).toBe(true)
+  })
+
+  it('refuses patterns with a query or a hash', () => {
+    expect(() => matchPagePath('/a?b=1', '/a')).toThrow(/page pattern/)
+    expect(() => matchPagePath('/a#b', '/a')).toThrow(/page pattern/)
+  })
+
+  it('picks the most specific rule, then source order', () => {
+    const rules = {
+      '*': { exit: 'fadeOut' as const },
+      '/settings/*': { exit: 'slideLeft' as const },
+      '/settings/:tab': { exit: 'wipeOutLeft' as const },
+      '/settings/:other': { exit: 'fadeOut' as const },
+    }
+    expect(matchPageRule(rules, '/settings/a')?.exit).toBe('wipeOutLeft')
+    expect(matchPageRule(rules, '/settings/a/b')?.exit).toBe('slideLeft')
+    expect(matchPageRule(rules, '/x')?.exit).toBe('fadeOut')
+    expect(matchPageRule(undefined, '/x')).toBeUndefined()
+  })
+
+  it('strips the base', () => {
+    expect(stripBase('/app/user/1', '/app')).toBe('/user/1')
+    expect(stripBase('/app', '/app')).toBe('/')
+    expect(stripBase('/apple', '/app')).toBe('/apple')
+    expect(stripBase('/a')).toBe('/a')
+  })
+})
+
+describe('resolving a route', () => {
+  const user: PageRoute = {
+    to: { '/settings/*': { exit: 'wipeOutLeft', mode: 'snapshot', duration: 0.5 } },
+  }
+  const settings: PageRoute = {
+    from: {
+      '/user/*': {
+        enter: 'flipOverRight',
+        exit: 'fadeOut',
+        duration: 0.8,
+        back: { enter: 'fadeIn' },
+      },
+    },
+  }
+  const pages = { from: user, to: settings }
+
+  it('takes each side from its owner', () => {
+    expect(resolvePageRoute(pages, '/user/1', '/settings/p')).toEqual({
+      enter: 'greese-flip-over-right',
+      exit: 'greese-wipe-out-left',
+      duration: '0.8s',
+      mode: 'snapshot',
+    })
+  })
+
+  it('falls back to the other page’s rule, and has nothing without a match', () => {
+    expect(
+      resolvePageRoute({ from: undefined, to: settings }, '/user/1', '/settings')
+    ).toEqual({
+      enter: 'greese-flip-over-right',
+      exit: 'greese-fade-out',
+      duration: '0.8s',
+    })
+    expect(resolvePageRoute(pages, '/home', '/about')).toEqual({})
+    expect(resolvePageRoute(pages, '/user/1', undefined)).toEqual({
+      enter: 'greese-flip-over-right',
+      exit: 'greese-fade-out',
+      duration: '0.8s',
+    })
+  })
+
+  it('merges back over the rule', () => {
+    expect(resolvePageRoute(pages, '/user/1', '/settings/p', true).enter).toBe(
+      'greese-fade-in'
+    )
+    expect(resolvePageRoute(pages, '/user/1', '/settings/p', true).exit).toBe(
+      'greese-wipe-out-left'
+    )
+  })
+
+  it('lets the navigation win, side by side', () => {
+    const r = resolvePageRoute(pages, '/user/1', '/settings/p', false, {
+      exit: 'none',
+      duration: 'fast',
+      ease: 'inOut',
+      mode: 'live',
+    })
+    expect(r).toEqual({
+      enter: 'greese-flip-over-right',
+      exit: 'none',
+      duration: 'var(--greese-duration-fast)',
+      ease: 'var(--greese-ease-in-out)',
+      mode: 'live',
+    })
+    // `theme` names nothing, so the route's entrance still plays.
+    expect(
+      resolvePageRoute(pages, '/user/1', '/settings/p', false, { enter: 'theme' }).enter
+    ).toBe('greese-flip-over-right')
+  })
+
+  it('names a type for each part it overrides', () => {
+    expect(routeTypes({})).toEqual([])
+    expect(routeTypes({ enter: 'x', exit: 'y', ease: 'z' })).toEqual([
+      'greese-route-enter',
+      'greese-route-exit',
+      'greese-route-pace',
+    ])
+  })
+
+  it('maps its types to fixed classes', () => {
+    const map = pageClassMap({}) as Record<string, string>
+    expect(map['greese-route-enter']).toBe(`${T}--route-enter`)
+    expect(map['greese-route-exit']).toBe(`${T}--route-exit`)
+    expect(map['greese-route-pace']).toBe(`${T}--route-pace`)
+  })
+})
 
 describe('PageTransition classes', () => {
   it('follows the theme by default, and its back roles going back', () => {
@@ -60,6 +196,9 @@ describe('PageTransition classes', () => {
       'greese-back': `${T} ${T}--theme-back ${T}--enter-slide-right ${T}--page`,
       // A page that left live: joined with its direction's, its rest fades.
       'greese-live': `${T}--left`,
+      'greese-route-enter': `${T}--route-enter`,
+      'greese-route-exit': `${T}--route-exit`,
+      'greese-route-pace': `${T}--route-pace`,
       checkout: `${T} ${T}--theme ${T}--enter-pop-in ${T}--page`,
       quiet: 'none',
       // A tab kept in the URL, a filter: the page changes in place.
@@ -357,6 +496,77 @@ describe('PageTransition', () => {
     expect(click.defaultPrevented).toBe(false)
     expect(screen.getByRole('main')).toHaveTextContent('Page /a')
   })
+  describe('routes', () => {
+    const route = (path: string): PageRoute | undefined =>
+      path.startsWith('/a')
+        ? { to: { '/b/*': { exit: 'wipeOutLeft', duration: 0.4 } } }
+        : undefined
+
+    const Routed = (): JSX.Element => {
+      const [path, setPath] = useState('/a')
+      const page = usePageNavigate(
+        (to) => {
+          if (typeof to === 'string') setPath(to)
+        },
+        { route }
+      )
+      return (
+        <>
+          <a href="/b/c" onClick={page.onLinkClick('/b/c')}>
+            Matching
+          </a>
+          <a href="/z" onClick={page.onLinkClick('/z')}>
+            Plain
+          </a>
+          <a href="/b/c" onClick={page.onLinkClick('/b/c', { enter: 'pocketUp' })}>
+            Own
+          </a>
+          <PageTransition>
+            <main>Page {path}</main>
+          </PageTransition>
+        </>
+      )
+    }
+    const root = () => document.documentElement.style
+
+    it('adds the route types and root variables, and removes them at the next click', async () => {
+      Object.assign(document, { startViewTransition })
+      window.history.replaceState(null, '', '/a')
+      render(<Routed />)
+      await userEvent.click(screen.getByRole('link', { name: 'Matching' }))
+      await act(() => Promise.resolve())
+      expect(startViewTransition.mock.lastCall![0].types).toEqual([
+        'greese-page',
+        'greese-forward',
+        'greese-deeper',
+        'greese-route-exit',
+        'greese-route-pace',
+      ])
+      expect(root().getPropertyValue('--greese-page-exit')).toBe('greese-wipe-out-left')
+      expect(root().getPropertyValue('--greese-page-duration')).toBe('0.4s')
+      expect(root().getPropertyValue('--greese-page-enter')).toBe('')
+
+      window.history.replaceState(null, '', '/a')
+      await userEvent.click(screen.getByRole('link', { name: 'Plain' }))
+      await act(() => Promise.resolve())
+      expect(startViewTransition.mock.lastCall![0].types).not.toContain(
+        'greese-route-exit'
+      )
+      expect(root().getPropertyValue('--greese-page-exit')).toBe('')
+      expect(root().getPropertyValue('--greese-page-duration')).toBe('')
+    })
+
+    it('puts a navigation’s own options over the route’s', async () => {
+      Object.assign(document, { startViewTransition })
+      window.history.replaceState(null, '', '/a')
+      render(<Routed />)
+      await userEvent.click(screen.getByRole('link', { name: 'Own' }))
+      await act(() => Promise.resolve())
+      expect(startViewTransition.mock.lastCall![0].types).toContain('greese-route-enter')
+      expect(root().getPropertyValue('--greese-page-enter')).toBe('greese-pocket-up')
+      expect(root().getPropertyValue('--greese-page-exit')).toBe('greese-wipe-out-left')
+    })
+  })
 })
 
 describe('live exits', () => {
@@ -430,6 +640,15 @@ describe('live exits', () => {
     expect(isTimeline({ main: 'fadeOut' })).toBe(true)
   })
 
+  it('lets the navigation’s or route’s mode beat the page’s, then the theme’s', () => {
+    onScreen()
+    render(<Page mode="snapshot" />)
+    const page = pagesOnScreen()[0]!
+    expect(leavesLive(page, 'live', false, 'live')).toBe(true)
+    expect(leavesLive(page, 'live', false)).toBe(false)
+    expect(leavesLive(page, 'live', false, 'snapshot')).toBe(false)
+  })
+
   it('plays each member’s exit (its own, else the theme’s), spaced in order, and puts them back', async () => {
     onScreen()
     render(<Page />)
@@ -443,13 +662,13 @@ describe('live exits', () => {
       /^greese-scale-out .* calc\(0 \* 0\.1s\) both$/
     )
     expect(first.style.animation).toMatch(
-      /^var\(--greese-motion-page-exit, greese-fade-out\) .* calc\(1 \* 0\.1s\) both$/
+      /^var\(--greese-page-exit, var\(--greese-motion-page-exit, greese-fade-out\)\) .* calc\(1 \* 0\.1s\) both$/
     )
     restore()
     expect(first.style.animation).toBe('')
     exitPage(page, true, 'together')
     expect(first.style.animation).toMatch(
-      /^var\(--greese-motion-page-back-exit, .* 0s both$/
+      /^var\(--greese-page-exit, var\(--greese-motion-page-back-exit, .* 0s both$/
     )
   })
 

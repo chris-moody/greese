@@ -92,7 +92,8 @@ module.exports = [
     // rendered; a page that left live still plays the new page in; a page's
     // snapshots show only the screenful in view (ADR 0029 addendum) (32.33 kB).
     // 32.4 kB → 32.6 kB (2026-10-30): a live exit's styles come off at React's commit of the navigation (the hook's own update, in its transition), not at the first change the old page makes, which put members back on a homepage still mounting its sections; back and forward wait while the URL has moved (ADR 0029 addendum) (32.56 kB).
-    limit: '32.6 kB',
+    // 32.6 kB → 33.4 kB (2026-10-31): route rules and a navigation's own options (ADR 0029 addendum): the pattern matcher, the resolver, the root variables and the hook's wiring, 0.7-0.75 kB over the 0.3-0.45 kB the plan estimated (33.34 kB).
+    limit: '33.4 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -129,7 +130,8 @@ module.exports = [
     // 37.85 kB → 37.95 kB (2026-10-30): the commit seen from React, as above (37.89 kB).
     // 37.95 kB → 38.05 kB (2026-10-31): Tooltip opens on a tap, and a tap elsewhere
     // closes it (ADR 0005 amendment), about 60-90 B (37.98 kB).
-    limit: '38.05 kB',
+    // 38.05 kB → 38.8 kB (2026-10-31): route rules and a navigation's own options (ADR 0029 addendum): the pattern matcher, the resolver, the root variables and the hook's wiring, 0.7-0.75 kB over the 0.3-0.45 kB the plan estimated (38.75 kB).
+    limit: '38.8 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -460,7 +462,8 @@ module.exports = [
     // commit is seen, not two frames after the exit; a live page still plays
     // the new page in; snapshots show the screenful in view (3.56 kB).
     // 3.6 kB → 3.8 kB (2026-10-30): a live exit's styles come off at React's commit of the navigation (the hook's own update, in its transition), not at the first change the old page makes, which put members back on a homepage still mounting its sections; back and forward wait while the URL has moved (ADR 0029 addendum) (3.75 kB).
-    limit: '3.8 kB',
+    // 3.8 kB → 4.55 kB (2026-10-31): route rules and a navigation's own options (ADR 0029 addendum): the pattern matcher, the resolver, the root variables and the hook's wiring, 0.7-0.75 kB over the 0.3-0.45 kB the plan estimated (4.5 kB).
+    limit: '4.55 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -557,7 +560,8 @@ module.exports = [
     modifyRolldownConfig: external,
     // 47.45 kB → 47.6 kB (2026-10-30): the commit seen from React, as above (47.53 kB).
     // 47.6 kB → 47.7 kB (2026-10-31): the same Tooltip taps (47.56-47.62 kB).
-    limit: '47.7 kB',
+    // 47.7 kB → 48.3 kB (2026-10-31): route rules and a navigation's own options (ADR 0029 addendum): the pattern matcher, the resolver, the root variables and the hook's wiring, 0.7-0.75 kB over the 0.3-0.45 kB the plan estimated (48.28 kB).
+    limit: '48.3 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.
