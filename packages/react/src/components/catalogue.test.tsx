@@ -569,7 +569,9 @@ describe('Carousel', () => {
     </>
   )
   const shown = () =>
-    screen.getAllByRole('group', { hidden: true }).findIndex((g) => !g.hasAttribute('inert'))
+    screen
+      .getAllByRole('group', { hidden: true })
+      .findIndex((g) => !g.hasAttribute('inert'))
 
   it('shows one slide at a time; the others are inert', async () => {
     const { container } = render(<Carousel label="Tour">{slides}</Carousel>)

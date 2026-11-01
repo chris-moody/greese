@@ -20,7 +20,9 @@ test('exclusive accordion: keyboard opens an item and the browser closes the oth
   await expect(page.getByText('Ships in two days.')).toBeHidden()
 })
 
-test('collapsible: the height animates without a jump at either end', async ({ page }) => {
+test('collapsible: the height animates without a jump at either end', async ({
+  page,
+}) => {
   const animates = await page.evaluate(() =>
     CSS.supports('interpolate-size', 'allow-keywords')
   )
@@ -46,7 +48,10 @@ test('collapsible: the height animates without a jump at either end', async ({ p
         })
     )
   for (const tops of [await sample(), await sample()]) {
-    const steps = tops.slice(1).map((top, i) => top - tops[i]!).filter((s) => s !== 0)
+    const steps = tops
+      .slice(1)
+      .map((top, i) => top - tops[i]!)
+      .filter((s) => s !== 0)
     // One direction only, and easing out: a margin dropping out at the end
     // was a last step of 1em.
     expect(steps.every((s) => Math.sign(s) === Math.sign(steps[0]!))).toBe(true)

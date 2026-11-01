@@ -51,7 +51,10 @@
       (var(--greese-scrollcarousel-per-view) - 1) * var(--greese-scrollcarousel-gap)
     );
 
-    flex: 0 0 calc((100% - var(--greese-scrollcarousel-gaps)) / var(--greese-scrollcarousel-per-view));
+    flex: 0 0
+      calc(
+        (100% - var(--greese-scrollcarousel-gaps)) / var(--greese-scrollcarousel-per-view)
+      );
     min-inline-size: 0;
     scroll-snap-align: start;
   }

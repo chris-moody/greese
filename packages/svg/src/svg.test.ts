@@ -397,7 +397,12 @@ describe('animation helpers', () => {
     const step = frames()
     const seen: number[] = []
     const done = vi.fn()
-    tween((p) => seen.push(p), { duration: 1, ease: 'linear', repeat: -1, onComplete: done })
+    tween((p) => seen.push(p), {
+      duration: 1,
+      ease: 'linear',
+      repeat: -1,
+      onComplete: done,
+    })
     step(0)
     step(500)
     step(10_500)
