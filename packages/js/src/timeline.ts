@@ -574,10 +574,9 @@ export class Timeline implements PromiseLike<void> {
     const end = this.totalDuration()
     // Reduced for the page, or for any element it moves (an app's
     // `data-greese-motion="reduce"` subtree).
-    const targets = [...this.#tracks.keys()]
     const reduce =
       this.#options.reducedMotion !== 'ignore' &&
-      (prefersReducedMotion() || targets.some((target) => prefersReducedMotion(target)))
+      (prefersReducedMotion() || [...this.#tracks.keys()].some(prefersReducedMotion))
     if (reduce) {
       this.render(direction > 0 ? (end === Infinity ? this.duration() : end) : 0, true)
       this.#complete()

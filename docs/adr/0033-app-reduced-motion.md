@@ -61,4 +61,7 @@ of pulsing, since the pulse is an animation too.
   on an element inside it jumps to its end; the root reduces everything),
   and `e2e/carousel.spec.ts`: inside `motion="reduce"`, Carousel's slides
   cut and ScrollCarousel scrolls at once, in all five projects.
-- **Size:** a few hundred bytes of CSS, before compression, in `tokens.css`.
+- **Size:** about 240 B of `greese.css` (budget 25.9 → 26.15 kB), and
+  greese.js's `prefersReducedMotion` and its check of the elements a timeline
+  moves, 36–65 B (budgets: everything 6.65 → 6.7 kB, `animate` 5.7 → 5.8 kB,
+  the `<script>` build 7.05 → 7.1 kB).
