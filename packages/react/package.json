@@ -1,6 +1,6 @@
 {
   "name": "@greese/react",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Mobile-first, TypeScript-first React components, styled by @greese/ui: zero-runtime, CSS-variable theming.",
   "keywords": [
     "react",
@@ -72,7 +72,7 @@
     "@greese/icons": "0.1.0",
     "@greese/js": "0.1.0",
     "@greese/svg": "0.1.0",
-    "@greese/ui": "1.0.0"
+    "@greese/ui": "1.1.0"
   },
   "peerDependencies": {
     "react": "^19.0.0",

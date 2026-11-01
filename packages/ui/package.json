@@ -1,6 +1,6 @@
 {
   "name": "@greese/ui",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "greese ui's CSS and design tokens: a framework-free stylesheet, per-component CSS, custom properties, Sass kit and TypeScript constants. Works in plain HTML, or under any framework.",
   "keywords": [
     "css",

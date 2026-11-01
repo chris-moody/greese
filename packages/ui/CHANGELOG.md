@@ -1,5 +1,12 @@
 # @greese/ui
 
+## 1.1.0
+
+### Minor Changes
+
+- 1f48cc2: Ship the color themes: `@greese/ui/themes/{greese,ocean,sunset,forest,grape,mono,candy}.css` (and `.scss` for the kit). Each sets the brand colors and tinted neutrals in both schemes, and nothing else, so it composes with any shape or motion theme.
+- 914ba96: PageTransition styles play a route's or a navigation's own effects and pace (`greese-PageTransition--route-enter`, `--route-exit`, `--route-pace`).
+
 ## 1.0.0
 
 ### Major Changes

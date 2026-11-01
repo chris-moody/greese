@@ -1,5 +1,18 @@
 # @greese/react
 
+## 1.1.0
+
+### Minor Changes
+
+- 5a2c487: Page transitions can be set by route and by navigation. `usePageNavigate(navigate, { route })` reads each page's `PageRoute` (`to` and `from` rules by path pattern) and `navigate` and `onLinkClick` take `enter`, `exit`, `duration` and `ease`. A navigation's `mode` now beats a page's own, as documented.
+- d1e328a: Tooltip opens on a tap on touch and pen screens, as well as running the trigger's own action; a tap on it again, a tap elsewhere or Escape closes it. Turn it off with `openOnTap={false}`.
+
+### Patch Changes
+
+- Updated dependencies [1f48cc2]
+- Updated dependencies [914ba96]
+  - @greese/ui@1.1.0
+
 ## 1.0.0
 
 ### Major Changes

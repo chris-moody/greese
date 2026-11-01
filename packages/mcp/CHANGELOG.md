@@ -1,5 +1,14 @@
 # @greese/mcp
 
+## 0.1.1
+
+### Patch Changes
+
+- 3a50fb7: Serves the color themes alongside the shape and motion themes, and describes `list_themes` as all of them.
+- Updated dependencies [1f48cc2]
+- Updated dependencies [914ba96]
+  - @greese/ui@1.1.0
+
 ## 0.1.0
 
 ### Minor Changes
