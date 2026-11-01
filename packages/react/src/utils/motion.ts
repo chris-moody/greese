@@ -1,5 +1,3 @@
-import { MOTION_ATTR } from '@greese/ui'
-
 /**
  * Whether motion is reduced for `el`: by the system
  * (`prefers-reduced-motion: reduce`), or by the app, with
@@ -10,4 +8,4 @@ export const prefersReducedMotion = (el?: Element | null): boolean =>
   (typeof matchMedia === 'function' &&
     matchMedia('(prefers-reduced-motion: reduce)').matches) ||
   (typeof document !== 'undefined' &&
-    !!(el ?? document.documentElement).closest(`[${MOTION_ATTR}='reduce']`))
+    !!(el ?? document.documentElement).closest("[data-greese-motion='reduce']"))

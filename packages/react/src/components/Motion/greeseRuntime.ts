@@ -5,6 +5,7 @@
  */
 import {
   batch,
+  prefersReducedMotion,
   splitText,
   timeline,
   type Keyframe,
@@ -32,7 +33,6 @@ import {
   type GreeseEffectKeyframes,
   type GreeseEffectWithDefaults,
 } from './effects.ts'
-import { prefersReducedMotion } from '../../utils/motion.ts'
 
 /**
  * Every built-in effect as plain keyframes, for tools that show or edit them

@@ -135,7 +135,8 @@ module.exports = [
     // 38.05 kB → 38.8 kB (2026-10-31): route rules and a navigation's own options (ADR 0029 addendum): the pattern matcher, the resolver, the root variables and the hook's wiring, 0.7-0.75 kB over the 0.3-0.45 kB the plan estimated (38.75 kB).
     // 38.8 kB → 39.7 kB (2026-11-01): Carousel and CarouselSlide (ADR 0032), and
     // ScrollCarousel's vertical orientation (39.63 kB).
-    limit: '39.7 kB',
+    // 39.7 kB → 39.75 kB (2026-11-01): reduced motion an app asks for (ADR 0033): greese.js's prefersReducedMotion and its check of what a timeline moves (39.73 kB).
+    limit: '39.75 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -510,7 +511,8 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ useGreese }',
     ignore: ['react', 'react-dom'],
-    limit: '6.1 kB',
+    // 6.1 kB → 6.15 kB (2026-11-01): reduced motion an app asks for (ADR 0033): greese.js's prefersReducedMotion and its check of what a timeline moves (6.11 kB).
+    limit: '6.15 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -564,7 +566,8 @@ module.exports = [
     // 11 kB → 11.05 kB (2026-10-29): playPageExit, a page's live exit timeline (ADR 0029, 11.03 kB).
     // 11.05 kB → 11.15 kB (2026-10-30): eight half turns (`flipOver<Dir>`, `flipOverOut<Dir>`,
     // the Depth theme's page change; ADR 0029): more of the effect names this carries (11.11 kB).
-    limit: '11.15 kB',
+    // 11.15 kB → 11.25 kB (2026-11-01): reduced motion an app asks for (ADR 0033): greese.js's prefersReducedMotion and its check of what a timeline moves, read per element by the runtime (11.21 kB).
+    limit: '11.25 kB',
   },
   // @greese/react/svg (ADR 0031) is an add-on, not part of the library: the
   // whole library with greese.js, as above, plus every SVG component and all
@@ -580,7 +583,10 @@ module.exports = [
     // 47.7 kB → 48.3 kB (2026-10-31): route rules and a navigation's own options (ADR 0029 addendum): the pattern matcher, the resolver, the root variables and the hook's wiring, 0.7-0.75 kB over the 0.3-0.45 kB the plan estimated (48.28 kB).
     // 48.3 kB → 49.3 kB (2026-11-01): Carousel and CarouselSlide (ADR 0032), and
     // ScrollCarousel's vertical orientation (49.26 kB).
-    limit: '49.3 kB',
+    // 49.3 kB → 49.35 kB (2026-11-01): reduced motion an app asks for (ADR 0033): greese.js's prefersReducedMotion and its check of what a timeline moves, and DrawPath's and MarqueePath's own check (49.32 kB).
+    // 49.35 kB → 49.7 kB (2026-11-01): the filter primitive and preset components
+    // (ADR 0031 §7) (49.66 kB).
+    limit: '49.7 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.
@@ -606,7 +612,8 @@ module.exports = [
     import: '{ Morph }',
     ignore: ['react', 'react-dom'],
     modifyRolldownConfig: external,
-    limit: '3.8 kB', // 3.72 kB
+    // 3.8 kB → 3.81 kB (2026-11-01): tween() also reads the root's data-greese-motion (ADR 0033) (3.80 kB).
+    limit: '3.81 kB',
   },
   {
     name: 'JS: @greese/react/svg (everything)',
