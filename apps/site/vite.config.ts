@@ -14,6 +14,7 @@ import { kitSources } from './server/kitSources.ts'
 import { prerenderHome } from './server/prerender.ts'
 import { runtimeChunkGuard } from './server/runtimeChunk.ts'
 import { storyNames } from './server/storyNames.ts'
+import { storySourcePlugin } from '../docs/.storybook/storySource.ts'
 import { studio } from './server/studio.ts'
 
 /**
@@ -142,6 +143,8 @@ export default defineConfig({
     docsIndex(),
     docgenDocs(),
     storyNames(),
+    // Stories that keep state show their whole source in "Show code".
+    storySourcePlugin() as Plugin,
     // Only the utility classes the app's source uses (ADR 0019).
     greeseUtilities({
       // The docs render the stories and guides, so their classes count too.

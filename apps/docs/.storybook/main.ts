@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url'
 import type { StorybookConfig } from '@storybook/react-vite'
 import remarkGfm from 'remark-gfm'
 import { NodePackageImporter } from 'sass-embedded'
+import { storySourcePlugin } from './storySource.ts'
 
 const reactSrc = fileURLToPath(new URL('../../../packages/react/src', import.meta.url))
 const uiSrc = fileURLToPath(new URL('../../../packages/ui/src', import.meta.url))
@@ -48,6 +49,8 @@ const config: StorybookConfig = {
    */
   viteFinal: (vite) => ({
     ...vite,
+    // Stories that keep state show their whole source (storySource.ts).
+    plugins: [...(vite.plugins ?? []), storySourcePlugin()],
     resolve: {
       ...vite.resolve,
       alias: [

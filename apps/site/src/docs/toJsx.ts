@@ -60,9 +60,13 @@ export const componentName = (type: unknown): string => nameOf(type)
 const quote = (text: string) => JSON.stringify(text)
 
 /** A prop's value as an expression; undefined to leave the prop out. */
+const SOURCE = Symbol.for('greese.source')
+
 const valueOf = (value: unknown, indent: string): string | undefined => {
   if (value === undefined) return undefined
-  if (typeof value === 'function') return '() => {}'
+  // A story file's function args carry their source (storySource.ts's tags).
+  if (typeof value === 'function')
+    return (value as unknown as Record<symbol, string | undefined>)[SOURCE] ?? '() => {}'
   if (isValidElement(value)) {
     // Several elements in one prop need their fragment back, or they aren't one expression.
     if (value.type === Fragment && flatten(value).length > 1)

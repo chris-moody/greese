@@ -48,6 +48,8 @@ export type ComposedStory = ComponentType<Args> & {
 export interface StoryAnnotation {
   name?: string
   args?: Args
+  /** `docs.source.code`: the story's own source, for one that keeps state. */
+  parameters?: { docs?: { source?: { code?: string } } }
   render?: (args: Args, context: Record<string, unknown>) => unknown
   decorators?: Decorator[]
 }

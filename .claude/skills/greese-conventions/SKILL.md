@@ -201,6 +201,11 @@ the procedure for writing them. In short:
   saying what to target instead.
 - Stories must render deterministically: no autoplaying animation, no
   randomness, no dates. Visual tests snapshot them.
+- **Interactive stories keep real state.** A callback does something a
+  reader can see (`setValue`, a toast), never `() => {}`; state lives in a
+  `render: function Name(args) { … }` with its hooks. "Show code" then
+  prints that render's whole source as a module that runs, and
+  `apps/site/src/docs/storySource.test.ts` type-checks it.
 - **Every animation a story or docs demo shows can be replayed.**
   - An animation that plays once (an entrance on mount, a draw-on, a morph
     in) sits in `Replay` from `stories/_shared/Replay.tsx`. `Replay` adds a

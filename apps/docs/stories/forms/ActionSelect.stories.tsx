@@ -9,7 +9,7 @@ const meta = {
   args: {
     icon: <PlusIcon />,
     actionLabel: 'New project',
-    onAction: () => {},
+    onAction: () => toast({ title: 'Project created', tone: 'positive' }),
     selectLabel: 'Project',
     defaultValue: 'greese',
     options: [
@@ -26,8 +26,17 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** Act with the button, choose with the native select. */
-export const Playground: Story = {}
+/** Act with the button (here, a toast), choose with the native select. */
+export const Playground: Story = {
+  decorators: [
+    (Story) => (
+      <>
+        {Story()}
+        <Toaster />
+      </>
+    ),
+  ],
+}
 
 /**
  * A recipe: picking a format runs the export, and the button repeats the

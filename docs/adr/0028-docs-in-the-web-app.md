@@ -43,7 +43,18 @@ second app: examples render in the page and wear the page's theme.
   `parameters.layout`), loaded per page. `play` functions don't run, as in
   Storybook's docs.
 - **"Show code"** is the story's output as JSX, decorators included (as
-  Storybook's source), named from the library's exports. Components a story
+  Storybook's source), named from the library's exports. A function arg
+  prints as written: the build tags each with its source text
+  (`Symbol.for('greese.source')`). A story whose render keeps state (calls
+  a hook, or hands an element a handler of its own), or whose file defines
+  the stateful component it shows, can't be printed from its output: it
+  shows its source instead, as a module that runs on its own, with the
+  imports and the file's own declarations it uses, `const args = … as const`
+  when it reads them, and the render as `export const <Story>`
+  (`apps/docs/.storybook/storySource.ts`, set as
+  `parameters.docs.source.code`, which Storybook shows too).
+  `src/docs/storySource.test.ts` type-checks every such snippet and fails
+  on any do-nothing callback (`onX: () => {}`) in a story. Components a story
   file defines get a `displayName` at build (`server/storyNames.ts`), so a
   minified build still prints `Swatch`, not `e`.
 - **MDX** compiles in the app's build (`@mdx-js/rollup`, with remark-gfm, as

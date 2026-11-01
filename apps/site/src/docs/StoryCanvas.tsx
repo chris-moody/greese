@@ -52,13 +52,18 @@ const Source = ({
   args: Args
 }): JSX.Element => (
   <CodeBlock
-    code={storySnippet(
-      annotation.render ?? meta.render,
-      meta.component,
-      args,
-      storyContext(story, meta, args),
-      [...(annotation.decorators ?? []), ...(meta.decorators ?? [])]
-    )}
+    code={
+      // A story that keeps state shows its source: its output can't show the
+      // hooks and handlers it needs (apps/docs/.storybook/storySource.ts).
+      annotation.parameters?.docs?.source?.code ??
+      storySnippet(
+        annotation.render ?? meta.render,
+        meta.component,
+        args,
+        storyContext(story, meta, args),
+        [...(annotation.decorators ?? []), ...(meta.decorators ?? [])]
+      )
+    }
   />
 )
 
