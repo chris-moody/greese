@@ -148,7 +148,9 @@ describe('the guides', () => {
         return `${file} TS${d.code} ${ts.flattenDiagnosticMessageText(d.messageText, ' ')}\n    ${text.split('\n')[at]!.trim()}`
       })
     expect(wrong).toEqual([])
-  })
+    // A whole TypeScript program over every guide's samples: seconds on a busy
+    // machine (a release runs it straight after the builds), not milliseconds.
+  }, 60_000)
 })
 
 const options: ts.CompilerOptions = {
