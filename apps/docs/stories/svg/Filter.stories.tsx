@@ -35,7 +35,7 @@ const meta = {
           {parameters.art ?? (
             <Path
               d={{ type: 'star', cx: 60, cy: 62, r: 40, innerRadius: 18 }}
-              style={{ fill: 'var(--greese-color-primary)' }}
+              className="fill-primary"
             />
           )}
         </g>

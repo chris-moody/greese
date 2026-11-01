@@ -4,6 +4,7 @@ import { toPath } from '@greese/svg'
 import { composeRefs } from '../components/Slot/Slot.tsx'
 import type { PathProps } from './Path.tsx'
 import { prefersReducedMotion } from '../utils/motion.ts'
+import { varsStyle } from './vars.ts'
 
 export interface MarqueePathProps extends Omit<PathProps, 'slice'> {
   /** Dashes, evenly spaced along the path. @default 1 */
@@ -34,6 +35,7 @@ export const MarqueePath = ({
   duration = 2,
   reverse = false,
   paused = false,
+  vars,
   style,
   ref,
   ...props
@@ -72,7 +74,12 @@ export const MarqueePath = ({
       ref={composeRefs(own, ref)}
       pathLength={100}
       // One dash and its gap per lap: the pattern tiles the path exactly.
-      style={{ strokeDasharray: `${dash} ${lap - dash}`, strokeDashoffset: 0, ...style }}
+      style={{
+        ...varsStyle(vars),
+        strokeDasharray: `${dash} ${lap - dash}`,
+        strokeDashoffset: 0,
+        ...style,
+      }}
     />
   )
 }

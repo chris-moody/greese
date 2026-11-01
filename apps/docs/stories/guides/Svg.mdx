@@ -318,6 +318,39 @@ paint.
 `Morph` animates with `tween()` and writes `d` directly: no React render per
 frame.
 
+## Styling
+
+The components render no classes and need no stylesheet. Color them like
+any element:
+
+- **Utility classes** (`@greese/ui/utilities.css`, or only the ones you use):
+  `fill-primary`, `stroke-accent`, `fill-none`, `stroke-current`,
+  `stroke-width-2`, and `hover-fill-*`. They follow the theme and the color
+  scheme.
+- **Your own classes**, or SVG's attributes (`strokeWidth`, `strokeLinecap`)
+  for anything that isn't a color.
+- **`vars`**, for values a drawing's parts share or a theme should reach:
+  `vars={{ accent: 'primary', weight: 3 }}` sets `--accent` and `--weight`
+  on the element, for `fill: var(--accent)` in a class or a child. A bare
+  word is a color token by name, falling back to itself (`gold` stays gold).
+- **`style`** still works, and always wins: it's merged after `vars` and
+  after the component's own styles (a slice's dashes).
+
+```tsx
+<Drawing viewBox="0 0 100 100" vars={{ accent: 'secondary' }}>
+  <Path
+    d={{ type: 'star', cx: 50, cy: 50, r: 40 }}
+    className="fill-primary hover-fill-accent"
+  />
+  <Path
+    d="M10 90H90"
+    className="fill-none"
+    strokeWidth={4}
+    style={{ stroke: 'var(--accent)' }}
+  />
+</Drawing>
+```
+
 ## Accessibility and motion
 
 - Give a meaningful drawing a `label` (on `Drawing`). One without a label is

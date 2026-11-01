@@ -1,7 +1,8 @@
 import type { ComponentPropsWithRef, CSSProperties, JSX } from 'react'
 import { dashes, toPath, type PathInput, type Slice } from '@greese/svg'
+import { varsStyle, type VarsProps } from './vars.ts'
 
-export interface PathProps extends Omit<ComponentPropsWithRef<'path'>, 'd'> {
+export interface PathProps extends VarsProps, Omit<ComponentPropsWithRef<'path'>, 'd'> {
   /**
    * What to draw: path data, or a shape from `@greese/svg`
    * (`{ type: 'star', r: 40 }`, `{ type: 'rect', width: 10, height: 4, rx: 1 }`…).
@@ -33,6 +34,6 @@ export const sliceProps = (
  * <Path d={{ type: 'circle', cx: 50, cy: 50, r: 40 }} slice={{ end: 75 }} stroke="currentColor" fill="none" />
  * ```
  */
-export const Path = ({ d, slice, style, ...props }: PathProps): JSX.Element => (
-  <path d={toPath(d)} {...props} {...sliceProps(slice, style)} />
+export const Path = ({ d, slice, vars, style, ...props }: PathProps): JSX.Element => (
+  <path d={toPath(d)} {...props} {...sliceProps(slice, varsStyle(vars, style))} />
 )

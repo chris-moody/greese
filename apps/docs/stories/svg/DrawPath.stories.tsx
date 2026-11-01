@@ -7,9 +7,9 @@ import { Replay } from '../_shared/Replay.tsx'
 const signature =
   'M8 70C20 30 32 20 38 34S30 80 44 66 62 20 70 34 66 72 80 60 92 40 96 44'
 
+// The theme's colors as utility classes; the rest as SVG attributes.
 const stroke = {
-  fill: 'none',
-  stroke: 'var(--greese-color-primary)',
+  className: 'fill-none stroke-primary',
   strokeWidth: 4,
   strokeLinecap: 'round',
   strokeLinejoin: 'round',
@@ -18,7 +18,7 @@ const stroke = {
 const meta = {
   title: 'SVG/DrawPath',
   component: DrawPath,
-  args: { d: signature, duration: 1.6, easing: 'ease-in-out', style: stroke },
+  args: { d: signature, duration: 1.6, easing: 'ease-in-out', ...stroke },
   argTypes: { paused: { control: 'boolean' }, alternate: { control: 'boolean' } },
   decorators: [
     // Stories with controls draw their own Drawing (`parameters.ownDrawing`).

@@ -79,7 +79,9 @@ module.exports = [
     rolldown: false,
     // Opt-in, and rarely shipped whole: a project writes only the classes it
     // uses (`greese-utilities`, ADR 0019).
-    limit: '7.5 kB',
+    // 7.5 kB → 8.15 kB (2026-11-01): SVG paint (ADR 0031): `fill-*` and `stroke-*`
+    // in every theme color with their `hover-` forms, and `stroke-width-*` (8.1 kB).
+    limit: '8.15 kB',
   },
   {
     name: 'CSS: base.css',

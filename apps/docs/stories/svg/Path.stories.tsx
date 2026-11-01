@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { Grid, Slider, Stack, Text } from '@greese/react'
 import { Drawing, Path, type ShapeSpec, type Slice } from '@greese/react/svg'
 
+// The theme's colors as utility classes; the rest as SVG attributes.
 const stroke = {
-  fill: 'none',
-  stroke: 'var(--greese-color-primary)',
+  className: 'fill-none stroke-primary',
   strokeWidth: 6,
   strokeLinecap: 'round',
 } as const
@@ -16,7 +16,7 @@ const meta = {
   args: {
     d: { type: 'circle', cx: 50, cy: 50, r: 40 },
     slice: { end: 70 },
-    style: stroke,
+    ...stroke,
   },
   decorators: [
     // Stories with controls draw their own Drawing (`parameters.ownDrawing`).
@@ -57,7 +57,7 @@ export const Shapes: Story = {
       {shapes.map(([name, d]) => (
         <Stack key={name} gap={1} align="center">
           <Drawing viewBox="0 0 100 100" width={96} height={96}>
-            <Path d={d} style={{ fill: 'var(--greese-color-primary)' }} />
+            <Path d={d} className="fill-primary" />
           </Drawing>
           <Text variant="caption">{name}</Text>
         </Stack>
@@ -84,7 +84,7 @@ export const Slices: Story = {
             <Path
               d={{ type: 'circle', cx: 50, cy: 50, r: 40 }}
               slice={slice}
-              style={stroke}
+              {...stroke}
             />
           </Drawing>
           <Text variant="caption">
@@ -110,8 +110,9 @@ export const Transition: Story = {
           <Path
             d={{ type: 'rect', x: 10, y: 10, width: 80, height: 80, rx: 16 }}
             slice={{ end }}
+            {...stroke}
+            // Merged after the slice's own dash styles.
             style={{
-              ...stroke,
               transition:
                 'stroke-dasharray 0.4s ease-out, stroke-dashoffset 0.4s ease-out',
             }}

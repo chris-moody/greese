@@ -11,6 +11,7 @@ import {
 } from '@greese/svg'
 import { composeRefs } from '../components/Slot/Slot.tsx'
 import type { PathProps } from './Path.tsx'
+import { varsStyle } from './vars.ts'
 
 // `from` is an SVG animation attribute too; here it's a shape's index.
 export interface MorphProps extends Omit<PathProps, 'd' | 'slice' | 'from'> {
@@ -64,6 +65,8 @@ export const Morph = ({
   ease = 'out',
   align = true,
   onFinish,
+  vars,
+  style,
   ref,
   ...props
 }: MorphProps): JSX.Element => {
@@ -110,5 +113,7 @@ export const Morph = ({
 
   useLayoutEffect(() => () => running.current?.cancel(), [])
 
-  return <path d={d} {...props} ref={composeRefs(own, ref)} />
+  return (
+    <path d={d} {...props} style={varsStyle(vars, style)} ref={composeRefs(own, ref)} />
+  )
 }

@@ -617,6 +617,27 @@ const definitions: UtilityDefinition[] = [
     values: colors,
     hover: true,
   },
+  // SVG paint: a drawing's fills and strokes in the theme's colors.
+  {
+    group: 'color',
+    stem: 'fill',
+    property: 'fill',
+    values: { ...colors, none: 'none' },
+    hover: true,
+  },
+  {
+    group: 'color',
+    stem: 'stroke',
+    property: 'stroke',
+    values: { ...colors, none: 'none' },
+    hover: true,
+  },
+  {
+    group: 'color',
+    stem: 'stroke-width',
+    property: 'stroke-width',
+    values: { '0': '0', '1': '1', '2': '2', '3': '3', '4': '4' },
+  },
 
   // Effects and interaction.
   {

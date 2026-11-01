@@ -9,12 +9,9 @@ const meta = {
     count: 8,
     size: 5,
     duration: 1.5,
-    style: {
-      fill: 'none',
-      stroke: 'var(--greese-color-accent)',
-      strokeWidth: 5,
-      strokeLinecap: 'round',
-    },
+    className: 'fill-none stroke-accent',
+    strokeWidth: 5,
+    strokeLinecap: 'round',
   },
   argTypes: { reverse: { control: 'boolean' }, paused: { control: 'boolean' } },
   decorators: [

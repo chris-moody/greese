@@ -20,6 +20,8 @@ import { useColorScheme, type ColorScheme } from '@greese/react'
 import { color, font } from '@greese/ui'
 import '@greese/react/base.css'
 import '@greese/react/styles.css'
+// The utility classes, whole, for stories that use them (`fill-primary`).
+import '@greese/ui/utilities.css'
 import { ComponentStyles, hasStyles } from '../stories/_shared/ComponentStyles.tsx'
 import { scss } from './scss-grammar.ts'
 import { LiveCode } from './LiveCode.tsx'

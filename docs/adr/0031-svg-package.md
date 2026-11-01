@@ -135,8 +135,20 @@ untouched:
   - `Morph` writes `d` itself on each frame, with no React render per frame.
     With `progress`, it's pure and renders on the server.
 - **The `greese` prop.** `Drawing`, the `<svg>` root, takes it.
-- **No CSS.** The components render no `greese-*` classes, so `@greese/ui`
-  gains nothing and they have no Styling section.
+- **No CSS of their own.** The components render no `greese-*` classes, so
+  they need no stylesheet and have no Styling section.
+- **Styled by class, tuned by variables.** Inline styles are only for what's
+  computed per element: a slice's dashes, what an animation writes. Color a
+  drawing with a class, your own or the utility classes' `fill-*`,
+  `stroke-*` (the theme's colors, `none`, `current`) and `stroke-width-*`
+  (ADR 0019), which follow the theme and dark mode and take `hover-`. Every
+  drawing component also takes `vars`: `vars={{ accent: 'primary' }}` sets
+  `--accent` on the element, a bare word naming a color token
+  (`var(--greese-color-primary, primary)`, so a CSS color name still falls
+  back to itself and no token list ships). `vars` comes first, then the
+  component's own styles, then `style`, which always wins. A
+  `@greese/ui/svg` stylesheet was weighed and rejected: it would make the
+  package need CSS, and tokens are already classes.
 
 ## Consequences
 

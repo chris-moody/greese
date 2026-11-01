@@ -4,6 +4,7 @@ import { mixSlices, strokeKeyframes, toPath, type Slice } from '@greese/svg'
 import { composeRefs } from '../components/Slot/Slot.tsx'
 import { sliceProps, type PathProps } from './Path.tsx'
 import { prefersReducedMotion } from '../utils/motion.ts'
+import { varsStyle } from './vars.ts'
 
 // `from` and `to` are SVG animation attributes too; here they're slices.
 export interface DrawPathProps extends Omit<PathProps, 'slice' | 'from' | 'to'> {
@@ -52,6 +53,7 @@ export const DrawPath = ({
   alternate = false,
   paused = false,
   onFinish,
+  vars,
   style,
   ref,
   ...props
@@ -112,7 +114,7 @@ export const DrawPath = ({
       d={toPath(d)}
       {...props}
       ref={composeRefs(own, ref)}
-      {...sliceProps(to, style)}
+      {...sliceProps(to, varsStyle(vars, style))}
     />
   )
 }

@@ -11,12 +11,10 @@ const shapes: ShapeSpec[] = [
   { type: 'regularPolygon', cx: 50, cy: 54, r: 44, sides: 3 },
 ]
 
-const fill = { fill: 'var(--greese-color-primary)' }
-
 const meta = {
   title: 'SVG/Morph',
   component: Morph,
-  args: { shapes, from: 3, index: 0, duration: 0.6, style: fill },
+  args: { shapes, from: 3, index: 0, duration: 0.6, className: 'fill-primary' },
   argTypes: {
     index: { control: 'inline-radio', options: [0, 1, 2, 3] },
     from: { control: 'inline-radio', options: [0, 1, 2, 3] },

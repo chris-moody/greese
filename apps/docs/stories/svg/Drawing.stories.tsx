@@ -13,7 +13,7 @@ const meta = {
     children: (
       <Path
         d={{ type: 'star', cx: 50, cy: 50, r: 44, innerRadius: 20 }}
-        style={{ fill: 'var(--greese-color-primary)' }}
+        className="fill-primary"
       />
     ),
   },

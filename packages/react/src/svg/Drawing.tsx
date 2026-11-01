@@ -1,7 +1,9 @@
 import type { ComponentPropsWithRef, JSX } from 'react'
 import { withGreese, type GreeseProps } from '../utils/greese.ts'
+import { varsStyle, type VarsProps } from './vars.ts'
 
-export interface DrawingProps extends GreeseProps, ComponentPropsWithRef<'svg'> {
+export interface DrawingProps
+  extends GreeseProps, VarsProps, ComponentPropsWithRef<'svg'> {
   /**
    * What the drawing shows, for screen readers: it becomes an image
    * (`role="img"`) with this name. Without it, the drawing is decorative and
@@ -24,6 +26,8 @@ export interface DrawingProps extends GreeseProps, ComponentPropsWithRef<'svg'> 
 export const Drawing = ({
   greese,
   label,
+  vars,
+  style,
   children,
   ...props
 }: DrawingProps): JSX.Element =>
@@ -33,6 +37,7 @@ export const Drawing = ({
       xmlns="http://www.w3.org/2000/svg"
       {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}
       {...props}
+      style={varsStyle(vars, style)}
     >
       {children}
     </svg>,

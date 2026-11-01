@@ -6,7 +6,7 @@ import { Drawing, Filter, Path, url } from '@greese/react/svg'
 const star = (
   <Path
     d={{ type: 'star', cx: 60, cy: 62, r: 40, innerRadius: 18 }}
-    style={{ fill: 'var(--greese-color-primary)' }}
+    className="fill-primary"
   />
 )
 
@@ -31,7 +31,7 @@ export const filterStage = (id: string): Decorator => {
 
 /** Three circles near each other, for the goo effect. */
 export const blobs = (
-  <g style={{ fill: 'var(--greese-color-secondary)' }}>
+  <g className="fill-secondary">
     <circle cx={38} cy={60} r={22} />
     <circle cx={76} cy={60} r={16} />
     <circle cx={100} cy={54} r={8} />

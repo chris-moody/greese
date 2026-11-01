@@ -586,7 +586,8 @@ module.exports = [
     // 49.3 kB → 49.35 kB (2026-11-01): reduced motion an app asks for (ADR 0033): greese.js's prefersReducedMotion and its check of what a timeline moves, and DrawPath's and MarqueePath's own check (49.32 kB).
     // 49.35 kB → 49.7 kB (2026-11-01): the filter primitive and preset components
     // (ADR 0031 §7) (49.66 kB).
-    limit: '49.7 kB',
+    // 49.7 kB → 49.75 kB (2026-11-01): the `vars` prop (ADR 0031): custom properties by name, color tokens by their names (49.74 kB).
+    limit: '49.75 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.
@@ -596,7 +597,8 @@ module.exports = [
     import: '{ Path }',
     ignore: ['react', 'react-dom'],
     modifyRolldownConfig: external,
-    limit: '1.9 kB', // 1.86 kB
+    // 1.9 kB → 2 kB (2026-11-01): the `vars` prop (ADR 0031): custom properties by name, color tokens by their names (1.96 kB).
+    limit: '2 kB',
   },
   {
     name: 'JS: @greese/react/svg { DrawPath, MarqueePath }',
@@ -604,7 +606,8 @@ module.exports = [
     import: '{ DrawPath, MarqueePath }',
     ignore: ['react', 'react-dom'],
     modifyRolldownConfig: external,
-    limit: '2.8 kB', // 2.75 kB
+    // 2.8 kB → 2.95 kB (2026-11-01): the `vars` prop (ADR 0031): custom properties by name, color tokens by their names (2.9 kB).
+    limit: '2.95 kB',
   },
   {
     name: 'JS: @greese/react/svg { Morph }',
@@ -613,7 +616,8 @@ module.exports = [
     ignore: ['react', 'react-dom'],
     modifyRolldownConfig: external,
     // 3.8 kB → 3.81 kB (2026-11-01): tween() also reads the root's data-greese-motion (ADR 0033) (3.80 kB).
-    limit: '3.81 kB',
+    // 3.81 kB → 3.95 kB (2026-11-01): the `vars` prop (ADR 0031): custom properties by name, color tokens by their names (3.92 kB).
+    limit: '3.95 kB',
   },
   {
     name: 'JS: @greese/react/svg (everything)',
@@ -625,6 +629,7 @@ module.exports = [
     // components) and all of @greese/svg (9.15 kB on its own).
     // 12.2 kB → 12.5 kB (2026-11-01): a component per filter primitive and preset
     // (ADR 0031 §7), sixteen thin wrappers over the builders (12.45 kB).
-    limit: '12.5 kB',
+    // 12.5 kB → 12.6 kB (2026-11-01): the `vars` prop (ADR 0031): custom properties by name, color tokens by their names (12.57 kB).
+    limit: '12.6 kB',
   },
 ]

@@ -144,7 +144,13 @@ export default defineConfig({
     storyNames(),
     // Only the utility classes the app's source uses (ADR 0019).
     greeseUtilities({
-      content: ['index.html', 'preview.html', 'src/**/*.{ts,tsx}'],
+      // The docs render the stories and guides, so their classes count too.
+      content: [
+        'index.html',
+        'preview.html',
+        'src/**/*.{ts,tsx}',
+        '../docs/stories/**/*.{ts,tsx,mdx}',
+      ],
     }) as Plugin,
     fallbackPages(),
     runtimeChunkGuard(),

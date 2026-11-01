@@ -95,101 +95,6 @@ describe('Drawing', () => {
   })
 })
 
-describe('filter primitives', () => {
-  it('take friendly names and write the native attributes', () => {
-    const { container } = render(
-      <svg>
-        <Filter id="f" colorInterpolation="sRGB">
-          <FeFlood color="gold" opacity={0.5} result="tint" />
-          <FeGaussianBlur in="SourceAlpha" deviation={[4, 0]} edges="none" />
-          <FeOffset x={2} y={3} result="moved" />
-          <FeDropShadow x={1} y={4} blur={3} color="black" opacity={0.4} />
-          <FeComposite in="tint" in2="SourceAlpha" operator="in" />
-          <FeBlend in2="moved" mode="multiply" />
-          <FeColorMatrix type="saturate" values={0} />
-          <FeTurbulence frequency={0.8} octaves={3} stitch type="fractalNoise" />
-          <FeDisplacementMap in2="noise" scale={8} xChannel="R" yChannel="G" />
-          <FeMorphology operator="dilate" radius={2} />
-          <FeMerge result="stack">
-            <FeMergeNode in="moved" />
-            <FeMergeNode in="SourceGraphic" />
-          </FeMerge>
-        </Filter>
-      </svg>
-    )
-    const attrs = (tag: string) =>
-      Object.fromEntries(
-        [...container.querySelector(`#f ${tag}`)!.attributes].map((a) => [
-          a.name,
-          a.value,
-        ])
-      )
-    expect(
-      container.querySelector('#f')!.getAttribute('color-interpolation-filters')
-    ).toBe('sRGB')
-    expect(attrs('feFlood')).toEqual({
-      'flood-color': 'gold',
-      'flood-opacity': '0.5',
-      result: 'tint',
-    })
-    expect(attrs('feGaussianBlur')).toEqual({
-      in: 'SourceAlpha',
-      stdDeviation: '4 0',
-      edgeMode: 'none',
-    })
-    expect(attrs('feOffset')).toEqual({ dx: '2', dy: '3', result: 'moved' })
-    expect(attrs('feDropShadow')).toMatchObject({
-      dx: '1',
-      dy: '4',
-      stdDeviation: '3',
-      'flood-color': 'black',
-      'flood-opacity': '0.4',
-    })
-    expect(attrs('feBlend')).toEqual({ in2: 'moved', mode: 'multiply' })
-    expect(attrs('feColorMatrix')).toEqual({ type: 'saturate', values: '0' })
-    expect(attrs('feTurbulence')).toEqual({
-      type: 'fractalNoise',
-      baseFrequency: '0.8',
-      numOctaves: '3',
-      stitchTiles: 'stitch',
-    })
-    expect(attrs('feDisplacementMap')).toEqual({
-      in2: 'noise',
-      scale: '8',
-      xChannelSelector: 'R',
-      yChannelSelector: 'G',
-    })
-    expect(attrs('feMorphology')).toEqual({ operator: 'dilate', radius: '2' })
-    expect(
-      [...container.querySelectorAll('#f feMergeNode')].map((n) => n.getAttribute('in'))
-    ).toEqual(['moved', 'SourceGraphic'])
-  })
-
-  it('presets render their primitives in place', () => {
-    const { container } = render(
-      <svg>
-        <Filter id="p">
-          <Goo blur={6} />
-          <Grain seed={4} />
-          <Distort scale={6} />
-        </Filter>
-      </svg>
-    )
-    const tags = [...container.querySelector('#p')!.children].map((c) => c.localName)
-    expect(tags).toEqual([
-      'feGaussianBlur',
-      'feColorMatrix',
-      'feComposite',
-      'feTurbulence',
-      'feColorMatrix',
-      'feComposite',
-      'feComposite',
-      'feTurbulence',
-      'feDisplacementMap',
-    ])
-  })
-})
-
 describe('Path', () => {
   it('draws shape specs and path data, and slices on the server', () => {
     const html = renderToString(
@@ -401,5 +306,126 @@ describe('definitions', () => {
     expect(container.querySelector('#hex path')!.getAttribute('d')).toMatch(/^M0 -10L/)
     expect(container.querySelector('#fade')!.getAttribute('mask-type')).toBe('alpha')
     expect(container.querySelector('#fade path')!.getAttribute('fill')).toBe('white')
+  })
+})
+
+describe('filter primitives', () => {
+  it('take friendly names and write the native attributes', () => {
+    const { container } = render(
+      <svg>
+        <Filter id="f" colorInterpolation="sRGB">
+          <FeFlood color="gold" opacity={0.5} result="tint" />
+          <FeGaussianBlur in="SourceAlpha" deviation={[4, 0]} edges="none" />
+          <FeOffset x={2} y={3} result="moved" />
+          <FeDropShadow x={1} y={4} blur={3} color="black" opacity={0.4} />
+          <FeComposite in="tint" in2="SourceAlpha" operator="in" />
+          <FeBlend in2="moved" mode="multiply" />
+          <FeColorMatrix type="saturate" values={0} />
+          <FeTurbulence frequency={0.8} octaves={3} stitch type="fractalNoise" />
+          <FeDisplacementMap in2="noise" scale={8} xChannel="R" yChannel="G" />
+          <FeMorphology operator="dilate" radius={2} />
+          <FeMerge result="stack">
+            <FeMergeNode in="moved" />
+            <FeMergeNode in="SourceGraphic" />
+          </FeMerge>
+        </Filter>
+      </svg>
+    )
+    const attrs = (tag: string) =>
+      Object.fromEntries(
+        [...container.querySelector(`#f ${tag}`)!.attributes].map((a) => [
+          a.name,
+          a.value,
+        ])
+      )
+    expect(
+      container.querySelector('#f')!.getAttribute('color-interpolation-filters')
+    ).toBe('sRGB')
+    expect(attrs('feFlood')).toEqual({
+      'flood-color': 'gold',
+      'flood-opacity': '0.5',
+      result: 'tint',
+    })
+    expect(attrs('feGaussianBlur')).toEqual({
+      in: 'SourceAlpha',
+      stdDeviation: '4 0',
+      edgeMode: 'none',
+    })
+    expect(attrs('feOffset')).toEqual({ dx: '2', dy: '3', result: 'moved' })
+    expect(attrs('feDropShadow')).toMatchObject({
+      dx: '1',
+      dy: '4',
+      stdDeviation: '3',
+      'flood-color': 'black',
+      'flood-opacity': '0.4',
+    })
+    expect(attrs('feBlend')).toEqual({ in2: 'moved', mode: 'multiply' })
+    expect(attrs('feColorMatrix')).toEqual({ type: 'saturate', values: '0' })
+    expect(attrs('feTurbulence')).toEqual({
+      type: 'fractalNoise',
+      baseFrequency: '0.8',
+      numOctaves: '3',
+      stitchTiles: 'stitch',
+    })
+    expect(attrs('feDisplacementMap')).toEqual({
+      in2: 'noise',
+      scale: '8',
+      xChannelSelector: 'R',
+      yChannelSelector: 'G',
+    })
+    expect(attrs('feMorphology')).toEqual({ operator: 'dilate', radius: '2' })
+    expect(
+      [...container.querySelectorAll('#f feMergeNode')].map((n) => n.getAttribute('in'))
+    ).toEqual(['moved', 'SourceGraphic'])
+  })
+
+  it('presets render their primitives in place', () => {
+    const { container } = render(
+      <svg>
+        <Filter id="p">
+          <Goo blur={6} />
+          <Grain seed={4} />
+          <Distort scale={6} />
+        </Filter>
+      </svg>
+    )
+    const tags = [...container.querySelector('#p')!.children].map((c) => c.localName)
+    expect(tags).toEqual([
+      'feGaussianBlur',
+      'feColorMatrix',
+      'feComposite',
+      'feTurbulence',
+      'feColorMatrix',
+      'feComposite',
+      'feComposite',
+      'feTurbulence',
+      'feDisplacementMap',
+    ])
+  })
+})
+
+describe('vars', () => {
+  it('sets custom properties, color tokens by name, ahead of style', () => {
+    const { container } = render(
+      <Drawing vars={{ accent: 'primary', '--size': 4, edge: 'gold', fill: 'none' }}>
+        <Path d="M0 0H10" vars={{ tint: 'fg-muted' }} style={{ fill: 'var(--tint)' }} />
+        <Path d="M0 0H10" slice={{ end: 50 }} vars={{ tint: '#f00' }} />
+      </Drawing>
+    )
+    const svg = container.querySelector('svg')!
+    expect(svg.style.getPropertyValue('--accent')).toBe(
+      'var(--greese-color-primary, primary)'
+    )
+    expect(svg.style.getPropertyValue('--size')).toBe('4')
+    expect(svg.style.getPropertyValue('--edge')).toBe('var(--greese-color-gold, gold)')
+    expect(svg.style.getPropertyValue('--fill')).toBe('var(--greese-color-none, none)')
+    const [a, b] = container.querySelectorAll('path')
+    expect(a!.style.getPropertyValue('--tint')).toBe(
+      'var(--greese-color-fg-muted, fg-muted)'
+    )
+    expect(a!.style.fill).toBe('var(--tint)')
+    expect(a!.hasAttribute('vars')).toBe(false)
+    expect(b!.style.getPropertyValue('--tint')).toBe('#f00')
+    expect(b!.style.strokeDasharray).toBe('50 101')
   })
 })
