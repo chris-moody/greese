@@ -28,6 +28,7 @@ const Glyph = () => <InfoIcon />
 /** Fixtures for e2e/catalogue.spec.ts: the components from ADR 0011. */
 export const Catalogue = (): JSX.Element => {
   const [slide, setSlide] = useState(0)
+  const [controlled, setControlled] = useState(0)
   const [split, setSplit] = useState(50)
   const [code, setCode] = useState('')
   const [action, setAction] = useState('')
@@ -42,6 +43,40 @@ export const Catalogue = (): JSX.Element => {
           ))}
         </ScrollCarousel>
         <output data-testid="slide">{slide}</output>
+
+        {/* Controlled, with buttons of the page's own. */}
+        <ScrollCarousel
+          label="Controlled"
+          index={controlled}
+          onIndexChange={setControlled}
+        >
+          {[30, 120, 210, 300].map((hue) => (
+            <ScrollCarouselSlide key={hue}>
+              <div style={tile(hue)} />
+            </ScrollCarouselSlide>
+          ))}
+        </ScrollCarousel>
+        <Stack direction="row" gap={2}>
+          <button type="button" onClick={() => setControlled((i) => Math.max(0, i - 1))}>
+            Back
+          </button>
+          <button type="button" onClick={() => setControlled((i) => Math.min(3, i + 1))}>
+            Forward
+          </button>
+          <output data-testid="controlled">{controlled}</output>
+        </Stack>
+
+        <ScrollCarousel
+          label="Vertical"
+          orientation="vertical"
+          style={{ inlineSize: '16rem' }}
+        >
+          {[60, 150, 240].map((hue) => (
+            <ScrollCarouselSlide key={hue}>
+              <div style={{ ...tile(hue), blockSize: '100%' }} />
+            </ScrollCarouselSlide>
+          ))}
+        </ScrollCarousel>
 
         <Diff
           label="Comparison"

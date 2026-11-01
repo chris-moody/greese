@@ -234,7 +234,7 @@ are at least 44px.
 | **Media**        | `Card` + `CardMedia`, `Image` (lazy by default, `priority` for LCP, CSS placeholder, fallback), `Video` (plays inline on iOS), `Embed`, `Icon`, `Avatar` + `AvatarGroup`                                                                |
 | **Disclosure**   | `Collapsible` and `Accordion` (native `<details>`; `exclusive` keeps one open with no JS; an icon of yours, or one per state), `Tabs`                                                                                                   |
 | **Feedback**     | `Alert` (announces only when you ask), `Badge`, `Chip` (removable or selectable), `Spinner`, `Progress`, `RadialProgress`, `Skeleton`, `Status` (a state dot), `Countdown`                                                              |
-| **Data display** | `Stat` + `StatGroup`, `List` + `ListItem`, `ChatBubble`, `Key`, `Indicator` (a badge or dot on a corner), `Diff` (a before/after slider), `ScrollCarousel` + `ScrollCarouselSlide` (native scroll snapping), `TextRotate` (CSS-only rotating words) |
+| **Data display** | `Stat` + `StatGroup`, `List` + `ListItem`, `ChatBubble`, `Key`, `Indicator` (a badge or dot on a corner), `Diff` (a before/after slider), `ScrollCarousel` + `ScrollCarouselSlide` (native scroll snapping, horizontal or vertical), `TextRotate` (CSS-only rotating words) |
 
 ## Overlays and navigation
 

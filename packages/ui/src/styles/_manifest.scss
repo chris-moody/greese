@@ -109,18 +109,6 @@ $blocks: (
     part-modifiers: (),
     variables: (),
   ),
-  'ScrollCarousel': (
-    parts: ('control', 'indicator', 'indicators', 'viewport',),
-    modifiers: (),
-    part-modifiers: ('control': ('next', 'previous',)),
-    variables: ('--greese-scrollcarousel-dots', '--greese-scrollcarousel-gap', '--greese-scrollcarousel-gaps', '--greese-scrollcarousel-per-view',),
-  ),
-  'ScrollCarouselSlide': (
-    parts: (),
-    modifiers: (),
-    part-modifiers: (),
-    variables: (),
-  ),
   'Center': (
     parts: (),
     modifiers: ('inline',),
@@ -414,6 +402,18 @@ $blocks: (
     modifiers: ('lg', 'md', 'sm', 'xl', 'xs',),
     part-modifiers: (),
     variables: ('--greese-rating-fill', '--greese-rating-off', '--greese-rating-on', '--greese-rating-size',),
+  ),
+  'ScrollCarousel': (
+    parts: ('control', 'indicator', 'indicators', 'viewport',),
+    modifiers: ('vertical',),
+    part-modifiers: ('control': ('next', 'previous',)),
+    variables: ('--greese-scrollcarousel-dots', '--greese-scrollcarousel-gap', '--greese-scrollcarousel-gaps', '--greese-scrollcarousel-per-view', '--greese-scrollcarousel-size',),
+  ),
+  'ScrollCarouselSlide': (
+    parts: (),
+    modifiers: (),
+    part-modifiers: (),
+    variables: (),
   ),
   'ScrollSpy': (
     parts: (),

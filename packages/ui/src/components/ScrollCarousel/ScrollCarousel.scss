@@ -29,9 +29,19 @@
 
     @include mixins.focus-ring;
 
-    @media (prefers-reduced-motion: no-preference) {
+    // The buttons and dots read this to choose a smooth or instant scroll.
+    @include mixins.motion-safe {
       scroll-behavior: smooth;
     }
+  }
+
+  // Vertical: a column in a viewport of its own height, snapping on y.
+  .greese-ScrollCarousel--vertical > .greese-ScrollCarousel-viewport {
+    flex-direction: column;
+    block-size: var(--greese-scrollcarousel-size, 20rem);
+    overflow: hidden auto;
+    overscroll-behavior: auto contain;
+    scroll-snap-type: y mandatory;
   }
 
   // Each slide's width: the viewport shared by `per-view` slides and the gaps.
@@ -104,6 +114,31 @@
 
   .greese-ScrollCarousel-control--next:dir(rtl) > svg {
     scale: 1;
+  }
+
+  // Vertical: the buttons sit centred on the top and bottom edges, the
+  // chevron turned to point up and down.
+  .greese-ScrollCarousel--vertical > .greese-ScrollCarousel-control {
+    inset-inline: 0;
+    margin-inline: auto;
+    translate: none;
+
+    > svg {
+      rotate: 90deg;
+      scale: 1;
+    }
+  }
+
+  .greese-ScrollCarousel--vertical > .greese-ScrollCarousel-control--previous {
+    inset-block-start: var(--greese-space-2);
+  }
+
+  .greese-ScrollCarousel--vertical > .greese-ScrollCarousel-control--next {
+    inset-block: auto calc(var(--greese-space-2) + var(--greese-scrollcarousel-dots, 0px));
+
+    > svg {
+      rotate: -90deg;
+    }
   }
 
   // Phones swipe; the buttons come back where a pointer can hover.

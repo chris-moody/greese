@@ -6,12 +6,13 @@ test.beforeEach(({ page }) =>
   openFixture(page, 'catalogue', (p) => p.getByRole('region', { name: 'Colors' }))
 )
 
-test('carousel: one slide per view, snapped, and the index follows scrolling', async ({
+test('scroll carousel: one slide per view, snapped, and the index follows scrolling', async ({
   page,
 }) => {
+  const colors = page.getByRole('region', { name: 'Colors' })
   // The scrolling region, as the dots name it.
-  const viewport = await controlledBy(page.getByRole('button', { name: 'Slide 1' }))
-  const slides = page.getByRole('group', { name: /of 4/ })
+  const viewport = await controlledBy(colors.getByRole('button', { name: 'Slide 1' }))
+  const slides = colors.getByRole('group', { name: /of 4/ })
   await expect(slides).toHaveCount(4)
   const view = (await viewport.boundingBox())!
   const first = (await slides.first().boundingBox())!
@@ -22,18 +23,19 @@ test('carousel: one slide per view, snapped, and the index follows scrolling', a
     el.scrollTo({ left: el.clientWidth * 2, behavior: 'instant' })
   )
   await expect(page.getByTestId('slide')).toHaveText('2')
-  await expect(page.getByRole('button', { name: 'Slide 3' })).toHaveAttribute(
+  await expect(colors.getByRole('button', { name: 'Slide 3' })).toHaveAttribute(
     'aria-current',
     'true'
   )
 })
 
-test('carousel: dots and buttons scroll to a slide, snapped to its start', async ({
+test('scroll carousel: dots and buttons scroll to a slide, snapped to its start', async ({
   page,
 }) => {
+  const colors = page.getByRole('region', { name: 'Colors' })
   // The scrolling region, as the dots name it.
-  const viewport = await controlledBy(page.getByRole('button', { name: 'Slide 1' }))
-  await page.getByRole('button', { name: 'Slide 4' }).click()
+  const viewport = await controlledBy(colors.getByRole('button', { name: 'Slide 1' }))
+  await colors.getByRole('button', { name: 'Slide 4' }).click()
   await expect(page.getByTestId('slide')).toHaveText('3')
   // A smooth scroll across three slides: under a full parallel run, WebKit's
   // animation can take longer than the 5 s default to land.
@@ -48,12 +50,110 @@ test('carousel: dots and buttons scroll to a slide, snapped to its start', async
     .toBeLessThan(2)
   if (touch()) {
     // Phones swipe: the arrow buttons are hidden where nothing hovers.
-    await expect(page.getByRole('button', { name: 'Previous slide' })).toBeHidden()
+    await expect(colors.getByRole('button', { name: 'Previous slide' })).toBeHidden()
     return
   }
-  await page.getByRole('button', { name: 'Previous slide' }).click()
+  await colors.getByRole('button', { name: 'Previous slide' }).click()
   await expect(page.getByTestId('slide')).toHaveText('2')
-  await expect(page.getByRole('button', { name: 'Next slide' })).toBeEnabled()
+  await expect(colors.getByRole('button', { name: 'Next slide' })).toBeEnabled()
+})
+
+test('scroll carousel: a controlled index moves the view to a slide already scrolled past', async ({
+  page,
+}) => {
+  const carousel = page.getByRole('region', { name: 'Controlled' })
+  const viewport = await controlledBy(carousel.getByRole('button', { name: 'Slide 1' }))
+  const at = (slide: number) =>
+    expect
+      .poll(
+        () =>
+          viewport.evaluate((el, i) => {
+            const children = el.children as HTMLCollectionOf<HTMLElement>
+            return Math.abs(
+              el.scrollLeft - (children[i]!.offsetLeft - children[0]!.offsetLeft)
+            )
+          }, slide),
+        {
+          timeout: 15_000,
+        }
+      )
+      .toBeLessThan(2)
+  // Swipe to the third slide and back to the first, as a user would.
+  for (const slide of [2, 0]) {
+    await viewport.evaluate((el, i) => {
+      const children = el.children as HTMLCollectionOf<HTMLElement>
+      el.scrollTo({
+        left: children[i]!.offsetLeft - children[0]!.offsetLeft,
+        behavior: 'instant',
+      })
+    }, slide)
+    await expect(page.getByTestId('controlled')).toHaveText(String(slide))
+  }
+  // The page's own buttons, through `index`: both slides were seen before.
+  await page.getByRole('button', { name: 'Forward' }).click()
+  await at(1)
+  await page.getByRole('button', { name: 'Forward' }).click()
+  await expect(page.getByTestId('controlled')).toHaveText('2')
+  await at(2)
+})
+
+test('scroll carousel: reduced motion moves at once', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  const colors = page.getByRole('region', { name: 'Colors' })
+  const viewport = await controlledBy(colors.getByRole('button', { name: 'Slide 1' }))
+  // The next frame after the click: a smooth scroll would still be on its way.
+  const left = await colors.getByRole('button', { name: 'Slide 3' }).evaluate(
+    (dot, view) =>
+      new Promise<number>((resolve) => {
+        ;(dot as HTMLElement).click()
+        requestAnimationFrame(() => {
+          const children = view.children as HTMLCollectionOf<HTMLElement>
+          resolve(view.scrollLeft - (children[2]!.offsetLeft - children[0]!.offsetLeft))
+        })
+      }),
+    await viewport.elementHandle()
+  )
+  expect(Math.abs(left)).toBeLessThan(2)
+})
+
+test('scroll carousel: vertical slides stack and scroll on y', async ({ page }) => {
+  const carousel = page.getByRole('region', { name: 'Vertical' })
+  const viewport = await controlledBy(carousel.getByRole('button', { name: 'Slide 1' }))
+  const slides = carousel.getByRole('group', { name: /of 3/ })
+  const [a, b] = [
+    (await slides.nth(0).boundingBox())!,
+    (await slides.nth(1).boundingBox())!,
+  ]
+  expect(Math.abs(a.x - b.x)).toBeLessThan(1)
+  expect(b.y).toBeGreaterThan(a.y)
+  const view = (await viewport.boundingBox())!
+  expect(Math.abs(a.height - view.height)).toBeLessThan(1)
+
+  await carousel.getByRole('button', { name: 'Slide 3' }).click()
+  await expect
+    .poll(
+      () => viewport.evaluate((el) => el.scrollHeight - el.clientHeight - el.scrollTop),
+      { timeout: 15_000 }
+    )
+    .toBeLessThan(2)
+  await expect(carousel.getByRole('button', { name: 'Slide 3' })).toHaveAttribute(
+    'aria-current',
+    'true'
+  )
+  if (touch()) return
+  // The buttons sit on the top and bottom edges, centred.
+  const previous = (await carousel
+    .getByRole('button', { name: 'Previous slide' })
+    .boundingBox())!
+  expect(
+    Math.abs(previous.x + previous.width / 2 - (view.x + view.width / 2))
+  ).toBeLessThan(2)
+  expect(previous.y).toBeLessThan(view.y + view.height / 2)
+  await carousel.getByRole('button', { name: 'Previous slide' }).click()
+  await expect(carousel.getByRole('button', { name: 'Slide 2' })).toHaveAttribute(
+    'aria-current',
+    'true'
+  )
 })
 
 test('diff: the divider follows the slider, by keyboard and pointer', async ({

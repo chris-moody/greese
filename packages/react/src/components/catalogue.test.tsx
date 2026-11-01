@@ -577,7 +577,9 @@ describe('ScrollCarousel', () => {
   )
 
   it('is a named carousel of labelled slides', async () => {
-    const { container } = render(<ScrollCarousel label="Featured">{slides}</ScrollCarousel>)
+    const { container } = render(
+      <ScrollCarousel label="Featured">{slides}</ScrollCarousel>
+    )
     expect(screen.getByRole('region', { name: 'Featured' })).toHaveAttribute(
       'aria-roledescription',
       'carousel'
@@ -620,7 +622,21 @@ describe('ScrollCarousel', () => {
       'greese-ScrollCarousel--xs-per-view',
       'greese-ScrollCarousel--md-per-view'
     )
-    expect(viewport.style.getPropertyValue('--greese-scrollcarousel-per-view-md')).toBe('2.5')
+    expect(viewport.style.getPropertyValue('--greese-scrollcarousel-per-view-md')).toBe(
+      '2.5'
+    )
+  })
+
+  it('runs vertically with orientation="vertical"', () => {
+    render(
+      <ScrollCarousel label="Featured" orientation="vertical">
+        {slides}
+      </ScrollCarousel>
+    )
+    expect(screen.getByRole('region')).toHaveClass(
+      'greese-ScrollCarousel',
+      'greese-ScrollCarousel--vertical'
+    )
   })
 
   it('follows the slide scrolled into view', () => {

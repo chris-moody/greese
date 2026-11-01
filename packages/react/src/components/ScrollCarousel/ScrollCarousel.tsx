@@ -60,20 +60,28 @@ export interface ScrollCarouselProps
   previousLabel?: string
   /** Accessible name of the next button. @default 'Next slide' */
   nextLabel?: string
+  /**
+   * The way the slides run. `vertical` stacks them in a viewport
+   * `--greese-scrollcarousel-size` tall (20rem); the buttons sit above and
+   * below. @default 'horizontal'
+   */
+  orientation?: ScrollCarouselOrientation
 }
+
+export type ScrollCarouselOrientation = 'horizontal' | 'vertical'
+
+/** The viewport's scroll position along its axis. */
+const position = (el: HTMLElement, vertical: boolean) =>
+  vertical ? el.scrollTop : el.scrollLeft
 
 class NoObserver {
   observe() {}
   disconnect() {}
 }
 
-const reduceMotion = () =>
-  typeof matchMedia === 'function' &&
-  matchMedia('(prefers-reduced-motion: reduce)').matches
-
 /**
- * Slides in a row that scroll with a swipe, the trackpad or the keyboard, on
- * native CSS scroll snapping. JavaScript only adds the buttons and dots and
+ * Slides in a row (or a column, `orientation="vertical"`) that scroll with a
+ * swipe, the trackpad or the keyboard, on native CSS scroll snapping. JavaScript only adds the buttons and dots and
  * tracks which slide is in view. It never moves on its own.
  *
  * ```tsx
@@ -96,6 +104,7 @@ export const ScrollCarousel = ({
   loop,
   previousLabel = 'Previous slide',
   nextLabel = 'Next slide',
+  orientation = 'horizontal',
   className,
   children,
   ...props
@@ -111,10 +120,10 @@ export const ScrollCarousel = ({
   })
   const [edges, setEdges] = useState({ start: true, end: count <= 1 })
   // Indexes the carousel reported itself (by observing the scroll, or in
-  // go(), which scrolls on its own) since the view last settled. Only a
-  // controlled `index` the carousel didn't report scrolls from the effect
-  // below: a parent echoing onIndexChange back, however late, never pulls
-  // the view to a slide it has already passed.
+  // go(), which scrolls on its own) since the view last settled or a move
+  // last began. Only a controlled `index` the carousel didn't report scrolls
+  // from the effect below: a parent echoing onIndexChange back, however late,
+  // never pulls the view to a slide it has already passed.
   const reported = useRef(new Set<number>())
   const current = useRef(index)
   current.current = index
@@ -122,41 +131,66 @@ export const ScrollCarousel = ({
   // The slide a scroll is heading for, until it has arrived.
   const target = useRef<number | null>(null)
 
-  /** Where the viewport's scrollLeft must be for a slide to lead the view. */
-  const leftOf = useCallback((i: number): number | undefined => {
-    const el = viewport.current
-    const slide = el?.querySelectorAll<HTMLElement>(':scope > .greese-ScrollCarouselSlide')[i]
-    if (!el || !slide) return undefined
-    const rtl = getComputedStyle(el).direction === 'rtl'
-    const a = slide.getBoundingClientRect()
-    const b = el.getBoundingClientRect()
-    const padding = parseFloat(getComputedStyle(el).scrollPaddingInlineStart) || 0
-    return Math.round(
-      el.scrollLeft + (rtl ? a.right - b.right + padding : a.left - b.left - padding)
-    )
-  }, [])
+  const vertical = orientation === 'vertical'
+
+  /**
+   * Where the viewport's scroll position (scrollLeft, or scrollTop when
+   * vertical) must be for a slide to lead the view.
+   */
+  const offsetOf = useCallback(
+    (i: number): number | undefined => {
+      const el = viewport.current
+      const slide = el?.querySelectorAll<HTMLElement>(
+        ':scope > .greese-ScrollCarouselSlide'
+      )[i]
+      if (!el || !slide) return undefined
+      const css = getComputedStyle(el)
+      const a = slide.getBoundingClientRect()
+      const b = el.getBoundingClientRect()
+      if (vertical)
+        return Math.round(
+          el.scrollTop + a.top - b.top - (parseFloat(css.scrollPaddingBlockStart) || 0)
+        )
+      const padding = parseFloat(css.scrollPaddingInlineStart) || 0
+      return Math.round(
+        el.scrollLeft +
+          (css.direction === 'rtl'
+            ? a.right - b.right + padding
+            : a.left - b.left - padding)
+      )
+    },
+    [vertical]
+  )
 
   const scrollToSlide = useCallback(
     (i: number) => {
       const el = viewport.current
-      const left = leftOf(i)
-      if (!el || left === undefined || Math.abs(el.scrollLeft - left) <= 1) return
+      const offset = offsetOf(i)
+      if (!el || offset === undefined || Math.abs(position(el, vertical) - offset) <= 1)
+        return
       target.current = i
       // Snapping is off while we scroll ourselves: with it on, any layout
       // change mid-scroll (a re-render anywhere on the page) makes browsers
       // re-snap and pull the view back a slide. check() turns it back on at
       // the target, which is a snap point, so nothing moves.
       el.style.scrollSnapType = 'none'
-      el.scrollTo({ left, behavior: reduceMotion() ? 'instant' : 'smooth' })
+      // Smooth only where the stylesheet makes it so: it does unless motion
+      // is reduced, by the system or by the app (ThemeProvider's `motion`).
+      el.scrollTo({
+        [vertical ? 'top' : 'left']: offset,
+        behavior: getComputedStyle(el).scrollBehavior === 'smooth' ? 'smooth' : 'instant',
+      })
     },
-    [leftOf]
+    [offsetOf, vertical]
   )
 
   // Which slide leads the view, and whether either end is reached.
   useEffect(() => {
     const el = viewport.current
     if (!el) return
-    const items = [...el.querySelectorAll<HTMLElement>(':scope > .greese-ScrollCarouselSlide')]
+    const items = [
+      ...el.querySelectorAll<HTMLElement>(':scope > .greese-ScrollCarouselSlide'),
+    ]
     const visible = new Set<number>()
     // Without IntersectionObserver the dots just follow the buttons.
     const observer = new (globalThis.IntersectionObserver ?? NoObserver)(
@@ -181,11 +215,11 @@ export const ScrollCarousel = ({
     // move that didn't arrive finishes at once.
     let settle = 0
     const onScroll = () => {
-      const left = Math.abs(el.scrollLeft)
-      setEdges({
-        start: left <= 1,
-        end: left + el.clientWidth >= el.scrollWidth - 1,
-      })
+      const at = Math.abs(position(el, vertical))
+      const [size, length] = vertical
+        ? [el.clientHeight, el.scrollHeight]
+        : [el.clientWidth, el.scrollWidth]
+      setEdges({ start: at <= 1, end: at + size >= length - 1 })
       clearTimeout(settle)
       settle = window.setTimeout(check, 150)
     }
@@ -193,9 +227,19 @@ export const ScrollCarousel = ({
     // re-snapped under load, so it's checked again, a few times at most.
     let tries = 0
     const check = () => {
-      if (target.current === null) return
-      const want = leftOf(target.current)
-      if (want === undefined || Math.abs(el.scrollLeft - want) <= 1 || ++tries > 3) {
+      // Settled after a scroll of the user's own: what it reported is
+      // history now, so a controlled `index` naming one of those slides
+      // again (Back, then Next) is a move, not an echo.
+      if (target.current === null) {
+        reported.current.clear()
+        return
+      }
+      const want = offsetOf(target.current)
+      if (
+        want === undefined ||
+        Math.abs(position(el, vertical) - want) <= 1 ||
+        ++tries > 3
+      ) {
         target.current = null
         tries = 0
         el.style.scrollSnapType = ''
@@ -203,7 +247,7 @@ export const ScrollCarousel = ({
         return
       }
       // 'instant', not 'auto': auto defers to the CSS scroll-behavior: smooth.
-      el.scrollTo({ left: want, behavior: 'instant' })
+      el.scrollTo({ [vertical ? 'top' : 'left']: want, behavior: 'instant' })
       clearTimeout(settle)
       settle = window.setTimeout(check, 150)
     }
@@ -223,13 +267,24 @@ export const ScrollCarousel = ({
       for (const type of ['pointerdown', 'wheel', 'keydown'])
         el.removeEventListener(type, release)
     }
-  }, [count, setIndex, leftOf])
+  }, [count, setIndex, offsetOf, vertical])
+
+  // A move of the carousel's own: what it reported on the way here is stale,
+  // so a later `index` naming one of those slides (Forward, Forward again
+  // before the first has settled) moves too.
+  const moveTo = useCallback(
+    (i: number) => {
+      reported.current.clear()
+      reported.current.add(i)
+      scrollToSlide(i)
+    },
+    [scrollToSlide]
+  )
 
   // A controlled `index` from outside moves the view.
   useEffect(() => {
-    if (indexProp !== undefined && !reported.current.has(indexProp))
-      scrollToSlide(indexProp)
-  }, [indexProp, scrollToSlide])
+    if (indexProp !== undefined && !reported.current.has(indexProp)) moveTo(indexProp)
+  }, [indexProp, moveTo])
 
   // A `defaultIndex` other than the first slide: start there, once. It's the
   // starting point by definition, so later changes to it don't move the view.
@@ -244,9 +299,8 @@ export const ScrollCarousel = ({
     const next = loop
       ? (target + count) % count
       : Math.max(0, Math.min(count - 1, target))
-    reported.current.add(next)
     setIndex(next)
-    scrollToSlide(next)
+    moveTo(next)
   }
 
   const resolved = resolveResponsive([[perView, PER_VIEW]], {
@@ -261,7 +315,7 @@ export const ScrollCarousel = ({
       aria-roledescription="carousel"
       aria-label={label}
       {...props}
-      className={cx(C, className)}
+      className={cx(C, vertical && `${C}--vertical`, className)}
     >
       <div
         id={viewportId}
@@ -322,7 +376,8 @@ export const ScrollCarousel = ({
   )
 }
 
-export interface ScrollCarouselSlideProps extends GreeseProps, ComponentPropsWithRef<'div'> {
+export interface ScrollCarouselSlideProps
+  extends GreeseProps, ComponentPropsWithRef<'div'> {
   /** How the slide is announced. @default '<n> of <count>' */
   label?: string
 }

@@ -1,5 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Card, ScrollCarousel, ScrollCarouselSlide, Heading, Image, Stack, Text } from '@greese/react'
+import {
+  Card,
+  ScrollCarousel,
+  ScrollCarouselSlide,
+  Heading,
+  Image,
+  Stack,
+  Text,
+} from '@greese/react'
 import { art } from '../_shared/fixtures.tsx'
 
 const places = ['Harbour', 'Ridge', 'Meadow', 'Coast', 'Forest', 'Valley']
@@ -40,3 +48,8 @@ export const SeveralInView: Story = {
 
 /** Next on the last slide wraps to the first. */
 export const Looping: Story = { args: { loop: true, indicators: false } }
+
+/** A column that scrolls and snaps on y; the buttons sit above and below. */
+export const Vertical: Story = {
+  args: { orientation: 'vertical', style: { maxInlineSize: '24rem' } },
+}

@@ -32,7 +32,7 @@ Many were already covered under other names:
 
 | Component                                                             | Native base                        | Notes                                                                                                                |
 | --------------------------------------------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `ScrollCarousel` + `ScrollCarouselSlide`                                          | CSS scroll snapping                | See §2                                                                                                               |
+| `ScrollCarousel` + `ScrollCarouselSlide`                              | CSS scroll snapping                | See §2                                                                                                               |
 | `Rating`                                                              | Radios in a `<fieldset>`           | See §3                                                                                                               |
 | `Diff`                                                                | `<input type="range">`             | See §4                                                                                                               |
 | `OtpField`                                                            | One `<input>`                      | See §5                                                                                                               |
@@ -66,14 +66,22 @@ tests (`apps/playground/e2e/catalogue.spec.ts`), run in five engines.
 
 - **Scrolling:** slides sit in a horizontally scrolling viewport with
   `scroll-snap-type: x mandatory`. Swipe, trackpad and keyboard scrolling
-  work with no JavaScript.
+  work with no JavaScript. `orientation="vertical"` stacks them in a column
+  instead, in a viewport `--greese-scrollcarousel-size` tall (20rem),
+  snapping on y, with the buttons centred on its top and bottom edges.
 - **JavaScript** adds only:
   - the previous/next buttons, hidden where nothing can hover, since phones
     swipe;
   - the dots;
   - an IntersectionObserver that reports which slide leads the view.
 - **Moving the view:** buttons scroll by the slide's measured offset, which is
-  RTL-aware, and honour reduced motion.
+  RTL-aware. Whether that scroll is smooth comes from the viewport's computed
+  `scroll-behavior`, which the stylesheet makes smooth only where motion
+  isn't reduced (by the system, or by the app through ThemeProvider's
+  `motion`), so CSS is the one place that decides.
+- **Not a deep-linking carousel.** `defaultIndex` and `index` position the
+  view, but a page that opens on a given slide wants `Carousel`, which shows
+  it before the first paint.
 - **No autoplay.** Moving content needs a pause control and causes
   WCAG 2.2.2 trouble. Apps that need it can drive the controlled `index`.
 - **Semantics:** the viewport is focusable and `aria-live="polite"`. Each
@@ -259,8 +267,11 @@ Firefox. Logging each scroll showed two causes, and the fixes for both:
   passed, and scrolled back to it. Neither a flag nor a value comparison
   could tell such an echo from a real request. Now only the controlled
   `index` prop drives that effect, skipping values the carousel reported
-  itself since the view last settled. Uncontrolled carousels never need it:
-  buttons and dots scroll directly.
+  itself since the view last settled or a move of its own last began. Both
+  resets matter: without the first, a slide swiped past could never be
+  reached through `index` again; without the second, Forward pressed twice
+  before the first move settled was ignored. Uncontrolled carousels never
+  need any of it: buttons and dots scroll directly.
 - **Re-snapping mid-scroll.** With `scroll-snap-type: mandatory`, a layout
   change during a smooth scroll makes browsers re-snap to the old snap
   point. That could be the active dot widening, or any re-render on the
