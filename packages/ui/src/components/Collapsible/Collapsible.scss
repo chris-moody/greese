@@ -123,6 +123,9 @@
   }
 
   .greese-Collapsible-content {
+    // Holds its children's margins: one that escaped would count while the
+    // height animates and drop out at the end, a jump the size of the margin.
+    display: flow-root;
     padding-block-end: var(--greese-space-4);
     color: var(--greese-color-fg-muted);
 

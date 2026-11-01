@@ -148,7 +148,8 @@ const ModalBase = ({
           onClick?.(event)
           // Backdrop clicks for browsers without `closedby` (they land on the
           // dialog element itself, outside its box).
-          if (supportsClosedBy() || event.target !== event.currentTarget) return
+          if (supportsClosedBy() || event.target !== event.currentTarget)
+            return
           const box = event.currentTarget.getBoundingClientRect()
           const inside =
             event.clientX >= box.left &&

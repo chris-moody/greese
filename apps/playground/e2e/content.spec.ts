@@ -20,6 +20,40 @@ test('exclusive accordion: keyboard opens an item and the browser closes the oth
   await expect(page.getByText('Ships in two days.')).toBeHidden()
 })
 
+test('collapsible: the height animates without a jump at either end', async ({ page }) => {
+  const animates = await page.evaluate(() =>
+    CSS.supports('interpolate-size', 'allow-keywords')
+  )
+  test.skip(!animates, 'elsewhere it opens and closes at once')
+  // The block below, sampled every frame while it opens and while it closes.
+  const sample = () =>
+    page.evaluate(
+      () =>
+        new Promise<number[]>((resolve) => {
+          const details = document.querySelector<HTMLDetailsElement>(
+            '[data-testid="collapsible"]'
+          )!
+          const after = document.querySelector('[data-testid="after-collapsible"]')!
+          const tops = [after.getBoundingClientRect().top]
+          const start = performance.now()
+          details.open = !details.open
+          const frame = () => {
+            tops.push(after.getBoundingClientRect().top)
+            if (performance.now() - start < 800) requestAnimationFrame(frame)
+            else resolve(tops)
+          }
+          requestAnimationFrame(frame)
+        })
+    )
+  for (const tops of [await sample(), await sample()]) {
+    const steps = tops.slice(1).map((top, i) => top - tops[i]!).filter((s) => s !== 0)
+    // One direction only, and easing out: a margin dropping out at the end
+    // was a last step of 1em.
+    expect(steps.every((s) => Math.sign(s) === Math.sign(steps[0]!))).toBe(true)
+    expect(Math.abs(steps.at(-1)!)).toBeLessThan(6)
+  }
+})
+
 for (const dir of ['ltr', 'rtl'] as const) {
   test(`tabs: arrow keys follow reading direction (${dir})`, async ({ page }) => {
     const tabs = page.getByTestId(dir)

@@ -4,6 +4,7 @@ import {
   AccordionItem,
   Card,
   CardMedia,
+  Collapsible,
   Heading,
   Image,
   Skeleton,
@@ -50,6 +51,15 @@ export const Content = (): JSX.Element => (
         <AccordionItem title="Shipping">Ships in two days.</AccordionItem>
         <AccordionItem title="Returns">Free returns for 30 days.</AccordionItem>
       </Accordion>
+
+      <Collapsible title="Margins" data-testid="collapsible">
+        {/* A list keeps the browser's 1em margins: the box must hold them. */}
+        <ul>
+          <li>First</li>
+          <li>Second</li>
+        </ul>
+      </Collapsible>
+      <div data-testid="after-collapsible" />
 
       <ExampleTabs id="ltr" />
       <div dir="rtl">
