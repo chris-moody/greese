@@ -3,6 +3,7 @@ import { useLayoutEffect, useRef, type JSX } from 'react'
 import { mixSlices, strokeKeyframes, toPath, type Slice } from '@greese/svg'
 import { composeRefs } from '../components/Slot/Slot.tsx'
 import { sliceProps, type PathProps } from './Path.tsx'
+import { prefersReducedMotion } from '../utils/motion.ts'
 
 // `from` and `to` are SVG animation attributes too; here they're slices.
 export interface DrawPathProps extends Omit<PathProps, 'slice' | 'from' | 'to'> {
@@ -29,10 +30,6 @@ export interface DrawPathProps extends Omit<PathProps, 'slice' | 'from' | 'to'> 
   /** Called when a play reaches its `to` slice. */
   onFinish?: () => void
 }
-
-const reduced = () =>
-  typeof matchMedia === 'function' &&
-  matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /**
  * A path whose stroke draws itself: on mount from `from` to `to`, and on to
@@ -83,7 +80,7 @@ export const DrawPath = ({
     }
     previous?.animation?.cancel()
     state.current = { from: start, to: target }
-    if (reduced()) return
+    if (prefersReducedMotion(el)) return
     const animation = el.animate(
       strokeKeyframes(start, target) as unknown as Keyframe[],
       {

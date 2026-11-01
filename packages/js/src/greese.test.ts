@@ -6,6 +6,7 @@ import {
   ease,
   mix,
   parseColor,
+  prefersReducedMotion,
   splitText,
   timeline,
   fromPixels,
@@ -375,6 +376,28 @@ describe('playback', () => {
     expect(tl.isActive()).toBe(true)
     tl.kill()
     vi.unstubAllGlobals()
+  })
+})
+
+describe('an app reducing motion (data-greese-motion="reduce")', () => {
+  it('jumps an element inside the subtree to its end', async () => {
+    const parent = document.createElement('div')
+    parent.setAttribute('data-greese-motion', 'reduce')
+    const el = document.createElement('div')
+    parent.append(el)
+    document.body.append(parent)
+    animate(el, { opacity: [0, 1] }, { duration: 5 })
+    await flushMicrotasks()
+    expect(el.style.opacity).toBe('1')
+    expect(prefersReducedMotion(el)).toBe(true)
+    expect(prefersReducedMotion()).toBe(false)
+    parent.remove()
+  })
+
+  it('reduces everything when set on the root', () => {
+    document.documentElement.setAttribute('data-greese-motion', 'reduce')
+    expect(prefersReducedMotion({ v: 0 })).toBe(true)
+    document.documentElement.removeAttribute('data-greese-motion')
   })
 })
 

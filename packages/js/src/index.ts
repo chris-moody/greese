@@ -29,4 +29,5 @@ export {
   type TimelineOptions,
   type Vars,
 } from './timeline.ts'
+export { prefersReducedMotion } from './motion.ts'
 export { mix, parseColor, type Mixer, type Value } from './value.ts'

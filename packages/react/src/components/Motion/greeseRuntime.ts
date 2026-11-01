@@ -32,6 +32,7 @@ import {
   type GreeseEffectKeyframes,
   type GreeseEffectWithDefaults,
 } from './effects.ts'
+import { prefersReducedMotion } from '../../utils/motion.ts'
 
 /**
  * Every built-in effect as plain keyframes, for tools that show or edit them
@@ -461,7 +462,7 @@ export const attach = (el: HTMLElement, o: GreeseOptions): (() => void) => {
   const setup: Setup = {
     el,
     o,
-    reduce: matchMedia('(prefers-reduced-motion: reduce)').matches,
+    reduce: prefersReducedMotion(el),
     ctx: {
       distance: o.distance ?? '1rem',
       // The dir attribute, as the CSS presets' :dir(rtl) reads it; computed
@@ -501,7 +502,7 @@ export const attachAll: GreeseRuntime['attachAll'] = (items) =>
  * fails. Under reduced motion every effect is a cut.
  */
 export const playPageExit: GreeseRuntime['playPageExit'] = (motion, page, targets) => {
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+  const reduce = prefersReducedMotion(page[0])
   const tl = timeline({ paused: true })
   const entries =
     typeof motion === 'string' ? [[undefined, motion] as const] : Object.entries(motion)

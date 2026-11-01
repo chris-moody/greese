@@ -9,6 +9,7 @@ import {
 } from './target.ts'
 import { addToTicker, removeFromTicker } from './ticker.ts'
 import type { Mixer, Value } from './value.ts'
+import { prefersReducedMotion } from './motion.ts'
 
 /**
  * Where a child goes in a timeline, in seconds:
@@ -571,10 +572,12 @@ export class Timeline implements PromiseLike<void> {
     if (this.#parent) return this
     this.#direction = direction
     const end = this.totalDuration()
+    // Reduced for the page, or for any element it moves (an app's
+    // `data-greese-motion="reduce"` subtree).
+    const targets = [...this.#tracks.keys()]
     const reduce =
       this.#options.reducedMotion !== 'ignore' &&
-      typeof matchMedia !== 'undefined' &&
-      matchMedia('(prefers-reduced-motion: reduce)').matches
+      (prefersReducedMotion() || targets.some((target) => prefersReducedMotion(target)))
     if (reduce) {
       this.render(direction > 0 ? (end === Infinity ? this.duration() : end) : 0, true)
       this.#complete()

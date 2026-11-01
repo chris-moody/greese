@@ -347,6 +347,14 @@ Under `prefers-reduced-motion: reduce`:
 
 You don't need to check the media query yourself.
 
+An app with a "Reduce motion" setting of its own gets the same with
+`<ThemeProvider motion="reduce">` around the subtree (or
+`data-greese-motion="reduce"` on any element, the root included). CSS
+durations collapse, nothing animates, transitions or scrolls smoothly, and
+the runtime, greese.js and `@greese/react/svg` skip to the end for any element
+inside it. `prefersReducedMotion(el)` from `@greese/js` answers the same
+question for your own code.
+
 ### Tuning motion globally
 
 The presets read CSS custom properties. Override them in your CSS (for

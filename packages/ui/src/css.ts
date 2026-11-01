@@ -20,6 +20,8 @@ export const LAYER_ORDER =
 
 export const SCHEME_ATTR = 'data-greese-scheme'
 export const THEME_ATTR = 'data-greese-theme'
+/** Set to `reduce` (ThemeProvider's `motion`), reduces motion in a subtree whatever the system says. */
+export const MOTION_ATTR = 'data-greese-motion'
 
 import { kebab } from './kebab.ts'
 export { kebab }

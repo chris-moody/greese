@@ -12,7 +12,9 @@ A small keyframe and timeline animation library for the web: about 5.6 kB
 - **Stagger**, an accessible **`splitText`**, named **eases** and
   **positions**.
 - **`fromPixels`** plays animation authored in the Pixels studio.
-- **Respects `prefers-reduced-motion`** by default.
+- **Respects `prefers-reduced-motion`** by default, and an app's own setting:
+  an element inside `data-greese-motion="reduce"` jumps to its end
+  (`prefersReducedMotion(el)` tells you the same).
 
 ## Install: pick your form
 

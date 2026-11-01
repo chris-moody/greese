@@ -28,7 +28,8 @@ export interface TweenOptions {
   /** Every other repeat plays backwards. @default false */
   yoyo?: boolean
   /**
-   * Under `prefers-reduced-motion: reduce`, `'reduce'` skips straight to the
+   * Under reduced motion (the system's, or `data-greese-motion="reduce"` on
+   * the root), `'reduce'` skips straight to the
    * end (a looping tween stays at its start); `'ignore'` plays anyway.
    * @default 'reduce'
    */
@@ -43,9 +44,12 @@ export interface Tween extends PromiseLike<void> {
   cancel(): void
 }
 
+// By the system, or by the app (`data-greese-motion="reduce"` on the root).
 const prefersReduced = () =>
-  typeof matchMedia === 'function' &&
-  matchMedia('(prefers-reduced-motion: reduce)').matches
+  (typeof matchMedia === 'function' &&
+    matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+  (typeof document !== 'undefined' &&
+    document.documentElement.closest("[data-greese-motion='reduce']") !== null)
 
 const frame = (callback: (now: number) => void): number =>
   typeof requestAnimationFrame === 'function'

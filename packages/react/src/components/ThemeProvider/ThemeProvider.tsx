@@ -32,6 +32,15 @@ export interface ThemeProviderProps extends ComponentPropsWithoutRef<'div'> {
   theme?: Theme | string
   /** Force `light` or `dark` for this subtree, or `system` to follow the OS. */
   scheme?: ColorScheme
+  /**
+   * `reduce` reduces motion for this subtree whatever the system's setting,
+   * for an app's own "Reduce motion" switch: durations collapse, nothing
+   * animates or scrolls smoothly, and JavaScript-driven motion (the `greese`
+   * prop, greese.js, `@greese/react/svg`) skips to its end. `system` (the
+   * default) follows `prefers-reduced-motion`. An ancestor's `reduce` can't be
+   * undone below it. @default 'system'
+   */
+  motion?: 'reduce' | 'system'
   /** Scope your own element instead of rendering a wrapper. */
   asChild?: boolean
 }
@@ -55,6 +64,7 @@ export interface ThemeProviderProps extends ComponentPropsWithoutRef<'div'> {
 export const ThemeProvider = ({
   theme,
   scheme,
+  motion,
   asChild,
   className,
   children,
@@ -85,6 +95,7 @@ export const ThemeProvider = ({
         className={cx(!asChild && 'greese-ThemeProvider', className)}
         data-greese-theme={themeName}
         data-greese-scheme={resolvedScheme}
+        data-greese-motion={motion === 'reduce' ? 'reduce' : undefined}
       >
         {children}
       </Root>

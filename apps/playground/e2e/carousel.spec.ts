@@ -166,4 +166,36 @@ test.describe('once open', () => {
         .evaluate((el) => getComputedStyle(el).visibility)
     ).toBe('hidden')
   })
+
+  test('an app reducing motion (ThemeProvider motion="reduce") cuts slides and scrolls', async ({
+    page,
+  }) => {
+    const carousel = page.getByRole('region', { name: 'Reduced', exact: true })
+    await carousel.getByRole('button', { name: 'Next slide' }).click()
+    expect(await shown(carousel)).toBe('2 of 2')
+    const slide = carousel.locator('.greese-CarouselSlide').first()
+    expect(
+      await slide.evaluate((el) => parseFloat(getComputedStyle(el).transitionDuration))
+    ).toBeLessThan(0.001)
+    await expect
+      .poll(() => slide.evaluate((el) => getComputedStyle(el).visibility))
+      .toBe('hidden')
+
+    const scroller = page.getByRole('region', { name: 'Reduced scroll' })
+    const viewport = await controlledBy(scroller.getByRole('button', { name: 'Slide 1' }))
+    expect(await viewport.evaluate((el) => getComputedStyle(el).scrollBehavior)).toBe(
+      'auto'
+    )
+    const left = await scroller.getByRole('button', { name: 'Slide 3' }).evaluate(
+      (dot, view) =>
+        new Promise<number>((resolve) => {
+          ;(dot as HTMLElement).click()
+          requestAnimationFrame(() =>
+            resolve(view.scrollWidth - view.clientWidth - view.scrollLeft)
+          )
+        }),
+      await viewport.elementHandle()
+    )
+    expect(Math.abs(left)).toBeLessThan(2)
+  })
 })

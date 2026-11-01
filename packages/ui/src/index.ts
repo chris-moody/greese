@@ -3,7 +3,7 @@ export * from './palette.ts'
 export * from './typography.ts'
 export * from './effects.ts'
 export * from './utilities.ts'
-export { cssVar, LAYER_ORDER, SCHEME_ATTR, THEME_ATTR } from './css.ts'
+export { cssVar, LAYER_ORDER, MOTION_ATTR, SCHEME_ATTR, THEME_ATTR } from './css.ts'
 export {
   createTheme,
   deriveColors,

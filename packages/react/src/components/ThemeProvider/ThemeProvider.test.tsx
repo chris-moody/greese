@@ -27,6 +27,17 @@ describe('ThemeProvider', () => {
     expect(screen.getByRole('status')).toHaveTextContent('brand/dark')
   })
 
+  it('reduces motion for its subtree with motion="reduce"', () => {
+    render(
+      <>
+        <ThemeProvider motion="reduce" data-testid="reduced" />
+        <ThemeProvider motion="system" data-testid="system" />
+      </>
+    )
+    expect(screen.getByTestId('reduced')).toHaveAttribute('data-greese-motion', 'reduce')
+    expect(screen.getByTestId('system')).not.toHaveAttribute('data-greese-motion')
+  })
+
   it('hoists the theme CSS into <head> once, however many providers use it', () => {
     render(
       <>

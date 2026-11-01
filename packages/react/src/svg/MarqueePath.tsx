@@ -3,6 +3,7 @@ import { useLayoutEffect, useRef, type JSX } from 'react'
 import { toPath } from '@greese/svg'
 import { composeRefs } from '../components/Slot/Slot.tsx'
 import type { PathProps } from './Path.tsx'
+import { prefersReducedMotion } from '../utils/motion.ts'
 
 export interface MarqueePathProps extends Omit<PathProps, 'slice'> {
   /** Dashes, evenly spaced along the path. @default 1 */
@@ -16,10 +17,6 @@ export interface MarqueePathProps extends Omit<PathProps, 'slice'> {
   /** Holds the dashes where they are. @default false */
   paused?: boolean
 }
-
-const reduced = () =>
-  typeof matchMedia === 'function' &&
-  matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /**
  * Dashes that run along a path without end, like a marquee's lights. The
@@ -48,7 +45,13 @@ export const MarqueePath = ({
 
   useLayoutEffect(() => {
     const el = own.current
-    if (!el || typeof el.animate !== 'function' || reduced() || dash >= lap) return
+    if (
+      !el ||
+      typeof el.animate !== 'function' ||
+      prefersReducedMotion(el) ||
+      dash >= lap
+    )
+      return
     const shift = reverse ? lap : -lap
     animation.current = el.animate(
       [{ strokeDashoffset: '0' }, { strokeDashoffset: String(shift) }],

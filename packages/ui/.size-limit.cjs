@@ -54,7 +54,10 @@ module.exports = [
     // ten properties, and the buttons and dots it shares with ScrollCarousel;
     // ScrollCarousel's vertical orientation; Collapsible's margin fix (25.84 kB).
     // Per-component CSS keeps Carousel off pages that don't use it.
-    limit: '25.9 kB',
+    // 25.9 kB → 26.15 kB (2026-11-01): reduced motion an app asks for (ADR 0033):
+    // collapsed durations and a cut for every animation, transition and smooth
+    // scroll under `data-greese-motion="reduce"`, in core.css too (26.12 kB).
+    limit: '26.15 kB',
   },
   {
     name: 'CSS: css/PageTransition.css',

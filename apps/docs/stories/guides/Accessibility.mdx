@@ -21,7 +21,10 @@ What greese ui guarantees, and what stays your job.
 - **Touch.** 44×44px hit areas on coarse pointers; control text never below 16px on
   phones, so iOS doesn't zoom.
 - **Motion.** Durations collapse under `prefers-reduced-motion`; spinners pulse
-  instead of spinning; skeletons stop shimmering.
+  instead of spinning; skeletons stop shimmering. An app's own "Reduce motion"
+  setting does the same for its subtree: `<ThemeProvider motion="reduce">`, or
+  `data-greese-motion="reduce"` on any element (the root, for the whole page and
+  its page transitions).
 - **Announcements.** Toasts announce through always-present live regions (assertive for
   errors) and stay usable above open dialogs. Static alerts don't interrupt.
 - **Tested** with axe in unit tests and with keyboard and touch in Chromium, Firefox,

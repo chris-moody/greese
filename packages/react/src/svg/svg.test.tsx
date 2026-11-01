@@ -236,6 +236,15 @@ describe('DrawPath', () => {
     })
   })
 
+  it('holds still inside an app-reduced subtree', () => {
+    render(
+      <svg data-greese-motion="reduce">
+        <DrawPath d={star} />
+      </svg>
+    )
+    expect(calls).toHaveLength(0)
+  })
+
   it('repeats forever with repeat -1', () => {
     render(
       <svg>

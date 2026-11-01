@@ -10,6 +10,7 @@ import {
   OtpField,
   Rating,
   SpeedDial,
+  ThemeProvider,
   SpeedDialAction,
   Stack,
   Steps,
@@ -62,6 +63,24 @@ export const Catalogue = (): JSX.Element => {
             </CarouselSlide>
           ))}
         </Carousel>
+
+        {/* An app's own Reduce motion switch. */}
+        <ThemeProvider motion="reduce">
+          <Carousel label="Reduced">
+            {[90, 270].map((hue) => (
+              <CarouselSlide key={hue}>
+                <div style={tile(hue)} />
+              </CarouselSlide>
+            ))}
+          </Carousel>
+          <ScrollCarousel label="Reduced scroll">
+            {[100, 200, 300].map((hue) => (
+              <ScrollCarouselSlide key={hue}>
+                <div style={tile(hue)} />
+              </ScrollCarouselSlide>
+            ))}
+          </ScrollCarousel>
+        </ThemeProvider>
 
         {/* Controlled, with buttons of the page's own. */}
         <ScrollCarousel

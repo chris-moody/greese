@@ -80,6 +80,7 @@ The phase numbers other ADRs cite:
 | —     | The web app on React Router                           | 2026-10-29 | ADR 0030          |
 | —     | `@greese/svg` and `@greese/react/svg`                 | 2026-10-30 | ADR 0031          |
 | —     | Carousel: one slide at a time, effects, deep links    | 2026-11-01 | ADR 0032          |
+| —     | Reduced motion an app asks for                        | 2026-11-01 | ADR 0033          |
 
 When a new body of work lands, add a row here; that's the status record the
 skills and agents keep up to date.
