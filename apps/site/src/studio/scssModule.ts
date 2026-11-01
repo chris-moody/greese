@@ -15,6 +15,7 @@ export const AUTHORING_ENTRIES = [
   'tones',
   'floating',
   'controls',
+  'slides',
 ] as const
 
 const PKG = 'pkg:@greese/ui/scss/'

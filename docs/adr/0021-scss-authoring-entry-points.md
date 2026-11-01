@@ -25,6 +25,7 @@ inside `component(Name) { }`, so it couldn't `@use` anything at all.
 | `pkg:@greese/ui/scss/tones`    | `src/styles/_tones`    | `classes`                                           |
 | `pkg:@greese/ui/scss/floating` | `src/styles/_floating` | nothing                                             |
 | `pkg:@greese/ui/scss/controls` | `src/styles/_controls` | nothing                                             |
+| `pkg:@greese/ui/scss/slides`   | `src/styles/_slides`   | nothing                                             |
 
 They join `scss`, `scss/kit`, `scss/config`, `scss/tokens`, `scss/layers` and
 `scss/maps`. Each is a one-line file in `src/styles/public/` that `@forward`s the

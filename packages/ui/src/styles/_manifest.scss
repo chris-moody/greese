@@ -109,6 +109,18 @@ $blocks: (
     part-modifiers: (),
     variables: (),
   ),
+  'Carousel': (
+    parts: ('control', 'indicator', 'indicators', 'viewport',),
+    modifiers: (),
+    part-modifiers: ('control': ('next', 'previous',)),
+    variables: ('--greese-carousel-dots', '--greese-carousel-duration', '--greese-carousel-enter', '--greese-carousel-exit-mask-from', '--greese-carousel-exit-mask-image', '--greese-carousel-exit-mask-position', '--greese-carousel-exit-mask-repeat', '--greese-carousel-exit-mask-size', '--greese-carousel-exit-opacity', '--greese-carousel-exit-scale', '--greese-carousel-exit-transform', '--greese-carousel-exit-transform-origin', '--greese-carousel-exit-translate', '--greese-carousel-slide-enter', '--greese-carousel-way', '--greese-motion-carousel', '--greese-motion-carousel-back', '--greese-motion-carousel-back-exit-mask-from', '--greese-motion-carousel-back-exit-mask-image', '--greese-motion-carousel-back-exit-mask-position', '--greese-motion-carousel-back-exit-mask-repeat', '--greese-motion-carousel-back-exit-mask-size', '--greese-motion-carousel-back-exit-opacity', '--greese-motion-carousel-back-exit-scale', '--greese-motion-carousel-back-exit-transform', '--greese-motion-carousel-back-exit-transform-origin', '--greese-motion-carousel-back-exit-translate', '--greese-motion-carousel-duration', '--greese-motion-carousel-exit-mask-from', '--greese-motion-carousel-exit-mask-image', '--greese-motion-carousel-exit-mask-position', '--greese-motion-carousel-exit-mask-repeat', '--greese-motion-carousel-exit-mask-size', '--greese-motion-carousel-exit-opacity', '--greese-motion-carousel-exit-scale', '--greese-motion-carousel-exit-transform', '--greese-motion-carousel-exit-transform-origin', '--greese-motion-carousel-exit-translate', '--greese-motion-exit-mask-from', '--greese-motion-exit-mask-image', '--greese-motion-exit-mask-position', '--greese-motion-exit-mask-repeat', '--greese-motion-exit-mask-size', '--greese-motion-exit-opacity', '--greese-motion-exit-scale', '--greese-motion-exit-transform', '--greese-motion-exit-transform-origin', '--greese-motion-exit-translate',),
+  ),
+  'CarouselSlide': (
+    parts: (),
+    modifiers: (),
+    part-modifiers: (),
+    variables: (),
+  ),
   'Center': (
     parts: (),
     modifiers: ('inline',),

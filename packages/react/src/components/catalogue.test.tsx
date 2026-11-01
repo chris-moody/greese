@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { expectNoAxeViolations } from '../test/axe.ts'
 import { installIntersectionObserver, intersect } from '../test/intersection.ts'
+import { Carousel, CarouselSlide } from './Carousel/Carousel.tsx'
 import { ScrollCarousel, ScrollCarouselSlide } from './ScrollCarousel/ScrollCarousel.tsx'
 import { ChatBubble } from './ChatBubble/ChatBubble.tsx'
 import { Countdown, durationText, splitDuration } from './Countdown/Countdown.tsx'
@@ -552,6 +553,129 @@ describe('OtpField', () => {
   it('sanitises by mode', () => {
     expect(sanitizeOtp(' 12 34 56 7', 6, 'numeric')).toBe('123456')
     expect(sanitizeOtp('ab-c1', 6, 'alphanumeric')).toBe('ABC1')
+  })
+})
+
+describe('Carousel', () => {
+  afterEach(() => history.replaceState(null, '', '/'))
+
+  const slides = (
+    <>
+      <CarouselSlide id="welcome">One</CarouselSlide>
+      <CarouselSlide id="setup">Two</CarouselSlide>
+      <CarouselSlide id="done" label="The last">
+        Three
+      </CarouselSlide>
+    </>
+  )
+  const shown = () =>
+    screen.getAllByRole('group', { hidden: true }).findIndex((g) => !g.hasAttribute('inert'))
+
+  it('shows one slide at a time; the others are inert', async () => {
+    const { container } = render(<Carousel label="Tour">{slides}</Carousel>)
+    expect(screen.getByRole('region', { name: 'Tour' })).toHaveAttribute(
+      'aria-roledescription',
+      'carousel'
+    )
+    const groups = screen.getAllByRole('group', { hidden: true })
+    expect(groups.map((g) => g.getAttribute('aria-label'))).toEqual([
+      '1 of 3',
+      '2 of 3',
+      'The last',
+    ])
+    expect(groups.map((g) => g.hasAttribute('inert'))).toEqual([false, true, true])
+    expect(groups[0]).toHaveAttribute('data-active')
+    // It opens still: nothing has moved, so nothing animates.
+    expect(screen.getByRole('region')).not.toHaveAttribute('data-moved')
+    await expectNoAxeViolations(container)
+  })
+
+  it('moves with the buttons, dots and keys, and reports the index', async () => {
+    const onIndexChange = vi.fn()
+    render(
+      <Carousel label="Tour" onIndexChange={onIndexChange}>
+        {slides}
+      </Carousel>
+    )
+    const region = screen.getByRole('region')
+    expect(screen.getByRole('button', { name: 'Previous slide' })).toBeDisabled()
+    await userEvent.click(screen.getByRole('button', { name: 'Next slide' }))
+    expect(onIndexChange).toHaveBeenLastCalledWith(1)
+    expect(shown()).toBe(1)
+    expect(region).toHaveAttribute('data-moved')
+    expect(region).toHaveAttribute('data-direction', 'forward')
+    await userEvent.click(screen.getByRole('button', { name: 'Slide 1' }))
+    expect(shown()).toBe(0)
+    expect(region).toHaveAttribute('data-direction', 'back')
+    const viewport = region.firstElementChild as HTMLElement
+    fireEvent.keyDown(viewport, { key: 'End' })
+    expect(shown()).toBe(2)
+    fireEvent.keyDown(viewport, { key: 'ArrowLeft' })
+    expect(shown()).toBe(1)
+    expect(screen.getByRole('button', { name: 'Slide 2' })).toHaveAttribute(
+      'aria-current',
+      'true'
+    )
+  })
+
+  it('plays the effects it names: an entrance on the arriving slide, an exit class on the leaving one', async () => {
+    render(
+      <Carousel label="Tour" enter="fadeIn" exit="fadeOut" back={{ exit: 'scaleOut' }}>
+        {slides}
+      </Carousel>
+    )
+    const groups = screen.getAllByRole('group', { hidden: true })
+    await userEvent.click(screen.getByRole('button', { name: 'Next slide' }))
+    expect(groups[1]!.style.getPropertyValue('--greese-carousel-slide-enter')).toBe(
+      'greese-fade-in'
+    )
+    expect(groups[0]).toHaveClass('greese-Motion--exit-fade-out')
+    await userEvent.click(screen.getByRole('button', { name: 'Previous slide' }))
+    // Back: its own exit, and the forward entrance where it names none.
+    expect(groups[1]).toHaveClass('greese-Motion--exit-scale-out')
+    expect(groups[0]!.style.getPropertyValue('--greese-carousel-slide-enter')).toBe(
+      'greese-fade-in'
+    )
+  })
+
+  it('opens on the slide the hash names, still', () => {
+    history.replaceState(null, '', '#done')
+    const onIndexChange = vi.fn()
+    render(
+      <Carousel label="Tour" onIndexChange={onIndexChange}>
+        {slides}
+      </Carousel>
+    )
+    expect(shown()).toBe(2)
+    expect(onIndexChange).toHaveBeenCalledWith(2)
+    expect(screen.getByRole('region')).not.toHaveAttribute('data-moved')
+  })
+
+  it('moves to a slide a link names, and writes the hash with syncHash', async () => {
+    render(
+      <Carousel label="Tour" syncHash>
+        {slides}
+      </Carousel>
+    )
+    act(() => {
+      history.replaceState(null, '', '#setup')
+      window.dispatchEvent(new HashChangeEvent('hashchange'))
+    })
+    expect(shown()).toBe(1)
+    expect(screen.getByRole('region')).toHaveAttribute('data-moved')
+    await userEvent.click(screen.getByRole('button', { name: 'Next slide' }))
+    expect(location.hash).toBe('#done')
+  })
+
+  it('wraps round with loop', async () => {
+    render(
+      <Carousel label="Tour" loop defaultIndex={2}>
+        {slides}
+      </Carousel>
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Next slide' }))
+    expect(shown()).toBe(0)
+    expect(screen.getByRole('region')).toHaveAttribute('data-direction', 'forward')
   })
 })
 

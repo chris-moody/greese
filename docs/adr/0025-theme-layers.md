@@ -264,11 +264,11 @@ overwrite the duration and easing tokens; a shape theme set the radius scale to 
 depended on the theme. Themes now only **reassign**: they point roles at
 values, and the values keep their own.
 
-| Layer  | Its roles                                                                                                                                                          | Point at                                                     |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
-| Colors | `primary`, `surface`, `fg`…                                                                                                                                        | the palette                                                  |
-| Shapes | `--greese-corner-control`, `-field`, `-surface`, `-panel`, `-inset`, `-pill`, `-round`                                                                             | the radius scale (`none` for the square themes)              |
-| Motion | `theme`, `content`, `rows`, `toast`, `backdrop`, `overlay`, `dialog`, `popover`, `tooltip`, `drawer`, their `-exit`s, the `*-duration`s, `enter-ease`, `exit-ease` | effects, duration and easing tokens (or values of their own) |
+| Layer  | Its roles                                                                                                                                                                                       | Point at                                                     |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Colors | `primary`, `surface`, `fg`…                                                                                                                                                                     | the palette                                                  |
+| Shapes | `--greese-corner-control`, `-field`, `-surface`, `-panel`, `-inset`, `-pill`, `-round`                                                                                                          | the radius scale (`none` for the square themes)              |
+| Motion | `theme`, `content`, `rows`, `toast`, `backdrop`, `overlay`, `dialog`, `popover`, `tooltip`, `drawer`, `carousel`, `carousel-back`, their `-exit`s, the `*-duration`s, `enter-ease`, `exit-ease` | effects, duration and easing tokens (or values of their own) |
 
 - **Components read roles.** The radius roles are a token group (`corner`),
   each defaulting to a step of the scale. Motion roles are custom properties
@@ -276,7 +276,10 @@ values, and the values keep their own.
   (`mixins.role-entrance`, `floating.motion-role`): tab panels and an opening
   accordion's children (`content`), table rows (`rows`, none by default),
   toasts, a dialog's scrim, and every overlay by kind. A drawer takes `drawer`,
-  not `dialog`, so it keeps sliding from its edge without a reset.
+  not `dialog`, so it keeps sliding from its edge without a reset. A
+  Carousel's slides take `carousel` and `carousel-exit`, and going back
+  `carousel-back` and `carousel-back-exit` (each falling back to its forward
+  role).
 - **The kit assigns them** with `motion-defaults()`, checking effect names and
   writing token names as `var()`s. It carries the assigned entrances' own
   keyframes, so a theme file works on a page without the Motion styles.

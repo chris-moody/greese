@@ -93,7 +93,9 @@ module.exports = [
     // snapshots show only the screenful in view (ADR 0029 addendum) (32.33 kB).
     // 32.4 kB → 32.6 kB (2026-10-30): a live exit's styles come off at React's commit of the navigation (the hook's own update, in its transition), not at the first change the old page makes, which put members back on a homepage still mounting its sections; back and forward wait while the URL has moved (ADR 0029 addendum) (32.56 kB).
     // 32.6 kB → 33.4 kB (2026-10-31): route rules and a navigation's own options (ADR 0029 addendum): the pattern matcher, the resolver, the root variables and the hook's wiring, 0.7-0.75 kB over the 0.3-0.45 kB the plan estimated (33.34 kB).
-    limit: '33.4 kB',
+    // 33.4 kB → 34.3 kB (2026-11-01): Carousel and CarouselSlide (ADR 0032), and
+    // ScrollCarousel's vertical orientation (34.25 kB).
+    limit: '34.3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -131,7 +133,9 @@ module.exports = [
     // 37.95 kB → 38.05 kB (2026-10-31): Tooltip opens on a tap, and a tap elsewhere
     // closes it (ADR 0005 amendment), about 60-90 B (37.98 kB).
     // 38.05 kB → 38.8 kB (2026-10-31): route rules and a navigation's own options (ADR 0029 addendum): the pattern matcher, the resolver, the root variables and the hook's wiring, 0.7-0.75 kB over the 0.3-0.45 kB the plan estimated (38.75 kB).
-    limit: '38.8 kB',
+    // 38.8 kB → 39.7 kB (2026-11-01): Carousel and CarouselSlide (ADR 0032), and
+    // ScrollCarousel's vertical orientation (39.63 kB).
+    limit: '39.7 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -340,6 +344,16 @@ module.exports = [
     modifyRolldownConfig: external,
   },
   {
+    name: 'JS: tree-shaken { Carousel, CarouselSlide }',
+    path: 'dist/index.js',
+    import: '{ Carousel, CarouselSlide }',
+    ignore: ['react', 'react-dom'],
+    // 3.55 kB (2026-11-01): one slide at a time with CSS effects, deep links
+    // through slide ids, keys and swipes (ADR 0032); 3.49 kB at its first build.
+    limit: '3.55 kB',
+    modifyRolldownConfig: external,
+  },
+  {
     name: 'JS: tree-shaken { ScrollCarousel, ScrollCarouselSlide }',
     path: 'dist/index.js',
     import: '{ ScrollCarousel, ScrollCarouselSlide }',
@@ -353,7 +367,10 @@ module.exports = [
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.
     // 3.8 kB → 3.85 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (3828 B).
-    limit: '3.85 kB',
+    // 3.85 kB → 3.95 kB (2026-11-01): `orientation="vertical"` (measuring and scrolling on
+    // either axis) and resetting its own reports when a move begins, so a controlled
+    // `index` can always reach a slide again (ADR 0011): 67 B.
+    limit: '3.95 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -561,7 +578,9 @@ module.exports = [
     // 47.45 kB → 47.6 kB (2026-10-30): the commit seen from React, as above (47.53 kB).
     // 47.6 kB → 47.7 kB (2026-10-31): the same Tooltip taps (47.56-47.62 kB).
     // 47.7 kB → 48.3 kB (2026-10-31): route rules and a navigation's own options (ADR 0029 addendum): the pattern matcher, the resolver, the root variables and the hook's wiring, 0.7-0.75 kB over the 0.3-0.45 kB the plan estimated (48.28 kB).
-    limit: '48.3 kB',
+    // 48.3 kB → 49.3 kB (2026-11-01): Carousel and CarouselSlide (ADR 0032), and
+    // ScrollCarousel's vertical orientation (49.26 kB).
+    limit: '49.3 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.

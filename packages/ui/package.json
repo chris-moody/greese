@@ -98,6 +98,9 @@
     "./scss/controls": {
       "sass": "./src/styles/public/_controls.scss"
     },
+    "./scss/slides": {
+      "sass": "./src/styles/public/_slides.scss"
+    },
     "./scss/tokens": "./dist/_tokens.scss",
     "./scss/layers": "./dist/_layers.scss",
     "./scss/maps": "./dist/_maps.scss",

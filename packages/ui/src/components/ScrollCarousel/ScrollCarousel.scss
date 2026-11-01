@@ -1,4 +1,5 @@
 @use '../../styles/mixins';
+@use '../../styles/slides';
 
 @layer greese.components {
   .greese-ScrollCarousel {
@@ -55,66 +56,7 @@
     scroll-snap-align: start;
   }
 
-  // Previous and next sit over the viewport's edges, centred on it.
-  .greese-ScrollCarousel-control {
-    position: absolute;
-    inset-block-start: calc(50% - 1.25rem - var(--greese-scrollcarousel-dots, 0px) / 2);
-    display: inline-grid;
-    place-items: center;
-    inline-size: 2.5rem;
-    block-size: 2.5rem;
-    padding: 0;
-    color: var(--greese-color-fg);
-    cursor: pointer;
-    background-color: color-mix(
-      in oklab,
-      var(--greese-color-surface-overlay) 88%,
-      transparent
-    );
-    border: 1px solid var(--greese-color-border);
-    border-radius: var(--greese-corner-round);
-    box-shadow: var(--greese-shadow-md);
-    translate: 0 -50%;
-    transition: opacity var(--greese-duration-fast) var(--greese-easing-standard);
-
-    @include mixins.focus-ring;
-    @include mixins.touch-target;
-
-    &:disabled {
-      cursor: default;
-      opacity: 0;
-    }
-
-    > svg {
-      inline-size: 1.125rem;
-      block-size: 1.125rem;
-    }
-  }
-
-  .greese-ScrollCarousel:has(.greese-ScrollCarousel-indicators) {
-    --greese-scrollcarousel-dots: calc(0.5rem + var(--greese-space-3));
-  }
-
-  .greese-ScrollCarousel-control--previous {
-    inset-inline-start: var(--greese-space-2);
-  }
-
-  .greese-ScrollCarousel-control--next {
-    inset-inline-end: var(--greese-space-2);
-
-    > svg {
-      scale: -1 1;
-    }
-  }
-
-  // The chevron points to the inline start; mirror both in RTL.
-  .greese-ScrollCarousel-control:dir(rtl) > svg {
-    scale: -1 1;
-  }
-
-  .greese-ScrollCarousel-control--next:dir(rtl) > svg {
-    scale: 1;
-  }
+  @include slides.controls('greese-ScrollCarousel', scrollcarousel);
 
   // Vertical: the buttons sit centred on the top and bottom edges, the
   // chevron turned to point up and down.
@@ -145,46 +87,6 @@
   @media (hover: none) {
     .greese-ScrollCarousel-control {
       display: none;
-    }
-  }
-
-  .greese-ScrollCarousel-indicators {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--greese-space-1);
-    justify-content: center;
-  }
-
-  // Each dot keeps one size; the active pill is drawn by clip-path, which
-  // never changes layout. A width change would: mid-scroll, every frame of
-  // it made WebKit re-snap the viewport and pull it back a slide.
-  .greese-ScrollCarousel-indicator {
-    position: relative;
-    inline-size: 1.5rem;
-    block-size: 0.5rem;
-    padding: 0;
-    cursor: pointer;
-    background: none;
-    border: 0;
-
-    @include mixins.focus-ring;
-    @include mixins.touch-target(24px);
-
-    &::before {
-      position: absolute;
-      inset: 0;
-      content: '';
-      background-color: var(--greese-color-border-strong);
-      border-radius: var(--greese-corner-pill);
-      clip-path: inset(0 calc(50% - 0.25rem) round var(--greese-corner-pill));
-      transition:
-        clip-path var(--greese-duration-normal) var(--greese-easing-standard),
-        background-color var(--greese-duration-normal) var(--greese-easing-standard);
-    }
-
-    &[aria-current='true']::before {
-      background-color: var(--greese-color-primary);
-      clip-path: inset(0 round var(--greese-corner-pill));
     }
   }
 

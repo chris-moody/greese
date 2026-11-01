@@ -1,6 +1,8 @@
 import { useState, type JSX } from 'react'
 import { InfoIcon } from '@greese/icons'
 import {
+  Carousel,
+  CarouselSlide,
   ScrollCarousel,
   ScrollCarouselSlide,
   Diff,
@@ -43,6 +45,23 @@ export const Catalogue = (): JSX.Element => {
           ))}
         </ScrollCarousel>
         <output data-testid="slide">{slide}</output>
+
+        <Carousel label="Tour" syncHash data-testid="tour">
+          {[0, 120, 240].map((hue, i) => (
+            <CarouselSlide key={hue} id={`tour-${i + 1}`}>
+              <div style={tile(hue)} />
+            </CarouselSlide>
+          ))}
+        </Carousel>
+        <a href="#tour-3">To the last stop</a>
+
+        <Carousel label="Faded" enter="fadeIn" exit="fadeOut">
+          {[45, 165].map((hue) => (
+            <CarouselSlide key={hue}>
+              <div style={tile(hue)} />
+            </CarouselSlide>
+          ))}
+        </Carousel>
 
         {/* Controlled, with buttons of the page's own. */}
         <ScrollCarousel

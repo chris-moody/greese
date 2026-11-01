@@ -5,7 +5,7 @@ import { compileAsProject, rules } from '../test/sass.ts'
 
 const compile = compileAsProject
 
-const AUTHORING = ['mixins', 'tones', 'floating', 'controls'] as const
+const AUTHORING = ['mixins', 'tones', 'floating', 'controls', 'slides'] as const
 
 describe('the SCSS entry points for theme authors (ADR 0021)', () => {
   it('are exported, and each compiles alone without writing CSS', () => {

@@ -38,6 +38,7 @@ describe('the hosted studio', () => {
         './scss/tones',
         './scss/floating',
         './scss/controls',
+        './scss/slides',
       ])
     )
     for (const entry of entries) {

@@ -49,7 +49,12 @@ module.exports = [
     // `flipOverOut<Dir>`, the Depth theme's page change), their keyframes,
     // classes and snapshot rules, and a still header stacked over the page
     // (25.18 kB).
-    limit: '25.2 kB',
+    // 25.2 kB → 25.9 kB (2026-11-01): Carousel (ADR 0032): slides stacked in one
+    // cell, the `carousel` motion roles forward and back for each of an exit's
+    // ten properties, and the buttons and dots it shares with ScrollCarousel;
+    // ScrollCarousel's vertical orientation; Collapsible's margin fix (25.84 kB).
+    // Per-component CSS keeps Carousel off pages that don't use it.
+    limit: '25.9 kB',
   },
   {
     name: 'CSS: css/PageTransition.css',

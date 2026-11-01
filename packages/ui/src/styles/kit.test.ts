@@ -231,6 +231,23 @@ describe('SCSS kit: motion()', () => {
     ])
   })
 
+  it('assigns the carousel roles, forward and back', () => {
+    const css = compile(`@include greese.motion-defaults((
+      carousel: fade-in,
+      carousel-back: pocket-right,
+      carousel-exit: fade-out,
+      carousel-back-exit: pocket-out-right,
+      carousel-duration: slow,
+    ));`)
+    expect(Object.fromEntries(declared(css, ':root'))).toMatchObject({
+      '--greese-motion-carousel': 'greese-fade-in',
+      '--greese-motion-carousel-back': 'greese-pocket-right',
+      '--greese-motion-carousel-exit-opacity': '0',
+      '--greese-motion-carousel-back-exit-translate': '100% 0px',
+      '--greese-motion-carousel-duration': 'var(--greese-duration-slow)',
+    })
+  })
+
   it('assigns motion roles with motion-defaults(), pointing at effects and tokens', () => {
     const css = compile(`@include greese.motion-defaults((
       content: wipe-open-x,

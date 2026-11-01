@@ -667,8 +667,12 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 ///              (the sidebar too) for one kind
 ///   overlay-exit, dialog-exit, popover-exit, tooltip-exit, drawer-exit
 ///              how they leave: an exit by name
+///   carousel, carousel-back                    a Carousel's arriving slide,
+///              going forward and back (base: a slide the way it moves)
+///   carousel-exit, carousel-back-exit          its leaving slide: an exit by
+///              name (base: a slide out the way it moves)
 ///   content-duration, rows-duration, overlay-duration, toast-duration,
-///   backdrop-duration, exit-duration           a duration token (`fast`,
+///   backdrop-duration, exit-duration, carousel-duration   a duration token (`fast`,
 ///              `normal`, `slow`) or a time
 ///   enter-ease, exit-ease                      an easing token (`standard`,
 ///              `enter`, `exit`), an ease name or a curve
@@ -701,9 +705,19 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
     dialog,
     popover,
     tooltip,
-    drawer
+    drawer,
+    carousel,
+    carousel-back
   );
-  $exits: (overlay-exit, dialog-exit, popover-exit, tooltip-exit, drawer-exit);
+  $exits: (
+    overlay-exit,
+    dialog-exit,
+    popover-exit,
+    tooltip-exit,
+    drawer-exit,
+    carousel-exit,
+    carousel-back-exit
+  );
 
   // A page transition's roles (ADR 0029): its entrances and exits are
   // `@keyframes` names, played on the view transition's snapshots.
@@ -728,6 +742,7 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
     toast-duration,
     backdrop-duration,
     exit-duration,
+    carousel-duration,
     page-duration,
     share-duration
   );

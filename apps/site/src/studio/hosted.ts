@@ -35,6 +35,7 @@ const entries: Record<string, string> = {
   'pkg:@greese/ui/scss/tones': '/src/styles/public/_tones.scss',
   'pkg:@greese/ui/scss/floating': '/src/styles/public/_floating.scss',
   'pkg:@greese/ui/scss/controls': '/src/styles/public/_controls.scss',
+  'pkg:@greese/ui/scss/slides': '/src/styles/public/_slides.scss',
   'pkg:@greese/ui/scss/tokens': '/dist/_tokens.scss',
   'pkg:@greese/ui/scss/layers': '/dist/_layers.scss',
   'pkg:@greese/ui/scss/maps': '/dist/_maps.scss',

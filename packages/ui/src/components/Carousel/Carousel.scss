@@ -1,0 +1,157 @@
+@use '../../styles/mixins';
+@use '../../styles/slides';
+
+// What a leaving slide's exit sets, and the base theme's values: a slide out
+// the way the carousel moves, no mask.
+$_exit: (
+  opacity: 1,
+  translate: calc(-100% * var(--greese-carousel-way)) 0,
+  scale: 1,
+  mask-image: none,
+  mask-repeat: no-repeat,
+  mask-position: 50% 50%,
+  mask-size: 100% 100%,
+  mask-from: 100% 100%,
+  transform: none,
+  transform-origin: 50% 50%,
+);
+
+/// A leaving slide's exit value: its own (the instance's `exit`, as an
+/// effect class on the slide), else the role's for the direction it goes.
+@function _exit($property) {
+  @return var(
+    --greese-motion-exit-#{$property},
+    var(--greese-carousel-exit-#{$property})
+  );
+}
+
+@layer greese.components {
+  // One slide at a time: the others stack under it, in the same cell, so the
+  // carousel is as tall as its tallest slide and never jumps as it moves.
+  .greese-Carousel {
+    @include mixins.component-root;
+
+    // 1 going forward, -1 going back; mirrored right-to-left, where forward
+    // runs leftward.
+    --greese-carousel-way: 1;
+
+    // The theme's motion roles (ADR 0025): `carousel` and `carousel-exit`,
+    // and `carousel-back` and `carousel-back-exit` going back (each falling
+    // back to its forward role). The base theme slides the way it moves.
+    --greese-carousel-enter: var(--greese-motion-carousel, greese-carousel-in);
+    --greese-carousel-duration: var(
+      --greese-motion-carousel-duration,
+      var(--greese-duration-normal)
+    );
+
+    @each $property, $base in $_exit {
+      --greese-carousel-exit-#{$property}: var(
+        --greese-motion-carousel-exit-#{$property},
+        #{$base}
+      );
+    }
+
+    position: relative;
+    display: grid;
+    gap: var(--greese-space-3);
+    min-inline-size: 0;
+
+    &[data-direction='back'] {
+      --greese-carousel-way: -1;
+      --greese-carousel-enter: var(
+        --greese-motion-carousel-back,
+        var(--greese-motion-carousel, greese-carousel-in)
+      );
+
+      @each $property, $base in $_exit {
+        --greese-carousel-exit-#{$property}: var(
+          --greese-motion-carousel-back-exit-#{$property},
+          var(--greese-motion-carousel-exit-#{$property}, #{$base})
+        );
+      }
+    }
+
+    &:dir(rtl) {
+      --greese-carousel-way: -1;
+    }
+
+    &[data-direction='back']:dir(rtl) {
+      --greese-carousel-way: 1;
+    }
+  }
+
+  .greese-Carousel-viewport {
+    // An exit set on an ancestor (a dialog's `greese` exit) is not the
+    // slides': cleared here, so they fall back to their own and the role's.
+    @each $property, $base in $_exit {
+      --greese-motion-exit-#{$property}: initial;
+    }
+
+    // The instance's entrance, set on the slide that arrives; cleared for
+    // nested carousels.
+    --greese-carousel-slide-enter: initial;
+
+    display: grid;
+    min-inline-size: 0;
+    overflow: clip;
+    border-radius: var(--greese-corner-panel);
+
+    // Vertical drags still scroll the page; sideways ones are swipes.
+    touch-action: pan-y;
+
+    @include mixins.focus-ring;
+  }
+
+  .greese-CarouselSlide {
+    grid-area: 1 / 1;
+    min-inline-size: 0;
+
+    // A wipe, iris or pocket exit's mask: held open at the size it starts
+    // from, then sized away as the slide leaves. Without one, it's `none`.
+    mask-image: _exit(mask-image);
+    mask-repeat: _exit(mask-repeat);
+    mask-position: _exit(mask-position);
+    mask-size: _exit(mask-from);
+    transform-origin: _exit(transform-origin);
+
+    &:not([data-active]) {
+      visibility: hidden;
+      opacity: _exit(opacity);
+      translate: _exit(translate);
+      scale: _exit(scale);
+      transform: _exit(transform);
+      mask-size: _exit(mask-size);
+    }
+  }
+
+  // Only once it has moved: the slide it opens on (a deep link's) is simply
+  // there. The arriving slide plays its entrance; the one leaving
+  // transitions to its exit, and is hidden when that ends. The arriving one
+  // has no transition, so its exit values never fight its entrance.
+  @include mixins.motion-safe {
+    .greese-Carousel[data-moved] > .greese-Carousel-viewport > .greese-CarouselSlide {
+      &[data-active] {
+        animation-name: var(--greese-carousel-slide-enter, var(--greese-carousel-enter));
+        animation-duration: var(--greese-carousel-duration);
+        animation-timing-function: var(--greese-easing-standard);
+        animation-fill-mode: backwards;
+      }
+
+      &:not([data-active]) {
+        transition-property:
+          visibility, opacity, translate, scale, transform, mask-size, mask-position;
+        transition-duration: var(--greese-carousel-duration);
+        transition-timing-function: var(--greese-easing-standard);
+      }
+    }
+  }
+
+  @include slides.controls('greese-Carousel', carousel);
+
+  // The base theme's entrance: in from the side the carousel moves toward.
+  @keyframes greese-carousel-in {
+    from {
+      translate: calc(100% * var(--greese-carousel-way)) 0;
+    }
+  }
+}

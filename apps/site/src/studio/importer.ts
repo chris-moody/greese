@@ -218,6 +218,8 @@ const ENTRANCE_ROLES = new Set([
   'popover',
   'tooltip',
   'drawer',
+  'carousel',
+  'carousel-back',
   // A page transition's entrances (ADR 0029).
   'page',
   'page-back',
@@ -233,6 +235,8 @@ const EXIT_ROLES = [
   'popover-exit',
   'tooltip-exit',
   'drawer-exit',
+  'carousel-exit',
+  'carousel-back-exit',
 ]
 const DURATION_ROLES = new Set([
   'content-duration',
@@ -241,6 +245,7 @@ const DURATION_ROLES = new Set([
   'toast-duration',
   'backdrop-duration',
   'exit-duration',
+  'carousel-duration',
   'page-duration',
   'share-duration',
 ])
