@@ -649,7 +649,10 @@ module.exports = [
     // color tokens for a canvas. Menu's own tree-shaken budget is unchanged
     // (3.37 kB of 3.4), so an app that imports Menu alone pays ~10 B of it: the
     // shared keyboard helper the two menus now both use (53.09 kB).
-    limit: '53.2 kB',
+    // 53.2 kB → 53.4 kB (2026-11-05): Chip's `size` prop — five size classes
+    // and the variables they set (53.3 kB). The other two whole-library
+    // budgets did not move; only this one was close enough to its limit.
+    limit: '53.4 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.

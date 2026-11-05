@@ -141,9 +141,9 @@ $blocks: (
   ),
   'Chip': (
     parts: ('icon', 'remove', 'toggle',),
-    modifiers: ('accent', 'info', 'negative', 'neutral', 'positive', 'primary', 'secondary', 'selected', 'tertiary', 'warning',),
+    modifiers: ('accent', 'info', 'negative', 'neutral', 'positive', 'primary', 'secondary', 'selected', 'size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs', 'tertiary', 'warning',),
     part-modifiers: (),
-    variables: ('--greese-chip-tone', '--greese-chip-tone-on',),
+    variables: ('--greese-chip-font', '--greese-chip-height', '--greese-chip-padding', '--greese-chip-remove', '--greese-chip-tone', '--greese-chip-tone-on',),
   ),
   'ChoiceGroup': (
     parts: (),

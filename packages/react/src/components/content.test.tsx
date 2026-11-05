@@ -551,6 +551,20 @@ describe('feedback', () => {
     expect(onSelectedChange).toHaveBeenCalledWith(true)
   })
 
+  it('Chip takes a size, defaulting to the one every chip had', () => {
+    const { container } = render(
+      <>
+        <Chip>Default</Chip>
+        <Chip size="xs">Tiny</Chip>
+        <Chip size="xl">Huge</Chip>
+      </>
+    )
+    const [plain, tiny, huge] = container.querySelectorAll('.greese-Chip')
+    expect(plain).toHaveClass('greese-Chip--size-md')
+    expect(tiny).toHaveClass('greese-Chip--size-xs')
+    expect(huge).toHaveClass('greese-Chip--size-xl')
+  })
+
   it('Spinner and Progress are announced; Skeleton is hidden', () => {
     render(
       <>
@@ -668,7 +682,8 @@ describe('brand tones', () => {
       </>
     )
     const [plain, filter] = container.querySelectorAll('.greese-Chip')
-    expect(plain!.className).not.toMatch(/--/) // no tone, not selected
+    // Its size is the only modifier: no tone, not selected.
+    expect(plain!.className).toBe('greese-Chip greese-Chip--size-md')
     expect(filter).toHaveClass('greese-Chip--secondary')
     expect(filter).not.toHaveClass('greese-Chip--selected')
     await user.click(screen.getByRole('button', { name: 'Filter' }))

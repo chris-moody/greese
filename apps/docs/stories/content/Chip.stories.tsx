@@ -6,6 +6,9 @@ const meta = {
   title: 'Content/Chip',
   component: Chip,
   args: { children: 'Design' },
+  argTypes: {
+    size: { control: 'inline-radio', options: ['xs', 'sm', 'md', 'lg', 'xl'] },
+  },
 } satisfies Meta<typeof Chip>
 export default meta
 
@@ -94,4 +97,28 @@ export const Filters: Story = {
       </Stack>
     )
   },
+}
+
+/**
+ * `size` sets the height, the inline padding and the text size together. A
+ * chip runs smaller than an input of the same name, because it is a label
+ * rather than something you type in; `md` is the default.
+ */
+export const Sizes: Story = {
+  render: function Sizes(args) {
+    return (
+      <Stack direction="row" gap={2} align="center" wrap="wrap">
+        {(['xs', 'sm', 'md', 'lg', 'xl'] as const).map((size) => (
+          <Chip {...args} key={size} size={size}>
+            {size}
+          </Chip>
+        ))}
+      </Stack>
+    )
+  },
+}
+
+/** The remove button scales with the chip, so a small one still fits it. */
+export const SmallRemovable: Story = {
+  args: { size: 'xs', children: 'Design', onRemove: () => {} },
 }

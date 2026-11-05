@@ -1,15 +1,56 @@
 @use 'sass:list';
+@use 'sass:map';
 @use '../../styles/mixins';
 @use '../../styles/tones';
+
+/// A chip's size scale.
+///
+/// Deliberately not `controls.$sizes`: a chip is a label, not something you
+/// type in, so it runs smaller than an input of the same name and needs no
+/// 44px touch floor of its own (only its toggle and remove buttons do, and
+/// `mixins.touch-target` gives them one). `md` is the size every chip was
+/// before the prop existed, so nothing moved when it arrived.
+$chip-sizes: (
+  xs: (
+    height: 1.25rem,
+    padding: var(--greese-space-1),
+    font: var(--greese-type-caption-font-size),
+    remove: 1rem,
+  ),
+  sm: (
+    height: 1.625rem,
+    padding: var(--greese-space-2),
+    font: var(--greese-type-caption-font-size),
+    remove: 1.25rem,
+  ),
+  md: (
+    height: 2rem,
+    padding: var(--greese-space-3),
+    font: var(--greese-type-p3-font-size),
+    remove: 1.5rem,
+  ),
+  lg: (
+    height: 2.5rem,
+    padding: var(--greese-space-4),
+    font: var(--greese-type-p2-font-size),
+    remove: 1.75rem,
+  ),
+  xl: (
+    height: 3rem,
+    padding: var(--greese-space-5),
+    font: var(--greese-type-p1-font-size),
+    remove: 2rem,
+  ),
+);
 
 @layer greese.components {
   .greese-Chip {
     display: inline-flex;
     gap: var(--greese-space-1);
     align-items: center;
-    min-block-size: 2rem;
-    padding-inline: var(--greese-space-3);
-    font-size: var(--greese-type-p3-font-size);
+    min-block-size: var(--greese-chip-height);
+    padding-inline: var(--greese-chip-padding);
+    font-size: var(--greese-chip-font);
     line-height: 1;
     color: var(--greese-color-fg);
     white-space: nowrap;
@@ -23,6 +64,18 @@
 
     &:has(.greese-Chip-remove) {
       padding-inline-end: var(--greese-space-1);
+    }
+  }
+
+  // Sizes. Each sets the three per-instance variables the block reads, so an
+  // app can override one of them on a chip (or a whole area) without picking a
+  // different size.
+  @each $size, $spec in $chip-sizes {
+    .greese-Chip--size-#{$size} {
+      --greese-chip-height: #{map.get($spec, height)};
+      --greese-chip-padding: #{map.get($spec, padding)};
+      --greese-chip-font: #{map.get($spec, font)};
+      --greese-chip-remove: #{map.get($spec, remove)};
     }
   }
 
@@ -95,20 +148,22 @@
 
   .greese-Chip-toggle {
     align-self: stretch;
-    padding-inline: var(--greese-space-3);
+    padding-inline: var(--greese-chip-padding);
     border-radius: var(--greese-corner-pill);
   }
 
   .greese-Chip-remove {
     justify-content: center;
-    inline-size: 1.5rem;
-    block-size: 1.5rem;
+
+    // Scales with the chip, or it overflows a small one.
+    inline-size: var(--greese-chip-remove);
+    block-size: var(--greese-chip-remove);
     color: var(--greese-color-fg-muted);
     border-radius: var(--greese-corner-round);
 
     > svg {
-      inline-size: 0.875rem;
-      block-size: 0.875rem;
+      inline-size: 0.6em;
+      block-size: 0.6em;
     }
 
     @include mixins.hover {

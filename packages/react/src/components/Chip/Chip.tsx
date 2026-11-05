@@ -3,6 +3,7 @@ import type { ComponentPropsWithRef, JSX, MouseEvent, ReactNode } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
 import { CloseIcon } from '@greese/icons'
+import type { ControlSize } from '../Button/Button.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 import type { BrandTone } from '../../utils/tone.ts'
 
@@ -13,6 +14,13 @@ export interface ChipProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'span'>, 'children'> {
   /** The chip's text. */
   children: ReactNode
+  /**
+   * Height, inline padding and text size: `xs` through `xl`. A chip is a
+   * label rather than a control, so its scale runs smaller than an input's at
+   * the same name — `md` is a chip's natural size beside body text.
+   * @default 'md'
+   */
+  size?: ControlSize
   /** Leading icon or avatar. */
   icon?: ReactNode
   /** Adds a remove button (e.g. a filter or a recipient). */
@@ -45,12 +53,13 @@ export interface ChipProps
  * ```tsx
  * <Chip onRemove={() => drop(tag)}>{tag}</Chip>
  * <Chip selectable defaultSelected>In stock</Chip>
- * <Chip tone="secondary">Featured</Chip>
+ * <Chip tone="secondary" size="sm">Featured</Chip>
  * ```
  */
 export const Chip = ({
   greese,
   children,
+  size = 'md',
   icon,
   onRemove,
   removeLabel,
@@ -84,6 +93,7 @@ export const Chip = ({
       {...props}
       className={cx(
         'greese-Chip',
+        `greese-Chip--size-${size}`,
         tone && `greese-Chip--${tone}`,
         selectable && selected && 'greese-Chip--selected',
         className
