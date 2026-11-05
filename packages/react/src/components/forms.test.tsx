@@ -425,6 +425,55 @@ describe('Slider and FileInput', () => {
     expect(slider.style.getPropertyValue('--greese-slider-fill')).toBe('50%')
   })
 
+  it('Slider shows its value in a bubble that follows the thumb', () => {
+    render(<Slider aria-label="Weight" defaultValue={20} valueLabel="always" unit="%" />)
+    const slider = screen.getByRole<HTMLInputElement>('slider', { name: 'Weight' })
+    // The two variables go on the wrapper, so the bubble's anchor — a sibling
+    // of the input — can read them.
+    const wrap = slider.parentElement!
+    expect(wrap).toHaveClass('greese-Slider-wrap')
+    expect(wrap.style.getPropertyValue('--greese-slider-ratio')).toBe('0.2')
+    expect(screen.getByText('20%')).toBeInTheDocument()
+
+    fireEvent.change(slider, { target: { value: '75' } })
+    expect(wrap.style.getPropertyValue('--greese-slider-ratio')).toBe('0.75')
+    expect(wrap.style.getPropertyValue('--greese-slider-fill')).toBe('75%')
+    expect(screen.getByText('75%')).toBeInTheDocument()
+  })
+
+  it('Slider speaks its value with the unit, and the bubble is not announced', () => {
+    render(<Slider aria-label="Weight" defaultValue={40} valueLabel="always" unit="%" />)
+    const slider = screen.getByRole('slider', { name: 'Weight' })
+    // One announcement, from the input, carrying the unit `aria-valuenow`
+    // cannot. The bubble repeating it would be a second.
+    expect(slider).toHaveAttribute('aria-valuetext', '40%')
+    expect(slider).not.toHaveAccessibleDescription()
+    expect(screen.queryByRole('tooltip', { hidden: true })).toBeNull()
+  })
+
+  it('Slider adds no wrapper and no bubble by default', () => {
+    render(<Slider aria-label="Volume" defaultValue={20} />)
+    const slider = screen.getByRole<HTMLInputElement>('slider')
+    expect(slider.parentElement).not.toHaveClass('greese-Slider-wrap')
+    expect(slider).not.toHaveAttribute('aria-valuetext')
+    expect(slider.style.getPropertyValue('--greese-slider-fill')).toBe('20%')
+  })
+
+  it("Slider's auto bubble follows the pointer and the keyboard", () => {
+    render(<Slider aria-label="Weight" defaultValue={20} valueLabel="auto" unit="%" />)
+    const slider = screen.getByRole('slider')
+    const bubble = () => screen.getByText('20%')
+    expect(bubble().matches(':popover-open')).toBe(false)
+    fireEvent.pointerEnter(slider, { pointerType: 'mouse' })
+    expect(bubble().matches(':popover-open')).toBe(true)
+    fireEvent.pointerLeave(slider, { pointerType: 'mouse' })
+    expect(bubble().matches(':popover-open')).toBe(false)
+    fireEvent.focus(slider)
+    expect(bubble().matches(':popover-open')).toBe(true)
+    fireEvent.blur(slider)
+    expect(bubble().matches(':popover-open')).toBe(false)
+  })
+
   it('FileInput is a native file input wired to its Field', () => {
     render(
       <Field label="Avatar">

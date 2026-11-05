@@ -60,7 +60,10 @@ module.exports = [
     // 26.15 kB → 26.6 kB (2026-11-04): EditableField's stylesheet — the property
     // row, its label, the color swatch's three states and the dial — plus
     // ColorPicker's channel fields and tool buttons (26.52 kB).
-    limit: '26.6 kB',
+    // 26.6 kB → 26.85 kB (2026-11-05): a slider's value bubble — the wrapper and
+    // the zero-size anchor that puts it at the thumb — 141 B of it, on top of
+    // 32 B already over before this change (26.77 kB).
+    limit: '26.85 kB',
   },
   {
     name: 'CSS: css/PageTransition.css',

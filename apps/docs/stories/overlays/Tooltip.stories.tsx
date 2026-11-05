@@ -27,6 +27,7 @@ const meta = {
         'end',
       ],
     },
+    open: { control: 'radio', options: [undefined, true, false] },
   },
 } satisfies Meta<typeof Tooltip>
 export default meta
@@ -48,4 +49,18 @@ export const Placements: Story = {
       ))}
     </Stack>
   ),
+}
+
+/**
+ * `open` drives it yourself: `true` keeps it up, `false` turns it off. Setting
+ * it replaces the hover, focus and tap behaviour, so the tooltip shows exactly
+ * when you say — a slider's value bubble works this way.
+ */
+export const AlwaysOpen: Story = {
+  args: { open: true, content: 'Always visible' },
+}
+
+/** `open={false}` is off: nothing opens it, and it describes nothing. */
+export const Disabled: Story = {
+  args: { open: false, content: 'You will not see this' },
 }

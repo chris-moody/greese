@@ -179,7 +179,13 @@ describe('useTokenColors', () => {
     return () => style.remove()
   }
 
-  const Probe = ({ roles, onRead }: { roles: string[]; onRead: (v: string[]) => void }) => {
+  const Probe = ({
+    roles,
+    onRead,
+  }: {
+    roles: string[]
+    onRead: (v: string[]) => void
+  }) => {
     const ref = useRef<HTMLDivElement>(null)
     const values = useTokenColors(ref, ...roles)
     onRead(values)

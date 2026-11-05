@@ -102,7 +102,12 @@ module.exports = [
     // color tokens for a canvas. Menu's own tree-shaken budget is unchanged
     // (3.37 kB of 3.4), so an app that imports Menu alone pays ~10 B of it: the
     // shared keyboard helper the two menus now both use (37.49 kB).
-    limit: '37.6 kB',
+    // 37.6 kB → 37.9 kB (2026-11-05): a slider can show its value in a bubble
+    // (`valueLabel`), which is a Tooltip given `open` and `describe`; and Slot no
+    // longer lets a child's `undefined` clobber the Slot's own prop — about 10 B
+    // every component pays, which fixes a Tooltip around any form control
+    // describing nothing (37.82 kB).
+    limit: '37.9 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -153,7 +158,8 @@ module.exports = [
     // color tokens for a canvas. Menu's own tree-shaken budget is unchanged
     // (3.37 kB of 3.4), so an app that imports Menu alone pays ~10 B of it: the
     // shared keyboard helper the two menus now both use (43.21 kB).
-    limit: '43.3 kB',
+    // 43.3 kB → 43.7 kB (2026-11-05): the same slider bubble and Slot merge fix (43.63 kB).
+    limit: '43.7 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -212,7 +218,8 @@ module.exports = [
     // 0025 addendum): the overlay exits' names every component carries, the 32 that
     // follow a direction written as prefixes times directions (2416 B).
     // 2.45 kB → 2.5 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (2462 B).
-    limit: '2.5 kB',
+    // 2.5 kB → 2.55 kB (2026-11-05): the Slot merge fix, which every component carries (2502 B).
+    limit: '2.55 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -227,7 +234,8 @@ module.exports = [
     // of those names (2604 B).
     // 2.65 kB → 2.7 kB (2026-10-30): eight half turns (`flipOver<Dir>`, `flipOverOut<Dir>`,
     // the Depth theme's page change; ADR 0029): more of the effect names this carries (2.66 kB).
-    limit: '2.7 kB',
+    // 2.7 kB → 2.75 kB (2026-11-05): the Slot merge fix (2.71 kB).
+    limit: '2.75 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -273,6 +281,17 @@ module.exports = [
     // 3.65 kB → 3.7 kB (2026-10-30): eight half turns (`flipOver<Dir>`, `flipOverOut<Dir>`,
     // the Depth theme's page change; ADR 0029): more of the effect names this carries (3.66 kB).
     limit: '3.7 kB',
+    modifyRolldownConfig: external,
+  },
+  {
+    name: 'JS: tree-shaken { Slider }',
+    path: 'dist/index.js',
+    import: '{ Slider }',
+    ignore: ['react', 'react-dom'],
+    // New entry (2026-11-05): a slider can show its value in a bubble
+    // (`valueLabel`), which is a Tooltip, so Slider now carries Tooltip and
+    // the anchor utilities. Budgeted so that cost stays visible (3.71 kB).
+    limit: '3.75 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -347,7 +366,8 @@ module.exports = [
     // (3.77 kB).
     // 3.8 kB → 3.85 kB (2026-10-24): the `track` color and the radius roles
     // (`corner`) among the default tokens createTheme carries (ADR 0025; 3.81 kB).
-    limit: '3.85 kB',
+    // 3.85 kB → 3.95 kB (2026-11-05): the Slot merge fix, on top of an 8 B overage already in the tree (3.9 kB).
+    limit: '3.95 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -506,7 +526,8 @@ module.exports = [
     // 2.35 kB → 2.4 kB (2026-10-27): sections in a scrolling panel, measured from its top (2.37 kB).
     // 2.4 kB → 2.45 kB (2026-10-30): eight half turns (`flipOver<Dir>`, `flipOverOut<Dir>`,
     // the Depth theme's page change; ADR 0029): more of the effect names this carries (2.41 kB).
-    limit: '2.45 kB',
+    // 2.45 kB → 2.5 kB (2026-11-05): the Slot merge fix (2454 B).
+    limit: '2.5 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -652,7 +673,8 @@ module.exports = [
     // 53.2 kB → 53.4 kB (2026-11-05): Chip's `size` prop — five size classes
     // and the variables they set (53.3 kB). The other two whole-library
     // budgets did not move; only this one was close enough to its limit.
-    limit: '53.4 kB',
+    // 53.4 kB → 53.7 kB (2026-11-05): the same slider bubble and Slot merge fix (53.55 kB).
+    limit: '53.7 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.

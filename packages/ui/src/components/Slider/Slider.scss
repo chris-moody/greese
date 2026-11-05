@@ -13,6 +13,18 @@
   border-radius: var(--greese-corner-pill);
 }
 
+// The thumb's size, on the wrapper as well as the slider: a custom property
+// inherits down, and the bubble's anchor is the slider's sibling, so reading
+// it from the slider alone would leave the anchor's `calc()` invalid.
+@mixin thumb-size {
+  --greese-slider-thumb: 1.25rem;
+
+  // A thumb big enough for fingers.
+  @media (pointer: coarse) {
+    --greese-slider-thumb: 1.75rem;
+  }
+}
+
 @mixin thumb {
   box-sizing: border-box;
   inline-size: var(--greese-slider-thumb);
@@ -24,8 +36,36 @@
 }
 
 @layer greese.components {
+  // Only present when the slider shows a value bubble, so a plain slider's
+  // markup is unchanged.
+  .greese-Slider-wrap {
+    @include thumb-size;
+
+    position: relative;
+    display: block;
+  }
+
+  // A zero-size anchor sitting at the centre of the thumb, so the bubble
+  // follows the value. The thumb's travel is inset by half its width at each
+  // end, which is why this is not simply the fill percentage.
+  .greese-Slider-thumbAnchor {
+    --greese-slider-travel: calc(100% - var(--greese-slider-thumb));
+    --greese-slider-offset: calc(
+      var(--greese-slider-travel) * var(--greese-slider-ratio, 0)
+    );
+
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: calc(
+      var(--greese-slider-thumb) / 2 + var(--greese-slider-offset)
+    );
+    inline-size: 0;
+    block-size: var(--greese-slider-thumb);
+  }
+
   .greese-Slider {
-    --greese-slider-thumb: 1.25rem;
+    @include thumb-size;
+
     --greese-slider-towards: right;
 
     @include mixins.component-root;
@@ -40,11 +80,6 @@
 
     &:dir(rtl) {
       --greese-slider-towards: left;
-    }
-
-    // A thumb big enough for fingers.
-    @media (pointer: coarse) {
-      --greese-slider-thumb: 1.75rem;
     }
 
     &:focus-visible {

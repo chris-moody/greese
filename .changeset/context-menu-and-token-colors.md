@@ -4,7 +4,7 @@
 ---
 
 - **`ContextMenu`**: a menu opened at the pointer, or hung off an element as a
-  submenu. `Menu` is a menu *button* — it owns a trigger and its own open
+  submenu. `Menu` is a menu _button_ — it owns a trigger and its own open
   state, and has nowhere to put a right-click — so this takes the other shape:
   the caller decides when and where it opens, and `anchor` carries both.
 

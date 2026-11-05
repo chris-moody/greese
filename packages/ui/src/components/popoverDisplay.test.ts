@@ -79,8 +79,9 @@ const stylesheets = (): Sheet[] => {
 const overlayRoots = (sheets: Sheet[]): Set<string> => {
   const found = new Set<string>()
   for (const { css } of sheets) {
-    for (const [, cls] of css.matchAll(/\.(greese-[\w-]+):not\(:popover-open\)/g)) {
-      found.add(cls)
+    for (const match of css.matchAll(/\.(greese-[\w-]+):not\(:popover-open\)/g)) {
+      const cls = match[1]
+      if (cls) found.add(cls)
     }
   }
   return found

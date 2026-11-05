@@ -15,6 +15,7 @@ import { Pagination, paginationRange } from './Pagination/Pagination.tsx'
 import { Popover } from './Popover/Popover.tsx'
 import { currentSection, ScrollSpy } from './ScrollSpy/ScrollSpy.tsx'
 import { Slot } from './Slot/Slot.tsx'
+import { Switch } from './Switch/Switch.tsx'
 import { Sidebar, SidebarLayout, SidebarTrigger } from './Sidebar/Sidebar.tsx'
 import { toast, Toaster } from './Toast/Toast.tsx'
 import { Tooltip } from './Tooltip/Tooltip.tsx'
@@ -207,6 +208,64 @@ describe('Popover and Tooltip', () => {
     fireEvent.pointerUp(element, { pointerType })
     fireEvent.click(element)
   }
+
+  it('Tooltip stays up while `open` is true and never shows while it is false', () => {
+    const { rerender } = render(
+      <Tooltip content="Copies the link" open={false}>
+        <Button>Share</Button>
+      </Tooltip>
+    )
+    const tip = screen.getByRole('tooltip', { hidden: true })
+    const trigger = screen.getByRole('button', { name: 'Share' })
+
+    // Off: the interaction that would normally open it is not even attached.
+    fireEvent.pointerEnter(trigger, { pointerType: 'mouse' })
+    fireEvent.focus(trigger)
+    expect(tip.matches(':popover-open')).toBe(false)
+
+    rerender(
+      <Tooltip content="Copies the link" open>
+        <Button>Share</Button>
+      </Tooltip>
+    )
+    expect(tip.matches(':popover-open')).toBe(true)
+    // And a mouse leaving does not take it away: the caller owns the state.
+    fireEvent.pointerLeave(trigger, { pointerType: 'mouse' })
+    expect(tip.matches(':popover-open')).toBe(true)
+  })
+
+  it('Tooltip stops describing its child when `describe` is off', () => {
+    const { rerender } = render(
+      <Tooltip content="40%" describe={false} open>
+        <Button>Weight</Button>
+      </Tooltip>
+    )
+    const trigger = screen.getByRole('button', { name: 'Weight' })
+    expect(trigger).not.toHaveAccessibleDescription()
+    expect(screen.queryByRole('tooltip', { hidden: true })).toBeNull()
+    expect(screen.getByText('40%')).toBeInTheDocument()
+
+    rerender(
+      <Tooltip content="40%" open>
+        <Button>Weight</Button>
+      </Tooltip>
+    )
+    expect(trigger).toHaveAccessibleDescription('40%')
+  })
+
+  it('Tooltip still describes a control that passes its own undefined aria-describedby', () => {
+    // Every greese control spreads `useFieldControl()`, whose
+    // `aria-describedby` is undefined outside a Field. Slot used to let that
+    // undefined overwrite the tooltip's id, so the description vanished.
+    render(
+      <Tooltip content="Turn it off">
+        <Switch aria-label="Group" />
+      </Tooltip>
+    )
+    expect(screen.getByRole('switch', { name: 'Group' })).toHaveAccessibleDescription(
+      'Turn it off'
+    )
+  })
 
   it('Tooltip opens on a tap, keeps the child working, and closes on a tap again or elsewhere', async () => {
     const onClick = vi.fn()

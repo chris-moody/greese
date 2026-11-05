@@ -488,10 +488,10 @@ $blocks: (
     variables: ('--greese-skeleton-height', '--greese-skeleton-width',),
   ),
   'Slider': (
-    parts: (),
+    parts: ('thumbAnchor', 'wrap',),
     modifiers: (),
     part-modifiers: (),
-    variables: ('--greese-slider-fill', '--greese-slider-thumb', '--greese-slider-towards',),
+    variables: ('--greese-slider-fill', '--greese-slider-offset', '--greese-slider-ratio', '--greese-slider-thumb', '--greese-slider-towards', '--greese-slider-travel',),
   ),
   'Spacer': (
     parts: (),

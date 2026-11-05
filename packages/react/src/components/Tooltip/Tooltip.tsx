@@ -30,6 +30,20 @@ export interface TooltipProps extends GreeseProps {
    * @default true
    */
   openOnTap?: boolean
+  /**
+   * Whether it is shown, when you drive it yourself: `true` keeps it up,
+   * `false` turns it off entirely. Leave it out for the hover, focus and tap
+   * behaviour above; setting it replaces that, so the tooltip shows exactly
+   * when you say.
+   */
+  open?: boolean
+  /**
+   * Whether it describes its child (`role="tooltip"` and `aria-describedby`).
+   * Turn it off when the child already exposes the same thing — a slider's
+   * value is in `aria-valuetext`, so a bubble repeating it would be announced
+   * twice. @default true
+   */
+  describe?: boolean
   /** Classes for the tooltip itself (the floating text), not its child. */
   className?: string
 }
@@ -55,6 +69,8 @@ export const Tooltip = ({
   placement = 'top',
   delay = 400,
   openOnTap = true,
+  open,
+  describe = true,
   className,
 }: TooltipProps): JSX.Element => {
   const id = useId()
@@ -78,10 +94,26 @@ export const Tooltip = ({
   // A finger leaves as it lifts: only a mouse leaving hides it.
   const leave = (event: PointerEvent) => event.pointerType === 'mouse' && hide(100)
 
+  // Driven from outside: follow `open` and leave the interaction alone.
+  // Shown and hidden directly rather than through the timer — a delay belongs
+  // to hovering, and a caller that says "open" means now. The popover is told
+  // on every render, not just on a change, because the element only exists
+  // after the first one.
+  useEffect(() => {
+    if (open === undefined) return
+    clearTimeout(timer.current)
+    const el = tip.current
+    if (!el) return
+    if (open && !el.matches(':popover-open')) el.showPopover()
+    if (!open && el.matches(':popover-open')) el.hidePopover()
+  })
+
   // Escape dismisses from anywhere, without moving focus. A tap anywhere but
   // the child or the tooltip dismisses one a tap opened: a manual popover has
   // no light dismiss, and iOS doesn't focus a tapped button, so no blur hides it.
   useEffect(() => {
+    // Escape would fight an `open` the caller controls.
+    if (open !== undefined) return
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') hide()
     }
@@ -102,36 +134,39 @@ export const Tooltip = ({
     <>
       <Slot
         ref={composeRefs<HTMLElement>(trigger, anchor.triggerRef)}
-        aria-describedby={id}
+        aria-describedby={describe ? id : undefined}
         style={anchor.anchorStyle}
-        onPointerEnter={(event: PointerEvent) =>
-          event.pointerType === 'mouse' && show(delay)
-        }
-        onPointerLeave={leave}
-        // A tap toggles it. A scroll that starts on the child cancels the
-        // pointer rather than lifting it, so it doesn't count as a tap.
-        onPointerUp={(event: PointerEvent) => {
-          if (openOnTap && event.pointerType !== 'mouse')
-            if (tip.current?.matches(':popover-open')) hide()
-            else show()
-        }}
-        onFocus={(event: FocusEvent<HTMLElement>) => {
-          if (event.currentTarget.matches(':focus-visible')) show()
-        }}
-        onBlur={() => hide()}
+        {...(open === undefined && {
+          onPointerEnter: (event: PointerEvent) =>
+            event.pointerType === 'mouse' && show(delay),
+          onPointerLeave: leave,
+          // A tap toggles it. A scroll that starts on the child cancels the
+          // pointer rather than lifting it, so it doesn't count as a tap.
+          onPointerUp: (event: PointerEvent) => {
+            if (openOnTap && event.pointerType !== 'mouse')
+              if (tip.current?.matches(':popover-open')) hide()
+              else show()
+          },
+          onFocus: (event: FocusEvent<HTMLElement>) => {
+            if (event.currentTarget.matches(':focus-visible')) show()
+          },
+          onBlur: () => hide(),
+        })}
       >
         {children}
       </Slot>
       {withGreese(
         <div
-          id={id}
+          id={describe ? id : undefined}
           ref={composeRefs<HTMLDivElement>(tip, anchor.floatingRef)}
           popover="manual"
-          role="tooltip"
+          role={describe ? 'tooltip' : 'presentation'}
           className={cx('greese-Tooltip', className)}
           style={anchor.floatingStyle}
-          onPointerEnter={() => clearTimeout(timer.current)}
-          onPointerLeave={leave}
+          {...(open === undefined && {
+            onPointerEnter: () => clearTimeout(timer.current),
+            onPointerLeave: leave,
+          })}
         >
           {content}
         </div>,

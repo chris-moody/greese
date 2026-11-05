@@ -1,7 +1,15 @@
 'use client'
-import type { ChangeEvent, ComponentPropsWithRef, CSSProperties, JSX } from 'react'
+import {
+  useRef,
+  useState,
+  type ChangeEvent,
+  type ComponentPropsWithRef,
+  type CSSProperties,
+  type JSX,
+} from 'react'
 import { cx } from '../../utils/cx.ts'
 import { useFieldControl } from '../Field/Field.tsx'
+import { Tooltip } from '../Tooltip/Tooltip.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 
 export interface SliderProps
@@ -21,6 +29,19 @@ export interface SliderProps
   /** Called with the new value as it moves. */
   onValueChange?: (value: number) => void
   /**
+   * A bubble above the thumb showing the value: `auto` while the slider is
+   * hovered, focused or being dragged, `always` for one that never hides, or
+   * `off`. Off by default, because showing the value means re-rendering as the
+   * thumb moves, which a slider otherwise avoids.
+   * @default 'off'
+   */
+  valueLabel?: 'auto' | 'always' | 'off'
+  /**
+   * A unit shown after the value in the bubble, and spoken with it: `%`, `px`,
+   * `°`. @default ''
+   */
+  unit?: string
+  /**
    * Marks it invalid and colors it as an error. A surrounding Field's `error`
    * sets it too.
    */
@@ -28,11 +49,23 @@ export interface SliderProps
 }
 
 const FILL = '--greese-slider-fill'
-const fill = (value: number, min: number, max: number): string => {
+const RATIO = '--greese-slider-ratio'
+
+/** The two variables the track's gradient and the bubble's anchor read. */
+const track = (
+  value: number,
+  min: number,
+  max: number
+): Record<string, string | number> => ({
+  [FILL]: `${ratioOf(value, min, max) * 100}%`,
+  [RATIO]: ratioOf(value, min, max),
+})
+
+const ratioOf = (value: number, min: number, max: number): number => {
   const ratio = max > min ? (Math.min(Math.max(value, min), max) - min) / (max - min) : 0
-  // Rounded to 0.01%: finer is invisible and float noise ("55.00000000000001%")
-  // would otherwise leak into the DOM.
-  return `${Math.round(ratio * 10_000) / 100}%`
+  // Rounded to 0.0001: finer is invisible and float noise
+  // ("0.5500000000000001") would otherwise leak into the DOM.
+  return Math.round(ratio * 10_000) / 10_000
 }
 
 /**
@@ -57,6 +90,8 @@ export const Slider = ({
   step = 1,
   onValueChange,
   onChange,
+  valueLabel = 'off',
+  unit = '',
   invalid,
   className,
   style,
@@ -64,6 +99,12 @@ export const Slider = ({
   required,
   disabled,
   'aria-describedby': describedBy,
+  onPointerDown,
+  onPointerEnter,
+  onPointerLeave,
+  onPointerUp,
+  onFocus,
+  onBlur,
   ...props
 }: SliderProps): JSX.Element => {
   const control = useFieldControl({
@@ -74,7 +115,21 @@ export const Slider = ({
     'aria-describedby': describedBy,
   })
   const initial = value ?? defaultValue ?? (min + max) / 2
-  return withGreese(
+  const labelled = valueLabel !== 'off'
+  // With a bubble the two variables go on the wrapper, not the input: a
+  // custom property inherits down, and the bubble's anchor is the input's
+  // sibling, so it could not read them from the input itself.
+  const wrap = useRef<HTMLSpanElement>(null)
+
+  // Only tracked when there is a bubble to put it in: the point of writing the
+  // fill straight to the element is that an uncontrolled slider does not
+  // re-render per step, and a label gives that up.
+  const [shown, setShown] = useState(initial)
+  const [active, setActive] = useState(false)
+  const current = value ?? shown
+  const text = `${current}${unit}`
+
+  const input = withGreese(
     <input
       {...props}
       {...control}
@@ -84,15 +139,81 @@ export const Slider = ({
       step={step}
       value={value}
       defaultValue={value === undefined ? initial : undefined}
+      // The bubble is presentational, so the value it shows is spoken from
+      // here instead — with its unit, which `aria-valuenow` cannot carry.
+      aria-valuetext={unit ? text : undefined}
       className={cx('greese-Slider', className)}
-      style={{ [FILL]: fill(initial, min, max), ...style } as CSSProperties}
+      style={
+        {
+          ...(labelled ? undefined : track(initial, min, max)),
+          ...style,
+        } as CSSProperties
+      }
       onChange={(event: ChangeEvent<HTMLInputElement>) => {
         const next = event.target.valueAsNumber
-        event.target.style.setProperty(FILL, fill(next, min, max))
+        const ratio = ratioOf(next, min, max)
+        const host = labelled ? wrap.current : event.target
+        host?.style.setProperty(FILL, `${ratio * 100}%`)
+        host?.style.setProperty(RATIO, String(ratio))
+        if (labelled) setShown(next)
         onChange?.(event)
         onValueChange?.(next)
       }}
+      onPointerDown={(event) => {
+        if (labelled) setActive(true)
+        onPointerDown?.(event)
+      }}
+      onPointerEnter={(event) => {
+        if (labelled && event.pointerType === 'mouse') setActive(true)
+        onPointerEnter?.(event)
+      }}
+      onPointerLeave={(event) => {
+        // A finger leaves as it lifts; only a mouse leaving ends the drag.
+        if (labelled && event.pointerType === 'mouse') setActive(false)
+        onPointerLeave?.(event)
+      }}
+      onPointerUp={(event) => {
+        if (labelled && event.pointerType !== 'mouse') setActive(false)
+        onPointerUp?.(event)
+      }}
+      onFocus={(event) => {
+        if (labelled) setActive(true)
+        onFocus?.(event)
+      }}
+      onBlur={(event) => {
+        if (labelled) setActive(false)
+        onBlur?.(event)
+      }}
     />,
+    // The slider is the component's own box in both shapes, so the `greese`
+    // prop animates the same element whether or not there is a bubble.
     greese
+  )
+
+  if (!labelled) return input
+
+  return (
+    <span
+      ref={wrap}
+      className="greese-Slider-wrap"
+      style={track(initial, min, max) as CSSProperties}
+    >
+      {input}
+      {/*
+        The tooltip hangs off a zero-size span sitting at the thumb, not off
+        the input, so the bubble follows the value instead of floating over
+        the middle of the track. The span needs no focus or hover of its own
+        because `open` is driven from here — which is also why a tooltip may
+        anchor to something unfocusable in this one case.
+      */}
+      <Tooltip
+        content={text}
+        open={valueLabel === 'always' || active}
+        describe={false}
+        placement="top"
+      >
+        <span className="greese-Slider-thumbAnchor" aria-hidden="true" />
+      </Tooltip>
+    </span>
   )
 }

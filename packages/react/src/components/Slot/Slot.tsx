@@ -22,9 +22,9 @@ export interface SlotProps extends HTMLAttributes<HTMLElement> {
  * `asChild` on greese ui components, so a component's behaviour and styling can
  * land on your element (a router `<Link>`, say) instead of a wrapper.
  *
- * Merge rules: the child's props win; `className`s are joined; `style`s are
- * merged (child wins per property); event handlers both run, child first; refs
- * are composed.
+ * Merge rules: the child's props win, unless the child's value is
+ * `undefined`; `className`s are joined; `style`s are merged (child wins per
+ * property); event handlers both run, child first; refs are composed.
  */
 export const Slot = ({ children, ref, ...slotProps }: SlotProps): ReactNode => {
   // With a <Slottable>, its child is the host and the Slot's other children
@@ -88,7 +88,14 @@ const mergeProps = (
   for (const key of Object.keys(slot)) {
     const s = slot[key]
     const c = child[key]
-    if (HANDLER.test(key) && typeof s === 'function' && typeof c === 'function') {
+    // An `undefined` on the child is a prop it didn't set, not an override.
+    // Spreading it clobbers the Slot's value: every greese control passes
+    // `useFieldControl()`'s `aria-describedby` straight through, which is
+    // `undefined` outside a Field — so a Tooltip around a Switch described
+    // nothing at all, with the attribute written and then erased.
+    if (c === undefined) {
+      merged[key] = s
+    } else if (HANDLER.test(key) && typeof s === 'function' && typeof c === 'function') {
       merged[key] = (...args: unknown[]) => {
         c(...args)
         s(...args)

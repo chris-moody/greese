@@ -8,7 +8,9 @@
   so a small chip still fits one.
 
   ```tsx
-  <Chip size="sm" tone="secondary">Featured</Chip>
+  <Chip size="sm" tone="secondary">
+    Featured
+  </Chip>
   ```
 
   A chip's scale is its own, not the shared control scale: a chip is a label
