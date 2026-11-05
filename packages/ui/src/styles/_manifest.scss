@@ -181,6 +181,12 @@ $blocks: (
     part-modifiers: (),
     variables: (),
   ),
+  'ContextMenu': (
+    parts: ('point',),
+    modifiers: (),
+    part-modifiers: (),
+    variables: (),
+  ),
   'Countdown': (
     parts: ('label', 'separator', 'unit',),
     modifiers: ('clock',),

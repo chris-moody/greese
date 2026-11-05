@@ -1,4 +1,5 @@
 import { act, render, renderHook, screen } from '@testing-library/react'
+import { useRef } from 'react'
 import { renderToString } from 'react-dom/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { setMedia } from '../test/matchMedia.ts'
@@ -14,6 +15,7 @@ import { useStoredState } from './useStoredState.ts'
 import { useColorScheme } from './useColorScheme.ts'
 import { useControllableState } from './useControllableState.ts'
 import { useMediaQuery } from './useMediaQuery.ts'
+import { useTokenColors } from './useTokenColors.ts'
 
 beforeEach(() => setMedia({ width: 1024, dark: false }))
 
@@ -164,6 +166,67 @@ describe('useColorScheme', () => {
   })
 })
 
+describe('useTokenColors', () => {
+  /**
+   * The values come from `getComputedStyle`, which jsdom resolves from the
+   * stylesheet rather than from an inherited custom property, so the test
+   * declares them on the element itself.
+   */
+  const withTokens = (declarations: string) => {
+    const style = document.createElement('style')
+    style.textContent = `.probe { ${declarations} }`
+    document.head.append(style)
+    return () => style.remove()
+  }
+
+  const Probe = ({ roles, onRead }: { roles: string[]; onRead: (v: string[]) => void }) => {
+    const ref = useRef<HTMLDivElement>(null)
+    const values = useTokenColors(ref, ...roles)
+    onRead(values)
+    return <div ref={ref} className="probe" />
+  }
+
+  it('resolves each role, in the order given', () => {
+    const cleanup = withTokens(
+      '--greese-color-fg-muted: rgb(1, 2, 3); --greese-color-surface: rgb(4, 5, 6);'
+    )
+    const reads: string[][] = []
+    render(<Probe roles={['fg-muted', 'surface']} onRead={(v) => reads.push(v)} />)
+    expect(reads.at(-1)).toEqual(['rgb(1,2,3)', 'rgb(4,5,6)'])
+    cleanup()
+  })
+
+  it('resolves a role a theme added, not only the ones greese ships', () => {
+    const cleanup = withTokens('--greese-color-brand-glow: rgb(7, 8, 9);')
+    const reads: string[][] = []
+    render(<Probe roles={['brand-glow']} onRead={(v) => reads.push(v)} />)
+    expect(reads.at(-1)).toEqual(['rgb(7,8,9)'])
+    cleanup()
+  })
+
+  it('gives an empty string for a token that does not exist', () => {
+    const reads: string[][] = []
+    render(<Probe roles={['not-a-role']} onRead={(v) => reads.push(v)} />)
+    expect(reads.at(-1)).toEqual([''])
+  })
+
+  it('returns the same tuple while the values are unchanged', () => {
+    const cleanup = withTokens('--greese-color-fg: rgb(1, 1, 1);')
+    const reads: string[][] = []
+    const { rerender } = render(<Probe roles={['fg']} onRead={(v) => reads.push(v)} />)
+    rerender(<Probe roles={['fg']} onRead={(v) => reads.push(v)} />)
+    // Identity, not just equality: it is meant to be safe as an effect dep.
+    expect(reads.at(-1)).toBe(reads.at(-2))
+    cleanup()
+  })
+
+  it('has one value per role before the first measurement', () => {
+    const reads: string[][] = []
+    render(<Probe roles={['fg', 'surface', 'border']} onRead={(v) => reads.push(v)} />)
+    expect(reads[0]).toEqual(['', '', ''])
+  })
+})
+
 describe('configureBreakpoints', () => {
   afterEach(resetBreakpoints)
 
@@ -205,6 +268,28 @@ describe('configureBreakpoints', () => {
   it('rejects values that do not increase', () => {
     expect(() => configureBreakpoints({ md: 500 })).toThrow(/must increase/)
     expect(getBreakpoints().md).toBe(900)
+  })
+
+  it('reads the stylesheet’s own with no argument, and keeps them without one', () => {
+    const style = document.createElement('style')
+    style.textContent = `:root {
+      --greese-breakpoint-keys: xs sm tablet md lg xl;
+      --greese-breakpoint-xs: 0px; --greese-breakpoint-sm: 600px;
+      --greese-breakpoint-tablet: 768px; --greese-breakpoint-md: 900px;
+      --greese-breakpoint-lg: 1200px; --greese-breakpoint-xl: 1536px;
+    }`
+    document.head.append(style)
+    try {
+      configureBreakpoints()
+      expect(getBreakpointKeys()).toEqual(['xs', 'sm', 'tablet', 'md', 'lg', 'xl'])
+      expect(getBreakpoints()).toMatchObject({ tablet: 768, md: 900 })
+    } finally {
+      style.remove()
+    }
+    // No stylesheet: nothing to read, so nothing changes.
+    resetBreakpoints()
+    configureBreakpoints()
+    expect(getBreakpointKeys()).toEqual(['xs', 'sm', 'md', 'lg', 'xl'])
   })
 })
 

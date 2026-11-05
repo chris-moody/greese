@@ -97,7 +97,12 @@ module.exports = [
     // ScrollCarousel's vertical orientation (34.25 kB).
     // 34.3 → 34.55 kB (2026-11-02): Carousel's own controls and dots (CarouselPrevious, CarouselNext, CarouselIndicator with asChild), `announce` and the label functions, less its hash deep links, now the app's (34.51 kB).
     // 34.55 kB → 37.1 kB (2026-11-04): EditableField, which renders any of eleven controls from a value, plus ColorPicker's channel fields and eyedropper.
-    limit: '37.1 kB',
+    // 37.1 kB → 37.6 kB (2026-11-05): ContextMenu, a menu anchored at a point or to an
+    // element rather than owning a trigger, and useTokenColors, which resolves
+    // color tokens for a canvas. Menu's own tree-shaken budget is unchanged
+    // (3.37 kB of 3.4), so an app that imports Menu alone pays ~10 B of it: the
+    // shared keyboard helper the two menus now both use (37.49 kB).
+    limit: '37.6 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -143,7 +148,12 @@ module.exports = [
     // 40.2 kB → 40.3 kB (2026-11-03): configureBreakpoints() with no argument reads the stylesheet's breakpoints (--greese-breakpoint-keys and each value), so the JavaScript can't disagree with the CSS (ADR 0034); the computed-style reads share nothing with the rest (40.28 kB).
     // 40.3 kB → 40.5 kB (2026-11-03): greese.js gained killTweensOf and a target registry, which Timeline's own track bookkeeping writes, so the whole library carries it (ADR 0008 addendum) (40.38 kB).
     // 40.5 kB → 42.8 kB (2026-11-04): EditableField, which renders any of eleven controls from a value, plus ColorPicker's channel fields and eyedropper.
-    limit: '42.8 kB',
+    // 42.8 kB → 43.3 kB (2026-11-05): ContextMenu, a menu anchored at a point or to an
+    // element rather than owning a trigger, and useTokenColors, which resolves
+    // color tokens for a canvas. Menu's own tree-shaken budget is unchanged
+    // (3.37 kB of 3.4), so an app that imports Menu alone pays ~10 B of it: the
+    // shared keyboard helper the two menus now both use (43.21 kB).
+    limit: '43.3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -634,7 +644,12 @@ module.exports = [
     // 50.2 kB → 50.25 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (50229 B).
     // +greese.js's killTweensOf target registry, which Timeline's track bookkeeping writes (ADR 0008 addendum, 2026-11-03).
     // 50.5 kB → 52.9 kB (2026-11-04): EditableField, which renders any of eleven controls from a value, plus ColorPicker's channel fields and eyedropper.
-    limit: '52.9 kB',
+    // 52.9 kB → 53.2 kB (2026-11-05): ContextMenu, a menu anchored at a point or to an
+    // element rather than owning a trigger, and useTokenColors, which resolves
+    // color tokens for a canvas. Menu's own tree-shaken budget is unchanged
+    // (3.37 kB of 3.4), so an app that imports Menu alone pays ~10 B of it: the
+    // shared keyboard helper the two menus now both use (53.09 kB).
+    limit: '53.2 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.

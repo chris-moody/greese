@@ -20,6 +20,24 @@
     }
   }
 
+  // A context menu is a Menu surface with a different anchor, so it carries
+  // `greese-Menu` too and changes only what the anchor implies.
+  .greese-ContextMenu {
+    // Menu's width floor makes a dropdown look deliberate under the button
+    // that opened it. A context menu has no button: it appears at the pointer,
+    // so it should be exactly as wide as its own items.
+    min-inline-size: 0;
+  }
+
+  // The stand-in for the pointer position: a zero-size box a ContextMenu
+  // anchors to. Inert and never painted — only its position matters.
+  .greese-ContextMenu-point {
+    position: fixed;
+    inline-size: 0;
+    block-size: 0;
+    pointer-events: none;
+  }
+
   .greese-Menu-viewport {
     min-block-size: 0;
     padding: var(--greese-space-1);

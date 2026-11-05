@@ -1,6 +1,5 @@
 'use client'
 import {
-  createContext,
   isValidElement,
   use,
   useId,
@@ -15,12 +14,11 @@ import {
 } from 'react'
 import { useAnchoredPopover, type Placement } from '../../utils/anchor.ts'
 import { cx } from '../../utils/cx.ts'
-import { listTarget } from '../../utils/listTarget.ts'
 import { composeRefs, Slot } from '../Slot/Slot.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
 import type { BrandTone } from '../../utils/tone.ts'
-
-const MenuContext = createContext<{ close: () => void } | null>(null)
+import { MenuContext } from './menuContext.ts'
+import { menuItems, moveMenuFocus } from './menuKeys.ts'
 
 export interface MenuProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'div'>, 'popover' | 'onToggle'> {
@@ -34,11 +32,6 @@ export interface MenuProps
   /** Called with the new state when the menu opens or closes. */
   onOpenChange?: (open: boolean) => void
 }
-
-const items = (menu: HTMLElement) =>
-  Array.from(
-    menu.querySelectorAll<HTMLElement>('[role="menuitem"]:not([aria-disabled="true"])')
-  )
 
 /**
  * A menu button, per the WAI-ARIA pattern: the trigger opens a list of
@@ -84,22 +77,7 @@ export const Menu = ({
 
   const onMenuKey = (event: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(event)
-    if (event.defaultPrevented) return
-    const list = items(event.currentTarget)
-    const at = list.indexOf(document.activeElement as HTMLElement)
-    const target = listTarget(event.key, at, list.length)
-
-    if (target !== undefined) list[target]?.focus()
-    else if (event.key === 'Tab') return close()
-    else if (event.key.length === 1 && /\S/.test(event.key)) {
-      // Type-ahead: next item starting with the typed character.
-      const key = event.key.toLowerCase()
-      const order = [...list.slice(at + 1), ...list.slice(0, at + 1)]
-      order
-        .find((item) => item.textContent?.trim().toLowerCase().startsWith(key))
-        ?.focus()
-    } else return
-    event.preventDefault()
+    if (!event.defaultPrevented) moveMenuFocus(event, close)
   }
 
   return withGreese(
@@ -136,7 +114,7 @@ export const Menu = ({
           setOpen(isOpen)
           onOpenChange?.(isOpen)
           if (isOpen) {
-            const list = items(event.currentTarget)
+            const list = menuItems(event.currentTarget)
             ;(focusLast.current ? list.at(-1) : list[0])?.focus()
             focusLast.current = false
           }

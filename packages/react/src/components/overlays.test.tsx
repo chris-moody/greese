@@ -9,6 +9,7 @@ import { BreadcrumbItem } from './Breadcrumbs/BreadcrumbItem.tsx'
 import { Breadcrumbs } from './Breadcrumbs/Breadcrumbs.tsx'
 import { Button } from './Button/Button.tsx'
 import { Dialog, Drawer } from './Dialog/Dialog.tsx'
+import { ContextMenu } from './Menu/ContextMenu.tsx'
 import { Menu, MenuItem, MenuSeparator } from './Menu/Menu.tsx'
 import { Pagination, paginationRange } from './Pagination/Pagination.tsx'
 import { Popover } from './Popover/Popover.tsx'
@@ -361,6 +362,110 @@ describe('Menu', () => {
       screen.getByRole('menuitem', { name: 'Duplicate', hidden: true })
     )
     expect(onSelect).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('ContextMenu', () => {
+  const Example = ({
+    anchor = { top: 20, left: 30 },
+    onSelect = vi.fn(),
+    onClose = vi.fn(),
+  }: {
+    anchor?: { top: number; left: number } | HTMLElement | null
+    onSelect?: (action: string) => void
+    onClose?: () => void
+  }) => (
+    <ContextMenu anchor={anchor} onClose={onClose}>
+      <MenuItem onSelect={() => onSelect('rename')}>Rename</MenuItem>
+      <MenuItem disabled>Duplicate</MenuItem>
+      <MenuSeparator />
+      <MenuItem tone="negative" onSelect={() => onSelect('delete')}>
+        Delete
+      </MenuItem>
+    </ContextMenu>
+  )
+
+  it('has no axe violations while open', async () => {
+    const { container } = render(<Example />)
+    await expectNoAxeViolations(container)
+  })
+
+  it('opens when given an anchor and closes when it is taken away', () => {
+    const { rerender } = render(<Example anchor={null} />)
+    expect(screen.getByRole('menu', { hidden: true })).not.toHaveAttribute(
+      'data-test-popover-open'
+    )
+    rerender(<Example anchor={{ top: 20, left: 30 }} />)
+    expect(screen.getByRole('menu')).toHaveAttribute('data-test-popover-open')
+    rerender(<Example anchor={null} />)
+    expect(screen.getByRole('menu', { hidden: true })).not.toHaveAttribute(
+      'data-test-popover-open'
+    )
+  })
+
+  it('positions its anchor at the given point', () => {
+    const { container } = render(<Example anchor={{ top: 20, left: 30 }} />)
+    expect(container.querySelector('.greese-ContextMenu-point')).toHaveStyle({
+      top: '20px',
+      left: '30px',
+    })
+  })
+
+  it('renders no point of its own when anchored to an element', () => {
+    const element = document.createElement('button')
+    document.body.append(element)
+    const { container } = render(<Example anchor={element} />)
+    expect(container.querySelector('.greese-ContextMenu-point')).toBeNull()
+    element.remove()
+  })
+
+  it('carries the Menu surface class as well as its own', () => {
+    render(<Example />)
+    const menu = screen.getByRole('menu')
+    expect(menu).toHaveClass('greese-Menu')
+    expect(menu).toHaveClass('greese-ContextMenu')
+  })
+
+  it('focuses the first enabled item on open', () => {
+    render(<Example />)
+    expect(screen.getByRole('menuitem', { name: 'Rename' })).toHaveFocus()
+  })
+
+  it('closes itself when an item is chosen, and reports it', async () => {
+    const onSelect = vi.fn()
+    const onClose = vi.fn()
+    render(<Example onSelect={onSelect} onClose={onClose} />)
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Delete' }))
+    expect(onSelect).toHaveBeenCalledWith('delete')
+    // The item closes the menu through the shared context, which is what makes
+    // MenuItem behave the same in a ContextMenu as in a Menu.
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it('tells the caller when the browser dismisses it', () => {
+    const onClose = vi.fn()
+    render(<Example onClose={onClose} />)
+    act(() => screen.getByRole('menu').hidePopover())
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it('moves between items with the arrow keys, skipping disabled ones', async () => {
+    render(<Example />)
+    await userEvent.keyboard('{ArrowDown}')
+    expect(screen.getByRole('menuitem', { name: 'Delete' })).toHaveFocus()
+    await userEvent.keyboard('{ArrowUp}')
+    expect(screen.getByRole('menuitem', { name: 'Rename' })).toHaveFocus()
+  })
+
+  it('returns focus where it was when it closes', () => {
+    const before = document.createElement('button')
+    document.body.append(before)
+    before.focus()
+    const { rerender } = render(<Example />)
+    expect(before).not.toHaveFocus()
+    rerender(<Example anchor={null} />)
+    expect(before).toHaveFocus()
+    before.remove()
   })
 })
 
