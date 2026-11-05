@@ -143,7 +143,12 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.5rem 0.5
   }
 
   // The picker's popover, and the "No color" button under it.
-  .greese-EditableField-picker {
+  // `display` is scoped to the open state on purpose. An author `display`
+  // beats the UA's `[popover]:not(:popover-open) { display: none }`, so
+  // declaring it unconditionally leaves the closed popover laid out and
+  // hit-testable — invisible, because the exit state sets `opacity: 0`, while
+  // still swallowing clicks meant for whatever is under it.
+  .greese-EditableField-picker:popover-open {
     display: grid;
     gap: var(--greese-space-3);
   }
