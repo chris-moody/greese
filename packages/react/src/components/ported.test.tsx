@@ -7,8 +7,12 @@ import { ActionSelect } from './ActionSelect/ActionSelect.tsx'
 import { AutoLayout, AutoLayoutItem, resolveMaxSize } from './AutoLayout/AutoLayout.tsx'
 import { Break } from './Break/Break.tsx'
 import {
+  channelsToHsv,
+  channelValues,
   ColorPicker,
   formatHex,
+  hslToHsv,
+  hsvToHsl,
   hsvToRgb,
   parseHex,
   rgbToHsv,
@@ -209,6 +213,111 @@ describe('ColorPicker', () => {
       '#00000080',
       expect.objectContaining({ a: 0.5 })
     )
+  })
+
+  it('converts between its channel sets', () => {
+    const red = rgbToHsv({ r: 255, g: 0, b: 0, a: 1 })
+    expect(hsvToHsl(red)).toMatchObject({ h: 0, s: 1, l: 0.5 })
+    expect(hslToHsv(hsvToHsl(red))).toMatchObject({ h: 0, s: 1, v: 1 })
+    // A grey has no hue of its own, so the one it came in with is kept.
+    const grey = { h: 200, s: 0, v: 0.5, a: 1 }
+    expect(hsvToHsl(grey)).toMatchObject({ h: 200, s: 0 })
+
+    expect(channelValues(red, 'rgb')).toEqual([255, 0, 0])
+    expect(channelValues(red, 'hsl')).toEqual([0, 100, 50])
+    expect(channelValues(red, 'hsb')).toEqual([0, 100, 100])
+    expect(formatHex(hsvToRgb(channelsToHsv([0, 0, 255], 'rgb', red)))).toBe('#0000ff')
+    expect(formatHex(hsvToRgb(channelsToHsv([240, 100, 50], 'hsl', red)))).toBe('#0000ff')
+    expect(formatHex(hsvToRgb(channelsToHsv([240, 100, 100], 'hsb', red)))).toBe(
+      '#0000ff'
+    )
+  })
+
+  it('takes numbers in the channel sets it is given', async () => {
+    const onValueChange = vi.fn()
+    render(
+      <ColorPicker
+        defaultValue="#ff0000"
+        channels={['rgb', 'hsl']}
+        onValueChange={onValueChange}
+      />
+    )
+    expect(screen.getByRole('group', { name: 'RGB' })).toBeInTheDocument()
+    const green = screen.getByLabelText('Green') as HTMLInputElement
+    expect((screen.getByLabelText('Red') as HTMLInputElement).value).toBe('255')
+    fireEvent.change(green, { target: { value: '128' } })
+    expect(onValueChange).toHaveBeenLastCalledWith('#ff8000', expect.anything())
+
+    // The same color, reported in the other set the picker was asked for.
+    expect((screen.getByLabelText('Lightness') as HTMLInputElement).value).toBe('50')
+    fireEvent.change(screen.getByLabelText('Lightness'), { target: { value: '25' } })
+    expect(onValueChange).toHaveBeenLastCalledWith('#804000', expect.anything())
+  })
+
+  it('clamps a channel to its range and holds an unfinished number', () => {
+    const onValueChange = vi.fn()
+    render(
+      <ColorPicker
+        defaultValue="#000000"
+        channels={['rgb']}
+        onValueChange={onValueChange}
+      />
+    )
+    fireEvent.change(screen.getByLabelText('Red'), { target: { value: '999' } })
+    expect(onValueChange).toHaveBeenLastCalledWith('#ff0000', expect.anything())
+
+    // An empty field is on the way to a number, not a color of its own.
+    onValueChange.mockClear()
+    fireEvent.change(screen.getByLabelText('Green'), { target: { value: '' } })
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect((screen.getByLabelText('Green') as HTMLInputElement).value).toBe('')
+  })
+
+  it('lets the reader keep swatches when onSwatchesChange is given', async () => {
+    const onSwatchesChange = vi.fn()
+    render(
+      <ColorPicker
+        defaultValue="#ff0000"
+        swatches={['#00ff00']}
+        onSwatchesChange={onSwatchesChange}
+      />
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Save this color' }))
+    expect(onSwatchesChange).toHaveBeenLastCalledWith(['#00ff00', '#ff0000'])
+    await userEvent.click(screen.getByRole('button', { name: 'Clear saved colors' }))
+    expect(onSwatchesChange).toHaveBeenLastCalledWith([])
+  })
+
+  it('has no save or clear button without onSwatchesChange', () => {
+    render(<ColorPicker defaultValue="#ff0000" swatches={['#00ff00']} />)
+    expect(screen.queryByRole('button', { name: 'Save this color' })).toBeNull()
+  })
+
+  it('offers the eyedropper only where the browser has one', async () => {
+    const onValueChange = vi.fn()
+    const { unmount } = render(<ColorPicker eyedropper defaultValue="#000000" />)
+    expect(screen.queryByRole('button', { name: /eyedropper|screen/i })).toBeNull()
+    unmount()
+
+    const open = vi.fn().mockResolvedValue({ sRGBHex: '#123456' })
+    Object.defineProperty(window, 'EyeDropper', {
+      configurable: true,
+      value: class {
+        open = open
+      },
+    })
+    try {
+      render(
+        <ColorPicker eyedropper defaultValue="#000000" onValueChange={onValueChange} />
+      )
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Pick a color from the screen' })
+      )
+      expect(open).toHaveBeenCalled()
+      expect(onValueChange).toHaveBeenLastCalledWith('#123456', expect.anything())
+    } finally {
+      Reflect.deleteProperty(window, 'EyeDropper')
+    }
   })
 
   it('follows a controlled value', () => {

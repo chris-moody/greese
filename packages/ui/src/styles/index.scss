@@ -5,7 +5,6 @@
 // lets `@use … with ($breakpoints: …)` reconfigure every component.
 @forward 'config';
 @use 'core';
-@use 'breakpoint-vars';
 @use '../components/ThemeProvider/ThemeProvider';
 @use '../components/VisuallyHidden/VisuallyHidden';
 @use '../components/Box/Box';
@@ -77,6 +76,7 @@
 @use '../components/Countdown/Countdown';
 @use '../components/Diff/Diff';
 @use '../components/Dock/Dock';
+@use '../components/EditableField/EditableField';
 @use '../components/Fieldset/Fieldset';
 @use '../components/Indicator/Indicator';
 @use '../components/Key/Key';

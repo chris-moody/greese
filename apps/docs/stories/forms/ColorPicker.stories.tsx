@@ -69,3 +69,45 @@ export const Controlled: Story = {
     )
   },
 }
+
+/**
+ * `channels` adds numeric fields for the formats you name, so a known value
+ * can be typed in rather than hunted for. They all edit one color: change a
+ * number in one set and the others follow.
+ */
+export const NumericChannels: Story = {
+  args: { channels: ['rgb', 'hsl'], swatches: undefined },
+}
+
+/**
+ * `eyedropper` offers a button that samples any pixel on screen. It appears
+ * only where the browser has the EyeDropper API, so the hex field stays the
+ * way to enter a color you already know.
+ */
+export const Eyedropper: Story = {
+  args: { eyedropper: true, channels: ['rgb'], swatches: undefined },
+}
+
+/**
+ * With `onSwatchesChange`, the swatches become a collection the reader keeps:
+ * the plus saves the current color and the bin empties the row.
+ */
+export const SavedSwatches: Story = {
+  render: function Render() {
+    const [saved, setSaved] = useState<readonly string[]>(['#e11d48', '#3b82f6'])
+    const [color, setColor] = useState('#22c55e')
+    return (
+      <Stack gap={3}>
+        <ColorPicker
+          value={color}
+          onValueChange={setColor}
+          swatches={saved}
+          onSwatchesChange={setSaved}
+        />
+        <Text variant="p3" tone="muted">
+          Saved: <code>{saved.join(' ') || 'none'}</code>
+        </Text>
+      </Stack>
+    )
+  },
+}

@@ -66,6 +66,26 @@ describe('DateField', () => {
 })
 
 describe('NumberField', () => {
+  it('puts back the value in force when a controlled parent declines one', async () => {
+    const onValueChange = vi.fn()
+    render(
+      <>
+        <NumberField label="Width" value={4} onValueChange={onValueChange} />
+        <button type="button">elsewhere</button>
+      </>
+    )
+    const input = screen.getByRole('spinbutton', {
+      name: 'Width',
+    }) as HTMLInputElement
+    await userEvent.clear(input)
+    await userEvent.click(screen.getByRole('button', { name: 'elsewhere' }))
+    expect(onValueChange).toHaveBeenLastCalledWith(null)
+
+    // The parent kept 4, so the field must not be left looking empty: leaving
+    // it re-reads the value in force rather than trusting what was typed.
+    expect(input.value).toBe('4')
+  })
+
   it.each([
     ['', null],
     [' 42 ', 42],

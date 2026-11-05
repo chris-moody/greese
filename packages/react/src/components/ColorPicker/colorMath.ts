@@ -69,3 +69,95 @@ export const rgbToHsv = ({ r, g, b, a }: RgbColor, hue = 0): HsvColor => {
   }
   return { h, s: max === 0 ? 0 : d / max, v: max, a }
 }
+
+/** Hue in `0`–`360`; saturation, lightness and alpha in `0`–`1`. */
+export interface HslColor {
+  /** Hue in degrees, 0–360. */
+  h: number
+  /** Saturation, 0–1. */
+  s: number
+  /** Lightness, 0–1. */
+  l: number
+  /** Opacity, 0–1. */
+  a: number
+}
+
+/** HSV and HSL share a hue, so the conversion is only saturation and the third axis. */
+export const hsvToHsl = ({ h, s, v, a }: HsvColor): HslColor => {
+  const l = v * (1 - s / 2)
+  const m = Math.min(l, 1 - l)
+  return { h, s: m === 0 ? 0 : (v - l) / m, l, a }
+}
+
+/** The inverse of {@link hsvToHsl}. */
+export const hslToHsv = ({ h, s, l, a }: HslColor): HsvColor => {
+  const v = l + s * Math.min(l, 1 - l)
+  return { h, s: v === 0 ? 0 : 2 * (1 - l / v), v, a }
+}
+
+/**
+ * Which numeric channels a picker can show beside its hex field: red/green/blue
+ * `0`–`255`, or hue `0`–`360` with the other two as percentages.
+ */
+export type ColorChannelSet = 'rgb' | 'hsl' | 'hsb'
+
+/** One numeric channel: how it's labelled and the largest value it takes. */
+export interface ColorChannel {
+  /** The one-letter name shown in the field. */
+  label: string
+  /** The highest value the channel accepts; the lowest is always 0. */
+  max: number
+  /** Its accessible name, spelled out. */
+  name: string
+}
+
+/** The channels each set shows, in order. */
+export const COLOR_CHANNELS: Readonly<Record<ColorChannelSet, readonly ColorChannel[]>> =
+  {
+    rgb: [
+      { label: 'R', max: 255, name: 'Red' },
+      { label: 'G', max: 255, name: 'Green' },
+      { label: 'B', max: 255, name: 'Blue' },
+    ],
+    hsl: [
+      { label: 'H', max: 360, name: 'Hue' },
+      { label: 'S', max: 100, name: 'Saturation' },
+      { label: 'L', max: 100, name: 'Lightness' },
+    ],
+    hsb: [
+      { label: 'H', max: 360, name: 'Hue' },
+      { label: 'S', max: 100, name: 'Saturation' },
+      { label: 'B', max: 100, name: 'Brightness' },
+    ],
+  }
+
+/** A color's three numbers in one channel set, rounded for display. */
+export const channelValues = (
+  hsv: HsvColor,
+  set: ColorChannelSet
+): [number, number, number] => {
+  if (set === 'rgb') {
+    const { r, g, b } = hsvToRgb(hsv)
+    return [Math.round(r), Math.round(g), Math.round(b)]
+  }
+  if (set === 'hsl') {
+    const { h, s, l } = hsvToHsl(hsv)
+    return [Math.round(h), Math.round(s * 100), Math.round(l * 100)]
+  }
+  return [Math.round(hsv.h), Math.round(hsv.s * 100), Math.round(hsv.v * 100)]
+}
+
+/**
+ * The color three channel numbers describe. `hue` is kept for a grey, the way
+ * {@link rgbToHsv} keeps it, so typing `0` into saturation doesn't throw the
+ * hue slider back to red.
+ */
+export const channelsToHsv = (
+  [x, y, z]: readonly [number, number, number],
+  set: ColorChannelSet,
+  { h: hue, a }: HsvColor
+): HsvColor => {
+  if (set === 'rgb') return rgbToHsv({ r: x, g: y, b: z, a }, hue)
+  if (set === 'hsl') return hslToHsv({ h: x, s: y / 100, l: z / 100, a })
+  return { h: x, s: y / 100, v: z / 100, a }
+}

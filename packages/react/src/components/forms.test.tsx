@@ -8,6 +8,13 @@ import { Button } from './Button/Button.tsx'
 import { Slot, Slottable } from './Slot/Slot.tsx'
 import { ButtonGroup } from './ButtonGroup/ButtonGroup.tsx'
 import { Checkbox, CheckboxGroup } from './Checkbox/Checkbox.tsx'
+import { EditableField } from './EditableField/EditableField.tsx'
+import {
+  inferEditableFieldType,
+  resolveDecimals,
+  roundTo,
+  wrapDegrees,
+} from './EditableField/fieldValues.ts'
 import { Field } from './Field/Field.tsx'
 import { FileInput, fileSummary } from './FileInput/FileInput.tsx'
 import { IconButton } from './IconButton/IconButton.tsx'
@@ -515,6 +522,288 @@ describe('native forms', () => {
 
   it('has no accessibility violations', async () => {
     const { container } = render(<Form onSubmit={() => {}} />)
+    await expectNoAxeViolations(container)
+  })
+})
+
+describe('EditableField', () => {
+  it('infers a control from the value when no type is given', () => {
+    expect(inferEditableFieldType('hello')).toBe('text')
+    expect(inferEditableFieldType('#ff0000')).toBe('color')
+    expect(inferEditableFieldType('#f00')).toBe('color')
+    expect(inferEditableFieldType(4)).toBe('number')
+    expect(inferEditableFieldType(true)).toBe('checkbox')
+    // null belongs to a cleared number field, whose type is always explicit.
+    expect(inferEditableFieldType(null)).toBe('number')
+  })
+
+  it('keeps enough decimals for its own step', () => {
+    expect(resolveDecimals(undefined)).toBe(2)
+    expect(resolveDecimals(1)).toBe(2)
+    // A step of 0.001 rounded to 2 places would refuse the values its own
+    // arrows produce, so the limit widens instead.
+    expect(resolveDecimals(0.001)).toBe(3)
+    expect(resolveDecimals(0.5, 0)).toBe(1)
+    expect(roundTo(1.23456, 2)).toBe(1.23)
+    expect(wrapDegrees(-90)).toBe(270)
+    expect(wrapDegrees(450)).toBe(90)
+  })
+
+  it('names the control once, and shows the label beside it', async () => {
+    const onValueChange = vi.fn()
+    const { container } = render(
+      <EditableField
+        label="Nickname"
+        value="Ada"
+        onValueChange={onValueChange}
+        unit="px"
+      />
+    )
+    const input = screen.getByRole('textbox', { name: 'Nickname' })
+    expect(screen.getByText('Nickname')).toHaveAttribute('aria-hidden', 'true')
+    // Focus selects the value, so typing replaces it rather than appending.
+    await userEvent.type(input, '!')
+    expect(onValueChange).toHaveBeenLastCalledWith('!')
+    expect(screen.getByText('px')).toBeInTheDocument()
+    await expectNoAxeViolations(container)
+  })
+
+  it('rounds a number to its decimals and can be cleared', async () => {
+    const onValueChange = vi.fn()
+    render(
+      <EditableField
+        label="Scale"
+        type="number"
+        value={1}
+        step={0.01}
+        allowEmpty
+        onValueChange={onValueChange}
+      />
+    )
+    const input = screen.getByRole('spinbutton', { name: 'Scale' })
+    await userEvent.clear(input)
+    await userEvent.type(input, '2.129')
+    fireEvent.blur(input)
+    expect(onValueChange).toHaveBeenLastCalledWith(2.13)
+
+    await userEvent.clear(input)
+    fireEvent.blur(input)
+    expect(onValueChange).toHaveBeenLastCalledWith(null)
+  })
+
+  it('will not report null from a number field without allowEmpty', async () => {
+    const onValueChange = vi.fn()
+    render(
+      <>
+        <EditableField
+          label="Width"
+          type="number"
+          value={4}
+          onValueChange={onValueChange}
+        />
+        <button type="button">elsewhere</button>
+      </>
+    )
+    const input = screen.getByRole('spinbutton', {
+      name: 'Width',
+    }) as HTMLInputElement
+    await userEvent.clear(input)
+    await userEvent.click(screen.getByRole('button', { name: 'elsewhere' }))
+    expect(onValueChange).not.toHaveBeenCalledWith(null)
+    // And the field does not sit there looking empty: leaving it puts back the
+    // value still in force (NumberField re-reads it when the field is left).
+    expect(input.value).toBe('4')
+  })
+
+  it('shows a range value with its unit', () => {
+    const onValueChange = vi.fn()
+    render(
+      <EditableField
+        label="Opacity"
+        type="range"
+        value={40}
+        unit="%"
+        onValueChange={onValueChange}
+      />
+    )
+    expect(screen.getByText('40%')).toBeInTheDocument()
+    fireEvent.change(screen.getByRole('slider', { name: 'Opacity' }), {
+      target: { value: '70' },
+    })
+    expect(onValueChange).toHaveBeenLastCalledWith(70)
+  })
+
+  it('reports an option’s own value, numbers included, and groups a select', async () => {
+    const onValueChange = vi.fn()
+    const { container } = render(
+      <EditableField
+        label="Weight"
+        type="select"
+        value={400}
+        options={[
+          { value: 400, label: 'Regular', group: 'Sans' },
+          { value: 700, label: 'Bold', group: 'Sans' },
+          { value: 300, label: 'Light', group: 'Serif' },
+        ]}
+        onValueChange={onValueChange}
+      />
+    )
+    const groups = container.querySelectorAll('optgroup')
+    expect([...groups].map((group) => group.label)).toEqual(['Sans', 'Serif'])
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Weight' }), '700')
+    expect(onValueChange).toHaveBeenLastCalledWith(700)
+  })
+
+  it('renders choice as radios while the options are few, a dropdown when many', () => {
+    const options = (count: number) =>
+      Array.from({ length: count }, (_, i) => ({ value: `o${i}`, label: `Option ${i}` }))
+    const { rerender } = render(
+      <EditableField
+        label="Fit"
+        type="choice"
+        value="o0"
+        options={options(3)}
+        onValueChange={() => {}}
+      />
+    )
+    expect(screen.getAllByRole('radio')).toHaveLength(3)
+    rerender(
+      <EditableField
+        label="Fit"
+        type="choice"
+        value="o0"
+        options={options(4)}
+        onValueChange={() => {}}
+      />
+    )
+    expect(screen.getByRole('combobox', { name: 'Fit' })).toBeInTheDocument()
+  })
+
+  it('renders nothing when an option type has no options', () => {
+    const { container } = render(
+      <EditableField
+        label="Fit"
+        type="select"
+        value=""
+        options={[]}
+        onValueChange={() => {}}
+      />
+    )
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('shows a placeholder instead of a value when the selection is mixed', () => {
+    render(
+      <EditableField
+        label="Name"
+        value="whatever"
+        indeterminate
+        onValueChange={() => {}}
+      />
+    )
+    const input = screen.getByRole('textbox', { name: 'Name' }) as HTMLInputElement
+    expect(input.value).toBe('')
+    expect(input).toHaveAttribute('placeholder', 'Mixed')
+  })
+
+  it('opens a picker from its swatch, and can clear the color', async () => {
+    const onValueChange = vi.fn()
+    render(
+      <EditableField
+        label="Fill"
+        type="color"
+        value="#ff0000"
+        allowEmpty
+        onValueChange={onValueChange}
+      />
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Fill' }))
+    fireEvent.change(screen.getByRole('slider', { name: 'Hue' }), {
+      target: { value: '240' },
+    })
+    expect(onValueChange).toHaveBeenLastCalledWith('#0000ff')
+
+    await userEvent.click(screen.getByRole('button', { name: 'No color' }))
+    expect(onValueChange).toHaveBeenLastCalledWith(null)
+  })
+
+  it('turns a dial with the arrow keys, wrapping at the top', async () => {
+    const onValueChange = vi.fn()
+    render(
+      <EditableField
+        label="Angle"
+        type="knob"
+        value={0}
+        showValue={false}
+        onValueChange={onValueChange}
+      />
+    )
+    const dial = screen.getByRole('slider', { name: 'Angle' })
+    dial.focus()
+    await userEvent.keyboard('{ArrowRight}')
+    expect(onValueChange).toHaveBeenLastCalledWith(1)
+    await userEvent.keyboard('{ArrowLeft}')
+    expect(onValueChange).toHaveBeenLastCalledWith(359)
+    await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}')
+    expect(onValueChange).toHaveBeenLastCalledWith(15)
+  })
+
+  it('reports a switch and a checkbox as booleans', async () => {
+    const onValueChange = vi.fn()
+    const { rerender } = render(
+      <EditableField
+        label="Loop"
+        type="switch"
+        value={false}
+        onValueChange={onValueChange}
+      />
+    )
+    await userEvent.click(screen.getByRole('switch', { name: 'Loop' }))
+    expect(onValueChange).toHaveBeenLastCalledWith(true)
+
+    rerender(<EditableField label="Loop" value={false} onValueChange={onValueChange} />)
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Loop' }))
+    expect(onValueChange).toHaveBeenLastCalledWith(true)
+  })
+
+  it('keeps its own value when given only a defaultValue', async () => {
+    const onValueChange = vi.fn()
+    render(
+      <EditableField label="Name" defaultValue="Ada" onValueChange={onValueChange} />
+    )
+    const input = screen.getByRole('textbox', { name: 'Name' }) as HTMLInputElement
+    expect(input.value).toBe('Ada')
+    await userEvent.type(input, 'Grace')
+    expect(input.value).toBe('Grace')
+    expect(onValueChange).toHaveBeenLastCalledWith('Grace')
+  })
+
+  it('has no accessibility violations across its types', async () => {
+    const { container } = render(
+      <>
+        <EditableField label="Text" value="a" onValueChange={() => {}} />
+        <EditableField label="Number" type="number" value={1} onValueChange={() => {}} />
+        <EditableField label="Range" type="range" value={1} onValueChange={() => {}} />
+        <EditableField
+          label="Color"
+          type="color"
+          value="#ff0000"
+          onValueChange={() => {}}
+        />
+        <EditableField label="Angle" type="knob" value={0} onValueChange={() => {}} />
+        <EditableField label="On" type="switch" value onValueChange={() => {}} />
+        <EditableField
+          label="Fit"
+          type="segmented"
+          value="a"
+          options={[
+            { value: 'a', label: 'A' },
+            { value: 'b', label: 'B' },
+          ]}
+          onValueChange={() => {}}
+        />
+      </>
+    )
     await expectNoAxeViolations(container)
   })
 })

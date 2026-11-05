@@ -189,8 +189,93 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
     direction: ltr;
   }
 
+  // The hex field and any numeric channel sets, wrapping onto new lines in a
+  // narrow picker rather than squeezing the fields.
+  .greese-ColorPicker-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--greese-space-2);
+    align-items: center;
+  }
+
   .greese-ColorPicker-hex {
+    flex: 1 1 7rem;
+    min-inline-size: 0;
     font-family: var(--greese-font-mono);
+  }
+
+  // A channel set takes a row of its own: sharing one with the hex field left
+  // three numbers about 3rem each, and a blue of 246 did not fit.
+  .greese-ColorPicker-channels {
+    display: flex;
+    flex: 1 0 100%;
+    gap: var(--greese-space-2);
+    min-inline-size: 0;
+  }
+
+  // Input's own root; its `<input>` is the `-control` part inside.
+  .greese-ColorPicker-channel {
+    flex: 1;
+    min-inline-size: 0;
+    padding-inline: var(--greese-space-1);
+
+    .greese-Input-control {
+      font-family: var(--greese-font-mono);
+      text-align: end;
+
+      // Three numbers side by side have no room for a spinner, and the area
+      // and hue slider are how a value gets nudged.
+      appearance: textfield;
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        margin: 0;
+        appearance: none;
+      }
+    }
+
+    .greese-Input-adornment {
+      font-family: var(--greese-font-mono);
+      color: var(--greese-color-fg-muted);
+    }
+  }
+
+  // The picker's own small buttons: the eyedropper, and saving or clearing a
+  // swatch. Plain buttons rather than IconButton, so a picker that shows none
+  // of them doesn't carry Button's variants (see .size-limit.cjs).
+  .greese-ColorPicker-tool {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    padding: 0;
+    color: var(--greese-color-fg-muted);
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-radius: var(--greese-corner-inset);
+
+    @media (pointer: coarse) {
+      inline-size: 2.25rem;
+      block-size: 2.25rem;
+    }
+
+    &:hover:not(:disabled) {
+      color: var(--greese-color-fg);
+      background: var(--greese-color-track);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--greese-color-focus-ring);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
   }
 
   .greese-ColorPicker-swatches {

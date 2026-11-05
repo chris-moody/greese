@@ -1,0 +1,215 @@
+@use '../../styles/mixins';
+
+// A color picker's swatch paints literal colors, whatever the theme: the
+// checkerboard behind a transparent color reads as "nothing here", not as a
+// surface, so it does not follow the palette.
+/* stylelint-disable color-no-hex */
+$checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.5rem 0.5rem;
+
+@layer greese.components {
+  .greese-EditableField {
+    --greese-editablefield-dial: 2.25rem;
+
+    @include mixins.component-root;
+
+    display: flex;
+    gap: var(--greese-space-2);
+    align-items: center;
+    min-inline-size: 0;
+
+    &[data-disabled] {
+      opacity: 0.55;
+    }
+  }
+
+  // A property row: the name on one side, the control on the other, so a
+  // column of fields lines up down the panel.
+  .greese-EditableField--row {
+    justify-content: space-between;
+  }
+
+  .greese-EditableField--column {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .greese-EditableField-label {
+    flex: none;
+    color: var(--greese-color-fg-muted);
+
+    // The name must not push the control out of a narrow panel.
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    .greese-EditableField--column > & {
+      align-self: start;
+    }
+  }
+
+  // Every control sits on the other side of the row and takes the slack.
+  .greese-EditableField-control {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  // A checkbox, switch or dial is its own size: stretching one would leave the
+  // hit target floating in a box of empty space.
+  .greese-EditableField--checkbox > .greese-EditableField-control,
+  .greese-EditableField--switch > .greese-EditableField-control,
+  .greese-EditableField--radio > .greese-EditableField-control,
+  .greese-EditableField--segmented > .greese-EditableField-control,
+  .greese-EditableField--color > .greese-EditableField-control {
+    flex: 0 0 auto;
+  }
+
+  .greese-EditableField-number,
+  .greese-EditableField-range,
+  .greese-EditableField-knob {
+    display: flex;
+    gap: var(--greese-space-2);
+    align-items: center;
+  }
+
+  .greese-EditableField-number > .greese-NumberField,
+  .greese-EditableField-range > .greese-Slider,
+  .greese-EditableField-knob > .greese-NumberField {
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  .greese-EditableField-unit,
+  .greese-EditableField-value {
+    flex: none;
+    font-variant-numeric: tabular-nums;
+    color: var(--greese-color-fg-muted);
+  }
+
+  .greese-EditableField-value {
+    min-inline-size: 3ch;
+    text-align: end;
+  }
+
+  // The color swatch that opens the picker.
+  .greese-EditableField-swatch {
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    padding: 0;
+    cursor: pointer;
+    background:
+      linear-gradient(
+        var(--greese-editablefield-swatch),
+        var(--greese-editablefield-swatch)
+      ),
+      $checker;
+    border: 0;
+    border-radius: var(--greese-corner-inset);
+    box-shadow: inset 0 0 0 1px var(--greese-color-border-strong);
+
+    @media (pointer: coarse) {
+      inline-size: 2.25rem;
+      block-size: 2.25rem;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--greese-color-focus-ring);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+
+    // No color at all, and a mixed selection, are different states: a slash
+    // for the one that is set to nothing, a dim fill for the one that has no
+    // single answer yet.
+    &[data-none] {
+      background:
+        linear-gradient(
+          to top right,
+          transparent calc(50% - 1px),
+          var(--greese-color-negative) calc(50% - 1px),
+          var(--greese-color-negative) calc(50% + 1px),
+          transparent calc(50% + 1px)
+        ),
+        var(--greese-color-surface);
+    }
+
+    &[data-mixed] {
+      background: var(--greese-color-track);
+      box-shadow: inset 0 0 0 1px var(--greese-color-border-strong);
+      opacity: 0.7;
+    }
+  }
+
+  // The picker's popover, and the "No color" button under it.
+  .greese-EditableField-picker {
+    display: grid;
+    gap: var(--greese-space-3);
+  }
+
+  .greese-EditableField-none {
+    padding: var(--greese-space-2);
+    font: inherit;
+    color: var(--greese-color-fg);
+    cursor: pointer;
+    background: var(--greese-color-surface);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-corner-inset);
+
+    &:hover {
+      background: var(--greese-color-track);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--greese-color-focus-ring);
+      outline-offset: 2px;
+    }
+  }
+
+  // The dial: a circle whose dot shows where it points.
+  .greese-EditableField-dial {
+    position: relative;
+    flex: none;
+    inline-size: var(--greese-editablefield-dial);
+    block-size: var(--greese-editablefield-dial);
+    cursor: grab;
+    background: var(--greese-color-track);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-corner-round);
+
+    // Turning the dial must not scroll the page under a finger.
+    touch-action: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--greese-color-focus-ring);
+      outline-offset: 2px;
+    }
+
+    &[aria-disabled='true'] {
+      cursor: not-allowed;
+    }
+  }
+
+  .greese-EditableField-dialDot {
+    position: absolute;
+    inset: 0;
+    display: block;
+
+    // The dot rides at the top of the circle and the whole layer rotates, so
+    // one angle drives it with no trigonometry in JavaScript.
+    rotate: var(--greese-editablefield-angle, 0deg);
+
+    &::after {
+      position: absolute;
+      inset-block-start: 0.125rem;
+      inset-inline-start: 50%;
+      inline-size: 0.375rem;
+      block-size: 0.375rem;
+      content: '';
+      background: var(--greese-color-primary);
+      border-radius: var(--greese-corner-round);
+      translate: -50% 0;
+    }
+  }
+}

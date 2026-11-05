@@ -1,5 +1,6 @@
 'use client'
 import {
+  useEffect,
   useState,
   type ComponentPropsWithRef,
   type CSSProperties,
@@ -7,13 +8,23 @@ import {
   type KeyboardEvent,
   type PointerEvent,
 } from 'react'
+import { EyedropperIcon, PlusIcon, TrashIcon } from '@greese/icons'
 import { cx } from '../../utils/cx.ts'
+import { Input } from '../Input/Input.tsx'
 import { MaskedInput } from '../MaskedInput/MaskedInput.tsx'
 import {
+  channelsToHsv,
+  channelValues,
+  COLOR_CHANNELS,
   formatHex,
+  hslToHsv,
+  hsvToHsl,
   hsvToRgb,
   parseHex,
   rgbToHsv,
+  type ColorChannel,
+  type ColorChannelSet,
+  type HslColor,
   type HsvColor,
   type RgbColor,
 } from './colorMath.ts'
@@ -31,10 +42,31 @@ export interface ColorPickerProps
   alpha?: boolean
   /** Preset colors offered as one-tap swatches. */
   swatches?: readonly string[]
+  /**
+   * Makes the swatches a collection the user keeps: setting it adds buttons
+   * that save the current color and clear the row. Called with the new list.
+   */
+  onSwatchesChange?: (swatches: readonly string[]) => void
+  /**
+   * Numeric fields beside the hex one, in the order given: `rgb` is 0–255 per
+   * channel, `hsl` and `hsb` are a hue in degrees and two percentages.
+   */
+  channels?: readonly ColorChannelSet[]
+  /**
+   * Offer a button that samples a color from anywhere on screen. It appears
+   * only in browsers with the EyeDropper API, so keep the hex field as the way
+   * to enter a known color.
+   */
+  eyedropper?: boolean
   /** Name for the whole picker. @default 'Color' */
   label?: string
   /** Disables every part of the picker. */
   disabled?: boolean
+}
+
+/** What a browser with the EyeDropper API adds to `window`. */
+interface EyeDropperApi {
+  new (): { open: () => Promise<{ sRGBHex: string }> }
 }
 
 const fromHex = (hex: string | undefined, hue = 0): HsvColor =>
@@ -53,7 +85,9 @@ const clamp01 = (n: number): number => Math.min(Math.max(n, 0), 1)
  * <ColorPicker defaultValue="#e11d48" swatches={brand} onValueChange={setColor} />
  * ```
  *
- * For a compact field, put it in a Popover with a swatch button as trigger.
+ * Add `channels` for numeric fields, `eyedropper` to sample the screen, and
+ * `onSwatchesChange` to let the user keep swatches of their own. For a compact
+ * field, put it in a Popover with a swatch button as trigger.
  */
 export const ColorPicker = ({
   greese,
@@ -62,6 +96,9 @@ export const ColorPicker = ({
   onValueChange,
   alpha = false,
   swatches,
+  onSwatchesChange,
+  channels,
+  eyedropper,
   label = 'Color',
   disabled,
   className,
@@ -80,6 +117,16 @@ export const ColorPicker = ({
   }
   const hex = toHex(hsv, alpha)
   const [draft, setDraft] = useState<string | null>(null)
+  // One in-progress numeric field, keyed by its set and position: typing "1"
+  // on the way to "100" must not commit a color and renumber the others.
+  const [channelDraft, setChannelDraft] = useState<[string, string] | null>(null)
+
+  // The EyeDropper API can only be detected at runtime, and the server has no
+  // answer, so the button appears after mount rather than risking a mismatch.
+  const [canSample, setCanSample] = useState(false)
+  useEffect(() => {
+    if (eyedropper) setCanSample('EyeDropper' in window)
+  }, [eyedropper])
 
   const update = (patch: Partial<HsvColor>) => {
     if (disabled) return
@@ -93,6 +140,16 @@ export const ColorPicker = ({
   const setFromHex = (input: string) => {
     const rgb = parseHex(input)
     if (rgb) update(rgbToHsv({ ...rgb, a: alpha ? rgb.a : 1 }, hsv.h))
+  }
+
+  const sample = () => {
+    const Api = (window as unknown as { EyeDropper?: EyeDropperApi }).EyeDropper
+    if (!Api) return
+    // A cancelled pick rejects; there is nothing to report.
+    void new Api().open().then(
+      ({ sRGBHex }) => setFromHex(sRGBHex),
+      () => {}
+    )
   }
 
   // The area is one 2D control: pointer capture keeps a drag going outside it.
@@ -121,6 +178,60 @@ export const ColorPicker = ({
     update(move)
   }
 
+  const setChannel = (set: ColorChannelSet, index: number, raw: string) => {
+    setChannelDraft([`${set}${index}`, raw])
+    const typed = Number(raw)
+    if (raw === '' || !Number.isFinite(typed)) return
+    const channel = COLOR_CHANNELS[set][index]
+    if (!channel) return
+    const next = channelValues(hsv, set)
+    next[index] = Math.min(Math.max(typed, 0), channel.max)
+    update(channelsToHsv(next, set, hsv))
+  }
+
+  const channelField = (
+    set: ColorChannelSet,
+    channel: ColorChannel,
+    index: number,
+    current: number
+  ): JSX.Element => {
+    const [key, text] = channelDraft ?? []
+    return (
+      <Input
+        key={channel.label}
+        className="greese-ColorPicker-channel"
+        size="sm"
+        type="number"
+        inputMode="numeric"
+        min={0}
+        max={channel.max}
+        aria-label={channel.name}
+        startAdornment={channel.label}
+        disabled={disabled}
+        value={key === `${set}${index}` ? text : String(current)}
+        onChange={(event) => setChannel(set, index, event.target.value)}
+        onBlur={() => setChannelDraft(null)}
+      />
+    )
+  }
+
+  const channelRows = channels?.map((set) => {
+    const values = channelValues(hsv, set)
+    return (
+      <div
+        key={set}
+        className="greese-ColorPicker-channels"
+        role="group"
+        aria-label={set.toUpperCase()}
+      >
+        {COLOR_CHANNELS[set].map((channel, index) =>
+          channelField(set, channel, index, values[index] ?? 0)
+        )}
+      </div>
+    )
+  })
+
+  const saved = swatches ?? []
   const opaque = toHex({ ...hsv, a: 1 }, false)
   return withGreese(
     <div
@@ -192,33 +303,47 @@ export const ColorPicker = ({
             />
           )}
         </div>
+        {canSample && (
+          <button
+            type="button"
+            className="greese-ColorPicker-tool"
+            aria-label="Pick a color from the screen"
+            disabled={disabled}
+            onClick={sample}
+          >
+            <EyedropperIcon />
+          </button>
+        )}
       </div>
 
-      <MaskedInput
-        className="greese-ColorPicker-hex"
-        size="sm"
-        aria-label="Hex color"
-        mask="hhhhhh"
-        maskChar=" "
-        spellCheck={false}
-        disabled={disabled}
-        startAdornment="#"
-        value={draft ?? hex.slice(1, 7)}
-        onValueChange={(raw) => {
-          if (raw.length === 6) setFromHex(raw + (alpha ? hex.slice(7) : ''))
-          else setDraft(raw)
-        }}
-        onBlur={() => {
-          if (draft?.length === 3) setFromHex(draft)
-          setDraft(null)
-        }}
-      />
+      <div className="greese-ColorPicker-fields">
+        <MaskedInput
+          className="greese-ColorPicker-hex"
+          size="sm"
+          aria-label="Hex color"
+          mask="hhhhhh"
+          maskChar=" "
+          spellCheck={false}
+          disabled={disabled}
+          startAdornment="#"
+          value={draft ?? hex.slice(1, 7)}
+          onValueChange={(raw) => {
+            if (raw.length === 6) setFromHex(raw + (alpha ? hex.slice(7) : ''))
+            else setDraft(raw)
+          }}
+          onBlur={() => {
+            if (draft?.length === 3) setFromHex(draft)
+            setDraft(null)
+          }}
+        />
+        {channelRows}
+      </div>
 
-      {swatches && swatches.length > 0 && (
+      {(saved.length > 0 || onSwatchesChange) && (
         <div className="greese-ColorPicker-swatches" role="group" aria-label="Presets">
-          {swatches.map((swatch) => (
+          {saved.map((swatch, index) => (
             <button
-              key={swatch}
+              key={`${swatch}-${index}`}
               type="button"
               className="greese-ColorPicker-swatch"
               style={{ '--greese-colorpicker-swatch': swatch } as CSSProperties}
@@ -228,6 +353,28 @@ export const ColorPicker = ({
               onClick={() => setFromHex(swatch)}
             />
           ))}
+          {onSwatchesChange && (
+            <>
+              <button
+                type="button"
+                className="greese-ColorPicker-tool"
+                aria-label="Save this color"
+                disabled={disabled || saved.includes(hex)}
+                onClick={() => onSwatchesChange([...saved, hex])}
+              >
+                <PlusIcon />
+              </button>
+              <button
+                type="button"
+                className="greese-ColorPicker-tool"
+                aria-label="Clear saved colors"
+                disabled={disabled || saved.length === 0}
+                onClick={() => onSwatchesChange([])}
+              >
+                <TrashIcon />
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>,
@@ -235,4 +382,19 @@ export const ColorPicker = ({
   )
 }
 
-export { formatHex, hsvToRgb, parseHex, rgbToHsv, type HsvColor, type RgbColor }
+export {
+  channelsToHsv,
+  channelValues,
+  COLOR_CHANNELS,
+  formatHex,
+  hslToHsv,
+  hsvToHsl,
+  hsvToRgb,
+  parseHex,
+  rgbToHsv,
+  type ColorChannel,
+  type ColorChannelSet,
+  type HslColor,
+  type HsvColor,
+  type RgbColor,
+}

@@ -164,7 +164,7 @@ $blocks: (
     variables: ('--greese-collapsible-icon-turn',),
   ),
   'ColorPicker': (
-    parts: ('alpha', 'area', 'controls', 'hex', 'hue', 'preview', 'sliders', 'swatch', 'swatches', 'thumb',),
+    parts: ('alpha', 'area', 'channel', 'channels', 'controls', 'fields', 'hex', 'hue', 'preview', 'sliders', 'swatch', 'swatches', 'thumb', 'tool',),
     modifiers: (),
     part-modifiers: (),
     variables: ('--greese-colorpicker-color', '--greese-colorpicker-current', '--greese-colorpicker-hue', '--greese-colorpicker-swatch', '--greese-colorpicker-thumb', '--greese-colorpicker-track', '--greese-colorpicker-x', '--greese-colorpicker-y',),
@@ -228,6 +228,12 @@ $blocks: (
     modifiers: (),
     part-modifiers: (),
     variables: ('--greese-drawer-dir', '--greese-drawer-edge',),
+  ),
+  'EditableField': (
+    parts: ('control', 'dial', 'dialDot', 'knob', 'label', 'none', 'number', 'picker', 'range', 'swatch', 'unit', 'value',),
+    modifiers: ('checkbox', 'color', 'column', 'radio', 'row', 'segmented', 'switch',),
+    part-modifiers: (),
+    variables: ('--greese-editablefield-angle', '--greese-editablefield-dial', '--greese-editablefield-swatch',),
   ),
   'Embed': (
     parts: (),

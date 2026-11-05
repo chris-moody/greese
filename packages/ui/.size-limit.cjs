@@ -57,7 +57,10 @@ module.exports = [
     // 25.9 kB → 26.15 kB (2026-11-01): reduced motion an app asks for (ADR 0033):
     // collapsed durations and a cut for every animation, transition and smooth
     // scroll under `data-greese-motion="reduce"`, in core.css too (26.12 kB).
-    limit: '26.15 kB',
+    // 26.15 kB → 26.6 kB (2026-11-04): EditableField's stylesheet — the property
+    // row, its label, the color swatch's three states and the dial — plus
+    // ColorPicker's channel fields and tool buttons (26.52 kB).
+    limit: '26.6 kB',
   },
   {
     name: 'CSS: css/PageTransition.css',

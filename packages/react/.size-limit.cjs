@@ -95,7 +95,9 @@ module.exports = [
     // 32.6 kB → 33.4 kB (2026-10-31): route rules and a navigation's own options (ADR 0029 addendum): the pattern matcher, the resolver, the root variables and the hook's wiring, 0.7-0.75 kB over the 0.3-0.45 kB the plan estimated (33.34 kB).
     // 33.4 kB → 34.3 kB (2026-11-01): Carousel and CarouselSlide (ADR 0032), and
     // ScrollCarousel's vertical orientation (34.25 kB).
-    limit: '34.3 kB',
+    // 34.3 → 34.55 kB (2026-11-02): Carousel's own controls and dots (CarouselPrevious, CarouselNext, CarouselIndicator with asChild), `announce` and the label functions, less its hash deep links, now the app's (34.51 kB).
+    // 34.55 kB → 37.1 kB (2026-11-04): EditableField, which renders any of eleven controls from a value, plus ColorPicker's channel fields and eyedropper.
+    limit: '37.1 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -136,7 +138,12 @@ module.exports = [
     // 38.8 kB → 39.7 kB (2026-11-01): Carousel and CarouselSlide (ADR 0032), and
     // ScrollCarousel's vertical orientation (39.63 kB).
     // 39.7 kB → 39.75 kB (2026-11-01): reduced motion an app asks for (ADR 0033): greese.js's prefersReducedMotion and its check of what a timeline moves (39.73 kB).
-    limit: '39.75 kB',
+    // 39.75 → 40.05 kB (2026-11-02): Carousel's own controls and dots (CarouselPrevious, CarouselNext, CarouselIndicator with asChild), `announce` and the label functions, less its hash deep links (39.99 kB).
+    // 40.05 kB → 40.2 kB (2026-11-02): greese.js animates an element's text nodes: `text` types into them and splitText splits them where they are, keeping markup (ADR 0008 addendum), and a split link's underline (40.17 kB).
+    // 40.2 kB → 40.3 kB (2026-11-03): configureBreakpoints() with no argument reads the stylesheet's breakpoints (--greese-breakpoint-keys and each value), so the JavaScript can't disagree with the CSS (ADR 0034); the computed-style reads share nothing with the rest (40.28 kB).
+    // 40.3 kB → 40.5 kB (2026-11-03): greese.js gained killTweensOf and a target registry, which Timeline's own track bookkeeping writes, so the whole library carries it (ADR 0008 addendum) (40.38 kB).
+    // 40.5 kB → 42.8 kB (2026-11-04): EditableField, which renders any of eleven controls from a value, plus ColorPicker's channel fields and eyedropper.
+    limit: '42.8 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -160,7 +167,8 @@ module.exports = [
     // 2.45 kB → 2.5 kB (2026-10-23): overlays leave with wipes and pockets too (ADR
     // 0025 addendum): the overlay exits' names every component carries, the 32 that
     // follow a direction written as prefixes times directions (2469 B).
-    limit: '2.5 kB',
+    // 2.5 kB → 2.55 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (2514 B).
+    limit: '2.55 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -176,7 +184,8 @@ module.exports = [
     // 0025 addendum): the overlay exits' names every component carries, the 32 that
     // follow a direction written as prefixes times directions (2376 B).
     // 2.4 kB → 2.45 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (2407 B).
-    limit: '2.45 kB',
+    // 2.45 kB → 2.5 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (2471 B).
+    limit: '2.5 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -235,7 +244,8 @@ module.exports = [
     // shape theme can draw the menu's border along its shape (3.26 kB).
     // 3.3 kB → 3.35 kB (2026-10-30): eight half turns (`flipOver<Dir>`, `flipOverOut<Dir>`,
     // the Depth theme's page change; ADR 0029): more of the effect names this carries (3.33 kB).
-    limit: '3.35 kB',
+    // 3.35 kB → 3.4 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (3361 B).
+    limit: '3.4 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -263,7 +273,8 @@ module.exports = [
     // 4.75 kB → 4.8 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (4785 B).
     // 4.8 kB → 4.85 kB (2026-10-24): option ids looked up in a map, once per options list, where indexOf made long lists render in quadratic time (4.81 kB).
     // 4.85 kB → 4.9 kB (2026-10-30): the same island (4851 B).
-    limit: '4.9 kB',
+    // 4.9 kB → 4.95 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (4924 B).
+    limit: '4.95 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -278,7 +289,12 @@ module.exports = [
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.
     // 3.6 kB → 3.65 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (3641 B).
-    limit: '3.65 kB',
+    // 3.65 kB → 3.7 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (3671 B).
+    // 3.7 kB → 3.75 kB (2026-11-04): the field re-reads its value when it is
+    // left, so a controlled parent declining what was committed no longer leaves
+    // the typed text sitting there (3701 B — one byte over, and the fix is
+    // correctness, not a feature).
+    limit: '3.75 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -329,7 +345,21 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ ColorPicker }',
     // 4.25 kB → 4.3 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (4265 B).
-    limit: '4.3 kB',
+    // 4.3 kB → 4.35 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (4314 B).
+    // 4.35 kB → 5.45 kB (2026-11-04): three opt-in parts of a working color picker — the eyedropper, numeric channel fields for rgb/hsl/hsb, and swatches the reader saves. The channel fields' HSL math and field table are the bulk of it (5.38 kB). Their buttons are plain `<button>`s, not IconButton, so a picker that shows none of them does not carry Button's variants: that alone was 0.65 kB.
+    limit: '5.45 kB',
+    modifyRolldownConfig: external,
+  },
+  {
+    name: 'EditableField',
+    path: 'dist/index.js',
+    import: '{ EditableField }',
+    // First entry (2026-11-04): one field that renders any of eleven controls,
+    // so it pulls in Input, NumberField, Slider, Checkbox, Switch, Select,
+    // Radio, SegmentedControl, Popover and ColorPicker. A panel built from it
+    // was going to import most of those anyway; a page that imports it to show
+    // one text field pays for the rest, which is the trade a dispatcher makes.
+    limit: '14 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -349,9 +379,10 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ Carousel, CarouselSlide }',
     ignore: ['react', 'react-dom'],
-    // 3.55 kB (2026-11-01): one slide at a time with CSS effects, deep links
-    // through slide ids, keys and swipes (ADR 0032); 3.49 kB at its first build.
-    limit: '3.55 kB',
+    // 3.55 kB (2026-11-01): one slide at a time with CSS effects, keys and
+    // swipes (ADR 0032); 3.49 kB at its first build, with hash deep links.
+    // 3.55 → 3.75 kB (2026-11-02): its own controls and dots (CarouselPrevious, CarouselNext, CarouselIndicator with asChild), `announce` and the label functions; the hash deep links, now the app's, came out (3.7 kB).
+    limit: '3.75 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -371,7 +402,8 @@ module.exports = [
     // 3.85 kB → 3.95 kB (2026-11-01): `orientation="vertical"` (measuring and scrolling on
     // either axis) and resetting its own reports when a move begins, so a controlled
     // `index` can always reach a slide again (ADR 0011): 67 B.
-    limit: '3.95 kB',
+    // 3.95 kB → 4 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (3953 B).
+    limit: '4 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -389,7 +421,8 @@ module.exports = [
     // 0025 addendum): the overlay exits' names every component carries, the 32 that
     // follow a direction written as prefixes times directions (3073 B).
     // 3.1 kB → 3.15 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (3117 B).
-    limit: '3.15 kB',
+    // 3.15 kB → 3.2 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (3153 B).
+    limit: '3.2 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -403,7 +436,8 @@ module.exports = [
     // 2.6 kB → 2.65 kB (2026-10-23): overlays leave with wipes and pockets too (ADR
     // 0025 addendum): the overlay exits' names every component carries, the 32 that
     // follow a direction written as prefixes times directions (2606 B).
-    limit: '2.65 kB',
+    // 2.65 kB → 2.7 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (2670 B).
+    limit: '2.7 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -411,7 +445,8 @@ module.exports = [
     path: 'dist/index.js',
     import: '{ Diff }',
     ignore: ['react', 'react-dom'],
-    limit: '2.25 kB',
+    // 2.25 kB → 2.3 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (2253 B).
+    limit: '2.3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -422,7 +457,8 @@ module.exports = [
     // 2.25 kB → 2.3 kB (2026-10-23): overlays leave with wipes and pockets too (ADR
     // 0025 addendum): the overlay exits' names every component carries, the 32 that
     // follow a direction written as prefixes times directions (2257 B).
-    limit: '2.3 kB',
+    // 2.3 kB → 2.35 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (2325 B).
+    limit: '2.35 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -443,7 +479,8 @@ module.exports = [
     // icon a Button, so they take a theme's button shape, depth and states: it
     // brings Button, which an app with a speed dial almost always has (3.98 kB).
     // 4 kB → 4.05 kB (2026-10-30): the same island (4.01 kB).
-    limit: '4.05 kB',
+    // 4.05 kB → 4.1 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (4081 B).
+    limit: '4.1 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -501,7 +538,8 @@ module.exports = [
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.
     // 2.1 kB → 2.15 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (2135 B).
-    limit: '2.15 kB',
+    // 2.15 kB → 2.2 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (2161 B).
+    limit: '2.2 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -512,7 +550,9 @@ module.exports = [
     import: '{ useGreese }',
     ignore: ['react', 'react-dom'],
     // 6.1 kB → 6.15 kB (2026-11-01): reduced motion an app asks for (ADR 0033): greese.js's prefersReducedMotion and its check of what a timeline moves (6.11 kB).
-    limit: '6.15 kB',
+    // 6.15 kB → 6.3 kB (2026-11-02): greese.js animates an element's text nodes: `text` types into them and splitText splits them where they are, keeping markup (ADR 0008 addendum) (6.24 kB).
+    // +greese.js's killTweensOf target registry (ADR 0008 addendum, 2026-11-03): 6.37 kB.
+    limit: '6.5 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -567,7 +607,9 @@ module.exports = [
     // 11.05 kB → 11.15 kB (2026-10-30): eight half turns (`flipOver<Dir>`, `flipOverOut<Dir>`,
     // the Depth theme's page change; ADR 0029): more of the effect names this carries (11.11 kB).
     // 11.15 kB → 11.25 kB (2026-11-01): reduced motion an app asks for (ADR 0033): greese.js's prefersReducedMotion and its check of what a timeline moves, read per element by the runtime (11.21 kB).
-    limit: '11.25 kB',
+    // 11.25 kB → 11.4 kB (2026-11-02): greese.js animates an element's text nodes: `text` types into them and splitText splits them where they are, keeping markup (ADR 0008 addendum), and the runtime's text effects take markup (11.39 kB).
+    // +greese.js's killTweensOf target registry, which Timeline's track bookkeeping writes (ADR 0008 addendum, 2026-11-03).
+    limit: '11.6 kB',
   },
   // @greese/react/svg (ADR 0031) is an add-on, not part of the library: the
   // whole library with greese.js, as above, plus every SVG component and all
@@ -587,7 +629,12 @@ module.exports = [
     // 49.35 kB → 49.7 kB (2026-11-01): the filter primitive and preset components
     // (ADR 0031 §7) (49.66 kB).
     // 49.7 kB → 49.75 kB (2026-11-01): the `vars` prop (ADR 0031): custom properties by name, color tokens by their names (49.74 kB).
-    limit: '49.75 kB',
+    // 49.75 → 50.1 kB (2026-11-02): Carousel's own controls and dots (CarouselPrevious, CarouselNext, CarouselIndicator with asChild), `announce` and the label functions, less its hash deep links (50.04 kB).
+    // 50.1 kB → 50.2 kB (2026-11-02): greese.js animates an element's text nodes: `text` types into them and splitText splits them where they are, keeping markup (ADR 0008 addendum) (50.13 kB).
+    // 50.2 kB → 50.25 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (50229 B).
+    // +greese.js's killTweensOf target registry, which Timeline's track bookkeeping writes (ADR 0008 addendum, 2026-11-03).
+    // 50.5 kB → 52.9 kB (2026-11-04): EditableField, which renders any of eleven controls from a value, plus ColorPicker's channel fields and eyedropper.
+    limit: '52.9 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.

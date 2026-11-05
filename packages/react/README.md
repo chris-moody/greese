@@ -214,7 +214,10 @@ phones), `ToggleButton` (on or off, `aria-pressed`) and `ButtonGroup`
 Also: `Combobox` (searchable select), `NumberField` (spinbutton with
 steppers), `DateField` (native date and time pickers), `MaskedInput` (formats
 as you type: phones, cards, codes), `ColorPicker` (touch-friendly, with
-opacity and swatches), `ActionSelect` (a button joined to a select),
+opacity, numeric channels, the screen eyedropper and swatches),
+`EditableField` (one field that renders any of eleven controls from the value
+it is given — for a property panel built from data), `ActionSelect` (a button
+joined to a select),
 `SegmentedControl`, and `Table` primitives with sortable headers and a stacked
 card layout on phones. `Rating` (stars on native radios; whole, half or quarter steps; any fraction read-only),
 `OtpField` (one-time codes: one input, so SMS autofill and paste work),
@@ -228,13 +231,13 @@ are at least 44px.
 
 ## Content
 
-| Area             | Components                                                                                                                                                                                                                                                                                                                                                              |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Typography**   | `Text` (responsive size, tone, truncate), `Heading` (outline level separate from size), `Link`, `Code`, `Break` (a line break per breakpoint, with a fallback where it doesn't break)                                                                                                                                                                                   |
-| **Media**        | `Card` + `CardMedia`, `Image` (lazy by default, `priority` for LCP, CSS placeholder, fallback), `Video` (plays inline on iOS), `Embed`, `Icon`, `Avatar` + `AvatarGroup`                                                                                                                                                                                                |
-| **Disclosure**   | `Collapsible` and `Accordion` (native `<details>`; `exclusive` keeps one open with no JS; an icon of yours, or one per state), `Tabs`                                                                                                                                                                                                                                   |
-| **Feedback**     | `Alert` (announces only when you ask), `Badge`, `Chip` (removable or selectable), `Spinner`, `Progress`, `RadialProgress`, `Skeleton`, `Status` (a state dot), `Countdown`                                                                                                                                                                                              |
-| **Data display** | `Stat` + `StatGroup`, `List` + `ListItem`, `ChatBubble`, `Key`, `Indicator` (a badge or dot on a corner), `Diff` (a before/after slider), `Carousel` + `CarouselSlide` (one slide at a time, greese effects, deep links by slide id), `ScrollCarousel` + `ScrollCarouselSlide` (native scroll snapping, horizontal or vertical), `TextRotate` (CSS-only rotating words) |
+| Area             | Components                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Typography**   | `Text` (responsive size, tone, truncate), `Heading` (outline level separate from size), `Link`, `Code`, `Break` (a line break per breakpoint, with a fallback where it doesn't break)                                                                                                                                                                                                                                                                                       |
+| **Media**        | `Card` + `CardMedia`, `Image` (lazy by default, `priority` for LCP, CSS placeholder, fallback), `Video` (plays inline on iOS), `Embed`, `Icon`, `Avatar` + `AvatarGroup`                                                                                                                                                                                                                                                                                                    |
+| **Disclosure**   | `Collapsible` and `Accordion` (native `<details>`; `exclusive` keeps one open with no JS; an icon of yours, or one per state), `Tabs`                                                                                                                                                                                                                                                                                                                                       |
+| **Feedback**     | `Alert` (announces only when you ask), `Badge`, `Chip` (removable or selectable), `Spinner`, `Progress`, `RadialProgress`, `Skeleton`, `Status` (a state dot), `Countdown`                                                                                                                                                                                                                                                                                                  |
+| **Data display** | `Stat` + `StatGroup`, `List` + `ListItem`, `ChatBubble`, `Key`, `Indicator` (a badge or dot on a corner), `Diff` (a before/after slider), `Carousel` + `CarouselSlide` (one slide at a time, greese effects, deep-linkable through a controlled `index`; your own controls with `CarouselPrevious`, `CarouselNext`, `CarouselIndicator`), `ScrollCarousel` + `ScrollCarouselSlide` (native scroll snapping, horizontal or vertical), `TextRotate` (CSS-only rotating words) |
 
 ## Overlays and navigation
 
@@ -385,7 +388,9 @@ keys stay `xs`–`xl`:
 ```
 
 ```ts
-configureBreakpoints({ sm: 480, md: 768, lg: 1024, xl: 1440 })
+// Reads them from the stylesheet (--greese-breakpoint-*): call it once the CSS
+// has loaded, before the first render. Or pass them: { sm: 480, md: 768, … }.
+configureBreakpoints()
 ```
 
 ## Utilities

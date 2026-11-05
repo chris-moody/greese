@@ -86,6 +86,7 @@ export const NumberField = ({
   className,
   onKeyDown,
   onBlur,
+  onFocus,
   ref,
   disabled,
   readOnly,
@@ -100,14 +101,19 @@ export const NumberField = ({
   const format = (n: number | null) =>
     n === null ? '' : String(Number(n.toFixed(decimals)))
   const [text, setText] = useState(() => format(value))
+  const [editing, setEditing] = useState(false)
   const input = useRef<HTMLInputElement>(null)
 
   // Follow outside changes (controlled value) unless the user is mid-edit.
+  // `editing` is a dependency so this also runs the moment the field is left:
+  // a controlled parent may have declined what was committed (a cleared field
+  // where empty means nothing, a value it clamps itself), and the text has to
+  // go back to the value actually in force rather than sit there stale.
   useEffect(() => {
-    if (document.activeElement !== input.current) {
+    if (!editing && document.activeElement !== input.current) {
       setText(value === null ? '' : String(Number(value.toFixed(decimals))))
     }
-  }, [value, decimals])
+  }, [value, decimals, editing])
 
   const clamp = (n: number) => Math.min(max ?? Infinity, Math.max(min ?? -Infinity, n))
   const snap = (n: number) => {
@@ -175,8 +181,13 @@ export const NumberField = ({
       value={text}
       className={cx('greese-NumberField', className)}
       onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)}
+      onFocus={(event: FocusEvent<HTMLInputElement>) => {
+        setEditing(true)
+        onFocus?.(event)
+      }}
       onBlur={(event: FocusEvent<HTMLInputElement>) => {
         commit()
+        setEditing(false)
         onBlur?.(event)
       }}
       onKeyDown={(event: KeyboardEvent<HTMLInputElement>) => {
