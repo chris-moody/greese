@@ -9,6 +9,8 @@ A small keyframe and timeline animation library for the web: about 5.6 kB
   **nest**.
 - Animates **CSS properties, individual transforms, custom properties, text,
   SVG attributes and plain objects**.
+- **`delay`**, and **`killTweensOf`** to take a target back from whatever is
+  animating it.
 - **Stagger**, an accessible **`splitText`**, named **eases** and
   **positions**.
 - **`fromPixels`** plays animation authored in the Pixels studio.
@@ -78,15 +80,20 @@ In a framework, build the timeline after mount and `kill()` it on unmount;
 `kill()` also restores what it animated. The guide has React, Vue, Svelte and
 plain JavaScript examples.
 
+Where you hold the target but not the timeline — a game loop reacting to a hit
+on a sprite that's already recoiling — `killTweensOf(target)` stops whatever is
+animating it, wherever that started, and leaves the timeline's other targets
+running.
+
 |            |                                                                                                                                                                                                                  |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Build      | `.to`, `.from`, `.fromTo`, `.animate` (keyframes), `.set`, `.add` (timeline or callback), `.call`, `.label`                                                                                                      |
-| Control    | `play`, `pause`, `resume`, `reverse`, `restart`, `seek`, `progress`, `time`, `timeScale`, `kill`, `invalidate`, `await`                                                                                          |
+| Control    | `play`, `pause`, `resume`, `reverse`, `restart`, `seek`, `progress`, `time`, `timeScale`, `kill`, `revert`, `killTweensOf`, `invalidate`, `await`                                                                          |
 | Options    | `paused`, `repeat`, `yoyo`, `repeatDelay`, `timeScale`, `reducedMotion`, `scope`, `onUpdate`, `onComplete`                                                                                                       |
 | Positions  | `1.5`, `'+=0.2'`, `'-=0.2'`, `'<'`, `'>-0.1'`, `'label+=0.5'`                                                                                                                                                    |
 | Eases      | `'out'` (default), `'power1'`–`'power4'`, `'sine'`, `'expo'`, `'circ'`, `'back'`, `'elastic'`, `'bounce'` with `.in`/`.out`/`.inOut`; CSS names and `cubic-bezier()`; `steps(n)`; cubic-bézier arrays; functions |
 | Per target | Any value, and `stagger`, can be a function of the target's index, the target and the list: `{ y: (i) => i * 8, stagger: (i, el) => … }`                                                                         |
-| Extras     | `splitText(el, { by })`, `fromPixels(animation, targets)`, `ease(name)`, `mix(a, b)`, `batch(fn)` (start many animations: all read, then all write)                                                              |
+| Extras     | `killTweensOf(targets)`, `splitText(el, { by })`, `fromPixels(animation, targets)`, `ease(name)`, `mix(a, b)`, `batch(fn)` (start many animations: all read, then all write)                                     |
 
 Times are seconds. Transforms use the individual CSS `translate`, `rotate` and
 `scale` properties, so they never fight your CSS `transform`. Colors mix in
@@ -96,10 +103,10 @@ OKLab.
 
 | Entry                                       | Size   |
 | ------------------------------------------- | ------ |
-| `animate` / `timeline`                      | 5.7 kB |
-| Everything (with `splitText`, `fromPixels`) | 6.6 kB |
+| `animate` / `timeline`                      | 5.9 kB |
+| Everything (with `splitText`, `fromPixels`) | 6.8 kB |
 | `ease` alone                                | 0.9 kB |
-| `greese.global.js` (`<script>`)             | 7 kB   |
+| `greese.global.js` (`<script>`)             | 7.3 kB |
 
 Full guide: **Guides/greese.js** in the greese ui docs. Design decisions:
 [ADR 0008](../../docs/adr/0008-greese-js-animation.md).

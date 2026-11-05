@@ -9,7 +9,7 @@ import {
 } from './target.ts'
 import { addToTicker, removeFromTicker } from './ticker.ts'
 import type { Mixer, Value } from './value.ts'
-import { prefersReducedMotion } from './motion.ts'
+import { appReducesMotion, prefersReducedMotion } from './motion.ts'
 
 /**
  * Where a child goes in a timeline, in seconds:
@@ -68,6 +68,13 @@ export interface StaggerOptions {
 export interface AnimateOptions {
   /** Seconds. @default 0.5 */
   duration?: number
+  /**
+   * Seconds to wait before it starts, from wherever it was placed. On a
+   * timeline a {@link Position} says the same thing and more, so this is for
+   * the one-call {@link animate}, where there is no timeline to position
+   * against. @default 0
+   */
+  delay?: number
   /** @default 'out' (power2.out) */
   ease?: Ease
   /**
@@ -101,7 +108,24 @@ export interface TimelineOptions {
   onComplete?: (timeline: Timeline) => void
 }
 
-const OPTION_KEYS = new Set(['duration', 'ease', 'stagger', 'offset'])
+const OPTION_KEYS = new Set(['duration', 'delay', 'ease', 'stagger', 'offset'])
+
+/**
+ * Which timelines hold a live track on a target, so {@link killTweensOf} can
+ * find them without a list of every timeline ever made.
+ *
+ * A WeakMap keyed by the target: the entry goes when the target does, which is
+ * what makes this safe for the thousands of short-lived objects a game or a
+ * particle system animates. The Sets do keep their timelines alive while the
+ * target is, which is the same trade every library with this feature makes.
+ */
+const animating = new WeakMap<Target, Set<Timeline>>()
+
+const register = (target: Target, timeline: Timeline): void => {
+  let set = animating.get(target)
+  if (!set) animating.set(target, (set = new Set()))
+  set.add(timeline)
+}
 
 /** One property's interpolation from `start` to `end` (seconds). */
 interface Segment {
@@ -184,7 +208,7 @@ class Track {
 
   /**
    * Reads the original before the first write, even when every value was
-   * given explicitly and none was needed, so `kill()` can restore it.
+   * given explicitly and none was needed, so `revert()` can restore it.
    */
   private firstWrite(value: Value): Value {
     this.original()
@@ -321,7 +345,9 @@ export class Timeline implements PromiseLike<void> {
     const duration = options.duration ?? inline.duration ?? 0.5
     const optEase = options.ease ?? inline.ease
     const stagger = options.stagger ?? inline.stagger
-    const at = this.#resolve(position)
+    // A delay shifts the whole segment, so `#placed` records the delayed
+    // start and a later `'<'`/`'>'` position follows it.
+    const at = this.#resolve(position) + (options.delay ?? inline.delay ?? 0)
     const stops = toStops(keyframes)
     let end = at
     list.forEach((target, i) => {
@@ -523,19 +549,38 @@ export class Timeline implements PromiseLike<void> {
   }
 
   /**
-   * Stops, and puts every animated property back as it was: inline styles and
-   * attributes it added are removed, so the element's CSS applies again.
+   * Stops where it is: every animated property keeps the value it has now, so
+   * a sprite killed mid-recoil stays mid-recoil and the next animation (or
+   * code) takes over from there. See {@link revert} to put things back.
    */
   kill(): this {
+    return this.#stop(false)
+  }
+
+  /**
+   * Stops, and puts every animated property back as it was: inline styles and
+   * attributes it added are removed, so the element's CSS applies again. Use it
+   * to clean up after an animation that should leave no trace (an unmount).
+   */
+  revert(): this {
+    return this.#stop(true)
+  }
+
+  #stop(restore: boolean): this {
     this.pause()
-    for (const props of this.#tracks.values()) {
+    for (const [target, props] of this.#tracks) {
       for (const track of props.values()) {
-        if (track.base !== undefined) track.adapter.restore(track.prop, track.base)
+        if (restore && track.base !== undefined) track.adapter.restore(track.prop, track.base)
         track.invalidate()
       }
+      // Leave the registry, so killTweensOf doesn't walk a dead timeline.
+      animating.get(target)?.delete(this)
     }
     this.#flush()
-    for (const c of this.#children) c.timeline?.kill()
+    // A killed timeline is finished with its targets: a later seek must not
+    // write to them again. (A reverted one keeps its tracks, as before.)
+    if (!restore) this.#tracks.clear()
+    for (const c of this.#children) c.timeline?.[restore ? 'revert' : 'kill']()
     return this
   }
 
@@ -573,10 +618,11 @@ export class Timeline implements PromiseLike<void> {
     this.#direction = direction
     const end = this.totalDuration()
     // Reduced for the page, or for any element it moves (an app's
-    // `data-greese-motion="reduce"` subtree).
+    // `data-greese-motion="reduce"` subtree). The media query once, not per
+    // target: a split text's timeline moves hundreds.
     const reduce =
       this.#options.reducedMotion !== 'ignore' &&
-      (prefersReducedMotion() || [...this.#tracks.keys()].some(prefersReducedMotion))
+      (prefersReducedMotion() || [...this.#tracks.keys()].some(appReducesMotion))
     if (reduce) {
       this.render(direction > 0 ? (end === Infinity ? this.duration() : end) : 0, true)
       this.#complete()
@@ -674,10 +720,41 @@ export class Timeline implements PromiseLike<void> {
 
   #track(target: Target, prop: string): Track {
     let props = this.#tracks.get(target)
-    if (!props) this.#tracks.set(target, (props = new Map()))
+    if (!props) {
+      this.#tracks.set(target, (props = new Map()))
+      register(target, this)
+    }
     let track = props.get(prop)
     if (!track) props.set(prop, (track = new Track(adapterFor(target), prop)))
     return track
+  }
+
+  /** Forgets one target's tracks, leaving its properties where they are. */
+  #drop(target: Target): boolean {
+    const props = this.#tracks.get(target)
+    if (!props) return false
+    for (const track of props.values()) track.invalidate()
+    flushAdapter(props.values().next().value!.adapter)
+    this.#tracks.delete(target)
+    animating.get(target)?.delete(this)
+    // Nothing left to animate: stop the clock rather than tick an empty
+    // timeline for the rest of its duration.
+    if (!this.#tracks.size && !this.#children.length) this.pause()
+    return true
+  }
+
+  /**
+   * Stops animating these targets, leaving their properties where they are and
+   * the timeline's other targets running.
+   *
+   * ```ts
+   * tl.killTweensOf(particle)
+   * ```
+   */
+  killTweensOf(targets: Targets): this {
+    for (const target of toTargets(targets, this.#options.scope)) this.#drop(target)
+    for (const c of this.#children) c.timeline?.killTweensOf(targets)
+    return this
   }
 
   #placed(start: number, end: number) {
@@ -720,3 +797,36 @@ export const animate = (
   keyframes: Keyframes,
   options: AnimateOptions & TimelineOptions = {}
 ): Timeline => new Timeline(options).animate(targets, keyframes, options)
+
+/**
+ * Stops every animation on these targets, wherever it was started, leaving
+ * their properties at the values they have now. Other targets in the same
+ * timelines keep running.
+ *
+ * Use it where something else is about to take a property over, so two
+ * animations don't fight: a new hit reaction on a sprite already recoiling, a
+ * particle returning to its pool, an element being animated again from a
+ * different place in the code.
+ *
+ * ```ts
+ * killTweensOf(particle)          // one object
+ * killTweensOf('.card')           // every element matching
+ * killTweensOf([a, b])            // several
+ * ```
+ *
+ * It is the counterpart to a timeline's own {@link Timeline.kill}: that stops a
+ * whole timeline you have a reference to, this stops whatever is animating a
+ * target you have a reference to. Returns the number of timelines it stopped
+ * animating, which is 0 when nothing was.
+ */
+export const killTweensOf = (targets: Targets, scope?: ParentNode): number => {
+  let stopped = 0
+  for (const target of toTargets(targets, scope)) {
+    // A copy: dropping a target mutates the set.
+    for (const timeline of [...(animating.get(target) ?? [])]) {
+      timeline.killTweensOf(target)
+      stopped++
+    }
+  }
+  return stopped
+}

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   animate,
   batch,
+  killTweensOf,
   cubicBezier,
   ease,
   mix,
@@ -262,12 +263,23 @@ describe('timeline on plain objects', () => {
     expect(child.isActive()).toBe(false)
   })
 
-  it('kills, restoring original values', () => {
+  it('kills in place, leaving values where they are', () => {
+    const o = { v: 3 }
+    const tl = timeline({ paused: true }).to(o, { v: 10, duration: 1, ease: 'linear' })
+    tl.progress(0.5)
+    expect(o.v).toBe(6.5)
+    tl.kill()
+    expect(o.v).toBe(6.5)
+    tl.seek(1)
+    expect(o.v).toBe(6.5)
+  })
+
+  it('reverts, restoring original values', () => {
     const o = { v: 3 }
     const tl = timeline({ paused: true }).to(o, { v: 10, duration: 1 })
     tl.progress(1)
     expect(o.v).toBe(10)
-    tl.kill()
+    tl.revert()
     expect(o.v).toBe(3)
   })
 
@@ -305,7 +317,7 @@ describe('timeline on plain objects', () => {
       .fromTo(o, { b: 0 }, { b: 10, duration: 1 })
     tl.progress(1)
     expect(o).toEqual({ a: 10, b: 10 })
-    tl.kill()
+    tl.revert()
     expect(o).toEqual({ a: 3, b: 4 })
   })
 })
@@ -398,6 +410,18 @@ describe('an app reducing motion (data-greese-motion="reduce")', () => {
     document.documentElement.setAttribute('data-greese-motion', 'reduce')
     expect(prefersReducedMotion({ v: 0 })).toBe(true)
     document.documentElement.removeAttribute('data-greese-motion')
+  })
+
+  it("answers for an iframe's elements", () => {
+    const frame = document.createElement('iframe')
+    document.body.append(frame)
+    const inner = frame.contentDocument!
+    inner.body.setAttribute('data-greese-motion', 'reduce')
+    const el = inner.createElement('div')
+    inner.body.append(el)
+    expect(el instanceof Element).toBe(false)
+    expect(prefersReducedMotion(el)).toBe(true)
+    frame.remove()
   })
 })
 
@@ -492,7 +516,7 @@ describe('repeats, labels and restoring', () => {
     expect(() => tl.seek('mdi')).toThrow('no label "mdi"')
   })
 
-  it('kill() takes off the inline styles it added and keeps ones that were there', () => {
+  it('revert() takes off the inline styles it added and keeps ones that were there', () => {
     const el = document.createElement('div')
     el.style.color = 'red'
     document.body.append(el)
@@ -500,19 +524,19 @@ describe('repeats, labels and restoring', () => {
       .to(el, { opacity: 0, x: 20, color: 'rgb(0, 0, 255)', duration: 1 })
       .seek(1)
     expect(el.style.opacity).toBe('0')
-    tl.kill()
+    tl.revert()
     expect(el.style.opacity).toBe('')
     expect(el.style.translate).toBe('')
     expect(el.style.color).toBe('red')
   })
 
-  it('two timelines on one element, killed newest first, leave it as it was', () => {
+  it('two timelines on one element, reverted newest first, leave it as it was', () => {
     const el = document.createElement('div')
     document.body.append(el)
     const first = timeline({ paused: true }).to(el, { opacity: 0.5, duration: 1 }).seek(1)
     const second = timeline({ paused: true }).to(el, { opacity: 0, duration: 1 }).seek(1)
-    second.kill()
-    first.kill()
+    second.revert()
+    first.revert()
     expect(el.style.opacity).toBe('')
   })
 
@@ -535,13 +559,57 @@ describe('splitText', () => {
     const { elements, revert } = splitText(p)
     expect(elements.map((e) => e.textContent).join('')).toBe('Hithere')
     expect(p.querySelector('[aria-hidden="true"]')).not.toBeNull()
-    expect(p.textContent).toContain('Hi there')
+    // Each text node's text, once, outside the aria-hidden pieces.
+    const read = [...p.querySelectorAll('span:not([aria-hidden] *, [aria-hidden])')]
+    expect(read.map((s) => s.textContent).join('')).toBe('Hi there')
     revert()
     expect(p.innerHTML).toBe('Hi <b>there</b>')
     expect(splitText(p, { by: 'words' }).elements.map((e) => e.textContent)).toEqual([
       'Hi',
       'there',
     ])
+  })
+})
+
+describe('text in markup', () => {
+  it('splits text where it is, keeping links and emphasis', () => {
+    const p = document.createElement('p')
+    p.innerHTML = 'Read <a href="/docs">the <em>docs</em></a> now'
+    const link = p.querySelector('a')!
+    const em = p.querySelector('em')!
+    const { elements, revert } = splitText(p, { by: 'words' })
+    expect(elements.map((e) => e.textContent)).toEqual(['Read', 'the', 'docs', 'now'])
+    expect(p.querySelector('a')).toBe(link)
+    expect(elements[2]!.closest('em')).toBe(em)
+    // Inline blocks don't get a link's underline unless they inherit it.
+    expect(elements[1]!.style.textDecoration).toBe('inherit')
+    expect(elements[1]!.parentElement!.style.textDecoration).toBe('inherit')
+    revert()
+    expect(p.innerHTML).toBe('Read <a href="/docs">the <em>docs</em></a> now')
+  })
+
+  it('types into an element’s text nodes, keeping its markup', () => {
+    const p = document.createElement('p')
+    p.innerHTML = 'Hi <b>there</b>!'
+    const tl = timeline({ paused: true }).fromTo(
+      p,
+      { text: '' },
+      { text: 'Hi there!', duration: 9, ease: 'linear' }
+    )
+    tl.seek(0)
+    expect(p.innerHTML).toBe('<b></b>')
+    tl.seek(5)
+    expect(p.innerHTML).toBe('Hi <b>th</b>')
+    tl.seek(9)
+    expect(p.innerHTML).toBe('Hi <b>there</b>!')
+    tl.kill()
+    expect(p.innerHTML).toBe('Hi <b>there</b>!')
+  })
+
+  it('fills an element with no text', () => {
+    const p = document.createElement('p')
+    timeline({ paused: true }).to(p, { text: 'Hey', duration: 1 }).seek(1)
+    expect(p.textContent).toBe('Hey')
   })
 })
 
@@ -609,5 +677,117 @@ describe('fromPixels', () => {
   it('loops like Pixels playback and skips layers without targets', () => {
     const tl = fromPixels({ ...animation, loop: true }, { body: { x: 0 } })
     expect(tl.totalDuration()).toBe(Infinity)
+  })
+})
+
+describe('delay', () => {
+  it('shifts a one-call animation without changing its duration', () => {
+    const o = { x: 0 }
+    const tl = animate(
+      o,
+      { x: 100 },
+      { delay: 1, duration: 1, ease: 'linear', paused: true }
+    )
+    expect(tl.duration()).toBe(2)
+    tl.seek(1)
+    expect(o.x).toBe(0)
+    tl.seek(1.5)
+    expect(o.x).toBe(50)
+    tl.seek(2)
+    expect(o.x).toBe(100)
+  })
+
+  it('a later relative position follows the delayed segment', () => {
+    const o = { a: 0, b: 0 }
+    const tl = timeline({ paused: true })
+      .to(o, { a: 1, duration: 1, delay: 0.5 })
+      .to(o, { b: 1, duration: 1 }, '<')
+    // '<' is the previous child's start, which the delay moved to 0.5.
+    expect(tl.duration()).toBe(1.5)
+    tl.seek(0.5)
+    expect(o.b).toBe(0)
+    tl.seek(1.5)
+    expect(o.b).toBe(1)
+  })
+})
+
+describe('killTweensOf', () => {
+  it('stops one target where it is, leaving others running', () => {
+    const a = { x: 0 }
+    const b = { x: 0 }
+    const tl = timeline({ paused: true })
+      .to(a, { x: 100, duration: 1, ease: 'linear' }, 0)
+      .to(b, { x: 100, duration: 1, ease: 'linear' }, 0)
+    tl.seek(0.5)
+    expect(a.x).toBe(50)
+    expect(b.x).toBe(50)
+    expect(killTweensOf(a)).toBe(1)
+    // a stays where it was stopped; b is untouched and still animates.
+    expect(a.x).toBe(50)
+    expect(b.x).toBe(50)
+    tl.seek(1)
+    expect(a.x).toBe(50)
+    expect(b.x).toBe(100)
+  })
+
+  it('reaches every timeline animating a target, not just one', () => {
+    const o = { x: 0, y: 0 }
+    const one = timeline({ paused: true }).to(o, { x: 10, duration: 1, ease: 'linear' })
+    const two = timeline({ paused: true }).to(o, { y: 10, duration: 1, ease: 'linear' })
+    one.seek(1)
+    two.seek(1)
+    expect(o).toEqual({ x: 10, y: 10 })
+    expect(killTweensOf(o)).toBe(2)
+    expect(o).toEqual({ x: 10, y: 10 })
+  })
+
+  it('reaches a target inside a nested timeline', () => {
+    const o = { x: 0 }
+    const child = timeline({ paused: true }).to(o, { x: 10, duration: 1, ease: 'linear' })
+    const parent = timeline({ paused: true }).add(child)
+    parent.seek(1)
+    expect(o.x).toBe(10)
+    killTweensOf(o)
+    expect(o.x).toBe(10)
+    parent.seek(0)
+    expect(o.x).toBe(10)
+  })
+
+  it('returns 0 and does nothing for a target nothing animates', () => {
+    const o = { x: 5 }
+    expect(killTweensOf(o)).toBe(0)
+    expect(o.x).toBe(5)
+  })
+
+  it('is idempotent', () => {
+    const o = { x: 0 }
+    timeline({ paused: true }).to(o, { x: 10, duration: 1 }).seek(1)
+    expect(killTweensOf(o)).toBe(1)
+    expect(killTweensOf(o)).toBe(0)
+    expect(o.x).toBe(10)
+  })
+
+  it('kills by selector, and the timeline keeps its other elements', () => {
+    document.body.innerHTML = '<i class="k"></i><i class="j"></i>'
+    const kept = document.querySelector<HTMLElement>('.j')!
+    const tl = timeline({ paused: true })
+      .to('.k', { opacity: 0.5, duration: 1, ease: 'linear' }, 0)
+      .to('.j', { opacity: 0.5, duration: 1, ease: 'linear' }, 0)
+    tl.seek(1)
+    expect(kept.style.opacity).toBe('0.5')
+    killTweensOf('.k')
+    expect(document.querySelector<HTMLElement>('.k')!.style.opacity).toBe('0.5')
+    expect(kept.style.opacity).toBe('0.5')
+  })
+
+  it("a timeline's own killTweensOf leaves other timelines alone", () => {
+    const o = { x: 0, y: 0 }
+    const mine = timeline({ paused: true }).to(o, { x: 10, duration: 1, ease: 'linear' })
+    const other = timeline({ paused: true }).to(o, { y: 10, duration: 1, ease: 'linear' })
+    mine.seek(1)
+    other.seek(1)
+    mine.killTweensOf(o)
+    expect(o.x).toBe(10)
+    expect(o.y).toBe(10)
   })
 })
