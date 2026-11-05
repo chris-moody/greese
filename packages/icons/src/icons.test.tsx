@@ -54,6 +54,12 @@ describe('icons', () => {
     expect(solid!.getAttribute('stroke-width')).toBeNull()
   })
 
+  it('import and upload are one icon: download turned half a turn', () => {
+    expect(icons.UploadIcon).toBe(icons.ImportIcon)
+    const { container } = render(<icons.DownloadIcon />)
+    expect(container.querySelectorAll('path')).toHaveLength(3)
+  })
+
   it('keep the paths of a two-part icon in order, for CSS that lights one', () => {
     const { container } = render(<icons.SortIcon />)
     expect(
@@ -61,10 +67,37 @@ describe('icons', () => {
     ).toEqual(['M5 6.5L8 3.5l3 3', 'M5 9.5l3 3 3-3'])
   })
 
+  it('every icon draws something, inside its own grid', () => {
+    // One pass over the whole set, so a mistyped path can't ship silently:
+    // the file is hand-authored and a typo makes a path the browser drops.
+    const entries = Object.entries(icons).filter(([name]) => /^[A-Z]\w*Icon$/.test(name))
+    expect(entries.length).toBeGreaterThan(100)
+    for (const [name, value] of entries) {
+      const Icon = value as typeof SearchIcon
+      const { container, unmount } = render(<Icon />)
+      const svg = container.querySelector('svg')!
+      expect(svg.getAttribute('viewBox'), name).toMatch(/^0 0 \d+ \d+$/)
+      const paths = [...svg.querySelectorAll('path')]
+      expect(paths.length, name).toBeGreaterThan(0)
+      for (const path of paths) {
+        const d = path.getAttribute('d')!
+        // Starts with a move, holds only path syntax, and isn't a stub. A
+        // coordinate-range check was tried and removed: relative commands and
+        // an arc's flags and radii aren't coordinates, so it flagged valid art.
+        expect(d, name).toMatch(/^[Mm]/)
+        expect(d, name).toMatch(/^[MmLlHhVvCcSsQqTtAaZz0-9\s.,-]+$/)
+        expect(d.length, name).toBeGreaterThan(5)
+      }
+      unmount()
+    }
+  })
+
   it('have readable names, for devtools', () => {
     expect(createIcon('Kite', 'M0 0').displayName).toBe('KiteIcon')
+    // Aliases keep the name of the icon they are.
+    const aliases: Record<string, string> = { UploadIcon: 'ImportIcon' }
     for (const [name, value] of Object.entries(icons))
       if (/^[A-Z]\w*Icon$/.test(name))
-        expect((value as { displayName: string }).displayName).toBe(name)
+        expect((value as { displayName: string }).displayName).toBe(aliases[name] ?? name)
   })
 })
