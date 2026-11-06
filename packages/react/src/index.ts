@@ -6,7 +6,7 @@ export {
   getBreakpoints,
   resetBreakpoints,
 } from './utils/breakpoints.ts'
-export { cx } from './utils/cx.ts'
+export { cx, type ClassDictionary, type ClassValue } from './utils/cx.ts'
 export {
   cssEase,
   resolveGreese,
