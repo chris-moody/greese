@@ -237,7 +237,7 @@ $blocks: (
   ),
   'EditableField': (
     parts: ('control', 'dial', 'dialDot', 'knob', 'label', 'none', 'number', 'picker', 'range', 'swatch', 'unit', 'value',),
-    modifiers: ('checkbox', 'color', 'column', 'radio', 'row', 'segmented', 'switch',),
+    modifiers: ('checkbox', 'column', 'radio', 'row', 'segmented', 'switch',),
     part-modifiers: (),
     variables: ('--greese-editablefield-angle', '--greese-editablefield-dial', '--greese-editablefield-swatch',),
   ),
@@ -321,7 +321,7 @@ $blocks: (
   ),
   'Input': (
     parts: ('adornment', 'control',),
-    modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
+    modifiers: ('measured', 'size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
     variables: ('--greese-input-height', '--greese-input-padding',),
   ),
