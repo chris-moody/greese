@@ -43,7 +43,7 @@ const pathOf = (route: Route, hash = '', page = '', search = ''): string =>
 
 /**
  * `studio` → `/greese/studio`; `home` → `/greese/`; `templates`, `finance` →
- * `/greese/templates/finance`; `studio` with `?tab=code` → `/greese/studio?tab=code`.
+ * `/greese/templates/finance`; `studio` with `?tab=output` → `/greese/studio?tab=output`.
  */
 export const hrefOf = (route: Route, hash = '', page = '', search = ''): string =>
   `${BASE}${pathOf(route, hash, page, search).slice(1)}`
@@ -61,15 +61,22 @@ export const useRoute = (): Route => {
 /** The page under the route: `finance` at `/templates/finance`, else undefined. */
 export const useSubpage = (): string | undefined => useParams().page
 
+/**
+ * A new page is simply there, at the top or its section: `instant` overrides
+ * the root's smooth scrolling, which is for links within a page. Animating
+ * the whole way up from where the last page was read only gets in the way.
+ */
+const toTop = () => scrollTo({ top: 0, behavior: 'instant' })
+
 /** Scrolls to `#id` once it exists: the page's sections mount a few at a time. */
 const scrollToHash = (hash: string) => {
   const id = decodeURIComponent(hash.slice(1))
-  if (!id) return scrollTo({ top: 0 })
+  if (!id) return toTop()
   let tries = 0
   const timer = setInterval(() => {
     const el = document.getElementById(id)
     if (el) {
-      el.scrollIntoView()
+      el.scrollIntoView({ behavior: 'instant' })
       clearInterval(timer)
     } else if (++tries > 30) clearInterval(timer)
   }, 100)
@@ -134,7 +141,7 @@ export const RouteLink = ({
   hash?: string
   /** A page under the route: a template's id. */
   page?: string
-  /** A query string: `?tab=code`. */
+  /** A query string: `?tab=output`. */
   search?: string
 }): JSX.Element => {
   const pages = use(PageNavigateContext)
@@ -167,7 +174,7 @@ export const ScrollOnRoute = (): null => {
   useLayoutEffect(() => {
     if (type === 'PUSH') {
       if (hash) scrollToHash(hash)
-      else scrollTo({ top: 0 })
+      else toTop()
     }
   }, [key, hash, type])
   // Not on the first render: a page that has just loaded is where the
@@ -175,7 +182,7 @@ export const ScrollOnRoute = (): null => {
   const first = useRef(true)
   useLayoutEffect(() => {
     if (first.current) first.current = false
-    else if (!location.hash) scrollTo({ top: 0 })
+    else if (!location.hash) toTop()
   }, [route, page])
   return null
 }

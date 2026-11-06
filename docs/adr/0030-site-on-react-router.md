@@ -54,6 +54,11 @@ Page transitions (ADR 0029) changed that:
   navigation to the top or to its hash. The hash retry for sections that
   mount late stays, since React Router's scroll restoration doesn't wait for
   them.
+- **A new page doesn't scroll there, it's there** (2026-11-02): the root's
+  `scroll-behavior: smooth` animated every route change up from where the
+  last page was read, slowly on a long docs page, and left the snapshot ADR
+  0029 takes mid-scroll. `ScrollOnRoute` scrolls with `behavior: 'instant'`;
+  smooth scrolling stays for links within a page.
 - **The studio's tab** is `useSearchParams`, replaced rather than pushed.
   Writing `history` directly would leave the router's location stale.
 - **The prerender** renders `/` through `createStaticHandler` and
