@@ -16,11 +16,11 @@ describe('type variants', () => {
     expect(el).not.toHaveClass('greese-Text--bold')
   })
 
-  it('Text without a variant takes its weight and nothing for size', () => {
+  it('Text without a variant falls back to body copy and still takes its weight', () => {
     render(<Text weight="bold">Plain</Text>)
     const el = screen.getByText('Plain')
-    expect(el).toHaveClass('greese-Text--bold')
-    expect(el.className).not.toContain('greese-Type')
+    // `p1` is the fallback, not a variant the caller named, so `weight` wins.
+    expect(el).toHaveClass('greese-Text', 'greese-Type--p1', 'greese-Text--bold')
   })
 
   it('Heading keeps its level for the element and takes the look from a variant', async () => {

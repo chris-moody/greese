@@ -55,12 +55,17 @@ export const Text = ({
   ...props
 }: TextProps): JSX.Element => {
   const Root = (asChild ? Slot : 'p') as typeof Slot
+  // Body copy is the default type style, so text with no variant still gets
+  // one. `variant` itself stays undefined, because `weight` below is only
+  // honoured when the caller named no variant — a default that filled it in
+  // would quietly disable the prop.
+  const type = variant ?? 'p1'
   return withGreese(
     <Root
       {...props}
       className={cx(
         'greese-Text',
-        variant && `greese-Type--${variant}`,
+        `greese-Type--${type}`,
         !variant && weight && `greese-Text--${weight}`,
         tone && `greese-Text--${tone}`,
         truncate === true && 'greese-Text--truncate',
