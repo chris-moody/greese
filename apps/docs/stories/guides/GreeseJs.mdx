@@ -5,7 +5,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
 # greese.js
 
 greese.js (`@greese/js`) is a small keyframe and timeline animation
-library for the web. It's about 5.7 kB brotli (6.6 kB with every extra), has no
+library for the web. It's about 5.9 kB brotli (6.8 kB with every extra), has no
 dependencies and needs no framework. Timelines play, pause, seek, reverse,
 scale time, repeat, yoyo and nest. It animates:
 
@@ -16,7 +16,9 @@ scale time, repeat, yoyo and nest. It animates:
 - plain objects.
 
 This page covers greese.js **on its own, without greese ui**. For motion in
-greese ui components (the `greese` prop), see **Guides/Animation**. Live demos
+greese ui components (the `greese` prop), see **Guides/Animation**. Every
+function, option and type, with examples, is in the
+[greese.js API reference](?path=/docs/guides-greese-js-api--docs). Live demos
 are under **Motion/greese.js**.
 
 ## Install and import: every supported form
@@ -124,13 +126,10 @@ import { timeline } from '@greese/js'
 export function Hero() {
   const root = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    const tl = timeline()
-      .from(root.current!.querySelector('h1'), { opacity: 0, y: 24 })
-      .from(
-        root.current!.querySelectorAll('li'),
-        { opacity: 0, x: -12, stagger: 0.05 },
-        '-=0.2'
-      )
+    // Selector strings match inside `scope`: this component's elements only.
+    const tl = timeline({ scope: root.current! })
+      .from('h1', { opacity: 0, y: 24 })
+      .from('li', { opacity: 0, x: -12, stagger: 0.05 }, '-=0.2')
     return () => {
       tl.kill()
     }
@@ -180,9 +179,9 @@ onBeforeUnmount(() => tl?.kill())
 ```ts
 import { animate, splitText } from '@greese/js'
 
-const { elements } = splitText(document.querySelector('h1')!)
+const { elements } = splitText(document.getElementById('title')!)
 const intro = animate(elements, { opacity: [0, 1], y: [10, 0] }, { stagger: 0.03 })
-document.querySelector('#replay')!.addEventListener('click', () => intro.restart())
+document.getElementById('replay')!.addEventListener('click', () => intro.restart())
 ```
 
 ## TypeScript
@@ -212,6 +211,8 @@ next frame and returns it.
 - **Targets**: a selector, an element, a list of elements (NodeList, array),
   or any object.
 - **Times are seconds** (WAAPI uses milliseconds).
+- **`delay`** waits before starting: `{ delay: 0.3 }`. On a timeline a
+  position says this and more, so `delay` is for this one-call form.
 - **Keyframes** come in two forms, as with `element.animate()`:
   - **Property lists**: `{ opacity: [0, 1], x: [0, 40, 20] }`. Values are
     spaced evenly; a single value animates from the current one.
@@ -269,6 +270,10 @@ const intro = timeline()
 `duration()`, `totalDuration()`, `isActive()`, `invalidate()`, and `kill()`,
 which stops and restores every animated property.
 
+`killTweensOf(targets)` stops one target and leaves the timeline's others
+running. There is a free function of the same name for when you don't hold the
+timeline — see below.
+
 Options: `paused`, `repeat` (`-1` is forever), `yoyo`, `repeatDelay`,
 `timeScale`, `reducedMotion`, `scope` (selector strings match inside that element), `onUpdate`, `onComplete`.
 
@@ -288,6 +293,31 @@ page.reverse() // plays everything backwards, nested timelines included
 A nested timeline stops running its own clock and is driven by its parent,
 through its own `repeat`, `yoyo` and `timeScale`.
 
+## Taking a target back: `killTweensOf`
+
+```ts
+import { killTweensOf } from '@greese/js'
+
+killTweensOf(particle) // whatever is animating it, wherever it started
+killTweensOf('.card') // every element matching
+```
+
+Stops every animation on those targets and puts their properties back. The
+targets' neighbours in the same timelines keep running, and it returns how many
+timelines it stopped animating.
+
+Reach for it where something else is about to take a property over, so two
+animations don't fight: a new hit reaction on a sprite that's already
+recoiling, a particle going back to its pool mid-tween, an element animated
+again from another module.
+
+It's the counterpart to `kill()`. That stops a timeline you hold a reference
+to; this stops whatever is animating a target you hold a reference to — which
+is the case that comes up in a game loop, where the code reacting to a hit has
+the sprite but not the tween. A timeline has the method too
+(`tl.killTweensOf(o)`), scoped to itself and its children, for when you do hold
+it and mean "this one only".
+
 ## What can be animated
 
 | Property                                             | Notes                                                                                                                                                                     |
@@ -295,7 +325,7 @@ through its own `repeat`, `yoyo` and `timeScale`.
 | `x`, `y`, `z`, `rotate`, `scale`, `scaleX`, `scaleY` | Written to the individual `translate`, `rotate` and `scale` properties: they compose without a matrix and don't fight a `transform` from your CSS. Numbers mean px or deg |
 | CSS properties, camelCase                            | `opacity`, `width`, `backgroundColor`, `filter`, `clipPath`, `boxShadow`… Bare numbers mean px, except unitless properties such as `opacity`                              |
 | `'--custom-properties'`                              | Including greese ui tokens: animate `--greese-color-primary` and every component that reads it follows                                                                    |
-| `text`                                               | Counts between numbers (`'0'` → `'12480'`), types on or deletes, or retypes                                                                                               |
+| `text`                                               | Counts between numbers (`'0'` → `'12480'`), types on or deletes, or retypes, in the element's text nodes: markup inside (links, emphasis) stays                           |
 | SVG attributes the element has                       | `r`, `cx`, `d` (when point counts match)…                                                                                                                                 |
 | Numeric element properties                           | `scrollTop`, `scrollLeft`                                                                                                                                                 |
 | Any object property                                  | Canvas, WebGL or game state your code reads each frame                                                                                                                    |
@@ -321,10 +351,24 @@ const { elements, revert } = splitText(heading) // or { by: 'words' }
 timeline().from(elements, { opacity: 0, y: 12, stagger: 0.03 })
 ```
 
-The pieces are hidden from assistive technology, and the full sentence is
-kept once, visually hidden, so screen readers read words, not letters.
-Characters stay grouped per word, so lines still wrap normally. Use it on
-plain text; markup inside is flattened. `revert()` restores the original.
+Each text node is split where it is, so markup inside stays: a link is still
+a link, focusable and clickable, with its pieces inside it. The pieces are
+hidden from assistive technology, and each text node's text is kept once
+beside them, visually hidden, so screen readers read words, not letters.
+Characters stay grouped per word, so lines still wrap normally. `revert()`
+puts the original nodes back.
+
+`text` works in the text nodes too. Typing on fills them in reading order,
+each up to its own length, so the markup appears as it goes:
+
+```ts
+// <p>Read <a href="/docs">the docs</a> first</p>
+timeline().fromTo(p, { text: '' }, { text: p.textContent!, duration: 1.2 })
+```
+
+A value of another shape is laid over the same lengths, so count on the
+element that holds the number (`<strong>0</strong> items`: animate the
+`strong`).
 
 ## Eases
 

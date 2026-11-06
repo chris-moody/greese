@@ -1,0 +1,593 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/greese.js API" />
+
+# greese.js API
+
+This page lists every function, class and type that `@greese/js` exports,
+with its options and an example. The
+[greese.js guide](?path=/docs/guides-greese-js--docs) covers installing,
+frameworks and how values interpolate. Live demos are under
+**Motion/greese.js**.
+
+```ts
+import { animate, timeline, splitText, ease } from '@greese/js'
+```
+
+`@greese/react` re-exports the most used of these (`animate`, `timeline`,
+`Timeline`, `ease`, `cubicBezier`, `splitText` and their types). Times are
+always in **seconds**.
+
+| Export                                          | What it is                                                     |
+| ----------------------------------------------- | -------------------------------------------------------------- |
+| [`animate`](#animate)                           | Animates targets through keyframes and plays at once           |
+| [`timeline`](#timeline)                         | Creates a timeline: animations, callbacks and timelines        |
+| [`Timeline`](#the-timeline-class)               | The timeline class: building, timing, playback                 |
+| [`splitText`](#splittext)                       | Splits an element's text into characters or words to animate   |
+| [`toTargets`](#totargets)                       | Resolves selectors and lists to the targets greese.js animates |
+| [`batch`](#batch)                               | Holds every write until a burst of animations has read         |
+| [`ease`](#ease)                                 | Resolves any ease to a function                                |
+| [`cubicBezier`](#cubicbezier)                   | A cubic-bézier ease from control points                        |
+| [`prefersReducedMotion`](#prefersreducedmotion) | Whether motion is reduced for an element                       |
+| [`mix`](#mix)                                   | An interpolator between any two values                         |
+| [`parseColor`](#parsecolor)                     | Reads a CSS color to sRGB channels and alpha                   |
+| [`fromPixels`](#frompixels)                     | Builds a timeline from a Pixels studio animation               |
+
+## Targets: selectors and scope
+
+Anything that takes `targets` accepts:
+
+- a selector string;
+- an element, or any object;
+- a list of them (an array or a `NodeList`);
+- `null` or `undefined`, which animates nothing.
+
+You don't need to query elements yourself. Pass a selector string, and give
+the timeline a `scope` so that it matches only inside one element, such as a
+component's root:
+
+```ts
+import { timeline } from '@greese/js'
+
+const card = document.getElementById('card')!
+
+timeline({ scope: card })
+  .from('h2', { opacity: 0, y: 12 })
+  .from('li', { opacity: 0, x: -8, stagger: 0.05 }, '-=0.2')
+```
+
+Without a `scope`, selectors match in the whole document. A selector is
+resolved once, when the animation is added, so elements added later are not
+included.
+
+## animate
+
+```ts
+declare function animate(
+  targets: Targets,
+  keyframes: Keyframes,
+  options?: AnimateOptions & TimelineOptions
+): Timeline
+```
+
+Builds a timeline holding one keyframe animation, plays it on the next frame
+and returns it. It's the one-call API: anything a timeline accepts as
+options, such as `repeat`, `yoyo`, `scope` or `onComplete`, can go in
+`options` too.
+
+```ts
+import { animate } from '@greese/js'
+
+// Property lists: values spaced evenly from start to end.
+animate('.card', { opacity: [0, 1], y: [16, 0] }, { duration: 0.4, stagger: 0.05 })
+
+// Frames: `offset` places a frame, and its `ease` runs until the next one.
+animate('.badge', [{ scale: 1 }, { scale: 1.2, offset: 0.3, ease: 'in' }, { scale: 1 }], {
+  duration: 0.8,
+  repeat: -1,
+})
+
+// A timeline is awaitable.
+await animate('.toast', { opacity: [1, 0] }, { duration: 0.2 })
+```
+
+| Parameter   | Type                                                                        | Description                                                              |
+| ----------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `targets`   | [`Targets`](#targets-selectors-and-scope)                                   | What to animate                                                          |
+| `keyframes` | [`Keyframes`](#keyframes-and-keyframe)                                      | Property lists or frames. A single value animates from the current value |
+| `options`   | [`AnimateOptions`](#animateoptions) & [`TimelineOptions`](#timelineoptions) | Duration, ease and stagger, plus the timeline's options                  |
+
+Returns the [`Timeline`](#the-timeline-class).
+
+## timeline
+
+```ts
+declare function timeline(options?: TimelineOptions): Timeline
+```
+
+Creates a timeline. Unless it's `paused`, it plays on the next frame, after
+the chained calls that fill it. Calling a control (`pause()`, `seek()`,
+`progress()`…) before then stops it from starting on its own.
+
+```ts
+import { timeline } from '@greese/js'
+
+const intro = timeline({ scope: document.getElementById('hero')! })
+  .to('.title', { opacity: 1, y: 0, duration: 0.6 })
+  .from('.card', { opacity: 0, y: 24, stagger: 0.08 }, '-=0.3')
+  .call(() => console.log('cards in'))
+```
+
+`new Timeline(options)` does the same.
+
+### TimelineOptions
+
+| Option          | Type                           | Default    | Description                                                                                                                                                              |
+| --------------- | ------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `paused`        | `boolean`                      | `false`    | Don't start until `play()`                                                                                                                                               |
+| `repeat`        | `number`                       | `0`        | How many more times to play after the first; `-1` repeats forever                                                                                                        |
+| `yoyo`          | `boolean`                      | `false`    | Every other repeat plays backwards                                                                                                                                       |
+| `repeatDelay`   | `number`                       | `0`        | Seconds between repeats                                                                                                                                                  |
+| `timeScale`     | `number`                       | `1`        | Speed multiplier: `2` is twice as fast                                                                                                                                   |
+| `reducedMotion` | `'reduce' \| 'ignore'`         | `'reduce'` | When motion is reduced (the system setting, or `data-greese-motion="reduce"` on an animated element or its ancestor), `play()` jumps to the end. `'ignore'` plays anyway |
+| `scope`         | `ParentNode`                   | `document` | Selector strings passed to this timeline match only inside this element                                                                                                  |
+| `onUpdate`      | `(timeline: Timeline) => void` | —          | Runs after every render: each frame, and each seek                                                                                                                       |
+| `onComplete`    | `(timeline: Timeline) => void` | —          | Runs when playback reaches the end, or the start when reversed                                                                                                           |
+
+Keep `reducedMotion: 'ignore'` for motion that carries meaning, such as a
+progress indicator, not for decoration.
+
+## The Timeline class
+
+A timeline places animations, callbacks and other timelines in time.
+Rendering depends only on the time, so you can seek to any time, in any
+order, and get the same result. Every building and control method returns
+the timeline, so calls chain.
+
+### Building
+
+| Method                                              | Description                                                                                                 |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `.to(targets, vars, position?)`                     | Animates from the current values to `vars`                                                                  |
+| `.from(targets, vars, position?)`                   | Animates from `vars` to the current values. `vars` apply straight away, so nothing flashes before it starts |
+| `.fromTo(targets, fromVars, toVars, position?)`     | Both ends given. Options (`duration`, `ease`, `stagger`) go on `toVars`                                     |
+| `.animate(targets, keyframes, options?, position?)` | Keyframes, as [`animate`](#animate) takes them                                                              |
+| `.set(targets, vars, position?)`                    | Sets values at a point in time: a zero-length animation                                                     |
+| `.add(child, position?)`                            | Nests a `Timeline`, or schedules a function. A nested timeline stops its own clock: this one drives it      |
+| `.call(fn, position?)`                              | Runs `fn` when the playhead passes `position`, in either direction                                          |
+| `.label(name, position?)`                           | Names a point in time, for positions and `seek()`                                                           |
+
+```ts
+import { timeline } from '@greese/js'
+
+const menu = document.getElementById('menu')!
+
+const open = timeline({ paused: true, scope: menu })
+  .set(menu, { display: 'block' })
+  .fromTo(menu, { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.2 })
+  .label('items')
+  .from('li', { opacity: 0, y: 8, stagger: 0.04 }, 'items-=0.1')
+
+const spin = timeline({ repeat: 2 }).to('.spinner', { rotate: 360, ease: 'linear' })
+const page = timeline().add(open).add(spin, '<0.3')
+```
+
+### Vars
+
+`vars` in `to`, `from` and `fromTo` hold property values plus
+[`AnimateOptions`](#animateoptions):
+
+```ts
+timeline().to('.tile', {
+  x: (i) => i * 20, // a value per target
+  backgroundColor: '#e11d48',
+  '--glow': '12px',
+  duration: 0.6,
+  ease: 'power3.out',
+  stagger: { each: 0.05, from: 'center' },
+})
+```
+
+[What can be animated](?path=/docs/guides-greese-js--docs) is listed in the
+guide.
+
+### Position
+
+Where a child goes. Leave it out to add the child at the end, so calls run
+in sequence.
+
+| Position                   | Means                                                      |
+| -------------------------- | ---------------------------------------------------------- |
+| omitted                    | At the end of the timeline                                 |
+| `1.5`                      | At 1.5 s                                                   |
+| `'+=0.2'` / `'-=0.2'`      | 0.2 s after / before the current end                       |
+| `'<'` / `'<0.1'`           | With / 0.1 s after the previous child's start              |
+| `'>'` / `'>-0.2'`          | At / 0.2 s before the previous child's end                 |
+| `'intro'` / `'intro+=0.5'` | At / 0.5 s after a label (labels can't contain `+` or `-`) |
+
+A label that doesn't exist yet is created at the end of the timeline.
+`seek()` is stricter: seeking to a missing label throws.
+
+### Timing
+
+| Method                           | Returns           | Description                                                                 |
+| -------------------------------- | ----------------- | --------------------------------------------------------------------------- |
+| `.duration()`                    | `number`          | Seconds in one play-through, without repeats                                |
+| `.totalDuration()`               | `number`          | Seconds including repeats and repeat delays; `Infinity` with `repeat: -1`   |
+| `.time()` / `.time(seconds)`     | `number` / `this` | Gets the playhead, or moves it without firing callbacks                     |
+| `.progress()` / `.progress(p)`   | `number` / `this` | Gets or sets progress through the whole timeline, `0`–`1`                   |
+| `.timeScale()` / `.timeScale(n)` | `number` / `this` | Gets or sets the speed multiplier                                           |
+| `.seek(position)`                | `this`            | Moves the playhead to a time or an existing label, without firing callbacks |
+
+```ts
+const tl = timeline({ paused: true }).to('.bar', { scaleX: 1, duration: 2 })
+
+tl.progress(0.5) // half way: 1 s
+tl.duration() // 2
+tl.timeScale(0.5).play() // plays at half speed
+```
+
+### Playback
+
+| Method               | Description                                                                                                          |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `.play(from?)`       | Plays forwards, optionally from a time or label                                                                      |
+| `.reverse(from?)`    | Plays backwards from the playhead, or from the end when the playhead is at the start                                 |
+| `.pause()`           | Stops the clock where it is                                                                                          |
+| `.resume()`          | Continues in the current direction                                                                                   |
+| `.restart()`         | Plays from the start                                                                                                 |
+| `.isActive()`        | Whether the clock is running                                                                                         |
+| `.kill()`            | Stops, and puts every animated property back: inline styles and attributes it added are removed, so your CSS applies |
+| `.invalidate()`      | Reads starting values again on the next render, after the page has changed underneath (a resize, new content)        |
+| `.then(onFulfilled)` | Makes the timeline awaitable: resolves, with no value, when it completes in either direction                         |
+
+```ts
+const button = document.getElementById('toggle')!
+const panel = timeline({ paused: true }).to('#panel', { y: 0, opacity: 1, duration: 0.3 })
+
+button.addEventListener('click', () => {
+  if (panel.progress() === 0) panel.play()
+  else panel.reverse()
+})
+
+// When the panel's element goes away:
+panel.kill()
+```
+
+Don't return a _paused_ timeline from an `async` function, a `then`
+callback or a React effect: anything that waits for a promise waits for the
+timeline to complete.
+
+`render(totalTime, seeking?)` and `tick(dt)` are public for the ticker and
+for nested timelines. Use `time()`, `seek()` and `progress()` instead.
+
+### AnimateOptions
+
+The options of [`animate`](#animate) and `.animate()`, and of `vars`.
+
+| Option     | Type                                            | Default              | Description                                                                              |
+| ---------- | ----------------------------------------------- | -------------------- | ---------------------------------------------------------------------------------------- |
+| `duration` | `number`                                        | `0.5`                | Seconds per target                                                                       |
+| `ease`     | [`Ease`](#ease)                                 | `'out'` (power2.out) | The easing curve                                                                         |
+| `stagger`  | `number \| StaggerOptions \| PerTarget<number>` | —                    | Offsets each target's start: seconds between neighbours, `{ each, from }`, or a function |
+
+### StaggerOptions
+
+| Option | Type                                     | Default   | Description                                            |
+| ------ | ---------------------------------------- | --------- | ------------------------------------------------------ |
+| `each` | `number`                                 | —         | Seconds between neighbouring targets                   |
+| `from` | `'start' \| 'end' \| 'center' \| number` | `'start'` | Where the wave starts: an end, the middle, or an index |
+
+```ts
+animate('.dot', { y: [0, -12, 0] }, { stagger: { each: 0.06, from: 'center' } })
+```
+
+### PerTarget
+
+```ts
+type PerTarget<T> = (index: number, target: Target, targets: Target[]) => T
+```
+
+A value worked out for each target when the animation is built. Use it for
+property values and `stagger`, so one call gives each target its own:
+
+```ts
+timeline().from('.bar', {
+  scaleY: 0,
+  y: (i) => 20 + i * 4,
+  stagger: (i, _target, targets) => (targets.length - i) * 0.03,
+})
+```
+
+In the property-list form of keyframes, a function goes inside the list:
+`{ y: [0, (i) => -8 - i * 4] }`.
+
+### Keyframes and Keyframe
+
+`Keyframes` takes the two forms that `element.animate()` takes:
+
+| Form           | Example                                                     | Description                                                                        |
+| -------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Property lists | `{ opacity: [0, 1], x: [0, 40, 20] }`                       | One list per property, spaced evenly. A single value animates from the current one |
+| Frames         | `[{ scale: 1 }, { scale: 1.2, offset: 0.3 }, { scale: 1 }]` | An array of `Keyframe`s. A single frame animates from the current values           |
+
+A `Keyframe` is property values plus:
+
+| Key      | Type            | Description                                                                         |
+| -------- | --------------- | ----------------------------------------------------------------------------------- |
+| `offset` | `number`        | Where the frame sits, `0`–`1`. Missing offsets are spaced evenly between known ones |
+| `ease`   | [`Ease`](#ease) | The curve from this frame to the next                                               |
+
+```ts
+import { animate, type Keyframe } from '@greese/js'
+
+const pulse: Keyframe[] = [
+  { scale: 1, backgroundColor: '#3b82f6' },
+  { scale: 1.4, backgroundColor: '#e11d48', offset: 0.3, ease: 'in' },
+  { scale: 1, backgroundColor: '#22c55e' },
+]
+animate('.pulse', pulse, { duration: 1.2 })
+```
+
+## splitText
+
+```ts
+declare function splitText(el: HTMLElement, options?: SplitTextOptions): SplitText
+```
+
+Wraps an element's text in one inline-block span per character or word, to
+animate with a stagger.
+
+- Each text node is split where it is, so markup inside stays: a link is
+  still a link.
+- The pieces are hidden from assistive technology, and each text node's text
+  is kept once beside them, visually hidden, so screen readers read words,
+  not letters.
+- Characters stay grouped per word, so lines still wrap between words.
+
+```ts
+import { splitText, timeline } from '@greese/js'
+
+const heading = document.getElementById('title')!
+const { elements, revert } = splitText(heading, { by: 'words' })
+
+timeline({ onComplete: revert }).from(elements, { opacity: 0, y: 12, stagger: 0.05 })
+```
+
+| Option | Type                 | Default   | Description                          |
+| ------ | -------------------- | --------- | ------------------------------------ |
+| `by`   | `'chars' \| 'words'` | `'chars'` | Split into characters, or into words |
+
+Returns a `SplitText`:
+
+| Property   | Type            | Description                                                     |
+| ---------- | --------------- | --------------------------------------------------------------- |
+| `elements` | `HTMLElement[]` | One span per character or word, in reading order: animate these |
+| `revert()` | `() => void`    | Puts the original content back                                  |
+
+## toTargets
+
+```ts
+declare function toTargets(targets: Targets, scope?: ParentNode): Target[]
+```
+
+Resolves `targets` to a list, the way every greese.js function does: a
+selector string matches inside `scope` (the document by default), a list
+becomes an array, and anything else becomes a list of one. `null` and
+`undefined` give `[]`.
+
+```ts
+import { toTargets } from '@greese/js'
+
+const list = document.getElementById('results')!
+const items = toTargets('li', list) // the list's items, as an array
+```
+
+| Type      | Is                                                             |
+| --------- | -------------------------------------------------------------- |
+| `Target`  | `Element \| object`: an element, or any object with properties |
+| `Targets` | `string \| Target \| ArrayLike<Target> \| null \| undefined`   |
+
+## batch
+
+```ts
+declare function batch(fn: () => void): void
+```
+
+Runs `fn` and holds every timeline's writes until it returns, so all of them
+read their starting values before any of them writes. Starting many
+animations at once otherwise recalculates styles once per animation. Each
+frame is batched already; batch your own bursts. Reads inside `fn`, such as
+in `onUpdate`, see values from before the batch.
+
+```ts
+import { animate, batch, toTargets } from '@greese/js'
+
+batch(() => {
+  for (const card of toTargets('.card')) animate(card, { opacity: [0, 1], y: [16, 0] })
+})
+```
+
+## ease
+
+```ts
+declare function ease(value?: Ease): EaseFn
+```
+
+Resolves any ease to a function from progress (`0`–`1`) to eased progress.
+It defaults to `'out'`, and throws on a name it doesn't know. Named eases
+are parsed once and cached. Everything that takes an `ease` option calls it
+for you; call it yourself to use a curve elsewhere:
+
+```ts
+import { ease } from '@greese/js'
+
+const curve = ease('back.out(2)')
+curve(0.5) // eased progress at the halfway point
+```
+
+`Ease` is any of:
+
+| Ease                                                                                | Description                                               |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| `'out'`, `'in'`, `'inOut'`                                                          | power2: a good general curve                              |
+| `'power1'`–`'power4'`, `'sine'`, `'expo'`, `'circ'`, with `.in`, `.out` or `.inOut` | Gentler to sharper curves                                 |
+| `'back.out(2)'`                                                                     | Overshoots, then settles (the number is how far)          |
+| `'elastic.out(1.2, 0.4)'`                                                           | Springs (amplitude, period)                               |
+| `'bounce.out'`                                                                      | Bounces to rest                                           |
+| `'linear'`, `'ease'`, `'ease-in'`, `'ease-out'`, `'ease-in-out'`                    | The CSS keywords                                          |
+| `'steps(4)'`                                                                        | Jumps in equal steps                                      |
+| `'cubic-bezier(0.2, 0, 0, 1)'`                                                      | CSS's form, as easing tokens and computed styles write it |
+| `[0.2, 0, 0, 1]`                                                                    | Cubic-bézier control points                               |
+| `(t) => t * t`                                                                      | Your own `EaseFn`                                         |
+
+`EaseFn` is `(t: number) => number`.
+
+## cubicBezier
+
+```ts
+declare function cubicBezier(x1: number, y1: number, x2: number, y2: number): EaseFn
+```
+
+An ease from CSS-style control points, with the ends fixed at 0,0 and 1,1.
+It solves the curve as browsers do, so it matches CSS `cubic-bezier()`.
+
+```ts
+import { animate, cubicBezier } from '@greese/js'
+
+const emphasized = cubicBezier(0.2, 0, 0, 1)
+animate('.sheet', { y: ['100%', '0%'] }, { duration: 0.5, ease: emphasized })
+```
+
+| Parameter  | Type     | Description              |
+| ---------- | -------- | ------------------------ |
+| `x1`, `y1` | `number` | The first control point  |
+| `x2`, `y2` | `number` | The second control point |
+
+## prefersReducedMotion
+
+```ts
+declare function prefersReducedMotion(target?: unknown): boolean
+```
+
+Whether motion is reduced for `target`: by the system
+(`prefers-reduced-motion: reduce`), or by the app, with
+`data-greese-motion="reduce"` on the element or an ancestor. A target that
+isn't an element, or none, asks the document's root. Timelines check this
+for you; use it for motion of your own, such as scrolling.
+
+```ts
+import { prefersReducedMotion } from '@greese/js'
+
+const section = document.getElementById('pricing')!
+section.scrollIntoView({
+  behavior: prefersReducedMotion(section) ? 'auto' : 'smooth',
+})
+```
+
+| Parameter | Type      | Description                                                                  |
+| --------- | --------- | ---------------------------------------------------------------------------- |
+| `target`  | `unknown` | The element to ask about. Its ancestors count too. Leave it out for the page |
+
+## mix
+
+```ts
+declare function mix(from: Value, to: Value): Mixer
+```
+
+An interpolator between two values: call it with `0` for `from`, `1` for
+`to`, or anything between. It's how timelines interpolate, so it mixes:
+
+- numbers, and strings of the same shape (`blur(0px)` → `blur(8px)`);
+- different units, blended with `calc()` (`16px` → `2rem`);
+- colors, in OKLab;
+- anything else by switching halfway, except that `none` and `hidden` give
+  way to the shown value.
+
+```ts
+import { mix } from '@greese/js'
+
+mix(0, 100)(0.25) // 25
+mix('10px', '40px')(0.5) // '25px'
+mix('#3b82f6', '#e11d48')(0.5) // an rgb() color in between
+```
+
+| Type    | Is                                                       |
+| ------- | -------------------------------------------------------- |
+| `Value` | `number \| string`: anything greese.js mixes             |
+| `Mixer` | `(t: number) => Value`: `0` gives `from`, `1` gives `to` |
+
+## parseColor
+
+```ts
+declare function parseColor(
+  input: string
+): [r: number, g: number, b: number, a: number] | undefined
+```
+
+Reads a CSS color to sRGB channels (`0`–`255`) and alpha (`0`–`1`). It reads
+`#rgb`, `#rgba`, `#rrggbb`, `#rrggbbaa`, `rgb()`, `rgba()`, `oklab()`,
+`oklch()`, `color(srgb …)` and `transparent`. Anything else, including other
+color spaces such as `display-p3`, gives `undefined`.
+
+```ts
+import { parseColor } from '@greese/js'
+
+parseColor('#3b82f6') // [59, 130, 246, 1]
+parseColor('rgb(0 0 0 / 50%)') // [0, 0, 0, 0.5]
+parseColor('red') // undefined: named colors aren't read
+```
+
+## fromPixels
+
+```ts
+declare function fromPixels(
+  animation: PixelsAnimation,
+  targets: Record<string, Targets>,
+  options?: FromPixelsOptions
+): Timeline
+```
+
+Builds a timeline from an animation authored in the Pixels studio. Each
+layer's keyframes become tracks, frame numbers become seconds at the
+animation's fps, and tween types become eases. The timeline starts
+**paused**: call `play()`.
+
+```ts
+import { fromPixels, type PixelsAnimation } from '@greese/js'
+
+declare const idle: PixelsAnimation // from your Pixels document
+
+const tl = fromPixels(
+  idle,
+  { body: '.hero', shadow: '.hero-shadow' }, // layer id → targets
+  { channels: { glow: '--glow' }, scope: document.getElementById('stage')! }
+)
+tl.play()
+```
+
+| Parameter   | Type                      | Description                                                |
+| ----------- | ------------------------- | ---------------------------------------------------------- |
+| `animation` | `PixelsAnimation`         | The animation: its layers, `fps` (default `24`) and `loop` |
+| `targets`   | `Record<string, Targets>` | Layer id → what it animates. Layers not listed are skipped |
+| `options`   | `FromPixelsOptions`       | [`TimelineOptions`](#timelineoptions), plus `channels`     |
+
+| Option     | Type                     | Default                                    | Description                                                                                                         |
+| ---------- | ------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `channels` | `Record<string, string>` | `{ rotation: 'rotate', alpha: 'opacity' }` | Pixels channel → greese.js property. Unlisted channels keep their name (`x`, `y`, `scaleX`, `scaleY` already match) |
+
+A `loop` animation repeats forever unless `options.repeat` says otherwise.
+The [greese.js guide](?path=/docs/guides-greese-js--docs) maps each Pixels
+tween type to its ease. Spans (nested animations) aren't read; nest
+timelines with `add()` instead.
+
+The document types are structural, so a Pixels document passes straight
+through:
+
+| Type              | Holds                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------- |
+| `PixelsAnimation` | `layers`, `fps?`, `loop?`                                                                                   |
+| `PixelsLayer`     | `id`, `timeline: { frames, tweens }`, `channel?` (the channel a single `value` animates, default `'value'`) |
+| `PixelsKeyframe`  | `id`, `frame`, `kind?` (`'span'` frames are skipped), `value?` or `values?`                                 |
+| `PixelsTween`     | `startKeyframeId`, `endKeyframeId`, `type`, `enabled?`, `bezier?`, `shortestRotation?`                      |
+| `PixelsTweenType` | `'linear'`, `'step'`, `'easeIn'`, `'easeOut'`, `'easeInOut'`, `'elastic'`, `'bounce'`, `'back'`, `'bezier'` |
