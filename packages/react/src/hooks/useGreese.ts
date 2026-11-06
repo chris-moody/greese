@@ -64,7 +64,7 @@ const useIsomorphicLayoutEffect =
 
 /** Kills newest first, so the oldest original values are the ones left standing. */
 const revert = (timelines: Timeline[]) => {
-  for (const tl of [...timelines].reverse()) tl.kill()
+  for (const tl of [...timelines].reverse()) tl.revert()
 }
 
 interface Recorder {

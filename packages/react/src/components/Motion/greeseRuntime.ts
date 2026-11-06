@@ -237,7 +237,7 @@ const buildEntrance = ({ el, o, reduce, ctx, cleanups }: Setup): Timeline => {
     paused: true,
     reducedMotion: reduce && !o.timeline ? 'ignore' : undefined,
   })
-  cleanups.push(() => entrance.kill())
+  cleanups.push(() => entrance.revert())
   const source = o.inView ?? o.enter
   const cssClass = `greese-Motion--${o.inView !== undefined ? 'view' : 'enter'}-`
   const cssPlays = [...el.classList].some((c) => c.startsWith(cssClass))
@@ -356,7 +356,7 @@ const attachInteractions = ({ el, o, ctx, cleanups }: Setup) => {
       ease: 'out',
       options: { ...o, stagger: undefined },
     })
-    cleanups.push(() => tl.kill())
+    cleanups.push(() => tl.revert())
     return tl
   }
   const interaction = (value: GreeseMotion | undefined, on: string[], off: string[]) => {
@@ -518,5 +518,5 @@ export const playPageExit: GreeseRuntime['playPageExit'] = (motion, page, target
     )
   }
   tl.play()
-  return { done: Promise.resolve(tl), cancel: () => tl.kill() }
+  return { done: Promise.resolve(tl), cancel: () => tl.revert() }
 }
