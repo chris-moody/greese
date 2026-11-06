@@ -3,20 +3,19 @@
 '@greese/ui': minor
 ---
 
-Give `Input` an automatic width, and an `htmlSize` prop for a deliberate one.
+Stop `Input` forcing a twenty-character minimum width, and add `htmlSize`.
 
-The frame was `inline-size: 100%`, and the `<input>` inside it kept the native
-`size` attribute's default — a preferred width of about twenty characters that
-nobody chose. Together they meant a text field demanded the full measure of
-whatever it sat in and refused to be narrower than twenty characters, which in a
-dense panel row is most of the row. A field holding three digits was as wide as
-one holding a sentence.
+A text field could never be narrower than about twenty characters, however
+little room the layout had for it. The cause was the frame's flex automatic
+minimum size: a flex item's minimum is its content's min-content width, and an
+`<input>`'s min-content width is whatever `size` says — twenty characters by
+default, a number nobody chose. `.greese-Input` set no `min-inline-size`, so
+that default became a floor every ancestor had to honour. A field holding three
+digits took as much room as one holding a sentence.
 
-The frame is now `inline-size: auto`, and the input contributes no width of its
-own. A `Field` stretches its control and a block-level flex container fills its
-containing block, so a labelled form is unchanged; as a flex or grid item the
-field takes what the layout gives it instead of demanding a track it does not
-own.
+`.greese-Input` now sets `min-inline-size: 0`. It still fills its container —
+a Field, a table cell, a flex row — but it imposes no floor of its own and
+shrinks to whatever the layout can give it.
 
 `htmlSize` is the native `size` attribute, renamed because `size` here is the
 control scale (`sm`/`md`/`lg`). Set it and the field is that many characters
@@ -31,4 +30,5 @@ It reaches `TextField`, `NumberField`, `NumberStepper`, `MaskedInput` and
 `Combobox` through `InputProps`, and `EditableField`'s text and number rows take
 it directly.
 
-`Textarea` and `Select` still set `inline-size: 100%`; they are untouched here.
+`Textarea` and `Select` have the same missing `min-inline-size: 0` on their
+frames; they are untouched here.

@@ -9,12 +9,15 @@
     gap: var(--greese-space-2);
     align-items: center;
 
-    // Automatic, not the full measure. A Field stretches its control, and a
-    // block-level flex container fills its containing block in normal flow, so
-    // a labelled field is full width either way; as a flex or grid item the
-    // frame now sizes to what the layout gives it instead of demanding 100% of
-    // a track it does not own.
-    inline-size: auto;
+    // Fills whatever it sits in — a Field, a table cell, a flex row.
+    inline-size: 100%;
+
+    // …but imposes no floor of its own. A flex item's automatic minimum size is
+    // its content's min-content width, and an `<input>`'s min-content width is
+    // whatever `size` says — about twenty characters by default, a number
+    // nobody chose. That is what stopped a text field from ever being narrower
+    // than twenty characters, however little the layout had to give it.
+    min-inline-size: 0;
     min-block-size: var(--greese-input-height);
     padding-inline: var(--greese-input-padding);
     cursor: text;
@@ -23,12 +26,6 @@
   .greese-Input-control {
     flex: 1 1 auto;
     min-inline-size: 0;
-
-    // A bare `<input>` prefers about 20 characters — `size`'s default, a
-    // number nobody chose — and forces it on every ancestor that sizes to
-    // content. Contributing no width leaves the frame to decide; `htmlSize`
-    // below is how a caller asks for a measure on purpose.
-    inline-size: 0;
     block-size: 100%;
     padding: 0;
     font: inherit;
@@ -66,10 +63,6 @@
   .greese-Input.greese-Input--measured {
     inline-size: fit-content;
     flex-grow: 0;
-
-    > .greese-Input-control {
-      inline-size: auto;
-    }
   }
 
   @each $size, $spec in controls.$sizes {
