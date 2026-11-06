@@ -159,7 +159,12 @@ module.exports = [
     // (3.37 kB of 3.4), so an app that imports Menu alone pays ~10 B of it: the
     // shared keyboard helper the two menus now both use (43.21 kB).
     // 43.3 kB → 43.7 kB (2026-11-05): the same slider bubble and Slot merge fix (43.63 kB).
-    limit: '43.7 kB',
+    // 43.7 kB → 43.8 kB (2026-11-06): Input's `htmlSize` — the native `size`
+    // attribute, which sets how many characters wide a field is now that it
+    // imposes no width of its own, and which every input-based control
+    // inherits — and Text falling back to body copy when no variant names a
+    // type style (43.79 kB).
+    limit: '43.8 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -303,7 +308,8 @@ module.exports = [
     // 4.8 kB → 4.85 kB (2026-10-24): option ids looked up in a map, once per options list, where indexOf made long lists render in quadratic time (4.81 kB).
     // 4.85 kB → 4.9 kB (2026-10-30): the same island (4851 B).
     // 4.9 kB → 4.95 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (4924 B).
-    limit: '4.95 kB',
+    // 4.95 kB → 5 kB (2026-11-06): Input's `htmlSize`, which Combobox is built on (4954 B).
+    limit: '5 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -401,7 +407,8 @@ module.exports = [
     // names of the entrances CSS can play, which every component's static part carries
     // to know when the runtime is needed, about 40 B.
     // 2.9 kB → 2.95 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (2919 B).
-    limit: '2.95 kB',
+    // 2.95 kB → 3 kB (2026-11-06): Input's `htmlSize`, which MaskedInput is built on (2977 B).
+    limit: '3 kB',
     modifyRolldownConfig: external,
   },
   {
