@@ -84,8 +84,8 @@ $widths: (
     inline-size: 100vw;
     max-block-size: 100dvh;
     block-size: 100dvh;
-    padding-block: max(var(--greese-space-5), env(safe-area-inset-top))
-      max(var(--greese-space-5), env(safe-area-inset-bottom));
+    padding-block: var(--greese-dialog-padding, max(var(--greese-space-5), env(safe-area-inset-top)))
+      var(--greese-dialog-padding, max(var(--greese-space-5), env(safe-area-inset-bottom)));
     border: 0;
     border-radius: 0;
   }
@@ -157,8 +157,14 @@ $widths: (
   }
 
   $edge: var(--greese-corner-surface);
-  $safe-top: max(var(--greese-space-5), env(safe-area-inset-top));
-  $safe-bottom: max(var(--greese-space-5), env(safe-area-inset-bottom));
+  $safe-top: var(
+    --greese-dialog-padding,
+    max(var(--greese-space-5), env(safe-area-inset-top))
+  );
+  $safe-bottom: var(
+    --greese-dialog-padding,
+    max(var(--greese-space-5), env(safe-area-inset-bottom))
+  );
   $side-size: min(24rem, 100vw - 3rem);
   $placements: (
     end: (
@@ -187,7 +193,7 @@ $widths: (
       inline-size: 100vw,
       block-size: auto,
       max-block-size: 85dvh,
-      padding-block: var(--greese-space-5) $safe-bottom,
+      padding-block: var(--greese-dialog-padding, var(--greese-space-5)) $safe-bottom,
       radius: $edge $edge 0 0,
       from: 0 100%,
     ),
@@ -197,7 +203,7 @@ $widths: (
       inline-size: 100vw,
       block-size: auto,
       max-block-size: 85dvh,
-      padding-block: $safe-top var(--greese-space-5),
+      padding-block: $safe-top var(--greese-dialog-padding, var(--greese-space-5)),
       radius: 0 0 $edge $edge,
       from: 0 -100%,
     ),
