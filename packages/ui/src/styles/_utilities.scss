@@ -1,0 +1,104 @@
+// `pkg:@greese/ui/scss/utilities`: the utility classes (ADR 0019), written by
+// Sass from the same table as `utilities.css`, the Vite plugin and the CLI
+// (src/utilities.ts, as dist/_utilities-table.scss). Built here, they take the
+// breakpoints the stylesheet is built with, so `md-…` agrees with the
+// components' `md` without passing the breakpoints twice:
+//   @use 'pkg:@greese/ui/scss/config' with ($breakpoints: (…));
+//   @use 'pkg:@greese/ui/scss/utilities';
+//   @include utilities.classes($groups: (spacing, layout), $prefix: g);
+// Sass can't read your source to keep only the classes it uses: name them in
+// `$only`, or use the Vite plugin or `greese-utilities --content`, which can.
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:string';
+@use 'config';
+@use '../../dist/maps' as defaults;
+@use '../../dist/utilities-table' as table;
+
+/// The groups, in the order they're written.
+$groups: table.$groups;
+
+@function _name($parts...) {
+  $out: '';
+
+  @each $part in $parts {
+    @if $part and $part != '' {
+      @if $out == '' {
+        $out: '#{$part}';
+      } @else {
+        $out: '#{$out}-#{$part}';
+      }
+    }
+  }
+
+  @return $out;
+}
+
+@mixin _variant($variant, $groups, $only, $prefix) {
+  @each $d in table.$definitions {
+    $group: map.get($d, group);
+    $wanted: not $groups or list.index($groups, $group);
+
+    @if $variant == hover {
+      $wanted: $wanted and map.get($d, hover);
+    } @else if $variant {
+      $wanted: $wanted and map.get($d, responsive);
+    }
+
+    @if $wanted {
+      @each $value, $declarations in map.get($d, values) {
+        $name: _name($prefix, $variant, map.get($d, stem), $value);
+
+        @if not $only or list.index($only, $name) {
+          $selector: '.#{$name}';
+
+          @if $variant == hover {
+            $selector: '#{$selector}:hover';
+          }
+
+          #{$selector} {
+            @each $property, $v in $declarations {
+              #{$property}: string.unquote($v);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/// The utility classes, in `@layer greese.utilities`: plain, then `hover-…`
+/// where hover exists, then each breakpoint's (`md-…`), smallest first, so a
+/// larger screen's class wins (mobile first).
+///
+///   $groups   only these groups (`spacing`, `sizing`, `layout`, `flex`,
+///             `grid`, `typography`, `border`, `color`, `effects`); all by default
+///   $only     only these class names, prefix included: your purge list
+///   $prefix   a prefix for every class (`g` gives `g-p-4`)
+@mixin classes($groups: null, $only: null, $prefix: '') {
+  @each $group in $groups or () {
+    @if not list.index(table.$groups, $group) {
+      @error 'greese ui utilities: no group `#{$group}`. Groups: #{meta.inspect(table.$groups)}.';
+    }
+  }
+
+  // stylelint-disable-next-line layer-name-pattern -- the whole list, interpolated
+  @layer #{defaults.$layer-order};
+
+  @layer greese.utilities {
+    @include _variant(null, $groups, $only, $prefix);
+
+    @media (hover: hover) {
+      @include _variant(hover, $groups, $only, $prefix);
+    }
+
+    @each $key, $min in config.$breakpoints {
+      @if $min > 0 {
+        @media (width >= #{$min}) {
+          @include _variant($key, $groups, $only, $prefix);
+        }
+      }
+    }
+  }
+}

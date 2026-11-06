@@ -1,16 +1,22 @@
-// Built with your own breakpoints (changed values or extra keys): the tokens
-// declare the defaults' `--greese-breakpoint-*` custom properties, so
-// redeclare every one with the configured values. Nothing is emitted for the
-// defaults.
+// The breakpoints the stylesheet is built with, as custom properties for CSS
+// and JavaScript to read: `--greese-breakpoint-md: 900px`, and the keys in
+// order, `--greese-breakpoint-keys: xs sm md lg xl`, which
+// `configureBreakpoints()` reads. Media queries can't use them, so they're
+// written once, here, from the configured breakpoints.
+@use 'sass:list';
+@use 'sass:map';
 @use 'config';
-@use '../../dist/maps' as defaults;
 
-@if config.$breakpoints != defaults.$breakpoints {
-  @layer greese.tokens {
-    :root {
-      @each $key, $min in config.$breakpoints {
-        --greese-breakpoint-#{$key}: #{$min};
-      }
+@layer greese.tokens {
+  :root {
+    @each $key, $min in config.$breakpoints {
+      --greese-breakpoint-#{$key}: #{$min};
     }
+
+    --greese-breakpoint-keys: #{list.join(
+        map.keys(config.$breakpoints),
+        (),
+        $separator: space
+      )};
   }
 }

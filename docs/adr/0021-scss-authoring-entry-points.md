@@ -99,3 +99,16 @@ virtual file nor `src/styles/` exists in an installed package.
 - Measured in Chromium, the browser studio compiles a theme with six SCSS
   components in about 35–60 ms per edit after the first (~0.8 s, which includes
   loading Sass).
+
+## Addendum (2026-11-03): more entry points
+
+ADR 0034 adds three entry points:
+
+- `scss/utilities`, the utility classes from Sass, is an authoring entry: it
+  writes nothing until called.
+- `scss/core` and `scss/components/<Name>` write CSS. They are for a Sass build
+  that picks its components, not for a theme's component SCSS.
+
+All three are semver API. `scss/components/*` maps to generated forwarding
+modules in `dist/scss/components/`, because Sass's package importer replaces
+only one `*` in an export target.

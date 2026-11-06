@@ -376,6 +376,12 @@ Wipes, irises and pockets are masks, so they compose with a shape's clip; no
 effect touches `clip-path`. Every motion theme's entrances are off for visitors
 who reduce motion.
 
+Any layer can be taken back from part of a page with a class:
+`.greese-reset-color`, `.greese-reset-shape`, `.greese-reset-motion`, or
+`.greese-reset` for all three. Load `@greese/react/css/resets.css` for the
+defaults they go back to. Guides/Styling has the details, including `reset()`
+for doing it at build time.
+
 #### Motion roles
 
 Components have no motion of their own: each says what it is (a dialog, a
@@ -561,6 +567,7 @@ on the component, a class, or any ancestor:
 | Dialog                                      | `--greese-dialog-width`                                                                                                                                                                                                                                                                                       |
 | Sidebar                                     | `--greese-sidebar-width`                                                                                                                                                                                                                                                                                      |
 | Avatar, Spinner, Progress                   | `--greese-avatar-size`, `--greese-spinner-size`, `--greese-progress-height`                                                                                                                                                                                                                                   |
+| Chip                                        | `--greese-chip-height`, `--greese-chip-padding`, `--greese-chip-font`, `--greese-chip-remove` (the remove button's box). The `size` prop sets all four; override one to adjust a chip without changing size. |
 | Slider, ColorPicker                         | `--greese-slider-thumb`, `--greese-colorpicker-thumb`                                                                                                                                                                                                                                                         |
 | SegmentedControl, Table                     | `--greese-segment-height`, `--greese-table-cell-padding`                                                                                                                                                                                                                                                      |
 | Rating, Status, Stat, List                  | `--greese-rating-size`, `--greese-rating-on`, `--greese-rating-off`, `--greese-status-size`, `--greese-stat-padding`, `--greese-list-padding`                                                                                                                                                                 |
@@ -576,6 +583,52 @@ Class names (`greese-Button`, `greese-Card`, …) are stable, prefixed and never
 hashed, so they're safe to target. Internal parts (`greese-Dialog-title`) may
 change in a minor release; through the SCSS kit, a renamed part fails your
 build instead of silently not matching.
+
+## Reading a token in JavaScript
+
+Almost never necessary: name the token in CSS and the browser resolves it, so
+nothing reads the palette in JavaScript and a scheme change re-paints without
+a re-render. SVG counts as CSS here — `fill` and `stroke` take a `var()`
+directly:
+
+```tsx
+<circle fill="var(--greese-color-primary)" />
+```
+
+A `<canvas>` is the exception. It has no CSS, and its 2D context wants a real
+color string, so the value has to be computed and handed over.
+`useTokenColors` does that against a live element, so it picks up whatever the
+cascade resolved there — including a `ThemeProvider scheme` on an ancestor —
+and re-reads it when the scheme changes:
+
+```tsx
+import { useTokenColors } from '@greese/react'
+
+const Sparkline = ({ points }: { points: number[] }) => {
+  const canvas = useRef<HTMLCanvasElement>(null)
+  const [line, grid] = useTokenColors(canvas, 'primary', 'border')
+
+  useEffect(() => {
+    const context = canvas.current?.getContext('2d')
+    if (!context) return
+    context.strokeStyle = grid
+    context.stroke()
+    context.strokeStyle = line
+    // …draw
+  }, [points, line, grid])
+
+  return <canvas ref={canvas} />
+}
+```
+
+Pass bare role names, not full property names: `'primary'`, not
+`'--greese-color-primary'`. Roles a theme added through
+[`extend`](#adding-your-own-tokens) work too. The result is a tuple in the
+order given, stable between renders while the values are, so it is safe in a
+dependency list. Before the first measurement each value is an empty string,
+which a canvas context ignores.
+
+For anything that is not a canvas, reach for CSS first.
 
 ## Server rendering and frameworks
 
@@ -656,54 +709,11 @@ Guides/Styling components), and Theme Studio adds them with the "Add a
 ## Custom breakpoints
 
 Breakpoint values compile into media queries, so they're fixed when the
-stylesheet is built, not in a theme and not at runtime. You can change the
-values and **add keys**. The five built-in keys (`xs`–`xl`) stay, because
-components use them; list the keys smallest first, with `xs` at `0px`, and
-write each as one word (quote one that starts with a digit: `'2xl'`):
-
-```scss
-// your-styles.scss, instead of importing styles.css
-@use 'pkg:@greese/ui/scss' with (
-  $breakpoints: (
-    xs: 0px,
-    sm: 480px,
-    tablet: 700px,
-    md: 768px,
-    lg: 1024px,
-    xl: 1440px,
-  )
-);
-```
-
-Every key, added ones included, gets responsive classes
-(`greese-Stack--tablet-gap-3`, so `gap={{ tablet: 3 }}` works) and a custom
-property in the built CSS, **`--greese-breakpoint-tablet: 700px`**, which
-your own CSS and JavaScript can read, for example
-`max-inline-size: var(--greese-breakpoint-md)`. (A custom property can't go
-inside a `@media` condition; that's why the values are fixed at build time.)
-
-```ts
-// Before the first render: hooks and Sidebar read these in JS.
-import { configureBreakpoints } from '@greese/react'
-configureBreakpoints({ sm: 480, tablet: 700, md: 768, lg: 1024, xl: 1440 })
-
-// For TypeScript, tell it about an added key (once, in any .d.ts):
-declare module '@greese/ui' {
-  interface BreakpointKeys {
-    tablet: true
-  }
-}
-```
-
-Compile with Sass's `NodePackageImporter`, which resolves `pkg:` URLs. In Vite:
-
-```ts
-import { NodePackageImporter } from 'sass-embedded'
-
-export default defineConfig({
-  css: { preprocessorOptions: { scss: { importers: [new NodePackageImporter()] } } },
-})
-```
+stylesheet is built, not in a theme and not at runtime. You change them by
+compiling greese ui's SCSS with your own; `configureBreakpoints()` then reads
+them from the stylesheet for the JavaScript. [Guides/SCSS themes](?path=/docs/guides-scss-themes--docs) covers it: the
+rules for the keys, the custom properties each one gets, the build, and
+utility classes that follow them.
 
 ## Without React
 
@@ -730,22 +740,12 @@ non-React code that should match.
 ## Token reference
 
 The live values, with swatches, are under **Foundations/Tokens**, and the
-color roles and palette under **Foundations/Color**. The property name is
-`--greese-<group>-<key>`, with camelCase keys in kebab case.
-
-| Group        | `createTheme` key    | Keys                                                                                                                                                                                                                                                             |
-| ------------ | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Color        | `color`              | `canvas`, `surface`, `surfaceOverlay`, `fg`, `fgMuted`, `border`, `borderStrong`, `track`, `primary`, `secondary`, `tertiary`, `accent` (each with `…Strong` and `…Content`), `focusRing`, `positive`, `negative`, `negativeContent`, `warning`, `info`, `scrim` |
-| Spacing      | `space`              | `0`–`8` (`0`, `0.25rem`, `0.5rem`, `0.75rem`, `1rem`, `1.5rem`, `2rem`, `3rem`, `4rem`)                                                                                                                                                                          |
-| Radius       | `radius`             | `none`, `sm`, `md`, `lg`, `xl`, `pill`, `round`                                                                                                                                                                                                                  |
-| Radius roles | `corner`             | `control`, `field`, `surface`, `panel`, `inset`, `pill`, `round`: which step of `radius` each kind of part takes                                                                                                                                                 |
-| Font family  | `font`               | `body`, `mono`                                                                                                                                                                                                                                                   |
-| Type system  | `typography`         | variants `p1`–`p3`, `h1`–`h6`, `s1`, `s2`, `caption`, `button`: font size, weight, letter spacing, line height (see Typography)                                                                                                                                  |
-| Font weight  | `fontWeight`         | `regular`, `medium`, `semibold`, `bold`                                                                                                                                                                                                                          |
-| Line height  | `lineHeight`         | `tight`, `snug`, `normal`                                                                                                                                                                                                                                        |
-| Shadow       | `shadow`             | `sm`, `md`, `lg`                                                                                                                                                                                                                                                 |
-| Stacking     | `zIndex`             | `dropdown`, `sticky`, `overlay`, `modal`, `popover`, `toast`, `tooltip`                                                                                                                                                                                          |
-| Motion       | `duration`, `easing` | `fast`, `normal`, `slow`; `standard`, `enter`, `exit`                                                                                                                                                                                                            |
+color roles and palette under **Foundations/Color**. Every group, with each
+key's default and the values it takes, is in
+[Guides/SCSS themes](?path=/docs/guides-scss-themes--docs). The property name is `--greese-<group>-<key>`.
+`createTheme` takes the groups and keys in camelCase (`fontWeight`,
+`surfaceOverlay`), the SCSS kit in kebab-case (`font-weight`,
+`surface-overlay`). The type system is `typography` (see Typography).
 
 Durations collapse to near zero under `prefers-reduced-motion: reduce`, in
 themes too.

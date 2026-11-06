@@ -367,10 +367,33 @@ const decls = (d: Record<string, string>, indent = '  ') =>
 const rule = (selector: string, d: Record<string, string>) =>
   Object.keys(d).length ? `${selector} {\n${decls(d)}\n}` : ''
 
-const paramDecls = (set: ShapeParams | undefined) =>
-  Object.fromEntries(
-    Object.entries(set ?? {}).map(([k, v]) => [shapeVar(k), `${num(v)}px`])
-  )
+/**
+ * Where a shape's size is written: its parameters at rest (`params`), hovered
+ * or pressed, or its border's width (param `width`). `factor` scales it for a
+ * smaller variant of the element.
+ */
+export type ShapeSizeState = 'params' | 'hover' | 'active' | 'border'
+
+/**
+ * How a size is written into the CSS: `10px` by default. A theme kept as
+ * SCSS writes a Sass expression instead, so its sizes can change in one place.
+ */
+export type ShapeSize = (
+  shape: string,
+  state: ShapeSizeState,
+  param: string,
+  value: number,
+  factor: number
+) => string
+
+const pxSize: ShapeSize = (_shape, _state, _param, value, factor) =>
+  `${num(value * factor)}px`
+
+const paramDecls = (
+  set: ShapeParams | undefined,
+  size: (param: string, value: number) => string
+) =>
+  Object.fromEntries(Object.entries(set ?? {}).map(([k, v]) => [shapeVar(k), size(k, v)]))
 
 /** The shape flipped start to end, still clockwise. */
 export const mirrored = (def: ShapeDef): ShapeDef => {
@@ -434,7 +457,11 @@ const TIMING = 'var(--greese-duration-normal) var(--greese-easing-standard)'
  * mechanics (the clip, the border layer, transitions) are written once per
  * kind of element. Pair it with `shapeProperties()` once.
  */
-export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): string => {
+export const shapesCss = (
+  shapes: Record<string, ShapeDef>,
+  uses: ShapeUse[],
+  size: ShapeSize = pxSize
+): string => {
   const live = uses.filter((u) => shapes[u.shape])
   if (!live.length) return ''
   const out: string[] = []
@@ -563,8 +590,8 @@ export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): s
       def.border?.color && def.border.color !== 'auto' ? def.border.color : undefined
     out.push(
       rule(sels.join(',\n'), {
-        ...paramDecls(def.params),
-        [shapeVar(BORDER)]: `${num(def.border?.width ?? 1)}px`,
+        ...paramDecls(def.params, (k, v) => size(name, 'params', k, v, 1)),
+        [shapeVar(BORDER)]: size(name, 'border', 'width', def.border?.width ?? 1, 1),
         ...(color && { '--greese-shape-ring': color }),
         '--greese-shape-clip': outer,
         '--greese-shape-ring-clip': ring,
@@ -599,14 +626,13 @@ export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): s
         ([suffix, f]) => [join(u.selector, suffix), f] as [string, number]
       ),
     ]
-    const scaled = (set: ShapeParams | undefined, f: number) =>
-      paramDecls(
-        set && Object.fromEntries(Object.entries(set).map(([k, v]) => [k, v * f]))
-      )
+    const scaled = (state: ShapeSizeState, set: ShapeParams | undefined, f: number) =>
+      paramDecls(set, (k, v) => size(name, state, k, v, f))
     for (const u of mine)
       for (const [sel, f] of variantsOf(u).slice(1))
-        out.push(rule(sel, scaled(def.params, f)))
+        out.push(rule(sel, scaled('params', def.params, f)))
     const stateRules = (
+      state: ShapeSizeState,
       set: ShapeParams | undefined,
       pick: (u: ShapeUse) => string | false | undefined,
       fallback: string
@@ -620,12 +646,12 @@ export const shapesCss = (shapes: Record<string, ShapeDef>, uses: ShapeUse[]): s
           byFactor.set(f, [...(byFactor.get(f) ?? []), join(sel, suffix ?? fallback)])
       }
       return [...byFactor]
-        .map(([f, list]) => rule(list.join(',\n'), scaled(set, f)))
+        .map(([f, list]) => rule(list.join(',\n'), scaled(state, set, f)))
         .join('\n')
     }
-    const hover = stateRules(def.hover, (u) => u.hover, ':hover')
+    const hover = stateRules('hover', def.hover, (u) => u.hover, ':hover')
     if (hover) out.push(block('@media (hover: hover)', hover))
-    const active = stateRules(def.active, (u) => u.active, ':active')
+    const active = stateRules('active', def.active, (u) => u.active, ':active')
     if (active) out.push(active)
 
     // Focus: the shape opens to its box and the usual focus ring shows round

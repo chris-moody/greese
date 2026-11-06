@@ -1,0 +1,7 @@
+// Compiled to dist/css/resets.css: the classes that take a theme's layers back
+// from part of a page (`.greese-reset-color`, `-shape`, `-motion`, and
+// `.greese-reset` for all three) with their default tokens. Opt-in, since most
+// pages never reset. Theme rules stop at the classes either way; this file
+// adds the defaults the tokens return to.
+@use 'kit';
+@include kit.reset-classes;

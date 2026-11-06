@@ -13,16 +13,37 @@ export const getBreakpoints = (): Readonly<Record<Breakpoint, number>> =>
 export const getBreakpointKeys = (): readonly Breakpoint[] => keys
 
 /**
+ * The breakpoints the page's stylesheet was built with, from the custom
+ * properties it declares (`--greese-breakpoint-keys`, then
+ * `--greese-breakpoint-<key>`), or none without a document or the stylesheet.
+ */
+const fromStylesheet = (): Record<string, number> => {
+  const found: Record<string, number> = {}
+  if (typeof document != 'undefined') {
+    const style = getComputedStyle(document.documentElement)
+    const read = (name: string) => style.getPropertyValue('--greese-breakpoint-' + name)
+    // `>= 0` leaves out what isn't a number (NaN), the empty key included.
+    for (const key of read('keys').trim().split(/\s+/)) {
+      const value = parseFloat(read(key))
+      if (value >= 0) found[key] = value
+    }
+  }
+  return found
+}
+
+/**
  * Use your own breakpoints in JS (useBreakpoint, useBreakpointValue,
- * Sidebar). Call once at startup, before rendering, with the same values you
- * compiled the SCSS with (`@use 'pkg:@greese/ui/scss' with ($breakpoints: …)`),
- * added keys included: `configureBreakpoints({ tablet: 700 })`. The keys
- * xs/sm/md/lg/xl stay, and `xs` is always 0. For TypeScript, add a new key to
- * the `BreakpointKeys` interface of `@greese/ui`.
+ * Sidebar). Call once at startup, before rendering. With no argument, it
+ * reads them from the stylesheet, which declares the ones it was built with,
+ * so they can't disagree: `configureBreakpoints()` (load the CSS first). Or
+ * pass the same values you compiled the SCSS with, added keys included:
+ * `configureBreakpoints({ tablet: 700 })`. The keys xs/sm/md/lg/xl stay, and
+ * `xs` is always 0. For TypeScript, add a new key to the `BreakpointKeys`
+ * interface of `@greese/ui`.
  */
 export const configureBreakpoints = (
   values: Partial<Record<Exclude<Breakpoint, 'xs'>, number>> &
-    Record<string, number | undefined>
+    Record<string, number | undefined> = fromStylesheet()
 ): void => {
   const next: Record<string, number> = { ...current }
   for (const [key, value] of Object.entries(values)) {

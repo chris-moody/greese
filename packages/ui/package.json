@@ -66,6 +66,10 @@
       "types": "./dist/utilitiesFiles.d.ts",
       "default": "./dist/utilitiesFiles.js"
     },
+    "./theme-files": {
+      "types": "./dist/themeFiles/index.d.ts",
+      "default": "./dist/themeFiles/index.js"
+    },
     "./vite": {
       "types": "./dist/vite.d.ts",
       "default": "./dist/vite.js"
@@ -86,6 +90,9 @@
     "./scss/config": {
       "sass": "./src/styles/_config.scss"
     },
+    "./scss/core": {
+      "sass": "./src/styles/_core.scss"
+    },
     "./scss/mixins": {
       "sass": "./src/styles/public/_mixins.scss"
     },
@@ -100,6 +107,12 @@
     },
     "./scss/slides": {
       "sass": "./src/styles/public/_slides.scss"
+    },
+    "./scss/utilities": {
+      "sass": "./src/styles/public/_utilities.scss"
+    },
+    "./scss/components/*": {
+      "sass": "./dist/scss/components/_*.scss"
     },
     "./scss/tokens": "./dist/_tokens.scss",
     "./scss/layers": "./dist/_layers.scss",

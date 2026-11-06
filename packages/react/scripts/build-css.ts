@@ -10,6 +10,7 @@
  *   dist/styles.css       @greese/ui's whole stylesheet
  *   dist/base.css         @greese/ui's opt-in reset
  *   dist/css/core.css     layer order + tokens
+ *   dist/css/resets.css   @greese/ui's opt-in reset classes (theme layers)
  *   dist/css/<Name>.css   @imports core, the components it builds on, and
  *                         its own, so bundlers pull in (and de-duplicate)
  *                         exactly what is used
@@ -39,11 +40,13 @@ mkdirSync(join(DIST, 'css'), { recursive: true })
 writeFileSync(join(DIST, 'styles.css'), `${imports('@greese/ui/styles.css')}\n`)
 writeFileSync(join(DIST, 'base.css'), `${imports('@greese/ui/base.css')}\n`)
 writeFileSync(join(DIST, 'css/core.css'), `${imports('@greese/ui/css/core.css')}\n`)
+writeFileSync(join(DIST, 'css/resets.css'), `${imports('@greese/ui/css/resets.css')}\n`)
 
-// Each @greese/ui stylesheet holds one component's own CSS (plus core).
+// Each @greese/ui stylesheet holds one component's own CSS (plus core, and
+// the opt-in resets, which no component needs).
 const compiled = new Map(
   readdirSync(UI_CSS)
-    .filter((file) => file.endsWith('.css') && file !== 'core.css')
+    .filter((file) => file.endsWith('.css') && !['core.css', 'resets.css'].includes(file))
     .map((file) => [file.slice(0, -4), readFileSync(join(UI_CSS, file), 'utf8')] as const)
 )
 

@@ -8,7 +8,10 @@ const build = (breakpoints: string): string =>
 
 const DEFAULTS = 'xs: 0px, sm: 600px, md: 900px, lg: 1200px, xl: 1536px'
 const vars = (css: string) =>
-  [...css.matchAll(/--greese-breakpoint-([a-z0-9]+): ([^;]+);/g)].map((m) => [m[1], m[2]])
+  [...css.matchAll(/--greese-breakpoint-(?!keys)([a-z0-9]+): ([^;]+);/g)].map((m) => [
+    m[1],
+    m[2],
+  ])
 
 describe('breakpoints, fixed when the stylesheet is built', () => {
   it('declares the defaults as custom properties, in the tokens', () => {
@@ -20,10 +23,27 @@ describe('breakpoints, fixed when the stylesheet is built', () => {
       ['lg', '1200px'],
       ['xl', '1536px'],
     ])
+    // And their keys, in order, for configureBreakpoints() to read.
+    expect(tokens).toContain('--greese-breakpoint-keys: xs sm md lg xl;')
   })
 
   it('does not repeat them when built with the defaults', () => {
     expect(vars(build(`(${DEFAULTS})`)).length).toBe(5)
+  })
+
+  it('declares only the configured ones in a build of its own, keys included', () => {
+    const css = build(
+      '(xs: 0px, sm: 600px, tablet: 700px, md: 777px, lg: 1200px, xl: 1536px)'
+    )
+    expect(vars(css)).toEqual([
+      ['xs', '0px'],
+      ['sm', '600px'],
+      ['tablet', '700px'],
+      ['md', '777px'],
+      ['lg', '1200px'],
+      ['xl', '1536px'],
+    ])
+    expect(css).toContain('--greese-breakpoint-keys: xs sm tablet md lg xl;')
   })
 
   it('adds a key: classes, media queries and a custom property', () => {

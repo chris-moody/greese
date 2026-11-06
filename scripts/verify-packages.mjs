@@ -172,7 +172,7 @@ import { createRequire } from 'node:module'
 import { compileString, NodePackageImporter } from 'sass-embedded'
 const compile = (scss) => compileString("@use 'pkg:@greese/ui/scss/kit' as greese;\\n" + scss, { importers: [new NodePackageImporter()], url: new URL(import.meta.url) }).css
 const css = compile('@include greese.component(Button) { @include greese.part(icon) { opacity: 0.5; } }')
-if (!css.includes('.greese-Button .greese-Button-icon') || !css.includes('greese.overrides, greese.utilities;')) throw new Error('kit output wrong: ' + css)
+if (!css.includes('.greese-Button:where(:not(.greese-reset-shape') || !css.includes(' .greese-Button-icon') || !css.includes('greese.overrides, greese.utilities;')) throw new Error('kit output wrong: ' + css)
 let failed = false
 try { compile('@include greese.component(Buton) {}') } catch { failed = true }
 if (!failed) throw new Error('kit accepted an unknown component')
@@ -181,11 +181,19 @@ if (!manifest.blocks.Button?.variables.includes('--greese-button-tone')) throw n
 // The partials theme authors @use (ADR 0021): published, and the same modules the kit configures.
 const authored = compileString("@use 'pkg:@greese/ui/scss/config' with ($breakpoints: (xs: 0px, sm: 500px, md: 700px, lg: 1000px, xl: 1400px));\\n@use 'pkg:@greese/ui/scss/kit' as greese;\\n@use 'pkg:@greese/ui/scss/mixins';\\n@use 'pkg:@greese/ui/scss/tones';\\n@use 'pkg:@greese/ui/scss/floating';\\n@use 'pkg:@greese/ui/scss/controls';\\n@include greese.component(Card) { @include mixins.up(md) { gap: 1px; } @include floating.surface; }", { importers: [new NodePackageImporter()], url: new URL(import.meta.url) }).css
 if (!authored.includes('@media (width >= 700px)') || !authored.includes('.greese-Card')) throw new Error('authoring entry points wrong: ' + authored)
+// A Sass build that picks its components, with the utilities from Sass (ADR 0034).
+const picked = compileString("@use 'pkg:@greese/ui/scss/config' with ($breakpoints: (xs: 0px, sm: 500px, md: 700px, lg: 1000px, xl: 1400px));\\n@use 'pkg:@greese/ui/scss/core';\\n@use 'pkg:@greese/ui/scss/components/Button';\\n@use 'pkg:@greese/ui/scss/utilities';\\n@include utilities.classes($groups: (layout));", { importers: [new NodePackageImporter()], url: new URL(import.meta.url) }).css
+if (!picked.includes('.greese-Button') || !picked.includes('.md-display-flex') || !picked.includes('(width >= 700px)')) throw new Error('component or utility entry points wrong')
+// A theme as files: the layout, compiled from the package.
+const { specToLayout } = await import('@greese/ui/theme-files')
+const layout = specToLayout({ name: 'brand', tokens: { radius: { md: '2px' } }, components: { Card: { styles: { gap: '0' } } } })
+if (!layout['main.scss'] || !layout['components/_card.scss']) throw new Error('theme-files layout incomplete')
+if (!readFileSync(createRequire(import.meta.url).resolve('@greese/ui/css/resets.css'), 'utf8').includes('.greese-reset-shape')) throw new Error('resets.css missing')
 `
   )
   run('node', ['kit.mjs'], work)
   ok(
-    'pkg:@greese/ui/scss/kit compiles and checks names; the authoring partials resolve; style-manifest.json resolves'
+    'pkg:@greese/ui/scss/kit compiles and checks names; the authoring partials, core, components and utilities resolve; theme-files and resets.css resolve; style-manifest.json resolves'
   )
 
   // 4c. The icons render on the server, and the library depends on them (it

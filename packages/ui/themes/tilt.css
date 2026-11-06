@@ -23,125 +23,125 @@
   }
 }
 @layer greese.overrides {
-  .greese-Accordion {
+  .greese-Accordion:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
     display: grid;
     gap: var(--greese-space-2);
     border-block-start: 0;
   }
 }
 @layer greese.overrides {
-  .greese-AccordionItem {
+  .greese-AccordionItem:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
     border-block-end: 0;
   }
 }
 @layer greese.overrides {
-  .greese-Button {
+  .greese-Button:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
     transform-origin: 50% 100%;
   }
   @media (prefers-reduced-motion: no-preference) {
-    .greese-Button {
+    .greese-Button:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
       transition: transform var(--greese-duration-normal) var(--greese-easing-standard), background-color var(--greese-duration-fast) var(--greese-easing-standard), border-color var(--greese-duration-fast) var(--greese-easing-standard), box-shadow var(--greese-duration-normal) var(--greese-easing-standard), color var(--greese-duration-fast) var(--greese-easing-standard);
     }
   }
   @media (prefers-reduced-motion: no-preference) and (hover: hover) {
-    .greese-Button:hover:not(:disabled, [aria-disabled=true]) {
+    .greese-Button:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)):hover:not(:disabled, [aria-disabled=true]) {
       transform: perspective(24rem) rotateX(18deg) translateZ(0.25rem);
     }
   }
   @media (prefers-reduced-motion: no-preference) {
-    .greese-Button:active:not(:disabled, [aria-disabled=true]) {
+    .greese-Button:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)):active:not(:disabled, [aria-disabled=true]) {
       transform: perspective(24rem) translateZ(-0.75rem);
     }
   }
 }
 @layer greese.overrides {
-  .greese-Card.greese-Card--interactive {
+  .greese-Card:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Card--interactive {
     transform-origin: 50% 50%;
   }
   @media (prefers-reduced-motion: no-preference) {
-    .greese-Card.greese-Card--interactive {
+    .greese-Card:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Card--interactive {
       transition: transform var(--greese-duration-normal) var(--greese-easing-standard), background-color var(--greese-duration-fast) var(--greese-easing-standard), border-color var(--greese-duration-fast) var(--greese-easing-standard), box-shadow var(--greese-duration-normal) var(--greese-easing-standard), color var(--greese-duration-fast) var(--greese-easing-standard);
     }
   }
   @media (prefers-reduced-motion: no-preference) and (hover: hover) {
-    .greese-Card.greese-Card--interactive:hover:not(:disabled, [aria-disabled=true]) {
+    .greese-Card:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Card--interactive:hover:not(:disabled, [aria-disabled=true]) {
       transform: perspective(60rem) rotateX(5deg) rotateY(-7deg) translateZ(1rem);
     }
   }
   @media (prefers-reduced-motion: no-preference) {
-    .greese-Card.greese-Card--interactive:active:not(:disabled, [aria-disabled=true]) {
+    .greese-Card:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Card--interactive:active:not(:disabled, [aria-disabled=true]) {
       transform: perspective(60rem) translateZ(-0.5rem);
     }
   }
 }
 @layer greese.overrides {
-  .greese-Chip {
+  .greese-Chip:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
     transform-origin: 50% 100%;
   }
   @media (prefers-reduced-motion: no-preference) {
-    .greese-Chip {
+    .greese-Chip:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
       transition: transform var(--greese-duration-normal) var(--greese-easing-standard), background-color var(--greese-duration-fast) var(--greese-easing-standard), border-color var(--greese-duration-fast) var(--greese-easing-standard), box-shadow var(--greese-duration-normal) var(--greese-easing-standard), color var(--greese-duration-fast) var(--greese-easing-standard);
     }
   }
   @media (prefers-reduced-motion: no-preference) and (hover: hover) {
-    .greese-Chip:hover:not(:disabled, [aria-disabled=true]) {
+    .greese-Chip:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)):hover:not(:disabled, [aria-disabled=true]) {
       transform: perspective(20rem) rotateX(18deg);
     }
   }
   @media (prefers-reduced-motion: no-preference) {
-    .greese-Chip:active:not(:disabled, [aria-disabled=true]) {
+    .greese-Chip:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)):active:not(:disabled, [aria-disabled=true]) {
       transform: perspective(20rem) translateZ(-0.5rem);
     }
   }
 }
 @layer greese.overrides {
-  .greese-Collapsible > .greese-Collapsible-trigger {
+  .greese-Collapsible:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) > .greese-Collapsible-trigger {
     padding-inline: var(--greese-space-4);
     background-color: var(--greese-color-surface);
     border: 1px solid var(--greese-collapsible-border, var(--greese-color-border));
     border-radius: var(--greese-corner-control);
   }
   @media (hover: hover) {
-    .greese-Collapsible > .greese-Collapsible-trigger:hover {
+    .greese-Collapsible:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) > .greese-Collapsible-trigger:hover {
       background-color: color-mix(in oklab, var(--greese-color-fg) 5%, var(--greese-color-surface));
     }
   }
-  .greese-Collapsible[open] > .greese-Collapsible-trigger {
+  .greese-Collapsible:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *))[open] > .greese-Collapsible-trigger {
     margin-block-end: var(--greese-space-2);
   }
-  .greese-Collapsible > .greese-Collapsible-content {
+  .greese-Collapsible:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) > .greese-Collapsible-content {
     padding-inline: var(--greese-space-4);
   }
 }
 @layer greese.overrides {
-  .greese-Tab {
+  .greese-Tab:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
     transform-origin: 50% 100%;
   }
   @media (prefers-reduced-motion: no-preference) {
-    .greese-Tab {
+    .greese-Tab:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
       transition: transform var(--greese-duration-normal) var(--greese-easing-standard), color var(--greese-duration-fast) var(--greese-easing-standard), background-color var(--greese-duration-fast) var(--greese-easing-standard), box-shadow var(--greese-duration-fast) var(--greese-easing-standard);
     }
-    .greese-Tab[aria-selected=true] {
+    .greese-Tab:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *))[aria-selected=true] {
       transform: perspective(16rem) rotateX(-14deg);
     }
   }
 }
 @layer greese.overrides {
-  .greese-Tile {
+  .greese-Tile:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
     transform-origin: 50% 50%;
   }
   @media (prefers-reduced-motion: no-preference) {
-    .greese-Tile {
+    .greese-Tile:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
       transition: transform var(--greese-duration-normal) var(--greese-easing-standard), background-color var(--greese-duration-fast) var(--greese-easing-standard), border-color var(--greese-duration-fast) var(--greese-easing-standard), box-shadow var(--greese-duration-normal) var(--greese-easing-standard), color var(--greese-duration-fast) var(--greese-easing-standard);
     }
   }
   @media (prefers-reduced-motion: no-preference) and (hover: hover) {
-    .greese-Tile:hover:not(:disabled, [aria-disabled=true]) {
+    .greese-Tile:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)):hover:not(:disabled, [aria-disabled=true]) {
       transform: perspective(50rem) rotateX(6deg) rotateY(-8deg) translateZ(0.75rem);
     }
   }
   @media (prefers-reduced-motion: no-preference) {
-    .greese-Tile:active:not(:disabled, [aria-disabled=true]) {
+    .greese-Tile:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)):active:not(:disabled, [aria-disabled=true]) {
       transform: perspective(50rem) translateZ(-0.5rem);
     }
   }

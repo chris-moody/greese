@@ -119,3 +119,11 @@ set it wants. A project's own classes or values are added in its own CSS in
 - Negative margins, arbitrary values (`p-[13px]`), `dark:` and group/peer
   variants are not in this set; token values keep themes working, and dark mode
   is the color tokens' job (ADR 0002).
+
+## Addendum (2026-11-03): the same classes from Sass
+
+`pkg:@greese/ui/scss/utilities` writes them with
+`utilities.classes($groups, $only, $prefix)`, from the same table, which the
+build writes to `dist/_utilities-table.scss`. It takes the build's configured
+breakpoints. Sass can't scan source, so purging there is an explicit `$only`
+list. A test keeps its output equal to `generateUtilities()` (ADR 0034 §6).

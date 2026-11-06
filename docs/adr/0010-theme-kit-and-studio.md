@@ -161,10 +161,19 @@ Choices:
   stylesheet. The kit and the manifest add nothing to the JavaScript or CSS
   bundles. The manifest is a separate file that only tools import.
 - **Docs:** every component's docs page ends with a Styling section
-  generated from the manifest. It shows the component's own blocks with
-  every row ("None" where empty), its items and what they're built on (on
-  a parent), the blocks it's built on, and CSS and kit examples written for
-  its real classes. Parts with no classes (TableHead, Slottable) say what to
+  generated from the manifest. It opens with the anatomy (the first story,
+  every element outlined and labelled with its classes, as Theme Studio
+  shows it), then each of the component's own blocks as tables: parts (root,
+  parts, modifiers and state attributes, with the class each sits in and
+  what its rules style), responsive props, and the block's own variables
+  (default, type, and the properties each ends up in; a shared system's and
+  another component's are left to their own pages). Manifest version 4
+  records what those need: each class's parent and properties, each state's
+  classes, and each variable's default, setters and reach. Then its items
+  and what they're built on (on a parent), the blocks it's built on, and CSS
+  and kit examples written for its real classes. Motion's classes, which a
+  component applies for the `greese` prop's effects, aren't listed as its
+  own. Parts with no classes (TableHead, Slottable) say what to
   target instead. The new **Guides/Styling components** covers classes,
   layers, CSS overrides, the kit, theme-wide motion, Theme Studio, and a
   full reference.
@@ -296,3 +305,12 @@ loads stylesheets from anywhere on disk, and overwrite the theme files.
   network as before.
 - **Tests:** `server/access.test.ts` (loopback, forged headers, the cookie,
   cross-site writes, the exchange, the token file).
+
+## Addendum (2026-11-03): the layout, by default
+
+Studio's theme data and serializer moved to `@greese/ui/theme-files` (ADR 0034).
+Saving writes the SCSS layout by default, a folder of modules to keep and edit
+in your source, plus the CSS. `GREESE_THEME_OUTPUT` (`layout`, `scss`, `css`)
+brings back the single file. A layout file whose first line is deleted belongs
+to whoever deleted it: saving leaves it alone. Every theme rule now carries a
+reset guard (ADR 0034 §5), which the importer removes as it reads.

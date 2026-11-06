@@ -144,1023 +144,1025 @@
 }
 @layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities;
 @layer greese.overrides {
-  .greese-shape-bevel-control,
-  .greese-shape-bevel-field,
-  .greese-shape-bevel-container,
-  .greese-shape-bevel-small {
-    --greese-shape-ring: var(--greese-color-border);
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-shape-bevel-control::after,
-  .greese-shape-bevel-field::after,
-  .greese-shape-bevel-container::after,
-  .greese-shape-bevel-small::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-shape-bevel-control,
-    .greese-shape-bevel-field,
-    .greese-shape-bevel-container,
-    .greese-shape-bevel-small {
-      transition: --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+  @include greese.scope(null) {
+    #{greese.themed(".greese-shape-bevel-control")},
+    #{greese.themed(".greese-shape-bevel-field")},
+    #{greese.themed(".greese-shape-bevel-container")},
+    #{greese.themed(".greese-shape-bevel-small")} {
+      --greese-shape-ring: var(--greese-color-border);
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-  }
-  @media (forced-colors: active) {
-    .greese-shape-bevel-control,
-    .greese-shape-bevel-field,
-    .greese-shape-bevel-container,
-    .greese-shape-bevel-small {
-      clip-path: none;
-      border-color: CanvasText;
+    #{greese.themed(".greese-shape-bevel-control")}::after,
+    #{greese.themed(".greese-shape-bevel-field")}::after,
+    #{greese.themed(".greese-shape-bevel-container")}::after,
+    #{greese.themed(".greese-shape-bevel-small")}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-    .greese-shape-bevel-control::after,
-    .greese-shape-bevel-field::after,
-    .greese-shape-bevel-container::after,
-    .greese-shape-bevel-small::after {
-      display: none;
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-shape-bevel-control")},
+      #{greese.themed(".greese-shape-bevel-field")},
+      #{greese.themed(".greese-shape-bevel-container")},
+      #{greese.themed(".greese-shape-bevel-small")} {
+        transition: --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
     }
-  }
-  .greese-shape-bevel-indicator {
-    --greese-shape-ring: var(--greese-color-border);
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-shape-bevel-indicator::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-shape-bevel-indicator {
-      transition: --greese-shape-h var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-shape-bevel-control")},
+      #{greese.themed(".greese-shape-bevel-field")},
+      #{greese.themed(".greese-shape-bevel-container")},
+      #{greese.themed(".greese-shape-bevel-small")} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-shape-bevel-control")}::after,
+      #{greese.themed(".greese-shape-bevel-field")}::after,
+      #{greese.themed(".greese-shape-bevel-container")}::after,
+      #{greese.themed(".greese-shape-bevel-small")}::after {
+        display: none;
+      }
     }
-  }
-  @media (forced-colors: active) {
-    .greese-shape-bevel-indicator {
-      clip-path: none;
-      border-color: CanvasText;
+    #{greese.themed(".greese-shape-bevel-indicator")} {
+      --greese-shape-ring: var(--greese-color-border);
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-    .greese-shape-bevel-indicator::after {
-      display: none;
+    #{greese.themed(".greese-shape-bevel-indicator")}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-  }
-  .greese-shape-bevel-mark,
-  .greese-shape-bevel-avatar {
-    --greese-shape-ring: var(--greese-color-border);
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-shape-bevel-mark::after,
-  .greese-shape-bevel-avatar::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-shape-bevel-mark,
-    .greese-shape-bevel-avatar {
-      transition: --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-shape-bevel-indicator")} {
+        transition: --greese-shape-h var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
     }
-  }
-  @media (forced-colors: active) {
-    .greese-shape-bevel-mark,
-    .greese-shape-bevel-avatar {
-      clip-path: none;
-      border-color: CanvasText;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-shape-bevel-indicator")} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-shape-bevel-indicator")}::after {
+        display: none;
+      }
     }
-    .greese-shape-bevel-mark::after,
-    .greese-shape-bevel-avatar::after {
-      display: none;
+    #{greese.themed(".greese-shape-bevel-mark")},
+    #{greese.themed(".greese-shape-bevel-avatar")} {
+      --greese-shape-ring: var(--greese-color-border);
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-  }
-  .greese-shape-bevel-tab,
-  .greese-shape-bevel-bubble {
-    --greese-shape-ring: var(--greese-color-border);
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-shape-bevel-tab::after,
-  .greese-shape-bevel-bubble::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-shape-bevel-tab,
-    .greese-shape-bevel-bubble {
-      transition: --greese-shape-c var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    #{greese.themed(".greese-shape-bevel-mark")}::after,
+    #{greese.themed(".greese-shape-bevel-avatar")}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-  }
-  @media (forced-colors: active) {
-    .greese-shape-bevel-tab,
-    .greese-shape-bevel-bubble {
-      clip-path: none;
-      border-color: CanvasText;
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-shape-bevel-mark")},
+      #{greese.themed(".greese-shape-bevel-avatar")} {
+        transition: --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
     }
-    .greese-shape-bevel-tab::after,
-    .greese-shape-bevel-bubble::after {
-      display: none;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-shape-bevel-mark")},
+      #{greese.themed(".greese-shape-bevel-avatar")} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-shape-bevel-mark")}::after,
+      #{greese.themed(".greese-shape-bevel-avatar")}::after {
+        display: none;
+      }
     }
-  }
-  .greese-AccordionItem > .greese-Collapsible-content,
-  .greese-Tile {
-    --greese-shape-ring: var(--greese-color-border);
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-AccordionItem > .greese-Collapsible-content::after,
-  .greese-Tile::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-AccordionItem > .greese-Collapsible-content,
-    .greese-Tile {
-      transition: --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    #{greese.themed(".greese-shape-bevel-tab")},
+    #{greese.themed(".greese-shape-bevel-bubble")} {
+      --greese-shape-ring: var(--greese-color-border);
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-  }
-  @media (forced-colors: active) {
-    .greese-AccordionItem > .greese-Collapsible-content,
-    .greese-Tile {
-      clip-path: none;
-      border-color: CanvasText;
+    #{greese.themed(".greese-shape-bevel-tab")}::after,
+    #{greese.themed(".greese-shape-bevel-bubble")}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-    .greese-AccordionItem > .greese-Collapsible-content::after,
-    .greese-Tile::after {
-      display: none;
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-shape-bevel-tab")},
+      #{greese.themed(".greese-shape-bevel-bubble")} {
+        transition: --greese-shape-c var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
     }
-  }
-  .greese-Alert {
-    --greese-shape-ring: color-mix(in oklab, var(--greese-alert-tone) 30%, transparent);
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-Alert::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-Alert {
-      transition: --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-shape-bevel-tab")},
+      #{greese.themed(".greese-shape-bevel-bubble")} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-shape-bevel-tab")}::after,
+      #{greese.themed(".greese-shape-bevel-bubble")}::after {
+        display: none;
+      }
     }
-  }
-  @media (forced-colors: active) {
-    .greese-Alert {
-      clip-path: none;
-      border-color: CanvasText;
+    #{greese.themed(".greese-AccordionItem > .greese-Collapsible-content", AccordionItem)},
+    #{greese.themed(".greese-Tile", Tile)} {
+      --greese-shape-ring: var(--greese-color-border);
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-    .greese-Alert::after {
-      display: none;
+    #{greese.themed(".greese-AccordionItem > .greese-Collapsible-content", AccordionItem)}::after,
+    #{greese.themed(".greese-Tile", Tile)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-  }
-  .greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar),
-  .greese-ChatBubble-bubble,
-  .greese-Status:not(.greese-Status--pulse) {
-    clip-path: var(--greese-shape-clip) border-box;
-  }
-  @media (forced-colors: active) {
-    .greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar),
-    .greese-ChatBubble-bubble,
-    .greese-Status:not(.greese-Status--pulse) {
-      clip-path: none;
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-AccordionItem > .greese-Collapsible-content", AccordionItem)},
+      #{greese.themed(".greese-Tile", Tile)} {
+        transition: --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
     }
-  }
-  .greese-Badge {
-    --greese-shape-ring: color-mix(in oklab, var(--greese-badge-tone) 35%, transparent);
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-Badge::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-Badge {
-      transition: --greese-shape-h var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-AccordionItem > .greese-Collapsible-content", AccordionItem)},
+      #{greese.themed(".greese-Tile", Tile)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-AccordionItem > .greese-Collapsible-content", AccordionItem)}::after,
+      #{greese.themed(".greese-Tile", Tile)}::after {
+        display: none;
+      }
     }
-  }
-  @media (forced-colors: active) {
-    .greese-Badge {
-      clip-path: none;
-      border-color: CanvasText;
+    #{greese.themed(".greese-Alert", Alert)} {
+      --greese-shape-ring: color-mix(in oklab, var(--greese-alert-tone) 30%, transparent);
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-    .greese-Badge::after {
-      display: none;
+    #{greese.themed(".greese-Alert", Alert)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-  }
-  .greese-Button {
-    --greese-shape-ring: var(--greese-button-border, transparent);
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-Button::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-Button {
-      transition: background-color var(--greese-duration-fast) var(--greese-easing-standard),
-        border-color var(--greese-duration-fast) var(--greese-easing-standard),
-        color var(--greese-duration-fast) var(--greese-easing-standard),
-        --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-Alert", Alert)} {
+        transition: --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
     }
-  }
-  @media (forced-colors: active) {
-    .greese-Button {
-      clip-path: none;
-      border-color: CanvasText;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Alert", Alert)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-Alert", Alert)}::after {
+        display: none;
+      }
     }
-    .greese-Button::after {
-      display: none;
+    #{greese.themed(".greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar)", Avatar)},
+    #{greese.themed(".greese-ChatBubble-bubble", ChatBubble)},
+    #{greese.themed(".greese-Status:not(.greese-Status--pulse)", Status)} {
+      clip-path: var(--greese-shape-clip) border-box;
     }
-  }
-  .greese-Card {
-    --greese-shape-ring: transparent;
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-Card::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  .greese-Card.greese-Card--outline {
-    --greese-shape-ring: var(--greese-color-border);
-  }
-  .greese-Card.greese-Card--elevated {
-    --greese-shape-ring: var(--greese-color-border-strong);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-Card {
-      transition: --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar)", Avatar)},
+      #{greese.themed(".greese-ChatBubble-bubble", ChatBubble)},
+      #{greese.themed(".greese-Status:not(.greese-Status--pulse)", Status)} {
+        clip-path: none;
+      }
     }
-    .greese-Card.greese-Card--interactive {
-      transition: --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear,
-        box-shadow var(--greese-duration-normal) var(--greese-easing-standard),
-        border-color var(--greese-duration-normal) var(--greese-easing-standard),
-        translate var(--greese-duration-normal) var(--greese-easing-standard);
+    #{greese.themed(".greese-Badge", Badge)} {
+      --greese-shape-ring: color-mix(in oklab, var(--greese-badge-tone) 35%, transparent);
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-  }
-  @media (forced-colors: active) {
-    .greese-Card {
-      clip-path: none;
-      border-color: CanvasText;
+    #{greese.themed(".greese-Badge", Badge)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-    .greese-Card::after {
-      display: none;
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-Badge", Badge)} {
+        transition: --greese-shape-h var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
     }
-  }
-  .greese-Chip {
-    --greese-shape-ring: var(--greese-color-border);
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-Chip::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-Chip {
-      transition: background-color var(--greese-duration-fast) var(--greese-easing-standard),
-        color var(--greese-duration-fast) var(--greese-easing-standard),
-        --greese-shape-h var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Badge", Badge)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-Badge", Badge)}::after {
+        display: none;
+      }
     }
-  }
-  @media (forced-colors: active) {
-    .greese-Chip {
-      clip-path: none;
-      border-color: CanvasText;
+    #{greese.themed(".greese-Button", Button)} {
+      --greese-shape-ring: var(--greese-button-border, transparent);
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-    .greese-Chip::after {
-      display: none;
+    #{greese.themed(".greese-Button", Button)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-  }
-  .greese-Collapsible-trigger {
-    --greese-shape-ring: var(--greese-collapsible-border, var(--greese-color-border));
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-Collapsible-trigger::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-Collapsible-trigger {
-      transition: background-color var(--greese-duration-fast) var(--greese-easing-standard),
-        --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-Button", Button)} {
+        transition: background-color var(--greese-duration-fast) var(--greese-easing-standard),
+          border-color var(--greese-duration-fast) var(--greese-easing-standard),
+          color var(--greese-duration-fast) var(--greese-easing-standard),
+          --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
     }
-  }
-  @media (forced-colors: active) {
-    .greese-Collapsible-trigger {
-      clip-path: none;
-      border-color: CanvasText;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Button", Button)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-Button", Button)}::after {
+        display: none;
+      }
     }
-    .greese-Collapsible-trigger::after {
-      display: none;
+    #{greese.themed(".greese-Card", Card)} {
+      --greese-shape-ring: transparent;
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-  }
-  .greese-Dialog,
-  .greese-Menu,
-  .greese-Popover {
-    --greese-shape-ring: var(--greese-color-border);
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-Dialog::after,
-  .greese-Menu::after,
-  .greese-Popover::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (forced-colors: active) {
-    .greese-Dialog,
-    .greese-Menu,
-    .greese-Popover {
-      clip-path: none;
-      border-color: CanvasText;
+    #{greese.themed(".greese-Card", Card)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-    .greese-Dialog::after,
-    .greese-Menu::after,
-    .greese-Popover::after {
-      display: none;
+    #{greese.themed(".greese-Card", Card)}.greese-Card--outline {
+      --greese-shape-ring: var(--greese-color-border);
     }
-  }
-  .greese-Input,
-  .greese-Select,
-  .greese-Textarea {
-    --greese-shape-ring: var(--greese-color-border-strong);
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-Input::after,
-  .greese-Select::after,
-  .greese-Textarea::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  .greese-Input:hover,
-  .greese-Select:hover,
-  .greese-Textarea:hover {
-    --greese-shape-ring: var(--greese-color-fg-muted);
-  }
-  .greese-Input[aria-invalid=true], .greese-Input[data-invalid],
-  .greese-Select[aria-invalid=true], .greese-Select[data-invalid],
-  .greese-Textarea[aria-invalid=true], .greese-Textarea[data-invalid] {
-    --greese-shape-ring: var(--greese-color-negative);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-Input,
-    .greese-Select,
-    .greese-Textarea {
-      transition: box-shadow var(--greese-duration-fast) var(--greese-easing-standard),
-        --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    #{greese.themed(".greese-Card", Card)}.greese-Card--elevated {
+      --greese-shape-ring: var(--greese-color-border-strong);
     }
-  }
-  @media (forced-colors: active) {
-    .greese-Input,
-    .greese-Select,
-    .greese-Textarea {
-      clip-path: none;
-      border-color: CanvasText;
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-Card", Card)} {
+        transition: --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
+      #{greese.themed(".greese-Card", Card)}.greese-Card--interactive {
+        transition: --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear,
+          box-shadow var(--greese-duration-normal) var(--greese-easing-standard),
+          border-color var(--greese-duration-normal) var(--greese-easing-standard),
+          translate var(--greese-duration-normal) var(--greese-easing-standard);
+      }
     }
-    .greese-Input::after,
-    .greese-Select::after,
-    .greese-Textarea::after {
-      display: none;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Card", Card)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-Card", Card)}::after {
+        display: none;
+      }
     }
-  }
-  .greese-OtpField-slot {
-    --greese-shape-ring: var(--greese-color-border-strong);
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-OtpField-slot::before {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  .greese-OtpField[data-invalid] .greese-OtpField-slot {
-    --greese-shape-ring: var(--greese-color-negative);
-  }
-  .greese-OtpField-slot.greese-OtpField-slot--active {
-    --greese-shape-ring: var(--greese-color-focus-ring);
-    --greese-shape-border: 2px;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-OtpField-slot {
-      transition: box-shadow var(--greese-duration-fast) var(--greese-easing-standard),
-        --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    #{greese.themed(".greese-Chip", Chip)} {
+      --greese-shape-ring: var(--greese-color-border);
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-  }
-  @media (forced-colors: active) {
-    .greese-OtpField-slot {
-      clip-path: none;
-      border-color: CanvasText;
+    #{greese.themed(".greese-Chip", Chip)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-    .greese-OtpField-slot::before {
-      display: none;
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-Chip", Chip)} {
+        transition: background-color var(--greese-duration-fast) var(--greese-easing-standard),
+          color var(--greese-duration-fast) var(--greese-easing-standard),
+          --greese-shape-h var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
     }
-  }
-  .greese-Segment {
-    --greese-shape-ring: transparent;
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-Segment::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  .greese-Segment:has(:checked) {
-    --greese-shape-ring: var(--greese-segment-current-ring, transparent);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-Segment {
-      transition: background-color var(--greese-duration-fast) var(--greese-easing-standard),
-        color var(--greese-duration-fast) var(--greese-easing-standard),
-        --greese-shape-h var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Chip", Chip)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-Chip", Chip)}::after {
+        display: none;
+      }
     }
-  }
-  @media (forced-colors: active) {
-    .greese-Segment {
-      clip-path: none;
-      border-color: CanvasText;
+    #{greese.themed(".greese-Collapsible-trigger", Collapsible)} {
+      --greese-shape-ring: var(--greese-collapsible-border, var(--greese-color-border));
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-    .greese-Segment::after {
-      display: none;
+    #{greese.themed(".greese-Collapsible-trigger", Collapsible)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-  }
-  .greese-SegmentedControl-track {
-    --greese-shape-ring: var(--greese-color-border);
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-SegmentedControl-track::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-SegmentedControl-track {
-      transition: --greese-shape-h var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-Collapsible-trigger", Collapsible)} {
+        transition: background-color var(--greese-duration-fast) var(--greese-easing-standard),
+          --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
     }
-  }
-  @media (forced-colors: active) {
-    .greese-SegmentedControl-track {
-      clip-path: none;
-      border-color: CanvasText;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Collapsible-trigger", Collapsible)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-Collapsible-trigger", Collapsible)}::after {
+        display: none;
+      }
     }
-    .greese-SegmentedControl-track::after {
-      display: none;
+    #{greese.themed(".greese-Dialog", Dialog)},
+    #{greese.themed(".greese-Menu", Menu)},
+    #{greese.themed(".greese-Popover", Popover)} {
+      --greese-shape-ring: var(--greese-color-border);
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-  }
-  .greese-Tab {
-    --greese-shape-ring: transparent;
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-Tab::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  .greese-Tab[aria-selected='true'] {
-    --greese-shape-ring: var(--greese-tab-current-ring, transparent);
-    --greese-shape-border: 1.5px;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .greese-Tab {
-      transition: color var(--greese-duration-fast) var(--greese-easing-standard),
-        background-color var(--greese-duration-fast) var(--greese-easing-standard),
-        box-shadow var(--greese-duration-fast) var(--greese-easing-standard),
-        --greese-shape-c var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
-        --greese-shape-bleed 0s linear;
+    #{greese.themed(".greese-Dialog", Dialog)}::after,
+    #{greese.themed(".greese-Menu", Menu)}::after,
+    #{greese.themed(".greese-Popover", Popover)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-  }
-  @media (forced-colors: active) {
-    .greese-Tab {
-      clip-path: none;
-      border-color: CanvasText;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Dialog", Dialog)},
+      #{greese.themed(".greese-Menu", Menu)},
+      #{greese.themed(".greese-Popover", Popover)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-Dialog", Dialog)}::after,
+      #{greese.themed(".greese-Menu", Menu)}::after,
+      #{greese.themed(".greese-Popover", Popover)}::after {
+        display: none;
+      }
     }
-    .greese-Tab::after {
-      display: none;
+    #{greese.themed(".greese-Input", Input)},
+    #{greese.themed(".greese-Select", Select)},
+    #{greese.themed(".greese-Textarea", Textarea)} {
+      --greese-shape-ring: var(--greese-color-border-strong);
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-  }
-  .greese-Toast {
-    --greese-shape-ring: color-mix(in oklab, var(--greese-toast-edge) 45%, var(--greese-color-border-strong));
-    position: relative;
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-Toast::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  .greese-Toast {
-    box-shadow: inset 3px 0 0 var(--greese-toast-edge);
-  }
-  .greese-Toast:dir(rtl) {
-    box-shadow: inset -3px 0 0 var(--greese-toast-edge);
-  }
-  @media (forced-colors: active) {
-    .greese-Toast {
-      clip-path: none;
-      border-color: CanvasText;
+    #{greese.themed(".greese-Input", Input)}::after,
+    #{greese.themed(".greese-Select", Select)}::after,
+    #{greese.themed(".greese-Textarea", Textarea)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
     }
-    .greese-Toast::after {
-      display: none;
+    #{greese.themed(".greese-Input", Input)}:hover,
+    #{greese.themed(".greese-Select", Select)}:hover,
+    #{greese.themed(".greese-Textarea", Textarea)}:hover {
+      --greese-shape-ring: var(--greese-color-fg-muted);
     }
-  }
-  .greese-Tooltip {
-    --greese-shape-ring: var(--greese-tooltip-border, transparent);
-    isolation: isolate;
-    border-color: transparent;
-    clip-path: var(--greese-shape-clip) padding-box;
-  }
-  .greese-Tooltip::after {
-    position: absolute;
-    inset: 0;
-    inline-size: auto;
-    block-size: auto;
-    translate: none;
-    z-index: 1;
-    pointer-events: none;
-    content: '';
-    background: var(--greese-shape-ring);
-    clip-path: var(--greese-shape-ring-clip);
-  }
-  @media (forced-colors: active) {
-    .greese-Tooltip {
-      clip-path: none;
-      border-color: CanvasText;
+    #{greese.themed(".greese-Input", Input)}[aria-invalid=true], #{greese.themed(".greese-Input", Input)}[data-invalid],
+    #{greese.themed(".greese-Select", Select)}[aria-invalid=true], #{greese.themed(".greese-Select", Select)}[data-invalid],
+    #{greese.themed(".greese-Textarea", Textarea)}[aria-invalid=true], #{greese.themed(".greese-Textarea", Textarea)}[data-invalid] {
+      --greese-shape-ring: var(--greese-color-negative);
     }
-    .greese-Tooltip::after {
-      display: none;
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-Input", Input)},
+      #{greese.themed(".greese-Select", Select)},
+      #{greese.themed(".greese-Textarea", Textarea)} {
+        transition: box-shadow var(--greese-duration-fast) var(--greese-easing-standard),
+          --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
     }
-  }
-  .greese-shape-bevel-control,
-  .greese-Button {
-    --greese-shape-a: 8px;
-    --greese-shape-b: 0px;
-    --greese-shape-border: 1px;
-    --greese-shape-clip: polygon(calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-b) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-b) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-b) - 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - var(--greese-shape-b) + 0.414 * var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)));
-    --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-a)) 0, calc(100% - var(--greese-shape-b)) 0, 100% calc(var(--greese-shape-b)), 100% calc(100% - var(--greese-shape-a)), calc(100% - var(--greese-shape-a)) 100%, calc(var(--greese-shape-b)) 100%, 0 calc(100% - var(--greese-shape-b)), 0 calc(var(--greese-shape-a)), calc(var(--greese-shape-a)) 0, calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-b) - 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-b) + 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-b) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-b) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
-  }
-  .greese-Button.greese-Button--size-sm {
-    --greese-shape-a: 5.6px;
-    --greese-shape-b: 0px;
-  }
-  .greese-Button.greese-Button--size-xs {
-    --greese-shape-a: 4px;
-    --greese-shape-b: 0px;
-  }
-  .greese-Button.greese-IconButton {
-    --greese-shape-a: 4px;
-    --greese-shape-b: 0px;
-  }
-  @media (hover: hover) {
-    .greese-shape-bevel-control:hover,
-    .greese-Button:hover {
-      --greese-shape-a: 0px;
-      --greese-shape-b: 8px;
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Input", Input)},
+      #{greese.themed(".greese-Select", Select)},
+      #{greese.themed(".greese-Textarea", Textarea)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-Input", Input)}::after,
+      #{greese.themed(".greese-Select", Select)}::after,
+      #{greese.themed(".greese-Textarea", Textarea)}::after {
+        display: none;
+      }
     }
-    .greese-Button.greese-Button--size-sm:hover {
-      --greese-shape-a: 0px;
-      --greese-shape-b: 5.6px;
+    #{greese.themed(".greese-OtpField-slot", OtpField)} {
+      --greese-shape-ring: var(--greese-color-border-strong);
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
     }
-    .greese-Button.greese-Button--size-xs:hover,
-    .greese-Button.greese-IconButton:hover {
-      --greese-shape-a: 0px;
+    #{greese.themed(".greese-OtpField-slot", OtpField)}::before {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
+    }
+    .greese-OtpField[data-invalid] #{greese.themed(".greese-OtpField-slot", OtpField)} {
+      --greese-shape-ring: var(--greese-color-negative);
+    }
+    #{greese.themed(".greese-OtpField-slot", OtpField)}.greese-OtpField-slot--active {
+      --greese-shape-ring: var(--greese-color-focus-ring);
+      --greese-shape-border: 2px;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-OtpField-slot", OtpField)} {
+        transition: box-shadow var(--greese-duration-fast) var(--greese-easing-standard),
+          --greese-shape-a var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-b var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
+    }
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-OtpField-slot", OtpField)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-OtpField-slot", OtpField)}::before {
+        display: none;
+      }
+    }
+    #{greese.themed(".greese-Segment", Segment)} {
+      --greese-shape-ring: transparent;
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
+    }
+    #{greese.themed(".greese-Segment", Segment)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
+    }
+    #{greese.themed(".greese-Segment", Segment)}:has(:checked) {
+      --greese-shape-ring: var(--greese-segment-current-ring, transparent);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-Segment", Segment)} {
+        transition: background-color var(--greese-duration-fast) var(--greese-easing-standard),
+          color var(--greese-duration-fast) var(--greese-easing-standard),
+          --greese-shape-h var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
+    }
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Segment", Segment)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-Segment", Segment)}::after {
+        display: none;
+      }
+    }
+    #{greese.themed(".greese-SegmentedControl-track", SegmentedControl)} {
+      --greese-shape-ring: var(--greese-color-border);
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
+    }
+    #{greese.themed(".greese-SegmentedControl-track", SegmentedControl)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-SegmentedControl-track", SegmentedControl)} {
+        transition: --greese-shape-h var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
+    }
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-SegmentedControl-track", SegmentedControl)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-SegmentedControl-track", SegmentedControl)}::after {
+        display: none;
+      }
+    }
+    #{greese.themed(".greese-Tab", Tab)} {
+      --greese-shape-ring: transparent;
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
+    }
+    #{greese.themed(".greese-Tab", Tab)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
+    }
+    #{greese.themed(".greese-Tab", Tab)}[aria-selected='true'] {
+      --greese-shape-ring: var(--greese-tab-current-ring, transparent);
+      --greese-shape-border: 1.5px;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      #{greese.themed(".greese-Tab", Tab)} {
+        transition: color var(--greese-duration-fast) var(--greese-easing-standard),
+          background-color var(--greese-duration-fast) var(--greese-easing-standard),
+          box-shadow var(--greese-duration-fast) var(--greese-easing-standard),
+          --greese-shape-c var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-border var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-ring var(--greese-duration-normal) var(--greese-easing-standard),
+          --greese-shape-bleed 0s linear;
+      }
+    }
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Tab", Tab)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-Tab", Tab)}::after {
+        display: none;
+      }
+    }
+    #{greese.themed(".greese-Toast", Toast)} {
+      --greese-shape-ring: color-mix(in oklab, var(--greese-toast-edge) 45%, var(--greese-color-border-strong));
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
+    }
+    #{greese.themed(".greese-Toast", Toast)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
+    }
+    #{greese.themed(".greese-Toast", Toast)} {
+      box-shadow: inset 3px 0 0 var(--greese-toast-edge);
+    }
+    #{greese.themed(".greese-Toast", Toast)}:dir(rtl) {
+      box-shadow: inset -3px 0 0 var(--greese-toast-edge);
+    }
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Toast", Toast)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-Toast", Toast)}::after {
+        display: none;
+      }
+    }
+    #{greese.themed(".greese-Tooltip", Tooltip)} {
+      --greese-shape-ring: var(--greese-tooltip-border, transparent);
+      isolation: isolate;
+      border-color: transparent;
+      clip-path: var(--greese-shape-clip) padding-box;
+    }
+    #{greese.themed(".greese-Tooltip", Tooltip)}::after {
+      position: absolute;
+      inset: 0;
+      inline-size: auto;
+      block-size: auto;
+      translate: none;
+      z-index: 1;
+      pointer-events: none;
+      content: '';
+      background: var(--greese-shape-ring);
+      clip-path: var(--greese-shape-ring-clip);
+    }
+    @media (forced-colors: active) {
+      #{greese.themed(".greese-Tooltip", Tooltip)} {
+        clip-path: none;
+        border-color: CanvasText;
+      }
+      #{greese.themed(".greese-Tooltip", Tooltip)}::after {
+        display: none;
+      }
+    }
+    #{greese.themed(".greese-shape-bevel-control")},
+    #{greese.themed(".greese-Button", Button)} {
+      --greese-shape-a: 8px;
+      --greese-shape-b: 0px;
+      --greese-shape-border: 1px;
+      --greese-shape-clip: polygon(calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-b) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-b) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-b) - 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - var(--greese-shape-b) + 0.414 * var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)));
+      --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-a)) 0, calc(100% - var(--greese-shape-b)) 0, 100% calc(var(--greese-shape-b)), 100% calc(100% - var(--greese-shape-a)), calc(100% - var(--greese-shape-a)) 100%, calc(var(--greese-shape-b)) 100%, 0 calc(100% - var(--greese-shape-b)), 0 calc(var(--greese-shape-a)), calc(var(--greese-shape-a)) 0, calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-b) - 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-b) + 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-b) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-b) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
+    }
+    #{greese.themed(".greese-Button", Button)}.greese-Button--size-sm {
+      --greese-shape-a: 5.6px;
+      --greese-shape-b: 0px;
+    }
+    #{greese.themed(".greese-Button", Button)}.greese-Button--size-xs {
+      --greese-shape-a: 4px;
+      --greese-shape-b: 0px;
+    }
+    #{greese.themed(".greese-Button", Button)}.greese-IconButton {
+      --greese-shape-a: 4px;
+      --greese-shape-b: 0px;
+    }
+    @media (hover: hover) {
+      #{greese.themed(".greese-shape-bevel-control")}:hover,
+      #{greese.themed(".greese-Button", Button)}:hover {
+        --greese-shape-a: 0px;
+        --greese-shape-b: 8px;
+      }
+      #{greese.themed(".greese-Button", Button)}.greese-Button--size-sm:hover {
+        --greese-shape-a: 0px;
+        --greese-shape-b: 5.6px;
+      }
+      #{greese.themed(".greese-Button", Button)}.greese-Button--size-xs:hover,
+      #{greese.themed(".greese-Button", Button)}.greese-IconButton:hover {
+        --greese-shape-a: 0px;
+        --greese-shape-b: 4px;
+      }
+    }
+    #{greese.themed(".greese-shape-bevel-control")}:active,
+    #{greese.themed(".greese-Button", Button)}:active {
+      --greese-shape-a: 4px;
       --greese-shape-b: 4px;
     }
-  }
-  .greese-shape-bevel-control:active,
-  .greese-Button:active {
-    --greese-shape-a: 4px;
-    --greese-shape-b: 4px;
-  }
-  .greese-Button.greese-Button--size-sm:active {
-    --greese-shape-a: 2.8px;
-    --greese-shape-b: 2.8px;
-  }
-  .greese-Button.greese-Button--size-xs:active,
-  .greese-Button.greese-IconButton:active {
-    --greese-shape-a: 2px;
-    --greese-shape-b: 2px;
-  }
-  .greese-shape-bevel-control:focus-visible {
-    --greese-shape-a: 0px;
-    --greese-shape-b: 0px;
-    --greese-shape-bleed: 8px;
-    transition-delay: 0s, 0s, 0s, 0s, var(--greese-duration-normal);
-  }
-  .greese-Button:focus-visible {
-    --greese-shape-a: 0px;
-    --greese-shape-b: 0px;
-    --greese-shape-bleed: 8px;
-    transition-delay: 0s, 0s, 0s, 0s, 0s, 0s, 0s, var(--greese-duration-normal);
-  }
-  .greese-shape-bevel-field,
-  .greese-Input,
-  .greese-OtpField-slot,
-  .greese-Select,
-  .greese-Textarea {
-    --greese-shape-a: 6px;
-    --greese-shape-b: 0px;
-    --greese-shape-border: 1px;
-    --greese-shape-clip: polygon(calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-b) + var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-b) - var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-b) - var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - var(--greese-shape-b) + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)));
-    --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-a)) 0, calc(100% - var(--greese-shape-b)) 0, 100% calc(var(--greese-shape-b)), 100% calc(100% - var(--greese-shape-a)), calc(100% - var(--greese-shape-a)) 100%, calc(var(--greese-shape-b)) 100%, 0 calc(100% - var(--greese-shape-b)), 0 calc(var(--greese-shape-a)), calc(var(--greese-shape-a)) 0, calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-b) - var(--greese-shape-border)), calc(var(--greese-shape-b) + var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-b) + var(--greese-shape-border)), calc(100% - var(--greese-shape-b) - var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
-  }
-  .greese-Input:has(:focus-visible),
-  .greese-Select:has(:focus-visible),
-  .greese-Textarea:has(:focus-visible) {
-    --greese-shape-border: 3px;
-    --greese-shape-ring: var(--greese-color-focus-ring);
-    outline-color: transparent;
-  }
-  .greese-shape-bevel-field:focus-visible {
-    --greese-shape-a: 0px;
-    --greese-shape-b: 0px;
-    --greese-shape-bleed: 8px;
-    transition-delay: 0s, 0s, 0s, 0s, var(--greese-duration-normal);
-  }
-  .greese-shape-bevel-container,
-  .greese-AccordionItem > .greese-Collapsible-content,
-  .greese-Card,
-  .greese-Dialog,
-  .greese-Menu,
-  .greese-Popover,
-  .greese-Tile,
-  .greese-Toast {
-    --greese-shape-a: 16px;
-    --greese-shape-b: 0px;
-    --greese-shape-border: 1px;
-    --greese-shape-clip: polygon(calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-b) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-b) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-b) - 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - var(--greese-shape-b) + 0.414 * var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)));
-    --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-a)) 0, calc(100% - var(--greese-shape-b)) 0, 100% calc(var(--greese-shape-b)), 100% calc(100% - var(--greese-shape-a)), calc(100% - var(--greese-shape-a)) 100%, calc(var(--greese-shape-b)) 100%, 0 calc(100% - var(--greese-shape-b)), 0 calc(var(--greese-shape-a)), calc(var(--greese-shape-a)) 0, calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-b) - 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-b) + 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-b) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-b) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
-  }
-  @media (hover: hover) {
-    .greese-shape-bevel-container:hover,
-    .greese-Card.greese-Card--interactive:hover {
-      --greese-shape-a: 0px;
-      --greese-shape-b: 16px;
+    #{greese.themed(".greese-Button", Button)}.greese-Button--size-sm:active {
+      --greese-shape-a: 2.8px;
+      --greese-shape-b: 2.8px;
     }
-  }
-  .greese-shape-bevel-container:focus-visible,
-  .greese-AccordionItem > .greese-Collapsible-content:focus-visible,
-  .greese-Card:focus-visible,
-  .greese-Tile:focus-visible {
-    --greese-shape-a: 0px;
-    --greese-shape-b: 0px;
-    --greese-shape-bleed: 8px;
-    transition-delay: 0s, 0s, 0s, 0s, var(--greese-duration-normal);
-  }
-  .greese-Dialog:focus-visible,
-  .greese-Menu:focus-visible,
-  .greese-Popover:focus-visible,
-  .greese-Toast:focus-visible {
-    --greese-shape-a: 0px;
-    --greese-shape-b: 0px;
-    --greese-shape-bleed: 8px;
-  }
-  .greese-shape-bevel-small,
-  .greese-Alert,
-  .greese-Collapsible-trigger,
-  .greese-Tooltip {
-    --greese-shape-a: 8px;
-    --greese-shape-b: 0px;
-    --greese-shape-border: 1px;
-    --greese-shape-clip: polygon(calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-b) + var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-b) - var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-b) - var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - var(--greese-shape-b) + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)));
-    --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-a)) 0, calc(100% - var(--greese-shape-b)) 0, 100% calc(var(--greese-shape-b)), 100% calc(100% - var(--greese-shape-a)), calc(100% - var(--greese-shape-a)) 100%, calc(var(--greese-shape-b)) 100%, 0 calc(100% - var(--greese-shape-b)), 0 calc(var(--greese-shape-a)), calc(var(--greese-shape-a)) 0, calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-b) - var(--greese-shape-border)), calc(var(--greese-shape-b) + var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-b) + var(--greese-shape-border)), calc(100% - var(--greese-shape-b) - var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
-  }
-  .greese-shape-bevel-small:focus-visible,
-  .greese-Alert:focus-visible {
-    --greese-shape-a: 0px;
-    --greese-shape-b: 0px;
-    --greese-shape-bleed: 8px;
-    transition-delay: 0s, 0s, 0s, 0s, var(--greese-duration-normal);
-  }
-  .greese-Collapsible-trigger:focus-visible {
-    --greese-shape-a: 0px;
-    --greese-shape-b: 0px;
-    --greese-shape-bleed: 8px;
-    transition-delay: 0s, 0s, 0s, 0s, 0s, var(--greese-duration-normal);
-  }
-  .greese-Tooltip:focus-visible {
-    --greese-shape-a: 0px;
-    --greese-shape-b: 0px;
-    --greese-shape-bleed: 8px;
-  }
-  .greese-shape-bevel-indicator,
-  .greese-Badge,
-  .greese-Chip,
-  .greese-Segment,
-  .greese-SegmentedControl-track {
-    --greese-shape-h: 6px;
-    --greese-shape-border: 1px;
-    --greese-shape-clip: polygon(calc(var(--greese-shape-h) - 0.936 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-h) + 0.936 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + 1.002 * var(--greese-shape-bleed)) 50%, calc(100% - var(--greese-shape-h) + 0.936 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-h) - 0.936 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * 1.002 * var(--greese-shape-bleed)) 50%);
-    --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-h)) 0, calc(100% - var(--greese-shape-h)) 0, 100% 50%, calc(100% - var(--greese-shape-h)) 100%, calc(var(--greese-shape-h)) 100%, 0 50%, calc(var(--greese-shape-h)) 0, calc(var(--greese-shape-h) + 0.936 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(1.002 * var(--greese-shape-border)) 50%, calc(var(--greese-shape-h) + 0.936 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-h) - 0.936 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - 1.002 * var(--greese-shape-border)) 50%, calc(100% - var(--greese-shape-h) - 0.936 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-h) + 0.936 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
-  }
-  .greese-Segment:has(:focus-visible) {
-    --greese-shape-border: 3px;
-    --greese-shape-ring: var(--greese-color-focus-ring);
-    outline-color: transparent;
-  }
-  .greese-shape-bevel-indicator:focus-visible,
-  .greese-Badge:focus-visible,
-  .greese-SegmentedControl-track:focus-visible {
-    --greese-shape-h: 0px;
-    --greese-shape-bleed: 8px;
-    transition-delay: 0s, 0s, 0s, var(--greese-duration-normal);
-  }
-  .greese-Chip:focus-visible {
-    --greese-shape-h: 0px;
-    --greese-shape-bleed: 8px;
-    transition-delay: 0s, 0s, 0s, 0s, 0s, var(--greese-duration-normal);
-  }
-  .greese-shape-bevel-mark,
-  .greese-Status:not(.greese-Status--pulse) {
-    --greese-shape-border: 1px;
-    --greese-shape-clip: polygon(50% calc(-1 * 1.147 * var(--greese-shape-bleed)), calc(100% + 2.04 * var(--greese-shape-bleed)) 50%, 50% calc(100% + 1.147 * var(--greese-shape-bleed)), calc(-1 * 2.04 * var(--greese-shape-bleed)) 50%);
-    --greese-shape-ring-clip: polygon(evenodd, 50% 0, 100% 50%, 50% 100%, 0 50%, 50% 0, 50% calc(1.147 * var(--greese-shape-border)), calc(2.04 * var(--greese-shape-border)) 50%, 50% calc(100% - 1.147 * var(--greese-shape-border)), calc(100% - 2.04 * var(--greese-shape-border)) 50%, 50% calc(1.147 * var(--greese-shape-border)));
-  }
-  .greese-shape-bevel-mark:focus-visible {
-    --greese-shape-border: 3px;
-    --greese-shape-ring: var(--greese-color-focus-ring);
-    outline-color: transparent;
-  }
-  .greese-shape-bevel-tab,
-  .greese-Tab {
-    --greese-shape-c: 7px;
-    --greese-shape-border: 1px;
-    --greese-shape-clip: polygon(calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)));
-    --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-c)) 0, calc(100% - var(--greese-shape-c)) 0, 100% calc(var(--greese-shape-c)), 100% 100%, 0 100%, 0 calc(var(--greese-shape-c)), calc(var(--greese-shape-c)) 0, calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
-  }
-  .greese-shape-bevel-tab:focus-visible {
-    --greese-shape-c: 0px;
-    --greese-shape-bleed: 8px;
-    transition-delay: 0s, 0s, 0s, var(--greese-duration-normal);
-  }
-  .greese-shape-bevel-avatar,
-  .greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar) {
-    --greese-shape-border: 1px;
-    --greese-shape-clip: polygon(calc(22% - 0.262 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(78% + 0.262 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(22% - 0.585 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(78% + 0.585 * var(--greese-shape-bleed)), calc(78% + 0.262 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(22% - 0.262 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(78% + 0.585 * var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(22% - 0.585 * var(--greese-shape-bleed)));
-    --greese-shape-ring-clip: polygon(evenodd, 22% 0, 78% 0, 100% 22%, 100% 78%, 78% 100%, 22% 100%, 0 78%, 0 22%, 22% 0, calc(22% + 0.262 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(22% + 0.585 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(78% - 0.585 * var(--greese-shape-border)), calc(22% + 0.262 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(78% - 0.262 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(78% - 0.585 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(22% + 0.585 * var(--greese-shape-border)), calc(78% - 0.262 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(22% + 0.262 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
-  }
-  .greese-shape-bevel-avatar:focus-visible {
-    --greese-shape-border: 3px;
-    --greese-shape-ring: var(--greese-color-focus-ring);
-    outline-color: transparent;
-  }
-  .greese-shape-bevel-bubble,
-  .greese-ChatBubble-bubble {
-    --greese-shape-c: 8px;
-    --greese-shape-border: 1px;
-    --greese-shape-clip: polygon(calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * 11px - 2.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - 11px - 0.414 * var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)));
-    --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-c)) 0, calc(100% - var(--greese-shape-c)) 0, 100% calc(var(--greese-shape-c)), 100% calc(100% - var(--greese-shape-c)), calc(100% - var(--greese-shape-c)) 100%, calc(-1 * 11px) 100%, 0 calc(100% - 11px), 0 calc(var(--greese-shape-c)), calc(var(--greese-shape-c)) 0, calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - 11px + 0.414 * var(--greese-shape-border)), calc(-1 * 11px + 2.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
-  }
-  .greese-shape-bevel-bubble:dir(rtl),
-  .greese-ChatBubble-bubble:dir(rtl),
-  .greese-ChatBubble--end .greese-ChatBubble-bubble {
-    --greese-shape-clip: polygon(calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - 11px - 0.414 * var(--greese-shape-bleed)), calc(100% + 11px + 2.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)), calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)));
-    --greese-shape-ring-clip: polygon(evenodd, 100% calc(var(--greese-shape-c)), 100% calc(100% - 11px), calc(100% + 11px) 100%, calc(var(--greese-shape-c)) 100%, 0 calc(100% - var(--greese-shape-c)), 0 calc(var(--greese-shape-c)), calc(var(--greese-shape-c)) 0, calc(100% - var(--greese-shape-c)) 0, 100% calc(var(--greese-shape-c)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% + 11px - 2.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - 11px + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)));
-  }
-  .greese-ChatBubble--end .greese-ChatBubble-bubble:dir(rtl) {
-    --greese-shape-clip: polygon(calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * 11px - 2.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - 11px - 0.414 * var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)));
-    --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-c)) 0, calc(100% - var(--greese-shape-c)) 0, 100% calc(var(--greese-shape-c)), 100% calc(100% - var(--greese-shape-c)), calc(100% - var(--greese-shape-c)) 100%, calc(-1 * 11px) 100%, 0 calc(100% - 11px), 0 calc(var(--greese-shape-c)), calc(var(--greese-shape-c)) 0, calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - 11px + 0.414 * var(--greese-shape-border)), calc(-1 * 11px + 2.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
-  }
-  .greese-shape-bevel-bubble:focus-visible {
-    --greese-shape-border: 3px;
-    --greese-shape-ring: var(--greese-color-focus-ring);
-    outline-color: transparent;
+    #{greese.themed(".greese-Button", Button)}.greese-Button--size-xs:active,
+    #{greese.themed(".greese-Button", Button)}.greese-IconButton:active {
+      --greese-shape-a: 2px;
+      --greese-shape-b: 2px;
+    }
+    #{greese.themed(".greese-shape-bevel-control")}:focus-visible {
+      --greese-shape-a: 0px;
+      --greese-shape-b: 0px;
+      --greese-shape-bleed: 8px;
+      transition-delay: 0s, 0s, 0s, 0s, var(--greese-duration-normal);
+    }
+    #{greese.themed(".greese-Button", Button)}:focus-visible {
+      --greese-shape-a: 0px;
+      --greese-shape-b: 0px;
+      --greese-shape-bleed: 8px;
+      transition-delay: 0s, 0s, 0s, 0s, 0s, 0s, 0s, var(--greese-duration-normal);
+    }
+    #{greese.themed(".greese-shape-bevel-field")},
+    #{greese.themed(".greese-Input", Input)},
+    #{greese.themed(".greese-OtpField-slot", OtpField)},
+    #{greese.themed(".greese-Select", Select)},
+    #{greese.themed(".greese-Textarea", Textarea)} {
+      --greese-shape-a: 6px;
+      --greese-shape-b: 0px;
+      --greese-shape-border: 1px;
+      --greese-shape-clip: polygon(calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-b) + var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-b) - var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-b) - var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - var(--greese-shape-b) + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)));
+      --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-a)) 0, calc(100% - var(--greese-shape-b)) 0, 100% calc(var(--greese-shape-b)), 100% calc(100% - var(--greese-shape-a)), calc(100% - var(--greese-shape-a)) 100%, calc(var(--greese-shape-b)) 100%, 0 calc(100% - var(--greese-shape-b)), 0 calc(var(--greese-shape-a)), calc(var(--greese-shape-a)) 0, calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-b) - var(--greese-shape-border)), calc(var(--greese-shape-b) + var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-b) + var(--greese-shape-border)), calc(100% - var(--greese-shape-b) - var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
+    }
+    #{greese.themed(".greese-Input", Input)}:has(:focus-visible),
+    #{greese.themed(".greese-Select", Select)}:has(:focus-visible),
+    #{greese.themed(".greese-Textarea", Textarea)}:has(:focus-visible) {
+      --greese-shape-border: 3px;
+      --greese-shape-ring: var(--greese-color-focus-ring);
+      outline-color: transparent;
+    }
+    #{greese.themed(".greese-shape-bevel-field")}:focus-visible {
+      --greese-shape-a: 0px;
+      --greese-shape-b: 0px;
+      --greese-shape-bleed: 8px;
+      transition-delay: 0s, 0s, 0s, 0s, var(--greese-duration-normal);
+    }
+    #{greese.themed(".greese-shape-bevel-container")},
+    #{greese.themed(".greese-AccordionItem > .greese-Collapsible-content", AccordionItem)},
+    #{greese.themed(".greese-Card", Card)},
+    #{greese.themed(".greese-Dialog", Dialog)},
+    #{greese.themed(".greese-Menu", Menu)},
+    #{greese.themed(".greese-Popover", Popover)},
+    #{greese.themed(".greese-Tile", Tile)},
+    #{greese.themed(".greese-Toast", Toast)} {
+      --greese-shape-a: 16px;
+      --greese-shape-b: 0px;
+      --greese-shape-border: 1px;
+      --greese-shape-clip: polygon(calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-b) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-b) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-b) - 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - var(--greese-shape-b) + 0.414 * var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)));
+      --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-a)) 0, calc(100% - var(--greese-shape-b)) 0, 100% calc(var(--greese-shape-b)), 100% calc(100% - var(--greese-shape-a)), calc(100% - var(--greese-shape-a)) 100%, calc(var(--greese-shape-b)) 100%, 0 calc(100% - var(--greese-shape-b)), 0 calc(var(--greese-shape-a)), calc(var(--greese-shape-a)) 0, calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-b) - 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-b) + 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-b) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-b) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
+    }
+    @media (hover: hover) {
+      #{greese.themed(".greese-shape-bevel-container")}:hover,
+      #{greese.themed(".greese-Card", Card)}.greese-Card--interactive:hover {
+        --greese-shape-a: 0px;
+        --greese-shape-b: 16px;
+      }
+    }
+    #{greese.themed(".greese-shape-bevel-container")}:focus-visible,
+    #{greese.themed(".greese-AccordionItem > .greese-Collapsible-content", AccordionItem)}:focus-visible,
+    #{greese.themed(".greese-Card", Card)}:focus-visible,
+    #{greese.themed(".greese-Tile", Tile)}:focus-visible {
+      --greese-shape-a: 0px;
+      --greese-shape-b: 0px;
+      --greese-shape-bleed: 8px;
+      transition-delay: 0s, 0s, 0s, 0s, var(--greese-duration-normal);
+    }
+    #{greese.themed(".greese-Dialog", Dialog)}:focus-visible,
+    #{greese.themed(".greese-Menu", Menu)}:focus-visible,
+    #{greese.themed(".greese-Popover", Popover)}:focus-visible,
+    #{greese.themed(".greese-Toast", Toast)}:focus-visible {
+      --greese-shape-a: 0px;
+      --greese-shape-b: 0px;
+      --greese-shape-bleed: 8px;
+    }
+    #{greese.themed(".greese-shape-bevel-small")},
+    #{greese.themed(".greese-Alert", Alert)},
+    #{greese.themed(".greese-Collapsible-trigger", Collapsible)},
+    #{greese.themed(".greese-Tooltip", Tooltip)} {
+      --greese-shape-a: 8px;
+      --greese-shape-b: 0px;
+      --greese-shape-border: 1px;
+      --greese-shape-clip: polygon(calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-b) + var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-b) - var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-a) + 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-b) - var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - var(--greese-shape-b) + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-a) - 0.414 * var(--greese-shape-bleed)));
+      --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-a)) 0, calc(100% - var(--greese-shape-b)) 0, 100% calc(var(--greese-shape-b)), 100% calc(100% - var(--greese-shape-a)), calc(100% - var(--greese-shape-a)) 100%, calc(var(--greese-shape-b)) 100%, 0 calc(100% - var(--greese-shape-b)), 0 calc(var(--greese-shape-a)), calc(var(--greese-shape-a)) 0, calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-b) - var(--greese-shape-border)), calc(var(--greese-shape-b) + var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-a) - 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-b) + var(--greese-shape-border)), calc(100% - var(--greese-shape-b) - var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-a) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
+    }
+    #{greese.themed(".greese-shape-bevel-small")}:focus-visible,
+    #{greese.themed(".greese-Alert", Alert)}:focus-visible {
+      --greese-shape-a: 0px;
+      --greese-shape-b: 0px;
+      --greese-shape-bleed: 8px;
+      transition-delay: 0s, 0s, 0s, 0s, var(--greese-duration-normal);
+    }
+    #{greese.themed(".greese-Collapsible-trigger", Collapsible)}:focus-visible {
+      --greese-shape-a: 0px;
+      --greese-shape-b: 0px;
+      --greese-shape-bleed: 8px;
+      transition-delay: 0s, 0s, 0s, 0s, 0s, var(--greese-duration-normal);
+    }
+    #{greese.themed(".greese-Tooltip", Tooltip)}:focus-visible {
+      --greese-shape-a: 0px;
+      --greese-shape-b: 0px;
+      --greese-shape-bleed: 8px;
+    }
+    #{greese.themed(".greese-shape-bevel-indicator")},
+    #{greese.themed(".greese-Badge", Badge)},
+    #{greese.themed(".greese-Chip", Chip)},
+    #{greese.themed(".greese-Segment", Segment)},
+    #{greese.themed(".greese-SegmentedControl-track", SegmentedControl)} {
+      --greese-shape-h: 6px;
+      --greese-shape-border: 1px;
+      --greese-shape-clip: polygon(calc(var(--greese-shape-h) - 0.936 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-h) + 0.936 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + 1.002 * var(--greese-shape-bleed)) 50%, calc(100% - var(--greese-shape-h) + 0.936 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-h) - 0.936 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * 1.002 * var(--greese-shape-bleed)) 50%);
+      --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-h)) 0, calc(100% - var(--greese-shape-h)) 0, 100% 50%, calc(100% - var(--greese-shape-h)) 100%, calc(var(--greese-shape-h)) 100%, 0 50%, calc(var(--greese-shape-h)) 0, calc(var(--greese-shape-h) + 0.936 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(1.002 * var(--greese-shape-border)) 50%, calc(var(--greese-shape-h) + 0.936 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-h) - 0.936 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - 1.002 * var(--greese-shape-border)) 50%, calc(100% - var(--greese-shape-h) - 0.936 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-h) + 0.936 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
+    }
+    #{greese.themed(".greese-Segment", Segment)}:has(:focus-visible) {
+      --greese-shape-border: 3px;
+      --greese-shape-ring: var(--greese-color-focus-ring);
+      outline-color: transparent;
+    }
+    #{greese.themed(".greese-shape-bevel-indicator")}:focus-visible,
+    #{greese.themed(".greese-Badge", Badge)}:focus-visible,
+    #{greese.themed(".greese-SegmentedControl-track", SegmentedControl)}:focus-visible {
+      --greese-shape-h: 0px;
+      --greese-shape-bleed: 8px;
+      transition-delay: 0s, 0s, 0s, var(--greese-duration-normal);
+    }
+    #{greese.themed(".greese-Chip", Chip)}:focus-visible {
+      --greese-shape-h: 0px;
+      --greese-shape-bleed: 8px;
+      transition-delay: 0s, 0s, 0s, 0s, 0s, var(--greese-duration-normal);
+    }
+    #{greese.themed(".greese-shape-bevel-mark")},
+    #{greese.themed(".greese-Status:not(.greese-Status--pulse)", Status)} {
+      --greese-shape-border: 1px;
+      --greese-shape-clip: polygon(50% calc(-1 * 1.147 * var(--greese-shape-bleed)), calc(100% + 2.04 * var(--greese-shape-bleed)) 50%, 50% calc(100% + 1.147 * var(--greese-shape-bleed)), calc(-1 * 2.04 * var(--greese-shape-bleed)) 50%);
+      --greese-shape-ring-clip: polygon(evenodd, 50% 0, 100% 50%, 50% 100%, 0 50%, 50% 0, 50% calc(1.147 * var(--greese-shape-border)), calc(2.04 * var(--greese-shape-border)) 50%, 50% calc(100% - 1.147 * var(--greese-shape-border)), calc(100% - 2.04 * var(--greese-shape-border)) 50%, 50% calc(1.147 * var(--greese-shape-border)));
+    }
+    #{greese.themed(".greese-shape-bevel-mark")}:focus-visible {
+      --greese-shape-border: 3px;
+      --greese-shape-ring: var(--greese-color-focus-ring);
+      outline-color: transparent;
+    }
+    #{greese.themed(".greese-shape-bevel-tab")},
+    #{greese.themed(".greese-Tab", Tab)} {
+      --greese-shape-c: 7px;
+      --greese-shape-border: 1px;
+      --greese-shape-clip: polygon(calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)));
+      --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-c)) 0, calc(100% - var(--greese-shape-c)) 0, 100% calc(var(--greese-shape-c)), 100% 100%, 0 100%, 0 calc(var(--greese-shape-c)), calc(var(--greese-shape-c)) 0, calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
+    }
+    #{greese.themed(".greese-shape-bevel-tab")}:focus-visible {
+      --greese-shape-c: 0px;
+      --greese-shape-bleed: 8px;
+      transition-delay: 0s, 0s, 0s, var(--greese-duration-normal);
+    }
+    #{greese.themed(".greese-shape-bevel-avatar")},
+    #{greese.themed(".greese-Avatar:not(.greese-AvatarGroup-item > .greese-Avatar)", Avatar)} {
+      --greese-shape-border: 1px;
+      --greese-shape-clip: polygon(calc(22% - 0.262 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(78% + 0.262 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(22% - 0.585 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(78% + 0.585 * var(--greese-shape-bleed)), calc(78% + 0.262 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(22% - 0.262 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(78% + 0.585 * var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(22% - 0.585 * var(--greese-shape-bleed)));
+      --greese-shape-ring-clip: polygon(evenodd, 22% 0, 78% 0, 100% 22%, 100% 78%, 78% 100%, 22% 100%, 0 78%, 0 22%, 22% 0, calc(22% + 0.262 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(22% + 0.585 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(78% - 0.585 * var(--greese-shape-border)), calc(22% + 0.262 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(78% - 0.262 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(78% - 0.585 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(22% + 0.585 * var(--greese-shape-border)), calc(78% - 0.262 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(22% + 0.262 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
+    }
+    #{greese.themed(".greese-shape-bevel-avatar")}:focus-visible {
+      --greese-shape-border: 3px;
+      --greese-shape-ring: var(--greese-color-focus-ring);
+      outline-color: transparent;
+    }
+    #{greese.themed(".greese-shape-bevel-bubble")},
+    #{greese.themed(".greese-ChatBubble-bubble", ChatBubble)} {
+      --greese-shape-c: 8px;
+      --greese-shape-border: 1px;
+      --greese-shape-clip: polygon(calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * 11px - 2.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - 11px - 0.414 * var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)));
+      --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-c)) 0, calc(100% - var(--greese-shape-c)) 0, 100% calc(var(--greese-shape-c)), 100% calc(100% - var(--greese-shape-c)), calc(100% - var(--greese-shape-c)) 100%, calc(-1 * 11px) 100%, 0 calc(100% - 11px), 0 calc(var(--greese-shape-c)), calc(var(--greese-shape-c)) 0, calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - 11px + 0.414 * var(--greese-shape-border)), calc(-1 * 11px + 2.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
+    }
+    #{greese.themed(".greese-shape-bevel-bubble")}:dir(rtl),
+    #{greese.themed(".greese-ChatBubble-bubble", ChatBubble)}:dir(rtl),
+    .greese-ChatBubble--end #{greese.themed(".greese-ChatBubble-bubble", ChatBubble)} {
+      --greese-shape-clip: polygon(calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - 11px - 0.414 * var(--greese-shape-bleed)), calc(100% + 11px + 2.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)), calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)));
+      --greese-shape-ring-clip: polygon(evenodd, 100% calc(var(--greese-shape-c)), 100% calc(100% - 11px), calc(100% + 11px) 100%, calc(var(--greese-shape-c)) 100%, 0 calc(100% - var(--greese-shape-c)), 0 calc(var(--greese-shape-c)), calc(var(--greese-shape-c)) 0, calc(100% - var(--greese-shape-c)) 0, 100% calc(var(--greese-shape-c)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% + 11px - 2.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - 11px + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)));
+    }
+    .greese-ChatBubble--end #{greese.themed(".greese-ChatBubble-bubble", ChatBubble)}:dir(rtl) {
+      --greese-shape-clip: polygon(calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)) calc(-1 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)), calc(100% + var(--greese-shape-bleed)) calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)), calc(100% - var(--greese-shape-c) + 0.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * 11px - 2.414 * var(--greese-shape-bleed)) calc(100% + var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(100% - 11px - 0.414 * var(--greese-shape-bleed)), calc(-1 * var(--greese-shape-bleed)) calc(var(--greese-shape-c) - 0.414 * var(--greese-shape-bleed)));
+      --greese-shape-ring-clip: polygon(evenodd, calc(var(--greese-shape-c)) 0, calc(100% - var(--greese-shape-c)) 0, 100% calc(var(--greese-shape-c)), 100% calc(100% - var(--greese-shape-c)), calc(100% - var(--greese-shape-c)) 100%, calc(-1 * 11px) 100%, 0 calc(100% - 11px), 0 calc(var(--greese-shape-c)), calc(var(--greese-shape-c)) 0, calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(var(--greese-shape-border)) calc(100% - 11px + 0.414 * var(--greese-shape-border)), calc(-1 * 11px + 2.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)) calc(100% - var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-border)) calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)), calc(100% - var(--greese-shape-c) - 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)), calc(var(--greese-shape-c) + 0.414 * var(--greese-shape-border)) calc(var(--greese-shape-border)));
+    }
+    #{greese.themed(".greese-shape-bevel-bubble")}:focus-visible {
+      --greese-shape-border: 3px;
+      --greese-shape-ring: var(--greese-color-focus-ring);
+      outline-color: transparent;
+    }
   }
 }

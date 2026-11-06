@@ -13,8 +13,15 @@ import {
 } from '../index.ts'
 import { blocks, compileScss, rules } from '../test/sass.ts'
 
-const compile = (scss: string, use = `@use 'kit' as greese;`): string =>
+/** The guard theme rules carry for `layer` (see reset-guard() in the kit). */
+const guard = (layer: string) =>
+  `:where(:not(.greese-reset-${layer}, .greese-reset-${layer} *, .greese-reset, .greese-reset *))`
+
+/** Compiled kit output with or without the reset guards, which most tests aren't about. */
+const compileGuarded = (scss: string, use = `@use 'kit' as greese;`): string =>
   compileScss(`${use}\n${scss}`)
+const compile = (scss: string, use?: string): string =>
+  compileGuarded(scss, use).replace(/:where\(:not\(\.greese-reset-[^)]*\)\)/g, '')
 
 /** The custom properties the first rule for `selector` declares, in order. */
 const declared = (css: string, selector: string): Array<[string, string]> => {
@@ -628,6 +635,55 @@ describe('SCSS kit: tokens() and theme()', () => {
     ])
   })
 
+  /** What each selector ends up declaring, by where it sits: later blocks win. */
+  const effective = (css: string) => {
+    const out = new Map<string, Map<string, string>>()
+    for (const b of blocks(css)) {
+      const key = [...b.within, b.prelude].join(' > ')
+      const seen = out.get(key) ?? new Map<string, string>()
+      for (const [p, v] of b.declarations) seen.set(p, v)
+      if (b.declarations.length) out.set(key, seen)
+    }
+    return out
+  }
+
+  it.each([
+    ['in a named theme', (body: string) => `@include greese.theme(brand) { ${body} }`],
+    ['on the page', (body: string) => body],
+  ])('adds up repeated calls %s, as one merged call', (_, wrap) => {
+    const color = `@include greese.tokens((color: (primary: (light: #0f766e, dark: #5eead4), accentContent: #000)));`
+    const shape = `@include greese.tokens((radius: (md: 2px), color: (accent: "#fde047")), $extend: (space: (9: 5rem)));`
+    const merged = `@include greese.tokens((color: (primary: (light: #0f766e, dark: #5eead4), accentContent: #000, accent: "#fde047"), radius: (md: 2px)), $extend: (space: (9: 5rem)));`
+    const split = compile(wrap(`${color}\n${shape}`))
+    expect(effective(split)).toEqual(effective(compile(wrap(merged))))
+    // The second call writes only what it changes, not the theme again.
+    expect(split.match(/--greese-space-4:/g)?.length ?? 0).toBeLessThanOrEqual(1)
+  })
+
+  it('keeps an earlier call’s explicit value over what a later one derives', () => {
+    const css = compile(`@include greese.theme(brand) {
+      @include greese.tokens((color: (primaryContent: #123456)));
+      @include greese.tokens((color: (primary: "#fde047")));
+    }`)
+    const values = effective(css).get('@layer greese.theme > [data-greese-theme=brand]')
+    expect(values?.get('--greese-color-primary-content')).toBe('#123456')
+    expect(values?.get('--greese-color-primary')).toBe('#fde047')
+  })
+
+  it('scopes to a theme with scope(name), and to the page with null, false or empty', () => {
+    const card = `@include greese.component(Card) { padding: 0; }`
+    expect(
+      rules(
+        compile(`@include greese.scope(brand) { ${card} }`),
+        '[data-greese-theme=brand] .greese-Card'
+      )
+    ).toHaveLength(1)
+    for (const none of ['null', 'false', "''"])
+      expect(
+        rules(compile(`@include greese.scope(${none}) { ${card} }`), '.greese-Card')
+      ).toHaveLength(1)
+  })
+
   it('rejects unknown token groups and keys', () => {
     expect(() => compile('@include greese.tokens((colr: (accent: red)));')).toThrow(
       /no token group `colr`/
@@ -767,5 +823,102 @@ describe('SCSS kit: keyframes()', () => {
     expect(() =>
       compile(`@include greese.keyframes(greese-fade-up, (from: (opacity: 0)));`)
     ).toThrow(/built-in effect keeps its keyframes/)
+  })
+})
+
+describe('SCSS kit: resets', () => {
+  it('guards each theme rule for its layer: component() as shape, motion() as motion', () => {
+    const css = compileGuarded(`@include greese.component(Dialog) {
+      padding: 0;
+      @include greese.part(body) { margin: 0; }
+      @include greese.motion((enter: fade-up));
+    }
+    @include greese.component(Card, $layer: color) { color: red; }`)
+    expect(rules(css, `.greese-Dialog${guard('shape')}`)[0]?.declarations).toEqual([
+      ['padding', '0'],
+    ])
+    expect(
+      rules(css, `.greese-Dialog${guard('shape')} .greese-Dialog-body`)
+    ).toHaveLength(1)
+    expect(
+      ruleIn(css, `.greese-Dialog${guard('motion')}`, '@layer greese.overrides', motionOk)
+    ).toContainEqual(expect.arrayContaining(['animation']))
+    expect(rules(css, `.greese-Card${guard('color')}`)).toHaveLength(1)
+  })
+
+  it('writes reset-guard() for rules of your own', () => {
+    const css = compileGuarded(`.x#{greese.reset-guard(motion)} { a: b; }`)
+    expect(rules(css, `.x${guard('motion')}`)).toHaveLength(1)
+    expect(() => compileGuarded(`.x#{greese.reset-guard(sound)} { a: b; }`)).toThrow(
+      /no theme layer `sound`. Layers: color, shape, motion/
+    )
+  })
+
+  it('declares each layer’s defaults in the reset classes, and all three in .greese-reset', () => {
+    const css = compileGuarded('@include greese.reset-classes;')
+    const color = declared(css, '.greese-reset-color')
+    expect(color).toContainEqual([
+      '--greese-color-primary',
+      'light-dark(#2771e0, #81b2ff)',
+    ])
+    expect(declared(css, '.greese-reset-shape')).toContainEqual([
+      '--greese-corner-control',
+      expect.any(String),
+    ])
+    expect(declared(css, '.greese-reset-motion')).toEqual(
+      expect.arrayContaining([
+        ['--greese-motion-overlay', 'initial'],
+        ['--greese-motion-dialog-exit-opacity', 'initial'],
+      ])
+    )
+    for (const layer of ['color', 'shape', 'motion'])
+      expect(rules(css, '.greese-reset').map((r) => r.declarations)).toContainEqual(
+        declared(css, `.greese-reset-${layer}`)
+      )
+  })
+
+  it('declares the defaults in any rule with reset()', () => {
+    const css = compileGuarded('.notice { @include greese.reset(color); }')
+    expect(declared(css, '.notice')).toContainEqual([
+      '--greese-color-primary',
+      'light-dark(#2771e0, #81b2ff)',
+    ])
+    expect(declared(css, '.notice').some(([p]) => p.startsWith('--greese-corner'))).toBe(
+      false
+    )
+  })
+
+  it('leaves a component out of the layers reset() takes from it, for the rest of the build', () => {
+    const css = compileGuarded(`
+      @include greese.component(Card) { @include greese.reset(shape); }
+      @include greese.component(Card) { border-radius: 0; @include greese.motion((enter: fade-up)); }
+      @include greese.component(Card, $layer: color) { color: red; }
+      .a { clip-path: none; }
+      #{greese.themed('.greese-Card', Card)}, #{greese.themed('.greese-Tile', Tile)} { clip-path: inset(0); }`)
+    // The reset layer's rule matches nothing; motion() inside it still plays.
+    expect(
+      rules(css, `.greese-Card${guard('shape')}:not(*)`).map((r) => r.declarations)
+    ).toContainEqual([['border-radius', '0']])
+    expect(
+      ruleIn(css, `.greese-Card${guard('motion')}`, '@layer greese.overrides', motionOk)
+    ).toHaveLength(1)
+    expect(css).toContain('color: red')
+    expect(
+      rules(css, `.greese-Card${guard('shape')}:not(*)`).map((r) => r.declarations)
+    ).toContainEqual([['clip-path', 'inset(0)']])
+    expect(rules(css, `.greese-Tile${guard('shape')}`)).toHaveLength(1)
+  })
+
+  it('warns when reset() comes after the rules it would take back', () => {
+    const warnings: string[] = []
+    compileScss(
+      `@use 'kit' as greese;
+      @include greese.component(Card) { border-radius: 0; }
+      @include greese.component(Card) { @include greese.reset(shape); }`,
+      warnings
+    )
+    expect(warnings.join('\n')).toMatch(
+      /reset\(shape\) for Card comes after Card's shape rules/
+    )
   })
 })

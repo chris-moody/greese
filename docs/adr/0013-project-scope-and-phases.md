@@ -46,41 +46,42 @@ else. Plans now stay local, so the parts with lasting value live here.
 
 The phase numbers other ADRs cite:
 
-| Phase | Scope                                                 | Done       | Decisions         |
-| ----- | ----------------------------------------------------- | ---------- | ----------------- |
-| 0     | Repo reshaping: npm workspaces, build, CI, Changesets | 2026-10-17 | This ADR          |
-| 1     | Foundations: tokens, theming, the responsive core     | 2026-10-17 | ADR 0001, 0002    |
-| 2     | Layout primitives and the MUI benchmark               | 2026-10-17 | ADR 0001          |
-| 3     | Actions and forms                                     | 2026-10-17 | ADR 0003          |
-| 4     | Content, media and disclosure                         | 2026-10-17 | ADR 0004          |
-| 5     | Overlays and navigation                               | 2026-10-17 | ADR 0005          |
-| 6     | Hardening, docs, quality gates, 1.0.0                 | 2026-10-17 | ADR 0006          |
-| 7     | Component gaps (1.1.0)                                | 2026-10-18 | ADR 0007          |
-| —     | Ported components                                     | 2026-10-18 | ADR 0007 addendum |
-| —     | greese.js                                             | 2026-10-18 | ADR 0008          |
-| —     | The `greese` prop                                     | 2026-10-18 | ADR 0009          |
-| —     | SCSS kit, style manifest, Theme Studio                | 2026-10-19 | ADR 0010          |
-| —     | Component gap review                                  | 2026-10-19 | ADR 0011          |
-| —     | `@greese/icons` and the docs rules                    | 2026-10-19 | ADR 0012          |
-| —     | Repository, npm metadata, the three apps on Pages     | 2026-10-20 | This ADR, 0010    |
-| —     | Framework-agnostic packages: `@greese/ui`, `js`       | 2026-10-20 | ADR 0014          |
-| —     | Breakpoint keys; extensible tokens                    | 2026-10-20 | ADR 0006, 0015    |
-| —     | Typography system                                     | 2026-10-20 | ADR 0016          |
-| —     | Motion scopes                                         | 2026-10-20 | ADR 0017          |
-| —     | One web app: the homepage and Theme Studio            | 2026-10-20 | ADR 0018          |
-| —     | Utility classes, purged by what the source uses       | 2026-10-21 | ADR 0019          |
-| —     | ScrollSpy; an MCP server, `@greese/mcp`               | 2026-10-23 | ADR 0022          |
-| —     | Shape themes and page templates                       | 2026-10-23 | ADR 0023          |
-| —     | Shapes: one geometry, animated parameters, editor     | 2026-10-23 | ADR 0024          |
-| —     | Theme layers: colors, shapes, motion themes           | 2026-10-23 | ADR 0025          |
-| —     | Header, Footer, anchors and steady hovers             | 2026-10-24 | ADR 0026          |
-| —     | Client boundaries: server Table, Pagination links     | 2026-10-24 | ADR 0027          |
-| —     | The docs as pages of the web app                      | 2026-10-25 | ADR 0028          |
-| —     | Page transitions: snapshots, live exits, themes       | 2026-10-29 | ADR 0029          |
-| —     | The web app on React Router                           | 2026-10-29 | ADR 0030          |
-| —     | `@greese/svg` and `@greese/react/svg`                 | 2026-10-30 | ADR 0031          |
-| —     | Carousel: one slide at a time, effects, deep links    | 2026-11-01 | ADR 0032          |
-| —     | Reduced motion an app asks for                        | 2026-11-01 | ADR 0033          |
+| Phase | Scope                                                  | Done       | Decisions         |
+| ----- | ------------------------------------------------------ | ---------- | ----------------- |
+| 0     | Repo reshaping: npm workspaces, build, CI, Changesets  | 2026-10-17 | This ADR          |
+| 1     | Foundations: tokens, theming, the responsive core      | 2026-10-17 | ADR 0001, 0002    |
+| 2     | Layout primitives and the MUI benchmark                | 2026-10-17 | ADR 0001          |
+| 3     | Actions and forms                                      | 2026-10-17 | ADR 0003          |
+| 4     | Content, media and disclosure                          | 2026-10-17 | ADR 0004          |
+| 5     | Overlays and navigation                                | 2026-10-17 | ADR 0005          |
+| 6     | Hardening, docs, quality gates, 1.0.0                  | 2026-10-17 | ADR 0006          |
+| 7     | Component gaps (1.1.0)                                 | 2026-10-18 | ADR 0007          |
+| —     | Ported components                                      | 2026-10-18 | ADR 0007 addendum |
+| —     | greese.js                                              | 2026-10-18 | ADR 0008          |
+| —     | The `greese` prop                                      | 2026-10-18 | ADR 0009          |
+| —     | SCSS kit, style manifest, Theme Studio                 | 2026-10-19 | ADR 0010          |
+| —     | Component gap review                                   | 2026-10-19 | ADR 0011          |
+| —     | `@greese/icons` and the docs rules                     | 2026-10-19 | ADR 0012          |
+| —     | Repository, npm metadata, the three apps on Pages      | 2026-10-20 | This ADR, 0010    |
+| —     | Framework-agnostic packages: `@greese/ui`, `js`        | 2026-10-20 | ADR 0014          |
+| —     | Breakpoint keys; extensible tokens                     | 2026-10-20 | ADR 0006, 0015    |
+| —     | Typography system                                      | 2026-10-20 | ADR 0016          |
+| —     | Motion scopes                                          | 2026-10-20 | ADR 0017          |
+| —     | One web app: the homepage and Theme Studio             | 2026-10-20 | ADR 0018          |
+| —     | Utility classes, purged by what the source uses        | 2026-10-21 | ADR 0019          |
+| —     | ScrollSpy; an MCP server, `@greese/mcp`                | 2026-10-23 | ADR 0022          |
+| —     | Shape themes and page templates                        | 2026-10-23 | ADR 0023          |
+| —     | Shapes: one geometry, animated parameters, editor      | 2026-10-23 | ADR 0024          |
+| —     | Theme layers: colors, shapes, motion themes            | 2026-10-23 | ADR 0025          |
+| —     | Header, Footer, anchors and steady hovers              | 2026-10-24 | ADR 0026          |
+| —     | Client boundaries: server Table, Pagination links      | 2026-10-24 | ADR 0027          |
+| —     | The docs as pages of the web app                       | 2026-10-25 | ADR 0028          |
+| —     | Page transitions: snapshots, live exits, themes        | 2026-10-29 | ADR 0029          |
+| —     | The web app on React Router                            | 2026-10-29 | ADR 0030          |
+| —     | `@greese/svg` and `@greese/react/svg`                  | 2026-10-30 | ADR 0031          |
+| —     | Carousel: one slide at a time, effects, app deep links | 2026-11-01 | ADR 0032          |
+| —     | Reduced motion an app asks for                         | 2026-11-01 | ADR 0033          |
+| —     | Theme layout in your source, resets, Sass utilities    | 2026-11-03 | ADR 0034          |
 
 When a new body of work lands, add a row here; that's the status record the
 skills and agents keep up to date.

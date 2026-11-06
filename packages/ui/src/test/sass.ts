@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import { compileString, NodePackageImporter } from 'sass-embedded'
+import { compileString, NodePackageImporter, type Importer } from 'sass-embedded'
 
 /** The library's own stylesheets: what `@use 'kit'`, `'mixins'` and `'index'` load. */
 export const STYLES = fileURLToPath(new URL('../styles/', import.meta.url))
@@ -8,10 +8,13 @@ export const STYLES = fileURLToPath(new URL('../styles/', import.meta.url))
 const ROOT = fileURLToPath(new URL('../../../../', import.meta.url))
 
 /** Compiles SCSS against the library's source stylesheets, as its own sheets are built. */
-export const compileScss = (scss: string): string =>
+export const compileScss = (scss: string, warnings?: string[]): string =>
   compileString(scss, {
     loadPaths: [STYLES],
     importers: [new NodePackageImporter()],
+    ...(warnings && {
+      logger: { warn: (message: string) => void warnings.push(message) },
+    }),
   }).css
 
 /** Compiles as a project does: by package URL, from outside the package. */
@@ -20,6 +23,42 @@ export const compileAsProject = (scss: string): string =>
     importers: [new NodePackageImporter(ROOT)],
     url: new URL(`file://${ROOT}theme.scss`),
   }).css
+
+/**
+ * Compiles `entry` of a folder of files held in memory (`files`, by path), as
+ * a project compiles its own: relative `@use` between them, package URLs from
+ * outside the package.
+ */
+export const compileFiles = (
+  files: Record<string, string>,
+  entry = 'main.scss'
+): string => {
+  // Under the repository, so package URLs resolve from it as from a project.
+  const base = `file://${ROOT}.theme-in-memory/`
+  const find = (path: string): string | undefined => {
+    const dir = path.includes('/') ? path.slice(0, path.lastIndexOf('/') + 1) : ''
+    const name = path.slice(dir.length)
+    return [`${path}.scss`, `${dir}_${name}.scss`, `${path}/_index.scss`, path].find(
+      (candidate) => candidate in files
+    )
+  }
+  const memory: Importer = {
+    canonicalize(url, { containingUrl }) {
+      if (url.startsWith('pkg:') || url.startsWith('sass:')) return null
+      const resolved = new URL(url, containingUrl ?? base).href
+      if (!resolved.startsWith(base)) return null
+      const found = find(resolved.slice(base.length))
+      return found ? new URL(found, base) : null
+    },
+    load(url) {
+      return { contents: files[url.href.slice(base.length)]!, syntax: 'scss' }
+    },
+  }
+  return compileString(files[entry]!, {
+    url: new URL(entry, base),
+    importers: [memory, new NodePackageImporter(ROOT)],
+  }).css
+}
 
 /** A block of compiled CSS: the preludes around it, its own prelude, its declarations. */
 export interface Block {

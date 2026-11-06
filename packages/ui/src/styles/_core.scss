@@ -1,4 +1,5 @@
 // What every component needs: the layer order, the tokens and the type
 // system. The whole stylesheet and css/core.css both start from this.
 @use '../../dist/tokens-base';
+@use 'breakpoint-vars';
 @use 'typography-vars';

@@ -368,3 +368,15 @@ their masks, so a pocket's window drifted with the card.
 **Scroll reveals read the element's box** while any of it is in view: a
 shape's clip-path kept IntersectionObserver's ratio under the 99% a reveal
 waited for.
+
+## Addendum (2026-11-03): taking a layer back
+
+ADR 0034 §5 makes the three layers removable:
+
+- **Run time:** `.greese-reset-color`, `-shape` and `-motion`, and
+  `.greese-reset` for all three, on any element and its subtree. Every theme rule
+  carries a zero-specificity guard for its layer.
+- **Build time:** `greese.reset(…)` inside a component.
+
+Component styles count as the shape layer, since only shape themes write
+component SCSS, unless `component(Name, $layer: …)` says otherwise.

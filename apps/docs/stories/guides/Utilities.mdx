@@ -127,6 +127,14 @@ out, or add them to `safelist` (strings or patterns).
 On the command: `--content`, `--out`, `--all` (every class, no scan),
 `--safelist`, `--groups a,b`, `--prefix`.
 
+### From Sass
+
+A project that compiles Sass can write the same classes in its own build with
+`pkg:@greese/ui/scss/utilities`, and they take the breakpoints the stylesheet
+is built with, so `md-…` always agrees with the components' `md`. Its
+arguments, and where it goes in a theme, are in
+[Guides/SCSS themes](?path=/docs/guides-scss-themes--docs) (`utilities/_index.scss`).
+
 ## How they relate to the rest
 
 - They live in `@layer greese.utilities`, the layer style props and the `greese`

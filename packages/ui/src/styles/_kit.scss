@@ -38,6 +38,10 @@ $_theme: null;
 // Tokens declared with `tokens(…, $extend: …)`, by group, so `token()` and
 // `component()` variables accept them from then on.
 $_extended: ();
+
+// What `tokens()` has declared, by theme name ('' for the page): the merged
+// overrides and extensions, so a later call adds to them.
+$_token-calls: ();
 $_block: null;
 $_part: null;
 $_scheme-attr: 'data-greese-scheme';
@@ -145,11 +149,14 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 
 @function _block-name($name) {
   $name: '#{$name}';
-  $known: map.has-key(manifest.$blocks, $name);
-  $checked: _check(
-    $known,
-    'no component `#{$name}`. Components are PascalCase, as in the docs: #{_join(map.keys(manifest.$blocks))}.'
-  );
+
+  // The message lists every component, so it's only built for an unknown one.
+  @if not map.has-key(manifest.$blocks, $name) {
+    $checked: _check(
+      false,
+      'no component `#{$name}`. Components are PascalCase, as in the docs: #{_join(map.keys(manifest.$blocks))}.'
+    );
+  }
 
   @return string.unquote($name);
 }
@@ -367,23 +374,60 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 
 /// Styles for one component, in `@layer greese.overrides`. Nest `part()`,
 /// `modifier()`, `vars()`, `motion()` and plain declarations inside.
-@mixin component($name) {
+///
+/// The styles belong to one of a theme's layers, `$layer`: `shape` (the
+/// default: a component's own look, as shape themes write it), `color` or
+/// `motion` (`motion()` inside is always motion). `.greese-reset-<layer>`
+/// stops them, and `reset()` leaves them out of the build.
+@mixin component($name, $layer: shape) {
   $block: _block-name($name);
+  $layer: list.nth(_check-layers(($layer)), 1);
   $outer-block: $_block;
   $outer-part: $_part;
+  $outer-layer: $_layer;
   $_block: $block !global;
   $_part: null !global;
+  $_layer: $layer !global;
+
+  // Once `reset()` has taken the layer, the rule matches nothing (`:not(*)`),
+  // but `motion()` inside still writes its own, which is another layer's.
+  $dead: '';
+
+  @if _is-reset($block, $layer) {
+    $dead: ':not(*)';
+  }
 
   @include _layer-order;
 
   @layer greese.overrides {
-    #{_scoped('.greese-#{$block}')} {
+    #{_scoped('.greese-#{$block}')}#{reset-guard($layer)}#{$dead} {
       @content;
     }
   }
 
+  // After the content, so a `reset()` inside doesn't count its own rule.
+  @if $dead == '' {
+    $_themed: _add($_themed, $block, $layer) !global;
+  }
+
   $_block: $outer-block !global;
   $_part: $outer-part !global;
+  $_layer: $outer-layer !global;
+}
+
+/// `$text` with every `$find` replaced.
+@function _replace($text, $find, $with) {
+  $text: '#{$text}';
+  $at: string.index($text, $find);
+
+  @while $at {
+    $before: string.slice($text, 1, $at - 1);
+    $after: string.slice($text, $at + string.length($find));
+    $text: $before + $with + $after;
+    $at: string.index($text, $find);
+  }
+
+  @return $text;
 }
 
 @function _require-component($mixin) {
@@ -478,6 +522,25 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 /// `delay` and `ease` tune it.
 @mixin motion($options) {
   $checked: _require-component('motion');
+
+  // Motion is its own theme layer: the rule is the component's, guarded for
+  // motion rather than the component's layer, and absent once reset.
+  @if not _is-reset($_block, motion) {
+    $_themed: _add($_themed, $_block, motion) !global;
+    $guard: reset-guard($_layer);
+    $selector: _replace(
+      _replace(&, '#{$guard}:not(*)', $guard),
+      $guard,
+      reset-guard(motion)
+    );
+
+    @at-root #{$selector} {
+      @include _motion($options);
+    }
+  }
+}
+
+@mixin _motion($options) {
   $known: (enter, keyframes, exit, duration, delay, ease, distance, durations, easings);
 
   @each $key, $unused in $options {
@@ -654,46 +717,9 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
   }
 }
 
-/// Tunes every `greese` prop entrance on the page (or in the theme), and
-/// assigns the theme's motion roles (ADR 0025):
-///
-///   duration, delay, ease, distance, stagger   every `greese` entrance's pacing
-///   theme      the entrance `greese="theme"` plays (base: fade-up)
-///   content    a tab panel's, an opening accordion's children (base: a short rise)
-///   rows       a table's rows, one after another (base: none)
-///   toast, backdrop                            their entrances
-///   overlay    every overlay's entrance but a drawer's; `dialog`, `popover`
-///              (menus and speed-dial actions too), `tooltip` and `drawer`
-///              (the sidebar too) for one kind
-///   overlay-exit, dialog-exit, popover-exit, tooltip-exit, drawer-exit
-///              how they leave: an exit by name
-///   carousel, carousel-back                    a Carousel's arriving slide,
-///              going forward and back (base: a slide the way it moves)
-///   carousel-exit, carousel-back-exit          its leaving slide: an exit by
-///              name (base: a slide out the way it moves)
-///   content-duration, rows-duration, overlay-duration, toast-duration,
-///   backdrop-duration, exit-duration, carousel-duration   a duration token (`fast`,
-///              `normal`, `slow`) or a time
-///   enter-ease, exit-ease                      an easing token (`standard`,
-///              `enter`, `exit`), an ease name or a curve
-///   page, page-back                            a page transition's entrance,
-///              going forward and back (ADR 0029; base: fade-in)
-///   page-exit, page-back-exit                  how the old page leaves: an exit
-///              by name (base: fade-out)
-///   page-duration, share-duration              a duration token or a time:
-///              the page's, and a shared element's morph
-///   page-ease, share-ease                      an easing, as above
-///   page-stagger                               seconds between a live exit's
-///              members (base: the entrance stagger)
-///   page-exit-order                            `reverse` (base), `document` or
-///              `together`: the order a live exit's members leave in
-///   page-mode                                  `auto` (base), `snapshot` or
-///              `live`: how a page change plays
-///
-/// `motion-defaults((content: wipe-open-x, dialog: iris-in, dialog-exit: iris-out,
-/// content-duration: slow))`. A role points at an effect or a token: the
-/// effects keep their keyframes and the tokens their values.
-@mixin motion-defaults($options) {
+/// The motion roles `motion-defaults()` assigns, by kind, and `known`: every
+/// option. A reset sets the variables of all of them back.
+@function _motion-lists() {
   $pacing: (duration, delay, ease, distance, stagger);
   $entrances: (
     theme,
@@ -758,15 +784,8 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
       list.join((page-stagger), map.keys($page-keywords))
     )
   );
-  $root: ':root';
 
-  @include _layer-order;
-
-  @if $_theme {
-    $root: "[#{$_theme-attr}='#{$_theme}']";
-  }
-
-  $lists: (
+  @return (
     known: $known,
     entrances: $entrances,
     exits: $exits,
@@ -774,8 +793,68 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
     page-exits: $page-exits,
     page-keywords: $page-keywords,
     durations: $durations,
-    eases: $eases,
+    eases: $eases
   );
+}
+
+/// Tunes every `greese` prop entrance on the page (or in the theme), and
+/// assigns the theme's motion roles (ADR 0025):
+///
+///   duration, delay, ease, distance, stagger   every `greese` entrance's pacing
+///   theme      the entrance `greese="theme"` plays (base: fade-up)
+///   content    a tab panel's, an opening accordion's children (base: a short rise)
+///   rows       a table's rows, one after another (base: none)
+///   toast, backdrop                            their entrances
+///   overlay    every overlay's entrance but a drawer's; `dialog`, `popover`
+///              (menus and speed-dial actions too), `tooltip` and `drawer`
+///              (the sidebar too) for one kind
+///   overlay-exit, dialog-exit, popover-exit, tooltip-exit, drawer-exit
+///              how they leave: an exit by name
+///   carousel, carousel-back                    a Carousel's arriving slide,
+///              going forward and back (base: a slide the way it moves)
+///   carousel-exit, carousel-back-exit          its leaving slide: an exit by
+///              name (base: a slide out the way it moves)
+///   content-duration, rows-duration, overlay-duration, toast-duration,
+///   backdrop-duration, exit-duration, carousel-duration   a duration token (`fast`,
+///              `normal`, `slow`) or a time
+///   enter-ease, exit-ease                      an easing token (`standard`,
+///              `enter`, `exit`), an ease name or a curve
+///   page, page-back                            a page transition's entrance,
+///              going forward and back (ADR 0029; base: fade-in)
+///   page-exit, page-back-exit                  how the old page leaves: an exit
+///              by name (base: fade-out)
+///   page-duration, share-duration              a duration token or a time:
+///              the page's, and a shared element's morph
+///   page-ease, share-ease                      an easing, as above
+///   page-stagger                               seconds between a live exit's
+///              members (base: the entrance stagger)
+///   page-exit-order                            `reverse` (base), `document` or
+///              `together`: the order a live exit's members leave in
+///   page-mode                                  `auto` (base), `snapshot` or
+///              `live`: how a page change plays
+///
+/// `motion-defaults((content: wipe-open-x, dialog: iris-in, dialog-exit: iris-out,
+/// content-duration: slow))`. A role points at an effect or a token: the
+/// effects keep their keyframes and the tokens their values.
+@mixin motion-defaults($options) {
+  // An empty map writes nothing (a theme layout's untouched files).
+  @if list.length($options) > 0 {
+    @include _motion-defaults($options);
+  }
+}
+
+@mixin _motion-defaults($options) {
+  $lists: _motion-lists();
+  $entrances: map.get($lists, entrances);
+  $page-entrances: map.get($lists, page-entrances);
+  $page-exits: map.get($lists, page-exits);
+  $root: ':root';
+
+  @include _layer-order;
+
+  @if $_theme {
+    $root: "[#{$_theme-attr}='#{$_theme}']";
+  }
 
   @layer greese.overrides {
     #{$root} {
@@ -846,6 +925,13 @@ $_eases: ('linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'in', 'out', '
 /// they move with the page. Every named element is a snapshot of its own:
 /// name sections, not every item of a long list.
 @mixin page-transitions($rules) {
+  // An empty map writes nothing (a theme layout's untouched files).
+  @if list.length($rules) > 0 {
+    @include _page-transitions($rules);
+  }
+}
+
+@mixin _page-transitions($rules) {
   $known: (enter, exit, duration, delay, ease);
   $during: ':root:active-view-transition-type(greese-page)';
   $prefix: base;
@@ -1224,6 +1310,46 @@ $_dark-ink: #11171c;
   @return $known;
 }
 
+/// A token map with kebab-case group and key names, so two calls' maps line up.
+@function _token-map($map) {
+  $out: ();
+
+  @each $group, $values in $map {
+    $group: '#{_kebab($group)}';
+    $keys: map.get($out, $group) or ();
+
+    @each $key, $value in $values {
+      $keys: map.set($keys, '#{_kebab($key)}', $value);
+    }
+
+    $out: map.set($out, $group, $keys);
+  }
+
+  @return $out;
+}
+
+/// `$b` over `$a`, a key at a time: a color pair replaces the pair before it.
+@function _merge-tokens($a, $b) {
+  @each $group, $values in $b {
+    $a: map.set($a, $group, map.merge(map.get($a, $group) or (), $values));
+  }
+
+  @return $a;
+}
+
+/// The declarations in `$now` that `$before` lacks or sets otherwise.
+@function _changed($now, $before) {
+  $out: ();
+
+  @each $property, $value in $now {
+    @if map.get($before, $property) != $value {
+      $out: map.set($out, $property, $value);
+    }
+  }
+
+  @return $out;
+}
+
 @function _token-decls($overrides, $complete, $extend: ()) {
   $base: ();
   $light: ();
@@ -1370,6 +1496,195 @@ $_dark-ink: #11171c;
   }
 }
 
+// --- resets ----------------------------------------------------------------
+
+// A theme's three layers (ADR 0025), each of which can be taken back from
+// part of a page (`.greese-reset-<layer>`, `.greese-reset` for all three) or
+// from a component (`reset()`).
+$_reset-layers: (color, shape, motion);
+
+// The layer the rules of the enclosing `component()` belong to.
+$_layer: shape;
+
+// Layers `reset()` took from a component, and those its rules have used so far.
+$_resets: ();
+$_themed: ();
+
+@function _check-layers($layers) {
+  @each $layer in $layers {
+    @if not _in($_reset-layers, $layer) {
+      $checked: _check(
+        false,
+        'no theme layer `#{$layer}`. Layers: #{_join($_reset-layers)}.'
+      );
+    }
+  }
+
+  @return $layers;
+}
+
+@function _add($map, $block, $layer) {
+  $list: map.get($map, '#{$block}') or ();
+
+  @if _in($list, $layer) {
+    @return $map;
+  }
+
+  @return map.set($map, '#{$block}', list.append($list, $layer, comma));
+}
+
+@function _is-reset($block, $layer) {
+  @return _in(map.get($_resets, '#{$block}') or (), $layer);
+}
+
+/// What every theme rule of `$layer` adds to its selector, so the rule stops
+/// at `.greese-reset-<layer>` and `.greese-reset` and everything inside them.
+/// No specificity. The kit adds it to `component()` and `motion()`; add it to
+/// rules of your own that belong to a theme layer:
+/// `.greese-Card#{greese.reset-guard(shape)} { … }`.
+@function reset-guard($layer: shape) {
+  $checked: _check-layers(($layer));
+  $r: '.greese-reset-#{$layer}';
+
+  @return ':where(:not(#{$r}, #{$r} *, .greese-reset, .greese-reset *))';
+}
+
+/// A selector of a theme's, for rules written as plain CSS (shapes'): inside
+/// `theme()`, scoped to it with no specificity; for a component (`$name`),
+/// guarded for `$layer`, and matching nothing once `reset()` has taken that
+/// layer from it. `#{greese.themed('.greese-Card', Card)} { … }`
+@function themed($selector, $name: null, $layer: shape) {
+  $scope: '';
+
+  @if $_theme {
+    $scope: ":where([#{$_theme-attr}='#{$_theme}']) ";
+  }
+
+  @if not $name {
+    @return '#{$scope}#{$selector}';
+  }
+
+  $block: _block-name($name);
+  $guard: reset-guard($layer);
+
+  @if _is-reset($block, $layer) {
+    @return '#{$scope}#{$selector}#{$guard}:not(*)';
+  }
+
+  $_themed: _add($_themed, $block, $layer) !global;
+
+  @return '#{$scope}#{$selector}#{$guard}';
+}
+
+/// Every variable `motion-defaults()` can set: each role's, and each exit
+/// role's per property any exit sets.
+@function _motion-variables() {
+  $lists: _motion-lists();
+  $properties: ();
+
+  @each $name, $plan in _effects() {
+    @each $property, $unused in map.get($plan, exit) or () {
+      @if not _in($properties, $property) {
+        $properties: list.append($properties, $property, comma);
+      }
+    }
+  }
+
+  $out: ();
+
+  @each $key in map.get($lists, known) {
+    @if _in(map.get($lists, exits), $key) {
+      @each $property in $properties {
+        $out: list.append($out, '--greese-motion-#{$key}-#{$property}', comma);
+      }
+    } @else {
+      $out: list.append($out, '--greese-motion-#{$key}', comma);
+    }
+  }
+
+  @return $out;
+}
+
+/// The default tokens of each layer, declared here, so the element and what
+/// it contains take them whatever theme is around: colors (as `light-dark()`,
+/// following the color scheme), the radius scale and roles, and no motion
+/// roles at all (each falls back to the base theme's).
+@mixin _reset-declarations($layers) {
+  @if _in($layers, color) {
+    @each $role, $pair in defaults.$color {
+      $light: _css(map.get($pair, light));
+      $dark: _css(map.get($pair, dark));
+      $name: 'greese-color-#{$role}';
+
+      --#{$name}: light-dark(#{$light}, #{$dark});
+    }
+  }
+
+  @if _in($layers, shape) {
+    @each $group in (radius, corner) {
+      @each $key, $value in map.get(defaults.$scalars, $group) {
+        $name: 'greese-#{$group}-#{$key}';
+
+        --#{$name}: #{_css($value)};
+      }
+    }
+  }
+
+  @if _in($layers, motion) {
+    @each $variable in _motion-variables() {
+      #{$variable}: initial;
+    }
+  }
+}
+
+/// Takes a theme's layers back: `reset(shape)`, `reset(color, motion)`, or
+/// `reset()` for all three. In any rule, it declares the layers' default
+/// tokens there, for that element and everything inside it:
+///
+///   .legal-notice { @include greese.reset(color); }
+///
+/// Inside `component(Name)` it also leaves that component out of the layers'
+/// theme rules for the rest of the build, its own and its parts': a shape
+/// theme's clip, a motion theme's entrance. Only rules compiled after it,
+/// in the same build, so call it first (in the theme layout, from
+/// `_resets.scss`); it warns about rules that came before. A prebuilt `.css`
+/// theme is outside the build: use the classes there.
+@mixin reset($layers...) {
+  @if list.length($layers) == 0 {
+    $layers: $_reset-layers;
+  }
+
+  $layers: _check-layers($layers);
+
+  @if $_block {
+    @each $layer in $layers {
+      @if _in(map.get($_themed, '#{$_block}') or (), $layer) {
+        @warn 'greese ui kit: reset(#{$layer}) for #{$_block} comes after #{$_block}\'s #{$layer} rules, which stay. Reset it before them.';
+      }
+
+      $_resets: _add($_resets, $_block, $layer) !global;
+    }
+  }
+
+  @include _reset-declarations($layers);
+}
+
+/// The reset classes (`.greese-reset-color`, `-shape`, `-motion`, and
+/// `.greese-reset` for all three), with their layers' default tokens.
+/// `@greese/ui`'s stylesheet has them; a theme built alone can include them.
+@mixin reset-classes {
+  @include _layer-order;
+
+  @layer greese.overrides {
+    @each $layer in $_reset-layers {
+      .greese-reset-#{$layer},
+      .greese-reset {
+        @include _reset-declarations(($layer));
+      }
+    }
+  }
+}
+
 /// Token overrides, compiled: the build-time `createTheme()`. Takes the same
 /// groups as `createTheme` in kebab-case, and a color takes one value or a
 /// `(light: …, dark: …)` pair:
@@ -1383,6 +1698,10 @@ $_dark-ink: #11171c;
 /// pass. Inside `theme(name)` it declares a complete theme, as `createTheme`
 /// does, for `data-greese-theme="name"`.
 ///
+/// Calls add up: a second call for the same theme (or the page) writes only
+/// what it changes, so token groups can live in files of their own and the
+/// result is the same as one call with everything merged.
+///
 /// To add tokens the system doesn't have, name them in `$extend` (same shape):
 ///
 ///   @include greese.tokens((), $extend: (
@@ -1394,9 +1713,67 @@ $_dark-ink: #11171c;
 /// component overrides accept it from then on. Names that already exist, or
 /// groups that don't, still stop the build. (A new `space` key is a variable
 /// only: the responsive classes come with the stylesheet's build.)
+///
+/// A call that sets nothing (no groups, or only empty ones, as a theme layout's
+/// untouched group files are) writes nothing, and in a named theme doesn't
+/// declare it either: the first call that sets something does.
 @mixin tokens($overrides, $extend: ()) {
+  @if not(_sets-nothing($overrides) and _sets-nothing($extend)) {
+    @include _tokens($overrides, $extend);
+  }
+}
+
+/// Whether a `tokens()` map sets nothing: no groups, or only empty ones.
+@function _sets-nothing($tokens) {
+  @each $_group, $values in $tokens {
+    @if list.length($values) > 0 {
+      @return false;
+    }
+  }
+
+  @return true;
+}
+
+@mixin _tokens($overrides, $extend) {
   $_extended: _register-extended($extend) !global;
-  $d: _token-decls($overrides, $_theme != null, $extend);
+  $scope: $_theme or '';
+  $before: map.get($_token-calls, $scope);
+  $call: (
+    overrides: _token-map($overrides),
+    extend: _token-map($extend),
+  );
+
+  @if $before {
+    $call: (
+      overrides: _merge-tokens(map.get($before, overrides), map.get($call, overrides)),
+      extend: _merge-tokens(map.get($before, extend), map.get($call, extend)),
+    );
+  }
+
+  $_token-calls: map.set($_token-calls, $scope, $call) !global;
+  $d: _token-decls(map.get($call, overrides), $_theme != null, map.get($call, extend));
+
+  // A repeat call writes what the merged tokens change since the last one,
+  // under the same selectors, so it wins without restating the theme.
+  @if $before {
+    $was: _token-decls(
+      map.get($before, overrides),
+      $_theme != null,
+      map.get($before, extend)
+    );
+    $changed: ();
+
+    @each $kind in (base, light, dark, durations) {
+      $changed: map.set(
+        $changed,
+        $kind,
+        _changed(map.get($d, $kind), map.get($was, $kind))
+      );
+    }
+
+    $d: $changed;
+  }
+
   $base: map.get($d, base);
   $light: map.get($d, light);
   $dark: map.get($d, dark);
@@ -1425,7 +1802,11 @@ $_dark-ink: #11171c;
         @include _declare($dark);
       }
 
-      @include type-emit.emit-media(config.$typography, $t);
+      // The type system's breakpoints are the same whatever the tokens, so
+      // a repeat call has none to write.
+      @if not $before {
+        @include type-emit.emit-media(config.$typography, $t);
+      }
 
       :root#{_scheme(light)} #{$t}:not(#{$s}) {
         @include _declare($light);
@@ -1489,6 +1870,13 @@ $_dark-ink: #11171c;
 /// word-spacing, font-variant-numeric, color. Variants: p1-p3,
 /// h1-h6, s1, s2, caption, button. Names that don't exist stop the build.
 @mixin typography($changes) {
+  // An empty map writes nothing (a theme layout's untouched files).
+  @if list.length($changes) > 0 {
+    @include _typography($changes);
+  }
+}
+
+@mixin _typography($changes) {
   $merged: ();
 
   @each $variant, $spec in $changes {
@@ -1560,4 +1948,28 @@ $_dark-ink: #11171c;
   @content;
 
   $_theme: $outer !global;
+}
+
+/// `theme($name)` when there is a name, the page when there isn't (`null`,
+/// `false` or `''`), so one file serves either. A theme's files share the
+/// name from one place:
+///
+///   // _settings.scss
+///   $theme: brand; // or null, for the page's defaults
+///
+///   // components/_card.scss
+///   @include greese.scope(settings.$theme) {
+///     @include greese.component(Card) { border-radius: 0; }
+///   }
+///
+/// (Set the name in that file rather than with `@use … with ($theme: null)`:
+/// Sass reads a null in `with` as "not configured" and keeps the default.)
+@mixin scope($name) {
+  @if $name and $name != '' {
+    @include theme($name) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
 }

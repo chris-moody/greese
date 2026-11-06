@@ -5,7 +5,14 @@ import { compileAsProject, rules } from '../test/sass.ts'
 
 const compile = compileAsProject
 
-const AUTHORING = ['mixins', 'tones', 'floating', 'controls', 'slides'] as const
+const AUTHORING = [
+  'mixins',
+  'tones',
+  'floating',
+  'controls',
+  'slides',
+  'utilities',
+] as const
 
 describe('the SCSS entry points for theme authors (ADR 0021)', () => {
   it('are exported, and each compiles alone without writing CSS', () => {
@@ -14,7 +21,7 @@ describe('the SCSS entry points for theme authors (ADR 0021)', () => {
       expect(exported, name).toContain(`./scss/${name}`)
       expect(compile(`@use 'pkg:@greese/ui/scss/${name}';`), name).toBe('')
     }
-  })
+  }, 30_000)
 
   it('give a component’s own members, under the name its source uses', () => {
     const css = compile(`
@@ -64,5 +71,20 @@ describe('the SCSS entry points for theme authors (ADR 0021)', () => {
         `@use 'pkg:@greese/ui/scss/tones'; .a { @include tones.classes('greese-A', tone); }`
       )
     ).toThrow(/Undefined mixin/)
+  })
+})
+
+describe('a build that picks its components (ADR 0034)', () => {
+  it('compiles core and chosen components from their sources, with its own breakpoints', () => {
+    const css = compile(`
+@use 'pkg:@greese/ui/scss/config' with ($breakpoints: (xs: 0px, sm: 480px, md: 700px, lg: 1024px, xl: 1440px));
+@use 'pkg:@greese/ui/scss/core';
+@use 'pkg:@greese/ui/scss/components/Stack';
+@use 'pkg:@greese/ui/scss/components/Button';`)
+    expect(css).toContain('--greese-color-primary:')
+    expect(rules(css, '.greese-Button').length).toBeGreaterThan(0)
+    expect(css).toContain('@media (width >= 700px)')
+    expect(css).not.toContain('greese-Dialog')
+    expect(css.match(/@layer greese\.reset, /g)).toHaveLength(1)
   })
 })

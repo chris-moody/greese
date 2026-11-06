@@ -24,20 +24,25 @@ the framework packages provide.
 
 ## What's in it
 
-| Import                           | What                                                                                                                                                            |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@greese/ui/styles.css`          | Tokens and every component's styles                                                                                                                             |
-| `@greese/ui/base.css`            | Opt-in reset and page defaults                                                                                                                                  |
-| `@greese/ui/css/<Name>.css`      | One component's own styles (plus the shared core). A component built on others (a Dialog uses Button) needs theirs too; the framework packages wire that up     |
-| `@greese/ui/tokens.css`          | `--greese-*` custom properties, in `@layer greese.tokens`                                                                                                       |
-| `@greese/ui/palette.css`         | Opt-in: the palette as `--greese-<hue>-<shade>` (`--greese-lavender-600`), about 1.5 kB compressed                                                              |
-| `@greese/ui/scss`                | The whole stylesheet as Sass, configurable (`@use 'pkg:@greese/ui/scss' with ($breakpoints: …)`)                                                                |
-| `@greese/ui/scss/kit`            | The theming kit: `@use 'pkg:@greese/ui/scss/kit' as greese`, build-time themes that reject unknown names                                                        |
-| `@greese/ui/scss/tokens`         | The token CSS, plus `$breakpoints` and `$space-keys` Sass maps                                                                                                  |
-| `@greese/ui/scss/layers`         | Only the cascade layer order statement                                                                                                                          |
-| `@greese/ui/scss/maps`           | Only the Sass maps (`$breakpoints`, `$space-keys`, every token default as `$color` and `$scalars`, the palette as `$palette`, and `$layer-order`); emits no CSS |
-| `@greese/ui/style-manifest.json` | Every component's styling API, read from the compiled CSS                                                                                                       |
-| `@greese/ui`                     | TypeScript constants (`color`, `palette` and each hue, `space`, `radius`, `lineHeight`, `shadow`, `breakpoints`, …), `createTheme()` and `getSchemeScript()`    |
+| Import                                                              | What                                                                                                                                                            |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@greese/ui/styles.css`                                             | Tokens and every component's styles                                                                                                                             |
+| `@greese/ui/base.css`                                               | Opt-in reset and page defaults                                                                                                                                  |
+| `@greese/ui/css/<Name>.css`                                         | One component's own styles (plus the shared core). A component built on others (a Dialog uses Button) needs theirs too; the framework packages wire that up     |
+| `@greese/ui/tokens.css`                                             | `--greese-*` custom properties, in `@layer greese.tokens`                                                                                                       |
+| `@greese/ui/palette.css`                                            | Opt-in: the palette as `--greese-<hue>-<shade>` (`--greese-lavender-600`), about 1.5 kB compressed                                                              |
+| `@greese/ui/scss`                                                   | The whole stylesheet as Sass, configurable (`@use 'pkg:@greese/ui/scss' with ($breakpoints: …)`)                                                                |
+| `@greese/ui/scss/kit`                                               | The theming kit: `@use 'pkg:@greese/ui/scss/kit' as greese`, build-time themes that reject unknown names                                                        |
+| `@greese/ui/scss/tokens`                                            | The token CSS, plus `$breakpoints` and `$space-keys` Sass maps                                                                                                  |
+| `@greese/ui/scss/layers`                                            | Only the cascade layer order statement                                                                                                                          |
+| `@greese/ui/scss/maps`                                              | Only the Sass maps (`$breakpoints`, `$space-keys`, every token default as `$color` and `$scalars`, the palette as `$palette`, and `$layer-order`); emits no CSS |
+| `@greese/ui/scss/mixins`, `tones`, `floating`, `controls`, `slides` | The library's own mixins and maps for theme authors (ADR 0021); emit no CSS                                                                                     |
+| `@greese/ui/scss/utilities`                                         | The utility classes from Sass, built with the configured breakpoints: `@include utilities.classes(…)`                                                           |
+| `@greese/ui/scss/core`, `scss/components/<Name>`                    | For a Sass build that picks its components: core (tokens, type system) and one component's own stylesheet                                                       |
+| `@greese/ui/css/resets.css`                                         | Opt-in: `.greese-reset-color`, `-shape`, `-motion` and `.greese-reset`, which take a theme's layers back from part of a page                                    |
+| `@greese/ui/theme-files`                                            | A theme as data (Theme Studio's JSON) and the SCSS it becomes: `specToLayout()`, the documented folder of modules, or `specToScss()`, one file (ADR 0034)       |
+| `@greese/ui/style-manifest.json`                                    | Every component's styling API, read from the compiled CSS                                                                                                       |
+| `@greese/ui`                                                        | TypeScript constants (`color`, `palette` and each hue, `space`, `radius`, `lineHeight`, `shadow`, `breakpoints`, …), `createTheme()` and `getSchemeScript()`    |
 
 It has no dependencies.
 

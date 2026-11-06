@@ -13,54 +13,54 @@
  */
 @layer greese.reset, greese.tokens, greese.theme, greese.base, greese.components, greese.overrides, greese.utilities;
 @layer greese.overrides {
-  .greese-Alert.greese-Alert--soft {
+  .greese-Alert:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Alert--soft {
     background-color: var(--greese-color-canvas);
     border-color: var(--greese-alert-tone);
   }
-  .greese-Alert.greese-Alert--outline {
+  .greese-Alert:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Alert--outline {
     background-color: color-mix(in oklab, var(--greese-alert-tone) 14%, transparent);
     border-color: transparent;
   }
 }
 @layer greese.overrides {
-  .greese-Avatar {
+  .greese-Avatar:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
     background-color: transparent;
     outline: 1.5px solid color-mix(in oklab, currentcolor 70%, transparent);
     outline-offset: -1.5px;
   }
 }
 @layer greese.overrides {
-  .greese-Badge.greese-Badge--solid {
+  .greese-Badge:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Badge--solid {
     color: var(--greese-badge-tone);
     background-color: color-mix(in oklab, var(--greese-badge-tone) 8%, var(--greese-badge-surface));
     border-color: var(--greese-badge-tone);
   }
-  .greese-Badge.greese-Badge--soft {
+  .greese-Badge:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Badge--soft {
     background-color: var(--greese-badge-surface);
     border-color: color-mix(in oklab, var(--greese-badge-tone) 55%, var(--greese-badge-surface));
   }
-  .greese-Badge.greese-Badge--outline {
+  .greese-Badge:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Badge--outline {
     color: var(--greese-badge-tone-on);
     background-color: var(--greese-badge-tone);
     border-color: var(--greese-badge-tone);
   }
 }
 @layer greese.overrides {
-  .greese-Button.greese-Button--solid {
+  .greese-Button:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Button--solid {
     --greese-button-fg: var(--greese-button-tone);
     --greese-button-bg: color-mix(in oklab, var(--greese-button-tone) 6%, transparent);
     --greese-button-border: var(--greese-button-tone);
     --greese-button-bg-hover: color-mix(in oklab, var(--greese-button-tone) 14%, transparent);
     --greese-button-bg-active: color-mix(in oklab, var(--greese-button-tone) 22%, transparent);
   }
-  .greese-Button.greese-Button--soft {
+  .greese-Button:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Button--soft {
     --greese-button-fg: var(--greese-button-tone);
     --greese-button-bg: transparent;
     --greese-button-border: color-mix(in oklab, var(--greese-button-tone) 45%, transparent);
     --greese-button-bg-hover: color-mix(in oklab, var(--greese-button-tone) 14%, transparent);
     --greese-button-bg-active: color-mix(in oklab, var(--greese-button-tone) 22%, transparent);
   }
-  .greese-Button.greese-Button--outline {
+  .greese-Button:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Button--outline {
     --greese-button-fg: var(--greese-button-on-tone);
     --greese-button-bg: var(--greese-button-tone);
     --greese-button-border: transparent;
@@ -69,56 +69,56 @@
   }
 }
 @layer greese.overrides {
-  .greese-Card.greese-Card--filled {
+  .greese-Card:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Card--filled {
     background-color: transparent;
     border: 1px solid var(--greese-color-border-strong);
     --greese-shape-ring: var(--greese-color-border-strong);
   }
-  .greese-Card.greese-Card--elevated {
+  .greese-Card:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Card--elevated {
     background-color: var(--greese-color-canvas);
     border: 1px solid var(--greese-color-border-strong);
     box-shadow: none;
     --greese-shape-ring: var(--greese-color-border-strong);
   }
-  .greese-Card.greese-Card--outline {
+  .greese-Card:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Card--outline {
     background-color: color-mix(in oklab, var(--greese-color-border) 65%, var(--greese-color-surface));
     border-color: transparent;
     --greese-shape-ring: transparent;
   }
 }
 @layer greese.overrides {
-  .greese-Segment {
+  .greese-Segment:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
     --greese-segment-current-bg: transparent;
     --greese-segment-current-edge: inset 0 0 0 1.5px var(--greese-color-primary);
     --greese-segment-current-ring: var(--greese-color-primary);
   }
 }
 @layer greese.overrides {
-  .greese-Tab {
+  .greese-Tab:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
     --greese-tab-current-bg: transparent;
     --greese-tab-current-edge: inset 0 0 0 1.5px var(--greese-color-primary);
     --greese-tab-current-ring: var(--greese-color-primary);
   }
 }
 @layer greese.overrides {
-  .greese-Tile {
+  .greese-Tile:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
     background-color: color-mix(in oklab, var(--greese-color-border) 65%, var(--greese-color-surface));
     border-color: transparent;
   }
-  .greese-Tile.greese-Tile--filled {
+  .greese-Tile:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)).greese-Tile--filled {
     background-color: transparent;
     border-color: var(--greese-color-border-strong);
   }
 }
 @layer greese.overrides {
-  .greese-Toast {
+  .greese-Toast:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
     background-color: var(--greese-color-canvas);
     border: 1px solid var(--greese-toast-tone);
     border-inline-start-width: 3px;
   }
 }
 @layer greese.overrides {
-  .greese-Tooltip {
+  .greese-Tooltip:where(:not(.greese-reset-shape, .greese-reset-shape *, .greese-reset, .greese-reset *)) {
     color: var(--greese-color-fg);
     background-color: var(--greese-color-surface-overlay);
     border: 1px solid var(--greese-color-fg);
