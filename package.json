@@ -15,7 +15,9 @@
     "apps/*"
   ],
   "scripts": {
+    "prebuild": "node scripts/check-workspace-links.mjs",
     "build": "turbo run build",
+    "predev": "node scripts/check-workspace-links.mjs",
     "dev": "turbo run dev watch",
     "studio": "npm run dev -w site",
     "lint": "turbo run lint",
@@ -33,7 +35,8 @@
     "commitlint": "commitlint",
     "test:visual": "turbo run test:visual",
     "test:dashboard": "node tools/test-dashboard/server.mjs",
-    "verify:packages": "node scripts/verify-packages.mjs"
+    "verify:packages": "node scripts/verify-packages.mjs",
+    "check:links": "node scripts/check-workspace-links.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
