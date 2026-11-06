@@ -320,6 +320,56 @@ describe('Field and text controls', () => {
   })
 })
 
+describe('input width', () => {
+  it('has no width of its own without htmlSize', () => {
+    render(<Input aria-label="Name" />)
+    const input = screen.getByLabelText('Name')
+    // No `size` attribute means no 20-character preferred width to force on
+    // whatever the field sits in.
+    expect(input).not.toHaveAttribute('size')
+    expect(input.closest('.greese-Input')).not.toHaveClass('greese-Input--measured')
+  })
+
+  it('htmlSize sets the native size and marks the frame measured', () => {
+    render(<Input aria-label="Frame" htmlSize={4} />)
+    const input = screen.getByLabelText('Frame')
+    expect(input).toHaveAttribute('size', '4')
+    expect(input.closest('.greese-Input')).toHaveClass('greese-Input--measured')
+  })
+
+  it('does not collide with the control size scale', () => {
+    render(<Input aria-label="Both" size="lg" htmlSize={2} />)
+    const input = screen.getByLabelText('Both')
+    const frame = input.closest('.greese-Input')
+    expect(input).toHaveAttribute('size', '2')
+    expect(frame).toHaveClass('greese-Input--size-lg', 'greese-Input--measured')
+  })
+
+  it('reaches the input through TextField and NumberField', () => {
+    render(
+      <>
+        <TextField label="Code" htmlSize={6} />
+        <NumberField label="Count" htmlSize={3} value={1} onValueChange={() => {}} />
+      </>
+    )
+    expect(screen.getByLabelText('Code')).toHaveAttribute('size', '6')
+    expect(screen.getByLabelText('Count')).toHaveAttribute('size', '3')
+  })
+
+  it('reaches an EditableField text row', () => {
+    render(
+      <EditableField
+        label="Label"
+        type="text"
+        value="x"
+        onValueChange={() => {}}
+        htmlSize={5}
+      />
+    )
+    expect(screen.getByLabelText('Label')).toHaveAttribute('size', '5')
+  })
+})
+
 describe('Checkbox, Switch, Radio', () => {
   it('Checkbox toggles from its label and from Space', async () => {
     const onCheckedChange = vi.fn()

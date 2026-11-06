@@ -73,6 +73,13 @@ interface EntryProps extends CommonProps {
   placeholder?: string
   /** A unit shown after the value: `px`, `%`, `°`. */
   unit?: string
+  /**
+   * How many characters wide the entry is (the input's `htmlSize`). Use it for
+   * a field with a known span — three digits, a six-character hex — so a dense
+   * panel's rows are not all one width. Left off, the entry takes the slack in
+   * the row.
+   */
+  htmlSize?: number
 }
 
 /** A line of text. What a string value renders as when no `type` is given. */
@@ -404,6 +411,7 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
             label={name}
             hideLabel
             size={size}
+            htmlSize={field.htmlSize}
             disabled={disabled}
             placeholder={indeterminate ? indeterminateLabel : field.placeholder}
             value={indeterminate || typeof value !== 'number' ? null : value}
@@ -642,6 +650,7 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
           className="greese-EditableField-control"
           aria-label={name || undefined}
           size={size}
+          htmlSize={field.htmlSize}
           disabled={disabled}
           endAdornment={field.unit}
           placeholder={indeterminate ? indeterminateLabel : field.placeholder}

@@ -52,3 +52,18 @@ export const States: Story = {
     </Stack>
   ),
 }
+
+/**
+ * `htmlSize` is how many characters the field holds, so a field with a known
+ * span stops taking the whole row. Without it the width is automatic: the
+ * field takes what the layout gives it and forces no minimum of its own.
+ */
+export const Measured: Story = {
+  render: () => (
+    <Stack direction="row" gap={3} align="center">
+      <Input aria-label="Hex" htmlSize={7} defaultValue="#4f46e5" startAdornment={null} />
+      <Input aria-label="Degrees" htmlSize={3} defaultValue="180" startAdornment={null} />
+      <Input aria-label="Automatic" placeholder="Takes the slack" startAdornment={null} />
+    </Stack>
+  ),
+}

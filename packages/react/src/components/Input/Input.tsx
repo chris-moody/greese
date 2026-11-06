@@ -20,6 +20,16 @@ export interface InputProps
    * @default 'md'
    */
   size?: ControlSize
+  /**
+   * How many characters wide the field is: the native `size` attribute, under
+   * another name because `size` here is the control scale.
+   *
+   * Give it the longest value the field is meant to hold and the field is that
+   * wide, instead of taking the whole measure. Left off, the width is
+   * automatic — the field takes what the layout gives it and imposes no
+   * minimum of its own.
+   */
+  htmlSize?: number
   /** Mark invalid (also set by a surrounding Field's `error`). */
   invalid?: boolean
   /** Content inside the frame, before the text: an icon, a currency sign. */
@@ -42,6 +52,7 @@ export interface InputProps
 export const Input = ({
   greese,
   size = 'md',
+  htmlSize,
   invalid,
   startAdornment,
   endAdornment,
@@ -78,7 +89,12 @@ export const Input = ({
 
   return withGreese(
     <div
-      className={cx('greese-Input', `greese-Input--size-${size}`, className)}
+      className={cx(
+        'greese-Input',
+        `greese-Input--size-${size}`,
+        htmlSize !== undefined && 'greese-Input--measured',
+        className
+      )}
       style={style}
       data-invalid={control['aria-invalid']}
       data-disabled={control.disabled || undefined}
@@ -88,6 +104,7 @@ export const Input = ({
       <input
         {...props}
         {...control}
+        size={htmlSize}
         ref={composeRefs(inputRef, ref)}
         className="greese-Input-control"
       />

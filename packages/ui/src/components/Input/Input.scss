@@ -8,7 +8,13 @@
     display: flex;
     gap: var(--greese-space-2);
     align-items: center;
-    inline-size: 100%;
+
+    // Automatic, not the full measure. A Field stretches its control, and a
+    // block-level flex container fills its containing block in normal flow, so
+    // a labelled field is full width either way; as a flex or grid item the
+    // frame now sizes to what the layout gives it instead of demanding 100% of
+    // a track it does not own.
+    inline-size: auto;
     min-block-size: var(--greese-input-height);
     padding-inline: var(--greese-input-padding);
     cursor: text;
@@ -17,6 +23,12 @@
   .greese-Input-control {
     flex: 1 1 auto;
     min-inline-size: 0;
+
+    // A bare `<input>` prefers about 20 characters — `size`'s default, a
+    // number nobody chose — and forces it on every ancestor that sizes to
+    // content. Contributing no width leaves the frame to decide; `htmlSize`
+    // below is how a caller asks for a measure on purpose.
+    inline-size: 0;
     block-size: 100%;
     padding: 0;
     font: inherit;
@@ -44,6 +56,19 @@
     > svg {
       inline-size: 1.25em;
       block-size: 1.25em;
+    }
+  }
+
+  // `htmlSize`: as wide as that many characters and no wider, so the frame
+  // hugs the input rather than stretching. The doubled class beats a
+  // container's `flex: 1 1 auto` (EditableField's control slot, a toolbar row)
+  // without depending on which stylesheet the bundle happens to emit last.
+  .greese-Input.greese-Input--measured {
+    inline-size: fit-content;
+    flex-grow: 0;
+
+    > .greese-Input-control {
+      inline-size: auto;
     }
   }
 
