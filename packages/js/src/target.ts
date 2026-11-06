@@ -76,6 +76,10 @@ const UNITLESS = new Set([
   'aspectRatio',
 ])
 
+/** An element's text nodes, in reading order. */
+export const textNodes = (node: Node): Text[] =>
+  node.nodeType == 3 ? [node as Text] : [...node.childNodes].flatMap(textNodes)
+
 const kebab = (prop: string) => prop.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
 
 const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
@@ -99,6 +103,23 @@ const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
     keep(property, () => el.style.getPropertyValue(property))
   const rememberAttribute = (name: string) =>
     keep(`@${name}`, () => el.getAttribute(name))
+
+  // `text` writes into the element's own text nodes, each filled up to its
+  // length before the next, so markup inside (a link, an <em>) stays where
+  // it was and typing reveals it in reading order. The last node takes any
+  // overflow. Lengths are measured before the first write, and again only
+  // when the app has replaced the nodes: half-typed lengths would be wrong.
+  let texts: [node: Text, length: number][] | undefined
+  const setText = (value: string) => {
+    if (!texts?.every(([node]) => el.contains(node)))
+      texts = textNodes(el).map((node) => [node, node.length])
+    if (!texts.length) return void (el.textContent = value)
+    let at = 0
+    texts.forEach(([node, length], i) => {
+      const part = value.slice(at, i < texts!.length - 1 ? (at += length) : undefined)
+      if (node.data !== part) node.data = part
+    })
+  }
 
   const transformParts = (property: string): string[] => {
     if (!parts[property]) {
@@ -154,7 +175,7 @@ const elementAdapter = (el: HTMLElement | SVGElement): Adapter => {
           p[t[1]] = v
         }
         dirty.add(t[0])
-      } else if (prop === 'text') el.textContent = String(value)
+      } else if (prop === 'text') setText(String(value))
       else if (isAttr(prop)) {
         rememberAttribute(prop)
         setAttr(prop, String(value))

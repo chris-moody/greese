@@ -92,6 +92,32 @@ test('split text stays one readable string for assistive technology', async ({
   expect(await first.evaluate((el) => getComputedStyle(el).opacity)).toBe('0')
 })
 
+test('split text keeps its markup: the link is still a named, working link', async ({
+  page,
+}) => {
+  const linked = page.getByTestId('linked')
+  await expect(linked.locator('[aria-hidden="true"] > span')).toHaveCount(4)
+  const link = page.getByRole('link', { name: 'the docs' })
+  await expect(link.locator('[aria-hidden="true"] > span')).toHaveCount(2)
+  await link.click()
+  await expect(page).toHaveURL(/#docs$/)
+})
+
+test('typing writes into the text nodes in reading order, keeping markup', async ({
+  page,
+}) => {
+  const typed = page.getByTestId('typed')
+  const at = async (p: number) => {
+    await page.evaluate((progress) => {
+      window.typed!.progress(progress)
+    }, p)
+    return typed.evaluate((el) => el.innerHTML)
+  }
+  expect(await at(0.25)).toBe('Type <em></em>')
+  expect(await at(0.75)).toBe('Type into <em>emph</em>')
+  expect(await at(1)).toBe('Type into <em>emphasis</em>')
+})
+
 test('mixed units blend smoothly: a px radius token to rem, a px width to vw', async ({
   page,
 }) => {

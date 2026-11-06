@@ -7,6 +7,7 @@ import {
   Dialog,
   Grid,
   Heading,
+  Link,
   Motion,
   Stack,
   Text,
@@ -361,6 +362,28 @@ export const TextEffects: Story = {
           </Text>
           <Badge tone="positive">orders</Badge>
         </Stack>
+      </Stack>
+    </Replay>
+  ),
+}
+
+/**
+ * `type` and `split` keep the markup inside: the link stays a link and the
+ * emphasis stays emphasis, typed or split in reading order with the rest.
+ * `type` plays on an inert copy, so its link can't take focus until it ends;
+ * a split link can be focused and followed all along.
+ */
+export const TextWithMarkup: Story = {
+  render: () => (
+    <Replay>
+      <Stack gap={3}>
+        <Heading level={2} greese={{ text: 'split' }}>
+          Read <Link href="#greese-prop">the docs</Link>, <em>then</em> ship
+        </Heading>
+        <Text variant="s2" greese={{ text: 'type' }}>
+          Typed on with <strong>bold</strong>, <em>emphasis</em> and{' '}
+          <Link href="#greese-prop">a link</Link> kept.
+        </Text>
       </Stack>
     </Replay>
   ),

@@ -19,6 +19,7 @@ declare global {
     motion?: Timeline
     /** Mixed-unit fixture: px → rem token, px → vw width. */
     units?: Timeline
+    typed?: Timeline
   }
 }
 
@@ -63,9 +64,18 @@ export const Motion = (): JSX.Element => {
   const label = useRef<HTMLParagraphElement>(null)
   const count = useRef<HTMLSpanElement>(null)
   const unitsBox = useRef<HTMLDivElement>(null)
+  const linked = useRef<HTMLParagraphElement>(null)
+  const typed = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
     const { elements, revert } = splitText(label.current!)
+    // Text in markup: split and typed where it is, the link kept.
+    const split = splitText(linked.current!, { by: 'words' })
+    window.typed = timeline({ paused: true }).fromTo(
+      typed.current,
+      { text: '' },
+      { text: 'Type into emphasis', duration: 1, ease: 'linear' }
+    )
     const tl = timeline({ paused: true })
       .to(box.current, {
         x: 50,
@@ -87,6 +97,8 @@ export const Motion = (): JSX.Element => {
     return () => {
       tl.kill()
       revert()
+      split.revert()
+      window.typed?.kill()
     }
   }, [])
 
@@ -116,6 +128,12 @@ export const Motion = (): JSX.Element => {
       />
       <p ref={label} data-testid="label">
         Hello world
+      </p>
+      <p ref={linked} data-testid="linked">
+        Read <a href="#docs">the docs</a> first
+      </p>
+      <p ref={typed} data-testid="typed">
+        Type into <em>emphasis</em>
       </p>
       <span ref={count} data-testid="count">
         0

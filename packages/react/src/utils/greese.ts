@@ -8,7 +8,10 @@ import { cssEase } from './ease.ts'
 
 export { cssEase } from './ease.ts'
 
-/** Text effects, for elements whose content is plain text. */
+/**
+ * Text effects: `type` and `split` keep the markup inside (links, emphasis);
+ * `count` takes a plain number.
+ */
 export type GreeseTextEffect = 'type' | 'count' | 'split'
 
 /**
@@ -84,7 +87,7 @@ export interface GreeseOptions {
   press?: GreeseMotion
   /** Plays while focus is inside, reverses on blur. */
   focus?: GreeseMotion
-  /** Animates plain-text content on enter (or on reveal, with `inView`). */
+  /** Animates the text on enter (or on reveal, with `inView`), keeping its markup. */
   text?: GreeseTextEffect
   /**
    * Seconds, for each effect. Overrides an effect's own duration. Defaults:

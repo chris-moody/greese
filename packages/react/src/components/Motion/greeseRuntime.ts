@@ -164,8 +164,10 @@ const VISUALLY_HIDDEN =
   'position:absolute;inline-size:1px;block-size:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap'
 
 /**
- * Text effects animate an aria-hidden copy while assistive technology reads
- * the real text once; the original nodes come back when it ends.
+ * Text effects keep the element's markup: `split` splits each text node where
+ * it is, and `type` types into an inert, aria-hidden copy of the content
+ * while assistive technology reads the real text once. The original nodes
+ * come back when it ends. `count` takes a plain number.
  */
 const textEffect = (
   tl: Timeline,
@@ -173,7 +175,7 @@ const textEffect = (
   o: GreeseOptions
 ): (() => void) | undefined => {
   const text = el.textContent ?? ''
-  if (el.children.length > 0 || !text.trim()) return undefined
+  if (!text.trim()) return undefined
   if (o.text === 'split') {
     const { elements, revert } = splitText(el)
     tl.from(elements, {
@@ -186,23 +188,28 @@ const textEffect = (
     tl.call(revert)
     return revert
   }
-  if (o.text === 'count' && !Number.isFinite(Number(text.trim()))) return undefined
+  const count = o.text === 'count'
+  if (count && (el.children.length > 0 || !Number.isFinite(Number(text.trim()))))
+    return undefined
   const original = [...el.childNodes]
   const accessible = document.createElement('span')
   accessible.style.cssText = VISUALLY_HIDDEN
   accessible.textContent = text
   const visual = document.createElement('span')
   visual.setAttribute('aria-hidden', 'true')
+  // The copy's links and buttons can't take focus while it types.
+  visual.inert = true
+  visual.append(...original.map((node) => node.cloneNode(true)))
   el.replaceChildren(accessible, visual)
   const restore = () => el.replaceChildren(...original)
   tl.fromTo(
     visual,
-    { text: o.text === 'count' ? '0' : '' },
+    { text: count ? '0' : '' },
     {
-      text: text.trim(),
-      duration:
-        o.duration ?? (o.text === 'count' ? 1.2 : Math.min(2, text.length * 0.04)),
-      ease: o.ease ?? (o.text === 'count' ? 'out' : 'linear'),
+      // Untrimmed when typing: the copy's text nodes take it back by length.
+      text: count ? text.trim() : text,
+      duration: o.duration ?? (count ? 1.2 : Math.min(2, text.trim().length * 0.04)),
+      ease: o.ease ?? (count ? 'out' : 'linear'),
     }
   )
   tl.call(restore)

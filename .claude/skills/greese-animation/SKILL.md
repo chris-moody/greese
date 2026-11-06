@@ -28,7 +28,7 @@ plan it implemented.
 | `src/target.ts`   | Adapters: elements (individual `translate`/`rotate`/`scale`, CSS, `--vars`, `text`, SVG attributes, numeric properties) and plain objects. All writes wait for `flush()` (one per render), and `batch()` holds flushes across timelines (the ticker batches each frame) |
 | `src/ease.ts`     | `cubicBezier`, named eases (`power2.out`, `back.out(2)`…), CSS names, `steps(n)`                                                                                                                                                                                        |
 | `src/ticker.ts`   | One shared rAF loop, only while something plays; gaps clamp to 1/30 s                                                                                                                                                                                                   |
-| `src/split.ts`    | `splitText`, accessible                                                                                                                                                                                                                                                 |
+| `src/split.ts`    | `splitText`, accessible, per text node (markup kept)                                                                                                                                                                                                                    |
 
 **Invariants:**
 
@@ -72,7 +72,7 @@ plan it implemented.
   - in Playwright, never return a timeline from `page.evaluate`, because
     it's a thenable and would be awaited.
 - **Size:** `npm run build -w @greese/js && npm run size -w @greese/js`.
-  The budget is 6.6 kB for everything (`animate` alone 5.7 kB). Measure per module (see
+  The budget is 6.9 kB for everything (`animate` alone 5.95 kB). Measure per module (see
   `greese-lightweight`) before adding features. Heavyweight features (plugins,
   ScrollTrigger, morphing, physics) are out of scope.
 - **Docs:**

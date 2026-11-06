@@ -253,6 +253,45 @@ describe('the runtime', () => {
     expect(p.innerHTML).toBe('480')
   })
 
+  it('types text with markup into an inert copy, then puts the real nodes back', async () => {
+    fakeFrames()
+    render(
+      <Text data-testid="t" greese={{ text: 'type', duration: 0.2 }}>
+        Read <a href="/docs">the docs</a>
+      </Text>
+    )
+    const t = screen.getByTestId('t')
+    const link = t.querySelector('a')!
+    await attached()
+    const copy = t.querySelector<HTMLElement>('[aria-hidden="true"]')!
+    expect(copy.inert).toBe(true)
+    expect(copy.querySelector('a')).not.toBeNull()
+    act(() => vi.advanceTimersByTime(100))
+    // Mid-way: typed in reading order, the link's markup still in place.
+    expect(copy.textContent!.length).toBeGreaterThan(0)
+    expect(copy.textContent!.length).toBeLessThan('Read the docs'.length)
+    act(() => vi.advanceTimersByTime(600))
+    expect(t.querySelector('a')).toBe(link)
+    expect(t.innerHTML).toBe('Read <a href="/docs">the docs</a>')
+  })
+
+  it('splits text with markup where it is, keeping the link live', async () => {
+    fakeFrames()
+    render(
+      <Text data-testid="t" greese={{ text: 'split', duration: 0.2 }}>
+        Read <a href="/docs">the docs</a>
+      </Text>
+    )
+    const t = screen.getByTestId('t')
+    const link = t.querySelector('a')!
+    await attached()
+    expect(t.querySelector('a')).toBe(link)
+    expect(link.querySelector('[aria-hidden="true"]')).not.toBeNull()
+    expect(screen.getByRole('link', { name: 'the docs' })).toBe(link)
+    act(() => vi.advanceTimersByTime(1000))
+    expect(t.innerHTML).toBe('Read <a href="/docs">the docs</a>')
+  })
+
   it('leaves an inView text effect already in view as written', async () => {
     // In view at mount: a reveal would only flash it, so nothing may change.
     render(

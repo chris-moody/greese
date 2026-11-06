@@ -123,7 +123,8 @@ the final state applies and only the movement is skipped.
 `splitText` splits text into one inline-block span per character, grouped per
 word so lines wrap normally, or into words. The pieces are `aria-hidden`, and
 the original sentence is kept once in a visually hidden span, so screen
-readers read words, not letters.
+readers read words, not letters. (Since the 2026-11-02 addendum it splits
+each text node where it is, keeping markup.)
 
 ## Consequences
 
@@ -251,3 +252,112 @@ greese.js read.
   5.7 and 7 kB. In `@greese/react`, the whole library with greese.js
   34.22 → 34.38 kB, `useGreese` 5.97 → 6.05 kB and the `greese` prop's lazy
   runtime 10.85 → 10.91 kB; budgets raised to 34.4, 6.1 and 10.95 kB.
+
+## Addendum (2026-11-02): text nodes, not textContent
+
+`text` wrote `textContent`, and `splitText` rebuilt the element from its
+`textContent`, so both flattened whatever markup was inside: a link in a
+typed sentence stopped being a link, and the `greese` prop's text effects
+skipped any element with children. Text is animated in the element's text
+nodes now.
+
+- **`text` writes into the text nodes,** in reading order, each filled up to
+  its own length before the next; the last takes any overflow. Typing on or
+  deleting reveals the markup as it goes (`Type <em>emph</em>`), and the
+  original text lands back in the same nodes. Lengths are measured before
+  the first write and again only when the nodes are replaced (half-typed
+  lengths would be wrong). An element with no text nodes gets `textContent`,
+  as before. A value of another shape is laid over the same lengths, so a
+  count belongs on the element holding the number, not its paragraph.
+- **`splitText` splits each text node where it is.** Links, emphasis and
+  code stay the same elements, their pieces inside them; the visually hidden
+  copy is kept per text node, beside its pieces, so a link's accessible name
+  is its own text and it stays focusable and clickable while split.
+  Whitespace-only nodes are left alone. `revert()` puts back the original
+  nodes themselves.
+- **The `greese` prop's `type` and `split`** take content with markup.
+  `type` types into a copy that's `inert` as well as `aria-hidden`, so the
+  copy's links can't take focus while it plays; the real nodes come back at
+  the end. `count` still takes a plain number.
+- **Not done:** `Text` nodes as targets of their own (`animate(node, …)`).
+  Targeting the element covers it without a second adapter.
+- **Underlines.** A link's underline doesn't propagate into inline blocks, so
+  each piece, and the wrappers around it, take `text-decoration: inherit`: a
+  split link is still underlined. A decoration from further up (a paragraph
+  that underlines everything) still stops at the pieces.
+- **Cost:** everything 6.7 → 6.86 kB, `animate` 5.78 → 5.89 kB and the
+  `<script>` build 7.08 → 7.27 kB; budgets raised to 6.9, 5.95 and 7.3 kB. In
+  `@greese/react`, the whole library with greese.js 39.99 → 40.17 kB,
+  `useGreese` 6.11 → 6.24 kB, the `greese` prop's lazy runtime 11.21 →
+  11.39 kB and the library with svg 50.04 → 50.13 kB; budgets raised to
+  40.2, 6.3, 11.4 and 50.2 kB.
+- **Tests:** `src/greese.test.ts` (typing into markup, splitting around a
+  link, an empty element), `src/components/motion.test.tsx` (`type` and
+  `split` with a link) and `e2e/motion.spec.ts` (a split link still named
+  and clickable, typing order, in five browsers). Demos: the `Text in markup`
+  story (greese.js) and `Text with markup` (the `greese` prop).
+
+## Addendum (2026-11-03): taking a target back, and `delay`
+
+Porting an app off GSAP found two gaps. Both are about the one-call `animate()`
+and about code that doesn't hold the timeline it needs to affect.
+
+**`killTweensOf(targets, scope?)`** stops every animation on a target, wherever
+it was started, and leaves its properties where they are; the target's neighbours in those
+timelines keep running. `Timeline.kill()` already stopped a timeline you hold a
+reference to; this stops whatever is animating a target you hold a reference to,
+which is the case that comes up in a game loop: a sprite is already recoiling
+when the next hit lands, a particle goes back to its pool mid-tween, an element
+is animated again from another module.
+
+**A `WeakMap` keyed by the target, not a list of timelines.** `Timeline` already
+keys its tracks by target, so registration is two lines where a track is first
+made for one. The alternatives were worse:
+
+- a global `Set` of every timeline would grow without bound, since timelines are
+  made constantly and most finish in under a second;
+- a registry filled only once someone asks would miss every animation already
+  running, which is exactly the case the feature exists for.
+
+The WeakMap entry dies with its target, so animating thousands of short-lived
+objects leaks nothing. While a target is alive, the timelines animating it stay
+alive with it — the same trade every library with this feature makes, and the
+reason the registry holds timelines rather than closures (one entry per
+target-and-timeline either way, but closures would also capture their props
+map).
+
+Two entry points, deliberately: the free function reaches every timeline through
+the registry, including nested ones, since a nested timeline owns its own tracks
+and registers itself. The method (`tl.killTweensOf(o)`) is scoped to one
+timeline and recurses into its children, for code that does hold the timeline
+and means "this one only".
+
+**`delay`** on `AnimateOptions`. A timeline's `Position` already expresses this
+and more (`'+=0.5'`, `'<0.2'`, a label), so `delay` is for `animate()`, which
+has no timeline to position against — and for a reader coming from a library
+where `delay` is the only way to say it. It shifts the whole segment, so
+`#placed` records the delayed start and a later `'<'`/`'>'` follows it.
+
+- **Cost:** everything 6.9 → 7.03 kB, `animate` 5.95 → 6.03 kB and the
+  `<script>` build 7.3 → 7.44 kB; budgets raised to 7.1, 6.1 and 7.5 kB. The
+  registry is written from `Timeline`'s own bookkeeping, so `{ animate }` pays
+  the 77 B whether it calls `killTweensOf` or not. In `@greese/react`, the whole
+  library with greese.js 40.28 → 40.38 kB, `useGreese` 6.3 → 6.37 kB, the
+  `greese` prop's lazy runtime 11.4 → 11.54 kB and the library with svg
+  50.25 → 50.41 kB; budgets raised to 40.5, 6.5, 11.6 and 50.5 kB. The motion
+  `scope` chunk is unchanged, carrying no greese.js.
+- **Tests:** nine in `src/greese.test.ts` — a delay shifting a one-call
+  animation and a later relative position; and for `killTweensOf`: one target
+  restored while its neighbour keeps animating, every timeline animating a
+  target reached, a nested timeline reached, 0 and no effect for an unanimated
+  target, idempotence, selectors with the timeline keeping its other elements,
+  and the method leaving other timelines alone.
+
+## Addendum (2026-11-04): killing leaves values in place
+
+`kill()` and `killTweensOf()` now stop an animation **without** restoring the
+properties it wrote, which is what GSAP does and what a game loop wants: a
+sprite killed mid-squash should not snap back before the next animation takes
+over. The old behavior (put everything back, remove added inline styles) is
+`Timeline.revert()`, and the React runtime (`Motion`, `useGreese`) uses it for
+its own cleanups, where leaving no trace on unmount is the point.
