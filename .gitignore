@@ -19,3 +19,6 @@ docs/plans/
 
 # The test dashboard's saved runs
 tools/test-dashboard/reports/
+
+# Local reports
+docs/reports
