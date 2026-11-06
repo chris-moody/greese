@@ -6,9 +6,10 @@
  *   virtual:greese-kit         what the kit reads: src/styles/_*.scss, the
  *                              authoring entry points in src/styles/public/ and
  *                              the generated token modules in dist/ (small, always)
- *   virtual:greese-stylesheet  the rest of the stylesheet: every component's SCSS
- *                              and the entry points (a lazy chunk, for building
- *                              the whole stylesheet with other breakpoints)
+ *   virtual:greese-stylesheet  the rest of the stylesheet: every component's SCSS,
+ *                              the entry points and the utility table (a lazy
+ *                              chunk, for building the whole stylesheet with
+ *                              other breakpoints, or the utilities)
  */
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -22,14 +23,18 @@ const read = (dir: string, accept: (file: string) => boolean, prefix: string) =>
     .filter(accept)
     .map((file) => [`${prefix}/${file}`, join(UI, dir, file)] as const)
 
+// The utility classes' table: large, and only for `scss/utilities`.
+const TABLE = '_utilities-table.scss'
+
 const kit = () => [
   ...read('src/styles', (f) => /^_.*\.scss$/.test(f), '/src/styles'),
   ...read('src/styles/public', (f) => /^_.*\.scss$/.test(f), '/src/styles/public'),
-  ...read('dist', (f) => /^_.*\.scss$/.test(f), '/dist'),
+  ...read('dist', (f) => /^_.*\.scss$/.test(f) && f !== TABLE, '/dist'),
 ]
 
 const stylesheet = () => [
   ...read('src/styles', (f) => /^[^_].*\.scss$/.test(f), '/src/styles'),
+  ...read('dist', (f) => f === TABLE, '/dist'),
   ...readdirSync(join(UI, 'src/components'), { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map(

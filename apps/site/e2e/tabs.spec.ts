@@ -14,9 +14,9 @@ test('the Motion tab holds the effects and their stage; there is no Greese tab',
   await expect(page.locator('.studio-preview-frame')).toBeVisible()
 })
 
-test('the Code tab colours its code', async ({ page }) => {
+test('the Output tab colours its code', async ({ page }) => {
   await page.goto('/studio')
-  await page.getByRole('tab', { name: 'Code' }).click()
+  await page.getByRole('tab', { name: 'Output' }).click()
   const scss = page.locator('.studio-highlighted').first()
   await expect(scss.locator('.tok-at').first()).toBeVisible()
   await expect(scss).toContainText('@use')

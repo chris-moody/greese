@@ -35,7 +35,7 @@ import { MotionPanel } from './panels/MotionPanel.tsx'
 import { ShapesPanel } from './panels/ShapesPanel.tsx'
 import { TokensPanel } from './panels/TokensPanel.tsx'
 import type { Picked } from './protocol.ts'
-import { customBreakpoints } from './spec.ts'
+import { customBreakpoints, specToLayout } from './spec.ts'
 import { useCompile } from './useCompile.ts'
 import { usePreviewSync } from './usePreviewSync.ts'
 import { useStudioTab, type StudioTab } from './useStudioTab.ts'
@@ -65,6 +65,9 @@ export const StudioPage = (): JSX.Element => {
   const theme = useThemeFile(spec, setSpec)
   const { file, loadError, dirty, changedOnDisk, savedNote } = theme
   const { compiled, building, errors, errorAt, setErrors } = useCompile(spec, !!file)
+  // The theme file's name: the layout's folder, and what its files say they came from.
+  const themeFileName =
+    (!hosted && file?.file.split(/[\\/]/).pop()) || 'greese-theme.json'
 
   usePreviewSync({
     frame,
@@ -145,13 +148,17 @@ export const StudioPage = (): JSX.Element => {
             <pre className="studio-errors">{errors.join('\n')}</pre>
           </Alert>
         )}
-        <Tabs value={tab} onValueChange={(v) => setTab(v as StudioTab)}>
+        <Tabs
+          className="studio-editor-tabs"
+          value={tab}
+          onValueChange={(v) => setTab(v as StudioTab)}
+        >
           <TabList aria-label="Editor">
             <Tab value="tokens">Tokens</Tab>
             <Tab value="components">Components</Tab>
             <Tab value="shapes">Shapes</Tab>
             <Tab value="motion">Motion</Tab>
-            <Tab value="code">Code</Tab>
+            <Tab value="output">Output</Tab>
           </TabList>
           <TabPanel value="tokens">
             <TokensPanel
@@ -177,10 +184,12 @@ export const StudioPage = (): JSX.Element => {
           <TabPanel value="motion">
             <MotionPanel spec={spec} onChange={setSpec} lab={lab} />
           </TabPanel>
-          <TabPanel value="code">
+          <TabPanel value="output">
             {/* Only while open: it colours the whole compiled CSS. */}
-            {tab === 'code' && (
+            {tab === 'output' && (
               <CodePanel
+                layout={specToLayout(spec, themeFileName)}
+                folder={themeFileName.replace(/\.json$/, '')}
                 scss={compiled.scss}
                 css={compiled.css}
                 effects={compiled.effects}

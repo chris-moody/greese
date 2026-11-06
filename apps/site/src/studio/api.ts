@@ -36,7 +36,7 @@ const send = (method: string, url: string, spec: ThemeSpec) =>
     method,
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(spec),
-  }).then((r) => json<Compiled & { written?: string[] }>(r))
+  }).then((r) => json<Compiled & { written?: string[]; kept?: string[] }>(r))
 
 /**
  * True when built (GitHub Pages): no dev server, so the studio works in the

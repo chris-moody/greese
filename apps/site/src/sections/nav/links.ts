@@ -20,5 +20,5 @@ export const STUDIO_TABS = [
   ['components', 'Components'],
   ['shapes', 'Shapes'],
   ['motion', 'Motion'],
-  ['code', 'Code'],
+  ['output', 'Output'],
 ] as const

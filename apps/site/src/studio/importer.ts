@@ -82,6 +82,16 @@ const declaration = (text: string): [string, string] | undefined => {
   return [text.slice(0, at).trim(), text.slice(at + 1).trim()]
 }
 
+/**
+ * The guard the kit adds to every theme rule (`reset-guard()`, ADR 0034): it
+ * says which theme layer a rule belongs to, not what it styles, so reading
+ * leaves it out.
+ */
+const RESET_GUARD = /:where\(:not\(\.greese-reset-[a-z]+, [^)]*\)\)/g
+
+/** CSS without the reset guards: the selectors as they read without them. */
+export const withoutResetGuards = (css: string): string => css.replace(RESET_GUARD, '')
+
 /** Resolves a nested selector against its parent (`&`, or a descendant). */
 const nest = (parent: string | undefined, child: string): string => {
   if (!parent) return child
@@ -133,7 +143,8 @@ export const parseCss = (css: string): Rule[] => {
         if (c === '}') break
       }
     }
-    if (selector && decls.length) rules.push({ selector, context, decls })
+    if (selector && decls.length)
+      rules.push({ selector: selector.replace(RESET_GUARD, ''), context, decls })
   }
 
   while (i < text.length) block(undefined, [])

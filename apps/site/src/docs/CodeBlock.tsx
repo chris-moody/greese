@@ -1,6 +1,6 @@
 /**
  * A block of code in the docs: highlighted in the page's own colours (light
- * and dark, `_code.scss`), with a copy button. TypeScript, JSX and JSON go
+ * and dark, `_palette.scss`, in the docs' shared code folder), with a copy button. TypeScript, JSX and JSON go
  * through Prism (prism-react-renderer, which the live editor uses too); CSS
  * and SCSS through the studio's tokenizer, which knows the kit's syntax.
  */
@@ -8,7 +8,7 @@ import { type JSX } from 'react'
 import { Highlight, Prism } from 'prism-react-renderer'
 import { Code, IconButton, toast } from '@greese/react'
 import { CopyIcon } from '@greese/icons'
-import { highlight, type Language } from '../studio/highlight.ts'
+import { highlight, type Language } from '../../../docs/stories/_shared/code/highlight.ts'
 
 const PRISM: Record<string, string> = {
   ts: 'tsx',

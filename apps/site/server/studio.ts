@@ -2,14 +2,22 @@
  * Theme Studio's file access: a Vite dev-server plugin. The studio edits one
  * theme file, `<name>.json`, and writes what it generates next to it:
  *
- *   greese-theme.json   the theme (source of truth; read and written here)
- *   greese-theme.scss   SCSS using the kit, for apps that compile Sass
- *   greese-theme.css    the same, compiled, for apps that don't
+ *   greese-theme.json   the theme (source of truth while you use the studio)
+ *   greese-theme/       the SCSS layout (ADR 0034): a module per component,
+ *                       token group and concern, to keep and edit in your source
+ *   greese-theme.scss   the same SCSS as one file (the `scss` output)
+ *   greese-theme.css    the theme compiled, for apps that don't compile Sass
  *   greese-theme.effects.ts  the theme's effects, for the app's `defineGreeseEffect`
  *                       (only while the theme has some)
  *
- * Choose the file with GREESE_THEME (relative to where npm was run):
+ * Choose the file with GREESE_THEME (relative to where npm was run), and what
+ * is written with GREESE_THEME_OUTPUT (`layout`, `scss`, `css`; `layout,css`
+ * when unset):
  *   GREESE_THEME=src/styles/greese-theme.json npm run studio
+ *   GREESE_THEME_OUTPUT=scss,css npm run studio   # one file, as before
+ *
+ * A layout file whose first line (LAYOUT_MARK) you deleted is yours: saving
+ * leaves it alone.
  *
  * Dev-only by design: it writes to disk, so it never exists in a build. It
  * answers this machine, and other devices (with `--host`, for testing on a
@@ -21,6 +29,7 @@ import { studioAccess, studioToken, TOKEN_PARAM } from './access.ts'
 import {
   existsSync,
   mkdirSync,
+  readdirSync,
   readFileSync,
   realpathSync,
   rmSync,
@@ -43,7 +52,9 @@ import type { ImportSource } from '../src/studio/api.ts'
 import {
   customBreakpoints,
   emptySpec,
+  LAYOUT_MARK,
   specToEffectsTs,
+  specToLayout,
   specToScss,
   specToScssWithLines,
   stylesheetScss,
@@ -57,9 +68,89 @@ const APP = join(dirname(fileURLToPath(import.meta.url)), '..')
 
 export interface ThemeFiles {
   json: string
+  /** The folder the SCSS layout goes in. */
+  layout: string
   scss: string
   css: string
   effects: string
+}
+
+/** What saving writes: the SCSS layout, the SCSS as one file, the compiled CSS. */
+export type ThemeOutput = 'layout' | 'scss' | 'css'
+const OUTPUTS: readonly ThemeOutput[] = ['layout', 'scss', 'css']
+
+export const themeOutputs = (
+  setting = process.env.GREESE_THEME_OUTPUT
+): ThemeOutput[] => {
+  if (!setting?.trim()) return ['layout', 'css']
+  const asked = setting.split(',').map((s) => s.trim())
+  const unknown = asked.filter((s) => !OUTPUTS.includes(s as ThemeOutput))
+  if (unknown.length)
+    throw new Error(
+      `GREESE_THEME_OUTPUT: no output ${unknown.map((u) => `"${u}"`).join(', ')}; choose from ${OUTPUTS.join(', ')}`
+    )
+  return OUTPUTS.filter((o) => asked.includes(o))
+}
+
+/**
+ * Writes the SCSS layout into `dir`. A file that no longer starts with
+ * LAYOUT_MARK is kept as it is: someone maintains it by hand now. A file the
+ * theme no longer needs is removed, unless it's kept for the same reason.
+ */
+/**
+ * The component files in a layout folder that are yours (their first line,
+ * LAYOUT_MARK, deleted, or never there), by path inside it: `main.scss` keeps
+ * loading them, whether the theme writes them or not.
+ */
+export const ownComponents = (dir: string): string[] => {
+  const folder = join(dir, 'components')
+  return existsSync(folder)
+    ? readdirSync(folder)
+        .filter((name) => name.endsWith('.scss'))
+        .filter(
+          (name) => !readFileSync(join(folder, name), 'utf8').startsWith(LAYOUT_MARK)
+        )
+        .sort()
+        .map((name) => `components/${name}`)
+    : []
+}
+
+export const writeLayout = (
+  dir: string,
+  files: Record<string, string>
+): { written: string[]; kept: string[]; removed: string[] } => {
+  const generated = (file: string) =>
+    !existsSync(file) || readFileSync(file, 'utf8').startsWith(LAYOUT_MARK)
+  const written: string[] = []
+  const kept: string[] = []
+  const removed: string[] = []
+  for (const [path, text] of Object.entries(files)) {
+    const file = join(dir, path)
+    if (!generated(file)) {
+      kept.push(file)
+      continue
+    }
+    mkdirSync(dirname(file), { recursive: true })
+    writeFileSync(file, text)
+    written.push(file)
+  }
+  const walk = (folder: string): string[] =>
+    existsSync(folder)
+      ? readdirSync(folder, { withFileTypes: true }).flatMap((entry) =>
+          entry.isDirectory()
+            ? walk(join(folder, entry.name))
+            : entry.name.endsWith('.scss')
+              ? [join(folder, entry.name)]
+              : []
+        )
+      : []
+  const wanted = new Set(Object.keys(files).map((path) => join(dir, path)))
+  for (const file of walk(dir))
+    if (!wanted.has(file) && generated(file)) {
+      rmSync(file)
+      removed.push(file)
+    }
+  return { written, kept, removed }
 }
 
 /** The theme the studio starts from, and the hosted studio's (src/hosted.ts). */
@@ -73,7 +164,13 @@ export const themeFiles = (
   // saving never rewrites the example the hosted studio starts from.
   const json = setting ? resolve(cwd, setting) : join(APP, '.local/greese-theme.json')
   const base = json.replace(/\.json$/, '')
-  return { json, scss: `${base}.scss`, css: `${base}.css`, effects: `${base}.effects.ts` }
+  return {
+    json,
+    layout: base,
+    scss: `${base}.scss`,
+    css: `${base}.css`,
+    effects: `${base}.effects.ts`,
+  }
 }
 
 /**
@@ -245,6 +342,14 @@ const send = (res: ServerResponse, status: number, data: unknown) => {
 
 export const studio = (): Plugin => {
   const files = themeFiles()
+  const outputs = themeOutputs()
+  // What saving writes, as the studio shows it.
+  const written = (shown: (file: string) => string) => [
+    ...(outputs.includes('layout') ? [`${shown(files.layout)}/`] : []),
+    ...(outputs.includes('scss') ? [shown(files.scss)] : []),
+    ...(outputs.includes('css') ? [shown(files.css)] : []),
+    shown(files.effects),
+  ]
   // Relative to where npm ran, unless that climbs out of it.
   const shown = (file: string) => {
     const rel = relative(process.env.INIT_CWD ?? process.cwd(), file)
@@ -291,7 +396,7 @@ export const studio = (): Plugin => {
             const spec = readSpec(files.json)
             return send(res, 200, {
               file: shown(files.json),
-              outputs: [shown(files.scss), shown(files.css), shown(files.effects)],
+              outputs: written(shown),
               spec,
               ...compileSpec(spec, basename(files.json)),
             })
@@ -316,19 +421,31 @@ export const studio = (): Plugin => {
             mkdirSync(dirname(files.json), { recursive: true })
             lastWrite = `${JSON.stringify(spec, null, 2)}\n`
             writeFileSync(files.json, lastWrite)
-            writeFileSync(files.scss, result.scss)
-            writeFileSync(files.css, result.css)
+            const layout = outputs.includes('layout')
+              ? writeLayout(
+                  files.layout,
+                  specToLayout(spec, basename(files.json), {
+                    components: ownComponents(files.layout),
+                  })
+                )
+              : undefined
+            if (outputs.includes('scss')) writeFileSync(files.scss, result.scss)
+            if (outputs.includes('css')) writeFileSync(files.css, result.css)
             // Only a theme with effects has the file; one that dropped them drops it.
             if (result.effects) writeFileSync(files.effects, result.effects)
             else rmSync(files.effects, { force: true })
             return send(res, 200, {
               ...result,
               written: [
-                files.json,
-                files.scss,
-                files.css,
-                ...(result.effects ? [files.effects] : []),
-              ].map(shown),
+                shown(files.json),
+                ...(layout
+                  ? [`${shown(files.layout)}/ (${layout.written.length} files)`]
+                  : []),
+                ...(outputs.includes('scss') ? [shown(files.scss)] : []),
+                ...(outputs.includes('css') ? [shown(files.css)] : []),
+                ...(result.effects ? [shown(files.effects)] : []),
+              ],
+              kept: (layout?.kept ?? []).map(shown),
             })
           }
         } catch (error) {

@@ -10,13 +10,14 @@ import {
   ComponentStyles,
   hasStyles,
 } from '../../../docs/stories/_shared/ComponentStyles.tsx'
+import { useStoryArgs } from './args.ts'
 import { ArgsTable } from './ArgsTable.tsx'
 import { LiveCode } from './LiveCode.tsx'
-import { pageStories } from './load.ts'
+import { pageStories, type ComposedStory } from './load.ts'
 import { Markdown } from './Markdown.tsx'
 import { pageName, type DocsPage } from './pages.ts'
 import { slug } from './slug.ts'
-import { StoryCanvas } from './StoryCanvas.tsx'
+import { Boundary, StoryCanvas } from './StoryCanvas.tsx'
 import { componentName } from './toJsx.ts'
 
 /** A section's heading, with the id the page's contents link to. */
@@ -32,6 +33,16 @@ const Section = ({ children }: { children: string }): JSX.Element => (
     </a>
   </Heading>
 )
+
+/** The page's first story, bare, for the Styling section's anatomy to take apart. */
+const AnatomyExample = ({ story: Story }: { story: ComposedStory }): JSX.Element => {
+  const { args } = useStoryArgs(Story)
+  return (
+    <Boundary>
+      <Story {...args} />
+    </Boundary>
+  )
+}
 
 export const ComponentPage = ({ page }: { page: DocsPage }): JSX.Element => {
   const { meta, description, stories: all } = use(pageStories(page.file))
@@ -125,7 +136,11 @@ export const ComponentPage = ({ page }: { page: DocsPage }): JSX.Element => {
         <>
           <Section>Styling</Section>
           <div className="docs-prose">
-            <ComponentStyles name={name} subcomponents={subcomponents} />
+            <ComponentStyles
+              name={name}
+              subcomponents={subcomponents}
+              anatomy={primary && <AnatomyExample story={primary.Story} />}
+            />
           </div>
         </>
       )}

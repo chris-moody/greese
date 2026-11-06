@@ -3,7 +3,7 @@
  * theme lives in this browser (localStorage), and Sass runs here: the `sass`
  * package, loaded on the first compile, against the kit's own sources
  * bundled as text, so a theme compiles exactly as `npm run studio` compiles
- * it. Saving keeps the theme here; the Code tab downloads the files.
+ * it. Saving keeps the theme here; the Output tab downloads the files.
  */
 import type { Importer } from 'sass'
 import kit from 'virtual:greese-kit'
@@ -30,12 +30,14 @@ const files = new Map(Object.entries(kit))
 const entries: Record<string, string> = {
   'pkg:@greese/ui/scss': '/src/styles/index.scss',
   'pkg:@greese/ui/scss/config': '/src/styles/_config.scss',
+  'pkg:@greese/ui/scss/core': '/src/styles/_core.scss',
   'pkg:@greese/ui/scss/kit': '/src/styles/_kit.scss',
   'pkg:@greese/ui/scss/mixins': '/src/styles/public/_mixins.scss',
   'pkg:@greese/ui/scss/tones': '/src/styles/public/_tones.scss',
   'pkg:@greese/ui/scss/floating': '/src/styles/public/_floating.scss',
   'pkg:@greese/ui/scss/controls': '/src/styles/public/_controls.scss',
   'pkg:@greese/ui/scss/slides': '/src/styles/public/_slides.scss',
+  'pkg:@greese/ui/scss/utilities': '/src/styles/public/_utilities.scss',
   'pkg:@greese/ui/scss/tokens': '/dist/_tokens.scss',
   'pkg:@greese/ui/scss/layers': '/dist/_layers.scss',
   'pkg:@greese/ui/scss/maps': '/dist/_maps.scss',
@@ -43,8 +45,20 @@ const entries: Record<string, string> = {
 
 /** Resolves `pkg:` entries, and the kit's relative `@use`s between its partials. */
 export const kitImporter: Importer<'async'> = {
-  canonicalize(url) {
+  async canonicalize(url) {
+    // The utilities' table comes with the lazy chunk.
+    if (url === 'pkg:@greese/ui/scss/utilities') await loadComponents()
     if (url in entries) return new URL(`file://${entries[url]}`)
+    // A component's own stylesheet (`pkg:@greese/ui/scss/components/<Name>`),
+    // from the lazy chunk.
+    const component = /^pkg:@greese\/ui\/scss\/components\/([A-Z][A-Za-z]*)$/.exec(
+      url
+    )?.[1]
+    if (component) {
+      await loadComponents()
+      const path = `/src/components/${component}/${component}.scss`
+      return files.has(path) ? new URL(`file://${path}`) : null
+    }
     if (!url.startsWith('file:///')) return null
     const path = new URL(url).pathname.replace(/\.scss$/, '')
     const name = path.slice(path.lastIndexOf('/') + 1)
@@ -126,7 +140,7 @@ export const hostedApi = {
       localStorage.setItem(KEY, JSON.stringify(spec))
     } catch {
       return {
-        errors: ['This browser won’t store the theme. Download it from the Code tab.'],
+        errors: ['This browser won’t store the theme. Download it from the Output tab.'],
       }
     }
     return { ...result, written: ['in this browser'] }

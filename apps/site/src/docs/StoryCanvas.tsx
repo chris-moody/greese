@@ -24,7 +24,7 @@ export const storyContext = (story: ComposedStory, meta: Meta, args: Args) => ({
 })
 
 /** A story that throws shows why, instead of taking the page with it. */
-class Boundary extends Component<{ children: ReactNode }, { error?: Error }> {
+export class Boundary extends Component<{ children: ReactNode }, { error?: Error }> {
   state: { error?: Error } = {}
   static getDerivedStateFromError(error: Error) {
     return { error }

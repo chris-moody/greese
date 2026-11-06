@@ -8,7 +8,12 @@ import {
   validateSpec,
   type ThemeSpec,
 } from '../src/studio/spec.ts'
+import { withoutResetGuards } from '../src/studio/importer.ts'
 import { compileSpec } from './studio.ts'
+import {
+  sampleEffectsTs,
+  sampleSpec,
+} from '../../docs/stories/_shared/themeLayoutSample.ts'
 
 describe('effect lists', () => {
   it('are the library’s own, not a copy', async () => {
@@ -27,7 +32,7 @@ describe('copying every built-in', () => {
     expect(validateSpec({ effects })).toEqual([])
     const result = compileSpec({ tokens: {}, components: {}, effects })
     expect(result).not.toHaveProperty('errors')
-    const css = (result as { css: string }).css
+    const css = withoutResetGuards((result as { css: string }).css)
     for (const name of entranceNames())
       expect(css).toContain(`@keyframes greese-${effectClass(name)}-copy`)
   }, 30_000)
@@ -64,7 +69,8 @@ describe('a theme with effects', () => {
       },
     })
     expect(result).not.toHaveProperty('errors')
-    const { css, scss } = result as { css: string; scss: string }
+    const { css: guarded, scss } = result as { css: string; scss: string }
+    const css = withoutResetGuards(guarded)
     expect(scss).toContain('@include greese.effect(float-up,')
     expect(scss).toContain('@include greese.effect(spin-in,')
     expect(css).toMatch(/@keyframes greese-float-up/)
@@ -108,6 +114,10 @@ describe('a theme with effects', () => {
     expect(ts).toMatch(/GreeseEffectRegistry {\n\s+floatUp: true\n\s+spinIn: true\n/)
     expect(specToEffectsTs({ tokens: {} })).toBeUndefined()
     expect(specToScss({ tokens: {} })).not.toContain('effect(')
+  })
+
+  it('writes the effects module the theme layout guide shows', () => {
+    expect(specToEffectsTs(sampleSpec as ThemeSpec)).toBe(sampleEffectsTs)
   })
 
   it('refuses names and values that would write bad CSS or code', () => {

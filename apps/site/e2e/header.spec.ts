@@ -111,8 +111,8 @@ test('a link to a studio tab opens that tab, from the studio itself too', async 
   const field = page.getByRole('combobox', { name: 'Search' })
   await field.fill('compiled')
   await field.press('Enter')
-  await expect(page).toHaveURL(/\/studio\?tab=code$/)
-  await expect(page.getByRole('tab', { name: 'Code' })).toHaveAttribute(
+  await expect(page).toHaveURL(/\/studio\?tab=output$/)
+  await expect(page.getByRole('tab', { name: 'Output' })).toHaveAttribute(
     'aria-selected',
     'true'
   )
@@ -159,7 +159,7 @@ test.describe('on a phone', () => {
     await expect(menu.getByRole('link', { name: 'GitHub' })).toHaveCount(0)
     // The page on screen is open. A row's name goes to the page; the rest of
     // the row opens what's on it. No list repeats its page's own link.
-    await expect(menu.getByRole('link', { name: 'Code' })).toBeVisible()
+    await expect(menu.getByRole('link', { name: 'Output' })).toBeVisible()
     await expect(menu.getByRole('link', { name: 'Finance' })).toBeHidden()
     await expect(
       menu.getByRole('link', { name: /^(All docs|All templates|Theme Studio)$/ })

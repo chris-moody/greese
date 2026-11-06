@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { withoutResetGuards } from '../src/studio/importer.ts'
 import { compileSpec as compileInBrowser } from '../src/studio/hosted.ts'
 import {
   defaultNamespace,
@@ -158,7 +159,7 @@ $list: ();
     expect(scss.indexOf('@mixin row')).toBeLessThan(
       scss.indexOf('@include greese.component(Card)')
     )
-    const css = (compileSpec(spec) as { css: string }).css
+    const css = withoutResetGuards((compileSpec(spec) as { css: string }).css)
     expect(css).toMatch(/\.greese-Card \.a \{\s+gap: 2rem;\s+order: 2;\s+content: "a b";/)
   })
 
@@ -232,7 +233,7 @@ describe('component SCSS with imports, through the real kit', () => {
     const served = compileSpec(spec)
     expect(served).not.toHaveProperty('errors')
     expect(await compileInBrowser(spec)).toEqual(served)
-    const css = (served as { css: string }).css
+    const css = withoutResetGuards((served as { css: string }).css)
     expect(css).toMatch(
       /@media \(width >= 900px\) \{\s+\.greese-Popover \{\s+padding: 2rem;/
     )
@@ -248,14 +249,16 @@ describe('component SCSS with imports, through the real kit', () => {
       ...spec,
       breakpoints: { xs: 0, sm: 500, md: 700, lg: 1000, xl: 1400 },
     }
-    const css = (compileSpec(custom) as { css: string }).css
+    const css = withoutResetGuards((compileSpec(custom) as { css: string }).css)
     expect(css).toMatch(
       /@media \(width >= 700px\) \{\s+\.greese-Popover \{\s+padding: 2rem;/
     )
   })
 
   it('keeps a named theme’s scope', () => {
-    const css = (compileSpec({ ...spec, name: 'brand' }) as { css: string }).css
+    const css = withoutResetGuards(
+      (compileSpec({ ...spec, name: 'brand' }) as { css: string }).css
+    )
     expect(css).toMatch(
       /\[data-greese-theme=brand\] \.greese-Card:hover \{\s+opacity: 0\.9;/
     )

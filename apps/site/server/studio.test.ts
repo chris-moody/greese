@@ -1,8 +1,22 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { specToScss, validateSpec, type ThemeSpec } from '../src/studio/spec.ts'
-import { importCss } from '../src/studio/importer.ts'
-import { compileSpec, exampleFile, themeFiles } from './studio.ts'
+import {
+  specToLayout,
+  specToScss,
+  validateSpec,
+  type ThemeSpec,
+} from '../src/studio/spec.ts'
+import { importCss, withoutResetGuards } from '../src/studio/importer.ts'
+import {
+  compileSpec,
+  exampleFile,
+  themeFiles,
+  themeOutputs,
+  ownComponents,
+  writeLayout,
+} from './studio.ts'
 
 const spec: ThemeSpec = {
   tokens: {
@@ -73,7 +87,9 @@ describe('compileSpec', () => {
     expect(result.css).toContain('@layer greese.theme')
     expect(result.css).toContain('--greese-space-4: 1.25rem;')
     expect(result.css).toContain("--greese-font-body: 'Inter', system-ui, sans-serif;")
-    expect(result.css).toContain('.greese-Button .greese-Button-icon {')
+    expect(withoutResetGuards(result.css)).toContain(
+      '.greese-Button .greese-Button-icon {'
+    )
     expect(result.css).toContain('animation: greese-fade-up')
   })
 
@@ -100,13 +116,76 @@ describe('compileSpec', () => {
 })
 
 describe('themeFiles', () => {
-  it('writes the SCSS, CSS and effects next to the JSON', () => {
+  it('writes the layout, SCSS, CSS and effects next to the JSON', () => {
     expect(themeFiles('styles/brand.json', '/app')).toEqual({
       json: '/app/styles/brand.json',
+      layout: '/app/styles/brand',
       scss: '/app/styles/brand.scss',
       css: '/app/styles/brand.css',
       effects: '/app/styles/brand.effects.ts',
     })
+  })
+})
+
+describe('themeOutputs', () => {
+  it('writes the layout and the CSS unless told otherwise', () => {
+    expect(themeOutputs(undefined)).toEqual(['layout', 'css'])
+    expect(themeOutputs('css, scss')).toEqual(['scss', 'css'])
+    expect(() => themeOutputs('layout,html')).toThrow(/no output "html"/)
+  })
+})
+
+describe('writeLayout', () => {
+  const layout = specToLayout({
+    name: 'brand',
+    tokens: { radius: { md: '2px' } },
+    components: { Card: { styles: { gap: '0' } }, Chip: { styles: { gap: '0' } } },
+  })
+
+  it('writes every file, then leaves alone the ones taken over by hand', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'greese-layout-'))
+    expect(writeLayout(dir, layout).written).toHaveLength(Object.keys(layout).length)
+    const card = join(dir, 'components/_card.scss')
+    const mine =
+      readFileSync(card, 'utf8').split('\n').slice(1).join('\n') + '\n// mine\n'
+    writeFileSync(card, mine)
+    const again = writeLayout(dir, layout)
+    expect(again.kept).toEqual([card])
+    expect(readFileSync(card, 'utf8')).toBe(mine)
+  })
+
+  it('removes the files the theme no longer needs, unless they are kept', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'greese-layout-'))
+    writeLayout(dir, layout)
+    const smaller = Object.fromEntries(
+      Object.entries(layout).filter(([path]) => path !== 'components/_chip.scss')
+    )
+    expect(writeLayout(dir, smaller).removed).toEqual([
+      join(dir, 'components/_chip.scss'),
+    ])
+    expect(existsSync(join(dir, 'components/_chip.scss'))).toBe(false)
+    expect(existsSync(join(dir, 'components/_card.scss'))).toBe(true)
+  })
+
+  it('keeps loading component files of your own from main.scss', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'greese-layout-'))
+    writeLayout(dir, layout)
+    writeFileSync(join(dir, 'components/_hero.scss'), '// mine\n')
+    // Taken over, then dropped from the theme: still yours, still loaded.
+    const chip = join(dir, 'components/_chip.scss')
+    writeFileSync(chip, readFileSync(chip, 'utf8').split('\n').slice(1).join('\n'))
+    expect(ownComponents(dir)).toEqual(['components/_chip.scss', 'components/_hero.scss'])
+    const spec: ThemeSpec = {
+      name: 'brand',
+      tokens: { radius: { md: '2px' } },
+      components: { Card: { styles: { gap: '0' } } },
+    }
+    writeLayout(dir, specToLayout(spec, 'x.json', { components: ownComponents(dir) }))
+    const main = readFileSync(join(dir, 'main.scss'), 'utf8')
+    expect(main).toContain(
+      "@use 'components/card';\n@use 'components/chip';\n@use 'components/hero';"
+    )
+    expect(existsSync(chip)).toBe(true)
   })
 })
 

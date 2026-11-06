@@ -39,11 +39,14 @@ describe('the hosted studio', () => {
         './scss/floating',
         './scss/controls',
         './scss/slides',
+        './scss/utilities',
+        './scss/core',
+        './scss/components/*',
       ])
     )
     for (const entry of entries) {
       const result = await hostedApi.import({
-        text: `@use 'pkg:@greese/ui${entry.slice(1)}' as m;`,
+        text: `@use 'pkg:@greese/ui${entry.slice(1).replace('*', 'Button')}' as m;`,
         format: 'scss',
       })
       expect(result, entry).not.toHaveProperty('errors')

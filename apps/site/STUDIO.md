@@ -33,7 +33,7 @@ cookie, so it keeps working across restarts. To sign every device out, delete
 
 A hosted copy runs at <https://chris-moody.github.io/greese/studio/>. It
 compiles in your browser and keeps the theme there: save, then download
-`greese-theme.json` (and the SCSS and CSS) from the Code tab, and open the
+`greese-theme.json` (and the SCSS and CSS) from the Output tab, and open the
 JSON here to carry on. Importing from project files needs `npm run studio`.
 
 ## Files
@@ -70,7 +70,7 @@ writes them through:
   refused, by the spec check, the kit and the runtime alike. The file exists
   only while the theme has effects;
 - the preview and the pages (homepage, stage) apply them live. The hosted
-  studio keeps them in the browser; the Code tab downloads the files.
+  studio keeps them in the browser; the Output tab downloads the files.
 
 Delete removes one of yours.
 Replay motion in the header plays the stage again.
@@ -181,9 +181,10 @@ or closes.
 
 Themes are more than tokens: the **Components tab** edits a component's own
 styles. Its **Styles** box is the code of a component _family_, edited together,
-in a highlighted editor (`src/studio/CodeEditor.tsx`, which colours CSS, SCSS and
-the JavaScript effects are written in, with no dependency: the text is
-tokenized by `src/studio/highlight.ts` and drawn under a transparent textarea).
+in a highlighted editor (`CodeEditor.tsx`, which colours CSS, SCSS, JavaScript
+and TypeScript, with no dependency: the text is tokenized by `highlight.ts` and
+drawn under a transparent textarea). Both live in
+`apps/docs/stories/_shared/code/`, because the docs show files in it too.
 
 - **The family** is derived, not listed: the component's own style blocks, then
   those of the components that go inside it (the `subcomponents` its story
@@ -259,8 +260,8 @@ in the browser in the hosted studio; about a second, once per set of
 breakpoints), and the preview uses that build. The theme file records
 `breakpoints`; the SCSS starts with
 `@use 'pkg:@greese/ui/scss' with ($breakpoints: …)`, and the compiled CSS is then the
-whole stylesheet, to use instead of `styles.css`. The Code tab also shows what
-the app needs: `configureBreakpoints({ … })`, and, for an added key, the
+whole stylesheet, to use instead of `styles.css`. The Output tab also shows what
+the app needs: `configureBreakpoints()`, which reads them from the stylesheet, and, for an added key, the
 `BreakpointKeys` declaration for TypeScript. The five built-in keys stay (components use
 them), `xs` is always 0, and a key is one word. Each key, added ones included,
 gets responsive classes and `--greese-breakpoint-<key>`.

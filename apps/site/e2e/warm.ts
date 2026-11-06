@@ -10,10 +10,7 @@ export default async function warm(config: FullConfig): Promise<void> {
   const browser = await chromium.launch()
   const page = await browser.newPage({ baseURL })
   await page.goto('/studio?tab=components')
-  await page
-    .frameLocator('iframe')
-    .locator('.studio-anatomy')
-    .waitFor({ timeout: 120_000 })
+  await page.frameLocator('iframe').locator('.anatomy').waitFor({ timeout: 120_000 })
   await page.goto('/docs/forms-button')
   await page.locator('.docs-canvas').first().waitFor({ timeout: 120_000 })
   await page.goto('/')

@@ -5,7 +5,7 @@ const open = async (page: Page, component: string) => {
   await page.goto('/studio')
   await page.getByRole('tab', { name: /components/i }).click()
   await page.getByLabel('Component', { exact: true }).selectOption(component)
-  await expect(page.frameLocator('iframe').locator('.studio-anatomy')).toBeVisible()
+  await expect(page.frameLocator('iframe').locator('.anatomy')).toBeVisible()
 }
 
 /** A computed style in the preview, inside the component and on a copy of the same markup outside it. */
@@ -14,7 +14,7 @@ const insideAndOutside = (page: Page, property: string) =>
     .frameLocator('iframe')
     .locator('body')
     .evaluate((body, prop) => {
-      const inside = body.querySelector('.studio-anatomy .greese-Collapsible-trigger')!
+      const inside = body.querySelector('.anatomy .greese-Collapsible-trigger')!
       const lone = document.createElement('details')
       lone.className = 'greese-Collapsible'
       lone.innerHTML = '<summary class="greese-Collapsible-trigger">Alone</summary>'
@@ -55,7 +55,7 @@ test('a library path copied from a component’s source is made portable, and an
   await expect(box).toHaveValue(/@use 'pkg:@greese\/ui\/scss\/mixins';/)
   await expect(page.getByText(/Rewritten for your project/)).toBeVisible()
   await expect(page.getByText(/^Line 4: Undefined variable/)).toBeVisible()
-  await expect(page.locator('.studio-codebox-mark')).toHaveCount(1)
+  await expect(page.locator('.code-editor-mark')).toHaveCount(1)
 })
 
 test('the box starts as the family’s own SCSS; an edit applies inside the component only', async ({
@@ -105,7 +105,7 @@ test('the anatomy’s disclosures start open and can be closed and opened again'
 }) => {
   for (const component of ['Accordion', 'AccordionItem', 'Collapsible']) {
     await open(page, component)
-    const details = page.frameLocator('iframe').locator('.studio-anatomy details').first()
+    const details = page.frameLocator('iframe').locator('.anatomy details').first()
     await expect(details).toHaveAttribute('open', '')
     await details.locator('summary').first().click()
     await expect(details).not.toHaveAttribute('open', '')
@@ -127,9 +127,7 @@ test('the code box draws its text where you type and select it, scrolled or not'
       let n = from
       while (!lines[n - 1]!.trim()) n++
       const column = lines[n - 1]!.search(/\S/)
-      const code = ta
-        .closest('.studio-codebox')!
-        .querySelector('.studio-codebox-layer code')!
+      const code = ta.closest('.code-editor')!.querySelector('.code-editor-layer code')!
       const walker = document.createTreeWalker(code, NodeFilter.SHOW_TEXT)
       let line = 1
       let col = 0

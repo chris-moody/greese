@@ -1,6 +1,7 @@
 import { Component, useEffect, useState, type JSX, type ReactNode } from 'react'
-import { Card, Heading, Spinner, Stack, Text } from '@greese/react'
-import { Anatomy } from './Anatomy.tsx'
+import { Card, Spinner, Stack, Text } from '@greese/react'
+import { Anatomy } from '../../../../docs/stories/_shared/Anatomy.tsx'
+import { familyOf } from '../family.ts'
 import { hasStories, loadStories, type LoadedStories } from './stories.ts'
 
 /** One broken story shows a message instead of taking the preview down. */
@@ -26,37 +27,36 @@ class StoryBoundary extends Component<{ children: ReactNode }, { error?: Error }
  */
 export const ComponentPreview = ({ block }: { block: string }): JSX.Element => {
   const [loaded, setLoaded] = useState<LoadedStories | null>()
+  const [family, setFamily] = useState<string[]>([block])
 
   useEffect(() => {
     let current = true
     setLoaded(undefined)
+    setFamily([block])
     void loadStories(block).then((result) => {
       if (current) setLoaded(result ?? null)
     })
+    void familyOf(block).then((blocks) => current && setFamily(blocks))
     return () => {
       current = false
     }
   }, [block])
 
   return (
-    <section aria-labelledby="component-preview" className="studio-component-preview">
+    <section aria-label={`${block} preview`} className="studio-component-preview">
       <Stack gap={4}>
-        <Stack gap={1}>
-          <Heading level={2} variant="h4" id="component-preview">
-            Component preview: {block}
-          </Heading>
+        {!hasStories(block) && (
           <Text variant="p3" tone="muted">
-            {hasStories(block)
-              ? `The stories from its docs page${loaded ? ` (${loaded.title})` : ''}, with your theme applied.`
-              : `${block} has no docs page of its own; it's styled through the components that use it, in the theme preview below.`}
+            {block} has no docs page of its own; it&apos;s styled through the components
+            that use it, in the theme preview below.
           </Text>
-        </Stack>
+        )}
         {loaded === undefined && hasStories(block) && <Spinner label="Loading stories" />}
         {loaded && loaded.stories[0] && (
           <Card padding={4}>
             <Stack gap={3}>
               <Text variant="h3" weight="semibold" tone="muted">
-                Anatomy: {loaded.stories[0][0]}
+                Anatomy: {block}
               </Text>
               <Text variant="caption" tone="muted">
                 Every element of {block}, and of what it contains and is built on, with
@@ -64,7 +64,7 @@ export const ComponentPreview = ({ block }: { block: string }): JSX.Element => {
               </Text>
               <div className="studio-story" data-layout="padded">
                 <StoryBoundary>
-                  <Anatomy block={block}>
+                  <Anatomy name={block} family={family}>
                     {(() => {
                       const Story = loaded.stories[0]![1]
                       return <Story />

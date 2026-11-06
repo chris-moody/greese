@@ -72,7 +72,7 @@ export const ENTRIES: SearchEntry[] = [
   studio('components', 'Components', 'Per-component styles'),
   studio('shapes', 'Shapes', 'Corner and edge shapes'),
   studio('motion', 'Motion', 'Motion defaults and effects'),
-  studio('code', 'Code', 'The compiled SCSS and CSS'),
+  studio('output', 'Output', 'The SCSS layout and the compiled CSS'),
   ...TEMPLATES.map((t): SearchEntry => ({
     group: 'Templates',
     title: t.title,

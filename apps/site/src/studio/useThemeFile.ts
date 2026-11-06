@@ -49,6 +49,7 @@ export const useThemeFile = (
   const [saving, setSaving] = useState(false)
   /** What the last save wrote; cleared by the next edit, since the button then says Save. */
   const [written, setWritten] = useState<string[]>()
+  const [kept, setKept] = useState<string[]>()
   const [changedOnDisk, setChangedOnDisk] = useState(false)
 
   // Serialized when the spec or the file changes, not on every render.
@@ -97,6 +98,7 @@ export const useThemeFile = (
     setFile((f) => f && { ...f, saved: JSON.stringify(spec) })
     setChangedOnDisk(false)
     setWritten(result.written)
+    setKept('kept' in result ? result.kept : undefined)
     return undefined
   }
 
@@ -109,6 +111,11 @@ export const useThemeFile = (
     load: () => read(true),
     saving,
     save,
-    savedNote: !dirty && written ? `Saved ${written.join(', ')}` : undefined,
+    savedNote:
+      !dirty && written
+        ? `Saved ${written.join(', ')}${
+            kept?.length ? `; left ${kept.join(', ')} alone (edited by hand)` : ''
+          }`
+        : undefined,
   }
 }

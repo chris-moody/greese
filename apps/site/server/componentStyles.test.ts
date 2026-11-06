@@ -5,6 +5,7 @@ import { familySource } from '../src/studio/copySource.ts'
 import { familyOf } from '../src/studio/family.ts'
 import { blocks } from '../src/studio/manifest.ts'
 import { validateSpec, type ThemeSpec } from '../src/studio/spec.ts'
+import { withoutResetGuards } from '../src/studio/importer.ts'
 import { compileSpec } from './studio.ts'
 import { rules } from '../../../packages/ui/src/test/sass.ts'
 
@@ -101,7 +102,7 @@ describe('editing a family in the theme', () => {
   it('applies inside the component it was edited from, and nowhere else', async () => {
     const result = compileSpec(await edited())
     expect(result).not.toHaveProperty('errors')
-    const out = (result as { css: string }).css
+    const out = withoutResetGuards((result as { css: string }).css)
     expect(wrapping(out, '.greese-Accordion .greese-Collapsible-trigger')).toEqual([
       ['@layer greese.overrides'],
     ])
@@ -109,8 +110,9 @@ describe('editing a family in the theme', () => {
   })
 
   it('keeps a named theme’s scope, since the kit nests the rules itself', async () => {
-    const out = (compileSpec({ ...(await edited()), name: 'brand' }) as { css: string })
-      .css
+    const out = withoutResetGuards(
+      (compileSpec({ ...(await edited()), name: 'brand' }) as { css: string }).css
+    )
     expect(
       wrapping(
         out,

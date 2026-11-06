@@ -1,5 +1,5 @@
 @use 'pkg:@greese/ui/scss/kit' as greese;
-@use '../code';
+@use '../../../docs/stories/_shared/code/palette' as code;
 
 /* The editor's own layout. The editor wears the theme being chosen, like
    every page; the preview iframe shows it with your edits too. */
@@ -473,94 +473,13 @@ code.studio-row-label {
   font-size: 0.8125rem;
 }
 
-// The highlighted code box (CodeEditor): the coloured text sits under a
-// transparent textarea that shares its font, padding and scroll.
-.studio-codebox {
-  position: relative;
-  font: 0.75rem / 1.55 var(--greese-font-mono);
-  background: var(--greese-color-surface);
-  border: 1px solid var(--greese-color-border);
-  border-radius: var(--greese-corner-panel);
-
-  &:focus-within {
-    outline: 2px solid var(--greese-color-focus-ring);
-    outline-offset: 1px;
-  }
-
-  &[data-invalid] {
-    border-color: var(--greese-color-negative);
-  }
+// The editor's five tabs fit the sidebar's width side by side.
+.studio-editor-tabs .greese-Tab {
+  padding-inline: var(--greese-space-2);
 }
 
-.studio-codebox-layer,
-.studio-codebox-input > .greese-Textarea-control {
-  padding: var(--greese-space-3);
-  margin: 0;
-  font: inherit;
-  letter-spacing: normal;
-  tab-size: 2;
-  white-space: pre;
-  overflow-wrap: normal;
-}
-
-.studio-codebox-layer {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  color: var(--greese-color-fg);
-  pointer-events: none;
-
-  // Scrolls with the text, since the layer is its containing block.
-  > .studio-codebox-mark {
-    position: absolute;
-    inset-inline: 0;
-    block-size: 1lh;
-    background: color-mix(in srgb, var(--greese-color-negative) 14%, transparent);
-    border-inline-start: 3px solid var(--greese-color-negative);
-  }
-}
-
-// The library Textarea's frame: none of its own, the code box is the frame
-// (a theme's field shape included).
-.studio-codebox-input {
-  position: relative;
-  display: block;
-  font: inherit;
-  color: transparent;
-  caret-color: var(--greese-color-fg);
-  background: transparent;
-  border: 0;
-  border-radius: inherit;
-  outline: 0;
-  box-shadow: none;
-  clip-path: none;
-
-  &::after {
-    display: none;
-  }
-
-  > .greese-Textarea-control {
-    position: relative;
-    display: block;
-    inline-size: 100%;
-    min-block-size: 0;
-    max-block-size: none;
-    overflow: auto;
-    resize: vertical;
-
-    // The library's Textarea grows to its content; the code box keeps its rows
-    // and scrolls, with the layer under it following (CodeEditor's onScroll).
-    field-sizing: fixed;
-
-    &::selection {
-      color: transparent;
-      background: color-mix(in srgb, var(--greese-color-primary) 30%, transparent);
-    }
-  }
-}
-
-// The colours of `highlight()`'s tokens, in the code box and in read-only code.
-.studio-codebox-layer,
+// The colours of `highlight()`'s tokens in read-only code. The code box
+// (CodeEditor) brings its own.
 .studio-highlighted {
   @include code.tokens;
 }

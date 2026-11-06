@@ -8,6 +8,7 @@ import { applyVariant, VARIANTS, variantIn } from '../src/studio/variants.ts'
 import { bevel } from '@greese/ui/shapes'
 import { shapesScss, validateSpec, type ThemeSpec } from '../src/studio/spec.ts'
 import { compileSpec } from './studio.ts'
+import { withoutResetGuards } from '../src/studio/importer.ts'
 import { themeFile } from './shapes.ts'
 import { blocks } from '../../../packages/ui/src/test/sass.ts'
 
@@ -174,7 +175,7 @@ describe('theme layers (ADR 0025)', () => {
   it.each(SHAPED.map((s) => [s.id, s] as const))(
     '%s: square corners, focus for every shaped component, no clip animation',
     (_id, preset) => {
-      const { css } = themeFile(preset, 'shape')
+      const css = withoutResetGuards(themeFile(preset, 'shape').css)
       // Every radius role reassigned to the scale's `none`; the scale keeps its values.
       expect(
         Object.values(preset.corner).every((r) => r === 'var(--greese-radius-none)')
@@ -238,21 +239,28 @@ describe('shapes in a theme spec', () => {
   })
 
   it('writes each shape as a class, and on the components that take it', () => {
-    const scss = shapesScss({
+    const spec: ThemeSpec = {
       shapes: { cut: bevel(8) },
       components: { Button: { shape: 'cut' }, Card: { styles: { gap: '0' } } },
-    })
+    }
+    const scss = shapesScss(spec)
     expect(scss).toMatch(/@property --greese-shape-a \{/)
     expect(scss).toMatch(/@layer greese\.overrides \{/)
-    expect(scss).toMatch(
-      /\.greese-shape-cut,\n {2}\.greese-Button \{\n {4}--greese-shape-a: 8px;/
-    )
+    // Through the kit: a component's selector is guarded for the shape layer.
+    expect(scss).toContain('#{greese.themed(".greese-Button", Button)}')
+    expect(scss).toContain('#{greese.themed(".greese-shape-cut")}')
     expect(scss).not.toMatch(/greese-Card/)
+    const compiled = compileSpec(spec)
+    expect('css' in compiled && withoutResetGuards(compiled.css)).toMatch(
+      /\.greese-shape-cut,\s*\.greese-Button \{\s*--greese-shape-a: 8px;/
+    )
   })
 
   it('scopes them to a named theme', () => {
-    const scss = shapesScss({ name: 'brand', shapes: { cut: bevel() } })
-    expect(scss).toMatch(/:where\(\[data-greese-theme='brand'\]\) \.greese-shape-cut/)
+    const compiled = compileSpec({ name: 'brand', shapes: { cut: bevel() } })
+    expect('css' in compiled && compiled.css).toMatch(
+      /:where\(\[data-greese-theme=brand\]\) \.greese-shape-cut/
+    )
   })
 
   it('compile through the kit like the rest of the theme', () => {
@@ -261,6 +269,8 @@ describe('shapes in a theme spec', () => {
       components: { Button: { shape: 'cut' } },
     })
     expect('errors' in compiled ? compiled.errors : []).toEqual([])
-    expect('css' in compiled && compiled.css).toMatch(/\.greese-Button::after \{/)
+    expect('css' in compiled && withoutResetGuards(compiled.css)).toMatch(
+      /\.greese-Button::after \{/
+    )
   })
 })

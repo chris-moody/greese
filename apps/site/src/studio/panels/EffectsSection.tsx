@@ -9,7 +9,7 @@ import {
   Text,
   TextField,
 } from '@greese/react'
-import { CodeEditor } from '../CodeEditor.tsx'
+import { CodeEditor } from '../../../../docs/stories/_shared/code/CodeEditor.tsx'
 import { GROUPS, type GreeseLab } from '../greeseLab.ts'
 
 /** One effect: its name, state, Play, and its keyframes as editable code. */
@@ -154,7 +154,7 @@ const NewEffect = ({ lab }: { lab: GreeseLab }): JSX.Element => {
  * assigns effects, it never rewrites one: ADR 0025); copy one to start yours.
  * Yours are part of the theme: saving writes them to the theme file, builds
  * their `@keyframes` into the CSS, and generates a module that defines them for
- * the app (see the Code tab). Play runs one on the stage beside the editor.
+ * the app (see the Output tab). Play runs one on the stage beside the editor.
  */
 export const EffectsSection = ({ lab }: { lab: GreeseLab }): JSX.Element => (
   <Stack gap={4}>

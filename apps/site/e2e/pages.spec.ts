@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 /**
  * Theme Studio's page transitions (ADR 0029): the Motion tab edits a theme's
- * page roles and rules, its stage plays them, and the Code tab writes them.
+ * page roles and rules, its stage plays them, and the Output tab writes them.
  */
 test('the Motion tab edits page transitions, its stage plays them, and the code has them', async ({
   page,
@@ -42,7 +42,9 @@ test('the Motion tab edits page transitions, its stage plays them, and the code 
       expect.arrayContaining(['greese-scale-out', 'greese-pop-in', 'greese-fade-out'])
     )
 
-  await page.getByRole('tab', { name: 'Code' }).click()
+  // The layout's motion module holds them, as the single file does.
+  await page.getByRole('tab', { name: 'Output' }).click()
+  await page.getByRole('combobox', { name: 'File' }).selectOption('motion/_index.scss')
   const code = page.locator('.studio-highlighted').first()
   await expect(code).toContainText('page-exit: "scale-out"')
   await expect(code).toContainText('@include greese.page-transitions(')

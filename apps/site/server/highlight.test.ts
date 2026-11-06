@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { highlight, type Language } from '../src/studio/highlight.ts'
+import { highlight, type Language } from '../../docs/stories/_shared/code/highlight.ts'
 
 const kinds = (text: string, language: Language) =>
   highlight(text, language)
@@ -85,5 +85,39 @@ describe('highlight', () => {
     expect(found).toContainEqual(['number', '0'])
     expect(found).toContainEqual(['string', "'1rem'"])
     expect(found).toContainEqual(['comment', '// c'])
+  })
+
+  it('reads typescript: keywords, types, generics, decorators', () => {
+    const source = [
+      "import { configureBreakpoints, type Breakpoints } from '@greese/react'",
+      'export interface Theme { name?: string; sizes: Record<string, number> }',
+      'const formats = configureBreakpoints<Breakpoints>({ md: 900 }) satisfies void',
+    ].join('\n')
+    expect(
+      highlight(source, 'ts')
+        .map((t) => t.text)
+        .join('')
+    ).toBe(source)
+    const found = kinds(source, 'ts')
+    for (const word of [
+      'import',
+      'type',
+      'from',
+      'export',
+      'interface',
+      'string',
+      'satisfies',
+    ])
+      expect(found, word).toContainEqual(['keyword', word])
+    expect(found).toContainEqual(['function', 'Breakpoints'])
+    expect(found).toContainEqual(['function', 'Record'])
+    expect(found).toContainEqual(['function', 'configureBreakpoints'])
+    expect(found).toContainEqual(['property', 'name'])
+    expect(found).toContainEqual(['string', "'@greese/react'"])
+    // A keyword inside a longer name is part of the name.
+    expect(found).not.toContainEqual(['keyword', 'for'])
+    expect(kinds('@sealed class A {}', 'ts')).toContainEqual(['at', '@sealed'])
+    // JavaScript doesn't know TypeScript's words.
+    expect(kinds('let type = 1', 'js')).not.toContainEqual(['keyword', 'type'])
   })
 })
