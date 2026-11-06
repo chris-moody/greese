@@ -210,4 +210,11 @@ describe('createTheme: typography', () => {
       createTheme({ name: 'a', typography: { h1: { base: { fontFamily: 'x; }' } } } })
     ).toThrow(/invalid value/)
   })
+
+  it('applies a theme body font to its own scope, not only as a variable', () => {
+    const css = createTheme({ name: 'fonty', font: { body: 'Fira Sans' } }).css
+    expect(css).toMatch(
+      /\[data-greese-theme='fonty'\] \{[^}]*--greese-font-body: Fira Sans;[^}]*font-family: var\(--greese-font-body\);/
+    )
+  })
 })

@@ -247,10 +247,15 @@ const themeCss = (
 ): string => {
   const T = `[${THEME_ATTR}='${name}']`
   const S = (scheme: string): string => `[${SCHEME_ATTR}='${scheme}']`
+  // `body` reads --greese-font-body from :root, so a theme scoped to a wrapper
+  // below <body> would set the variable but never reach any text: text inherits
+  // font-family from <body>, not from the variable. A theme scope therefore
+  // applies its own body font.
+  const scopeFont: Declarations = [['font-family', 'var(--greese-font-body)']]
   return `${LAYER_ORDER}
 @layer greese.theme {
   ${T} {
-${decls([...base, ...light], '    ')}
+${decls([...base, ...light, ...scopeFont], '    ')}
   }
 
   @media (prefers-color-scheme: dark) {
