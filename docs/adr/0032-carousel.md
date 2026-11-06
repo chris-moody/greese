@@ -13,12 +13,12 @@ several in view at once. Two things it can't do well:
 - **Transitions.** A scroll is the only way it moves. A fade, a wipe, an iris
   or any other greese effect between slides needs slides that aren't laid
   out in a row.
-- **Deep links.** A page opened on a later slide scrolls there after the
-  first paint, visibly. A scroll position can't be set before layout, and
-  snapping fights it.
+- **Opening on a later slide.** A page opened on a later slide scrolls
+  there after the first paint, visibly. A scroll position can't be set
+  before layout, and snapping fights it.
 
 So the library has two carousels: ScrollCarousel for browsing a row, and
-Carousel for stepping through slides one at a time, by link if need be.
+Carousel for stepping through slides one at a time, opening on any of them.
 
 ## Decisions
 
@@ -39,8 +39,8 @@ Carousel for stepping through slides one at a time, by link if need be.
   transition, so its exit values never fight its entrance: transitions
   outrank animations in the cascade.
 - **Nothing on the first paint.** Animation and transitions apply only once
-  the carousel has moved (`data-moved`), so the slide it opens on, a deep
-  link's included, is simply there.
+  the carousel has moved (`data-moved`), so the slide it opens on is simply
+  there.
 - **Reduced motion:** both sit inside `mixins.motion-safe`, so slides change
   at once.
 
@@ -64,21 +64,35 @@ Carousel for stepping through slides one at a time, by link if need be.
   viewport sets each to `initial` (the guaranteed-invalid value), so slides
   fall back to their own and the role's.
 
-### 3. Deep links through slide ids
+### 3. Deep links are the app's
 
-- **A slide with an `id` is linkable.** On mount, a layout effect reads
-  `location.hash` and, if it names a slide, shows that slide before the
-  first paint, with no transition. A `hashchange` (a link to `#<id>`, back
-  and forward through hashes) moves there, with the transition.
-- **`syncHash`** writes the shown slide's id as it changes, with
-  `history.replaceState`, so stepping through slides adds no history
-  entries. Off by default: a carousel shouldn't rewrite a page's address
-  unasked.
-- **Server rendering:** a server can't see the hash, so a server-rendered
-  page shows `defaultIndex` until it hydrates. A page that knows the slide
-  from the request (a query, a route) passes it as `defaultIndex`.
-- **No router dependency** (ADR 0030): a router that owns the address
-  drives the controlled `index` instead.
+Carousel doesn't read or write the address. An earlier draft did: it read
+`location.hash` in a layout effect, followed `hashchange`, and wrote the
+slide's id with `syncHash`. That was dropped before release:
+
+- **One job.** Which slide an address names is routing. A hash is only one
+  scheme; apps use paths (`/tour/coast`), queries and routers' own state,
+  and a carousel that knows one scheme ends up half-supporting the rest.
+- **The server can't see a hash.** A server-rendered page showed
+  `defaultIndex` until it hydrated, then jumped. The props the app already
+  has do it from the first paint.
+- **No effects for the address.** Without them Carousel has no layout
+  effect, no global listener, and nothing to get wrong with an odd hash
+  (a stray `%` threw in `decodeURIComponent`).
+
+So the app owns it, with three props Carousel has anyway:
+
+- **`defaultIndex` or `index` from the route.** A server-rendered or
+  prerendered page renders the slide its route names, so it's in the HTML,
+  and Carousel animates nothing until it moves (`data-moved`).
+- **A controlled `index`** follows route changes (a link, back and
+  forward) with the transition, going the way the index moved.
+- **`onIndexChange`** is where the app writes the address (`navigate`, or
+  `history.replaceState` to add no history).
+
+The e2e fixture (`apps/playground/src/pages/Catalogue.tsx`) is the hash
+version of this, in about fifteen lines, and the Controlled story documents
+the pattern. No router dependency either way (ADR 0030).
 
 ### 4. Input
 
@@ -89,7 +103,23 @@ Carousel for stepping through slides one at a time, by link if need be.
   because a swipe scrolls natively. Here a swipe is JavaScript, so the
   buttons stay.
 - The focused viewport takes the APG carousel keys: the arrows (mirrored
-  right to left), Home and End.
+  right to left), Home and End. Only keys aimed at the viewport itself: a
+  key that bubbles up from a control inside a slide (a slider, a color
+  picker) stays that control's, and so does one with Alt, Ctrl or Cmd held
+  (Alt+Left is the browser's back).
+- Your own controls and dots (`CarouselPrevious`, `CarouselNext`,
+  `CarouselIndicator`) take `asChild`. A link (`<a href>`) never moves the
+  carousel itself: it navigates, and the carousel follows the controlled
+  `index` the app gives it. A router's Link runs your click handler before
+  it prevents the default, so checking for that would move the carousel and
+  push the slide to history twice.
+- Used alone, the previous and next parts render the chevron and take the
+  carousel's `previousLabel` and `nextLabel`; text children name them
+  instead. With `asChild` at the end they get `aria-disabled` and
+  `data-disabled`, not `disabled`, so a focused link or button keeps focus.
+- **Every name is the app's to translate:** `previousLabel`, `nextLabel`,
+  and functions for the slides (`slideLabel`, "2 of 4") and the dots
+  (`indicatorLabel`, "Slide 2"), from the index and the count.
 - Swipes by touch or pen: across by 40px and more across than down. A mouse
   drag stays a text selection. `touch-action: pan-y` leaves vertical drags
   to the page.
@@ -101,9 +131,10 @@ Carousel for stepping through slides one at a time, by link if need be.
   3.55 kB). `greese.css` gains about 0.66 kB: the roles in both directions
   for each of an exit's ten properties, and the shared buttons and dots.
 - **Tests:** `catalogue.test.tsx` (inert slides, buttons, dots, keys,
-  named effects, opening on a hash, `hashchange`, `syncHash`, loop) and
+  named effects, opening on `defaultIndex`, a controlled `index` and a move
+  its parent turned down, the label functions, the parts' names, loop) and
   `e2e/carousel.spec.ts` in all five projects. The e2e tests check that
-  every frame from the first shows the linked slide, that nothing animates
+  every frame from the first shows the slide the app opened on, that nothing animates
   on load, that the theme and named effects run as CSS animations and
   transitions, swipes, keys, and that reduced motion changes slides at once.
   `styles/kit.test.ts` covers the roles.

@@ -1,7 +1,10 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
 import { controlledBy, openFixture } from './support.ts'
 
-/** Carousel in real engines: deep links, effects, swipes and reduced motion. */
+/**
+ * Carousel in real engines: effects, swipes, reduced motion, and deep links
+ * an app drives through a controlled `index` (the fixture's hash).
+ */
 
 const tour = (page: Page) => page.getByRole('region', { name: 'Tour' })
 
@@ -43,7 +46,7 @@ const pressAndSample = (carousel: Locator, name: string) =>
     name
   )
 
-test('opens on the slide the hash names, from the first frame, with nothing animating', async ({
+test('opens on the slide the app gives it, from the first frame, with nothing animating', async ({
   page,
 }) => {
   // Every frame from the start: which slide the carousel shows, once it's there.
@@ -72,7 +75,7 @@ test('opens on the slide the hash names, from the first frame, with nothing anim
 test.describe('once open', () => {
   test.beforeEach(({ page }) => openFixture(page, 'catalogue', tour))
 
-  test('moves with the buttons, playing the theme entrance and exit, and writes the hash', async ({
+  test('moves with the buttons, playing the theme entrance and exit, and tells the app', async ({
     page,
   }) => {
     const carousel = tour(page)
@@ -102,7 +105,7 @@ test.describe('once open', () => {
     expect(await page.evaluate(() => history.length)).toBe(entries)
   })
 
-  test('a link to a slide moves there', async ({ page }) => {
+  test('follows the app when a link changes the slide', async ({ page }) => {
     await page.getByRole('link', { name: 'To the last stop' }).click()
     await expect.poll(() => shown(tour(page))).toBe('3 of 3')
     await expect(tour(page)).toHaveAttribute('data-moved')

@@ -1,4 +1,4 @@
-import { useState, type JSX } from 'react'
+import { useEffect, useState, type JSX } from 'react'
 import { InfoIcon } from '@greese/icons'
 import {
   Carousel,
@@ -28,9 +28,31 @@ const tile = (hue: number) => ({
 
 const Glyph = () => <InfoIcon />
 
+/**
+ * Deep links are the app's, not Carousel's: here the hash names the tour's
+ * slide. Read before the first render, so the page opens on it; followed on
+ * `hashchange`; and written as the user moves, without adding history.
+ */
+const stops = ['tour-1', 'tour-2', 'tour-3']
+const hashStop = () => Math.max(0, stops.indexOf(location.hash.slice(1)))
+const useHashStop = () => {
+  const [stop, setStop] = useState(hashStop)
+  useEffect(() => {
+    const follow = () => setStop(hashStop())
+    addEventListener('hashchange', follow)
+    return () => removeEventListener('hashchange', follow)
+  }, [])
+  const move = (i: number) => {
+    setStop(i)
+    history.replaceState(history.state, '', `#${stops[i]}`)
+  }
+  return [stop, move] as const
+}
+
 /** Fixtures for e2e/catalogue.spec.ts: the components from ADR 0011. */
 export const Catalogue = (): JSX.Element => {
   const [slide, setSlide] = useState(0)
+  const [stop, setStop] = useHashStop()
   const [controlled, setControlled] = useState(0)
   const [split, setSplit] = useState(50)
   const [code, setCode] = useState('')
@@ -47,9 +69,9 @@ export const Catalogue = (): JSX.Element => {
         </ScrollCarousel>
         <output data-testid="slide">{slide}</output>
 
-        <Carousel label="Tour" syncHash data-testid="tour">
-          {[0, 120, 240].map((hue, i) => (
-            <CarouselSlide key={hue} id={`tour-${i + 1}`}>
+        <Carousel label="Tour" index={stop} onIndexChange={setStop} data-testid="tour">
+          {[0, 120, 240].map((hue) => (
+            <CarouselSlide key={hue}>
               <div style={tile(hue)} />
             </CarouselSlide>
           ))}

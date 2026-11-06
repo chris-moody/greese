@@ -1,9 +1,16 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ComponentProps } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { expectNoAxeViolations } from '../test/axe.ts'
 import { installIntersectionObserver, intersect } from '../test/intersection.ts'
-import { Carousel, CarouselSlide } from './Carousel/Carousel.tsx'
+import {
+  Carousel,
+  CarouselIndicator,
+  CarouselNext,
+  CarouselPrevious,
+  CarouselSlide,
+} from './Carousel/Carousel.tsx'
 import { ScrollCarousel, ScrollCarouselSlide } from './ScrollCarousel/ScrollCarousel.tsx'
 import { ChatBubble } from './ChatBubble/ChatBubble.tsx'
 import { Countdown, durationText, splitDuration } from './Countdown/Countdown.tsx'
@@ -557,15 +564,11 @@ describe('OtpField', () => {
 })
 
 describe('Carousel', () => {
-  afterEach(() => history.replaceState(null, '', '/'))
-
   const slides = (
     <>
-      <CarouselSlide id="welcome">One</CarouselSlide>
-      <CarouselSlide id="setup">Two</CarouselSlide>
-      <CarouselSlide id="done" label="The last">
-        Three
-      </CarouselSlide>
+      <CarouselSlide>One</CarouselSlide>
+      <CarouselSlide>Two</CarouselSlide>
+      <CarouselSlide label="The last">Three</CarouselSlide>
     </>
   )
   const shown = () =>
@@ -640,33 +643,252 @@ describe('Carousel', () => {
     )
   })
 
-  it('opens on the slide the hash names, still', () => {
-    history.replaceState(null, '', '#done')
+  it('opens on the slide a page gives it, still, as a deep link would', () => {
+    const onIndexChange = vi.fn()
+    render(
+      <Carousel label="Tour" defaultIndex={2} onIndexChange={onIndexChange}>
+        {slides}
+      </Carousel>
+    )
+    expect(shown()).toBe(2)
+    expect(onIndexChange).not.toHaveBeenCalled()
+    expect(screen.getByRole('region')).not.toHaveAttribute('data-moved')
+  })
+
+  it('follows a controlled index, and forgets a move its parent turned down', async () => {
+    const tour = (index: number) => (
+      <Carousel label="Tour" loop index={index} onIndexChange={() => {}}>
+        {slides}
+      </Carousel>
+    )
+    const { rerender } = render(tour(0))
+    const region = screen.getByRole('region')
+    // Asked to wrap back to the last, but the parent keeps the slide.
+    await userEvent.click(screen.getByRole('button', { name: 'Previous slide' }))
+    expect(shown()).toBe(0)
+    expect(region).not.toHaveAttribute('data-moved')
+    // A route change later: it plays the way it went, not the way asked.
+    rerender(tour(1))
+    expect(shown()).toBe(1)
+    expect(region).toHaveAttribute('data-moved')
+    expect(region).toHaveAttribute('data-direction', 'forward')
+  })
+
+  it('takes its labels from functions', () => {
+    render(
+      <Carousel
+        label="Visite"
+        previousLabel="Précédente"
+        nextLabel="Suivante"
+        slideLabel={(i, count) => `Diapositive ${i + 1} sur ${count}`}
+        indicatorLabel={(i) => `Aller à la diapositive ${i + 1}`}
+      >
+        {slides}
+      </Carousel>
+    )
+    const groups = screen.getAllByRole('group', { hidden: true })
+    expect(groups.map((g) => g.getAttribute('aria-label'))).toEqual([
+      'Diapositive 1 sur 3',
+      'Diapositive 2 sur 3',
+      'The last',
+    ])
+    expect(screen.getByRole('button', { name: 'Aller à la diapositive 2' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Précédente' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Suivante' })).toBeTruthy()
+  })
+
+  it("names its parts used on their own, and marks your element's end", async () => {
+    const { container } = render(
+      <Carousel
+        label="Tour"
+        nextLabel="Onward"
+        controls={
+          <>
+            <CarouselPrevious />
+            <CarouselNext>
+              <span aria-hidden>→</span>
+            </CarouselNext>
+            <CarouselPrevious>Back</CarouselPrevious>
+            <CarouselNext asChild>
+              <button type="button">Forth</button>
+            </CarouselNext>
+          </>
+        }
+      >
+        {slides}
+      </Carousel>
+    )
+    expect(screen.getByRole('button', { name: 'Previous slide' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Onward' })).toBeEnabled()
+    // Text names it itself.
+    expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled()
+    // Your element isn't disabled (it stays focusable), but says it's done.
+    const forth = screen.getByRole('button', { name: 'Forth' })
+    expect(forth).not.toHaveAttribute('aria-disabled')
+    await userEvent.click(forth)
+    await userEvent.click(forth)
+    expect(shown()).toBe(2)
+    expect(forth).toHaveAttribute('aria-disabled', 'true')
+    expect(forth).toHaveAttribute('data-disabled')
+    await userEvent.click(forth)
+    expect(shown()).toBe(2)
+    await expectNoAxeViolations(container)
+  })
+
+  it('does nothing with no slides, looping or not', () => {
+    const onIndexChange = vi.fn()
+    render(<Carousel label="Empty" loop onIndexChange={onIndexChange} />)
+    for (const key of ['ArrowRight', 'ArrowLeft', 'Home', 'End']) {
+      fireEvent.keyDown(screen.getByRole('region').firstElementChild!, { key })
+    }
+    expect(onIndexChange).not.toHaveBeenCalled()
+  })
+
+  it('takes your own controls and dots, as buttons or your elements', async () => {
+    const onIndexChange = vi.fn()
+    const { container } = render(
+      <Carousel
+        label="Tour"
+        onIndexChange={onIndexChange}
+        controls={
+          <nav aria-label="Tour controls">
+            <CarouselPrevious>Back</CarouselPrevious>
+            <CarouselNext asChild>
+              <button type="button">Onward</button>
+            </CarouselNext>
+          </nav>
+        }
+        indicators={
+          <ol>
+            {[0, 1, 2].map((i) => (
+              <li key={i}>
+                <CarouselIndicator asChild index={i}>
+                  <button type="button">Go to slide {i + 1}</button>
+                </CarouselIndicator>
+              </li>
+            ))}
+          </ol>
+        }
+      >
+        {slides}
+      </Carousel>
+    )
+    const viewport = screen.getByRole('region').firstElementChild as HTMLElement
+    expect(screen.queryByRole('button', { name: 'Next slide' })).toBeNull()
+    const back = screen.getByRole('button', { name: 'Back' })
+    expect(back).toBeDisabled()
+    expect(back).toHaveClass('greese-Carousel-control--previous')
+    // Your element: the behaviour and wiring, not the look.
+    const onward = screen.getByRole('button', { name: 'Onward' })
+    expect(onward).toHaveAttribute('aria-controls', viewport.id)
+    expect(onward).not.toHaveClass('greese-Carousel-control')
+    await userEvent.click(onward)
+    expect(onIndexChange).toHaveBeenLastCalledWith(1)
+    const dot = screen.getByRole('button', { name: 'Go to slide 2' })
+    expect(dot).toHaveAttribute('aria-controls', viewport.id)
+    expect(dot).toHaveAttribute('aria-current', 'true')
+    await userEvent.click(screen.getByRole('button', { name: 'Go to slide 3' }))
+    expect(shown()).toBe(2)
+    expect(onIndexChange).toHaveBeenCalledTimes(2)
+    await expectNoAxeViolations(container)
+  })
+
+  it('leaves a router link to navigate, and follows the index it sets', async () => {
+    // A router's Link, as React Router's: your onClick runs first, then the
+    // link prevents the default and pushes the address.
+    const navigate = vi.fn()
+    const Link = ({ to, onClick, ...props }: ComponentProps<'a'> & { to: string }) => (
+      <a
+        href={to}
+        {...props}
+        onClick={(event) => {
+          onClick?.(event)
+          if (event.defaultPrevented) return
+          event.preventDefault()
+          navigate(to)
+        }}
+      />
+    )
+    const onIndexChange = vi.fn()
+    const tour = (index: number) => (
+      <Carousel
+        label="Tour"
+        index={index}
+        onIndexChange={onIndexChange}
+        controls={
+          <CarouselNext asChild>
+            <Link to="/tour/setup">Next</Link>
+          </CarouselNext>
+        }
+      >
+        {slides}
+      </Carousel>
+    )
+    const { rerender } = render(tour(0))
+    await userEvent.click(screen.getByRole('link', { name: 'Next' }))
+    expect(navigate).toHaveBeenCalledTimes(1)
+    expect(navigate).toHaveBeenCalledWith('/tour/setup')
+    expect(onIndexChange).not.toHaveBeenCalled()
+    expect(shown()).toBe(0)
+    rerender(tour(1))
+    expect(shown()).toBe(1)
+  })
+
+  it('leaves keys aimed at a control inside a slide to that control', () => {
+    const onIndexChange = vi.fn()
+    render(
+      <Carousel label="Tour" onIndexChange={onIndexChange}>
+        <CarouselSlide>
+          <input type="range" aria-label="Hue" />
+        </CarouselSlide>
+        <CarouselSlide>Two</CarouselSlide>
+      </Carousel>
+    )
+    const hue = screen.getByRole('slider', { name: 'Hue' })
+    for (const key of ['ArrowRight', 'ArrowLeft', 'Home', 'End']) {
+      expect(fireEvent.keyDown(hue, { key })).toBe(true)
+    }
+    expect(onIndexChange).not.toHaveBeenCalled()
+    fireEvent.keyDown(screen.getByRole('region').firstElementChild!, {
+      key: 'ArrowRight',
+    })
+    expect(onIndexChange).toHaveBeenCalledWith(1)
+  })
+
+  it('leaves modified keys on the viewport to the browser (Alt+Left is back)', () => {
     const onIndexChange = vi.fn()
     render(
       <Carousel label="Tour" onIndexChange={onIndexChange}>
         {slides}
       </Carousel>
     )
-    expect(shown()).toBe(2)
-    expect(onIndexChange).toHaveBeenCalledWith(2)
-    expect(screen.getByRole('region')).not.toHaveAttribute('data-moved')
+    const viewport = screen.getByRole('region').firstElementChild!
+    for (const modifier of ['altKey', 'ctrlKey', 'metaKey']) {
+      expect(fireEvent.keyDown(viewport, { key: 'ArrowRight', [modifier]: true })).toBe(
+        true
+      )
+      expect(fireEvent.keyDown(viewport, { key: 'End', [modifier]: true })).toBe(true)
+    }
+    expect(onIndexChange).not.toHaveBeenCalled()
+    expect(shown()).toBe(0)
   })
 
-  it('moves to a slide a link names, and writes the hash with syncHash', async () => {
+  it('stays quiet with announce={false}', () => {
     render(
-      <Carousel label="Tour" syncHash>
+      <Carousel label="Tour" announce={false}>
         {slides}
       </Carousel>
     )
-    act(() => {
-      history.replaceState(null, '', '#setup')
-      window.dispatchEvent(new HashChangeEvent('hashchange'))
-    })
-    expect(shown()).toBe(1)
-    expect(screen.getByRole('region')).toHaveAttribute('data-moved')
-    await userEvent.click(screen.getByRole('button', { name: 'Next slide' }))
-    expect(location.hash).toBe('#done')
+    expect(screen.getByRole('region').firstElementChild).toHaveAttribute(
+      'aria-live',
+      'off'
+    )
+  })
+
+  it('keeps its parts inside a Carousel', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    expect(() => render(<CarouselNext>Next</CarouselNext>)).toThrow(/inside a Carousel/)
+    vi.restoreAllMocks()
   })
 
   it('wraps round with loop', async () => {
