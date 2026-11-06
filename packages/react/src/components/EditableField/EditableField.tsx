@@ -436,6 +436,7 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
       return (
         <div className="greese-EditableField-control greese-EditableField-range">
           <Slider
+            size={size}
             aria-label={name || undefined}
             min={field.min}
             max={field.max}
@@ -481,6 +482,7 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
           }
         >
           <ColorPicker
+            size={size}
             value={color ?? undefined}
             label={name || 'Color'}
             alpha={field.alpha}
@@ -540,6 +542,7 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
     case 'checkbox': {
       return (
         <Checkbox
+          size={size}
           className="greese-EditableField-control"
           aria-label={name || undefined}
           checked={value === true}
@@ -553,6 +556,7 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
     case 'switch': {
       return (
         <Switch
+          size={size}
           className="greese-EditableField-control"
           aria-label={name || undefined}
           checked={value === true}
@@ -584,6 +588,7 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
       const field = props as RadioFieldVariantProps
       return (
         <RadioGroup
+          size={size}
           className="greese-EditableField-control"
           label={name}
           hideLabel

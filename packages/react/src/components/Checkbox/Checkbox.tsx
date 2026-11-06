@@ -12,6 +12,7 @@ import {
   type JSX,
   type ReactNode,
 } from 'react'
+import type { ControlSize } from '../Button/Button.tsx'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
 import {
@@ -38,6 +39,11 @@ export interface CheckboxProps
   invalid?: boolean
   /** Convenience alongside `onChange`: receives the new checked state. */
   onCheckedChange?: (checked: boolean) => void
+  /**
+   * Height, padding and text size: `xs` through `xl`, matching every other
+   * control so a row of them lines up. @default 'md'
+   */
+  size?: ControlSize
 }
 
 interface CheckboxGroupContextValue {
@@ -56,6 +62,7 @@ const CheckboxGroupContext = createContext<CheckboxGroupContextValue | null>(nul
  * CheckboxGroup (pass `value`).
  */
 export const Checkbox = ({
+  size = 'md',
   greese,
   label,
   description,
@@ -99,7 +106,7 @@ export const Checkbox = ({
 
   return withGreese(
     <div
-      className={cx('greese-Checkbox', className)}
+      className={cx('greese-Checkbox', `greese-Checkbox--size-${size}`, className)}
       style={style}
       data-disabled={control.disabled || undefined}
     >

@@ -5,10 +5,13 @@
     font-variant-numeric: tabular-nums;
   }
 
+  // Two carets in a column, the height of the field between them. Side by side
+  // they cost about 3.5rem of a field's width, which is most of a row in a
+  // dense panel; stacked they cost one button's width.
   .greese-NumberField-steppers {
     display: inline-flex;
-    gap: 2px;
-    margin-inline-end: calc(-1 * var(--greese-space-2));
+    flex-direction: column;
+    margin-inline-end: calc(-1 * var(--greese-space-1));
   }
 
   .greese-NumberField-step {
@@ -17,19 +20,12 @@
     position: relative;
     display: inline-grid;
     place-items: center;
-    inline-size: 1.75rem;
-    block-size: 1.75rem;
     padding: 0;
     color: var(--greese-color-fg-muted);
     cursor: pointer;
     background: none;
     border: 0;
     border-radius: var(--greese-corner-inset);
-
-    > svg {
-      inline-size: 1rem;
-      block-size: 1rem;
-    }
 
     @include mixins.hover {
       color: var(--greese-color-fg);
@@ -39,6 +35,29 @@
     &:disabled {
       cursor: not-allowed;
       opacity: 0.4;
+    }
+  }
+
+  // Stacked: each caret takes half the row, so the pair is one button tall.
+  .greese-NumberField-steppers .greese-NumberField-step {
+    inline-size: 1.25rem;
+    block-size: 0.875rem;
+
+    > svg {
+      inline-size: 0.75rem;
+      block-size: 0.75rem;
+    }
+  }
+
+  // Split: a minus at one end of the field and a plus at the other, each a
+  // full-height target.
+  .greese-NumberField--split .greese-NumberField-step {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+
+    > svg {
+      inline-size: 0.875rem;
+      block-size: 0.875rem;
     }
   }
 }

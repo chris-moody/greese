@@ -47,6 +47,14 @@ interface ModalBaseProps extends Omit<ComponentPropsWithRef<'dialog'>, 'title' |
   footer?: ReactNode
   /** Accessible name of the close button. @default 'Close' */
   closeLabel?: string
+  /**
+   * Drop the close button. Only for a dialog that is dismissed some other
+   * visible way — a navigation drawer with its own toggle, say. Escape, a
+   * click outside and (for a Drawer) a swipe still close it, but none of
+   * those is discoverable on its own, so a dialog that asks something keeps
+   * its button. @default false
+   */
+  hideClose?: boolean
 }
 
 const supportsClosedBy = () =>
@@ -67,6 +75,7 @@ const ModalBase = ({
   description,
   footer,
   closeLabel = 'Close',
+  hideClose = false,
   className,
   children,
   ref,
@@ -165,14 +174,16 @@ const ModalBase = ({
           >
             {title}
           </h2>
-          <IconButton
-            label={closeLabel}
-            size="sm"
-            className="greese-Dialog-close"
-            onClick={() => setOpen(false)}
-          >
-            <CloseIcon />
-          </IconButton>
+          {!hideClose && (
+            <IconButton
+              label={closeLabel}
+              size="sm"
+              className="greese-Dialog-close"
+              onClick={() => setOpen(false)}
+            >
+              <CloseIcon />
+            </IconButton>
+          )}
         </div>
         {description && (
           <p id={`${id}-description`} className="greese-Dialog-description">

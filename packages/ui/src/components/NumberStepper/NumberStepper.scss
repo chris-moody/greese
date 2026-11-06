@@ -1,0 +1,13 @@
+@layer greese.components {
+  // A minus at one end and a plus at the other, with the value between them.
+  // The field keeps its own frame; only what sits inside it differs from a
+  // NumberField.
+  .greese-NumberStepper {
+    --greese-numberstepper-gap: var(--greese-space-1);
+  }
+
+  // The value is centred because it reads as a quantity, not as typed text.
+  .greese-NumberStepper .greese-Input-control {
+    text-align: center;
+  }
+}

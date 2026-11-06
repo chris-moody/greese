@@ -63,7 +63,10 @@ module.exports = [
     // 26.6 kB → 26.85 kB (2026-11-05): a slider's value bubble — the wrapper and
     // the zero-size anchor that puts it at the thumb — 141 B of it, on top of
     // 32 B already over before this change (26.77 kB).
-    limit: '26.85 kB',
+    // 26.85 kB → 27.1 kB (2026-11-05): a size scale on Checkbox, Radio,
+    // RadioGroup, Switch, Slider and ColorPicker — five classes each, setting
+    // the shared control variables — plus NumberStepper's one rule (27.02 kB).
+    limit: '27.1 kB',
   },
   {
     name: 'CSS: css/PageTransition.css',

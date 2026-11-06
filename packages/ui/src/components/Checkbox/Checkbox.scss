@@ -5,8 +5,8 @@
     @include mixins.touch-target;
 
     position: relative;
-    inline-size: 1.125rem;
-    block-size: 1.125rem;
+    inline-size: var(--greese-choice-box, 1.125rem);
+    block-size: var(--greese-choice-box, 1.125rem);
     margin: 0;
     cursor: pointer;
     background-color: var(--greese-color-canvas);

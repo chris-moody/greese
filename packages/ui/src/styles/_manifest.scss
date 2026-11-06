@@ -135,9 +135,9 @@ $blocks: (
   ),
   'Checkbox': (
     parts: ('box', 'description', 'icon', 'input', 'label', 'text',),
-    modifiers: (),
+    modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
-    variables: (),
+    variables: ('--greese-choice-box',),
   ),
   'Chip': (
     parts: ('icon', 'remove', 'toggle',),
@@ -147,9 +147,9 @@ $blocks: (
   ),
   'ChoiceGroup': (
     parts: (),
-    modifiers: (),
+    modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
-    variables: (),
+    variables: ('--greese-choice-box', '--greese-choice-description-font', '--greese-choice-font', '--greese-choice-gap',),
   ),
   'Code': (
     parts: (),
@@ -165,9 +165,9 @@ $blocks: (
   ),
   'ColorPicker': (
     parts: ('alpha', 'area', 'channel', 'channels', 'controls', 'fields', 'hex', 'hue', 'preview', 'sliders', 'swatch', 'swatches', 'thumb', 'tool',),
-    modifiers: (),
+    modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
-    variables: ('--greese-colorpicker-color', '--greese-colorpicker-current', '--greese-colorpicker-hue', '--greese-colorpicker-swatch', '--greese-colorpicker-thumb', '--greese-colorpicker-track', '--greese-colorpicker-x', '--greese-colorpicker-y',),
+    variables: ('--greese-colorpicker-color', '--greese-colorpicker-current', '--greese-colorpicker-font', '--greese-colorpicker-hue', '--greese-colorpicker-padding', '--greese-colorpicker-swatch', '--greese-colorpicker-thumb', '--greese-colorpicker-track', '--greese-colorpicker-x', '--greese-colorpicker-y',),
   ),
   'Combobox': (
     parts: ('empty', 'list', 'option', 'popup', 'toggle',),
@@ -203,7 +203,7 @@ $blocks: (
     parts: ('body', 'close', 'description', 'footer', 'header', 'title',),
     modifiers: ('size-full', 'size-lg', 'size-md', 'size-sm', 'size-xl',),
     part-modifiers: (),
-    variables: ('--greese-dialog-width', '--greese-motion-backdrop', '--greese-motion-backdrop-duration', '--greese-motion-dialog', '--greese-motion-dialog-exit-mask-from', '--greese-motion-dialog-exit-mask-image', '--greese-motion-dialog-exit-mask-position', '--greese-motion-dialog-exit-mask-repeat', '--greese-motion-dialog-exit-mask-size', '--greese-motion-dialog-exit-opacity', '--greese-motion-dialog-exit-scale', '--greese-motion-dialog-exit-transform', '--greese-motion-dialog-exit-transform-origin', '--greese-motion-dialog-exit-translate', '--greese-motion-drawer', '--greese-motion-drawer-exit-mask-from', '--greese-motion-drawer-exit-mask-image', '--greese-motion-drawer-exit-mask-position', '--greese-motion-drawer-exit-mask-repeat', '--greese-motion-drawer-exit-mask-size', '--greese-motion-drawer-exit-opacity', '--greese-motion-drawer-exit-scale', '--greese-motion-drawer-exit-transform', '--greese-motion-drawer-exit-transform-origin', '--greese-motion-drawer-exit-translate', '--greese-motion-enter-ease', '--greese-motion-exit-duration', '--greese-motion-exit-ease', '--greese-motion-exit-mask-from', '--greese-motion-exit-mask-image', '--greese-motion-exit-mask-position', '--greese-motion-exit-mask-repeat', '--greese-motion-exit-mask-size', '--greese-motion-exit-opacity', '--greese-motion-exit-scale', '--greese-motion-exit-transform', '--greese-motion-exit-transform-origin', '--greese-motion-exit-translate', '--greese-motion-overlay', '--greese-motion-overlay-duration', '--greese-motion-overlay-exit-mask-from', '--greese-motion-overlay-exit-mask-image', '--greese-motion-overlay-exit-mask-position', '--greese-motion-overlay-exit-mask-repeat', '--greese-motion-overlay-exit-mask-size', '--greese-motion-overlay-exit-opacity', '--greese-motion-overlay-exit-scale', '--greese-motion-overlay-exit-transform', '--greese-motion-overlay-exit-transform-origin', '--greese-motion-overlay-exit-translate', '--greese-overlay-enter', '--greese-overlay-exit-mask-from', '--greese-overlay-exit-mask-image', '--greese-overlay-exit-mask-position', '--greese-overlay-exit-mask-repeat', '--greese-overlay-exit-mask-size', '--greese-overlay-exit-opacity', '--greese-overlay-exit-scale', '--greese-overlay-exit-transform', '--greese-overlay-exit-transform-origin', '--greese-overlay-exit-translate', '--greese-overlay-origin', '--greese-scrollbar-gap',),
+    variables: ('--greese-dialog-padding', '--greese-dialog-width', '--greese-motion-backdrop', '--greese-motion-backdrop-duration', '--greese-motion-dialog', '--greese-motion-dialog-exit-mask-from', '--greese-motion-dialog-exit-mask-image', '--greese-motion-dialog-exit-mask-position', '--greese-motion-dialog-exit-mask-repeat', '--greese-motion-dialog-exit-mask-size', '--greese-motion-dialog-exit-opacity', '--greese-motion-dialog-exit-scale', '--greese-motion-dialog-exit-transform', '--greese-motion-dialog-exit-transform-origin', '--greese-motion-dialog-exit-translate', '--greese-motion-drawer', '--greese-motion-drawer-exit-mask-from', '--greese-motion-drawer-exit-mask-image', '--greese-motion-drawer-exit-mask-position', '--greese-motion-drawer-exit-mask-repeat', '--greese-motion-drawer-exit-mask-size', '--greese-motion-drawer-exit-opacity', '--greese-motion-drawer-exit-scale', '--greese-motion-drawer-exit-transform', '--greese-motion-drawer-exit-transform-origin', '--greese-motion-drawer-exit-translate', '--greese-motion-enter-ease', '--greese-motion-exit-duration', '--greese-motion-exit-ease', '--greese-motion-exit-mask-from', '--greese-motion-exit-mask-image', '--greese-motion-exit-mask-position', '--greese-motion-exit-mask-repeat', '--greese-motion-exit-mask-size', '--greese-motion-exit-opacity', '--greese-motion-exit-scale', '--greese-motion-exit-transform', '--greese-motion-exit-transform-origin', '--greese-motion-exit-translate', '--greese-motion-overlay', '--greese-motion-overlay-duration', '--greese-motion-overlay-exit-mask-from', '--greese-motion-overlay-exit-mask-image', '--greese-motion-overlay-exit-mask-position', '--greese-motion-overlay-exit-mask-repeat', '--greese-motion-overlay-exit-mask-size', '--greese-motion-overlay-exit-opacity', '--greese-motion-overlay-exit-scale', '--greese-motion-overlay-exit-transform', '--greese-motion-overlay-exit-transform-origin', '--greese-motion-overlay-exit-translate', '--greese-overlay-enter', '--greese-overlay-exit-mask-from', '--greese-overlay-exit-mask-image', '--greese-overlay-exit-mask-position', '--greese-overlay-exit-mask-repeat', '--greese-overlay-exit-mask-size', '--greese-overlay-exit-opacity', '--greese-overlay-exit-scale', '--greese-overlay-exit-transform', '--greese-overlay-exit-transform-origin', '--greese-overlay-exit-translate', '--greese-overlay-origin', '--greese-scrollbar-gap',),
   ),
   'Diff': (
     parts: ('handle', 'item', 'range', 'tag',),
@@ -375,9 +375,15 @@ $blocks: (
   ),
   'NumberField': (
     parts: ('step', 'steppers',),
-    modifiers: (),
+    modifiers: ('split',),
     part-modifiers: (),
     variables: (),
+  ),
+  'NumberStepper': (
+    parts: (),
+    modifiers: (),
+    part-modifiers: (),
+    variables: ('--greese-numberstepper-gap',),
   ),
   'OtpField': (
     parts: ('input', 'slot',),
@@ -417,9 +423,9 @@ $blocks: (
   ),
   'Radio': (
     parts: ('input',),
-    modifiers: (),
+    modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
-    variables: (),
+    variables: ('--greese-choice-box',),
   ),
   'Rating': (
     parts: ('choice', 'choices', 'empty', 'filled', 'icon', 'input', 'items', 'stars',),
@@ -489,7 +495,7 @@ $blocks: (
   ),
   'Slider': (
     parts: ('thumbAnchor', 'wrap',),
-    modifiers: (),
+    modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
     variables: ('--greese-slider-fill', '--greese-slider-offset', '--greese-slider-ratio', '--greese-slider-thumb', '--greese-slider-towards', '--greese-slider-travel',),
   ),
@@ -561,9 +567,9 @@ $blocks: (
   ),
   'Switch': (
     parts: ('input', 'thumb', 'track',),
-    modifiers: (),
+    modifiers: ('size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs',),
     part-modifiers: (),
-    variables: (),
+    variables: ('--greese-choice-box',),
   ),
   'Tab': (
     parts: (),

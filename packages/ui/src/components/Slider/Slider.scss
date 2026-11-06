@@ -1,3 +1,5 @@
+@use 'sass:map';
+@use '../../styles/controls';
 @use '../../styles/mixins';
 
 // Vendor pseudo-elements are the only way to style range parts.
@@ -36,6 +38,14 @@
 }
 
 @layer greese.components {
+  // The thumb follows the control scale, so a slider in a row of inputs is
+  // the same height as they are.
+  @each $size, $spec in controls.$sizes {
+    .greese-Slider--size-#{$size} {
+      --greese-slider-thumb: calc(#{map.get($spec, height)} * 0.5);
+    }
+  }
+
   // Only present when the slider shows a value bubble, so a plain slider's
   // markup is unchanged.
   .greese-Slider-wrap {

@@ -8,6 +8,7 @@ import {
   type JSX,
 } from 'react'
 import { cx } from '../../utils/cx.ts'
+import type { ControlSize } from '../Button/Button.tsx'
 import { useFieldControl } from '../Field/Field.tsx'
 import { Tooltip } from '../Tooltip/Tooltip.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
@@ -41,6 +42,11 @@ export interface SliderProps
    * `°`. @default ''
    */
   unit?: string
+  /**
+   * The thumb's size and the track's thickness: `xs` through `xl`, matching
+   * every other control so a row of them lines up. @default 'md'
+   */
+  size?: ControlSize
   /**
    * Marks it invalid and colors it as an error. A surrounding Field's `error`
    * sets it too.
@@ -92,6 +98,7 @@ export const Slider = ({
   onChange,
   valueLabel = 'off',
   unit = '',
+  size = 'md',
   invalid,
   className,
   style,
@@ -142,7 +149,7 @@ export const Slider = ({
       // The bubble is presentational, so the value it shows is spoken from
       // here instead — with its unit, which `aria-valuenow` cannot carry.
       aria-valuetext={unit ? text : undefined}
-      className={cx('greese-Slider', className)}
+      className={cx('greese-Slider', `greese-Slider--size-${size}`, className)}
       style={
         {
           ...(labelled ? undefined : track(initial, min, max)),

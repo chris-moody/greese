@@ -24,3 +24,12 @@ export const Decimal: Story = {
     step: 0.05,
   },
 }
+
+/**
+ * `steppers` picks the layout: `stacked` carets (the default, and the
+ * narrowest), `split` for a minus and plus at either end — which is what
+ * `NumberStepper` renders — or `none`.
+ */
+export const SteppersNone: Story = { args: { steppers: 'none' } }
+
+export const SteppersSplit: Story = { args: { steppers: 'split' } }

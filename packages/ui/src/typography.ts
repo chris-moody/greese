@@ -122,7 +122,7 @@ export const typography: Typography = {
   p2: { base: t('1rem', '400', '1.55') },
   p3: { base: t('0.875rem', '400', '1.5') },
   caption: { base: t('0.75rem', '400', '1.4', '0.02em') },
-  button: { base: t('0.9375rem', '600', '1.25') },
+  button: { base: t('0.9375rem', '700', '1.25') },
 }
 
 /** `--greese-type-h1-font-size`, for the type property `fontSize`. */

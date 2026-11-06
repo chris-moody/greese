@@ -1,3 +1,5 @@
+@use 'sass:map';
+@use '../../styles/controls';
 @use '../../styles/mixins';
 
 /* stylelint-disable selector-no-vendor-prefix */
@@ -21,7 +23,15 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.75rem 0.
     var(--greese-shadow-sm);
 }
 
+// The picker's own number and text fields take the size the picker was given.
 @layer greese.components {
+  @each $size, $spec in controls.$sizes {
+    .greese-ColorPicker--size-#{$size} {
+      --greese-colorpicker-font: #{map.get($spec, font)};
+      --greese-colorpicker-padding: #{map.get($spec, padding)};
+    }
+  }
+
   .greese-ColorPicker {
     --greese-colorpicker-thumb: 1.125rem;
 

@@ -9,6 +9,8 @@ import { Slot, Slottable } from './Slot/Slot.tsx'
 import { ButtonGroup } from './ButtonGroup/ButtonGroup.tsx'
 import { Checkbox, CheckboxGroup } from './Checkbox/Checkbox.tsx'
 import { EditableField } from './EditableField/EditableField.tsx'
+import { NumberField } from './NumberField/NumberField.tsx'
+import { NumberStepper } from './NumberStepper/NumberStepper.tsx'
 import {
   inferEditableFieldType,
   resolveDecimals,
@@ -472,6 +474,46 @@ describe('Slider and FileInput', () => {
     expect(bubble().matches(':popover-open')).toBe(true)
     fireEvent.blur(slider)
     expect(bubble().matches(':popover-open')).toBe(false)
+  })
+
+  it('NumberField stacks its steppers, and NumberStepper splits them', async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<NumberField aria-label="Guests" defaultValue={2} />)
+    const up = screen.getByRole('button', { name: 'Increase' })
+    // Stacked: both carets sit in the one adornment at the end.
+    expect(up.parentElement).toHaveClass('greese-NumberField-steppers')
+    await user.click(up)
+    expect(screen.getByRole('spinbutton')).toHaveValue('3')
+
+    rerender(<NumberStepper aria-label="Guests" defaultValue={2} />)
+    // Split: a button at each end of the field, so neither is in the stack.
+    const plus = screen.getByRole('button', { name: 'Increase' })
+    const minus = screen.getByRole('button', { name: 'Decrease' })
+    expect(plus.parentElement).not.toHaveClass('greese-NumberField-steppers')
+    expect(minus.parentElement).not.toHaveClass('greese-NumberField-steppers')
+    await user.click(minus)
+    expect(screen.getByRole('spinbutton')).toHaveValue('1')
+  })
+
+  it('NumberField can drop its steppers entirely', () => {
+    render(<NumberField aria-label="Guests" defaultValue={2} steppers="none" />)
+    expect(screen.queryByRole('button', { name: 'Increase' })).toBeNull()
+    expect(screen.getByRole('spinbutton')).toHaveValue('2')
+  })
+
+  it('every control an EditableField renders takes its size', () => {
+    const { container } = render(
+      <>
+        <EditableField label="On" type="switch" size="lg" checked />
+        <EditableField label="Tick" type="checkbox" size="lg" checked />
+        <EditableField label="Level" type="range" size="lg" value={3} />
+      </>
+    )
+    // The size reaches each control, not just the text ones — a column of
+    // mixed fields would otherwise be ragged.
+    expect(container.querySelector('.greese-Switch--size-lg')).not.toBeNull()
+    expect(container.querySelector('.greese-Checkbox--size-lg')).not.toBeNull()
+    expect(container.querySelector('.greese-Slider--size-lg')).not.toBeNull()
   })
 
   it('FileInput is a native file input wired to its Field', () => {

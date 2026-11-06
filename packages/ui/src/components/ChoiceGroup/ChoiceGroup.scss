@@ -1,3 +1,5 @@
+@use 'sass:map';
+@use '../../styles/controls';
 @use '../../styles/mixins';
 
 @layer greese.components {
@@ -38,6 +40,21 @@
     }
   }
 
+  // The size a Checkbox, Radio or Switch was given reaches its text through
+  // these variables: one scale for the three, so a column of mixed controls
+  // lines up. `controls.$sizes` is the same scale Input, Select and Button
+  // use.
+  @each $size, $spec in controls.$sizes {
+    .greese-Checkbox--size-#{$size},
+    .greese-Radio--size-#{$size},
+    .greese-Switch--size-#{$size},
+    .greese-ChoiceGroup--size-#{$size} {
+      --greese-choice-font: #{map.get($spec, font)};
+      --greese-choice-gap: #{map.get($spec, padding)};
+      --greese-choice-box: calc(#{map.get($spec, height)} * 0.45);
+    }
+  }
+
   .greese-Checkbox-text {
     display: flex;
     flex-direction: column;
@@ -45,6 +62,7 @@
   }
 
   .greese-Checkbox-label {
+    font-size: var(--greese-choice-font, inherit);
     cursor: pointer;
 
     [data-disabled] > .greese-Checkbox-text > & {
@@ -53,7 +71,7 @@
   }
 
   .greese-Checkbox-description {
-    font-size: var(--greese-type-p3-font-size);
+    font-size: var(--greese-choice-description-font, var(--greese-type-p3-font-size));
     color: var(--greese-color-fg-muted);
   }
 

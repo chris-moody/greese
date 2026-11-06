@@ -9,6 +9,7 @@ import {
   type PointerEvent,
 } from 'react'
 import { EyedropperIcon, PlusIcon, TrashIcon } from '@greese/icons'
+import type { ControlSize } from '../Button/Button.tsx'
 import { cx } from '../../utils/cx.ts'
 import { Input } from '../Input/Input.tsx'
 import { MaskedInput } from '../MaskedInput/MaskedInput.tsx'
@@ -62,6 +63,11 @@ export interface ColorPickerProps
   label?: string
   /** Disables every part of the picker. */
   disabled?: boolean
+  /**
+   * Height, padding and text size of the picker's own fields: `xs` through
+   * `xl`, matching every other control. @default 'md'
+   */
+  size?: ControlSize
 }
 
 /** What a browser with the EyeDropper API adds to `window`. */
@@ -90,6 +96,7 @@ const clamp01 = (n: number): number => Math.min(Math.max(n, 0), 1)
  * field, put it in a Popover with a swatch button as trigger.
  */
 export const ColorPicker = ({
+  size = 'md',
   greese,
   value,
   defaultValue = '#3b82f6',
@@ -238,7 +245,7 @@ export const ColorPicker = ({
       role="group"
       aria-label={label}
       {...props}
-      className={cx('greese-ColorPicker', className)}
+      className={cx('greese-ColorPicker', `greese-ColorPicker--size-${size}`, className)}
       data-disabled={disabled || undefined}
       style={
         {

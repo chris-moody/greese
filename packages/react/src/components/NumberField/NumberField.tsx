@@ -10,7 +10,7 @@ import {
 } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
-import { MinusIcon, PlusIcon } from '@greese/icons'
+import { ChevronDownIcon, ChevronUpIcon, MinusIcon, PlusIcon } from '@greese/icons'
 import { composeRefs } from '../Slot/Slot.tsx'
 import { TextField, type TextFieldProps } from '../TextField/TextField.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
@@ -44,6 +44,17 @@ export interface NumberFieldProps
   step?: number
   /** Page Up / Page Down move by this. @default step × 10 */
   largeStep?: number
+  /**
+   * Where the stepper buttons sit: `stacked` is a caret above a caret at the
+   * end of the field, `split` puts a minus at one end and a plus at the other
+   * (what `NumberStepper` renders), and `none` leaves the keyboard and typing
+   * as the only ways to change it.
+   *
+   * Stacked by default because it is the narrowest: two buttons side by side
+   * cost about 3.5rem of a field's width, which is most of a dense panel row.
+   * @default 'stacked'
+   */
+  steppers?: 'stacked' | 'split' | 'none'
   /** Accessible name of the plus button. @default 'Increase' */
   incrementLabel?: string
   /** Accessible name of the minus button. @default 'Decrease' */
@@ -81,6 +92,7 @@ export const NumberField = ({
   max,
   step = 1,
   largeStep = step * 10,
+  steppers = 'stacked',
   incrementLabel = 'Increase',
   decrementLabel = 'Decrease',
   className,
@@ -179,7 +191,7 @@ export const NumberField = ({
       disabled={disabled}
       readOnly={readOnly}
       value={text}
-      className={cx('greese-NumberField', className)}
+      className={cx('greese-NumberField', `greese-NumberField--${steppers}`, className)}
       onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)}
       onFocus={(event: FocusEvent<HTMLInputElement>) => {
         setEditing(true)
@@ -207,11 +219,20 @@ export const NumberField = ({
         if (event.key !== 'Enter') event.preventDefault()
         action()
       }}
+      startAdornment={
+        steppers === 'split'
+          ? stepper(-step, decrementLabel, atMin, <MinusIcon />)
+          : undefined
+      }
       endAdornment={
-        <span className="greese-NumberField-steppers">
-          {stepper(-step, decrementLabel, atMin, <MinusIcon />)}
-          {stepper(step, incrementLabel, atMax, <PlusIcon />)}
-        </span>
+        steppers === 'split' ? (
+          stepper(step, incrementLabel, atMax, <PlusIcon />)
+        ) : steppers === 'stacked' ? (
+          <span className="greese-NumberField-steppers">
+            {stepper(step, incrementLabel, atMax, <ChevronUpIcon />)}
+            {stepper(-step, decrementLabel, atMin, <ChevronDownIcon />)}
+          </span>
+        ) : undefined
       }
     />,
     greese

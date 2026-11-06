@@ -9,6 +9,7 @@ import {
   type JSX,
   type ReactNode,
 } from 'react'
+import type { ControlSize } from '../Button/Button.tsx'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
 import {
@@ -40,6 +41,11 @@ export interface RadioProps
   description?: ReactNode
   /** Marks it invalid and colors it as an error. The group's `error` sets it too. */
   invalid?: boolean
+  /**
+   * Height, padding and text size: `xs` through `xl`, matching every other
+   * control so a row of them lines up. @default 'md'
+   */
+  size?: ControlSize
 }
 
 /**
@@ -47,6 +53,7 @@ export interface RadioProps
  * `name`, so arrow keys move the selection as the platform expects.
  */
 export const Radio = ({
+  size = 'md',
   greese,
   label,
   description,
@@ -79,7 +86,7 @@ export const Radio = ({
 
   return withGreese(
     <div
-      className={cx('greese-Radio', className)}
+      className={cx('greese-Radio', `greese-Radio--size-${size}`, className)}
       style={style}
       data-disabled={control.disabled || undefined}
     >
@@ -116,6 +123,12 @@ export interface RadioGroupProps extends GreeseProps, ChoiceGroupProps {
   defaultValue?: string
   /** Called with the newly chosen value. */
   onValueChange?: (value: string) => void
+  /**
+   * Height, padding and text size of every radio in the group: `xs` through
+   * `xl`, matching every other control. It reaches them through a custom
+   * property, so a radio inside needs no size of its own. @default 'md'
+   */
+  size?: ControlSize
 }
 
 /**
@@ -130,6 +143,8 @@ export interface RadioGroupProps extends GreeseProps, ChoiceGroupProps {
  */
 export const RadioGroup = ({
   greese,
+  size = 'md',
+  className,
   name,
   value: valueProp,
   defaultValue,
@@ -150,6 +165,7 @@ export const RadioGroup = ({
   return withGreese(
     <ChoiceGroupShell
       {...props}
+      className={cx(`greese-ChoiceGroup--size-${size}`, className)}
       error={error}
       invalid={isInvalid}
       required={required}

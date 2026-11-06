@@ -1,6 +1,7 @@
 'use client'
 import type { ChangeEvent, ComponentPropsWithRef, JSX, ReactNode } from 'react'
 import { useId } from 'react'
+import type { ControlSize } from '../Button/Button.tsx'
 import { cx } from '../../utils/cx.ts'
 import { ChoiceText } from '../ChoiceGroup/ChoiceGroup.tsx'
 import { useFieldControl } from '../Field/Field.tsx'
@@ -19,6 +20,11 @@ export interface SwitchProps
   invalid?: boolean
   /** Called with the new state when it's turned on or off. */
   onCheckedChange?: (checked: boolean) => void
+  /**
+   * Height, padding and text size: `xs` through `xl`, matching every other
+   * control so a row of them lines up. @default 'md'
+   */
+  size?: ControlSize
 }
 
 /**
@@ -31,6 +37,7 @@ export interface SwitchProps
  * ```
  */
 export const Switch = ({
+  size = 'md',
   greese,
   label,
   description,
@@ -55,7 +62,7 @@ export const Switch = ({
   })
   return withGreese(
     <div
-      className={cx('greese-Switch', className)}
+      className={cx('greese-Switch', `greese-Switch--size-${size}`, className)}
       style={style}
       data-disabled={control.disabled || undefined}
     >
