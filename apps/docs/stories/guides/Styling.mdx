@@ -7,8 +7,9 @@ import { Meta } from '@storybook/addon-docs/blocks'
 **Guides/Theming** changes the design tokens every component reads. This guide
 covers everything past tokens: a component's classes, parts and variables;
 overriding them in CSS; the **SCSS kit**, which writes those overrides for you
-at build time; theme-wide motion; and **Theme Studio**, which edits all of it
-visually and saves it to your project.
+at build time; and theme-wide motion. [Guides/SCSS themes](?path=/docs/guides-scss-themes--docs) puts it
+together: exporting a theme from **Theme Studio** and keeping it in your source
+as the theme layout, a file at a time.
 
 1. [Choosing a level](#choosing-a-level)
 2. [Class names](#class-names)
@@ -16,13 +17,16 @@ visually and saves it to your project.
 4. [Overriding in plain CSS](#overriding-in-plain-css)
 5. [The SCSS kit](#the-scss-kit)
 6. [Theme-wide motion](#theme-wide-motion)
-7. [Theme Studio](#theme-studio)
+7. [Keeping a theme in your source](#keeping-a-theme-in-your-source)
 
 Every component's docs page, parts like AccordionItem and TableRow included,
-also ends with a **Styling** section: the classes it renders (root, parts,
-modifiers, states, responsive props, variables), its items, the components
-it's built on (an AccordionItem is a Collapsible), and override examples
-written for it.
+also ends with a **Styling** section: its anatomy (its first example, every
+element outlined and labelled with its classes), then tables of what it
+renders: its parts (root, parts, modifiers and state attributes, each with the
+class it sits in and what it styles), its responsive props, and its own
+variables (default, type, and the properties they end up in). Then its items,
+the components it's built on (an AccordionItem is a Collapsible), and
+override examples written for it.
 
 ## Choosing a level
 
@@ -111,18 +115,9 @@ library doesn't have**, listing the ones it does.
 
 ### Setup
 
-Compile with Sass's `NodePackageImporter`, which resolves `pkg:` URLs. In
-Vite:
-
-```ts
-import { NodePackageImporter } from 'sass-embedded'
-
-export default defineConfig({
-  css: { preprocessorOptions: { scss: { importers: [new NodePackageImporter()] } } },
-})
-```
-
-Then, in a stylesheet imported **after** greese ui's styles:
+Compile with Sass's `NodePackageImporter`, which resolves `pkg:` URLs
+([Guides/SCSS themes](?path=/docs/guides-scss-themes--docs) shows the Vite config). Then, in a stylesheet
+imported **after** greese ui's styles:
 
 ```scss
 // theme.scss
@@ -197,6 +192,15 @@ A new `space` token is a variable only: the responsive prop classes
 At the top level it overrides only what you pass, on the page, mirroring the
 default selectors, so light, dark and nested schemes all work. Duration
 overrides still collapse under reduced motion.
+
+Calls add up. A second `tokens()` call for the same theme, or for the page,
+writes only what it changes. Token groups can therefore live in files of their
+own, and the result is the same as one call with everything merged:
+
+```scss
+@include greese.tokens($colors);
+@include greese.tokens($radii); // the colors stay
+```
 
 ### Components
 
@@ -283,7 +287,23 @@ the provider only stamps the attributes (and keeps nested schemes working):
 
 Component overrides are descendant selectors, so a theme nested inside
 `brand` still gets `brand`'s component overrides (tokens replace; overrides
-add up).
+add up). [Take them back](?path=/docs/guides-scss-themes--docs) where you don't want
+them: Guides/SCSS themes, "Taking a theme's layers back".
+
+`scope($name)` is `theme($name)` when there is a name, and the page when there
+isn't (`null`, `false` or `''`), so one file serves either:
+
+```scss
+$theme: brand; // or null
+
+@include greese.scope($theme) {
+  @include greese.component(Card) {
+    border-radius: 0;
+  }
+}
+```
+
+The theme layout keeps that name in `_settings.scss` (Guides/SCSS themes).
 
 ### Strict names
 
@@ -301,13 +321,14 @@ turn the check off: `@use 'pkg:@greese/ui/scss/kit' as greese with ($strict: fal
 The components are written with a handful of partials, and a theme can `@use`
 them too, so styles copied from a component's source compile in your theme:
 
-| Entry point                    | What's in it                                                                         |
-| ------------------------------ | ------------------------------------------------------------------------------------ |
-| `pkg:@greese/ui/scss/mixins`   | `up`, `down`, `hover`, `focus-ring`, `touch-target`, `motion-safe`, `component-root` |
-| `pkg:@greese/ui/scss/tones`    | `$tones` (each tone's color and content color) and `$brand`                          |
-| `pkg:@greese/ui/scss/floating` | `surface`, `anchored`, `enter-exit`: what the overlays share                         |
-| `pkg:@greese/ui/scss/controls` | `$sizes`, `frame`, `focused`, `no-zoom-font`: what the form controls share           |
-| `pkg:@greese/ui/scss/maps`     | the token maps (`$color`, `$scalars`, `$breakpoints`, `$typography`…)                |
+| Entry point                     | What's in it                                                                                              |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `pkg:@greese/ui/scss/mixins`    | `up`, `down`, `hover`, `focus-ring`, `touch-target`, `motion-safe`, `component-root`                      |
+| `pkg:@greese/ui/scss/tones`     | `$tones` (each tone's color and content color) and `$brand`                                               |
+| `pkg:@greese/ui/scss/floating`  | `surface`, `anchored`, `enter-exit`: what the overlays share                                              |
+| `pkg:@greese/ui/scss/controls`  | `$sizes`, `frame`, `focused`, `no-zoom-font`: what the form controls share                                |
+| `pkg:@greese/ui/scss/maps`      | the token maps (`$color`, `$scalars`, `$breakpoints`, `$typography`…)                                     |
+| `pkg:@greese/ui/scss/utilities` | `classes()`: the [utility classes](?path=/docs/guides-utility-classes--docs), built with your breakpoints |
 
 ```scss
 @use 'pkg:@greese/ui/scss/kit' as greese;
@@ -327,6 +348,29 @@ They are the modules the library itself loads, so a build with its own
 breakpoints (`@use 'pkg:@greese/ui/scss' with ($breakpoints: …)`) reaches
 `mixins.up()` too. What writes a component's own class names (the
 responsive-prop machinery, `tones.classes`) stays private.
+
+Two more entry points write CSS, for a Sass build that picks its components:
+`pkg:@greese/ui/scss/core` (the layer order, tokens and type system) and
+`pkg:@greese/ui/scss/components/<Name>` (one component's own stylesheet):
+
+```scss
+@use 'pkg:@greese/ui/scss/config' with (
+  $breakpoints: (
+    xs: 0px,
+    sm: 480px,
+    md: 700px,
+    lg: 1024px,
+    xl: 1440px,
+  )
+);
+@use 'pkg:@greese/ui/scss/core';
+@use 'pkg:@greese/ui/scss/components/Stack';
+@use 'pkg:@greese/ui/scss/components/Button';
+```
+
+A component built on others (a Dialog renders a Button) needs theirs too. To
+replace a component's styles outright, leave its stylesheet out and write your
+own `.greese-<Name>` rules in `@layer greese.components`.
 
 ## Theme-wide motion
 
@@ -397,93 +441,14 @@ per-component CSS, also import `@greese/react/css/Motion.css`.
 Scroll reveals and hover, press and focus effects need the JavaScript
 runtime, so they stay per instance, on the `greese` prop.
 
-## Theme Studio
+## Keeping a theme in your source
 
-Theme Studio is a local web app for building a theme visually. It reads and
-writes a theme file in your project, previews every change live on real
-components, and generates the kit SCSS and the compiled CSS.
-
-```sh
-npm run studio                                         # the example theme
-GREESE_THEME=src/styles/greese-theme.json npm run studio   # yours
-npm run studio -- --host                               # also on your phone
-```
-
-On another device, open the studio link it prints (with a token): until a
-device has, its pages load but it can't load, save or import a theme.
-
-It edits `greese-theme.json` (the source of truth, which you commit) and
-writes two files next to it on save:
-
-| File                | Use it if                                                  |
-| ------------------- | ---------------------------------------------------------- |
-| `greese-theme.scss` | Your app compiles Sass: `@use` it after the library styles |
-| `greese-theme.css`  | It doesn't: import it after `@greese/react/styles.css`     |
-
-Both are generated; edit the JSON, or use the studio. Put hand-written
-overrides in a stylesheet of your own beside them.
-
-In the studio:
-
-- **Tokens:** every token, with light and dark colors. Name the theme to
-  scope it to `data-greese-theme`.
-- **Component preview:** above the gallery, the component you've picked,
-  shown through every story from its docs page, live as you edit it.
-- **Components:** pick one, or switch on **Inspect** and click any element in
-  the preview. You get its classes, parts, modifiers and states, its variables
-  with their current values, and its motion defaults. Its styles, and those of
-  what it contains, are one **SCSS** box that starts as the library's own source
-  for them and takes the same imports the components use
-  (`@use 'pkg:@greese/ui/scss/mixins'`…, ticked in an **Imports** menu). Once
-  you edit it, it applies inside that component only; the same components used
-  elsewhere keep their styles.
-- **Motion:** entrance tuning for the whole theme, its motion roles (which
-  effect plays where, which timing it takes), and its **Effects**: every
-  built-in's keyframes to read or copy, effects of your own, and a stage to
-  play sequences on.
-- **Code:** the generated SCSS and CSS, highlighted.
-- **Import:** bring in a theme you already have, then edit it. See below.
-
-The preview runs in a frame, so the theme never restyles the editor. It
-compiles through the same kit you'd use by hand, so a theme that previews
-compiles. If the JSON changes on disk (a pull, another editor), the studio
-reloads it, or asks first when you have unsaved changes.
-
-### Importing an existing theme
-
-**Import** reads a theme you already have into the editor. Paste it, upload
-it, or give a path in your project:
-
-| Source                                                          | Read as                                              |
-| --------------------------------------------------------------- | ---------------------------------------------------- |
-| A studio `.json` file                                           | As it is                                             |
-| `createTheme()` options (JSON, or a module exporting them)      | Token overrides                                      |
-| A `.ts`/`.js` module exporting `createTheme()` results          | Their CSS (the module runs in the studio's server)   |
-| SCSS, the kit's or your own                                     | Compiled first; a project file keeps its own `@use`s |
-| CSS: `createTheme()` output, kit output, hand-written overrides | Tokens, component rules and motion                   |
-
-Everything becomes CSS and is read back:
-
-- **Tokens:** light and dark values come from the scheme selectors and
-  media queries. Values equal to the defaults are left out, so a complete
-  `createTheme()` theme imports as just its overrides.
-- **Components:** `.greese-<Name>` rules, their parts and modifiers, become
-  component styles and variables.
-- **Motion:** the kit's motion output becomes motion settings.
-
-What the studio can't hold is listed with its CSS, never dropped silently:
-responsive or hover rules, other selectors, page CSS, custom keyframes. Copy
-it into a stylesheet of your own.
-
-You can replace the current theme or merge into it, the import winning.
-Nothing changes until you choose, and nothing is written until you save, to
-the studio's theme file (`GREESE_THEME`). So importing never overwrites your
-original. If the CSS holds several named themes, pick which one to edit.
-
-For safety, paths must be inside the folder you ran npm from.
-
-Theme Studio runs from this repository for now; publishing it as a package
-comes with the rest of the release work.
+A theme written with the kit is best kept as **the theme layout**: a folder of
+Sass modules, a file per component and per token group, which Theme Studio
+exports and you maintain from then on. [Guides/SCSS themes](?path=/docs/guides-scss-themes--docs) covers it end
+to end: exporting from Theme Studio, building it, every file and what it
+holds, changing it, and taking a theme's layers back with `.greese-reset-*`
+and `reset()`.
 
 ## Reference: every component
 

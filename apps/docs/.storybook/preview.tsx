@@ -7,6 +7,7 @@ import {
   Heading,
   Primary,
   Stories,
+  Story,
   Subtitle,
   Title,
   useOf,
@@ -93,10 +94,15 @@ const Styling = () => {
   const { title = '', component, subcomponents = {} } = csfFile.meta
   const name = nameOf(component, title)
   if (!hasStyles(name)) return null
+  const primary = csfFile.stories[0]
   return (
     <>
       <Heading>Styling</Heading>
-      <ComponentStyles name={name} subcomponents={Object.keys(subcomponents)} />
+      <ComponentStyles
+        name={name}
+        subcomponents={Object.keys(subcomponents)}
+        anatomy={primary && <Story of={primary.moduleExport} />}
+      />
     </>
   )
 }
@@ -135,12 +141,14 @@ const preview: Preview = {
             'Getting started',
             'Theming',
             'Styling components',
+            'SCSS themes',
             'Component reference',
             'Responsive props',
             'Accessibility',
             'Animation',
             'Utility classes',
             'greese.js',
+            'greese.js API',
             'SVG',
           ],
           'Foundations',

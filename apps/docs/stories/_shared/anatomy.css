@@ -1,0 +1,96 @@
+/* The anatomy diagram (Anatomy.tsx): a built example with every element of
+   the component family outlined and labelled. Colour follows nesting, and is
+   chosen per page for contrast (anatomyColors.ts). */
+.anatomy-frame {
+  display: grid;
+  gap: 0.75rem;
+  container-type: inline-size;
+}
+
+.anatomy {
+  position: relative;
+  min-block-size: var(--anatomy-height, 0);
+
+  /* Room on the right for the labels. */
+  padding-inline-end: 21rem;
+}
+
+.anatomy-canvas {
+  position: relative;
+}
+
+.anatomy-marks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.anatomy-lines {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  overflow: visible;
+}
+
+.anatomy-lines line {
+  stroke: var(--anatomy-color);
+  stroke-dasharray: 2 2;
+  stroke-width: 1;
+}
+
+.anatomy-box,
+.anatomy-label {
+  position: absolute;
+}
+
+.anatomy-box {
+  border: 1px dashed var(--anatomy-color);
+}
+
+.anatomy-label {
+  display: grid;
+  padding: 0 4px;
+  font:
+    600 10px / 15px ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  color: var(--anatomy-on-color);
+  white-space: nowrap;
+  background: var(--anatomy-color);
+  border-radius: 3px;
+}
+
+.anatomy-tree {
+  display: grid;
+  gap: 2px;
+  padding: 0;
+  margin: 0;
+  font-size: 0.8125rem;
+  list-style: none;
+}
+
+.anatomy-tree code {
+  margin-inline-end: 0.35rem;
+}
+
+.anatomy-tag {
+  color: var(--anatomy-color);
+}
+
+.anatomy-measuring {
+  opacity: 0.7;
+}
+
+/* Too narrow for a gutter of labels beside the example: the example alone,
+   with the list below it saying the same. */
+@container (inline-size < 40rem) {
+  .anatomy {
+    min-block-size: 0;
+    padding-inline-end: 0;
+  }
+
+  .anatomy-marks {
+    display: none;
+  }
+}

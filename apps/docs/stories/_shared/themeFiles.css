@@ -1,0 +1,111 @@
+/* ThemeFiles: a file tree beside the file it shows, stacked on a phone. */
+.theme-files {
+  display: grid;
+  gap: var(--greese-space-4);
+  align-items: start;
+  margin-block: var(--greese-space-4);
+
+  @media (width >= 900px) {
+    grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+  }
+}
+
+.theme-files-tree {
+  padding: var(--greese-space-2);
+  font-size: 0.875rem;
+  background: var(--greese-color-surface);
+  border: 1px solid var(--greese-color-border);
+  border-radius: var(--greese-corner-panel);
+}
+
+/* Folders: the library's Accordion, made a tree. The folder icon comes before
+   the name, and each level indents under its folder. */
+.theme-files-folders,
+.theme-files-folders .greese-AccordionItem {
+  border: 0;
+}
+
+.theme-files-folders .greese-Collapsible-trigger {
+  flex-direction: row-reverse;
+  gap: var(--greese-space-2);
+  justify-content: start;
+  min-block-size: 2rem;
+  padding-block: var(--greese-space-1);
+  padding-inline: var(--greese-space-1);
+  font-weight: var(--greese-font-weight-medium);
+}
+
+.theme-files-folders .greese-Collapsible-content {
+  padding: 0;
+  padding-inline-start: var(--greese-space-4);
+}
+
+/* Scoped twice, to win over a docs page's prose lists. */
+.theme-files .theme-files-list {
+  max-inline-size: none;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  > li + li {
+    margin-block-start: 0;
+  }
+}
+
+.theme-files-file {
+  display: flex;
+  gap: var(--greese-space-2);
+  align-items: center;
+  inline-size: 100%;
+  min-block-size: 2rem;
+  padding-block: var(--greese-space-1);
+  padding-inline: var(--greese-space-1);
+  font: inherit;
+  color: var(--greese-color-fg);
+  text-align: start;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: var(--greese-corner-inset);
+
+  &:focus-visible {
+    outline: 2px solid var(--greese-color-focus-ring);
+    outline-offset: 1px;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background: color-mix(in oklab, var(--greese-color-fg) 6%, transparent);
+    }
+  }
+
+  &[aria-current='true'] {
+    color: var(--greese-color-primary-strong);
+    background: color-mix(in oklab, var(--greese-color-primary) 12%, transparent);
+  }
+
+  > svg {
+    flex-shrink: 0;
+    color: var(--greese-color-fg-muted);
+  }
+}
+
+/* On a touch screen, each row is a full-size target. */
+@media (pointer: coarse) {
+  .theme-files-file,
+  .theme-files-folders .greese-Collapsible-trigger {
+    min-block-size: 2.75rem;
+  }
+}
+
+.theme-files-view {
+  display: grid;
+  gap: var(--greese-space-2);
+  min-inline-size: 0;
+}
+
+.theme-files .theme-files-path {
+  max-inline-size: none;
+  margin: 0;
+  font-family: var(--greese-font-mono);
+}

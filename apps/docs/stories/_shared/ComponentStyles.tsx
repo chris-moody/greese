@@ -5,10 +5,12 @@
  * the blocks a component renders itself, its items' blocks, the blocks of the
  * components it's built on, and override examples written for it.
  */
-import type { JSX } from 'react'
+import type { JSX, ReactNode } from 'react'
 import { Source, Subheading } from '@storybook/addon-docs/blocks'
 import manifest from '@greese/ui/style-manifest.json' with { type: 'json' }
 import componentStyles from '@greese/react/component-styles.json' with { type: 'json' }
+import { Anatomy } from './Anatomy.tsx'
+import { familyOf, ownBlocks } from './family.ts'
 
 interface BlockStyles {
   name: string
@@ -20,6 +22,12 @@ interface BlockStyles {
   responsive: Record<string, string[]>
   attributes: string[]
   variables: string[]
+  classes: Record<string, { parent?: string; properties: string[] }>
+  states: Record<string, { on: string[]; properties: string[] }>
+  variableInfo: Record<
+    string,
+    { default?: string; setBy: string[]; affects: string[]; type: string }
+  >
 }
 
 interface ComponentUse {
@@ -28,7 +36,7 @@ interface ComponentUse {
   builtOn: string[]
 }
 
-const blocks = manifest.blocks as Record<string, BlockStyles>
+const blocks = manifest.blocks as unknown as Record<string, BlockStyles>
 const components = componentStyles.components as Record<string, ComponentUse>
 
 /**
@@ -88,85 +96,295 @@ const Codes = ({ items }: { items: string[] }) =>
     none
   )
 
-const ROWS: Array<[label: string, help: string, items: (b: BlockStyles) => string[]]> = [
-  ['Root', 'On the outermost element', (b) => [`.${b.className}`]],
-  ['Parts', 'Elements inside it', (b) => b.parts.map((p) => `.${b.className}-${p}`)],
+/** What a set of CSS properties styles, in words: the first group a property matches. */
+const GROUPS: [RegExp, string][] = [
+  [/^(transition|animation|view-transition)/, 'motion'],
+  [/^(overflow|scroll|overscroll|scrollbar)/, 'scrolling'],
+  [/^(cursor|pointer-events|user-select|touch-action|resize|appearance)/, 'interaction'],
   [
-    'Modifiers',
-    'Set by props, on the root or a part',
-    (b) => [
-      ...b.modifiers.map((m) => `.${b.className}--${m}`),
-      ...Object.entries(b.partModifiers).flatMap(([p, mods]) =>
-        mods.map((m) => `.${b.className}-${p}--${m}`)
-      ),
-    ],
+    /^(opacity|filter|backdrop-filter|mix-blend|mask|clip-path|transform|translate|scale|rotate|perspective|visibility)/,
+    'effects',
   ],
-  ['States', 'Attributes it styles', (b) => b.attributes],
+  [/^(border|outline|box-shadow)/, 'border'],
+  [/^(color|background|fill|stroke|accent-color|caret-color|color-scheme)/, 'color'],
+  [/^(padding|margin)/, 'spacing'],
+  [/size$|width$|height$|^aspect-ratio/, 'size'],
   [
-    'Responsive props',
-    'Set the prop; don’t target these classes',
-    (b) =>
-      Object.entries(b.responsive).map(([prop, tokens]) =>
-        tokens.length ? `${prop}: ${tokens.join(' | ')}` : prop
-      ),
+    /^(font|line-height|letter-spacing|text|white-space|word|hyphens|-webkit-line-clamp|line-clamp|content|list-style|vertical-align)/,
+    'text',
   ],
-  ['Variables', 'Set on it or any ancestor', (b) => b.variables],
+  [
+    /^(display|position|inset|top|right|bottom|left|float|z-index|order|flex|grid|gap|row-gap|column-gap|place-|align-|justify-|box-sizing|container|contain)/,
+    'layout',
+  ],
 ]
 
+/** The order they're said in: where it is and how big, then how it looks, then how it acts. */
+const SAID = [
+  'layout',
+  'size',
+  'spacing',
+  'text',
+  'color',
+  'border',
+  'effects',
+  'motion',
+  'scrolling',
+  'interaction',
+]
+
+/** Every block's variables, to follow a modifier's variables to what they set. */
+const allVariables = Object.assign(
+  {},
+  ...Object.values(blocks).map((b) => b.variableInfo)
+) as BlockStyles['variableInfo']
+
+/** "Layout, color and border": what `properties` style, variables followed through. */
+const styles = (properties: string[]): string => {
+  const real = properties.flatMap((p) =>
+    p.startsWith('--') ? (allVariables[p]?.affects ?? []) : [p]
+  )
+  const found = new Set(real.map((p) => GROUPS.find(([pattern]) => pattern.test(p))?.[1]))
+  const groups = SAID.filter((group) => found.has(group))
+  if (!groups.length) return ''
+  const words =
+    groups.length > 1
+      ? `${groups.slice(0, -1).join(', ')} and ${groups.at(-1)}`
+      : groups[0]!
+  return words[0]!.toUpperCase() + words.slice(1)
+}
+
+const muted = (text: string) => <span style={{ opacity: 0.7 }}>{text}</span>
+
+/** One table of a block's styling API, in the docs' scrolling table box. */
+const Table = ({
+  label,
+  columns,
+  children,
+}: {
+  label: string
+  columns: string[]
+  children: ReactNode
+}) => (
+  <div className="docs-table-scroll" role="region" aria-label={label} tabIndex={0}>
+    <table style={{ inlineSize: '100%' }}>
+      <caption style={{ textAlign: 'start', fontWeight: 600 }}>{label}</caption>
+      <thead>
+        <tr>
+          {columns.map((column) => (
+            <th key={column} scope="col" style={{ textAlign: 'start' }}>
+              {column}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>{children}</tbody>
+    </table>
+  </div>
+)
+
+interface PartRow {
+  name: string
+  type: string
+  parent?: string
+  styles: ReactNode
+}
+
 /**
- * One block's full styling API: every row, "None" where it has nothing. In a
- * `docs-table-scroll` box, as the app's docs style their tables.
+ * Every element and state a block styles: its root, its parts, the
+ * modifiers props set on them, and the attributes it styles, each with what
+ * it sits in or applies to and what its rules set.
+ */
+const partRows = (block: BlockStyles): PartRow[] => {
+  const root = block.className
+  const own = (cls: string) => block.classes[cls] ?? { properties: [] }
+  const said = (cls: string, fallback: string) =>
+    styles(own(cls).properties) || muted(fallback)
+  return [
+    { name: `.${root}`, type: 'Root class', styles: said(root, 'Nothing of its own') },
+    ...block.parts.map((part) => ({
+      name: `.${root}-${part}`,
+      type: 'Part class',
+      parent: own(`${root}-${part}`).parent ?? root,
+      styles: said(`${root}-${part}`, 'Only what is inside it'),
+    })),
+    ...[
+      ...block.modifiers.map((m) => `${root}--${m}`),
+      ...Object.entries(block.partModifiers).flatMap(([part, mods]) =>
+        mods.map((m) => `${root}-${part}--${m}`)
+      ),
+    ].map((cls) => ({
+      name: `.${cls}`,
+      type: 'Modifier class',
+      parent: own(cls).parent ?? cls.split('--')[0],
+      styles: said(cls, 'Only what is inside it'),
+    })),
+    ...block.attributes.map((attribute) => {
+      const state = block.states[attribute]
+      return {
+        name: attribute,
+        type: 'State attribute',
+        parent: state?.on.join(', '),
+        styles: (state && styles(state.properties)) || muted('Only what is inside it'),
+      }
+    }),
+  ]
+}
+
+/**
+ * The variables that are this block's own: a shared system's (motion roles,
+ * type variants, overlays, easings) and another component's (IconButton
+ * reads Button's) are documented where they're defined.
+ */
+const ownVariables = (block: BlockStyles): string[] => {
+  const shared = /^--greese-(motion|type|overlay|ease|scrollbar)-/
+  const others = Object.keys(blocks)
+    .filter((b) => b !== block.name)
+    .map((b) => `--greese-${b.toLowerCase()}-`)
+  return block.variables.filter(
+    (v) =>
+      (block.name === 'Motion' || !shared.test(v)) &&
+      (v.startsWith(`--greese-${block.name.toLowerCase()}-`) ||
+        !others.some((prefix) => v.startsWith(prefix)))
+  )
+}
+
+/** What sets a variable that has no default: the block's own modifiers and states. */
+const setBy = (block: BlockStyles, variable: string): string[] =>
+  (block.variableInfo[variable]?.setBy ?? []).filter(
+    (by) => by.startsWith('[') || by.startsWith(`${block.className}-`)
+  )
+
+/**
+ * What sets a variable with no default, in short: "Set by the ghost, solid
+ * modifiers, and [aria-pressed=true]".
+ */
+const SetBy = ({ block, by }: { block: BlockStyles; by: string[] }) => {
+  const modifiers = by
+    .filter((b) => !b.startsWith('['))
+    .map((b) => b.slice(block.className.length).replace(/^-+/, ''))
+  const states = by.filter((b) => b.startsWith('['))
+  return (
+    <>
+      {muted('Set by ')}
+      {modifiers.length > 0 && (
+        <>
+          {muted('the ')}
+          <Codes items={modifiers} />
+          {muted(modifiers.length > 1 ? ' modifiers' : ' modifier')}
+        </>
+      )}
+      {modifiers.length > 0 && states.length > 0 && muted(', and ')}
+      {states.length > 0 && <Codes items={states} />}
+    </>
+  )
+}
+
+/**
+ * One block's full styling API as tables: its parts (root, parts, modifiers
+ * and states), its responsive props, and its own variables. In
+ * `docs-table-scroll` boxes, as the app's docs style their tables.
  */
 export const BlockTable = ({
   block,
   caption = true,
 }: {
   block: BlockStyles
-  /** Whether to name the block above its rows; a list that names it already doesn't. */
+  /** Whether to name the block above its tables; a list that names it already doesn't. */
   caption?: boolean
-}): JSX.Element => (
-  <div
-    className="docs-table-scroll"
-    role="region"
-    aria-label={`${block.name} classes`}
-    tabIndex={0}
-  >
-    <table style={{ inlineSize: '100%' }}>
+}): JSX.Element => {
+  const variables = ownVariables(block)
+  const responsive = Object.entries(block.responsive)
+  return (
+    <div style={{ display: 'grid', gap: 'var(--greese-space-3)' }}>
       {caption && (
-        <caption style={{ textAlign: 'start', fontWeight: 600 }}>
-          {block.name} <small>· css/{block.stylesheet}.css</small>
-        </caption>
+        <p style={{ margin: 0, fontWeight: 600 }}>
+          {block.name}{' '}
+          <small style={{ fontWeight: 400 }}>· css/{block.stylesheet}.css</small>
+        </p>
       )}
-      <thead>
-        <tr>
-          <th scope="col" style={{ textAlign: 'start' }}>
-            Kind
-          </th>
-          <th scope="col" style={{ textAlign: 'start' }}>
-            Classes and names
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {ROWS.map(([label, help, items]) => (
-          <tr key={label}>
-            <th
-              scope="row"
-              style={{ whiteSpace: 'nowrap', textAlign: 'start', inlineSize: '14rem' }}
-            >
-              {label}
-              <br />
-              <small style={{ fontWeight: 400, opacity: 0.7 }}>{help}</small>
+      <Table label={`${block.name} parts`} columns={['Name', 'Type', 'Parent', 'Styles']}>
+        {partRows(block).map((row) => (
+          <tr key={row.name}>
+            <th scope="row" style={{ textAlign: 'start', fontWeight: 400 }}>
+              <code>{row.name}</code>
             </th>
-            <td>
-              <Codes items={items(block)} />
+            <td style={{ whiteSpace: 'nowrap' }}>{row.type}</td>
+            {/* A class a line, unbroken: they're long, and break badly at hyphens. */}
+            <td style={{ whiteSpace: 'nowrap' }}>
+              {row.parent
+                ? row.parent.split(', ').map((p, i) => (
+                    <span key={p}>
+                      {i > 0 && <br />}
+                      <code>.{p}</code>
+                    </span>
+                  ))
+                : muted('—')}
             </td>
+            <td>{row.styles}</td>
           </tr>
         ))}
-      </tbody>
-    </table>
-  </div>
-)
+      </Table>
+      {responsive.length > 0 && (
+        <Table label={`${block.name} responsive props`} columns={['Prop', 'Values']}>
+          {responsive.map(([prop, tokens]) => (
+            <tr key={prop}>
+              <th scope="row" style={{ textAlign: 'start', fontWeight: 400 }}>
+                <code>{prop}</code>
+              </th>
+              <td>
+                {tokens.length ? (
+                  <Codes items={tokens} />
+                ) : (
+                  muted('Any value, as a variable')
+                )}
+                <br />
+                <small style={{ opacity: 0.7 }}>
+                  Set the prop; don’t target its classes.
+                </small>
+              </td>
+            </tr>
+          ))}
+        </Table>
+      )}
+      {variables.length > 0 && (
+        <Table
+          label={`${block.name} variables`}
+          columns={['Name', 'Default', 'Type', 'Affects']}
+        >
+          {variables.map((v) => {
+            const info = block.variableInfo[v]
+            const by = setBy(block, v)
+            return (
+              <tr key={v}>
+                <th scope="row" style={{ textAlign: 'start', fontWeight: 400 }}>
+                  <code>{v}</code>
+                </th>
+                <td>
+                  {info?.default !== undefined ? (
+                    <code>{info.default}</code>
+                  ) : by.length ? (
+                    <SetBy block={block} by={by} />
+                  ) : (
+                    muted('None: set it to use it')
+                  )}
+                </td>
+                <td style={{ whiteSpace: 'nowrap' }}>{info?.type ?? 'value'}</td>
+                <td>
+                  {info?.affects.length ? (
+                    <Codes items={info.affects} />
+                  ) : (
+                    muted('Read by the component’s script')
+                  )}
+                </td>
+              </tr>
+            )
+          })}
+        </Table>
+      )}
+    </div>
+  )
+}
 
 /** A variable that reads as a setting (tone, height, width…), not internal state. */
 const knob = (b: BlockStyles) =>
@@ -217,13 +435,16 @@ export const hasStyles = (name: string): boolean => name in components
 export const ComponentStyles = ({
   name,
   subcomponents = [],
+  anatomy,
 }: {
   name: string
   subcomponents?: string[]
+  /** An example to take apart, labelled with its classes: the page's first story. */
+  anatomy?: ReactNode
 }): JSX.Element | null => {
   const use = components[name]
   if (!use) return null
-  const own = use.blocks.map((b) => blocks[b]!)
+  const own = ownBlocks(name).map((b) => blocks[b]!)
   const builtOn = use.builtOn.map((b) => blocks[b]!)
   // Its items' own blocks, then what they're built on: Accordion's items are
   // Collapsibles.
@@ -270,6 +491,19 @@ export const ComponentStyles = ({
           </>
         )}
       </p>
+
+      {anatomy && (own.length > 0 || builtOn.length > 0) && (
+        <>
+          <Subheading>Anatomy</Subheading>
+          <p>
+            Every element of {name}, and of what it contains and is built on, outlined and
+            labelled with the classes it carries.
+          </p>
+          <Anatomy name={name} family={familyOf(name, subcomponents)}>
+            {anatomy}
+          </Anatomy>
+        </>
+      )}
 
       {own.length > 0 && (
         <>

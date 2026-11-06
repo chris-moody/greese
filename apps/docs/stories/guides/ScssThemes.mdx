@@ -1,0 +1,592 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { ThemeFiles } from '../_shared/ThemeFiles.tsx'
+import { TokenDefaults } from '../_shared/TokenDefaults.tsx'
+
+<Meta title="Guides/SCSS themes" />
+
+# SCSS themes, end to end
+
+This is the way to keep a greese ui theme. You generate it once, with Theme
+Studio or any other tool, as **the theme layout**: a folder of Sass modules, a
+file per component, per token group and per concern. From then on the folder is
+part of your source code, and you change it like any other code.
+
+The layout is plain SCSS. It needs Sass and `@greese/ui`, not React, a
+bundler or the studio.
+
+1. [Export a theme from Theme Studio](#export-a-theme-from-theme-studio)
+2. [Build it](#build-it)
+3. [The files](#the-files)
+4. [What each file holds](#what-each-file-holds)
+5. [Changing the theme](#changing-the-theme)
+6. [Taking a theme's layers back](#taking-a-themes-layers-back)
+7. [Theme Studio's other features](#theme-studios-other-features)
+
+Guides/Styling components is the reference for the kit's mixins that these
+files call (`component()`, `modifier()`, `motion()`…). Guides/Theming covers
+the same tokens from TypeScript, with `createTheme`.
+
+## Export a theme from Theme Studio
+
+Theme Studio is a local web app for building a theme visually. It reads and
+writes a theme file in your project, and previews every change live on real
+components:
+
+```sh
+npm run studio                                             # the example theme
+GREESE_THEME=src/styles/greese-theme.json npm run studio   # yours
+npm run studio -- --host                                   # also on your phone
+```
+
+On another device, open the studio link it prints, which carries a token.
+Until a device has opened that link, its pages load but it can't load, save or
+import a theme.
+
+Saving writes these files next to the theme file:
+
+| Output                    | What it is                                                                                    |
+| ------------------------- | --------------------------------------------------------------------------------------------- |
+| `greese-theme.json`       | The theme as data: what the studio edits                                                      |
+| `greese-theme/`           | **The layout**: the theme as Sass modules, to keep in your source                             |
+| `greese-theme.css`        | The theme compiled, for an app that doesn't compile Sass: import it after greese ui's styles  |
+| `greese-theme.effects.ts` | Only if the theme has effects of its own: import it once at your app's entry, for the runtime |
+| `greese-theme.scss`       | The SCSS as one file, if you ask for it                                                       |
+
+`GREESE_THEME_OUTPUT` chooses what saving writes: `layout`, `scss` and `css`,
+comma-separated. The default is `layout,css`.
+
+The hosted studio keeps the theme in your browser. Its **Output** tab
+downloads the layout as a .zip, and each other file on its own.
+
+Any other tool can write the same files. `specToLayout()` takes the theme as
+data, the shape of `greese-theme.json`, and returns the layout's files by path:
+
+```ts
+import { specToLayout } from '@greese/ui/theme-files'
+
+const files = specToLayout({ name: 'brand', tokens: { radius: { md: '10px' } } })
+// { 'main.scss': '…', '_settings.scss': '…', 'tokens/_radius.scss': '…', … }
+```
+
+## Build it
+
+Compile with Sass's `NodePackageImporter`, which resolves the `pkg:` URLs the
+files use. In Vite:
+
+```ts
+import { NodePackageImporter } from 'sass-embedded'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  css: { preprocessorOptions: { scss: { importers: [new NodePackageImporter()] } } },
+})
+```
+
+Then import `main.scss` where you would import a stylesheet. What it holds
+depends on the breakpoints in `_settings.scss`:
+
+- **The library's own:** `main.scss` is the theme alone. Import it after
+  greese ui's styles, and `utilities.css` if you use the utility classes.
+
+  ```ts
+  import '@greese/react/styles.css'
+  import './greese-theme/main.scss'
+  ```
+
+- **The theme's own:** breakpoints compile into media queries, so greese ui's
+  stylesheet and utility classes have to be built with them. `main.scss` then
+  builds both itself, so it's the only stylesheet you import:
+
+  ```ts
+  import './greese-theme/main.scss' // no styles.css, no utilities.css
+  ```
+
+`_settings.scss` switches between the two on its own (`$library`, below), so
+a breakpoint changed there later works the same, with nothing else to edit.
+
+The JavaScript (`useBreakpoint`, `Sidebar`) reads the breakpoints from the
+stylesheet, which declares the ones it was built with. Call
+`configureBreakpoints()` once, after the CSS has loaded and before the first
+render:
+
+```ts
+import { configureBreakpoints } from '@greese/react'
+
+configureBreakpoints() // reads --greese-breakpoint-keys and each value
+```
+
+For TypeScript, declare the keys you added, once, in any `.d.ts`:
+
+```ts
+declare module '@greese/ui' {
+  interface BreakpointKeys {
+    tablet: true
+  }
+}
+```
+
+A named theme applies inside `data-greese-theme="<name>"`. Its CSS is
+already in your bundle, so `ThemeProvider` only stamps the attributes:
+
+```tsx
+<ThemeProvider theme="brand">…</ThemeProvider>
+```
+
+If the theme has effects of its own, import `greese-theme.effects.ts` once,
+before anything renders, so the `greese` prop knows them.
+
+## The files
+
+Here is everything Theme Studio saves for one theme. It has a name (`brand`),
+its own breakpoints, tokens it sets and adds, the type system, motion, a
+shape, and two components, one with SCSS of its own. Open a folder and choose
+a file to read it. These files are `specToLayout()`'s real output for that
+theme, so they match what the studio writes.
+
+<ThemeFiles />
+
+Every setting has a place, even one the theme leaves alone. Each token group
+has its file, and it and the type system's list every default the theme
+doesn't change, commented out: to change one, uncomment it and edit the
+value. The motion file lists its options the same way. Only components and
+shapes get files when the theme has them; see
+[Changing the theme](#changing-the-theme) to add one.
+
+The files depend on each other only through `_settings.scss`. Each one writes
+its CSS when `main.scss` first loads it, and the cascade layers decide what
+wins, so their order only matters within a layer. Four rules keep the layout
+working:
+
+- **`@use` comes before anything else.** Sass refuses a `@use` after a rule,
+  so `main.scss` holds nothing but `@use` lines, and each file does its own
+  work.
+- **`settings` is every file's first `@use`.** It configures the breakpoints,
+  and Sass configures a module only before anything else loads it: the kit and
+  the library's partials do.
+- **`$theme` is set in `_settings.scss`.** Configuring it with `@use … with`
+  can't set it to `null`: Sass reads `null` there as "not configured".
+- **`tokens` loads before the components.** A token added with `$extend` is
+  known to `greese.token()` and component variables only once its `tokens()`
+  call has run.
+
+Every file starts with a `// greese-theme: generated` line. Delete that line
+and the file is yours: the studio leaves it alone from then on, and its save
+note names the files it kept. Studio is a way to start a theme, not something
+you have to keep using.
+
+## What each file holds
+
+### main.scss
+
+The entry: the file you compile. It holds only `@use` lines, in this order:
+`settings`, `library`, `resets`, `tokens`, `motion`, each component,
+`shapes`, `utilities`. Add a line here for each file you add.
+
+### \_settings.scss
+
+What every other file reads.
+
+| Holds          | Type                                                      | Default                                                   |
+| -------------- | --------------------------------------------------------- | --------------------------------------------------------- |
+| `$breakpoints` | A map of key to `px` width, smallest first, in `with`     | `(xs: 0px, sm: 600px, md: 900px, lg: 1200px, xl: 1536px)` |
+| `$typography`  | The type system's values, in `with`, if you'd rather      | The library's (Foundations/Typography)                    |
+| `$library`     | `true` builds greese ui's whole stylesheet in `_library`  | `true` when the breakpoints differ from the library's     |
+| `$utilities`   | `true` builds greese ui's utility classes in `utilities/` | `$library`                                                |
+| `$theme`       | A name, unquoted (`brand`), or `null` for the page        | The studio's theme name, else `null`                      |
+
+```scss
+@use 'pkg:@greese/ui/scss/config' with (
+  $breakpoints: (
+    xs: 0px,
+    sm: 600px,
+    tablet: 768px,
+    md: 900px,
+    lg: 1200px,
+    xl: 1536px,
+  )
+);
+@use 'pkg:@greese/ui/scss/maps';
+
+$library: config.$breakpoints != maps.$breakpoints;
+$utilities: $library;
+$theme: brand;
+```
+
+**Breakpoints.** Change a value here and every media query follows: the
+components', the type system's and the utility classes'. You can add keys
+too. The five built-in keys (`xs`–`xl`) stay, because components use them.
+List the keys smallest first, with `xs` at `0px`, and write each as one word
+(quote one that starts with a digit: `'2xl'`). The build stops with a message
+when one of these doesn't hold.
+
+Every key, added ones included, gets responsive classes
+(`greese-Stack--tablet-gap-3`, so `gap={{ tablet: 3 }}` works) and a custom
+property, `--greese-breakpoint-tablet: 768px`, which your own CSS can read:
+`max-inline-size: var(--greese-breakpoint-md)`. A custom property can't go in
+a `@media` condition, which is why the values are fixed at build time.
+
+**`$library` and `$utilities`.** With the library's breakpoints, the prebuilt
+`styles.css` and `utilities.css` are right, and the layout builds only the
+theme. Change one and both switch on. Set `$library: true` to always ship one
+stylesheet; set `$utilities: false` if the app uses no utility classes.
+
+**`$theme`.** With `brand`, every rule applies inside
+`data-greese-theme="brand"`, and the first `tokens()` call that sets anything
+declares a complete theme, as `createTheme` does. With `null`, the rules are
+the page's own defaults.
+
+### \_library.scss
+
+greese ui's whole stylesheet, built with the theme's breakpoints when
+`$library` is on (`meta.load-css('pkg:@greese/ui/scss')`), and nothing when
+it's off. It comes before the theme, which the cascade layers put above it
+anyway.
+
+### \_resets.scss
+
+Theme layers taken back from components at build time, with `reset()`. It
+loads before the theme's rules, because a reset leaves out the rules compiled
+after it. Empty until you add one: see
+[Taking a theme's layers back](#taking-a-themes-layers-back).
+
+### tokens/\_index.scss
+
+One `tokens()` call per group file, every group, then `typography()`. Calls
+add up: each writes only what it changes, and one that sets nothing writes
+nothing, so the result is the same as one call with everything merged, and a
+group's file can change alone. A token group of your own isn't possible: add
+tokens to an existing group with `$extend`.
+
+### tokens/\_&lt;group&gt;.scss
+
+A group's values, in two maps:
+
+| Holds     | Type                                                                                     | Default |
+| --------- | ---------------------------------------------------------------------------------------- | ------- |
+| `$tokens` | `(<group>: (<key>: <value>, …))`: what the theme sets, then every default, commented out | none    |
+| `$extend` | The same shape: tokens the system doesn't have, which it now has                         | `()`    |
+
+```scss
+$tokens: (
+  color: (
+    primary: (
+      light: '#0f766e',
+      dark: '#5eead4',
+    ),
+    accent: (
+      light: 'magenta-600',
+      dark: 'magenta-400',
+    ),
+    // canvas: (light: "#ffffff", dark: "#11171c"),
+    // surface: (light: "#f5f7f9", dark: "#2a333c"),
+     // …
+  ),
+);
+$extend: (
+  color: (
+    brand-ink: (
+      light: '#1b1340',
+      dark: '#e5defc',
+    ),
+  ),
+);
+```
+
+Keys are kebab-case (camelCase works too). A color takes one value for both
+schemes, or a light/dark pair, and a palette name (`'orange-700'`) as well as
+any CSS color. A key left commented keeps its default. In a named theme, the
+defaults are what it starts from. Setting `primary` also derives
+`primary-strong` and `primary-content`, unless you set them too.
+
+Each `$extend` token becomes `--greese-<group>-<key>`, and `greese.token()`
+and component variables accept it from then on. A name that already exists,
+or a group that doesn't, stops the build. A new `space` token is a variable
+only: the responsive prop classes (`gap={9}`) are built for `0`–`8`.
+
+Every group, its keys, defaults and value types:
+
+<TokenDefaults />
+
+### tokens/\_typography.scss
+
+The type system, as `$changes`: by variant (`h1`–`h6`, `s1`, `s2`,
+`p1`–`p3`, `caption`, `button`), then `base` or a breakpoint, then the CSS
+property. What the theme changes comes first; every default it leaves alone
+follows, commented out, a variant it doesn't touch as a whole block:
+
+```scss
+$changes: (
+  h1: (
+    base: (
+      font-size: '2rem',
+      // font-weight: "700",
+       // line-height: "1.15",
+    ),
+    lg: (
+      font-size: '4rem',
+    ),
+    // md: (font-size: "2.75rem"),
+  ),
+  // h2: (
+  //   base: (font-size: "1.875rem", font-weight: "700", …),
+  //   md: (font-size: "2.25rem"),
+   // ),
+);
+```
+
+Every variant has `font-size`, `font-weight`, `line-height` and
+`letter-spacing`, and may set `color`, `font-family`, `font-style`,
+`text-transform`, `text-wrap`, `word-spacing`, `font-stretch`,
+`font-variant-numeric`, `font-feature-settings` and
+`font-variation-settings`. A breakpoint is any key of `$breakpoints`, yours
+included.
+
+### motion/\_index.scss
+
+The theme's motion, in three parts:
+
+| Holds                               | Type                                                                                      | Default       |
+| ----------------------------------- | ----------------------------------------------------------------------------------------- | ------------- |
+| `effect(name, (enter: (from: …)))`  | Effects of the theme's own: a kebab-case name, and the frame it starts from or ends at    | none          |
+| `motion-defaults((…))`              | Entrance tuning (`duration`, `delay`, `ease`, `distance`, `stagger`) and the motion roles | the library's |
+| `page-transitions(('selector': …))` | Parts of a page with page-transition motion of their own: `still`, or `enter`, `exit`…    | none          |
+
+`motion-defaults()` lists what the theme sets, then the options that have a
+base value, commented out: `duration: 0.5s`, `delay: 0s`, `ease: out`,
+`stagger: 0s`, `theme: fade-up`, `page: fade-in`, `page-exit: fade-out`,
+`page-exit-order: reverse` and `page-mode: auto`. The file's comment names
+every other role; Guides/Theming describes them under **Motion roles**, and
+Guides/Styling components describes `motion()`, a component's own. Effects
+come first in the file, because a component's `motion()` can only name an
+effect that already exists.
+
+### components/\_&lt;name&gt;.scss
+
+One component's overrides, in `@layer greese.overrides`, inside
+`scope(settings.$theme)`. It holds everything the kit writes for a component
+(Guides/Styling components):
+
+- declarations on its root (`font-weight: 700`);
+- `vars((…))`: its own variables and tokens, rescoped to it;
+- `modifier(name)`, `part(name)`, `hover`, and plain nesting (`&[open]`);
+- `motion((…))`: its default entrance, exit and transition timing;
+- its own `@use` lines and helpers (`$lift: 2px`), which stay in this file.
+
+Names are checked: a part or modifier the component doesn't have stops the
+build, listing the ones it does.
+
+### shapes/\_index.scss
+
+The theme's shapes (ADR 0024): each one's outline, border ring and hover
+motion, as clip paths. Their sizes come first, in a map:
+
+```scss
+$shapes: (
+  'notch': (
+    border: 1px,
+    params: (
+      'a': 10px,
+    ),
+    hover: (
+      'a': 4px,
+    ),
+  ),
+);
+```
+
+| Key      | What it sizes                                             |
+| -------- | --------------------------------------------------------- |
+| `border` | The ring's width                                          |
+| `params` | Each parameter at rest: how deep a cut or notch goes      |
+| `hover`  | Each parameter while hovered (fine pointers), if it moves |
+| `active` | Each parameter while pressed, if it moves                 |
+
+Change a size there and every rule that uses it follows, smaller variants of
+an element scaled to match. The outlines themselves are generated geometry
+(`@greese/ui/shapes`), best changed in Theme Studio. Give a component a
+different shape, or none, in its component file or in `_resets.scss`.
+
+### utilities/\_index.scss
+
+Utility classes, in `@layer greese.utilities`. With `$utilities` on, it
+builds greese ui's own, with the theme's breakpoints, so `md-…` always agrees
+with the components' `md`:
+
+```scss
+@if settings.$utilities {
+  @include utilities.classes($groups: null, $only: null, $prefix: '');
+}
+```
+
+| Argument  | Type                                                   | Default             |
+| --------- | ------------------------------------------------------ | ------------------- |
+| `$groups` | A list of groups: `spacing`, `layout`, `flex`, `grid`… | `null`: every group |
+| `$only`   | A list of class names to keep                          | `null`: every class |
+| `$prefix` | A prefix for every class: `g` gives `g-p-4`            | `''`                |
+
+Sass can't read your source, so `$only` is how you purge here. The command
+and the Vite plugin (Guides/Utility classes) scan for you. All of them read
+one table, so the classes are the same however they're made. Your own
+classes go after, in the same layer:
+
+```scss
+@layer greese.utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  @include mixins.up(md) {
+    .md-text-balance {
+      text-wrap: balance;
+    }
+  }
+}
+```
+
+### greese-theme.json, greese-theme.css and greese-theme.effects.ts
+
+- **`greese-theme.json`** is the studio's copy of the theme. Keep it while you
+  use the studio; once you maintain the layout by hand, the layout is the
+  source.
+- **`greese-theme.css`** is the same theme compiled from one SCSS file, for an
+  app without Sass. With breakpoints of its own, it's the whole stylesheet,
+  in place of `styles.css` (without the utility classes). Leave it out of a
+  project that compiles the layout.
+- **`greese-theme.effects.ts`** defines the theme's effects for the runtime,
+  with `defineGreeseEffect`, and declares their names to TypeScript. The CSS
+  already holds their keyframes.
+
+## Changing the theme
+
+| To change           | Edit                                                                                          |
+| ------------------- | --------------------------------------------------------------------------------------------- |
+| A token's value     | Its key in `tokens/_<group>.scss`: uncomment the default, or edit what the theme sets         |
+| A token of your own | `$extend` in its group's file                                                                 |
+| A breakpoint        | `$breakpoints` in `_settings.scss`. Components, type and utility classes follow               |
+| A component         | Its file in `components/`. For a new one, add a file the same shape and a line in `main.scss` |
+| The theme's name    | `$theme` in `_settings.scss`, and `ThemeProvider`'s `theme`                                   |
+| Type styles         | `tokens/_typography.scss`                                                                     |
+| Motion              | `motion/_index.scss`, or a component's `motion()`                                             |
+| A shape's sizes     | The `$shapes` map in `shapes/_index.scss`                                                     |
+| A shape's outline   | Theme Studio, then copy `shapes/_index.scss`                                                  |
+
+To keep using the studio for some files, leave their first line in. Saving
+rewrites those, keeps the ones you've taken over, and removes generated files
+the theme no longer needs. While `main.scss` is the studio's, saving keeps
+loading every component file of yours: a new one in `components/`, or one
+you've taken over that the theme no longer writes.
+
+## Taking a theme's layers back
+
+A theme has three layers: colors, shapes and motion (Guides/Theming). Any of
+them can be taken back from part of a page, so that part looks like
+greese ui's own:
+
+```html
+<div class="greese-reset-shape">…cards with the library's corners…</div>
+<aside class="greese-reset">…no theme at all…</aside>
+```
+
+| Class                  | Takes back                               |
+| ---------------------- | ---------------------------------------- |
+| `.greese-reset-color`  | the theme's colors                       |
+| `.greese-reset-shape`  | its radii, shapes and component styles   |
+| `.greese-reset-motion` | its motion roles and component entrances |
+| `.greese-reset`        | all three                                |
+
+The class covers the element and everything inside it. Every theme rule the
+kit writes skips those elements, through a zero-specificity guard on its
+selector: `component()` styles count as the shape layer, and `motion()` as
+motion. The tokens they go back to are in `@greese/ui/css/resets.css` (or
+`@greese/react/css/resets.css`), which you load if you use the classes:
+
+```ts
+import '@greese/react/css/resets.css'
+```
+
+In your own rules that belong to a layer, add the guard yourself:
+`.promo#{greese.reset-guard(shape)} { … }`. `component(Name, $layer: color)`
+files a component's styles under another layer.
+
+At build time, `reset()` does the same from Sass, in `_resets.scss`. In any
+rule it declares the layers' default tokens. Inside a component it also
+leaves that component out of the layers' theme rules for the rest of the
+build:
+
+```scss
+// _resets.scss, loaded before the theme's rules
+@include greese.scope(settings.$theme) {
+  @include greese.component(Card) {
+    @include greese.reset(shape); // cards keep the library's corners
+  }
+}
+```
+
+A `reset()` that comes after the rules it would take back warns instead.
+Three things stay as they are:
+
+- **Prebuilt `.css` themes.** They're outside your build: use the classes.
+- **Retuned `@keyframes`.** They're global.
+- **Themes nested inside a reset.** They don't apply their guarded rules there.
+
+## Theme Studio's other features
+
+- **Tokens:** every token group, in alphabetical order, with light and dark
+  colors. Name the theme to scope it to `data-greese-theme`.
+- **Component preview:** above the gallery, the component you've picked:
+  its anatomy, then every story from its docs page, live as you edit it.
+- **Components:** pick one, or switch on **Inspect** and click any element in
+  the preview. You get its classes, parts, modifiers and states, its variables
+  with their current values, and its motion defaults. Its styles, and those of
+  what it contains, are one **SCSS** box that starts as the library's own source
+  for them and takes the same imports the components use
+  (`@use 'pkg:@greese/ui/scss/mixins'`…, ticked in an **Imports** menu). Once
+  you edit it, it applies inside that component only; the same components used
+  elsewhere keep their styles.
+- **Motion:** entrance tuning for the whole theme, its motion roles, and its
+  **Effects**: every built-in's keyframes to read or copy, effects of your own,
+  and a stage to play sequences on.
+- **Output:** the layout a file at a time, the single SCSS file, the CSS and
+  the effects module, highlighted.
+- **Import:** bring in a theme you already have, then edit it. See below.
+
+The preview runs in a frame, so the theme never restyles the editor. It
+compiles through the same kit you'd use by hand, so a theme that previews
+compiles. If the JSON changes on disk (a pull, another editor), the studio
+reloads it, or asks first when you have unsaved changes.
+
+### Importing an existing theme
+
+**Import** reads a theme you already have into the editor. Paste it, upload
+it, or give a path in your project:
+
+| Source                                                          | Read as                                              |
+| --------------------------------------------------------------- | ---------------------------------------------------- |
+| A studio `.json` file                                           | As it is                                             |
+| `createTheme()` options (JSON, or a module exporting them)      | Token overrides                                      |
+| A `.ts`/`.js` module exporting `createTheme()` results          | Their CSS (the module runs in the studio's server)   |
+| SCSS, the kit's or your own                                     | Compiled first; a project file keeps its own `@use`s |
+| CSS: `createTheme()` output, kit output, hand-written overrides | Tokens, component rules and motion                   |
+
+Everything becomes CSS and is read back:
+
+- **Tokens:** light and dark values come from the scheme selectors and
+  media queries. Values equal to the defaults are left out, so a complete
+  `createTheme()` theme imports as just its overrides.
+- **Components:** `.greese-<Name>` rules, their parts and modifiers, become
+  component styles and variables.
+- **Motion:** the kit's motion output becomes motion settings.
+
+What the studio can't hold is listed with its CSS, never dropped silently:
+responsive or hover rules, other selectors, page CSS, custom keyframes. Copy
+it into a stylesheet of your own.
+
+You can replace the current theme or merge into it, the import winning.
+Nothing changes until you choose, and nothing is written until you save, to
+the studio's theme file (`GREESE_THEME`). So importing never overwrites your
+original. If the CSS holds several named themes, pick which one to edit.
+
+For safety, paths must be inside the folder you ran npm from.
+
+Theme Studio runs from this repository for now; publishing it as a package
+comes with the rest of the release work.
