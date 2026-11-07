@@ -374,7 +374,8 @@ For the authoring timeline (ADR 0036, whose audit chose these three):
   changed without rebuilding. Playing starts inside them; past the out point a
   timeline stops, or loops back carrying its overshoot. A wrap renders to the
   edge (firing cues), seeks to the other edge without firing, then renders on.
-  `then()` resolves at the bounds' end.
+  `then()` resolves at the bounds' end, unless they loop: a looping
+  timeline never completes.
 - **`ticker: false`**: `play()` doesn't join the shared ticker, and `tick(dt)`
   is the documented way for a host's clock to advance it.
 
@@ -383,7 +384,12 @@ For the authoring timeline (ADR 0036, whose audit chose these three):
   `@greese/react`: the library with greese.js 44.53 kB (44.6), `useGreese`
   6.65 kB (6.7), the `greese` prop's runtime 11.81 kB (11.85), the library with
   svg 54.6 kB (54.65).
-- **Tests:** six in `src/greese.test.ts`: frames with the end exact, nested
-  timelines snapped, bounds stopping at the out point, looping with the
-  overshoot and cues each lap (both directions), reversing from the out
-  point, and `ticker: false` advancing only by `tick`.
+- **Tests:** in `src/greese.test.ts`: frames with the end exact, nested
+  timelines snapped, an `fps` that isn't a positive number ignored; bounds
+  stopping at the out point, reversing from it, and looping with the
+  overshoot carried; a cue on each edge firing every lap in both directions,
+  and `onUpdate` once a tick across a wrap; and `ticker: false` advancing only
+  by `tick`. A review (2026-11-07) found the edge cues and the triple
+  `onUpdate` on a wrap: a wrap now renders to the edge and back quietly, then
+  lands with the edge included. Not covered yet: `then()`, reduced motion and
+  `bounds()` set while playing.

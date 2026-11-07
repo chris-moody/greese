@@ -265,7 +265,10 @@ timeline to complete.
 calls it; with `ticker: false`, your clock does:
 
 ```ts
-const song = timeline({ ticker: false, fps: 24 }).to(sprite, { x: 300, duration: 4 })
+const song = timeline({ paused: true, ticker: false, fps: 24 })
+  .to(sprite, { x: 300, duration: 4 })
+  .label('verse', 1)
+  .label('chorus', 3)
 song.bounds('verse', 'chorus', { loop: true }).play()
 audio.onFrame((dt) => song.tick(dt))
 ```

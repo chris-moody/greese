@@ -335,6 +335,8 @@ export class Timeline implements PromiseLike<void> {
   #settle?: () => void
   #done?: Promise<void>
   #bounds?: { start: number; end: number; loop: boolean }
+  /** Set while a loop wraps: its passing renders aren't updates. */
+  #quiet = false
 
   constructor(options: TimelineOptions = {}) {
     this.#options = options
@@ -711,12 +713,20 @@ export class Timeline implements PromiseLike<void> {
     const past = this.#direction > 0 ? next - hi : lo - next
     if (past < 0) return this.render(next)
     const edge = this.#direction > 0 ? hi : lo
+    const loops = this.#bounds?.loop && hi > lo
+    // A wrap renders to the edge (its cues fire) and back to the other edge
+    // without telling `onUpdate`, which hears only where the lap lands.
+    this.#quiet = !!loops
     this.render(edge)
-    if (this.#bounds?.loop && hi > lo) {
+    if (loops) {
       // Carry the overshoot into the next lap, so laps keep exact time
       // against a continuous clock (a metronome) instead of each running long.
       const into = past % (hi - lo)
-      this.render(this.#direction > 0 ? lo : hi, true)
+      const restart = this.#direction > 0 ? lo : hi
+      this.render(restart, true)
+      // Just short of the edge, so a cue on it fires as the lap starts.
+      this.#raw -= this.#direction * 1e-9
+      this.#quiet = false
       this.render(this.#direction > 0 ? lo + into : hi - into)
       return
     }
@@ -751,7 +761,9 @@ export class Timeline implements PromiseLike<void> {
     // Tracks and children see whole frames; the end stays exact, so the last
     // frame is the final values.
     const { fps } = this.#options
-    const drawn = fps && local < length ? Math.floor(local * fps + 1e-9) / fps : local
+    // A rate that isn't a positive number draws every instant.
+    const snap = fps !== undefined && Number.isFinite(fps) && fps > 0
+    const drawn = snap && local < length ? Math.floor(local * fps + 1e-9) / fps : local
     const from = { iteration: this.#iteration, raw: this.#raw }
     this.#time_ = time
     this.#iteration = iteration
@@ -791,7 +803,7 @@ export class Timeline implements PromiseLike<void> {
         }
       }
     }
-    this.#options.onUpdate?.(this)
+    if (!this.#quiet) this.#options.onUpdate?.(this)
   }
 
   #flush() {

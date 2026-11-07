@@ -890,3 +890,59 @@ describe('editor playback (ADR 0036)', () => {
     vi.useRealTimers()
   })
 })
+
+describe('loop wraps (ADR 0036 review)', () => {
+  it('fires cues on both edges each lap, in both directions', () => {
+    const o = { v: 0 }
+    const atIn = vi.fn()
+    const atOut = vi.fn()
+    const tl = timeline({ paused: true, ticker: false })
+      .to(o, { v: 10, duration: 1, ease: 'linear' })
+      .call(atIn, 0.4)
+      .call(atOut, 0.8)
+    tl.bounds(0.4, 0.8, { loop: true }).play()
+    for (let i = 0; i < 6; i++) tl.tick(0.2) // three laps
+    expect(atIn).toHaveBeenCalledTimes(3)
+    expect(atOut).toHaveBeenCalledTimes(3)
+    atIn.mockClear()
+    atOut.mockClear()
+    tl.reverse(0.8)
+    // Steps that cross the edges cleanly, clear of float error.
+    for (let i = 0; i < 4; i++) tl.tick(0.25) // two laps back
+    expect(atOut).toHaveBeenCalledTimes(2)
+    expect(atIn).toHaveBeenCalledTimes(2)
+  })
+
+  it('calls onUpdate once a tick, even across a wrap', () => {
+    const o = { v: 0 }
+    const onUpdate = vi.fn()
+    const tl = timeline({ paused: true, ticker: false, onUpdate }).to(o, {
+      v: 10,
+      duration: 1,
+      ease: 'linear',
+    })
+    tl.bounds(0, 0.5, { loop: true }).play()
+    onUpdate.mockClear()
+    for (let i = 0; i < 5; i++) tl.tick(0.3)
+    expect(onUpdate).toHaveBeenCalledTimes(5)
+  })
+
+  it('ignores an fps that isn’t a positive number', () => {
+    const o = { v: 0 }
+    const tl = timeline({ paused: true, fps: Infinity }).to(o, {
+      v: 10,
+      duration: 1,
+      ease: 'linear',
+    })
+    tl.seek(0.25)
+    expect(o.v).toBeCloseTo(2.5)
+    const p = { v: 0 }
+    const neg = timeline({ paused: true, fps: -5 }).to(p, {
+      v: 10,
+      duration: 1,
+      ease: 'linear',
+    })
+    neg.seek(0.25)
+    expect(p.v).toBeCloseTo(2.5)
+  })
+})
