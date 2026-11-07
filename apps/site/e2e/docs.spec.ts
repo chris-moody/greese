@@ -234,3 +234,36 @@ test('every guide opens in the app with no errors', async ({ page }) => {
     expect(errors, id).toEqual([])
   }
 })
+
+test("a page's contents are its own sections, not an example's dialog title", async ({
+  page,
+}) => {
+  await page.goto('/docs/authoring-hierarchicallistfolder')
+  const contents = page.getByRole('navigation', { name: 'On this page' })
+  await expect(contents.getByRole('link', { name: 'Try it' })).toBeVisible()
+  await expect(contents.getByRole('link', { name: 'Delete folder?' })).toHaveCount(0)
+})
+
+test("LayerContextMenu's example opens on a right-click, not the browser's menu", async ({
+  page,
+}) => {
+  await page.goto('/docs/authoring-layercontextmenu')
+  const trigger = page
+    .locator('.docs-canvas')
+    .first()
+    .getByRole('button', { name: 'Right-click the Ball layer' })
+  await trigger.click({ button: 'right' })
+  await expect(page.getByRole('menuitem', { name: /Delete/ })).toBeVisible()
+  // And from the keyboard, where the event has no pointer position.
+  await page.keyboard.press('Escape')
+  await trigger.focus()
+  await page.keyboard.press('Shift+F10')
+  await expect(page.getByRole('menuitem', { name: /Delete/ })).toBeVisible()
+})
+
+test('Try it runs on authoring pages: Highlighted is in scope', async ({ page }) => {
+  await page.goto('/docs/authoring-highlighted')
+  await expect(page.locator('.docs-live-preview .greese-CodeEditor-static')).toBeVisible()
+  await expect(page.locator('.docs-live-error')).toHaveCount(0)
+  await expect(page.locator('.docs-live-editor pre')).toContainText('<Highlighted')
+})
