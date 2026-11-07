@@ -1,0 +1,48 @@
+/**
+ * Size budgets (brotli). See .claude/skills/greese-lightweight. Peers (React,
+ * Redux, immer) and the greese packages are left out: an app has them anyway.
+ */
+module.exports = [
+  {
+    name: '@greese/authoring/core: everything',
+    path: 'dist/core/index.js',
+    import: '*',
+    // 3 → 7 kB (2026-11-06): Glop's framework types and pure helpers joined
+    // the layout tree: timing model, tick maths, musical and animation time
+    // resolutions, the tree and layer helpers, viewport maths (6.41 kB).
+    limit: '7 kB',
+  },
+  {
+    name: '@greese/authoring/state: everything',
+    path: 'dist/state/index.js',
+    import: '*',
+    ignore: ['@reduxjs/toolkit', 'immer'],
+    // 2 → 8.7 kB (2026-11-06): every framework slice (layers, library,
+    // timeline, navigation, guides, playback and its bounds, time modes and
+    // signatures, rate curves, recording), selectors and undo (7.98 kB).
+    limit: '8.7 kB',
+  },
+  {
+    name: '@greese/authoring: PanelDock and an environment',
+    path: 'dist/index.js',
+    import: '{ PanelDock, createAuthoringEnvironment }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+    ],
+    // 6.4 → 12 kB (2026-11-06): an environment's store now has every
+    // framework slice, so a dock costs the whole state layer (11.1 kB).
+    limit: '12 kB',
+  },
+  {
+    name: '@greese/authoring/styles.css',
+    path: 'dist/styles.css',
+    rolldown: false,
+    limit: '1.4 kB',
+  },
+]

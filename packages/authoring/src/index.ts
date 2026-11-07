@@ -18,6 +18,11 @@ export {
   type AuthoringEnvironmentOptions,
 } from './environment/environment.tsx'
 export {
+  useHistory,
+  useUndoRedoKeymap,
+  type HistoryControls,
+} from './hooks/useHistory.ts'
+export {
   useInitialWorkspace,
   useLayoutCache,
   usePanelListFromSpec,

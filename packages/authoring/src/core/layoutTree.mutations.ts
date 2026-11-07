@@ -279,7 +279,10 @@ export function mergeUnknownPanels(
  * list by mode (graphics and animate, pose and animation) would otherwise keep
  * leaves for panels the new mode lacks, rendered as blank tabs.
  */
-export function pruneUnknownPanels(tree: ZoneTree, panels: readonly PanelSlot[]): ZoneTree {
+export function pruneUnknownPanels(
+  tree: ZoneTree,
+  panels: readonly PanelSlot[]
+): ZoneTree {
   const valid = new Set(panels.map((p) => p.id))
   let result = tree
   for (const id of collectPanelIds(tree)) {
