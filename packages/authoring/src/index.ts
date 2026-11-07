@@ -34,6 +34,27 @@ export {
   type SymbolCreateDialogProps,
   type SymbolTypeOption,
 } from './components/Library/SymbolCreateDialog.tsx'
+export {
+  EditableSelect,
+  unitOptions,
+  type EditableSelectOption,
+  type EditableSelectProps,
+} from './components/EditableSelect/EditableSelect.tsx'
+export {
+  GRID_INTERVAL_PRESETS,
+  GridControl,
+  LayoutBar,
+  StageBar,
+  StageColorControl,
+  ZOOM_PRESETS,
+  ZoomControl,
+  type GridControlProps,
+  type LayoutBarProps,
+  type StageBarLayoutOption,
+  type StageBarProps,
+  type StageColorControlProps,
+  type ZoomControlProps,
+} from './components/StageBar/StageBar.tsx'
 export { PanelDock, type PanelDockProps } from './components/PanelDock/PanelDock.tsx'
 export {
   AuthoringBreadcrumbs,

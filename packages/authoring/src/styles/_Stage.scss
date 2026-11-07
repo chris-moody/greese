@@ -92,3 +92,23 @@
     border-block-end: 1px solid var(--greese-color-border);
   }
 }
+
+@layer greese.components {
+  // The stage's toolbar and its groups of controls, compact for a thin bar.
+  .greese-StageBar {
+    display: flex;
+    gap: var(--greese-space-3);
+    align-items: center;
+  }
+
+  .greese-StageBar-group {
+    display: flex;
+    gap: var(--greese-space-1);
+    align-items: center;
+  }
+
+  // A number with presets: wide enough for "10000" and the toggle.
+  .greese-StageBar-value {
+    inline-size: 6rem;
+  }
+}
