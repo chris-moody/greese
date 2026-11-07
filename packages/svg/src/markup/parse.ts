@@ -133,16 +133,33 @@ export const parseMarkup = (
       skipSpace()
       if (at('<?')) i = through('?>', 'processing instruction') + 2
       else if (at('<!--')) comment(into)
-      else if (at('<!DOCTYPE') || at('<!doctype')) {
-        // A doctype may hold an internal subset in brackets.
-        const bracket = source.indexOf('[', i)
-        const close = source.indexOf('>', i)
-        i =
-          bracket >= 0 && bracket < close
-            ? source.indexOf('>', through(']', 'doctype')) + 1
-            : through('>', 'doctype') + 1
-      } else return
+      else if (at('<!DOCTYPE') || at('<!doctype')) doctype()
+      else return
     }
+  }
+
+  /**
+   * Skips a doctype, its internal subset in brackets included. Quoted
+   * strings are skipped whole, so a `]` or `>` in an entity's value doesn't
+   * end it early. Its entities are never expanded.
+   */
+  const doctype = () => {
+    const start = i
+    let depth = 0
+    for (i += 2; i < source.length; i++) {
+      const c = source[i]
+      if (c === '"' || c === "'") {
+        const close = source.indexOf(c, i + 1)
+        if (close < 0) break
+        i = close
+      } else if (c === '[') depth++
+      else if (c === ']') depth--
+      else if (c === '>' && depth <= 0) {
+        i++
+        return
+      }
+    }
+    fail('Unclosed doctype', start)
   }
 
   const comment = (into: MarkupNode[] | null) => {

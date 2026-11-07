@@ -39,7 +39,7 @@
     "name": "@greese/svg/markup: everything",
     "path": "dist/markup/index.js",
     "import": "*",
-    "limit": "3.2 kB"
+    "limit": "3.8 kB"
   },
   {
     "name": "@greese/svg/schema: everything",

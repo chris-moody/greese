@@ -190,3 +190,17 @@ and `@greese/react/svg` with it, doesn't move:
   `freehandPath` (smoothing, then Schneider's cubic fit). Path editing went
   in an entry of its own, rather than the main one the plan named, for the
   same budget reason.
+
+A review (2026-11-07) hardened `/markup` (3 → 3.62 kB, budget 3.2 → 3.8 kB):
+the sanitizer compares names by local name and case, reads URLs as browsers
+do (whitespace and control characters dropped, a script scheme anywhere), drops
+animations that would set a link, a handler or a style, refuses outside
+`url()`s and `@import` in attributes and `<style>`, drops comments that could
+end early in HTML, and applies its rules inside `<foreignObject>`; a refused
+root becomes an empty `<svg>`. The parser skips a doctype's quoted strings and
+fails on one left open (it looped). `renameIds` moves only references, never a
+colour that spells an id; `adoptIds` matches ids before positions. `/schema`
+gives filter primitives (`primitive`) and parts (`component`: stops,
+transfer functions, merge nodes, `mpath`) their own categories, marks SVG 2's
+geometry properties and `transform` as presentation attributes, and adds
+`discard`. `/edit` reads `S` and `T` handles as a node's.

@@ -172,13 +172,88 @@ describe('sanitizeMarkup', () => {
     expect(notices.map((n) => `${n.kind}: ${n.what}`)).toEqual([
       'removed: onload on <svg>',
       'removed: <script>',
-      'removed: javascript: in href on <a>',
-      'removed: javascript: in fill on <rect>',
+      'removed: a script URL in href on <a>',
+      'removed: a script URL in fill on <rect>',
       'removed: external href on <use>',
       'warning: <foreignObject> holds HTML',
     ])
     // The input is untouched.
     expect(root.attrs.onload).toBe('x()')
+  })
+})
+
+describe('sanitizeMarkup, against bypasses', () => {
+  const clean = (svg: string) =>
+    serializeMarkup(sanitizeMarkup(parseMarkup(svg)).root, { pretty: false })
+
+  it('catches script schemes hidden by entities, case and position', () => {
+    expect(clean('<svg><a href="java&#9;script:alert(1)"/></svg>')).toBe(
+      '<svg><a/></svg>'
+    )
+    expect(clean('<svg><a href="VBScript:x"/></svg>')).toBe('<svg><a/></svg>')
+    expect(clean('<svg><a href="data:text/html,x"/></svg>')).toBe('<svg><a/></svg>')
+    expect(clean('<svg><image href="data:image/png;base64,AA"/></svg>')).toContain(
+      'data:image/png'
+    )
+  })
+
+  it('drops animations that would set a link, a handler or a style', () => {
+    expect(
+      clean(
+        '<svg><a><set attributeName="href" to="https://evil/"/><animate attributeName="xlink:href" values="#a;javascript:x"/><animate attributeName="onclick"/><set attributeName="STYLE"/><animate attributeName="r" to="2"/></a></svg>'
+      )
+    ).toBe('<svg><a><animate attributeName="r" to="2"/></a></svg>')
+  })
+
+  it('compares names by local name and case', () => {
+    expect(
+      clean(
+        '<svg xmlns:x="http://www.w3.org/1999/xlink"><use x:href="https://evil/x.svg#a"/><use HREF="https://evil/"/><SCRIPT>x</SCRIPT></svg>'
+      )
+    ).toBe('<svg xmlns:x="http://www.w3.org/1999/xlink"><use/><use/></svg>')
+  })
+
+  it('keeps url()s inside the file, in attributes and in <style>', () => {
+    expect(
+      clean(
+        '<svg><rect style="fill:url(https://evil/)" fill="url(https://e/#g)" stroke="url(#ok)"/></svg>'
+      )
+    ).toBe('<svg><rect stroke="url(#ok)"/></svg>')
+    expect(
+      clean(
+        '<svg><style>@import url(https://e/x.css); .a{fill:url(https://e/) } .b{fill:url(#g)}</style></svg>'
+      )
+    ).toBe('<svg><style> .a{fill:none } .b{fill:url(#g)}</style></svg>')
+  })
+
+  it('drops comments that could end early once inlined in HTML', () => {
+    expect(
+      clean('<svg><!-- --!><img src=x onerror=alert(1)> --><!-- fine --></svg>')
+    ).toBe('<svg><!-- fine --></svg>')
+  })
+
+  it('applies the rules inside <foreignObject>, less what loads or runs', () => {
+    expect(
+      clean(
+        '<svg><foreignObject><div onclick="x()"><iframe srcdoc="x"/><img src="https://e/x.png"/><img src="data:image/png;base64,AA"/></div></foreignObject></svg>'
+      )
+    ).toBe(
+      '<svg><foreignObject><div><img/><img src="data:image/png;base64,AA"/></div></foreignObject></svg>'
+    )
+  })
+
+  it('never returns a refused root', () => {
+    expect(clean('<script href="https://evil/x.js" onload="x()"/>')).toBe('<svg/>')
+  })
+})
+
+describe('parsing doctypes', () => {
+  it('skips an internal subset, quotes and all, and fails on one left open', () => {
+    expect(parseMarkup('<!DOCTYPE svg [ <!ENTITY a "]>"> ]><svg/>').tag).toBe('svg')
+    expect(() => parseMarkup('<!DOCTYPE svg [ <!ENTITY a "x"> ]')).toThrow(
+      /Unclosed doctype/
+    )
+    expect(() => parseMarkup('<!DOCTYPE svg')).toThrow(/Unclosed doctype/)
   })
 })
 
@@ -235,9 +310,33 @@ describe('renameIds', () => {
     expect(collectIds(moved)).toContain('p-2')
   })
 
+  it('moves references, never a colour that spells the id', () => {
+    const root = parseMarkup(
+      '<svg><g id="fed"/><rect fill="#fed" stroke="url(#fed)"/><use href="#fed"/><style>.a{color:#fed} #fed{fill:url(#fed)}</style></svg>'
+    )
+    const moved = serializeMarkup(renameIds(root, new Set(['fed'])).root, {
+      pretty: false,
+    })
+    expect(moved).toBe(
+      '<svg><g id="fed-2"/><rect fill="#fed" stroke="url(#fed-2)"/><use href="#fed-2"/><style>.a{color:#fed} #fed-2{fill:url(#fed-2)}</style></svg>'
+    )
+  })
+
   it('leaves a tree without clashes as it was', () => {
     const root = parseMarkup('<svg><g id="a"/></svg>')
     expect(renameIds(root, new Set(['b'])).renamed.size).toBe(0)
+  })
+})
+
+describe('adoptIds, ids first', () => {
+  it('keeps an id’d element’s identity when one is added before it', () => {
+    const before = parseMarkup('<svg><rect id="a"/><rect/></svg>')
+    const after = parseMarkup('<svg><rect/><rect id="a"/></svg>', {
+      nextId: () => `x${Math.random()}`,
+    })
+    const adopted = adoptIds(before, after)
+    expect(adopted.children[1]!.id).toBe(before.children[0]!.id)
+    expect(adopted.children[0]!.id).toBe(before.children[1]!.id)
   })
 })
 

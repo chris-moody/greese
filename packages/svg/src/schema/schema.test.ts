@@ -90,7 +90,7 @@ describe('the SVG schema', () => {
     expect(elementSpec('clipPath')).toMatchObject({ role: 'library', renders: false })
     expect(elementSpec('defs')).toMatchObject({ role: 'none', renders: false })
     expect(elementSpec('feGaussianBlur')).toMatchObject({
-      category: 'filter',
+      category: 'primitive',
       role: 'none',
     })
     expect(elementSpec('animate')).toMatchObject({ category: 'animation', role: 'none' })
@@ -98,8 +98,22 @@ describe('the SVG schema', () => {
   })
 
   it('types every attribute, the shared groups included', () => {
-    expect(attributeSpec('rect', 'rx')).toEqual({ name: 'rx', type: 'length' })
-    expect(attributeSpec('path', 'd')).toEqual({ name: 'd', type: 'pathData' })
+    expect(attributeSpec('rect', 'rx')).toEqual({
+      name: 'rx',
+      type: 'length',
+      presentation: true,
+    })
+    expect(attributeSpec('g', 'transform')).toEqual({
+      name: 'transform',
+      type: 'transform',
+      presentation: true,
+    })
+    expect(attributeSpec('line', 'x1')).toEqual({ name: 'x1', type: 'length' })
+    expect(attributeSpec('path', 'd')).toEqual({
+      name: 'd',
+      type: 'pathData',
+      presentation: true,
+    })
     expect(attributeSpec('path', 'fill')).toEqual({
       name: 'fill',
       type: 'paint',
@@ -143,5 +157,11 @@ describe('the SVG schema', () => {
     expect(canContain('clipPath', 'g')).toBe(false)
     expect(canContain('foreignObject', 'div')).toBe(true)
     expect(canContain('custom', 'rect')).toBe(true)
+    // Parts belong to their own parent only.
+    expect(canContain('filter', 'filter')).toBe(false)
+    expect(canContain('filter', 'feFuncR')).toBe(false)
+    expect(canContain('g', 'stop')).toBe(false)
+    expect(canContain('a', '#text')).toBe(true)
+    expect(SVG_ELEMENTS).toContain('discard')
   })
 })

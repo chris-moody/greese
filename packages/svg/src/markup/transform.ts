@@ -26,24 +26,133 @@ const copy = (node: MarkupNode): MarkupNode => ({
 })
 
 const localName = (tag: string) => tag.slice(tag.indexOf(':') + 1)
-const isHref = (name: string) => name === 'href' || name === 'xlink:href'
+const lower = (name: string) => localName(name).toLowerCase()
+
+/**
+ * A value as a URL parser reads it: browsers drop ASCII whitespace and
+ * control characters inside a scheme (`java\tscript:`), so the checks do too.
+ */
+const squash = (value: string) =>
+  // eslint-disable-next-line no-control-regex -- control characters are what this removes
+  value.replace(/[\u0000-\u0020\u007f]+/g, '').toLowerCase()
+
+/** A script scheme anywhere in a value. */
+const runsScript = (value: string) => /(?:javascript|vbscript):/.test(squash(value))
+
+/** `url(…)` targets in a value or a stylesheet. */
+const urlTargets = (value: string) =>
+  [...value.matchAll(/url\(\s*(['"]?)(.*?)\1\s*\)/gi)].map((m) => squash(m[2] ?? ''))
+
+/** Whether a reference stays in the file: `#id`, or an image's `data:`. */
+const inFile = (target: string, imageData: boolean) =>
+  target.startsWith('#') || (imageData && target.startsWith('data:image/'))
+
+/** Animations whose target is a link, a handler or a style: they can set what the rest refuses. */
+const ANIMATIONS = new Set([
+  'animate',
+  'set',
+  'animatemotion',
+  'animatetransform',
+  'discard',
+])
+/** HTML that runs, loads or redirects, inside `<foreignObject>`. */
+const HTML_REFUSED = new Set([
+  'iframe',
+  'frame',
+  'frameset',
+  'object',
+  'embed',
+  'applet',
+  'meta',
+  'base',
+  'link',
+  'form',
+  'portal',
+  'template',
+])
+/** HTML attributes that load a URL. */
+const HTML_URLS = new Set([
+  'src',
+  'action',
+  'formaction',
+  'data',
+  'poster',
+  'background',
+  'ping',
+  'cite',
+  'longdesc',
+  'srcset',
+  'codebase',
+  'manifest',
+])
+/** Elements whose `href` may be an image's `data:` URL. */
+const IMAGES = new Set(['image', 'feimage', 'img'])
+
+/**
+ * Whether a comment could end early once the markup is inlined in HTML,
+ * whose comment rules differ from XML's (`--!>`, `<!-->`).
+ */
+const unsafeComment = (text: string) => /--|[<>]/.test(text) || text.startsWith('-')
+
+/** A stylesheet with `@import` and outside `url()`s taken out. */
+const cleanCss = (css: string): { css: string; changed: boolean } => {
+  let out = css.replace(/@import[^;]*;?/gi, '')
+  out = out.replace(/url\(\s*(['"]?)(.*?)\1\s*\)/gi, (whole, _q, target: string) =>
+    inFile(squash(target), false) ? whole : 'none'
+  )
+  return { css: out, changed: out !== css }
+}
 
 /**
  * Takes out what could run code or reach outside the file, and says what it
- * took: `<script>` elements, `on*` handlers, `javascript:` URLs anywhere, and
- * `href`s that aren't in-document (`#id`) or an image's `data:`. Keeps
- * `<foreignObject>`, with a warning: its HTML is the page's to trust.
+ * took:
+ *
+ * - `<script>`, `on*` handlers, and `javascript:` or `vbscript:` anywhere;
+ * - links and `url()`s that aren't in the file (`#id`, or an image's
+ *   `data:`), in attributes and in `<style>`, and `@import`;
+ * - animations that would set a link, a handler or a style;
+ * - comments that could end early once inlined in HTML.
+ *
+ * Names are compared by local name and case, so a prefix (`x:href` bound to
+ * XLink) or `SCRIPT` doesn't slip by. `<foreignObject>` is kept with a
+ * warning, and its HTML gets the same rules, less anything that loads or
+ * runs (`iframe`, `object`, `srcdoc`…).
  */
 export const sanitizeMarkup = (input: MarkupNode): MarkupResult => {
   const notices: MarkupNotice[] = []
-  const clean = (node: MarkupNode): MarkupNode | null => {
-    if (node.tag[0] === '#') return { ...node, attrs: {}, children: [] }
-    const name = localName(node.tag)
-    if (name === 'script') {
-      notices.push({ kind: 'removed', what: '<script>' })
+  const clean = (
+    node: MarkupNode,
+    inHtml: boolean,
+    inStyle: boolean
+  ): MarkupNode | null => {
+    if (node.tag === '#comment') {
+      if (!unsafeComment(node.text ?? '')) return copy(node)
+      notices.push({ kind: 'removed', what: 'a comment that could end early in HTML' })
       return null
     }
-    if (name === 'foreignObject')
+    if (node.tag[0] === '#') {
+      if (!inStyle) return copy(node)
+      const { css, changed } = cleanCss(node.text ?? '')
+      if (changed)
+        notices.push({ kind: 'removed', what: '@import or an outside url() in <style>' })
+      return { ...copy(node), text: css }
+    }
+    const name = lower(node.tag)
+    if (name === 'script' || (inHtml && HTML_REFUSED.has(name))) {
+      notices.push({ kind: 'removed', what: `<${node.tag}>` })
+      return null
+    }
+    if (ANIMATIONS.has(name)) {
+      const target = lower(node.attrs.attributeName ?? '')
+      if (target === 'href' || target.startsWith('on') || target === 'style') {
+        notices.push({
+          kind: 'removed',
+          what: `<${node.tag}> setting ${node.attrs.attributeName}`,
+        })
+        return null
+      }
+    }
+    if (name === 'foreignobject')
       notices.push({
         kind: 'warning',
         what: '<foreignObject> holds HTML',
@@ -52,24 +161,40 @@ export const sanitizeMarkup = (input: MarkupNode): MarkupResult => {
     const attrs: Record<string, string> = {}
     for (const [attr, value] of Object.entries(node.attrs)) {
       const what = `${attr} on <${node.tag}>`
-      if (/^on/i.test(attr)) notices.push({ kind: 'removed', what, nodeId: node.id })
-      else if (
-        /^\s*javascript:/i.test(value) ||
-        /url\(\s*['"]?\s*javascript:/i.test(value)
-      )
-        notices.push({ kind: 'removed', what: `javascript: in ${what}`, nodeId: node.id })
-      else if (
-        isHref(attr) &&
-        !value.startsWith('#') &&
-        !(name === 'image' && /^data:image\//i.test(value))
-      )
+      const key = lower(attr)
+      const link = key === 'href' || (inHtml && HTML_URLS.has(key))
+      if (key.startsWith('on') || (inHtml && key === 'srcdoc'))
+        notices.push({ kind: 'removed', what, nodeId: node.id })
+      else if (runsScript(value))
+        notices.push({
+          kind: 'removed',
+          what: `a script URL in ${what}`,
+          nodeId: node.id,
+        })
+      else if (link && !inFile(squash(value), IMAGES.has(name)))
         notices.push({ kind: 'removed', what: `external ${what}`, nodeId: node.id })
+      else if (urlTargets(value).some((t) => !inFile(t, false)))
+        notices.push({
+          kind: 'removed',
+          what: `an outside url() in ${what}`,
+          nodeId: node.id,
+        })
       else attrs[attr] = value
     }
-    const children = node.children.map(clean).filter((c): c is MarkupNode => !!c)
+    const html = inHtml || name === 'foreignobject'
+    const children = node.children
+      .map((c) => clean(c, html, name === 'style'))
+      .filter((c): c is MarkupNode => !!c)
     return { ...copy({ ...node, children: [] }), attrs, children }
   }
-  return { root: clean(input) ?? copy({ ...input, children: [] }), notices }
+  // A root that's refused leaves an empty drawing, never the root it was.
+  const root = clean(input, false, false) ?? {
+    id: input.id,
+    tag: 'svg',
+    attrs: {},
+    children: [],
+  }
+  return { root, notices }
 }
 
 /** Definitions: they draw only when referenced, so they belong in `<defs>`. */
@@ -197,8 +322,17 @@ export const renameIds = (
     `#(${[...renamed.keys()].map(escapeRegExp).join('|')})(?![\\w-])`,
     'g'
   )
-  const rewrite = (value: string) =>
-    value.replace(pattern, (_, id: string) => `#${renamed.get(id)}`)
+  const swap = (_: string, id: string) => `#${renamed.get(id)}`
+  // Only references move: `url(#id)`, never `#fed`, a colour that happens to match.
+  const inUrls = (value: string) =>
+    value.replace(/url\(([^)]*)\)/gi, (whole) => whole.replace(pattern, swap))
+  // A stylesheet's selectors (what ends at `{`) name ids; its values don't.
+  const inCss = (css: string) =>
+    css
+      .split(/(?<=[{};])/)
+      .map((part) => (part.endsWith('{') ? part.replace(pattern, swap) : part))
+      .map(inUrls)
+      .join('')
   const timing = new RegExp(
     `(^|[\\s;])(${[...renamed.keys()].map(escapeRegExp).join('|')})(?=\\.)`,
     'g'
@@ -206,7 +340,7 @@ export const renameIds = (
 
   const visit = (node: MarkupNode, inStyle: boolean): MarkupNode => {
     if (node.tag === '#text' || node.tag === '#cdata')
-      return { ...copy(node), text: inStyle ? rewrite(node.text ?? '') : node.text }
+      return { ...copy(node), text: inStyle ? inCss(node.text ?? '') : node.text }
     const attrs: Record<string, string> = {}
     for (const [name, value] of Object.entries(node.attrs)) {
       if (name === 'id') attrs[name] = renamed.get(value) ?? value
@@ -220,7 +354,9 @@ export const renameIds = (
           timing,
           (_, lead: string, id: string) => `${lead}${renamed.get(id)}`
         )
-      else attrs[name] = value.includes('#') ? rewrite(value) : value
+      else if (lower(name) === 'href' && value.startsWith('#'))
+        attrs[name] = value.replace(pattern, swap)
+      else attrs[name] = value.includes('url(') ? inUrls(value) : value
     }
     const style = localName(node.tag) === 'style'
     return {
@@ -243,22 +379,38 @@ export const renameIds = (
  */
 export const adoptIds = (previous: MarkupNode, next: MarkupNode): MarkupNode => {
   const match = (old: MarkupNode, fresh: MarkupNode): MarkupNode => {
-    const byAttr = new Map(
-      old.children.filter((c) => c.attrs.id).map((c) => [c.attrs.id!, c])
-    )
+    const pairs = new Map<MarkupNode, MarkupNode>()
     const used = new Set<MarkupNode>()
-    const children = fresh.children.map((child) => {
-      let found = child.attrs.id ? byAttr.get(child.attrs.id) : undefined
-      if (found && (found.tag !== child.tag || used.has(found))) found = undefined
-      found ??= old.children.find(
+    // First every `id` attribute, so an element added before an id'd sibling
+    // can't take that sibling's identity by position.
+    for (const child of fresh.children) {
+      if (!child.attrs.id) continue
+      const found = old.children.find(
+        (c) => !used.has(c) && c.attrs.id === child.attrs.id && c.tag === child.tag
+      )
+      if (found) {
+        pairs.set(child, found)
+        used.add(found)
+      }
+    }
+    // Then by tag, in order, among what's left.
+    for (const child of fresh.children) {
+      if (pairs.has(child)) continue
+      const found = old.children.find(
         (c) =>
           !used.has(c) &&
           c.tag === child.tag &&
-          !(c.attrs.id && child.attrs.id && c.attrs.id !== child.attrs.id)
+          !(c.attrs.id && child.attrs.id && c.attrs.id !== child.attrs.id) &&
+          !(c.attrs.id && fresh.children.some((f) => f.attrs.id === c.attrs.id))
       )
-      if (!found) return child
-      used.add(found)
-      return match(found, child)
+      if (found) {
+        pairs.set(child, found)
+        used.add(found)
+      }
+    }
+    const children = fresh.children.map((child) => {
+      const found = pairs.get(child)
+      return found ? match(found, child) : child
     })
     return { ...fresh, id: old.tag === fresh.tag ? old.id : fresh.id, children }
   }

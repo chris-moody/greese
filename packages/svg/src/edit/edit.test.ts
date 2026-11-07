@@ -283,3 +283,15 @@ describe('freehand', () => {
     expect(freehandPath(circle, { closed: true })).toMatch(/Z$/)
   })
 })
+
+describe('shorthand handles', () => {
+  it('reads S and T reflections as a node’s handles', () => {
+    expect(nodeType('M0 0C0 10 10 10 10 0S20 -10 20 0', 1)).toBe('symmetric')
+    expect(nodeType('M0 0Q5 10 10 0T20 0', 1)).toBe('symmetric')
+    expect(nodeHandles('M0 0Q5 10 10 0T20 0', 2)!.in).toEqual([15, -10])
+  })
+
+  it('keeps a zero-length arc as a segment', () => {
+    expect(convertSegment('M0 0A1 1 0 0 1 0 0L5 5', 1, 'C')).toHaveLength(3)
+  })
+})

@@ -114,8 +114,11 @@ export const segmentToCubics = (
         ],
       ]
     }
-    case 'A':
-      return arcToCubics(p0, full[1], full[2], full[3], full[4], full[5], end)
+    case 'A': {
+      // A zero-length arc draws nothing, but it's still a segment: keep one.
+      const arcs = arcToCubics(p0, full[1], full[2], full[3], full[4], full[5], end)
+      return arcs.length ? arcs : [[p0, p0, end, end]]
+    }
     default:
       // Lines (L, H, V, Z): controls at thirds, so the shape doesn't change.
       return [

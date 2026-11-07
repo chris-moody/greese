@@ -12,7 +12,8 @@ export type ElementCategory =
   | 'text'
   | 'paint'
   | 'definition'
-  | 'filter'
+  | 'primitive'
+  | 'component'
   | 'light'
   | 'descriptive'
   | 'animation'
@@ -121,8 +122,9 @@ const PRESENTATION: Raw = {
   'vector-effect': '~enum:none|non-scaling-stroke',
   'mix-blend-mode': `~enum:${BLEND}`,
   'shape-rendering': '~enum:auto|optimizeSpeed|crispEdges|geometricPrecision',
-  'pointer-events': '~enum:auto|none|visiblePainted|visible|painted|fill|stroke|all',
-  transform: 'transform',
+  'pointer-events':
+    '~enum:auto|none|visiblePainted|visibleFill|visibleStroke|visible|painted|fill|stroke|all|bounding-box',
+  transform: '~transform',
 }
 
 const TEXT_STYLE: Raw = {
@@ -152,6 +154,8 @@ const TIMING: Raw = {
 }
 
 const BOX: Raw = { 'x y width height': 'length' }
+/** SVG 2's geometry properties: settable from CSS too. */
+const GEOMETRY: Raw = { 'x y width height': '~length' }
 const VIEW: Raw = { viewBox: 'viewBox', preserveAspectRatio: 'preserveAspectRatio' }
 const HREF: Raw = { 'href xlink:href': 'href' }
 const TEXT_POSITION: Raw = {
@@ -194,11 +198,12 @@ const ROWS: Record<string, Row> = {
     { ...BOX, ...VIEW, 'xmlns xmlns:xlink version': 'string' },
   ],
   g: ['container', 'folder', true, DRAWING],
+  // Text as well: an `<a>` inside `<text>` holds words.
   a: [
     'container',
     'folder',
     true,
-    DRAWING,
+    [...DRAWING, '#text'],
     { ...HREF, 'target download rel hreflang type': 'string' },
   ],
   switch: ['container', 'folder', true, DRAWING],
@@ -276,7 +281,7 @@ const ROWS: Record<string, Row> = {
     },
   ],
   stop: [
-    'paint',
+    'component',
     'none',
     false,
     ['animate', 'set'],
@@ -287,21 +292,21 @@ const ROWS: Record<string, Row> = {
     'layer',
     true,
     SHAPE_CHILDREN,
-    { ...BOX, 'rx ry': 'length', pathLength: 'number' },
+    { ...GEOMETRY, 'rx ry': '~length', pathLength: 'number' },
   ],
   circle: [
     'shape',
     'layer',
     true,
     SHAPE_CHILDREN,
-    { 'cx cy r': 'length', pathLength: 'number' },
+    { 'cx cy r': '~length', pathLength: 'number' },
   ],
   ellipse: [
     'shape',
     'layer',
     true,
     SHAPE_CHILDREN,
-    { 'cx cy rx ry': 'length', pathLength: 'number' },
+    { 'cx cy rx ry': '~length', pathLength: 'number' },
   ],
   line: [
     'shape',
@@ -324,7 +329,13 @@ const ROWS: Record<string, Row> = {
     SHAPE_CHILDREN,
     { points: 'points', pathLength: 'number' },
   ],
-  path: ['shape', 'layer', true, SHAPE_CHILDREN, { d: 'pathData', pathLength: 'number' }],
+  path: [
+    'shape',
+    'layer',
+    true,
+    SHAPE_CHILDREN,
+    { d: '~pathData', pathLength: 'number' },
+  ],
   use: ['graphic', 'layer', true, SHAPE_CHILDREN, { ...BOX, ...HREF }],
   image: [
     'graphic',
@@ -367,31 +378,31 @@ const ROWS: Record<string, Row> = {
     'definition',
     'library',
     false,
-    ['filter', 'descriptive', 'animate', 'set'],
+    ['primitive', 'descriptive', 'animate', 'set'],
     { ...BOX, 'filterUnits primitiveUnits': UNITS },
   ],
   feBlend: [
-    'filter',
+    'primitive',
     'none',
     false,
     PRIMITIVE_CHILDREN,
     { in2: 'string', mode: `enum:${BLEND}` },
   ],
   feColorMatrix: [
-    'filter',
+    'primitive',
     'none',
     false,
     PRIMITIVE_CHILDREN,
     { type: 'enum:matrix|saturate|hueRotate|luminanceToAlpha', values: 'numberList' },
   ],
   feComponentTransfer: [
-    'filter',
+    'primitive',
     'none',
     false,
     ['feFuncR', 'feFuncG', 'feFuncB', 'feFuncA'],
   ],
   feComposite: [
-    'filter',
+    'primitive',
     'none',
     false,
     PRIMITIVE_CHILDREN,
@@ -402,7 +413,7 @@ const ROWS: Record<string, Row> = {
     },
   ],
   feConvolveMatrix: [
-    'filter',
+    'primitive',
     'none',
     false,
     PRIMITIVE_CHILDREN,
@@ -414,14 +425,14 @@ const ROWS: Record<string, Row> = {
     },
   ],
   feDiffuseLighting: [
-    'filter',
+    'primitive',
     'none',
     false,
     ['light', ...PRIMITIVE_CHILDREN],
     { 'surfaceScale diffuseConstant': 'number', 'lighting-color': '~color' },
   ],
   feSpecularLighting: [
-    'filter',
+    'primitive',
     'none',
     false,
     ['light', ...PRIMITIVE_CHILDREN],
@@ -431,14 +442,14 @@ const ROWS: Record<string, Row> = {
     },
   ],
   feDisplacementMap: [
-    'filter',
+    'primitive',
     'none',
     false,
     PRIMITIVE_CHILDREN,
     { in2: 'string', scale: 'number', 'xChannelSelector yChannelSelector': CHANNEL },
   ],
   feDropShadow: [
-    'filter',
+    'primitive',
     'none',
     false,
     PRIMITIVE_CHILDREN,
@@ -450,21 +461,21 @@ const ROWS: Record<string, Row> = {
     },
   ],
   feFlood: [
-    'filter',
+    'primitive',
     'none',
     false,
     PRIMITIVE_CHILDREN,
     { 'flood-color': '~color', 'flood-opacity': '~number' },
   ],
   feGaussianBlur: [
-    'filter',
+    'primitive',
     'none',
     false,
     PRIMITIVE_CHILDREN,
     { stdDeviation: 'numberList', edgeMode: EDGE },
   ],
   feImage: [
-    'filter',
+    'primitive',
     'none',
     false,
     PRIMITIVE_CHILDREN,
@@ -474,18 +485,18 @@ const ROWS: Record<string, Row> = {
       crossorigin: 'enum:anonymous|use-credentials',
     },
   ],
-  feMerge: ['filter', 'none', false, ['feMergeNode']],
+  feMerge: ['primitive', 'none', false, ['feMergeNode']],
   feMorphology: [
-    'filter',
+    'primitive',
     'none',
     false,
     PRIMITIVE_CHILDREN,
     { operator: 'enum:erode|dilate', radius: 'numberList' },
   ],
-  feOffset: ['filter', 'none', false, PRIMITIVE_CHILDREN, { 'dx dy': 'number' }],
-  feTile: ['filter', 'none', false, PRIMITIVE_CHILDREN],
+  feOffset: ['primitive', 'none', false, PRIMITIVE_CHILDREN, { 'dx dy': 'number' }],
+  feTile: ['primitive', 'none', false, PRIMITIVE_CHILDREN],
   feTurbulence: [
-    'filter',
+    'primitive',
     'none',
     false,
     PRIMITIVE_CHILDREN,
@@ -496,11 +507,11 @@ const ROWS: Record<string, Row> = {
       type: 'enum:fractalNoise|turbulence',
     },
   ],
-  feMergeNode: ['filter', 'none', false, ['animate', 'set'], { in: 'string' }],
-  feFuncR: ['filter', 'none', false, ['animate', 'set']],
-  feFuncG: ['filter', 'none', false, ['animate', 'set']],
-  feFuncB: ['filter', 'none', false, ['animate', 'set']],
-  feFuncA: ['filter', 'none', false, ['animate', 'set']],
+  feMergeNode: ['component', 'none', false, ['animate', 'set'], { in: 'string' }],
+  feFuncR: ['component', 'none', false, ['animate', 'set']],
+  feFuncG: ['component', 'none', false, ['animate', 'set']],
+  feFuncB: ['component', 'none', false, ['animate', 'set']],
+  feFuncA: ['component', 'none', false, ['animate', 'set']],
   feDistantLight: [
     'light',
     'none',
@@ -520,6 +531,7 @@ const ROWS: Record<string, Row> = {
   ],
   animate: ['animation', 'none', false, ['descriptive']],
   set: ['animation', 'none', false, ['descriptive']],
+  discard: ['animation', 'none', false, ['descriptive'], { 'begin href': 'string' }],
   animateTransform: [
     'animation',
     'none',
@@ -534,7 +546,7 @@ const ROWS: Record<string, Row> = {
     ['descriptive', 'mpath'],
     { path: 'pathData', keyPoints: 'string', rotate: 'string' },
   ],
-  mpath: ['animation', 'none', false, ['descriptive'], HREF],
+  mpath: ['component', 'none', false, ['descriptive'], HREF],
 }
 
 /** Each element's tag, in the table's order. */
@@ -563,7 +575,7 @@ const groupsFor = (tag: string, category: ElementCategory): Raw[] => {
     case 'definition':
     case 'paint':
       return tag === 'style' ? [{ id: 'id' }] : [CORE, PRESENTATION]
-    case 'filter':
+    case 'primitive':
       return tag === 'feMergeNode' ? [CORE] : [CORE, PRIMITIVE]
     case 'animation':
       return [CORE, TIMING]

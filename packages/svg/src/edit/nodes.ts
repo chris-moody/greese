@@ -27,12 +27,37 @@ export const nodeHandles = (input: PathData, index: number): NodeHandles | undef
   const segment = segments[index]
   if (!segment) return undefined
   const point = segmentEnd(segment, contexts[index]!)
-  const next = segments[index + 1]
-  return {
-    point,
-    ...(segment[0] === 'C' && { in: [segment[3], segment[4]] as Point }),
-    ...(next?.[0] === 'C' && { out: [next[1], next[2]] as Point }),
+  // The handle coming in: a cubic's second control, or a quadratic's one
+  // (a `T`'s is the reflection of the one before).
+  const incoming = (): Point | undefined => {
+    switch (segment[0]) {
+      case 'C':
+        return [segment[3], segment[4]]
+      case 'S':
+      case 'Q':
+        return [segment[1], segment[2]]
+      case 'T': {
+        const { quadControl: q, from } = contexts[index]!
+        return q ? [2 * from[0] - q[0], 2 * from[1] - q[1]] : from
+      }
+      default:
+        return undefined
+    }
   }
+  const into = incoming()
+  // The handle going out: a `C` or `Q` says it; an `S` or `T` reflects this one.
+  const next = segments[index + 1]
+  const reflect = (p?: Point): Point | undefined =>
+    p && [2 * point[0] - p[0], 2 * point[1] - p[1]]
+  const out: Point | undefined =
+    next?.[0] === 'C' || next?.[0] === 'Q'
+      ? [next[1], next[2]]
+      : next?.[0] === 'S'
+        ? reflect(segment[0] === 'C' || segment[0] === 'S' ? into : undefined)
+        : next?.[0] === 'T'
+          ? reflect(segment[0] === 'Q' || segment[0] === 'T' ? into : undefined)
+          : undefined
+  return { point, ...(into && { in: into }), ...(out && { out }) }
 }
 
 const sub = (a: Point, b: Point): Point => [a[0] - b[0], a[1] - b[1]]
