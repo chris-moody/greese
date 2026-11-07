@@ -109,6 +109,42 @@ test('popover: anchored below its trigger, dismissed by clicking outside', async
   await expect(trigger).toHaveAttribute('aria-expanded', 'false')
 })
 
+test('context menu: stays open after the press that opened it is released', async ({
+  page,
+}) => {
+  test.skip(isTouch(), 'a long-press is not something Playwright can emulate')
+  const area = page.getByTestId('context-area')
+  await area.scrollIntoViewIfNeeded()
+  const box = (await area.boundingBox())!
+  // Pressed and released apart, as a person does it. macOS opens the menu on
+  // the press, and Firefox and WebKit light-dismissed it on the release.
+  await page.mouse.move(box.x + 8, box.y + 8)
+  await page.mouse.down({ button: 'right' })
+  await page.mouse.up({ button: 'right' })
+  await expect(page.getByRole('menuitem', { name: 'Copy' })).toBeFocused()
+  await page.waitForTimeout(200)
+  await expect(page.getByRole('menu')).toBeVisible()
+  await page.getByRole('menuitem', { name: 'Paste' }).click()
+  await expect(page.getByTestId('selected')).toHaveText('paste')
+  await expect(page.getByRole('menu')).toBeHidden()
+})
+
+test('context menu: hangs off an element anchor', async ({ page }) => {
+  const trigger = page.getByRole('button', { name: 'Move to…' })
+  await trigger.click()
+  const menu = page.getByRole('menu')
+  await expect(menu.getByRole('menuitem', { name: 'Inbox' })).toBeFocused()
+  const button = (await trigger.boundingBox())!
+  const surface = (await menu.boundingBox())!
+  // Beside the button (or flipped to its other side on a narrow screen), and
+  // level with it: not in the page's corner.
+  const beside =
+    surface.x >= button.x + button.width - 1 || surface.x + surface.width <= button.x + 1
+  expect(beside).toBe(true)
+  expect(surface.y).toBeLessThan(button.y + button.height)
+  expect(surface.y + surface.height).toBeGreaterThan(button.y)
+})
+
 test('menu: keyboard open, arrows, Enter selects, Escape returns focus', async ({
   page,
 }) => {

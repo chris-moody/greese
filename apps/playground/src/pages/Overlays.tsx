@@ -1,9 +1,11 @@
-import { useState, type JSX } from 'react'
+import { useRef, useState, type JSX } from 'react'
 import {
   AppBar,
   BreadcrumbItem,
   Breadcrumbs,
   Button,
+  ContextMenu,
+  type ContextMenuPoint,
   Dialog,
   Drawer,
   Menu,
@@ -27,6 +29,9 @@ import '@greese/react/styles.css'
 /** Overlay and navigation fixtures for e2e/overlays.spec.ts. */
 export const Overlays = (): JSX.Element => {
   const [selected, setSelected] = useState('')
+  const [at, setAt] = useState<ContextMenuPoint | null>(null)
+  const moveTo = useRef<HTMLButtonElement>(null)
+  const [moving, setMoving] = useState(false)
   return (
     <SidebarLayout>
       <Sidebar label="Main navigation" data-testid="sidebar">
@@ -91,6 +96,31 @@ export const Overlays = (): JSX.Element => {
                 Delete
               </MenuItem>
             </Menu>
+            <div
+              data-testid="context-area"
+              className="p-4 border border-color-border"
+              onContextMenu={(event) => {
+                event.preventDefault()
+                setAt({ top: event.clientY, left: event.clientX })
+              }}
+            >
+              Right-click here
+            </div>
+            <ContextMenu anchor={at} onClose={() => setAt(null)}>
+              <MenuItem onSelect={() => setSelected('copy')}>Copy</MenuItem>
+              <MenuItem onSelect={() => setSelected('paste')}>Paste</MenuItem>
+            </ContextMenu>
+            <Button ref={moveTo} onClick={() => setMoving(true)}>
+              Move to…
+            </Button>
+            <ContextMenu
+              anchor={moving ? moveTo.current : null}
+              onClose={() => setMoving(false)}
+              placement="end"
+            >
+              <MenuItem onSelect={() => setSelected('inbox')}>Inbox</MenuItem>
+              <MenuItem onSelect={() => setSelected('archive')}>Archive</MenuItem>
+            </ContextMenu>
             <output data-testid="selected">{selected}</output>
             <Pagination count={10} defaultPage={5} data-testid="pagination" />
           </Stack>
