@@ -38,6 +38,7 @@ export default {
         'js',
         'icons',
         'svg',
+        'authoring',
         'mcp',
         'docs',
         'playground',

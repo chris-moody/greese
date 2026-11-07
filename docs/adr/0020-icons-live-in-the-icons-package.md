@@ -39,7 +39,7 @@ icon-agnostic part (you can always bring your own) stays.
 
 **`createIcon` grew two options** so the whole set fits one function:
 
-- `viewBox` (default 16) and `strokeWidth` (default 1.75) for icons drawn on
+- `viewBox` (default 16) and `strokeWidth` (default 1.5) for icons drawn on
   another grid, such as the site's 24-unit icons at 1.8;
 - `filled: true` for solid shapes (`StarFilledIcon`).
 

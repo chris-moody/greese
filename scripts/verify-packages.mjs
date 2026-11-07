@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Proves the packages work as published: packs @greese/ui,
- * @greese/js (greese.js), @greese/react, @greese/icons and @greese/svg, installs the tarballs into an empty project, and checks
+ * @greese/js (greese.js), @greese/react, @greese/icons, @greese/svg and
+ * @greese/authoring, installs the tarballs into an empty project, and checks
  * what a consumer would do with them.
  *
  *   npm run build && npm run verify:packages
@@ -40,6 +41,8 @@ try {
       '@greese/icons',
       '-w',
       '@greese/svg',
+      '-w',
+      '@greese/authoring',
       '--pack-destination',
       work,
     ],
@@ -54,7 +57,7 @@ try {
       type: 'module',
       dependencies: Object.fromEntries(
         tarballs.map((t) => [
-          `@greese/${/^greese-(ui|js|react|icons|svg)-\d/.exec(t)[1]}`,
+          `@greese/${/^greese-(ui|js|react|icons|svg|authoring)-\d/.exec(t)[1]}`,
           `file:./${t}`,
         ])
       ),
@@ -68,6 +71,9 @@ try {
       '--no-fund',
       'react@19',
       'react-dom@19',
+      // @greese/authoring's peers (ADR 0035).
+      '@reduxjs/toolkit@2',
+      'react-redux@9',
       '@types/react@19',
       'typescript@~6.0.3',
       'sass-embedded',
@@ -235,6 +241,37 @@ if (!html.includes('role="img"') || !html.includes('stop-color="red"') || !html.
   )
   run('node', ['svg.mjs'], work)
   ok('@greese/svg runs without a DOM; @greese/react/svg renders on the server')
+
+  // 4e. @greese/authoring: core and state run in Node with no React or DOM,
+  // its peers are peers, and the dock renders on the server (ADR 0035).
+  writeFileSync(
+    join(work, 'authoring.mjs'),
+    `import { readFileSync } from 'node:fs'
+import { createElement } from 'react'
+import { renderToString } from 'react-dom/server'
+import { buildFromSpec, extractPanelIds } from '@greese/authoring/core'
+import { createAuthoringStore, panelsActions } from '@greese/authoring/state'
+import { createAuthoringEnvironment, PanelArea, PanelDock } from '@greese/authoring'
+const spec = { kind: 'row', children: [{ size: 200, spec: { kind: 'panel', id: 'a' } }, { spec: { kind: 'stage' } }] }
+const store = createAuthoringStore()
+store.dispatch(panelsActions.hydrate({ workspace: buildFromSpec(spec), floating: [] }))
+if (extractPanelIds(spec).join() !== 'a' || !store.getState().panels.workspace.nodes._stage_) throw new Error('core/state')
+const env = createAuthoringEnvironment()
+const html = renderToString(createElement(env.Provider, null, createElement(PanelDock, {
+  panels: [{ id: 'a', title: 'A', area: PanelArea.LEFT, component: () => 'body' }],
+  initialWorkspace: buildFromSpec(spec),
+  renderReserved: () => 'stage',
+})))
+if (!html.includes('greese-PanelDock') || !html.includes('role="tab"')) throw new Error('authoring html: ' + html)
+const pkg = JSON.parse(readFileSync('node_modules/@greese/authoring/package.json', 'utf8'))
+if (pkg.dependencies?.['@reduxjs/toolkit'] || !pkg.peerDependencies?.['@reduxjs/toolkit'] || !pkg.peerDependencies?.['react-redux']) throw new Error('Redux must be a peer')
+if (!readFileSync('node_modules/@greese/authoring/dist/styles.css', 'utf8').includes('@layer greese.components')) throw new Error('styles.css')
+`
+  )
+  run('node', ['authoring.mjs'], work)
+  ok(
+    '@greese/authoring: core and state run without React, Redux is a peer, the dock renders on the server, styles.css is layered'
+  )
 
   // 5. Every per-component @import points at a shipped file: React's
   // stylesheets import @greese/ui's, which import core.

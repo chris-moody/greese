@@ -1,0 +1,116 @@
+@use 'pkg:@greese/ui/scss/mixins';
+
+@layer greese.components {
+  .greese-PanelGroup {
+    @include mixins.component-root;
+
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    inline-size: 100%;
+    min-block-size: 0;
+    overflow: hidden;
+    background-color: var(--greese-color-surface);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-corner-panel);
+    box-shadow: var(--greese-shadow-md);
+
+    // The group being dragged dims in place; the ghost follows the pointer.
+    &[data-dragging] {
+      opacity: 0.35;
+    }
+  }
+
+  .greese-PanelGroup-header {
+    display: flex;
+    align-items: center;
+    min-block-size: 1.75rem;
+    background-color: color-mix(in oklab, var(--greese-color-fg) 6%, transparent);
+  }
+
+  .greese-PanelGroup-tabs {
+    display: flex;
+    flex: 1 1 auto;
+    align-self: stretch;
+    min-inline-size: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  // Tabs are drag handles as well as tabs, so touch can't scroll them away.
+  .greese-PanelGroup-tab {
+    @include mixins.focus-ring(-2px);
+
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    padding-block: var(--greese-space-1);
+    padding-inline: var(--greese-space-2);
+    font-family: var(--greese-panel-tab-font-family, var(--greese-font-mono));
+    font-size: var(--greese-panel-tab-font-size, var(--greese-type-caption-font-size));
+    font-weight: var(--greese-panel-tab-font-weight, var(--greese-font-weight-semibold));
+    color: var(--greese-color-fg-muted);
+    white-space: nowrap;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    background: none;
+    border: 0;
+    border-block-end: 2px solid transparent;
+
+    @include mixins.hover {
+      color: var(--greese-color-fg);
+    }
+
+    &[aria-selected='true'] {
+      color: var(--greese-color-fg);
+      background-color: var(--greese-color-surface);
+      border-block-end-color: var(--greese-color-primary);
+    }
+
+    &[data-dragging] {
+      opacity: 0.4;
+    }
+  }
+
+  // A headless group's drag handle: a short bar of grip dots instead of tabs.
+  .greese-PanelGroup-handle {
+    flex: 0 0 auto;
+    block-size: 0.75rem;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    background-color: color-mix(in oklab, var(--greese-color-fg) 6%, transparent);
+    background-image: radial-gradient(
+      color-mix(in oklab, var(--greese-color-fg-muted) 50%, transparent) 1px,
+      transparent 1px
+    );
+    background-repeat: repeat-x;
+    background-position: center;
+    background-size: 6px 4px;
+    border-block-end: 1px solid var(--greese-color-border);
+
+    @include mixins.hover {
+      background-color: color-mix(in oklab, var(--greese-color-fg) 12%, transparent);
+    }
+  }
+
+  // Fills the group below its header and scrolls, unless the panel scrolls
+  // itself (`scrollable: false`). It must be the group's direct flex child to
+  // get a bounded height.
+  .greese-PanelGroup-body {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    overflow: hidden auto;
+    scrollbar-width: thin;
+
+    &[data-scrollable='false'] {
+      overflow-y: hidden;
+    }
+
+    &[hidden] {
+      display: none;
+    }
+  }
+}

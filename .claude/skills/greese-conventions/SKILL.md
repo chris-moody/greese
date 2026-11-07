@@ -54,20 +54,23 @@ the ADR wins: fix this file in the same change.
 | 0032 carousel                       | Carousel: stacked slides, CSS effects, `carousel` roles, deep links are the app's                  |
 | 0033 app reduced motion             | `data-greese-motion="reduce"` / ThemeProvider `motion`; `prefersReducedMotion(el)`                 |
 | 0034 theme layout and resets        | `@greese/ui/theme-files`, the SCSS layout, `tokens()` adding up, `scope()`, resets, Sass utilities |
+| 0035 authoring package              | `@greese/authoring`: entries, Redux peers, its own layered CSS, no `greese-Dock*` names            |
+| 0036 authoring timeline             | the editor timeline plays and tweens on greese.js; what moves into greese.js                       |
 
 ## Workspace
 
-| Path              | What                                                                                                                                                                                      |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/ui`     | `@greese/ui`, framework-free: tokens in `src/tokens.ts`, `createTheme`, the scheme script, every component's SCSS (`src/components/<Name>/<Name>.scss`), the Sass kit, the style manifest |
-| `packages/react`  | `@greese/react`: components in `src/components/<Name>/<Name>.tsx`; styled by `@greese/ui`                                                                                                 |
-| `packages/js`     | `@greese/js` (greese.js): animation; no dependencies, no React                                                                                                                            |
-| `packages/icons`  | `@greese/icons`: every icon (`createIcon`); `@greese/react` depends on it (ADR 0020)                                                                                                      |
-| `packages/svg`    | `@greese/svg`: SVG paths, shapes, morphs, stroke slices and definitions; no dependencies. Its React components are `packages/react/src/svg` (`@greese/react/svg`, ADR 0031)               |
-| `packages/mcp`    | `@greese/mcp`: the MCP server for coding assistants (ADR 0022)                                                                                                                            |
-| `apps/docs`       | The docs' source: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`. Storybook runs them for authoring and visual tests; the web app renders them at `/docs`      |
-| `apps/playground` | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                                                                                                                     |
-| `apps/site`       | The web app: the homepage at `/`, the docs at `/docs` and Theme Studio at `/studio` (`npm run studio`: edits a theme JSON, generates kit SCSS + CSS)                                      |
+| Path                 | What                                                                                                                                                                                      |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/ui`        | `@greese/ui`, framework-free: tokens in `src/tokens.ts`, `createTheme`, the scheme script, every component's SCSS (`src/components/<Name>/<Name>.scss`), the Sass kit, the style manifest |
+| `packages/react`     | `@greese/react`: components in `src/components/<Name>/<Name>.tsx`; styled by `@greese/ui`                                                                                                 |
+| `packages/js`        | `@greese/js` (greese.js): animation; no dependencies, no React                                                                                                                            |
+| `packages/icons`     | `@greese/icons`: every icon (`createIcon`); `@greese/react` depends on it (ADR 0020)                                                                                                      |
+| `packages/svg`       | `@greese/svg`: SVG paths, shapes, morphs, stroke slices and definitions; no dependencies. Its React components are `packages/react/src/svg` (`@greese/react/svg`, ADR 0031)               |
+| `packages/mcp`       | `@greese/mcp`: the MCP server for coding assistants (ADR 0022)                                                                                                                            |
+| `packages/authoring` | `@greese/authoring`: editor UI (docking, layout specs, a Redux store per editor), React-only with its own CSS; Redux is a peer (ADR 0035)                                                 |
+| `apps/docs`          | The docs' source: `stories/<Category>/<Name>.stories.tsx`, guides in `stories/guides/*.mdx`. Storybook runs them for authoring and visual tests; the web app renders them at `/docs`      |
+| `apps/playground`    | Vite app driven by Playwright: e2e, visual, Lighthouse, MUI benchmark                                                                                                                     |
+| `apps/site`          | The web app: the homepage at `/`, the docs at `/docs` and Theme Studio at `/studio` (`npm run studio`: edits a theme JSON, generates kit SCSS + CSS)                                      |
 
 Use npm, never yarn. Node ≥ 24.
 

@@ -3,7 +3,7 @@ import { createIcon } from './createIcon.tsx'
 /*
  * Line icons, 16 × 16 unless a call says otherwise (`viewBox`). Each is its own
  * export, so bundlers keep only the ones you import (the PURE marks tell
- * bundlers the calls have no side effects). Paths are drawn for a 1.75 stroke
+ * bundlers the calls have no side effects). Paths are drawn for a 1.5 stroke
  * with round caps and joins, or the stroke a call names. Sorted by name.
  *
  * Every icon greese ui or its apps draw lives here: add one to this file rather
