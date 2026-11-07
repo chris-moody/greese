@@ -26,6 +26,7 @@ export {
   type ColorScheme,
   type SchemeScriptOptions,
 } from './colorScheme.ts'
+export { copyToClipboard } from './clipboard.ts'
 export {
   createStoredValue,
   type StoredValue,
