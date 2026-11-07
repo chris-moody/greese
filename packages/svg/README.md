@@ -54,6 +54,29 @@ animate(strokeControl(el), { end: [0, 100] })
 The built-in `tween()` is there for pages without one. It respects
 `prefers-reduced-motion`.
 
+**For editors**, three more entries, each with its own budget so the main
+one doesn't carry them:
+
+- **`@greese/svg/markup`** (3 kB): a parser that records where every node and
+  attribute is in the source, a canonical serializer (pretty or minified)
+  that records where each node lands, a sanitizer, defs hoisting, id renaming
+  with reference rewriting, and id adoption across reparses.
+- **`@greese/svg/schema`** (3 kB): every SVG 2 element and filter primitive,
+  its category, what it may hold, and its typed attributes.
+- **`@greese/svg/edit`** (4 kB): segment conversion (lines, quadratics and
+  arcs to cubics and back, shorthands, absolute and relative), corner, smooth
+  and symmetric nodes, and freehand fitting (Schneider's method).
+
+```ts
+import { parseMarkup, serializeMarkup, sanitizeMarkup } from '@greese/svg/markup'
+import { attributeSpec } from '@greese/svg/schema'
+import { convertSegment, freehandPath } from '@greese/svg/edit'
+
+const { root, notices } = sanitizeMarkup(parseMarkup(file))
+attributeSpec('rect', 'rx') // { name: 'rx', type: 'length' }
+convertSegment('M0 0L30 0', 1, 'C') // [['M', 0, 0], ['C', 10, 0, 20, 0, 30, 0]]
+```
+
 **React:** `@greese/react/svg` has the components: `Drawing`, `Path`,
 `DrawPath`, `MarqueePath`, `Morph`, `LinearGradient`, `RadialGradient`,
 `Filter` (with a component per primitive, `FeFlood`, `FeGaussianBlur`…, and

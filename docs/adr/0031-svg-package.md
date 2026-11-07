@@ -168,3 +168,25 @@ untouched:
   - SMIL.
 
   Each would be a separate addition with its own budget.
+
+## Addendum (2026-11-07): entries for editors
+
+Shaper (ADR 0037, 0038) needs SVG as data and path editing. Three entries,
+each pure, Node-safe and budgeted on its own, so `@greese/svg`'s main entry,
+and `@greese/react/svg` with it, doesn't move:
+
+- **`@greese/svg/markup`** (3 kB): `parseMarkup` records every node's and
+  attribute's source range and throws `MarkupError` with a line and column;
+  `serializeMarkup` is canonical and `serializeMarkupWithRanges` reports
+  where each node lands; `sanitizeMarkup`, `hoistDefs`, `renameIds` and
+  `adoptIds` are ADR 0037's import rules and its reparse identity.
+- **`@greese/svg/schema`** (2.95 kB): one table of every SVG 2 element and
+  filter primitive, attributes written in a compact shorthand and expanded
+  on lookup, with the shared groups (core, presentation, text, primitive,
+  timing) attached by category.
+- **`@greese/svg/edit`** (3.96 kB): `convertSegment` (exact where it can be,
+  fitted within a tolerance where it can't, `null` where it can't keep the
+  shape), absolute and relative per path or per segment, node types, and
+  `freehandPath` (smoothing, then Schneider's cubic fit). Path editing went
+  in an entry of its own, rather than the main one the plan named, for the
+  same budget reason.

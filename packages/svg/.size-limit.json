@@ -46,5 +46,11 @@
     "path": "dist/schema/index.js",
     "import": "*",
     "limit": "3.1 kB"
+  },
+  {
+    "name": "@greese/svg/edit: everything",
+    "path": "dist/edit/index.js",
+    "import": "*",
+    "limit": "4.2 kB"
   }
 ]

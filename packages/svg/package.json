@@ -42,6 +42,10 @@
       "types": "./dist/schema/index.d.ts",
       "default": "./dist/schema/index.js"
     },
+    "./edit": {
+      "types": "./dist/edit/index.d.ts",
+      "default": "./dist/edit/index.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
