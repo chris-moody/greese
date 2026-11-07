@@ -4,6 +4,7 @@
  * KeyFrames and Tweens (never stored). The framework owns this pure logic; media
  * modules supply the easing so interpolation stays media-agnostic.
  */
+import { tweenEase, type TweenKeywords } from '@greese/js'
 import { FrameKind, type FrameBase, type LayerTimeline } from '../types/frame.types.ts'
 import type { Tween, TweenBoundRef } from '../types/tween.types.ts'
 
@@ -88,6 +89,21 @@ export const isEmptyAtFrame = (timeline: LayerTimeline, frame: number): boolean 
 
 /** Resolve a Tween to an easing function `(t: 0..1) => 0..1`. */
 export type TweenEaseResolver = (tween: Tween) => (t: number) => number
+
+/**
+ * The resolver every medium can use: a tween's type and bézier as greese.js
+ * draws them (`tweenEase`, ADR 0040), so the curves have one source. Pass
+ * `'css'` for media whose `easeIn`, `easeOut` and `easeInOut` are CSS's
+ * keyword curves (Pixels) rather than quadratic.
+ *
+ * ```ts
+ * sampleTweenedNumber(timeline, frame, read, tweenEaseResolver())
+ * ```
+ */
+export const tweenEaseResolver =
+  (keywords?: TweenKeywords): TweenEaseResolver =>
+  (tween) =>
+    tweenEase(tween.type, { bezier: tween.bezier, keywords })
 
 /** Options for {@link sampleTweenedNumber}. */
 export interface SampleOptions {

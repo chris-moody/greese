@@ -9,6 +9,7 @@ import {
   resolveBoundRef,
   sampleTweenedNumber,
   sampleTweenedRecord,
+  tweenEaseResolver,
 } from './tween.ts'
 import { FrameKind, type FrameBase, type LayerTimeline } from '../types/frame.types.ts'
 import { TweenType, type Tween } from '../types/tween.types.ts'
@@ -196,6 +197,32 @@ describe('sampleTweenedRecord', () => {
       rotation: -1,
       length: 5,
     })
+  })
+})
+
+describe('tweenEaseResolver', () => {
+  const tween = (type: TweenType, bezier?: Tween['bezier']): Tween => ({
+    id: 't',
+    startKeyframeId: 'a',
+    endKeyframeId: 'b',
+    type,
+    enabled: true,
+    bezier,
+  })
+
+  it('draws each type with greese.js: quadratic keywords by default, CSS for Pixels', () => {
+    const tl = (type: TweenType, bezier?: Tween['bezier']) =>
+      timeline([kf('a', 0, 0), kf('b', 10, 100)], [tween(type, bezier)])
+    expect(
+      sampleTweenedNumber(tl(TweenType.EASE_IN), 5, tweenEaseResolver())
+    ).toBeCloseTo(25)
+    expect(
+      sampleTweenedNumber(tl(TweenType.EASE_IN), 5, tweenEaseResolver('css'))
+    ).toBeCloseTo(100 * cubicBezier(0.42, 0, 1, 1)(0.5))
+    expect(sampleTweenedNumber(tl(TweenType.STEP), 5, tweenEaseResolver())).toBe(0)
+    expect(
+      sampleTweenedNumber(tl(TweenType.BEZIER, [0, 0, 1, 1]), 5, tweenEaseResolver())
+    ).toBeCloseTo(50)
   })
 })
 
