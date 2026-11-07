@@ -61,6 +61,26 @@ describe('dependenciesOf', () => {
     expect(deps.get('TextField')).toEqual(['Button'])
   })
 
+  it('ignores type-only imports: a type renders nothing', () => {
+    const { deps } = dependenciesOf(
+      [
+        component('Button', "'greese-Button'"),
+        component(
+          'Switch',
+          "import type { ControlSize } from '../Button/Button.tsx'\nimport {\n  type ButtonProps,\n} from '../Button/Button.tsx'\n'greese-Dialog'"
+        ),
+        component(
+          'Chip',
+          "import { Button, type ControlSize } from '../Button/Button.tsx'"
+        ),
+      ],
+      compiled
+    )
+    expect(deps.get('Switch')).toEqual(['Dialog'])
+    // A value import alongside a type still counts.
+    expect(deps.get('Chip')).toEqual(['Button'])
+  })
+
   it('reports classes whose block no stylesheet defines', () => {
     const { unresolved } = dependenciesOf([component('Typo', "'greese-Buton'")], compiled)
     expect(unresolved).toEqual([{ component: 'Typo', cls: 'greese-Buton' }])

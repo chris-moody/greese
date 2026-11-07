@@ -6,6 +6,22 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
+/**
+ * An import statement from a sibling component's file: group 1 is `type` for
+ * `import type`, group 2 the braced names, group 3 the component.
+ */
+const IMPORT = /^import(\s+type)?\s*(\{[^}]*\})?[^;]*?from '\.\.\/([A-Za-z]+)\/\3\.tsx'/gm
+
+/** Whether every name in `{ … }` is a type: then nothing from it renders. */
+const onlyTypes = (names: string | undefined): boolean =>
+  !!names &&
+  names
+    .slice(1, -1)
+    .split(',')
+    .map((n) => n.trim())
+    .filter(Boolean)
+    .every((n) => n.startsWith('type '))
+
 /** `greese-Button--solid` → `greese-Button`; `greese-Dialog-title` stays. */
 const CLASS = /greese-[A-Z][A-Za-z]*(?:-[a-z][A-Za-z]*)?/g
 const blockOf = (cls: string) => cls.replace(/^(greese-[A-Z][A-Za-z]*).*$/, '$1')
@@ -78,8 +94,11 @@ export const dependenciesOf = (
       else if (!withCss.has(blockOf(cls).slice('greese-'.length)))
         unresolved.push({ component: name, cls })
     }
-    for (const [, imported] of tsx.matchAll(/from '\.\.\/([A-Za-z]+)\/\1\.tsx'/g)) {
-      needed.add(imported!)
+    // Components it imports values from. A type-only import (`import type
+    // { ControlSize }`, or braces of nothing but `type` names) renders
+    // nothing, so it needs no stylesheet.
+    for (const [, typeOnly, names, imported] of tsx.matchAll(IMPORT)) {
+      if (!typeOnly && !onlyTypes(names)) needed.add(imported!)
     }
     needed.delete(name)
     deps.set(name, [...needed].sort())
