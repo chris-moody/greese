@@ -317,7 +317,28 @@ export const renameIds = (
     used.add(`${id}-${n}`)
   }
   if (!renamed.size) return { root: copy(input), notices: [], renamed }
+  const notices: MarkupNotice[] = [...renamed].map(([from, to]) => ({
+    kind: 'moved',
+    what: `#${from} renamed #${to}`,
+  }))
+  return { root: renameReferences(input, renamed), notices, renamed }
+}
 
+/**
+ * Renames ids and rewrites every reference to them, by a map of old to new:
+ * `url(#…)` in any attribute and in `<style>`, `#id` selectors there, `href`
+ * and `xlink:href` of `#id`, ARIA id lists and SMIL `begin`/`end`. A colour that
+ * spells an id (`#fed`) and a filter primitive's `in` (a result name) stay.
+ *
+ * ```ts
+ * renameReferences(root, new Map([['sky', 'dusk']]))
+ * ```
+ */
+export const renameReferences = (
+  input: MarkupNode,
+  renamed: ReadonlyMap<string, string>
+): MarkupNode => {
+  if (!renamed.size) return copy(input)
   const pattern = new RegExp(
     `#(${[...renamed.keys()].map(escapeRegExp).join('|')})(?![\\w-])`,
     'g'
@@ -365,11 +386,20 @@ export const renameIds = (
       children: node.children.map((c) => visit(c, style)),
     }
   }
-  const notices: MarkupNotice[] = [...renamed].map(([from, to]) => ({
-    kind: 'moved',
-    what: `#${from} renamed #${to}`,
-  }))
-  return { root: visit(input, false), notices, renamed }
+  return visit(input, false)
+}
+
+/** How many references an id has, counted as `renameReferences` would rewrite them. */
+export const countReferences = (root: MarkupNode, id: string): number => {
+  const marker = `\u0000${id}\u0000`
+  const swapped = renameReferences(root, new Map([[id, marker]]))
+  let count = 0
+  for (const node of walkMarkup(swapped)) {
+    for (const [name, value] of Object.entries(node.attrs))
+      if (name !== 'id') count += value.split(marker).length - 1
+    if (node.text) count += node.text.split(marker).length - 1
+  }
+  return count
 }
 
 /**

@@ -24,9 +24,11 @@ export {
 export {
   adoptIds,
   collectIds,
+  countReferences,
   DEFINITION_TAGS,
   hoistDefs,
   renameIds,
+  renameReferences,
   sanitizeMarkup,
   type MarkupNotice,
   type MarkupResult,

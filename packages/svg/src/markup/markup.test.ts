@@ -362,3 +362,20 @@ describe('adoptIds', () => {
     expect(rect!.attrs.x).toBe('1')
   })
 })
+
+describe('renameReferences and countReferences', () => {
+  it('renames by a map and counts what it would rewrite', async () => {
+    const { renameReferences, countReferences } = await import('./index.ts')
+    const root = parseMarkup(
+      '<svg aria-labelledby="t"><title id="t"/><linearGradient id="fff"/><rect fill="url(#fff)" stroke="#fff"/><use href="#fff"/></svg>'
+    )
+    expect(countReferences(root, 'fff')).toBe(2)
+    expect(countReferences(root, 't')).toBe(1)
+    const out = serializeMarkup(renameReferences(root, new Map([['fff', 'sky']])), {
+      pretty: false,
+    })
+    expect(out).toBe(
+      '<svg aria-labelledby="t"><title id="t"/><linearGradient id="sky"/><rect fill="url(#sky)" stroke="#fff"/><use href="#sky"/></svg>'
+    )
+  })
+})
