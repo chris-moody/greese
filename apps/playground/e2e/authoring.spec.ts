@@ -89,3 +89,19 @@ test('dragging a tab to the workspace’s bottom edge docks it across the whole 
   )
   expect(library.height).toBeGreaterThan(100)
 })
+
+test('docking a FREE panel moves it: it stops floating, so there is one Notes', async ({
+  page,
+}) => {
+  const target = await box(group(page, 'Properties'))
+  await drag(page, page.getByRole('tab', { name: 'Notes' }), {
+    x: target.x + target.width / 2,
+    y: target.y + target.height / 2,
+  })
+  await expect(page.getByRole('tab', { name: 'Notes' })).toHaveCount(1)
+  await expect(page.getByText('Notes body')).toHaveCount(1)
+  await expect(group(page, 'Properties').getByRole('tab')).toHaveText([
+    'Properties',
+    'Notes',
+  ])
+})

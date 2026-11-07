@@ -23,6 +23,9 @@ const panels = [
   panel('layers', 'Layers'),
   panel('library', 'Library'),
   panel('properties', 'Properties'),
+  // Floats from its registration until it's moved: in the stage's top-left
+  // corner, clear of the drop points the tests use.
+  { ...panel('notes', 'Notes'), area: PanelArea.FREE, x: 136, y: 8 },
 ]
 
 // Narrow enough for a phone: both side columns and the stage fit in 390px.
