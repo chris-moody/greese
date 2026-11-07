@@ -3,7 +3,8 @@
  *
  *   virtual:greese-docgen  react-docgen-typescript over packages/react (its
  *                          components and @greese/react/svg) and
- *                          packages/icons, as Storybook reads them (same
+ *                          packages/icons and packages/authoring, as
+ *                          Storybook reads them (same
  *                          parser, same filter), keyed by component name
  *
  * About a second for the whole library; redone when a component's source
@@ -19,6 +20,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../../..')
 const COMPONENTS = join(ROOT, 'packages/react/src/components')
 const SVG = join(ROOT, 'packages/react/src/svg')
 const ICONS = join(ROOT, 'packages/icons/src')
+const AUTHORING = join(ROOT, 'packages/authoring/src/components')
 const ID = 'virtual:greese-docgen'
 
 export interface PropDoc {
@@ -44,6 +46,9 @@ const sources = (): string[] => [
   ...readdirSync(SVG)
     .filter((f) => /^[A-Z]\w*\.tsx$/.test(f))
     .map((f) => join(SVG, f)),
+  ...readdirSync(AUTHORING, { recursive: true, encoding: 'utf8' })
+    .filter((f) => /^[A-Z]\w*\/[A-Z]\w*\.tsx$/.test(f))
+    .map((f) => join(AUTHORING, f)),
   join(ICONS, 'icons.tsx'),
   join(ICONS, 'createIcon.tsx'),
 ]

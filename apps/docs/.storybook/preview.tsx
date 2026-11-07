@@ -160,6 +160,7 @@ const preview: Preview = {
           'Motion',
           'SVG',
           'Utilities',
+          'Authoring',
         ],
       },
     },

@@ -8,6 +8,9 @@ const reactSrc = fileURLToPath(new URL('../../../packages/react/src', import.met
 const uiSrc = fileURLToPath(new URL('../../../packages/ui/src', import.meta.url))
 const iconsSrc = fileURLToPath(new URL('../../../packages/icons/src', import.meta.url))
 const svgSrc = fileURLToPath(new URL('../../../packages/svg/src', import.meta.url))
+const authoringSrc = fileURLToPath(
+  new URL('../../../packages/authoring/src', import.meta.url)
+)
 
 const config: StorybookConfig = {
   framework: '@storybook/react-vite',
@@ -34,6 +37,7 @@ const config: StorybookConfig = {
         '**/*.tsx',
         '../../packages/react/src/**/*.tsx',
         '../../packages/icons/src/**/*.tsx',
+        '../../packages/authoring/src/**/*.tsx',
       ],
       tsconfigPath: '../../packages/react/tsconfig.json',
       shouldRemoveUndefinedFromOptional: true,
@@ -65,6 +69,16 @@ const config: StorybookConfig = {
         { find: /^@greese\/react$/, replacement: `${reactSrc}/index.ts` },
         { find: /^@greese\/react\/svg$/, replacement: `${reactSrc}/svg/index.ts` },
         { find: /^@greese\/svg$/, replacement: `${svgSrc}/index.ts` },
+        // @greese/authoring (ADR 0035): its components, entries and SCSS.
+        {
+          find: /^@greese\/authoring\/styles\.css$/,
+          replacement: `${authoringSrc}/styles/index.scss`,
+        },
+        {
+          find: /^@greese\/authoring\/(core|state)$/,
+          replacement: `${authoringSrc}/$1/index.ts`,
+        },
+        { find: /^@greese\/authoring$/, replacement: `${authoringSrc}/index.ts` },
         // The icons from source too, so their props tables read their TSDoc.
         { find: /^@greese\/icons$/, replacement: `${iconsSrc}/index.ts` },
       ],

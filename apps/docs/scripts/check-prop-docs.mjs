@@ -15,6 +15,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 const react = join(here, '../../../packages/react')
 const componentsDir = join(react, 'src/components')
 const svgDir = join(react, 'src/svg')
+const authoringSrc = join(here, '../../../packages/authoring/src')
 
 const files = readdirSync(componentsDir, { withFileTypes: true })
   .filter((d) => d.isDirectory())
@@ -28,6 +29,12 @@ const files = readdirSync(componentsDir, { withFileTypes: true })
       .filter((f) => /^[A-Z]\w*\.tsx$/.test(f))
       .map((f) => join(svgDir, f))
   )
+  // @greese/authoring's components (ADR 0035).
+  .concat(
+    readdirSync(join(authoringSrc, 'components'), { recursive: true, encoding: 'utf8' })
+      .filter((f) => /^[A-Z]\w*\/[A-Z]\w*\.tsx$/.test(f))
+      .map((f) => join(authoringSrc, 'components', f))
+  )
 
 // Only what the library exports: internal helpers have no props table.
 const barrel = readFileSync(join(componentsDir, 'index.ts'), 'utf8')
@@ -40,6 +47,13 @@ for (const [, file] of barrel.matchAll(/export \* from '\.\/(.+)'/g)) {
 
 const svgBarrel = readFileSync(join(svgDir, 'index.ts'), 'utf8')
 for (const [, names] of svgBarrel.matchAll(/export \{([^}]+)\} from '\.\/.+\.tsx'/g))
+  for (const name of names.split(',').map((n) => n.trim()))
+    if (/^[A-Z]/.test(name)) exported.add(name)
+
+const authoringBarrel = readFileSync(join(authoringSrc, 'index.ts'), 'utf8')
+for (const [, names] of authoringBarrel.matchAll(
+  /export \{([^}]+)\} from '\.\/.+\.tsx'/g
+))
   for (const name of names.split(',').map((n) => n.trim()))
     if (/^[A-Z]/.test(name)) exported.add(name)
 

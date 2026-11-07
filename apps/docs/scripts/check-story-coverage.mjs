@@ -1,5 +1,6 @@
 /**
- * Fails when a component exported from @greese/react (or @greese/react/svg)
+ * Fails when a component exported from @greese/react (or @greese/react/svg,
+ * or @greese/authoring)
  * has no page of its own: every PascalCase export must be some story meta's `component`, so it
  * gets a docs page with its props table and Styling section. Being listed in
  * a parent's `subcomponents` (AccordionItem under Accordion) isn't enough;
@@ -13,6 +14,7 @@ import { fileURLToPath } from 'node:url'
 const here = dirname(fileURLToPath(import.meta.url))
 const componentsDir = join(here, '../../../packages/react/src/components')
 const svgDir = join(here, '../../../packages/react/src/svg')
+const authoringDir = join(here, '../../../packages/authoring/src')
 const storiesDir = join(here, '../stories')
 
 const barrel = readFileSync(join(componentsDir, 'index.ts'), 'utf8')
@@ -42,6 +44,16 @@ for (const [, names, file] of svgBarrel.matchAll(
   for (const name of names.split(',').map((n) => n.trim()))
     if (/^[A-Z]/.test(name) && !name.startsWith('type '))
       exported.set(name, join('../svg', file))
+}
+
+// So does @greese/authoring's root entry (ADR 0035).
+const authoringBarrel = readFileSync(join(authoringDir, 'index.ts'), 'utf8')
+for (const [, names, file] of authoringBarrel.matchAll(
+  /export \{([^}]+)\} from '\.\/(.+\.tsx)'/g
+)) {
+  for (const name of names.split(',').map((n) => n.trim()))
+    if (/^[A-Z]/.test(name) && !name.startsWith('type '))
+      exported.set(name, join('../../../authoring/src', file))
 }
 
 const missing = [...exported].filter(([name]) => !documented.has(name))

@@ -10,11 +10,14 @@
     "lint": "eslint stories .storybook scripts --max-warnings 0 && node scripts/check-story-coverage.mjs && node scripts/check-prop-docs.mjs"
   },
   "dependencies": {
+    "@greese/authoring": "*",
     "@greese/icons": "*",
     "@greese/react": "*",
     "@greese/ui": "*",
+    "@reduxjs/toolkit": "^2.11.2",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@greese/eslint-config": "*",
