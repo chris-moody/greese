@@ -21,6 +21,19 @@ export {
   LayerTreeItem,
   type LayerTreeItemProps,
 } from './components/LayerTree/LayerTreeItem.tsx'
+export {
+  LibraryAssetItem,
+  type LibraryAssetItemProps,
+} from './components/Library/LibraryAssetItem.tsx'
+export {
+  LibraryPanel,
+  type LibraryPanelProps,
+} from './components/Library/LibraryPanel.tsx'
+export {
+  SymbolCreateDialog,
+  type SymbolCreateDialogProps,
+  type SymbolTypeOption,
+} from './components/Library/SymbolCreateDialog.tsx'
 export { PanelDock, type PanelDockProps } from './components/PanelDock/PanelDock.tsx'
 export {
   AuthoringBreadcrumbs,

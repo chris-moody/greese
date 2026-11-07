@@ -4,4 +4,9 @@
     flex-shrink: 0;
     margin-inline-end: var(--greese-space-2);
   }
+
+  // A library row's Open button, clear of the row's end.
+  .greese-LibraryPanel-open {
+    margin-inline-end: var(--greese-space-2);
+  }
 }

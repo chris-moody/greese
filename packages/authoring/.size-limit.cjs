@@ -95,6 +95,23 @@ module.exports = [
     limit: '10.4 kB',
   },
   {
+    name: '@greese/authoring: LibraryPanel and an environment',
+    path: 'dist/index.js',
+    import: '{ LibraryPanel, createAuthoringEnvironment }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+    ],
+    // The library list, its rows, the add-symbol dialog, naming and
+    // navigation, over the store's state layer (12.7 kB).
+    limit: '13.6 kB',
+  },
+  {
     name: '@greese/authoring/styles.css',
     path: 'dist/styles.css',
     rolldown: false,
