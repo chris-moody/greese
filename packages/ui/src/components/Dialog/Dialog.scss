@@ -126,6 +126,11 @@ $widths: (
   .greese-Dialog-body {
     flex: 1 1 auto;
     min-block-size: 0;
+
+    // Room for a focus ring at its edges, which its scrolling would clip; the
+    // margin gives it back, so the content stays where it was.
+    padding: 4px;
+    margin: -4px;
     overflow: auto;
     overscroll-behavior: contain;
   }

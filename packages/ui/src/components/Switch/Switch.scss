@@ -53,11 +53,14 @@
     transition: translate var(--greese-duration-fast) var(--greese-easing-standard);
   }
 
+  // The track's width less the thumb and a margin each side (the thumb is
+  // 0.889 of a box and the track 2), so it ends inside the track at every
+  // size: a fixed 1rem overshot the small one.
   .greese-Switch-input:checked + .greese-Switch-thumb {
-    translate: 1rem 0;
+    translate: calc(125% - 0.25rem) 0;
 
     &:dir(rtl) {
-      translate: -1rem 0;
+      translate: calc(0.25rem - 125%) 0;
     }
   }
 }
