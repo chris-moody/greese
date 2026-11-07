@@ -168,3 +168,59 @@ export {
   type CodeEditorProps,
   type HighlightedProps,
 } from './components/CodeEditor/CodeEditor.tsx'
+export { Timeline, type TimelineProps } from './timeline/Timeline/Timeline.tsx'
+export {
+  TimelineHeader,
+  type TimelineHeaderProps,
+} from './timeline/TimelineHeader/TimelineHeader.tsx'
+export {
+  TimelinePanel,
+  type TimelinePanelProps,
+} from './timeline/TimelinePanel/TimelinePanel.tsx'
+export {
+  TimelineLevelEditor,
+  type TimelineLevelEditorProps,
+} from './timeline/levelEditor/TimelineLevelEditor.tsx'
+export {
+  SpanActivityChart,
+  type SpanActivityChartProps,
+} from './timeline/spanChart/SpanActivityChart.tsx'
+export {
+  mapAdapterResultToChartGeometry,
+  useSpanChartGeometry,
+  type SpanChartGeometry,
+  type SpanChartLineGeometry,
+  type SpanChartRowGeometry,
+} from './timeline/spanChart/spanChartGeometry.ts'
+export { TweenPanel } from './panels/TweenPanel/TweenPanel.tsx'
+export { MarkerPanel } from './panels/MarkerPanel/MarkerPanel.tsx'
+export {
+  AuthoringView,
+  type AuthoringViewProps,
+} from './components/AuthoringView/AuthoringView.tsx'
+export {
+  LayerContextMenu,
+  type LayerContextMenuProps,
+} from './components/LayerTree/LayerContextMenu.tsx'
+export { usePlaybackClock } from './timeline/usePlaybackClock.ts'
+export {
+  PULSE_DECAY_MS,
+  usePulseClock,
+  type PulseClockHandle,
+  type PulseEntry,
+} from './timeline/usePulseClock.ts'
+export { useTimelineEditing } from './timeline/useTimelineEditing.ts'
+export { useTimelineKeymap } from './timeline/useTimelineKeymap.ts'
+export { useTimelineResolution } from './timeline/useTimelineResolution.ts'
+export {
+  autoKeyframeAction,
+  autoKeyframesAction,
+  autoKeyframeSource,
+} from './timeline/autoKeyframe.ts'
+export {
+  useLevelEditorInteractions,
+  type LevelEditorInteractions,
+  type LevelEditorMarquee,
+} from './timeline/levelEditor/useLevelEditorInteractions.ts'
+export { useLevelEditorEditing } from './timeline/levelEditor/useLevelEditorEditing.ts'
+export { useHoldRepeat, type HoldRepeatOptions } from './hooks/useHoldRepeat.ts'

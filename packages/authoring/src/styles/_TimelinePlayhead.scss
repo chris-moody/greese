@@ -1,0 +1,39 @@
+// Ported from Glop's playhead.module.scss.
+
+@layer greese.components {
+  // Playhead: the full-height line and its draggable ruler tab. See
+  // `layout.module.scss` for the convention on inline vs attribute-driven
+  // geometry that governs every file in this family.
+
+  // Playhead: vertical line + draggable tab, spanning the frames column.
+  .greese-TimelinePlayhead-playheadRoot {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0.75;
+  }
+
+  .greese-TimelinePlayhead-playheadLine {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: var(--greese-color-negative);
+    opacity: 0.75;
+  }
+
+  .greese-TimelinePlayhead-playheadTab {
+    position: sticky;
+    top: 0;
+    margin-left: -6px;
+    width: 12px;
+    height: var(--greese-timeline-ruler-height);
+    background-color: var(--greese-color-negative);
+    opacity: 0.75;
+    cursor: ew-resize;
+    pointer-events: all;
+  }
+}

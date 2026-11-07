@@ -1,0 +1,59 @@
+// Ported from Glop's pulse.module.scss.
+
+@layer greese.components {
+  // Temporal Guide overlay, driven by `usePulseClock`: the transient pulse-flash
+  // layer and the playhead's fading echo ring. See `layout.module.scss` for the
+  // convention on inline vs attribute-driven geometry that governs every file in
+  // this family.
+
+  // Transient overlay hosting the per-boundary pulse flashes. Never intercepts
+  // pointer events.
+  .greese-TimelinePulse-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  // A single boundary's transient flash — a thin full-height bar, positioned
+  // like `.tick`. The color comes from the layer's own token; opacity and width
+  // the caller drives inline from `usePulseClock`'s per-entry age (fresh =
+  // brighter and wider, decayed = fading toward invisible), a pure numeric value
+  // and the same convention as `.tick` and the bound handle's inline `left`.
+  .greese-TimelinePulse-flash {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+    background-color: var(
+      --greese-authoring-timeline-pulse-subdivision,
+      var(--greese-color-primary)
+    );
+
+    // A measure boundary, and a loop boundary, read as the heavier accent.
+    &[data-layer='measure'],
+    &[data-layer='loop'] {
+      background-color: var(
+        --greese-authoring-timeline-pulse-measure,
+        color-mix(in oklab, var(--greese-color-warning) 65%, var(--greese-color-surface))
+      );
+    }
+  }
+
+  // The playhead's fading echo ring, driven by `usePulseClock`'s beat phase.
+  .greese-TimelinePulse-echo {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    border-radius: 50%;
+    border: 1px solid
+      var(
+        --greese-authoring-timeline-pulse-echo,
+        color-mix(in oklab, var(--greese-color-negative) 65%, var(--greese-color-surface))
+      );
+    pointer-events: none;
+  }
+}

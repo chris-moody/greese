@@ -1,0 +1,121 @@
+// Ported from Glop's markers.module.scss.
+
+@layer greese.components {
+  // Timeline markers: the full-height line, its ruler tab, the invisible hit
+  // strip, the Marker-tool input backdrop, and the hover label. See
+  // `layout.module.scss` for the convention on inline vs attribute-driven
+  // geometry that governs every file in this family.
+
+  // Root of one marker — a single object spanning the whole frames column, like
+  // `.playheadRoot`: a ruler tab plus a full-height line. Children opt back into
+  // pointer events (the root itself is zero-wide and inert).
+  .greese-TimelineMarkers-marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  // The line and the tab share one state → color mapping, so it is declared once
+  // here as a local custom property and reassigned by the state attributes. Both
+  // elements carry those attributes, which is why the selectors sit on each.
+  .greese-TimelineMarkers-line,
+  .greese-TimelineMarkers-tab {
+    --greese-timeline-marker-color: var(
+      --greese-authoring-timeline-marker,
+      var(--greese-color-warning)
+    );
+
+    &[data-hovered='true'] {
+      --greese-timeline-marker-color: var(
+        --greese-authoring-timeline-marker-hover,
+        color-mix(in oklab, var(--greese-color-warning) 65%, var(--greese-color-surface))
+      );
+    }
+
+    // Selected wins over hovered, as it did when the two were nested ternaries.
+    &[data-selected='true'] {
+      --greese-timeline-marker-color: var(
+        --greese-authoring-timeline-marker-selected,
+        var(--greese-color-secondary)
+      );
+    }
+  }
+
+  // The visible full-height line — the same visual weight as the playhead.
+  .greese-TimelineMarkers-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    margin-left: 0;
+    pointer-events: none;
+    background-color: var(--greese-timeline-marker-color);
+
+    // A selected line thickens, staying centred on its frame.
+    &[data-selected='true'] {
+      width: 2px;
+      margin-left: -1px;
+    }
+  }
+
+  // The marker's ruler tab — a downward flag pinned to the ruler while the frame
+  // rows scroll vertically (the same sticky trick as `.playheadTab`). A primary
+  // interaction surface: select/toggle on press, drag to move.
+  .greese-TimelineMarkers-tab {
+    position: sticky;
+    top: 2px;
+    margin-left: -6px;
+    width: 12px;
+    height: calc(var(--greese-timeline-ruler-height) - 4px);
+    cursor: ew-resize;
+    pointer-events: all;
+    background-color: var(--greese-timeline-marker-color);
+
+    // Pennant: square top, pointed bottom, so it reads apart from the playhead tab.
+    clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%);
+  }
+
+  // Invisible full-height hit strip around the marker line — makes the whole
+  // line grabbable (select and drag), not just the ruler tab.
+  .greese-TimelineMarkers-hitStrip {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 13px;
+    margin-left: -6px;
+    cursor: ew-resize;
+    pointer-events: all;
+  }
+
+  // Transparent Marker-tool input surface over the frame rows (below the sticky
+  // ruler, below the markers themselves): double-click adds a marker, press-drag
+  // marquee-selects markers, a plain press clears the marker selection.
+  .greese-TimelineMarkers-toolBackdrop {
+    position: absolute;
+    top: var(--greese-timeline-ruler-height);
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+  }
+
+  // Hover label showing a marker's name/position, anchored just below the ruler.
+  .greese-TimelineMarkers-label {
+    position: absolute;
+    top: calc(var(--greese-timeline-ruler-height) + 2px);
+    left: 4px;
+    padding: calc(var(--greese-space-1) / 2) var(--greese-space-1);
+    border-radius: 2px;
+    font-size: 10px;
+    font-family: var(--greese-font-mono);
+    white-space: nowrap;
+    pointer-events: none;
+    background-color: var(
+      --greese-authoring-timeline-marker-label-bg,
+      var(--greese-color-surface)
+    );
+    color: var(--greese-authoring-timeline-marker-label-text, var(--greese-color-fg));
+  }
+}

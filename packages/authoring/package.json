@@ -64,6 +64,7 @@
   },
   "dependencies": {
     "@greese/icons": "0.1.0",
+    "@greese/js": "0.1.0",
     "@greese/react": "1.1.0",
     "@greese/ui": "1.1.0"
   },

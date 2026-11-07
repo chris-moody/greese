@@ -1,0 +1,33 @@
+// Ported from Glop's timelineToolbar.module.scss.
+
+@layer greese.components {
+  // The timeline's tool switcher.
+  // The selected tool's colors come from the authoring token scope rather than
+  // greese's own pressed styling, because the studios give the active tool a
+  // filled, high-contrast treatment that the kit's default (a tinted surface)
+  // doesn't match. `aria-pressed` is the state greese's ToggleButton sets, so
+  // that is what this hooks onto — no class name of greese's own is referenced,
+  // which keeps the override from breaking if the kit renames one.
+
+  .greese-TimelineToolbar-toolbar {
+    margin-right: var(--greese-space-2);
+  }
+
+  .greese-TimelineToolbar-button[aria-pressed='true'] {
+    color: var(
+      --greese-authoring-timeline-toolbar-icon-selected,
+      var(--greese-color-primary-content)
+    );
+    background-color: var(
+      --greese-authoring-timeline-toolbar-icon-selected-bg,
+      var(--greese-color-primary)
+    );
+
+    &:hover {
+      background-color: var(
+        --greese-authoring-timeline-toolbar-icon-selected-bg,
+        var(--greese-color-primary)
+      );
+    }
+  }
+}

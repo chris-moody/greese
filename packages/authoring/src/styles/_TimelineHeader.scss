@@ -1,0 +1,36 @@
+// Ported from Glop's timelineHeader.module.scss.
+
+@layer greese.components {
+  // The timeline's transport header: the fixed row above the scroll body.
+  .greese-TimelineHeader-header {
+    display: flex;
+    align-items: center;
+    gap: var(--greese-space-1);
+    padding: 0 var(--greese-space-2);
+    height: 40px;
+    flex: 0 0 auto;
+    border-bottom: 1px solid var(--greese-color-border);
+    background-color: var(--greese-color-surface);
+  }
+
+  .greese-TimelineHeader-readout {
+    margin-left: var(--greese-space-2);
+    font-family: var(--greese-font-mono);
+    font-size: var(--greese-type-caption-font-size);
+    color: var(--greese-color-fg-muted);
+  }
+
+  .greese-TimelineHeader-spacer {
+    flex: 1 1 auto;
+  }
+
+  // Temporal Guide's layer toggles (beat/subdivision/measure/frame/loop) — a
+  // plain flex row, not a button group: each layer toggles independently, so
+  // there is no single group value and no segmented appearance to join.
+  .greese-TimelineHeader-temporalGuide {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: var(--greese-space-1);
+  }
+}

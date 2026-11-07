@@ -1,0 +1,25 @@
+@layer greese.components {
+  // The timeline's panels (TweenPanel, MarkerPanel) and dialogs.
+  .greese-AuthoringPanel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--greese-space-2);
+    padding: var(--greese-space-2);
+  }
+
+  .greese-AuthoringPanel-label {
+    font-size: var(--greese-type-caption-font-size);
+    color: var(--greese-color-fg-muted);
+  }
+
+  .greese-AuthoringPanel-empty {
+    padding: var(--greese-space-2);
+    font-size: var(--greese-type-caption-font-size);
+    color: var(--greese-color-fg-muted);
+  }
+
+  .greese-AuthoringPanel-dialogFields {
+    min-inline-size: 15rem;
+    padding-block-start: var(--greese-space-1);
+  }
+}

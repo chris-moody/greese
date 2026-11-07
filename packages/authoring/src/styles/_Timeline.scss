@@ -1,0 +1,107 @@
+// Ported from Glop's layout.module.scss.
+
+@layer greese.components {
+  // Timeline region chrome: the root, the fixed tools header, the scroll body,
+  // and the sticky label column/corner.
+  // ── The convention that governs this whole family ──────────────────────────
+  // Discrete visual variants (selection, kind, hover) are data attributes on
+  // these elements. Continuously variable per-render geometry (`left`/`top`/
+  // `width` computed from frame × frameWidth, drag deltas, pointer position, …)
+  // is deliberately left as an inline `style={{ … }}` on the consuming
+  // component: with hundreds of keyframes, ticks and markers on screen, routing
+  // that through CSS would mean writing a custom property per element per frame
+  // in exactly the drag and scrub paths this package's perf work has hardened.
+  // Don't "fix" those inline styles into classes or tokens. (Under the MUI
+  // `styled()` these files used to use, the same mistake minted a fresh emotion
+  // class per distinct value — the cost has changed shape, not gone away.)
+  // The three shared layout constants — `ROW_HEIGHT`, `LABEL_WIDTH` and
+  // `RULER_HEIGHT` from `../../constants` — arrive as the custom properties
+  // `--greese-timeline-row-height`, `--greese-timeline-label-width` and `--greese-timeline-ruler-height`, set once on the root
+  // by `Timeline.tsx`. They are TypeScript values first because the layout math
+  // needs them; this way the stylesheet reads the same numbers instead of
+  // repeating them.
+
+  // Timeline region root: header on top, scrollable body below.
+  .greese-Timeline {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  // Fixed chrome above the scroll body (the transport header). Never scrolls.
+  .greese-Timeline-tools {
+    flex: 0 0 auto;
+  }
+
+  // The single scroll container — both axes. Its height is the timeline region
+  // minus the fixed `.tools` (flex column + `min-height: 0`), so THIS is the
+  // scroller: the panel hosting the timeline must not scroll (see
+  // `PanelRegistrant.scrollable: false`). The label column pins left and the
+  // ruler/corner pin to the top via CSS sticky.
+  .greese-Timeline-bodyScroll {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    position: relative;
+    scrollbar-width: none;
+  }
+
+  .greese-Timeline-bodyRow {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: max-content;
+    min-width: 100%;
+  }
+
+  // Left column of layer labels — sticky while scrolling horizontally. Its
+  // z-index must beat EVERYTHING positioned in the frames column (ruler 3,
+  // cursor/markers 4, playhead 5, playback bound handles 6, tool overlays 2)
+  // or those slide over the label corner during horizontal scroll and steal its
+  // pointer events.
+  .greese-Timeline-labelColumn {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    flex: 0 0 auto;
+    width: var(--greese-timeline-label-width);
+    background-color: var(--greese-color-canvas);
+    border-right: 1px solid var(--greese-color-border);
+  }
+
+  // Top-left corner cell (above the labels), sticky on both axes.
+  .greese-Timeline-labelCorner {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--greese-space-2);
+    box-sizing: border-box;
+    height: var(--greese-timeline-ruler-height);
+    background-color: var(--greese-color-surface);
+    border-bottom: 1px solid var(--greese-color-border);
+  }
+
+  // Zero-height sticky slot for tool overlays (rate chart, time signature),
+  // placed in flow right below the ruler: `top` pins it vertically to the
+  // viewport while the timeline scrolls, and — with no `left` — it scrolls
+  // horizontally with the content. Its absolute children render the overlay.
+  .greese-Timeline-toolOverlaySticky {
+    position: sticky;
+    top: var(--greese-timeline-ruler-height);
+    height: 0;
+    z-index: 2;
+  }
+
+  // Right column holding the ruler, frame rows, and playhead.
+  .greese-Timeline-framesColumn {
+    flex: 0 0 auto;
+    position: relative;
+  }
+}

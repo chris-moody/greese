@@ -1,0 +1,15 @@
+// Ported from Glop's boundField.module.scss.
+
+@layer greese.components {
+  // A tween-bound row, and the controls grouped at its trailing end.
+  .greese-BoundField-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .greese-BoundField-controls {
+    display: flex;
+    align-items: center;
+  }
+}

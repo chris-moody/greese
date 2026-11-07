@@ -1,0 +1,285 @@
+// Ported from Glop's frames.module.scss.
+
+@layer greese.components {
+  // Frame-grid styles: rows, grid lines, keyframes, holds/tweens/spans, cell
+  // selection, the rubber-band marquee, and the pointer-snap cursor line. See
+  // `layout.module.scss` for the convention on inline vs attribute-driven
+  // geometry that governs every file in this family.
+  // The row proportions below (`calc(var(--greese-timeline-row-height) * 0.2)` and friends) were
+  // arithmetic in JavaScript against `ROW_HEIGHT`. They are the same fractions,
+  // computed by the browser against the custom property the root sets, so the
+  // rows stay proportional if that constant ever changes.
+
+  .greese-TimelineFrames-body {
+    position: relative;
+  }
+
+  // A held region between two keyframes (no tween) — a continuous shaded block,
+  // read-only, selectable. Sits below the keyframe diamonds.
+  // Shading encodes content: full frames (governed by a non-empty keyframe) are
+  // shaded; an empty region (governed by an empty keyframe) renders unshaded, so
+  // the row reads as "nothing here". Selection still tints them, which is why
+  // the selected rule comes after the empty one.
+  .greese-TimelineFrames-holdBlock {
+    position: absolute;
+    top: calc(var(--greese-timeline-row-height) * 0.2);
+    height: calc(var(--greese-timeline-row-height) * 0.6);
+    cursor: pointer;
+    opacity: 0.55;
+    background-color: var(
+      --greese-authoring-frame-hold,
+      color-mix(in oklab, var(--greese-color-primary) 18%, transparent)
+    );
+
+    &[data-empty='true'] {
+      background-color: transparent;
+    }
+
+    &[data-selected='true'] {
+      background-color: var(
+        --greese-authoring-frame-span-selected,
+        var(--greese-color-secondary)
+      );
+    }
+  }
+
+  // The trailing hold after a layer's last keyframe — shaded to the end of the
+  // timeline when that key is non-empty (its hold descendants are full frames).
+  // Non-interactive: clicks fall through to the row for cell selection and menus.
+  .greese-TimelineFrames-tailBlock {
+    position: absolute;
+    top: calc(var(--greese-timeline-row-height) * 0.2);
+    height: calc(var(--greese-timeline-row-height) * 0.6);
+    pointer-events: none;
+    opacity: 0.35;
+    background-color: var(
+      --greese-authoring-frame-hold,
+      color-mix(in oklab, var(--greese-color-primary) 18%, transparent)
+    );
+  }
+
+  // An interpolation region between two keyframes (an enabled tween) — a bar
+  // that reads as motion; selectable as a first-class object.
+  .greese-TimelineFrames-tweenBar {
+    position: absolute;
+    top: 50%;
+    height: 6px;
+    transform: translateY(-50%);
+    border-radius: 3px;
+    cursor: pointer;
+    background-image: linear-gradient(
+      90deg,
+      var(
+        --greese-authoring-frame-tween-start,
+        color-mix(in oklab, var(--greese-color-primary) 65%, var(--greese-color-surface))
+      ),
+      var(--greese-authoring-frame-tween-end, var(--greese-color-primary))
+    );
+
+    &[data-selected='true'] {
+      background-image: linear-gradient(
+        90deg,
+        var(
+          --greese-authoring-frame-tween-selected-start,
+          color-mix(
+            in oklab,
+            var(--greese-color-secondary) 65%,
+            var(--greese-color-surface)
+          )
+        ),
+        var(--greese-authoring-frame-tween-selected-end, var(--greese-color-secondary))
+      );
+    }
+  }
+
+  // A span (held/tween/clip) rendered as a bar across its duration.
+  .greese-TimelineFrames-spanBar {
+    position: absolute;
+    top: calc(var(--greese-timeline-row-height) * 0.25);
+    height: calc(var(--greese-timeline-row-height) * 0.5);
+    box-sizing: border-box;
+    border-radius: 3px;
+    cursor: grab;
+    opacity: 0.9;
+    background-color: var(--greese-authoring-frame-span, var(--greese-color-primary));
+    border: 1px solid
+      var(--greese-authoring-frame-keyframe-border, var(--greese-color-surface));
+
+    // A hosted activity chart needs more vertical room than the plain bar — so
+    // the bar grows, rather than the fixed row height itself.
+    &[data-has-chart='true'] {
+      top: calc(var(--greese-timeline-row-height) * 0.05);
+      height: calc(var(--greese-timeline-row-height) * 0.9);
+    }
+
+    &[data-selected='true'] {
+      background-color: var(
+        --greese-authoring-frame-span-selected,
+        var(--greese-color-secondary)
+      );
+      border-color: var(
+        --greese-authoring-frame-span-selected-border,
+        color-mix(
+          in oklab,
+          var(--greese-color-secondary) 65%,
+          var(--greese-color-surface)
+        )
+      );
+    }
+
+    // Glow the span the playhead is currently inside.
+    &[data-playing='true'] {
+      opacity: 1;
+      box-shadow:
+        0 0 0 1px var(--greese-authoring-frame-span-playing, var(--greese-color-warning)),
+        0 0 8px var(--greese-authoring-frame-span-playing, var(--greese-color-warning));
+      border-color: var(
+        --greese-authoring-frame-span-playing-border,
+        color-mix(in oklab, var(--greese-color-warning) 65%, var(--greese-color-surface))
+      );
+    }
+  }
+
+  // Left/right trim handle on a span bar.
+  .greese-TimelineFrames-spanHandle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: ew-resize;
+
+    &[data-side='left'] {
+      left: 0;
+    }
+
+    &[data-side='right'] {
+      right: 0;
+    }
+  }
+
+  // Rubber-band selection rectangle drawn over the frame grid.
+  .greese-TimelineFrames-marqueeRect {
+    position: absolute;
+    z-index: 4;
+    pointer-events: none;
+    border: 1px solid var(--greese-color-primary);
+
+    // The `…22` hex suffix these two carried is 0x22/0xff — 13% — which only
+    // worked because the color was a literal. The token is a `var()`, so the
+    // transparency happens in CSS.
+    background-color: color-mix(in srgb, var(--greese-color-primary) 13%, transparent);
+  }
+
+  // Highlight for a selected timeline cell (a frame position, keyed or empty).
+  .greese-TimelineFrames-cellHighlight {
+    position: absolute;
+    top: calc(var(--greese-timeline-row-height) * 0.1);
+    height: calc(var(--greese-timeline-row-height) * 0.8);
+    pointer-events: none;
+    box-sizing: border-box;
+    border-radius: 2px;
+    border: 1px solid var(--greese-color-secondary);
+    background-color: color-mix(in srgb, var(--greese-color-secondary) 13%, transparent);
+  }
+
+  // A layer's frame row. The per-frame cell borders are painted with a repeating
+  // gradient (one paint, no per-cell DOM) so any number of frames stays cheap;
+  // the frame width arrives inline, to keep the grid aligned to the current zoom.
+  .greese-TimelineFrames-frameRow {
+    position: relative;
+    box-sizing: border-box;
+    height: var(--greese-timeline-row-height);
+    cursor: pointer;
+    border-bottom: 1px solid var(--greese-color-border);
+  }
+
+  // One vertical frame-grid line, spanning every row. Rendered from the
+  // resolution's snap points (windowed, one div per line) instead of a per-row
+  // repeating gradient, so non-uniform grids (musical triplets, bars of varying
+  // signature) land on their true tick positions.
+  .greese-TimelineFrames-gridLine {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: var(--greese-color-border);
+    pointer-events: none;
+  }
+
+  // Keyframe indicator, centred on its frame (only keyframes render — sparse). A
+  // `poseFrame` kind (a reference to a named pose) renders green to distinguish
+  // it from a plain authored keyframe. An *empty* keyframe renders as a hollow
+  // diamond — stroke only, no fill — since it keys the absence of content.
+  // Fill and border are one state machine with three inputs (kind, empty,
+  // selected), so the diamond's own color is a local custom property and each
+  // rule below reassigns just that. The cascade order is the ternary order the
+  // JavaScript had: kind first, then selection, then emptiness, which wins.
+  .greese-TimelineFrames-keyframeDiamond {
+    --greese-timeline-diamond-color: var(
+      --greese-authoring-frame-keyframe,
+      var(--greese-color-primary)
+    );
+    --greese-timeline-diamond-border: var(
+      --greese-authoring-frame-keyframe-border,
+      var(--greese-color-surface)
+    );
+
+    position: absolute;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    box-sizing: border-box;
+    transform: translate(-50%, -50%) rotate(45deg);
+    cursor: pointer;
+    background-color: var(--greese-timeline-diamond-color);
+    border: 1px solid var(--greese-timeline-diamond-border);
+
+    &[data-kind='poseFrame'] {
+      --greese-timeline-diamond-color: var(
+        --greese-authoring-frame-pose,
+        var(--greese-color-positive)
+      );
+    }
+
+    &[data-selected='true'] {
+      --greese-timeline-diamond-color: var(
+        --greese-authoring-frame-keyframe-selected,
+        var(--greese-color-secondary)
+      );
+      --greese-timeline-diamond-border: var(
+        --greese-authoring-frame-keyframe-selected-border,
+        color-mix(
+          in oklab,
+          var(--greese-color-secondary) 65%,
+          var(--greese-color-surface)
+        )
+      );
+
+      width: 11px;
+      height: 11px;
+    }
+
+    // An empty keyframe is a hollow diamond: no fill, and a slightly heavier
+    // stroke in whatever color the fill would have been. `--greese-timeline-diamond-color` is
+    // still the right source for that stroke, which is why this rule reads it
+    // rather than restating the cases above.
+    &[data-empty='true'] {
+      background-color: transparent;
+      border: 1.5px solid var(--greese-timeline-diamond-color);
+    }
+  }
+
+  // Snapping cursor line: tracks the pointer over the frames area, hidden during drags.
+  .greese-TimelineFrames-cursorLine {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    z-index: 4;
+    pointer-events: none;
+    background-color: var(
+      --greese-authoring-timeline-cursor,
+      var(--greese-color-fg-muted)
+    );
+  }
+}

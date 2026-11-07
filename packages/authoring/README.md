@@ -34,7 +34,9 @@ It has:
   with no dependency, lights a span, and keeps its selection in step with a
   canvas. Its palette is `pkg:@greese/authoring/scss/code`.
 
-The timeline follows, moved from Glop's authoring framework (see the ADRs).
+- **The timeline:** `Timeline` (frames, keyframes, tweens, spans, markers,
+  playback bounds, the rate and time-signature tools), played on greese.js,
+  with `TweenPanel`, `MarkerPanel` and `AuthoringView`, a whole editor.
 
 ## Install
 

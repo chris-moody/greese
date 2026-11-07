@@ -1,0 +1,22 @@
+// Ported from Glop's timeModeToggle.module.scss.
+
+@layer greese.components {
+  // The time-mode switch, sized for the timeline transport's dense row. greese's
+  // `sm` segmented control is still taller than this strip allows, so the
+  // padding and the icon size are set here.
+
+  .greese-TimeModeToggle-control {
+    // No label is shown, so the fieldset shouldn't reserve room for one.
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .greese-TimeModeToggle-segment {
+    padding: 2px;
+  }
+
+  .greese-TimeModeToggle-icon {
+    display: block;
+  }
+}

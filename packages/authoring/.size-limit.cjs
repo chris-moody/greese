@@ -7,6 +7,9 @@ module.exports = [
     name: '@greese/authoring/core: everything',
     path: 'dist/core/index.js',
     import: '*',
+    // greese.js's cubicBezier is the tween sampler's (ADR 0036); an app has
+    // greese.js anyway, as with the other greese packages.
+    ignore: ['@greese/js'],
     // 3 → 7 kB (2026-11-06): Glop's framework types and pure helpers joined
     // the layout tree: timing model, tick maths, musical and animation time
     // resolutions, the tree and layer helpers, viewport maths (6.41 kB).
@@ -18,7 +21,11 @@ module.exports = [
     // 8.2 → 9 kB (2026-11-07): the tool registry (hotkeys, flattening) and
     // the paint and gradient maths: direction, type and kind switches, stop
     // blending (8.73 kB).
-    limit: '9 kB',
+    // 9 → 12.7 kB (2026-11-07): the timeline's pure helpers from Glop (step
+    // 8): frame evaluation and tween sampling, curve and bezier presets, the
+    // level editor's curve, span playback and the ruler's label tiers
+    // (12.44 kB, greese.js's cubicBezier left out as an app's anyway).
+    limit: '12.7 kB',
   },
   {
     name: '@greese/authoring/state: everything',
@@ -42,6 +49,7 @@ module.exports = [
       'immer',
       '@greese/react',
       '@greese/icons',
+      '@greese/js',
     ],
     // 6.4 → 12 kB (2026-11-06): an environment's store now has every
     // framework slice, so a dock costs the whole state layer (11.1 kB).
@@ -59,6 +67,7 @@ module.exports = [
       'immer',
       '@greese/react',
       '@greese/icons',
+      '@greese/js',
     ],
     // The tree, its rows and folders, its keyboard and drag handling, and the
     // tree helpers it reorders with (4.32 kB).
@@ -76,9 +85,15 @@ module.exports = [
       'immer',
       '@greese/react',
       '@greese/icons',
+      '@greese/js',
     ],
     // The tree, its layer rows, and the store's whole state layer (11.89 kB).
-    limit: '12.8 kB',
+    // 12.8 → 15.6 kB (2026-11-07): the tree opens its own LayerContextMenu,
+    // which pastes keyframes into a layer through the timeline's editing
+    // hook (its clipboard and edit helpers), the step-8 work the menu waited
+    // for (15.39 kB). Loading it lazily measured worse: size-limit counts the
+    // chunk, plus its overhead.
+    limit: '15.6 kB',
   },
   {
     name: '@greese/authoring: StageHost and StageContext',
@@ -92,6 +107,7 @@ module.exports = [
       'immer',
       '@greese/react',
       '@greese/icons',
+      '@greese/js',
     ],
     // The stage, its driver (sampling, reconciling, selection), navigation
     // and instance creation, over the store's state layer (9.57 kB).
@@ -109,6 +125,7 @@ module.exports = [
       'immer',
       '@greese/react',
       '@greese/icons',
+      '@greese/js',
     ],
     // The library list, its rows, the add-symbol dialog, naming and
     // navigation, over the store's state layer (12.7 kB).
@@ -126,6 +143,7 @@ module.exports = [
       'immer',
       '@greese/react',
       '@greese/icons',
+      '@greese/js',
     ],
     // The toolbar, its buttons and flyouts, the hotkey table and the cursor
     // builder: no store (2.1 kB).
@@ -143,6 +161,7 @@ module.exports = [
       'immer',
       '@greese/react',
       '@greese/icons',
+      '@greese/js',
     ],
     // The nav bar's slots, Back and its history menu, the environment
     // picker and the accent: no store (646 B).
@@ -160,10 +179,50 @@ module.exports = [
       'immer',
       '@greese/react',
       '@greese/icons',
+      '@greese/js',
     ],
     // The paint field, the gradient editor and its stop bar, the gradient
     // maths, the property grid and the toggle select: no store (2.89 kB).
     limit: '3.1 kB',
+  },
+  {
+    name: '@greese/authoring: Timeline and an environment',
+    path: 'dist/index.js',
+    import: '{ Timeline, createAuthoringEnvironment }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+      '@greese/js',
+    ],
+    // Glop's whole timeline (step 8): rows of frames, keyframes, tweens and
+    // spans, the ruler, playhead, bounds, markers, pulses, the rate,
+    // time-signature and marker tools, the level editor, the span chart, its
+    // header and toolbar, the keymap, clipboard and editing hooks, and the
+    // greese.js clock, over the store (30.7 kB).
+    limit: '31.5 kB',
+  },
+  {
+    name: '@greese/authoring: AuthoringView, a whole editor',
+    path: 'dist/index.js',
+    import: '{ AuthoringView, createAuthoringEnvironment }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+      '@greese/js',
+    ],
+    // The editor shell: the dock, the stage (host, context bar, rulers) and
+    // the timeline, with undo and redo keys (36.94 kB).
+    limit: '37.5 kB',
   },
   {
     name: '@greese/authoring/styles.css',
@@ -180,6 +239,11 @@ module.exports = [
     // 2.6 → 3.1 kB (2026-11-07): the property grid's subgrid rows, the
     // gradient stop bar (preview, stops and their touch-sized hit areas), the
     // paint field and the toggle select (2.85 kB).
-    limit: '3.1 kB',
+    // 3.1 → 5.7 kB (2026-11-07): the timeline (frames, keyframes, tweens,
+    // spans, markers, ruler, playhead, bounds, pulses, level editor, span
+    // chart), its header and toolbar, the tween and marker panels and the
+    // authoring view, about 2.4 kB (5.49 kB). One stylesheet still: most
+    // editors have a timeline, and a second import is one to forget.
+    limit: '5.7 kB',
   },
 ]

@@ -1,0 +1,21 @@
+// Ported from Glop's pasteMappingDialog.module.scss.
+
+@layer greese.components {
+  // One missing source layer and the choice of what to do with it.
+  .greese-PasteMappingDialog-row {
+    display: flex;
+    align-items: center;
+    gap: var(--greese-space-4);
+    margin: var(--greese-space-2) 0;
+    min-width: 320px;
+  }
+
+  // The source layer's id — monospace, and truncated rather than wrapped.
+  .greese-PasteMappingDialog-source {
+    flex: 1;
+    font-family: var(--greese-font-mono);
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

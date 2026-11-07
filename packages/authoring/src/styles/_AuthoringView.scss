@@ -1,0 +1,34 @@
+@layer greese.components {
+  // A whole editor: the dock fills it, the stage and timeline in their leaves.
+  .greese-AuthoringView {
+    display: flex;
+    flex-direction: column;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: hidden;
+    color: var(--greese-color-fg);
+    background-color: var(--greese-color-canvas);
+
+    > .greese-PanelDock {
+      flex: 1 1 auto;
+      min-block-size: 0;
+    }
+  }
+
+  // The stage's leaf: its context bar over the render surface.
+  .greese-AuthoringView-stage {
+    display: flex;
+    flex-direction: column;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: hidden;
+  }
+
+  // Where the renderer mounts; floating panels and rulers sit over it.
+  .greese-AuthoringView-canvas {
+    position: relative;
+    flex: 1 1 auto;
+    min-block-size: 0;
+    overflow: hidden;
+  }
+}

@@ -1,0 +1,11 @@
+// Ported from Glop's spanChart.module.scss.
+
+@layer greese.components {
+  // Fills the hosting span bar; the chart itself never intercepts pointer events.
+  .greese-TimelineSpanChart {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+}

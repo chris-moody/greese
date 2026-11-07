@@ -1,0 +1,134 @@
+// Ported from Glop's ruler.module.scss.
+
+@layer greese.components {
+  // Frame ruler, its ticks, and the playback in/out bound handles that pin to
+  // it. See `layout.module.scss` for the convention on inline vs attribute-driven
+  // geometry that governs every file in this family.
+
+  // Frame ruler — first in the frames column's flow, sticky at the top so it
+  // stays put while the rows scroll vertically, yet scrolls naturally with the
+  // frames (and the playhead/marker tabs that sit on it) horizontally.
+  .greese-TimelineRuler-ruler {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    box-sizing: border-box;
+    height: var(--greese-timeline-ruler-height);
+    cursor: ew-resize;
+    background-color: var(--greese-color-surface);
+    border-bottom: 1px solid var(--greese-color-border);
+  }
+
+  // One ruler tick: label centered ON its tick position (the container is
+  // translated back by half its width), with the tick line drawn by a `::before`
+  // hairline at the container's midpoint.
+  .greese-TimelineRuler-tick {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transform: translateX(-50%);
+    padding: 0 3px;
+    text-align: center;
+    font-size: 10px;
+    line-height: var(--greese-timeline-ruler-height);
+    font-family: var(--greese-font-mono);
+    color: var(--greese-color-fg-muted);
+    user-select: none;
+    pointer-events: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      height: 5px;
+      border-left: 1px solid var(--greese-color-border);
+    }
+  }
+
+  // Positioning root for one playback bound handle — mirrors `.playheadRoot`'s
+  // shape (absolute, zero-width, horizontal position via inline `left`) rather
+  // than nesting the handle inside `.ruler`: a child's z-index can never escape
+  // its ancestor's own stacking context, and `.ruler` (z-index 3, with an opaque
+  // background) sits below `.playheadRoot` (z-index 5) — nesting the handle
+  // there caps it at 3 no matter what z-index *it* declares, and simply raising
+  // `.ruler` above the playhead would drag that opaque background over the
+  // playhead tab too, hiding it entirely. Rendered as a sibling of `Playhead`
+  // (`Timeline.tsx`) instead, so `.boundHandleFlag`'s own z-index (6) genuinely
+  // competes against `.playheadRoot`'s (5) — bounds render in front of the
+  // playhead without touching the ruler's paint layer at all.
+  // `bottom: 0` (spanning the full row height, exactly like `.playheadRoot`) is
+  // load-bearing, not decorative: `.boundHandleFlag`'s `position: sticky; top: 0`
+  // only has a range to stick *within* if its containing block (this element)
+  // actually spans the vertically-scrolling row area. Without `bottom: 0` this
+  // box collapses to just its own content height (a thin sliver pinned at
+  // `top: 0` of the *unscrolled* content coordinate space, not the viewport), so
+  // the sticky child had no room to operate and the whole handle scrolled away
+  // with the rows instead of staying pinned to the ruler like the frame labels,
+  // marker tags and the playhead tab all correctly do.
+  .greese-TimelineRuler-boundHandleRoot {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    z-index: 6;
+    pointer-events: none;
+  }
+
+  // A playback in/out bracket handle on the ruler — `[` for the start bound, `]`
+  // for the end, built from borders rather than a glyph so its color comes from
+  // a token, not a font. The `::before` extends the pointer hit area well past
+  // the 8px visual bracket. `position: sticky` (own top-pinning, like
+  // `.playheadTab`) rather than relying on a sticky ancestor — see
+  // `.boundHandleRoot` above for why it is no longer nested inside `.ruler`.
+  .greese-TimelineRuler-boundHandleFlag {
+    // The handle's color in its three states. Declaring it once as a local
+    // custom property is what lets the four border declarations below stay a
+    // single rule each: the state selectors only reassign this.
+    --greese-timeline-bound-handle-color: var(
+      --greese-authoring-timeline-bound-handle,
+      var(--greese-color-info)
+    );
+
+    position: sticky;
+    top: 0;
+    height: var(--greese-timeline-ruler-height);
+    width: 8px;
+    box-sizing: border-box;
+    cursor: ew-resize;
+    pointer-events: all;
+    border-top: 2px solid var(--greese-timeline-bound-handle-color);
+    border-bottom: 2px solid var(--greese-timeline-bound-handle-color);
+
+    &:hover {
+      --greese-timeline-bound-handle-color: var(
+        --greese-authoring-timeline-bound-handle-hover,
+        color-mix(in oklab, var(--greese-color-info) 65%, var(--greese-color-surface))
+      );
+    }
+
+    // Active wins over hover, as it did when the two were an either/or in JS.
+    &[data-active='true'],
+    &[data-active='true']:hover {
+      --greese-timeline-bound-handle-color: var(
+        --greese-authoring-timeline-bound-handle-active,
+        var(--greese-color-secondary)
+      );
+    }
+
+    &[data-side='start'] {
+      border-left: 2px solid var(--greese-timeline-bound-handle-color);
+    }
+
+    &[data-side='end'] {
+      border-right: 2px solid var(--greese-timeline-bound-handle-color);
+      transform: translateX(-100%);
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0 -6px;
+    }
+  }
+}

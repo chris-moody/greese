@@ -1,11 +1,20 @@
 'use client'
-import { memo, useCallback, type JSX, type MouseEvent, type ReactNode } from 'react'
+import {
+  memo,
+  useCallback,
+  useState,
+  type JSX,
+  type MouseEvent,
+  type ReactNode,
+} from 'react'
 import type { DropTargetPosition } from '../../core/types/tree.types.ts'
 import type { AuthoringLayer } from '../../core/types/layer.types.ts'
 import { useAuthoringEnvironment } from '../../environment/environment.tsx'
 import { useLayerTreeController } from '../../hooks/useLayerTreeController.ts'
 import { HierarchicalList } from '../HierarchicalList/HierarchicalList.tsx'
 import { LayerTreeItem, type LayerTreeItemProps } from './LayerTreeItem.tsx'
+
+import { LayerContextMenu } from './LayerContextMenu.tsx'
 
 export interface LayerTreeProps {
   /** The tree's accessible name. @default 'Layers' */
@@ -32,8 +41,13 @@ export interface LayerTreeProps {
   onExternalDrop?: (draggedIds: string[]) => void
   /** Asks before deleting a folder that has layers in it. */
   confirmNonEmptyFolderDelete?: boolean
-  /** Called with a layer's id and the pointer's position when its row is right-clicked: open a menu there. */
+  /**
+   * Called with a layer's id and the pointer's position when its row is
+   * right-clicked, in place of the tree's own `LayerContextMenu`.
+   */
   onLayerContextMenu?: (layerId: string, at: { top: number; left: number }) => void
+  /** Turns the tree's own right-click menu off. */
+  disableContextMenu?: boolean
   /** Renders a row in place of `LayerTreeItem`, with the toggles' handlers in its props. */
   renderItem?: (data: AuthoringLayer, props?: LayerTreeItemProps) => ReactNode
 }
@@ -60,6 +74,7 @@ export const LayerTree = memo(function LayerTree({
   onExternalDrop,
   confirmNonEmptyFolderDelete,
   onLayerContextMenu,
+  disableContextMenu,
   renderItem,
 }: LayerTreeProps): JSX.Element {
   const { config } = useAuthoringEnvironment()
@@ -81,14 +96,20 @@ export const LayerTree = memo(function LayerTree({
     [config.layerTypes]
   )
 
+  const [menu, setMenu] = useState<{
+    layerId: string
+    position: { top: number; left: number }
+  } | null>(null)
   const contextMenu = useCallback(
     (layerId: string) => (event: MouseEvent<HTMLElement>) => {
-      if (!onLayerContextMenu) return
+      if (!onLayerContextMenu && disableContextMenu) return
       event.preventDefault()
       event.stopPropagation()
-      onLayerContextMenu(layerId, { top: event.clientY, left: event.clientX })
+      const position = { top: event.clientY, left: event.clientX }
+      if (onLayerContextMenu) onLayerContextMenu(layerId, position)
+      else setMenu({ layerId, position })
     },
-    [onLayerContextMenu]
+    [onLayerContextMenu, disableContextMenu]
   )
 
   const renderRow = useCallback(
@@ -114,24 +135,33 @@ export const LayerTree = memo(function LayerTree({
   )
 
   return (
-    <HierarchicalList<AuthoringLayer, LayerTreeItemProps>
-      {...list}
-      {...(!hideItemActions && {
-        onAddItem: hideAddItem ? undefined : onAddItem,
-        onDeleteItems,
-        onAddFolder,
-      })}
-      label={label}
-      className="greese-LayerTree"
-      renderItem={renderRow}
-      disableScroll={disableScroll}
-      flat={flat}
-      disableRename={disableRename}
-      isStructural={isStructural}
-      canDrop={canDrop}
-      onExternalDrop={onExternalDrop}
-      confirmNonEmptyFolderDelete={confirmNonEmptyFolderDelete}
-      stickyActions={!hideItemActions}
-    />
+    <>
+      <HierarchicalList<AuthoringLayer, LayerTreeItemProps>
+        {...list}
+        {...(!hideItemActions && {
+          onAddItem: hideAddItem ? undefined : onAddItem,
+          onDeleteItems,
+          onAddFolder,
+        })}
+        label={label}
+        className="greese-LayerTree"
+        renderItem={renderRow}
+        disableScroll={disableScroll}
+        flat={flat}
+        disableRename={disableRename}
+        isStructural={isStructural}
+        canDrop={canDrop}
+        onExternalDrop={onExternalDrop}
+        confirmNonEmptyFolderDelete={confirmNonEmptyFolderDelete}
+        stickyActions={!hideItemActions}
+      />
+      {menu && (
+        <LayerContextMenu
+          layerId={menu.layerId}
+          position={menu.position}
+          onClose={() => setMenu(null)}
+        />
+      )}
+    </>
   )
 })

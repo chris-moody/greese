@@ -1,0 +1,100 @@
+// Ported from Glop's levelEditor.module.scss.
+
+@layer greese.components {
+  // The level editor's overlay: a dimming backdrop, the value graph (an SVG
+  // polyline with draggable points), its grid lines and the floating y-axis.
+  // Every size and position the consumer computes — the backdrop's width/height,
+  // the axis's scroll offset, each grid line's `top` — stays on the inline
+  // `style` prop; see `../Timeline/layout.module.scss` for why.
+
+  // Semi-transparent backdrop, separating the overlay from the frame grid below.
+  // Consumers size it explicitly, and offset its `top` when pinning the chart to
+  // the scroll viewport.
+  .greese-TimelineLevelEditor-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    background-color: var(
+      --greese-authoring-timeline-level-backdrop,
+      var(--greese-color-canvas)
+    );
+    opacity: 0.85;
+  }
+
+  .greese-TimelineLevelEditor-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: visible;
+  }
+
+  .greese-TimelineLevelEditor-line {
+    fill: none;
+    stroke: var(--greese-authoring-timeline-level-line, var(--greese-color-primary));
+    stroke-width: 2;
+    cursor: ns-resize;
+
+    // Only the stroke is grabbable — the area under the curve isn't a target.
+    pointer-events: stroke;
+  }
+
+  .greese-TimelineLevelEditor-point {
+    fill: var(
+      --greese-authoring-timeline-level-point,
+      color-mix(in oklab, var(--greese-color-primary) 65%, var(--greese-color-surface))
+    );
+    stroke: var(--greese-color-surface);
+    stroke-width: 1.5;
+    cursor: grab;
+
+    &[data-selected='true'] {
+      fill: var(
+        --greese-authoring-timeline-level-point-selected,
+        var(--greese-color-secondary)
+      );
+    }
+  }
+
+  // Rubber-band marquee selection rectangle over the point graph.
+  .greese-TimelineLevelEditor-marqueeRect {
+    position: absolute;
+    pointer-events: none;
+    border: 1px solid var(--greese-color-primary);
+    background-color: color-mix(in srgb, var(--greese-color-primary) 13%, transparent);
+  }
+
+  // Horizontal value grid line across the graph.
+  .greese-TimelineLevelEditor-gridLine {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    pointer-events: none;
+    background-color: var(--greese-color-border);
+  }
+
+  // Floating y-axis: a slim label column pinned to the viewport's left edge (the
+  // consumer positions it at the current horizontal scroll offset).
+  .greese-TimelineLevelEditor-axis {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 36px;
+    pointer-events: none;
+    background-color: var(--greese-color-surface);
+    border-right: 1px solid var(--greese-color-border);
+    opacity: 0.9;
+  }
+
+  // One value label on the floating y-axis, vertically centred on its grid line.
+  .greese-TimelineLevelEditor-axisLabel {
+    position: absolute;
+    left: 4px;
+    transform: translateY(-50%);
+    font-size: 9px;
+    font-family: var(--greese-font-mono);
+    color: var(--greese-color-fg-muted);
+    white-space: nowrap;
+  }
+}

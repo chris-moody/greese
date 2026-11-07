@@ -90,3 +90,18 @@ export * from './library/symbolNaming.ts'
 export * from './tools/tools.ts'
 export * from './paint/gradient.ts'
 export * from './code/highlight.ts'
+export * from './timeline/tween.ts'
+export * from './timeline/curvePresets.ts'
+export * from './timeline/bezierPresets.ts'
+export * from './timeline/levelEditor.ts'
+export * from './timeline/spanPlayback.ts'
+export * from './timeline/rulerTiers.ts'
+export * from './timeline/spanChart.types.ts'
+export * from './keyboard.ts'
+export {
+  DEFAULT_FRAME_WIDTH,
+  LABEL_WIDTH,
+  MAX_FRAME_WIDTH,
+  MIN_FRAME_WIDTH,
+  RULER_HEIGHT,
+} from './constants.ts'

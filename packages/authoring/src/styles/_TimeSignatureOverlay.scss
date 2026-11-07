@@ -1,0 +1,35 @@
+// Ported from Glop's timeSignatureOverlay.module.scss.
+
+@layer greese.components {
+  // Bar-boundary dividers and the signature chips that label them.
+
+  .greese-TimeSignatureOverlay-divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    pointer-events: none;
+    background-color: var(
+      --greese-authoring-timeline-time-signature-divider,
+      var(--greese-color-border)
+    );
+  }
+
+  // Numerator/denominator chip anchored at a signature change's tick.
+  .greese-TimeSignatureOverlay-chip {
+    position: absolute;
+    top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 var(--greese-space-1);
+    border-radius: 2px;
+    font-size: 10px;
+    font-family: var(--greese-font-mono);
+    color: var(--greese-color-fg);
+    background-color: var(--greese-color-surface);
+
+    // The chip is clickable even though the divider beside it isn't.
+    pointer-events: auto;
+  }
+}
