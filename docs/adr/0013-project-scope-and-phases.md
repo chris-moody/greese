@@ -82,6 +82,7 @@ The phase numbers other ADRs cite:
 | —     | Carousel: one slide at a time, effects, app deep links | 2026-11-01 | ADR 0032          |
 | —     | Reduced motion an app asks for                         | 2026-11-01 | ADR 0033          |
 | —     | Theme layout in your source, resets, Sass utilities    | 2026-11-03 | ADR 0034          |
+| —     | Editor UI, `@greese/authoring`                         | 2026-11-06 | ADR 0035, 0036    |
 
 When a new body of work lands, add a row here; that's the status record the
 skills and agents keep up to date.
