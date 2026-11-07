@@ -82,6 +82,12 @@ describe('copying a component’s source into its SCSS box', () => {
 }`)
   })
 
+  it('turns a doubled class, there for specificity, into one &', () => {
+    expect(
+      copySource('.greese-Input.greese-Input--measured { flex-grow: 0; }', 'greese-Input')
+    ).toBe('&.greese-Input--measured { flex-grow: 0; }')
+  })
+
   it('leaves out top-level rules about components outside the family', () => {
     const copied = copySource(
       `.greese-Accordion { gap: 0; }

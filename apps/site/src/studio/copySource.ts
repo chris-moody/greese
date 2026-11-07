@@ -14,7 +14,7 @@ import {
  * - the `@layer … { }` wrappers go, since the box is already in the overrides
  *   layer (left in, they would nest as a sublayer);
  * - the component's own class becomes `&` (`.greese-Accordion` → `&`, its
- *   modifiers `&.greese-Accordion--x`), since a nested `.greese-Accordion`
+ *   modifiers `&.greese-Accordion--x`, a doubled class one `&`), since a nested `.greese-Accordion`
  *   would mean an Accordion inside an Accordion. Only in the selectors of rules
  *   that aren't inside another rule: there, as in `.greese-AvatarGroup-item {
  *   > .greese-Avatar { } }`, the class is another element, and `&` would be the
@@ -39,6 +39,9 @@ export const copySource = (
     selector
       .replace(new RegExp(`\\.${escaped}(--[\\w-]+)`, 'g'), `&.${rootClass}$1`)
       .replace(new RegExp(`\\.${escaped}(?![\\w-])`, 'g'), '&')
+      // A doubled root class (`.greese-Input.greese-Input--measured`, there
+      // for specificity) is the one element: `&&` isn't a selector.
+      .replace(/&{2,}/g, '&')
   return outerSelectors(text, own)
     .replace(/\n{3,}/g, '\n\n')
     .trim()
