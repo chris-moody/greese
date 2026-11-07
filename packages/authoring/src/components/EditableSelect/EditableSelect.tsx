@@ -73,7 +73,9 @@ export const EditableSelect = <T = number,>({
       // The arrow keys and the toggle open every preset.
       filter={(option, text) => {
         const typed = text.trim().toLowerCase()
-        return option.value.toLowerCase() === typed || option.label.toLowerCase() === typed
+        return (
+          option.value.toLowerCase() === typed || option.label.toLowerCase() === typed
+        )
       }}
       value={value === undefined ? null : toText(value)}
       options={options.map((o) => ({ value: toText(o.value), label: o.label }))}

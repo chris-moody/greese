@@ -119,6 +119,8 @@ module.exports = [
     // actions bar (1.56 kB).
     // 1.7 → 2 kB (2026-11-06): the stage's host, context bar, rulers and
     // breadcrumbs (1.8 kB).
-    limit: '2 kB',
+    // 2 → 2.25 kB (2026-11-06): the stage bar's controls and the guides'
+    // lines, grab areas and position tip (2.05 kB).
+    limit: '2.25 kB',
   },
 ]

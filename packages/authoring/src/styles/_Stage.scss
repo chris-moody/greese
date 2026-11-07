@@ -112,3 +112,71 @@
     inline-size: 6rem;
   }
 }
+
+@layer greese.components {
+  // The guides drawn over the stage. Their colors come from tokens and can be
+  // set per editor: `--greese-guide-color`, `--greese-guide-global-color`.
+  .greese-GuidesOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+    pointer-events: none;
+
+    g[data-global] {
+      --greese-guide-stroke: var(
+        --greese-guide-global-color,
+        var(--greese-color-warning)
+      );
+    }
+  }
+
+  .greese-GuidesOverlay-line {
+    pointer-events: none;
+    stroke: var(
+      --greese-guide-stroke,
+      var(--greese-guide-color, var(--greese-color-tertiary))
+    );
+    stroke-opacity: 0.75;
+    stroke-width: 1;
+
+    // A guide being dragged out of a ruler.
+    &[data-pending] {
+      stroke-dasharray: 4 4;
+      stroke-opacity: 0.5;
+    }
+  }
+
+  // The wide grab area along a guide; its cursor follows the way it moves.
+  .greese-GuidesOverlay-hit {
+    cursor: ns-resize;
+    pointer-events: stroke;
+    stroke: transparent;
+
+    &[data-axis='v'] {
+      cursor: ew-resize;
+    }
+
+    // Focused from the keyboard, the guide's own stroke is the ring.
+    &:focus-visible {
+      outline: none;
+      stroke: var(--greese-color-focus-ring);
+      stroke-opacity: 0.4;
+    }
+  }
+
+  // The position shown while dragging, faded out after.
+  .greese-GuidesOverlay-tip {
+    font-size: 10px;
+    pointer-events: none;
+    fill: var(--greese-guide-color, var(--greese-color-tertiary));
+    opacity: 0;
+    transition: opacity 600ms var(--greese-easing-standard);
+
+    &[data-visible] {
+      opacity: 1;
+    }
+  }
+}

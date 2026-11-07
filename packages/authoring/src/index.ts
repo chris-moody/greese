@@ -55,6 +55,14 @@ export {
   type StageColorControlProps,
   type ZoomControlProps,
 } from './components/StageBar/StageBar.tsx'
+export {
+  GuidePropertiesDialog,
+  type GuidePropertiesDialogProps,
+} from './components/Guides/GuidePropertiesDialog.tsx'
+export {
+  GuidesOverlay,
+  type GuidesOverlayProps,
+} from './components/Guides/GuidesOverlay.tsx'
 export { PanelDock, type PanelDockProps } from './components/PanelDock/PanelDock.tsx'
 export {
   AuthoringBreadcrumbs,
