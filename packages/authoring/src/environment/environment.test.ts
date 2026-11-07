@@ -1,7 +1,9 @@
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import { describe, expect, it } from 'vitest'
 import { layersActions } from '../state/layers.slice.ts'
 import { makeLayer } from '../core/layers/layers.ts'
 import { createAuthoringEnvironment } from './environment.tsx'
+import { undo, undoable } from '../state/commandsMiddleware.ts'
 import { TimingMode } from '../core/types/timing.types.ts'
 
 describe('createAuthoringEnvironment', () => {
@@ -37,5 +39,39 @@ describe('createAuthoringEnvironment', () => {
     const { layers } = target.store.getState()
     expect(layers.rootOrder).toEqual([layer.id])
     expect(layers.layers.get(layer.id)?.name).toBe('Star')
+  })
+})
+
+describe('an editor’s own undo steps', () => {
+  const doc = createSlice({
+    name: 'doc',
+    initialState: { text: 'a' },
+    reducers: {
+      set: (state, action: PayloadAction<string>) => void (state.text = action.payload),
+    },
+  })
+  const view = createSlice({
+    name: 'view',
+    initialState: { zoom: 1 },
+    reducers: {
+      zoom: (state, action: PayloadAction<number>) => void (state.zoom = action.payload),
+    },
+  })
+
+  it('undoes actions marked undoable, and keeps the view slices it names', () => {
+    const env = createAuthoringEnvironment({
+      reducers: { doc: doc.reducer, view: view.reducer },
+      viewSlices: ['view'],
+    })
+    const { dispatch, getState } = env.store
+    dispatch(doc.actions.set('b'))
+    expect(getState().history.canUndo).toBe(false)
+    dispatch(undoable(doc.actions.set('c')))
+    dispatch(view.actions.zoom(2))
+    expect(getState().history.canUndo).toBe(true)
+    dispatch(undo())
+    expect(getState().doc.text).toBe('b')
+    // The zoom is view state: undo leaves it.
+    expect(getState().view.zoom).toBe(2)
   })
 })

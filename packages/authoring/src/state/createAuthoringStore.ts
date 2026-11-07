@@ -122,7 +122,9 @@ const VIEW_SLICES = [
 export const createAuthoringStore = <
   M extends Record<string, Reducer> = Record<string, never>,
 >(
-  reducers?: M
+  reducers?: M,
+  /** The editor's own view slices: undo and redo keep them as they are. */
+  viewSlices: readonly (keyof M & string)[] = []
 ) => {
   type State = AuthoringRootState & StateOfReducers<M>
   // A plain reducer function: a generic reducer map defeats RTK's
@@ -135,7 +137,9 @@ export const createAuthoringStore = <
   const reducer: Reducer<State> = (state, action: UnknownAction) => {
     if (action.type !== RESTORE_STATE || !state) return combined(state, action)
     const snapshot = (action as UnknownAction & { payload: State }).payload
-    const view = Object.fromEntries(VIEW_SLICES.map((key) => [key, state[key]]))
+    const view = Object.fromEntries(
+      [...VIEW_SLICES, ...viewSlices].map((key) => [key, state[key as keyof State]])
+    )
     return {
       ...snapshot,
       ...view,

@@ -40,6 +40,11 @@ export interface AuthoringEnvironmentOptions<M extends Record<string, Reducer>> 
   config?: Partial<MediaConfig>
   /** The project's id and name, for `serialize`. */
   meta?: { id?: string; name?: string }
+  /**
+   * The editor's own slices that hold view state (a tool, a zoom, a
+   * selection): undo and redo keep them, restoring only the document.
+   */
+  viewSlices?: readonly (keyof M & string)[]
 }
 
 const DEFAULT_CONFIG: MediaConfig = {
@@ -70,8 +75,9 @@ export const createAuthoringEnvironment = <
   reducers,
   config: options,
   meta: { id = uid(), name = 'Untitled' } = {},
+  viewSlices,
 }: AuthoringEnvironmentOptions<M> = {}): AuthoringEnvironment<StateOfReducers<M>> => {
-  const store = createAuthoringStore(reducers) as unknown as AuthoringStore<
+  const store = createAuthoringStore(reducers, viewSlices) as unknown as AuthoringStore<
     StateOfReducers<M>
   >
   const config: MediaConfig = { ...DEFAULT_CONFIG, ...options }

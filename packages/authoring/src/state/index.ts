@@ -9,6 +9,7 @@ export {
   createCommandsMiddleware,
   redo,
   silent,
+  undoable,
   undo,
 } from './commandsMiddleware.ts'
 export {

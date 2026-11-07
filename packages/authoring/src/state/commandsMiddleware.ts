@@ -44,6 +44,19 @@ export const silent = <A extends UnknownAction>(action: A): A => ({
 })
 
 /**
+ * Marks an editor's own action as an undo step: the framework's structural
+ * edits are undoable by type, and an editor's slices opt in action by action.
+ *
+ * ```ts
+ * dispatch(undoable(shaperActions.updateNode({ id, attrs })))
+ * ```
+ */
+export const undoable = <A extends UnknownAction>(action: A): A => ({
+  ...action,
+  meta: { ...(action as { meta?: object }).meta, undoable: true },
+})
+
+/**
  * Tag an action with a coalesce key so a run of actions sharing that key
  * collapses into one undo step (e.g. all keyframes of one paste/duplicate).
  */
@@ -134,7 +147,8 @@ export const createCommandsMiddleware = (): Middleware => (store) => {
       }
       default: {
         const isUndoable =
-          UNDOABLE_TYPES.has(typedAction.type) && typedAction.meta?.undoable !== false
+          typedAction.meta?.undoable === true ||
+          (UNDOABLE_TYPES.has(typedAction.type) && typedAction.meta?.undoable !== false)
         if (!isUndoable) return next(action)
 
         const key = typedAction.meta?.coalesceKey
