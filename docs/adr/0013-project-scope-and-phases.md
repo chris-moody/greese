@@ -83,6 +83,7 @@ The phase numbers other ADRs cite:
 | —     | Reduced motion an app asks for                         | 2026-11-01 | ADR 0033          |
 | —     | Theme layout in your source, resets, Sass utilities    | 2026-11-03 | ADR 0034          |
 | —     | Editor UI, `@greese/authoring`                         | 2026-11-06 | ADR 0035, 0036    |
+| —     | Shaper's filter editor on authoring's `NodeGraph`      | 2026-11-07 | ADR 0039          |
 
 When a new body of work lands, add a row here; that's the status record the
 skills and agents keep up to date.
