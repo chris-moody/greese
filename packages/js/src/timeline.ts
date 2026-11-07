@@ -570,7 +570,8 @@ export class Timeline implements PromiseLike<void> {
     this.pause()
     for (const [target, props] of this.#tracks) {
       for (const track of props.values()) {
-        if (restore && track.base !== undefined) track.adapter.restore(track.prop, track.base)
+        if (restore && track.base !== undefined)
+          track.adapter.restore(track.prop, track.base)
         track.invalidate()
       }
       // Leave the registry, so killTweensOf doesn't walk a dead timeline.
