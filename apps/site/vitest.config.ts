@@ -14,6 +14,10 @@ export default defineConfig({
     // point, so their cost grows with every component stylesheet the kit
     // carries. 5s was already marginal at 87 of them.
     testTimeout: 20_000,
+    // The docs' tests read the story files through `import.meta.glob`, and the
+    // persistent module cache keeps a glob's list from the run that cached it:
+    // a new story was "not a function" until the cache was cleared.
+    fsModuleCache: false,
     // The library's compiled stylesheets are read as text (`?raw`), not processed.
     css: { include: [/packages\/ui\/dist\/css\//] },
   },
