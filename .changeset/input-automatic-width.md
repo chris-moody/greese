@@ -35,4 +35,5 @@ frames; they are untouched here.
 
 The measure is in `ch` as well (`--greese-input-size`, which the React
 component sets): `size` alone measures in the font's average character, which
-is narrower than its digits, so `htmlSize={7}` clipped `#4f46e5`.
+is narrower than its digits, so `htmlSize={7}` clipped `#4f46e5`. A measured
+field doesn't shrink below its measure in a crowded row either.

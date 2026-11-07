@@ -57,12 +57,15 @@
   }
 
   // `htmlSize`: as wide as that many characters and no wider, so the frame
-  // hugs the input rather than stretching. The doubled class beats a
-  // container's `flex: 1 1 auto` (EditableField's control slot, a toolbar row)
-  // without depending on which stylesheet the bundle happens to emit last.
+  // hugs the input rather than stretching or shrinking. The doubled class
+  // beats a container's `flex: 1 1 auto` (EditableField's control slot, a
+  // toolbar row) without depending on which stylesheet the bundle happens to
+  // emit last.
   .greese-Input.greese-Input--measured {
     inline-size: fit-content;
-    flex-grow: 0;
+
+    // Neither grows nor gives up its measure in a crowded row.
+    flex: none;
 
     // `size` alone measures in the font's average character, narrower than
     // its digits, so seven of them overflow `size="7"`. `--greese-input-size`
