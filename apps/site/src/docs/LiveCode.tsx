@@ -1,41 +1,20 @@
 /**
  * "Try it": a page's main example as editable code, rendered live as you type
  * (react-live transpiles the JSX in the browser). Everything greese ui exports
- * (`@greese/react/svg` included), every icon, the docs' `Replay` button, React's hooks, the docs' sample data and the story file's own
- * helpers (`parameters.tryIt.scope`) are in scope, so a
+ * (`@greese/react/svg` and `@greese/authoring` included), every icon, the docs'
+ * `Replay` button, React's hooks, the docs' sample data (liveScope.ts) and the
+ * story file's own helpers (`parameters.tryIt.scope`) are in scope, so a
  * visitor can change props, add components or wire up state. It starts from
  * the main story with the args its controls set.
  */
-import * as React from 'react'
 import { useEffect, useRef, useState, type JSX } from 'react'
 import { LiveEditor, LiveError, LivePreview, LiveProvider } from 'react-live'
 import * as Greese from '@greese/react'
-import * as Svg from '@greese/react/svg'
-import * as Icons from '@greese/icons'
-import { art, countries } from '../../../docs/stories/_shared/fixtures.tsx'
-import { Replay } from '../../../docs/stories/_shared/Replay.tsx'
 import { useStoryArgs } from './args.ts'
 import type { ComposedStory, Meta, StoryAnnotation } from './load.ts'
 import { storyContext } from './StoryCanvas.tsx'
+import { LIVE_SCOPE, transformCode } from './liveScope.ts'
 import { storyScope, storySnippet } from './toJsx.ts'
-
-// react-live turns each key into a function parameter, so only plain
-// identifiers: a namespace import's `default` would be a syntax error.
-const scope = Object.fromEntries(
-  Object.entries({
-    ...React,
-    React,
-    ...Greese,
-    ...Svg,
-    ...Icons,
-    art,
-    countries,
-    Replay,
-  }).filter(([name]) => name !== 'default' && /^[A-Za-z_$][\w$]*$/.test(name))
-)
-
-// Several top-level elements are fine: they render as a fragment.
-const transformCode = (code: string) => `<>\n${code}\n</>`
 
 // The editor's colours come from the page's code palette (`pkg:@greese/authoring/scss/code`).
 const THEME = { plain: {}, styles: [] }
@@ -75,7 +54,7 @@ export const LiveCode = ({
   return (
     <LiveProvider
       code={code}
-      scope={{ ...scope, ...helpers }}
+      scope={{ ...LIVE_SCOPE, ...helpers }}
       transformCode={transformCode}
       theme={THEME}
       enableTypeScript

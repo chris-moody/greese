@@ -21,6 +21,12 @@ describe('toJsx', () => {
     ).toBe('<Button variant="outline" startIcon={<PlusIcon />} disabled>Add</Button>')
   })
 
+  it('writes a Map or Set prop as one, not as an empty object', () => {
+    expect(
+      toJsx(h(Stack, { items: new Map([['a', 1]]), picked: new Set(['a']) } as never))
+    ).toBe('<Stack items={new Map([["a", 1]])} picked={new Set(["a"])} />')
+  })
+
   it('opens fragments passed as children and indents nested elements', () => {
     const element = h(
       Stack,

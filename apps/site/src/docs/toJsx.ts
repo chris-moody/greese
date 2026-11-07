@@ -12,14 +12,12 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react'
-import * as Greese from '@greese/react'
-import * as Svg from '@greese/react/svg'
-import * as Icons from '@greese/icons'
+import { LIBRARY } from './liveScope.ts'
 
-// Every module the live editor's scope draws components from (LiveCode.tsx):
-// one left out is named by its minified function name (`W` for `Drawing`).
+// The live editor's scope draws on the same exports (liveScope.ts): a module
+// left out is named by its minified function name (`W` for `Drawing`).
 const NAMES = new Map<unknown, string>(
-  Object.entries({ ...Greese, ...Svg, ...Icons })
+  Object.entries(LIBRARY)
     .filter(([name, value]) => /^[A-Z]/.test(name) && value)
     .map(([name, value]) => [value, name])
 )
@@ -31,6 +29,13 @@ const HOLES = new WeakMap<object, ReactNode>()
 
 type AnyElement = ReactElement<Record<string, unknown>>
 
+/**
+ * Names that came from a function's own `name`, which a production build
+ * minifies (`Provider` for `function AuthoringProvider`): fine in dev, wrong in
+ * the built site. liveScope.test.tsx fails on any outside a story's own helpers.
+ */
+export const minifiableNames = new Set<string>()
+
 const nameOf = (type: unknown): string => {
   if (typeof type === 'string') return type
   if (type === Fragment) return ''
@@ -41,7 +46,10 @@ const nameOf = (type: unknown): string => {
     name?: string
     render?: { name?: string }
   }
-  return component.displayName || component.name || component.render?.name || 'Component'
+  if (component.displayName) return component.displayName
+  const own = component.name || component.render?.name
+  if (own) minifiableNames.add(own)
+  return own || 'Component'
 }
 
 /**
@@ -75,6 +83,9 @@ const valueOf = (value: unknown, indent: string): string | undefined => {
   }
   if (Array.isArray(value))
     return `[${value.map((v) => valueOf(v, indent) ?? 'undefined').join(', ')}]`
+  // As constructions, or a Map or Set prop reads as an empty object (`{  }`).
+  if (value instanceof Map) return `new Map(${valueOf([...value], indent)})`
+  if (value instanceof Set) return `new Set(${valueOf([...value], indent)})`
   if (value && typeof value === 'object') {
     const entries = Object.entries(value)
       .map(([k, v]) => {

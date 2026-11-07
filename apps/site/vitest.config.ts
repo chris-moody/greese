@@ -1,13 +1,15 @@
 import { defineConfig } from 'vitest/config'
 import { docsIndex } from './server/docsIndex.ts'
 import { kitSources } from './server/kitSources.ts'
+import { storyNames } from './server/storyNames.ts'
 
 export default defineConfig({
-  plugins: [kitSources(), docsIndex()],
+  // storyNames as in the build: the Try it test checks the names the site prints.
+  plugins: [kitSources(), docsIndex(), storyNames()],
   cacheDir: 'node_modules/.vitest',
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts', 'server/**/*.test.ts'],
+    include: ['src/**/*.test.{ts,tsx}', 'server/**/*.test.ts'],
     // Several of these compile the whole theme SCSS, once per shape or entry
     // point, so their cost grows with every component stylesheet the kit
     // carries. 5s was already marginal at 87 of them.
