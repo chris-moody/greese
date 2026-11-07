@@ -120,3 +120,30 @@ longer deployed or linked: the docs a visitor reads are the app's.
   production build with no errors (2026-10-25: 134 pages, 298 snippets).
 - **GitHub Pages** serves `docs/<page>/index.html` copies of the app, so a
   direct visit works without rewrites.
+
+## Addendum (2026-11-07): Try it's scope is one list, and a test runs it
+
+Try it broke twice the same way. `@greese/react/svg` (2026-10-31) and then
+`@greese/authoring` were missing from the lists the docs draw names from, so
+their pages' Try it threw `ReferenceError: Highlighted is not defined` in dev.
+In the built site they named the component by its minified function name: as
+`<u>`, an HTML element, that didn't even throw. Three more faults turned up on
+the same pages: a story's own environment printed as `<Provider>`, a `Map`
+prop printed as `{}`, and two motion pages named helpers not in scope.
+
+- **One list:** `src/docs/liveScope.ts` holds the packages (`LIBRARY`), which
+  name components in "Show code" (`toJsx.ts`), and the editor's scope
+  (`LIVE_SCOPE`). A package with docs pages is added there, once.
+- **An environment in scope:** `AuthoringProvider` is a fresh, empty
+  authoring environment. A page needing a prepared one passes its own through
+  `parameters.tryIt.scope`. The environment's Provider has a `displayName`, so
+  it prints by name in a minified build.
+- **`toJsx` writes `Map` and `Set` props** as `new Map([...])` and `new Set([...])`.
+- **`src/docs/liveScope.test.tsx`** takes each component page's Try it code as
+  the page does, with the `storyNames` plugin as in the build. It fails when
+  the code names a component not in scope, or one named only by a function's
+  own `name`, which a production build minifies. It also fails when the code
+  throws as it compiles and renders under react-live. It runs in jsdom.
+- **A page's contents list leaves out an example's own headings.** A closed
+  `Dialog` in a story still renders its `<h2 id>`, and HierarchicalList's
+  "Delete folder?" showed up as a section of its pages.

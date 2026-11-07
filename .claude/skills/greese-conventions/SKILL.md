@@ -201,6 +201,16 @@ the procedure for writing them. In short:
   a `/** comment */` above each story as its description; MDX may use
   `Meta`, `Canvas`, `Controls`, `Source` and `Subheading`. Any other
   Storybook API needs adding to `apps/site/src/docs` first.
+- **Try it can name only what's in its scope.** The live editor's scope and
+  "Show code"'s component names both come from
+  `apps/site/src/docs/liveScope.ts`. A new package with docs pages goes in
+  `LIBRARY` there. A component a story file defines for itself goes in its
+  `parameters.tryIt.scope`. A component made at runtime, such as a provider
+  returned by a factory, needs a `displayName`, because a production build
+  minifies function names. `src/docs/liveScope.test.tsx` compiles and renders
+  every page's Try it code and fails on a missing name or an error, which
+  `ReferenceError: Highlighted is not defined` (2026-11-07) and the svg
+  names (2026-10-31) both would have hit.
 - **Styling sections are generated.** Every docs page ends with one, built
   from the style manifest: the classes a component renders, its items, the
   components it's built on, and override examples. A part with no classes of
