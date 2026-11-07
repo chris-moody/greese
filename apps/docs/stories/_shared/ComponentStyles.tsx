@@ -72,6 +72,14 @@ const UNSTYLED: Record<string, JSX.Element> = {
       <code>style</code> included, onto its child. Style the child.
     </>
   ),
+  CopyToClipboard: (
+    <>
+      renders no element of its own: its child gets the click and{' '}
+      <code>data-copy-status</code> (<code>copied</code>, <code>failed</code>), and a
+      visually hidden live region sits beside it. Style the child, by that attribute for
+      the moment after a copy.
+    </>
+  ),
   Slottable: (
     <>
       renders no element of its own: it marks which child of a <code>Slot</code> receives

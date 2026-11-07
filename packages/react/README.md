@@ -399,3 +399,7 @@ configureBreakpoints()
 - `useControllableState` supports controlled and uncontrolled state.
 - `cx` joins class names.
 - `VisuallyHidden` hides content visually but keeps it for screen readers.
+- `CopyToClipboard` makes any element copy text on click, marking it
+  (`data-copy-status`) and announcing the outcome; `useCopyToClipboard()` is
+  the hook under it, and `copyToClipboard()` from `@greese/ui` works outside
+  React.

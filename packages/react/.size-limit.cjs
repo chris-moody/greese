@@ -107,7 +107,9 @@ module.exports = [
     // longer lets a child's `undefined` clobber the Slot's own prop — about 10 B
     // every component pays, which fixes a Tooltip around any form control
     // describing nothing (37.82 kB).
-    limit: '37.9 kB',
+    // 37.9 kB → 38.45 kB (2026-11-06): CopyToClipboard, useCopyToClipboard and @greese/ui's
+    // copyToClipboard with its execCommand fallback, about 0.5 kB (38.53 kB, of which 80 B was over before).
+    limit: '38.45 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -164,7 +166,9 @@ module.exports = [
     // imposes no width of its own, and which every input-based control
     // inherits — and Text falling back to body copy when no variant names a
     // type style (43.79 kB).
-    limit: '43.8 kB',
+    // 43.8 kB → 44.3 kB (2026-11-06): CopyToClipboard, useCopyToClipboard and @greese/ui's
+    // copyToClipboard with its execCommand fallback, about 0.5 kB (44.29 kB).
+    limit: '44.3 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -568,6 +572,15 @@ module.exports = [
     modifyRolldownConfig: external,
   },
   {
+    name: 'JS: tree-shaken { CopyToClipboard }',
+    path: 'dist/index.js',
+    import: '{ CopyToClipboard }',
+    ignore: ['react', 'react-dom'],
+    // Slot, VisuallyHidden and the copy with its fallback (1.24 kB).
+    limit: '1.25 kB',
+    modifyRolldownConfig: external,
+  },
+  {
     name: 'JS: tree-shaken { Swap }',
     path: 'dist/index.js',
     import: '{ Swap }',
@@ -681,7 +694,9 @@ module.exports = [
     // and the variables they set (53.3 kB). The other two whole-library
     // budgets did not move; only this one was close enough to its limit.
     // 53.4 kB → 53.7 kB (2026-11-05): the same slider bubble and Slot merge fix (53.55 kB).
-    limit: '53.7 kB',
+    // 53.7 kB → 54.3 kB (2026-11-06): CopyToClipboard, useCopyToClipboard and @greese/ui's
+    // copyToClipboard with its execCommand fallback, about 0.5 kB (54.37 kB, of which 46 B was over before).
+    limit: '54.3 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.

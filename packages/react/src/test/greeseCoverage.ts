@@ -19,6 +19,7 @@ type Excluded =
   | 'Timeline' // greese.js's class, re-exported
   | 'PageTransition' // the page itself: its motion is its props
   | 'PageShare' // wraps its child, which morphs between pages
+  | 'CopyToClipboard' // its child is the element
 
 type ComponentNames = {
   [K in keyof typeof Library]: K extends `${Uppercase<string>}${string}`
