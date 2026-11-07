@@ -7,6 +7,15 @@
  */
 export * from './core/index.ts'
 export * from './state/index.ts'
+export { HierarchicalList } from './components/HierarchicalList/HierarchicalList.tsx'
+export { HierarchicalListFolder } from './components/HierarchicalList/HierarchicalListFolder.tsx'
+export { HierarchicalListItem } from './components/HierarchicalList/HierarchicalListItem.tsx'
+export type {
+  HierarchicalListFolderProps,
+  HierarchicalListItemProps,
+  HierarchicalListProps,
+  RowRenderProps,
+} from './components/HierarchicalList/hierarchicalList.types.ts'
 export { PanelDock, type PanelDockProps } from './components/PanelDock/PanelDock.tsx'
 export type { PanelRegistrant } from './components/PanelDock/panel.types.ts'
 export {

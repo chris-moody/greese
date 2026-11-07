@@ -10,7 +10,9 @@ module.exports = [
     // 3 → 7 kB (2026-11-06): Glop's framework types and pure helpers joined
     // the layout tree: timing model, tick maths, musical and animation time
     // resolutions, the tree and layer helpers, viewport maths (6.41 kB).
-    limit: '7 kB',
+    // 7 → 7.6 kB (2026-11-06): the search providers, with a fuzzy scorer of
+    // our own in place of fuzzysort, and the drop readers (7.02 kB).
+    limit: '7.6 kB',
   },
   {
     name: '@greese/authoring/state: everything',
@@ -40,9 +42,28 @@ module.exports = [
     limit: '12 kB',
   },
   {
+    name: '@greese/authoring: HierarchicalList',
+    path: 'dist/index.js',
+    import: '{ HierarchicalList }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+    ],
+    // The tree, its rows and folders, its keyboard and drag handling, and the
+    // tree helpers it reorders with (4.32 kB).
+    limit: '4.7 kB',
+  },
+  {
     name: '@greese/authoring/styles.css',
     path: 'dist/styles.css',
     rolldown: false,
-    limit: '1.4 kB',
+    // 1.4 → 1.7 kB (2026-11-06): HierarchicalList's rows, drop lines and
+    // actions bar (1.56 kB).
+    limit: '1.7 kB',
   },
 ]

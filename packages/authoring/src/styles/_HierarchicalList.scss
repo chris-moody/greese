@@ -1,0 +1,109 @@
+@use 'pkg:@greese/ui/scss/mixins';
+
+@layer greese.components {
+  // A header, the scrolling tree, and the actions bar.
+  .greese-HierarchicalList {
+    @include mixins.component-root;
+
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+  }
+
+  // A plain scroll area: the rows are the tree's items, and its focus roves
+  // among them.
+  .greese-HierarchicalList-tree {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    overflow: auto;
+
+    // Inside a parent that scrolls (the timeline's body).
+    &[data-scroll='none'] {
+      flex: none;
+      overflow: visible;
+    }
+  }
+
+  .greese-HierarchicalList-actions {
+    display: flex;
+    gap: var(--greese-space-2);
+    justify-content: flex-end;
+    padding: var(--greese-space-2);
+
+    // Pinned to the bottom of a parent's scroll area.
+    &[data-sticky] {
+      position: sticky;
+      inset-block-end: 0;
+      z-index: 1;
+      background-color: var(--greese-color-canvas);
+    }
+  }
+
+  // A row. Its height matches the timeline's frame rows, so a layer and its
+  // frames line up; each level of nesting adds a step of indent.
+  .greese-HierarchicalList-row {
+    --greese-tree-row-depth: 0;
+
+    @include mixins.focus-ring(-2px);
+
+    display: flex;
+    align-items: center;
+    inline-size: 100%;
+    block-size: var(--greese-tree-row-height, 1.75rem);
+    padding-inline: calc(
+        var(--greese-space-4) + var(--greese-tree-row-depth) * var(--greese-space-1)
+      )
+      var(--greese-space-2);
+    color: inherit;
+    text-align: start;
+    cursor: pointer;
+    background: transparent;
+    border-block-start: 2px solid transparent;
+    border-block-end: 1px solid var(--greese-color-border);
+    transition: background-color var(--greese-duration-fast) var(--greese-easing-standard);
+
+    @include mixins.hover {
+      background-color: color-mix(in oklab, var(--greese-color-fg) 6%, transparent);
+    }
+
+    &[aria-selected='true'] {
+      background-color: color-mix(in oklab, var(--greese-color-primary) 14%, transparent);
+    }
+
+    &[data-dragged] {
+      opacity: 0.5;
+    }
+
+    // Where the dragged rows would land: a line above or below, or inside.
+    &[data-drop='above'] {
+      border-block-start-color: var(--greese-color-primary);
+    }
+
+    &[data-drop='below'] {
+      border-block-end: 2px solid var(--greese-color-primary);
+    }
+
+    &[data-drop='into'] {
+      background-color: color-mix(in oklab, var(--greese-color-primary) 10%, transparent);
+    }
+  }
+
+  // The label, or the rename field, so a trailing icon sits at the row's end.
+  .greese-HierarchicalList-label {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // Pulled tight, so renaming doesn't grow the row.
+  .greese-HierarchicalList-rename {
+    inline-size: 100%;
+    margin-block: calc(var(--greese-space-2) * -1);
+  }
+
+  .greese-HierarchicalList-toggle {
+    margin-inline-end: var(--greese-space-2);
+  }
+}
