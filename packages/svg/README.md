@@ -1,7 +1,8 @@
 # `@greese/svg`
 
-Type-safe SVG drawing and animation for the web. No dependencies, no
-framework, about 9 kB brotli for everything and tree-shaken per function.
+Type-safe SVG drawing and animation for the web. One dependency (greese.js,
+whose eases it uses), no framework, about 10 kB brotli for everything and
+tree-shaken per function.
 
 It covers:
 

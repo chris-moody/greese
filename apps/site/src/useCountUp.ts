@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
+import { ease } from '@greese/js'
 
-const easeOut = (t: number) => 1 - (1 - t) ** 3
+const easeOut = ease('out')
 
 /**
  * Counts from 0 up to `target` when the element first scrolls into view, and

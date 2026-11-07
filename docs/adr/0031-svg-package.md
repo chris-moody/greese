@@ -204,3 +204,9 @@ gives filter primitives (`primitive`) and parts (`component`: stops,
 transfer functions, merge nodes, `mpath`) their own categories, marks SVG 2's
 geometry properties and `transform` as presentation attributes, and adds
 `discard`. `/edit` reads `S` and `T` handles as a node's.
+
+## Addendum (2026-11-07): one dependency, greese.js
+
+`@greese/svg` now depends on `@greese/js` for its `ease` option, so that
+curves are defined in one place (ADR 0040). greese.js has no dependencies,
+so svg still pulls in nothing from outside greese.

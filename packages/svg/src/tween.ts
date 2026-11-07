@@ -1,19 +1,17 @@
+import { ease as greeseEase, type Ease as GreeseEase } from '@greese/js'
+
 /** An easing function: progress in, eased progress out. */
 export type EaseFunction = (t: number) => number
 
-/** Built-in eases (cubic), or your own function. */
-export type Ease = 'linear' | 'in' | 'out' | 'inOut' | EaseFunction
-
-const EASES: Record<Exclude<Ease, EaseFunction>, EaseFunction> = {
-  linear: (t) => t,
-  in: (t) => t * t * t,
-  out: (t) => 1 - (1 - t) ** 3,
-  inOut: (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2),
-}
+/**
+ * greese.js's eases: `'linear'`, `'in'`, `'out'` and `'inOut'` (cubic), any
+ * other name it knows (`'back.out(2)'`, `'ease-in-out'`), bézier points, or
+ * your own function. greese.js is the one place curves are defined.
+ */
+export type Ease = 'linear' | 'in' | 'out' | 'inOut' | GreeseEase
 
 /** Resolves an `Ease` to its function. */
-export const toEase = (ease: Ease = 'out'): EaseFunction =>
-  typeof ease === 'function' ? ease : EASES[ease]
+export const toEase = (ease: Ease = 'out'): EaseFunction => greeseEase(ease)
 
 /** Timing for `tween` and the helpers built on it. Times are seconds. */
 export interface TweenOptions {

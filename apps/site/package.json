@@ -19,6 +19,7 @@
   "dependencies": {
     "@greese/authoring": "*",
     "@greese/icons": "*",
+    "@greese/js": "*",
     "@greese/react": "*",
     "@greese/ui": "*",
     "@reduxjs/toolkit": "^2.11.2",

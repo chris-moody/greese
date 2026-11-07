@@ -3,7 +3,7 @@
     "name": "@greese/svg: everything",
     "path": "dist/index.js",
     "import": "*",
-    "limit": "9.4 kB"
+    "limit": "9.95 kB"
   },
   {
     "name": "@greese/svg: path builder",
