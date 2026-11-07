@@ -95,3 +95,31 @@ Each Glop helper, against greese.js:
 - **`ticker: false`** leaves a playing timeline for the host to `tick(dt)`.
 
 Cost, together: about 0.2 kB brotli (ADR 0008 addendum).
+
+## Addendum (2026-11-07): what the review changed
+
+- **The clock reports whole frames.** `usePlaybackClock` maps the
+  timeline's seconds to a frame through the resolution and floors it, so
+  `currentFrame` is always an integer and changes only when the frame does.
+  While playing, it listens to the store: a frame set from elsewhere (a scrub,
+  a ruler click, a key) seeks the clock there, rather than being overwritten
+  on the next tick.
+- **The playhead, the playback bounds and the bezier editor's points are
+  sliders** (WAI-ARIA APG): focusable, with arrows, Page keys, Home and End.
+  Their hit areas are 44px on coarse pointers, and they take no browser
+  panning (`touch-action: none`).
+- **The keyframes have no keyboard path yet: a known gap.** Frames and
+  keyframes are picked and dragged by pointer. The timeline's keymap acts on a
+  selection (copy, paste, delete, tweens, splits), and the playhead moves by
+  key, but nothing moves a focus through the cells. Closing it means a grid
+  (`role="grid"`, one cell per layer and frame, roving focus) over a surface
+  that renders thousands of frames, and is its own piece of work.
+- **The keymap yields.** It ignores a key something else has already handled,
+  and keys inside a dialog, popover, menu, listbox, select or slider. Escape
+  is taken only when there's a selection to clear.
+- **Reduced motion:** the beat pulses and the playhead's echo ring don't play
+  under `prefers-reduced-motion` or the app's `data-greese-motion="reduce"`
+  (greese.js's `prefersReducedMotion`). The playhead itself still moves: it's
+  the tool, not decoration.
+- **Time runs left to right** on a right-to-left page (`direction: ltr` on the
+  timeline).

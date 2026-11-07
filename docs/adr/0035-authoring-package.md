@@ -68,6 +68,11 @@ The split keeps each layer honest:
     themselves, so their reducers also work outside `createAuthoringStore`.
   - **Same copy:** the plugin must be enabled on the copy RTK drafts with, so
     an app must resolve one immer. Glop dedupes it with React and Redux.
+- Its dependencies are the greese packages only: `@greese/react`,
+  `@greese/ui` (the Sass kit its styles compile with), `@greese/icons` and,
+  since ADR 0036, `@greese/js` (the playback clock and tween easing). Each is
+  pinned to the version it's built against, as greese's packages pin each
+  other.
 
 ### Styles live in the package
 

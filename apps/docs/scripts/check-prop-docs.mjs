@@ -29,11 +29,13 @@ const files = readdirSync(componentsDir, { withFileTypes: true })
       .filter((f) => /^[A-Z]\w*\.tsx$/.test(f))
       .map((f) => join(svgDir, f))
   )
-  // @greese/authoring's components (ADR 0035).
+  // @greese/authoring's components, timeline and panels (ADR 0035).
   .concat(
-    readdirSync(join(authoringSrc, 'components'), { recursive: true, encoding: 'utf8' })
-      .filter((f) => /^[A-Z]\w*\/[A-Z]\w*\.tsx$/.test(f))
-      .map((f) => join(authoringSrc, 'components', f))
+    ['components', 'timeline', 'panels'].flatMap((dir) =>
+      readdirSync(join(authoringSrc, dir), { recursive: true, encoding: 'utf8' })
+        .filter((f) => /(^|\/)[A-Z]\w*\.tsx$/.test(f) && !f.includes('.test.'))
+        .map((f) => join(authoringSrc, dir, f))
+    )
   )
 
 // Only what the library exports: internal helpers have no props table.
@@ -68,7 +70,7 @@ for (const doc of parser.parse(files).filter((d) => exported.has(d.displayName))
   for (const [name, prop] of Object.entries(doc.props)) {
     if (!prop.description.trim()) {
       const where = prop.parent
-        ? prop.parent.fileName.replace(/^.*packages\/react\//, '')
+        ? prop.parent.fileName.replace(/^.*packages\/(react|authoring)\//, '$1/')
         : 'unknown'
       missing.push(`  ${doc.displayName}.${name}  (${where})`)
     }
