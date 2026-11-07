@@ -42,7 +42,7 @@ for (const [, names, file] of svgBarrel.matchAll(
   /export \{([^}]+)\} from '\.\/(.+\.tsx)'/g
 )) {
   for (const name of names.split(',').map((n) => n.trim()))
-    if (/^[A-Z]/.test(name) && !name.startsWith('type '))
+    if (/^[A-Z]/.test(name) && !name.startsWith('type ') && !/^[A-Z0-9_]+$/.test(name))
       exported.set(name, join('../svg', file))
 }
 
@@ -52,7 +52,7 @@ for (const [, names, file] of authoringBarrel.matchAll(
   /export \{([^}]+)\} from '\.\/(.+\.tsx)'/g
 )) {
   for (const name of names.split(',').map((n) => n.trim()))
-    if (/^[A-Z]/.test(name) && !name.startsWith('type '))
+    if (/^[A-Z]/.test(name) && !name.startsWith('type ') && !/^[A-Z0-9_]+$/.test(name))
       exported.set(name, join('../../../authoring/src', file))
 }
 

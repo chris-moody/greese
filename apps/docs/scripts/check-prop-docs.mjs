@@ -48,14 +48,14 @@ for (const [, file] of barrel.matchAll(/export \* from '\.\/(.+)'/g)) {
 const svgBarrel = readFileSync(join(svgDir, 'index.ts'), 'utf8')
 for (const [, names] of svgBarrel.matchAll(/export \{([^}]+)\} from '\.\/.+\.tsx'/g))
   for (const name of names.split(',').map((n) => n.trim()))
-    if (/^[A-Z]/.test(name)) exported.add(name)
+    if (/^[A-Z]/.test(name) && !/^[A-Z0-9_]+$/.test(name)) exported.add(name)
 
 const authoringBarrel = readFileSync(join(authoringSrc, 'index.ts'), 'utf8')
 for (const [, names] of authoringBarrel.matchAll(
   /export \{([^}]+)\} from '\.\/.+\.tsx'/g
 ))
   for (const name of names.split(',').map((n) => n.trim()))
-    if (/^[A-Z]/.test(name)) exported.add(name)
+    if (/^[A-Z]/.test(name) && !/^[A-Z0-9_]+$/.test(name)) exported.add(name)
 
 const parser = docgen.withCustomConfig(join(react, 'tsconfig.json'), {
   savePropValueAsString: true,
