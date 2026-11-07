@@ -52,3 +52,21 @@ export const Playground: Story = {
     )
   },
 }
+
+/** Beside the toggle, for a header one row tall, like a timeline's. */
+export const Horizontal: Story = {
+  render: function Horizontal(args) {
+    const [snap, setSnap] = useState(true)
+    const [division, setDivision] = useState('8')
+    return (
+      <ToggleSelect
+        {...args}
+        orientation="horizontal"
+        pressed={snap}
+        onPressedChange={setSnap}
+        value={division}
+        onChange={setDivision}
+      />
+    )
+  },
+}

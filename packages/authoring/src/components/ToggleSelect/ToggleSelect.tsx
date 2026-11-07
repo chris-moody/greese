@@ -29,6 +29,8 @@ export interface ToggleSelectProps {
   selectLabel?: string
   /** Turns off both the toggle and the list. */
   disabled?: boolean
+  /** The list under the toggle, or beside it for a header one row tall. @default 'vertical' */
+  orientation?: 'vertical' | 'horizontal'
   /** Classes for the root. */
   className?: string
 }
@@ -53,9 +55,16 @@ export const ToggleSelect = ({
   options,
   selectLabel = `${label} value`,
   disabled,
+  orientation = 'vertical',
   className,
 }: ToggleSelectProps): JSX.Element => (
-  <div className={cx('greese-ToggleSelect', className)}>
+  <div
+    className={cx(
+      'greese-ToggleSelect',
+      orientation === 'horizontal' && 'greese-ToggleSelect--horizontal',
+      className
+    )}
+  >
     <Tooltip content={label}>
       <ToggleButton
         size="sm"

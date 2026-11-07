@@ -133,4 +133,11 @@
     gap: calc(var(--greese-space-1) / 2);
     align-items: stretch;
   }
+
+  // Beside it: one row, for a header no taller than a button.
+  .greese-ToggleSelect--horizontal {
+    flex-direction: row;
+    gap: var(--greese-space-1);
+    align-items: center;
+  }
 }
