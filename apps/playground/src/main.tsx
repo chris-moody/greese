@@ -15,6 +15,10 @@ const pages: Record<string, () => Promise<{ default: ComponentType }>> = {
   motion: () => import('./pages/Motion.tsx').then((m) => ({ default: m.Motion })),
   authoring: () =>
     import('./pages/Authoring.tsx').then((m) => ({ default: m.Authoring })),
+  'authoring-timeline': () =>
+    import('./pages/AuthoringTimeline.tsx').then((m) => ({
+      default: m.AuthoringTimeline,
+    })),
   'authoring-tools': () =>
     import('./pages/AuthoringTools.tsx').then((m) => ({ default: m.AuthoringTools })),
   additions: () =>
