@@ -13,6 +13,8 @@ const pages: Record<string, () => Promise<{ default: ComponentType }>> = {
   overlays: () => import('./pages/Overlays.tsx').then((m) => ({ default: m.Overlays })),
   gaps: () => import('./pages/Gaps.tsx').then((m) => ({ default: m.Gaps })),
   motion: () => import('./pages/Motion.tsx').then((m) => ({ default: m.Motion })),
+  authoring: () =>
+    import('./pages/Authoring.tsx').then((m) => ({ default: m.Authoring })),
   additions: () =>
     import('./pages/Additions.tsx').then((m) => ({ default: m.Additions })),
   catalogue: () =>

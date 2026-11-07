@@ -16,11 +16,14 @@
     "lighthouse": "lhci autorun"
   },
   "dependencies": {
+    "@greese/authoring": "*",
     "@greese/icons": "*",
     "@greese/react": "*",
     "@greese/ui": "*",
+    "@reduxjs/toolkit": "^2.11.2",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@emotion/react": "11.14.0",
