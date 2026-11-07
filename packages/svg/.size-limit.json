@@ -40,5 +40,11 @@
     "path": "dist/markup/index.js",
     "import": "*",
     "limit": "3.2 kB"
+  },
+  {
+    "name": "@greese/svg/schema: everything",
+    "path": "dist/schema/index.js",
+    "import": "*",
+    "limit": "3.1 kB"
   }
 ]

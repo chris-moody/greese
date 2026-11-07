@@ -38,6 +38,10 @@
       "types": "./dist/markup/index.d.ts",
       "default": "./dist/markup/index.js"
     },
+    "./schema": {
+      "types": "./dist/schema/index.d.ts",
+      "default": "./dist/schema/index.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
