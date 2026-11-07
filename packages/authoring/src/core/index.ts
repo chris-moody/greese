@@ -58,6 +58,7 @@ export {
   type PointerDragDelta,
   type PointerDragOptions,
 } from './pointerDrag.ts'
+export { contextMenuPoint } from './contextMenu.ts'
 export { uid } from './uid.ts'
 export * from './types/tree.types.ts'
 export * from './types/timing.types.ts'

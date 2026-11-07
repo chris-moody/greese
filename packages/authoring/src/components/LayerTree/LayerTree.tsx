@@ -16,6 +16,7 @@ import { HierarchicalListFolder } from '../HierarchicalList/HierarchicalListFold
 import { LayerTreeItem, type LayerTreeItemProps } from './LayerTreeItem.tsx'
 
 import { LayerContextMenu } from './LayerContextMenu.tsx'
+import { contextMenuPoint } from '../../core/contextMenu.ts'
 
 export interface LayerTreeProps {
   /** The tree's accessible name. @default 'Layers' */
@@ -104,9 +105,8 @@ export const LayerTree = memo(function LayerTree({
   const contextMenu = useCallback(
     (layerId: string) => (event: MouseEvent<HTMLElement>) => {
       if (!onLayerContextMenu && disableContextMenu) return
-      event.preventDefault()
       event.stopPropagation()
-      const position = { top: event.clientY, left: event.clientX }
+      const position = contextMenuPoint(event)
       if (onLayerContextMenu) onLayerContextMenu(layerId, position)
       else setMenu({ layerId, position })
     },

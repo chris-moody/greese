@@ -27,8 +27,13 @@ export interface LayerContextMenuProps {
  * can't be duplicated or deleted, and a layer type can hide actions
  * (`hiddenContextMenuActions`). `LayerTree` opens it on a right-click.
  *
+ * It opens where you put it: the trigger is yours. `contextMenuPoint`
+ * (`@greese/authoring/core`) cancels the browser's own menu and gives the
+ * position, the pointer's or, from the keyboard, the trigger's corner.
+ *
  * ```tsx
- * <LayerContextMenu layerId={id} position={at} onClose={close} />
+ * <div onContextMenu={(e) => setAt(contextMenuPoint(e))}>Ball</div>
+ * <LayerContextMenu layerId={id} position={at} onClose={() => setAt(null)} />
  * ```
  */
 export const LayerContextMenu = ({

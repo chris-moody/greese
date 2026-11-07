@@ -98,6 +98,9 @@ export const createAuthoringEnvironment = <
       )
     },
   }
+  // A minified build renames the function; tools that print the tree (the
+  // docs' "Show code", React DevTools) read this instead.
+  ;(environment.Provider as { displayName?: string }).displayName = 'AuthoringProvider'
   return environment
 }
 
