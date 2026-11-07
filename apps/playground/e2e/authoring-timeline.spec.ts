@@ -24,8 +24,42 @@ test('pauses where it is', async ({ page }) => {
   await expect.poll(() => frame(page)).toBeGreaterThan(2)
   await page.getByRole('button', { name: 'Pause' }).click()
   const at = await frame(page)
-  await page.waitForTimeout(300)
+  // Twenty rendered frames: at 24 fps a playing clock would have moved.
+  await page.evaluate(
+    () =>
+      new Promise<void>((done) => {
+        let left = 20
+        const next = () => (--left ? requestAnimationFrame(next) : done())
+        requestAnimationFrame(next)
+      })
+  )
   expect(await frame(page)).toBe(at)
+})
+
+test('the playhead is a slider: arrows, Home and End move it', async ({ page }) => {
+  const playhead = page.getByRole('slider', { name: 'Playhead' })
+  await playhead.focus()
+  await page.keyboard.press('ArrowRight')
+  await page.keyboard.press('ArrowRight')
+  await expect(playhead).toHaveAttribute('aria-valuenow', '2')
+  await page.keyboard.press('End')
+  await expect(page.getByText('23 / 24')).toBeVisible()
+  await page.keyboard.press('Home')
+  await expect(playhead).toHaveAttribute('aria-valuenow', '0')
+})
+
+test('Escape with nothing selected is the page’s', async ({ page }) => {
+  await page.getByRole('slider', { name: 'Playhead' }).focus()
+  const prevented = await page.evaluate(() => {
+    const event = new KeyboardEvent('keydown', {
+      key: 'Escape',
+      bubbles: true,
+      cancelable: true,
+    })
+    document.body.dispatchEvent(event)
+    return event.defaultPrevented
+  })
+  expect(prevented).toBe(false)
 })
 
 test('loops when Loop is on', async ({ page }) => {
