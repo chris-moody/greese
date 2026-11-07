@@ -59,6 +59,22 @@ module.exports = [
     limit: '4.7 kB',
   },
   {
+    name: '@greese/authoring: LayerTree and an environment',
+    path: 'dist/index.js',
+    import: '{ LayerTree, createAuthoringEnvironment }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+    ],
+    // The tree, its layer rows, and the store's whole state layer (11.89 kB).
+    limit: '12.8 kB',
+  },
+  {
     name: '@greese/authoring/styles.css',
     path: 'dist/styles.css',
     rolldown: false,

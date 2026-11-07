@@ -8,10 +8,14 @@ import {
   type AuthoringStore,
   type StateOfReducers,
 } from '../state/createAuthoringStore.ts'
+import type { AuthoringConfig } from '../core/types/config.types.ts'
+import { DEFAULT_LAYER_TYPE } from '../core/layers/layers.ts'
 
 /** One editor instance: its store and the provider that puts it in context. */
 export interface AuthoringEnvironment<TState = Record<string, never>> {
   readonly store: AuthoringStore<TState>
+  /** The editor's configuration: its layer types. */
+  readonly config: AuthoringConfig
   /** Wrap the editor in this: it provides the store to every panel, hook and the stage. */
   readonly Provider: (props: { children?: ReactNode }) => JSX.Element
 }
@@ -19,6 +23,12 @@ export interface AuthoringEnvironment<TState = Record<string, never>> {
 export interface AuthoringEnvironmentOptions<M extends Record<string, Reducer>> {
   /** The editor's own slices, merged with the framework's. */
   reducers?: M
+  /** The editor's configuration. Without it, one generic layer type. */
+  config?: AuthoringConfig
+}
+
+const DEFAULT_CONFIG: AuthoringConfig = {
+  layerTypes: [{ layerType: DEFAULT_LAYER_TYPE, label: 'Layer' }],
 }
 
 const EnvironmentContext = createContext<AuthoringEnvironment<unknown> | null>(null)
@@ -39,14 +49,16 @@ const EnvironmentContext = createContext<AuthoringEnvironment<unknown> | null>(n
  */
 export const createAuthoringEnvironment = <
   M extends Record<string, Reducer> = Record<string, never>,
->({ reducers }: AuthoringEnvironmentOptions<M> = {}): AuthoringEnvironment<
-  StateOfReducers<M>
-> => {
+>({
+  reducers,
+  config = DEFAULT_CONFIG,
+}: AuthoringEnvironmentOptions<M> = {}): AuthoringEnvironment<StateOfReducers<M>> => {
   const store = createAuthoringStore(reducers) as unknown as AuthoringStore<
     StateOfReducers<M>
   >
   const environment: AuthoringEnvironment<StateOfReducers<M>> = {
     store,
+    config,
     Provider: function AuthoringProvider({ children }: { children?: ReactNode }) {
       return (
         <ReduxProvider store={store}>

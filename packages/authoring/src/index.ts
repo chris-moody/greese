@@ -16,6 +16,11 @@ export type {
   HierarchicalListProps,
   RowRenderProps,
 } from './components/HierarchicalList/hierarchicalList.types.ts'
+export { LayerTree, type LayerTreeProps } from './components/LayerTree/LayerTree.tsx'
+export {
+  LayerTreeItem,
+  type LayerTreeItemProps,
+} from './components/LayerTree/LayerTreeItem.tsx'
 export { PanelDock, type PanelDockProps } from './components/PanelDock/PanelDock.tsx'
 export type { PanelRegistrant } from './components/PanelDock/panel.types.ts'
 export {

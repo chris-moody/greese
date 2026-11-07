@@ -1,0 +1,7 @@
+@layer greese.components {
+  // A layer row's visibility, lock and mute toggles, clear of the row's end.
+  .greese-LayerTree-toggles {
+    flex-shrink: 0;
+    margin-inline-end: var(--greese-space-2);
+  }
+}
