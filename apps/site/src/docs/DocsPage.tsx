@@ -74,11 +74,15 @@ const useSections = (page: DocsPage): Array<[string, string, number]> => {
       '.docs-article h2[id], .docs-article h3[id]'
     )
     setSections(
-      [...headings].map((h) => [
-        h.id,
-        (h.textContent ?? '').replace(/#$/, '').trim(),
-        h.tagName === 'H2' ? 2 : 3,
-      ])
+      [...headings]
+        // An example's own headings (a dialog's title, rendered while it's
+        // closed) are the example's, not sections of the page.
+        .filter((h) => !h.closest('.docs-story, .docs-live'))
+        .map((h) => [
+          h.id,
+          (h.textContent ?? '').replace(/#$/, '').trim(),
+          h.tagName === 'H2' ? 2 : 3,
+        ])
     )
     // A visit to `/docs/<page>#section`: the browser looked for it before
     // the page loaded, so scroll to it now that it's there.
