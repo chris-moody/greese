@@ -121,6 +121,10 @@ describe('AuthoringBreadcrumbs accents', () => {
     )
     const trail = screen.getByRole('navigation', { name: 'Subview trail' })
     expect(trail).toHaveTextContent('RigRoot')
+    // Styled as one of the trail's own steps, without the host's knowing how.
+    expect(screen.getByRole('button', { name: 'Rig' })).toHaveClass(
+      'greese-AuthoringBreadcrumbs-crumb'
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Rig' }))
     expect(back).toHaveBeenCalledOnce()
 

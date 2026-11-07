@@ -1,6 +1,6 @@
 'use client'
 import type { JSX, ReactNode } from 'react'
-import { BreadcrumbItem, Breadcrumbs as Trail } from '@greese/react'
+import { BreadcrumbItem, Slot, Breadcrumbs as Trail } from '@greese/react'
 import { useAuthoringSelector } from '../../environment/environment.tsx'
 import { selectNavigationStack } from '../../state/selectors.ts'
 import { useNavigation } from '../../hooks/useNavigation.ts'
@@ -19,7 +19,10 @@ export interface AuthoringBreadcrumbsProps {
   label?: string
   /** Marks each step, by the asset it opened (`null` for Root): an icon and a hue. */
   accent?: (assetId: string | null) => BreadcrumbAccent
-  /** A step before Root, which the host supplies: a button back to where the editor was opened from. */
+  /**
+   * A step before Root, which the host supplies: a button back to where the
+   * editor was opened from. It's styled as one of the trail's own steps.
+   */
   leading?: ReactNode
   /** Shows the trail at the top level too, as just Root (and `leading`). */
   showAtRoot?: boolean
@@ -73,7 +76,11 @@ export const AuthoringBreadcrumbs = ({
 
   return (
     <Trail label={label} className="greese-AuthoringBreadcrumbs">
-      {leading && <BreadcrumbItem asChild>{leading}</BreadcrumbItem>}
+      {leading && (
+        <BreadcrumbItem asChild>
+          <Slot className="greese-AuthoringBreadcrumbs-crumb">{leading}</Slot>
+        </BreadcrumbItem>
+      )}
       {stack.length === 0 ? (
         <BreadcrumbItem current>{step('Root', null)}</BreadcrumbItem>
       ) : (
