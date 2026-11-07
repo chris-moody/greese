@@ -15,7 +15,9 @@ const frame = async (page: Page) => {
 test('plays through the frames, and stops at the end without loop', async ({ page }) => {
   await page.getByRole('button', { name: 'Play' }).click()
   await expect.poll(() => frame(page)).toBeGreaterThan(3)
-  await expect(page.getByText('23 / 24')).toBeVisible({ timeout: 3000 })
+  // A second of frames, with room for a loaded machine (WebKit missed 3 s
+  // under the full suite): this checks where it stops, not how fast.
+  await expect(page.getByText('23 / 24')).toBeVisible({ timeout: 10_000 })
   await expect(page.getByRole('button', { name: 'Play' })).toBeVisible()
 })
 
