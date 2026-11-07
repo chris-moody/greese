@@ -12,7 +12,10 @@ module.exports = [
     // resolutions, the tree and layer helpers, viewport maths (6.41 kB).
     // 7 → 7.6 kB (2026-11-06): the search providers, with a fuzzy scorer of
     // our own in place of fuzzysort, and the drop readers (7.02 kB).
-    limit: '7.6 kB',
+    // 7.6 → 8.2 kB (2026-11-06): the library helpers (asset kinds, folder
+    // trees, symbol naming) and the stage driver's sampling and
+    // reconciliation (7.67 kB).
+    limit: '8.2 kB',
   },
   {
     name: '@greese/authoring/state: everything',

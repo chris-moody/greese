@@ -42,3 +42,20 @@ export {
   usePanelListFromSpec,
   type LayoutCache,
 } from './hooks/layout.ts'
+export * from './environment/media.types.ts'
+export { deserializeProject, serializeProject } from './environment/serialize.ts'
+export { buildToolCursorCss } from './environment/toolCursorCss.ts'
+export {
+  applySelection,
+  backendReconciles,
+  indexLayerTypes,
+  reconcileObjects,
+  resolveEditInPlaceTransition,
+  sampleLayers,
+  type EditInPlaceTransition,
+  type SampleLayersOptions,
+} from './core/stage/stageDriver.ts'
+export { useCreateInstance } from './hooks/useCreateInstance.ts'
+export { useNavigation } from './hooks/useNavigation.ts'
+export { useStageDriver } from './hooks/useStageDriver.ts'
+export { useSymbolCreateNaming, type SymbolCreateNaming } from './hooks/useSymbolCreateNaming.ts'
