@@ -762,8 +762,11 @@ export class Timeline implements PromiseLike<void> {
     // frame is the final values.
     const { fps } = this.#options
     // A rate that isn't a positive number draws every instant.
-    const snap = fps !== undefined && Number.isFinite(fps) && fps > 0
-    const drawn = snap && local < length ? Math.floor(local * fps + 1e-9) / fps : local
+    // (`undefined` and NaN compare false.)
+    const drawn =
+      fps! > 0 && fps! < Infinity && local < length
+        ? Math.floor(local * fps! + 1e-9) / fps!
+        : local
     const from = { iteration: this.#iteration, raw: this.#raw }
     this.#time_ = time
     this.#iteration = iteration
