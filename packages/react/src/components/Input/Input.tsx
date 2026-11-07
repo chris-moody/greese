@@ -2,6 +2,7 @@
 import {
   useRef,
   type ComponentPropsWithRef,
+  type CSSProperties,
   type JSX,
   type MouseEvent,
   type ReactNode,
@@ -95,7 +96,10 @@ export const Input = ({
         htmlSize !== undefined && 'greese-Input--measured',
         className
       )}
-      style={style}
+      // `size` measures in the font's average character, which is narrower
+      // than its digits: the measure goes in `ch` too, so a value that long
+      // fits. Unset, React writes nothing.
+      style={{ '--greese-input-size': htmlSize, ...style } as CSSProperties}
       data-invalid={control['aria-invalid']}
       data-disabled={control.disabled || undefined}
       onMouseDown={focusInput}

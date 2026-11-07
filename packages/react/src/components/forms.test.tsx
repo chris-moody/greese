@@ -337,6 +337,13 @@ describe('input width', () => {
     expect(input.closest('.greese-Input')).toHaveClass('greese-Input--measured')
   })
 
+  it('htmlSize measures in ch as well, keeping a style of your own', () => {
+    render(<Input aria-label="Hex" htmlSize={7} style={{ color: 'red' }} />)
+    const frame = screen.getByLabelText('Hex').closest<HTMLElement>('.greese-Input')!
+    expect(frame.style.getPropertyValue('--greese-input-size')).toBe('7')
+    expect(frame.style.color).toBe('red')
+  })
+
   it('does not collide with the control size scale', () => {
     render(<Input aria-label="Both" size="lg" htmlSize={2} />)
     const input = screen.getByLabelText('Both')
