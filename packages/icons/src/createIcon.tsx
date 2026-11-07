@@ -8,14 +8,14 @@ export interface IconProps extends Omit<SVGProps<SVGSVGElement>, 'children'> {
   title?: string
   /** Width and height: any CSS length, or a number of pixels. @default '1em' */
   size?: number | string
-  /** Line width, in units of the drawing (16 × 16 unless it says otherwise). @default 1.75 */
+  /** Line width, in units of the drawing (16 × 16 unless it says otherwise). @default 1.5 */
   strokeWidth?: number | string
 }
 
 export interface IconOptions {
   /** The drawing's width and height in its own units. @default 16 */
   viewBox?: number
-  /** The line width the icon is drawn for, in those units. @default 1.75 */
+  /** The line width the icon is drawn for, in those units. @default 1.5 */
   strokeWidth?: number
   /** A solid shape, filled with `currentColor`, not a line drawing. */
   filled?: boolean

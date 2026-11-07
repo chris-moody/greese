@@ -7,7 +7,7 @@ const meta = {
   title: 'Foundations/Icons',
   component: StarIcon,
   tags: ['!autodocs'],
-  args: { size: 48, strokeWidth: 1.75 },
+  args: { size: 48, strokeWidth: 1.5 },
   argTypes: {
     // Icons come from a factory (createIcon), which docgen can't read, so
     // their props are described here.
@@ -20,7 +20,7 @@ const meta = {
     strokeWidth: {
       control: { type: 'range', min: 0.5, max: 3, step: 0.25 },
       description: 'Line width, in units of the 16 × 16 drawing.',
-      table: { type: { summary: 'number | string' }, defaultValue: { summary: '1.75' } },
+      table: { type: { summary: 'number | string' }, defaultValue: { summary: '1.5' } },
     },
     title: {
       control: 'text',
