@@ -84,8 +84,14 @@ $widths: (
     inline-size: 100vw;
     max-block-size: 100dvh;
     block-size: 100dvh;
-    padding-block: var(--greese-dialog-padding, max(var(--greese-space-5), env(safe-area-inset-top)))
-      var(--greese-dialog-padding, max(var(--greese-space-5), env(safe-area-inset-bottom)));
+    padding-block: var(
+        --greese-dialog-padding,
+        max(var(--greese-space-5), env(safe-area-inset-top))
+      )
+      var(
+        --greese-dialog-padding,
+        max(var(--greese-space-5), env(safe-area-inset-bottom))
+      );
     border: 0;
     border-radius: 0;
   }
