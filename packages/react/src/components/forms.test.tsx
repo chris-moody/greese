@@ -528,14 +528,14 @@ describe('Slider and FileInput', () => {
 
   it('NumberField stacks its steppers, and NumberStepper splits them', async () => {
     const user = userEvent.setup()
-    const { rerender } = render(<NumberField aria-label="Guests" defaultValue={2} />)
+    const { rerender } = render(<NumberField label="Guests" defaultValue={2} />)
     const up = screen.getByRole('button', { name: 'Increase' })
     // Stacked: both carets sit in the one adornment at the end.
     expect(up.parentElement).toHaveClass('greese-NumberField-steppers')
     await user.click(up)
     expect(screen.getByRole('spinbutton')).toHaveValue('3')
 
-    rerender(<NumberStepper aria-label="Guests" defaultValue={2} />)
+    rerender(<NumberStepper label="Guests" defaultValue={2} />)
     // Split: a button at each end of the field, so neither is in the stack.
     const plus = screen.getByRole('button', { name: 'Increase' })
     const minus = screen.getByRole('button', { name: 'Decrease' })
@@ -546,7 +546,7 @@ describe('Slider and FileInput', () => {
   })
 
   it('NumberField can drop its steppers entirely', () => {
-    render(<NumberField aria-label="Guests" defaultValue={2} steppers="none" />)
+    render(<NumberField label="Guests" defaultValue={2} steppers="none" />)
     expect(screen.queryByRole('button', { name: 'Increase' })).toBeNull()
     expect(screen.getByRole('spinbutton')).toHaveValue('2')
   })
@@ -554,8 +554,8 @@ describe('Slider and FileInput', () => {
   it('every control an EditableField renders takes its size', () => {
     const { container } = render(
       <>
-        <EditableField label="On" type="switch" size="lg" checked />
-        <EditableField label="Tick" type="checkbox" size="lg" checked />
+        <EditableField label="On" type="switch" size="lg" value />
+        <EditableField label="Tick" type="checkbox" size="lg" value />
         <EditableField label="Level" type="range" size="lg" value={3} />
       </>
     )
