@@ -14,6 +14,12 @@ export {
   type PixelsTween,
   type PixelsTweenType,
 } from './pixels.ts'
+export {
+  tweenEase,
+  tweenEaseName,
+  type TweenEaseOptions,
+  type TweenKeywords,
+} from './tweenEase.ts'
 export { splitText, type SplitText, type SplitTextOptions } from './split.ts'
 export { batch, toTargets, type Target, type Targets } from './target.ts'
 export {

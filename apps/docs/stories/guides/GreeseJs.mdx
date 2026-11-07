@@ -198,6 +198,7 @@ Everything is typed. The types you'll use most are:
 | `Ease`, `EaseFn`                       | Ease names, bézier arrays or functions                         |
 | `Targets`, `Target`                    | What can be animated                                           |
 | `PixelsAnimation`, `FromPixelsOptions` | Pixels documents for `fromPixels`                              |
+| `TweenEaseOptions`, `TweenKeywords`    | A tween's bézier, and what its keyword names mean              |
 
 ## The one-call API
 
@@ -407,19 +408,43 @@ const tl = fromPixels(
 tl.play()
 ```
 
-| Pixels                                                     | greese.js                                                                            |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Channels `x`, `y`, `scaleX`, `scaleY`                      | The same transform properties                                                        |
-| `rotation` (shortest arc, unless the tween disables it)    | `rotate`                                                                             |
-| `alpha`                                                    | `opacity`                                                                            |
-| Any other channel                                          | The same name: map it with `channels` (e.g. to a CSS variable)                       |
-| Frame index at `fps`                                       | Seconds = frame ÷ fps                                                                |
-| `linear`, `easeIn`/`easeOut`/`easeInOut`, `bezier`, `step` | `linear`, the CSS `ease-*` curves, the bézier, `steps(1)`                            |
-| `elastic`, `bounce`, `back`                                | `elastic.out`, `bounce.out`, `back.out` (Pixels' own renderer plays these as linear) |
-| Keys with no tween between them                            | A hold until the next key                                                            |
-| `loop`                                                     | `repeat: -1`                                                                         |
+| Pixels                                                     | greese.js                                                               |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Channels `x`, `y`, `scaleX`, `scaleY`                      | The same transform properties                                           |
+| `rotation` (shortest arc, unless the tween disables it)    | `rotate`                                                                |
+| `alpha`                                                    | `opacity`                                                               |
+| Any other channel                                          | The same name: map it with `channels` (e.g. to a CSS variable)          |
+| Frame index at `fps`                                       | Seconds = frame ÷ fps                                                   |
+| `linear`, `easeIn`/`easeOut`/`easeInOut`, `bezier`, `step` | `linear`, the CSS `ease-*` curves, the bézier, `steps(1)`               |
+| `elastic`, `bounce`, `back`                                | `elastic.out`, `bounce.out`, `back.in`, as every Glop studio draws them |
+| Keys with no tween between them                            | A hold until the next key                                               |
+| `loop`                                                     | `repeat: -1`                                                            |
 
 Spans (nested animations) aren't read; nest timelines with `add()` instead.
+
+## Editor tween names: `tweenEase`
+
+An editor's tweens (authoring's `TweenType`, and the names saved rigs, sound
+documents and game code hold) are named differently from greese.js's eases.
+`tweenEase` draws them, so the curves are defined once, here (ADR 0040):
+
+```ts
+import { tweenEase, tweenEaseName } from '@greese/js'
+
+tweenEase('easeOut')(0.5) // 0.75: quadratic
+tweenEaseName('back') // 'back.in'
+tweenEaseName('easeIn', { keywords: 'css' }) // 'ease-in', as Pixels draws it
+tweenEaseName('bezier', { bezier: [0.7, 0, 0.84, 0] }) // the points
+```
+
+| Tween name                                                    | greese.js                                       |
+| ------------------------------------------------------------- | ----------------------------------------------- |
+| `linear`; `step`, `stepped`                                   | `linear`; `steps(1)`                            |
+| `easeIn`, `easeOut`, `easeInOut` (and `easeInQuad` and so on) | `power1.in`, `.out`, `.inOut`; CSS's with `css` |
+| `elastic`, `bounce`, `back`                                   | `elastic.out`, `bounce.out`, `back.in`          |
+| `bezier`                                                      | The tween's points, or CSS `ease`               |
+| A greese.js name (`power3.out`)                               | Itself                                          |
+| Anything else                                                 | `linear`, so a saved document always loads      |
 
 ## Accessibility: reduced motion
 

@@ -1,5 +1,6 @@
 import type { Ease } from './ease.ts'
 import type { Targets } from './target.ts'
+import { tweenEaseName } from './tweenEase.ts'
 import { Timeline, type TimelineOptions } from './timeline.ts'
 
 /**
@@ -67,28 +68,14 @@ export interface FromPixelsOptions extends TimelineOptions {
 const CHANNELS: Record<string, string> = { rotation: 'rotate', alpha: 'opacity' }
 
 /**
- * Pixels' tween types as eases. Pixels' own renderer plays elastic, bounce
- * and back as linear; here they get greese.js's real curves.
+ * Pixels' tween types as eases: `tweenEaseName`'s, with Pixels' keyword
+ * curves. Pixels' own renderer plays elastic, bounce and back as linear;
+ * here they get greese.js's real curves.
  */
-const easeOf = (tween: PixelsTween | undefined): Ease => {
-  if (!tween || tween.enabled === false) return 'steps(1)' // a hold
-  switch (tween.type) {
-    case 'linear':
-      return 'linear'
-    case 'step':
-      return 'steps(1)'
-    case 'easeIn':
-      return 'ease-in'
-    case 'easeOut':
-      return 'ease-out'
-    case 'easeInOut':
-      return 'ease-in-out'
-    case 'bezier':
-      return tween.bezier ?? [0.25, 0.1, 0.25, 1]
-    default:
-      return `${tween.type}.out`
-  }
-}
+const easeOf = (tween: PixelsTween | undefined): Ease =>
+  !tween || tween.enabled === false
+    ? 'steps(1)' // a hold
+    : tweenEaseName(tween.type, { bezier: tween.bezier, keywords: 'css' })
 
 /** Shortest arc from `a` to `b`, in degrees. */
 const shortest = (a: number, b: number): number => {

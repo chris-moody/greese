@@ -13,7 +13,8 @@ A small keyframe and timeline animation library for the web: about 5.6 kB
   animating it.
 - **Stagger**, an accessible **`splitText`**, named **eases** and
   **positions**.
-- **`fromPixels`** plays animation authored in the Pixels studio.
+- **`fromPixels`** plays animation authored in the Pixels studio, and
+  **`tweenEase`** draws an editor tween's named curve (`easeOut`, `back`).
 - **Respects `prefers-reduced-motion`** by default, and an app's own setting:
   an element inside `data-greese-motion="reduce"` jumps to its end
   (`prefersReducedMotion(el)` tells you the same).
@@ -93,7 +94,7 @@ running.
 | Positions  | `1.5`, `'+=0.2'`, `'-=0.2'`, `'<'`, `'>-0.1'`, `'label+=0.5'`                                                                                                                                                    |
 | Eases      | `'out'` (default), `'power1'`–`'power4'`, `'sine'`, `'expo'`, `'circ'`, `'back'`, `'elastic'`, `'bounce'` with `.in`/`.out`/`.inOut`; CSS names and `cubic-bezier()`; `steps(n)`; cubic-bézier arrays; functions |
 | Per target | Any value, and `stagger`, can be a function of the target's index, the target and the list: `{ y: (i) => i * 8, stagger: (i, el) => … }`                                                                         |
-| Extras     | `killTweensOf(targets)`, `splitText(el, { by })`, `fromPixels(animation, targets)`, `ease(name)`, `mix(a, b)`, `batch(fn)` (start many animations: all read, then all write)                                     |
+| Extras     | `killTweensOf(targets)`, `splitText(el, { by })`, `fromPixels(animation, targets)`, `ease(name)`, `tweenEase(type)`, `mix(a, b)`, `batch(fn)` (start many animations: all read, then all write)                  |
 
 Times are seconds. Transforms use the individual CSS `translate`, `rotate` and
 `scale` properties, so they never fight your CSS `transform`. Colors mix in
