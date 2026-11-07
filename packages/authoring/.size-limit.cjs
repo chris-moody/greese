@@ -15,7 +15,10 @@ module.exports = [
     // 7.6 → 8.2 kB (2026-11-06): the library helpers (asset kinds, folder
     // trees, symbol naming) and the stage driver's sampling and
     // reconciliation (7.67 kB).
-    limit: '8.2 kB',
+    // 8.2 → 9 kB (2026-11-07): the tool registry (hotkeys, flattening) and
+    // the paint and gradient maths: direction, type and kind switches, stop
+    // blending (8.73 kB).
+    limit: '9 kB',
   },
   {
     name: '@greese/authoring/state: everything',
@@ -146,6 +149,23 @@ module.exports = [
     limit: '750 B',
   },
   {
+    name: '@greese/authoring: the property fields',
+    path: 'dist/index.js',
+    import: '{ PropertyGrid, ComplexColorField, ToggleSelect }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+    ],
+    // The paint field, the gradient editor and its stop bar, the gradient
+    // maths, the property grid and the toggle select: no store (2.89 kB).
+    limit: '3.1 kB',
+  },
+  {
     name: '@greese/authoring/styles.css',
     path: 'dist/styles.css',
     rolldown: false,
@@ -157,6 +177,9 @@ module.exports = [
     // lines, grab areas and position tip (2.05 kB).
     // 2.25 → 2.6 kB (2026-11-07): the toolbar and its flyout arrow, the Tool
     // Options panel, the nav bar, and the environment accent (2.42 kB).
-    limit: '2.6 kB',
+    // 2.6 → 3.1 kB (2026-11-07): the property grid's subgrid rows, the
+    // gradient stop bar (preview, stops and their touch-sized hit areas), the
+    // paint field and the toggle select (2.85 kB).
+    limit: '3.1 kB',
   },
 ]

@@ -1,0 +1,136 @@
+@layer greese.components {
+  // Property rows whose names and controls line up: each row field takes a
+  // name track and a control track through subgrid.
+  .greese-PropertyGrid {
+    display: grid;
+    grid-template-columns: repeat(
+      var(--greese-propertygrid-columns, 1),
+      fit-content(40%) minmax(0, 1fr)
+    );
+    gap: var(--greese-space-2);
+    align-items: center;
+
+    // Anything that isn't a row field spans the grid.
+    > * {
+      grid-column: 1 / -1;
+    }
+
+    > .greese-EditableField--row {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: span 2;
+    }
+
+    // A field without a shown name gives its control both tracks.
+    > .greese-EditableField--row > .greese-EditableField-control:only-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .greese-GradientEditor,
+  .greese-ComplexColorField {
+    display: flex;
+    flex-direction: column;
+    gap: var(--greese-space-2);
+    min-inline-size: 0;
+  }
+
+  .greese-ComplexColorField-label {
+    font-size: var(--greese-type-caption-font-size);
+    color: var(--greese-color-fg-muted);
+  }
+
+  .greese-GradientStopBar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--greese-space-2);
+
+    &[data-disabled] {
+      opacity: 0.55;
+    }
+  }
+
+  // The stops stand on the preview; it holds their positions.
+  .greese-GradientStopBar-track {
+    position: relative;
+    block-size: 1rem;
+    margin-inline: calc(var(--greese-space-1) / 2);
+  }
+
+  .greese-GradientStopBar-preview {
+    position: absolute;
+    inset: 0;
+    cursor: copy;
+
+    // The gradient over a checker, so a translucent stop reads as see-through.
+    background-image:
+      var(--greese-gradient-preview),
+      repeating-conic-gradient(
+        var(--greese-color-border) 0% 25%,
+        var(--greese-color-surface) 0% 50%
+      );
+    background-size:
+      100% 100%,
+      0.75rem 0.75rem;
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-corner-inset);
+  }
+
+  // A slim bar standing proud of the preview: the overhang is what you grab.
+  .greese-GradientStopBar-stop {
+    position: absolute;
+    inset-block: calc(var(--greese-space-1) * -1);
+    inline-size: 0.375rem;
+    cursor: grab;
+    border: 1px solid var(--greese-color-surface);
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px var(--greese-color-border-strong);
+    translate: -50% 0;
+    touch-action: none;
+
+    // A wider hit area than the bar, and a touch-sized one on coarse pointers.
+    &::before {
+      position: absolute;
+      inset: calc(var(--greese-space-1) * -1);
+      content: '';
+    }
+
+    @media (pointer: coarse) {
+      &::before {
+        inset-block: -0.875rem;
+        inset-inline: -1.125rem;
+      }
+    }
+
+    &[data-selected] {
+      box-shadow: 0 0 0 2px var(--greese-color-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--greese-color-focus-ring);
+      outline-offset: 2px;
+    }
+
+    &[aria-disabled] {
+      cursor: default;
+    }
+  }
+
+  .greese-GradientStopBar-footer {
+    display: flex;
+    gap: var(--greese-space-1);
+    align-items: center;
+
+    > .greese-EditableField {
+      flex: 1;
+    }
+  }
+
+  // A toggle over its setting, sized for a dense header.
+  .greese-ToggleSelect {
+    display: inline-flex;
+    flex-direction: column;
+    gap: calc(var(--greese-space-1) / 2);
+    align-items: stretch;
+  }
+}

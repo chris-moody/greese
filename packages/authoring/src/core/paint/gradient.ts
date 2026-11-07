@@ -1,0 +1,202 @@
+/**
+ * Paint as an editor stores it: a solid color, a gradient, or none, with the
+ * pure maths the gradient editor needs. The shapes are Glop's, so its
+ * documents load unchanged.
+ */
+
+/** A color stop: `offset` is 0–1 along the gradient's axis. */
+export interface GradientColorStop {
+  offset: number
+  color: string
+}
+
+/**
+ * A linear or radial gradient. Coordinates are fractions of the painted
+ * shape's box (0,0 its top-left, 1,1 its bottom-right), as SVG's
+ * `objectBoundingBox` and Pixi's local texture space read them, and are not
+ * clamped: a gradient may reach past the box. A radial's inner circle
+ * (`cx`, `cy`, `innerRadius`) is where the first stop is, its outer circle
+ * where the last is. `rotation` is degrees clockwise from up, and `scaleY`
+ * squashes it.
+ */
+export type GradientFill =
+  | {
+      type: 'linear'
+      x0: number
+      y0: number
+      x1: number
+      y1: number
+      stops: GradientColorStop[]
+    }
+  | {
+      type: 'radial'
+      cx: number
+      cy: number
+      innerRadius: number
+      outerCx: number
+      outerCy: number
+      outerRadius: number
+      rotation: number
+      scaleY: number
+      stops: GradientColorStop[]
+    }
+
+/** A fill or stroke: a color, a gradient, or deliberately nothing. */
+export type ComplexColorValue =
+  | { type: 'solid'; color: string }
+  | { type: 'gradient'; gradient: GradientFill }
+  | { type: 'none' }
+
+/** A gradient has at least this many stops: the editor won't delete below it. */
+export const MIN_GRADIENT_STOPS = 2
+
+const wrap360 = (deg: number): number => ((deg % 360) + 360) % 360
+
+/**
+ * Which way a gradient points, in degrees clockwise from up: a radial's
+ * `rotation`, or a linear's start-to-end line.
+ */
+export const gradientDirection = (value: GradientFill): number => {
+  if (value.type === 'radial') return value.rotation
+  const dx = value.x1 - value.x0
+  const dy = value.y1 - value.y0
+  if (dx === 0 && dy === 0) return 0
+  return wrap360(Math.round((Math.atan2(dx, -dy) * 180) / Math.PI))
+}
+
+/**
+ * The gradient turned to point `direction`: a radial's `rotation`, or a
+ * linear's line turned about its middle, keeping its length.
+ */
+export const withGradientDirection = (
+  value: GradientFill,
+  direction: number
+): GradientFill => {
+  if (value.type === 'radial') return { ...value, rotation: direction }
+  const cx = (value.x0 + value.x1) / 2
+  const cy = (value.y0 + value.y1) / 2
+  const half = Math.hypot(value.x1 - value.x0, value.y1 - value.y0) / 2 || 0.5
+  const radians = (direction * Math.PI) / 180
+  const dx = Math.sin(radians) * half
+  const dy = -Math.cos(radians) * half
+  return { ...value, x0: cx - dx, y0: cy - dy, x1: cx + dx, y1: cy + dy }
+}
+
+/**
+ * The gradient as the other type, keeping its stops and place: a linear's
+ * middle becomes a radial's centre and half its length the radius; a
+ * radial's outer circle becomes a horizontal line across it.
+ */
+export const withGradientType = (
+  value: GradientFill,
+  type: GradientFill['type']
+): GradientFill => {
+  if (type === value.type) return value
+  if (value.type === 'linear') {
+    const cx = (value.x0 + value.x1) / 2
+    const cy = (value.y0 + value.y1) / 2
+    const outerRadius = Math.hypot(value.x1 - value.x0, value.y1 - value.y0) / 2 || 0.25
+    return {
+      type: 'radial',
+      cx,
+      cy,
+      innerRadius: 0,
+      outerCx: cx,
+      outerCy: cy,
+      outerRadius,
+      rotation: 0,
+      scaleY: 1,
+      stops: value.stops,
+    }
+  }
+  const { outerCx: cx, outerCy: cy, outerRadius: r } = value
+  return { type: 'linear', x0: cx - r, y0: cy, x1: cx + r, y1: cy, stops: value.stops }
+}
+
+/**
+ * A left-to-right gradient across the box, from `from` to black. Glop's
+ * default ran to `x1: 100`, a hundred boxes wide, in a 0–1 space.
+ */
+export const defaultGradient = (from = '#ffffff'): GradientFill => ({
+  type: 'linear',
+  x0: 0,
+  y0: 0.5,
+  x1: 1,
+  y1: 0.5,
+  stops: [
+    { offset: 0, color: from },
+    { offset: 1, color: '#000000' },
+  ],
+})
+
+/** The paint as another kind, carrying its color across where it can. */
+export const withPaintType = (
+  value: ComplexColorValue,
+  type: ComplexColorValue['type']
+): ComplexColorValue => {
+  if (type === value.type) return value
+  if (type === 'none') return { type: 'none' }
+  if (type === 'gradient') {
+    return {
+      type: 'gradient',
+      gradient: defaultGradient(value.type === 'solid' ? value.color : undefined),
+    }
+  }
+  const first = value.type === 'gradient' ? value.gradient.stops[0]?.color : undefined
+  return { type: 'solid', color: first ?? '#000000' }
+}
+
+/** Stops in order along the gradient. */
+export const sortStops = (stops: readonly GradientColorStop[]): GradientColorStop[] =>
+  [...stops].sort((a, b) => a.offset - b.offset)
+
+/** A CSS preview of the stops, left to right. */
+export const gradientStopsCss = (stops: readonly GradientColorStop[]): string =>
+  `linear-gradient(to right, ${sortStops(stops)
+    .map((stop) => `${stop.color} ${Math.round(stop.offset * 1000) / 10}%`)
+    .join(', ')})`
+
+const rgb = (hex: string): [number, number, number] => {
+  const clean = hex.replace('#', '')
+  const full =
+    clean.length === 3
+      ? clean
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : clean.slice(0, 6)
+  const n = parseInt(full, 16) || 0
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
+}
+
+const hex = (channels: number[]): string =>
+  `#${channels
+    .map((c) =>
+      Math.round(Math.max(0, Math.min(255, c)))
+        .toString(16)
+        .padStart(2, '0')
+    )
+    .join('')}`
+
+/**
+ * The color a new stop at `offset` starts with: blended between its
+ * neighbors by where it falls between them, or the end color past either end.
+ */
+export const colorAtOffset = (
+  stops: readonly GradientColorStop[],
+  offset: number
+): string => {
+  const sorted = sortStops(stops)
+  const first = sorted[0]
+  const last = sorted.at(-1)
+  if (!first || !last) return '#ffffff'
+  if (offset <= first.offset) return first.color
+  if (offset >= last.offset) return last.color
+  const i = sorted.findIndex((stop) => stop.offset >= offset)
+  const a = sorted[i - 1]!
+  const b = sorted[i]!
+  const t = b.offset === a.offset ? 0 : (offset - a.offset) / (b.offset - a.offset)
+  const [r1, g1, b1] = rgb(a.color)
+  const [r2, g2, b2] = rgb(b.color)
+  return hex([r1 + (r2 - r1) * t, g1 + (g2 - g1) * t, b1 + (b2 - b1) * t])
+}

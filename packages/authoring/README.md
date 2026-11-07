@@ -26,8 +26,12 @@ It has:
 - **Navigation:** `NavBar` arranges `NavHistory`, `AuthoringBreadcrumbs` and
   `EnvironmentSelect`.
 
-The timeline and property fields follow, moved from Glop's authoring
-framework (see the ADRs).
+- **Property fields:** `PropertyGrid` lines up greese's `EditableField`
+  rows; `ComplexColorField`, `GradientEditor` and `ToggleSelect` cover what
+  `EditableField` doesn't.
+
+The timeline and a code editor follow, moved from Glop's authoring framework
+(see the ADRs).
 
 ## Install
 
