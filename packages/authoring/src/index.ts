@@ -22,6 +22,18 @@ export {
   type LayerTreeItemProps,
 } from './components/LayerTree/LayerTreeItem.tsx'
 export { PanelDock, type PanelDockProps } from './components/PanelDock/PanelDock.tsx'
+export {
+  AuthoringBreadcrumbs,
+  type AuthoringBreadcrumbsProps,
+} from './components/Stage/Breadcrumbs.tsx'
+export { RulerToggle, type RulerToggleProps } from './components/Stage/RulerToggle.tsx'
+export { StageContext, type StageContextProps } from './components/Stage/StageContext.tsx'
+export { StageHost, type StageHostProps } from './components/Stage/StageHost.tsx'
+export {
+  RULER_SIZE,
+  StageRulers,
+  type StageRulersProps,
+} from './components/Stage/StageRulers.tsx'
 export type { PanelRegistrant } from './components/PanelDock/panel.types.ts'
 export {
   createAuthoringEnvironment,
@@ -58,4 +70,7 @@ export {
 export { useCreateInstance } from './hooks/useCreateInstance.ts'
 export { useNavigation } from './hooks/useNavigation.ts'
 export { useStageDriver } from './hooks/useStageDriver.ts'
-export { useSymbolCreateNaming, type SymbolCreateNaming } from './hooks/useSymbolCreateNaming.ts'
+export {
+  useSymbolCreateNaming,
+  type SymbolCreateNaming,
+} from './hooks/useSymbolCreateNaming.ts'

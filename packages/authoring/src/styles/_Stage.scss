@@ -1,0 +1,94 @@
+@layer greese.components {
+  // The region the media's backend mounts its canvas into.
+  .greese-StageHost {
+    position: relative;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: hidden;
+  }
+
+  .greese-StageHost-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    block-size: 100%;
+    font-size: var(--greese-type-caption-font-size);
+    color: var(--greese-color-fg-muted);
+  }
+
+  // The thin bar above the stage.
+  .greese-StageContext {
+    display: flex;
+    flex: 0 0 auto;
+    gap: var(--greese-space-1);
+    align-items: center;
+    min-block-size: 1.875rem;
+    padding-block: calc(var(--greese-space-1) / 2);
+    padding-inline: var(--greese-space-1);
+    background-color: var(--greese-color-surface);
+    border-block-end: 1px solid var(--greese-color-border);
+  }
+
+  .greese-StageContext-spacer {
+    flex: 1 1 auto;
+  }
+
+  .greese-AuthoringBreadcrumbs {
+    font-size: var(--greese-type-caption-font-size);
+  }
+
+  // A step back up the trail: a button that reads as part of the trail.
+  .greese-AuthoringBreadcrumbs-crumb {
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    background: none;
+    border: 0;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // The ruler strips over the stage. `--greese-ruler-size` is `RULER_SIZE`,
+  // the canvases' drawing size too, so the box and the drawing can't drift.
+  .greese-StageRulers {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+
+    // The rulers themselves take pointers back, to drag guides out.
+    pointer-events: none;
+  }
+
+  // Canvases are positioned in device pixels, so these are physical.
+  .greese-StageRulers-ruler {
+    position: absolute;
+    display: block;
+    pointer-events: all;
+    cursor: crosshair;
+
+    &[data-ruler='h'] {
+      inset: 0 0 auto var(--greese-ruler-size);
+      inline-size: calc(100% - var(--greese-ruler-size));
+      block-size: var(--greese-ruler-size);
+    }
+
+    &[data-ruler='v'] {
+      inset: var(--greese-ruler-size) auto 0 0;
+      inline-size: var(--greese-ruler-size);
+      block-size: calc(100% - var(--greese-ruler-size));
+    }
+  }
+
+  .greese-StageRulers-corner {
+    position: absolute;
+    inset: 0 auto auto 0;
+    inline-size: var(--greese-ruler-size);
+    block-size: var(--greese-ruler-size);
+    background-color: var(--greese-color-surface);
+    border-inline-end: 1px solid var(--greese-color-border);
+    border-block-end: 1px solid var(--greese-color-border);
+  }
+}

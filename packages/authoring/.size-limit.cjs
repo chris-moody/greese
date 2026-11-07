@@ -78,11 +78,30 @@ module.exports = [
     limit: '12.8 kB',
   },
   {
+    name: '@greese/authoring: StageHost and StageContext',
+    path: 'dist/index.js',
+    import: '{ StageHost, StageContext, createAuthoringEnvironment }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+    ],
+    // The stage, its driver (sampling, reconciling, selection), navigation
+    // and instance creation, over the store's state layer (9.57 kB).
+    limit: '10.4 kB',
+  },
+  {
     name: '@greese/authoring/styles.css',
     path: 'dist/styles.css',
     rolldown: false,
     // 1.4 → 1.7 kB (2026-11-06): HierarchicalList's rows, drop lines and
     // actions bar (1.56 kB).
-    limit: '1.7 kB',
+    // 1.7 → 2 kB (2026-11-06): the stage's host, context bar, rulers and
+    // breadcrumbs (1.8 kB).
+    limit: '2 kB',
   },
 ]
