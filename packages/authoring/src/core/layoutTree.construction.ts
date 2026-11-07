@@ -61,7 +61,7 @@ export interface BuildDefaultTreeOptions {
  * with the timeline above when asked for. Each side's panels stack in order.
  */
 export function buildDefaultTree(
-  panels: PanelSlot[],
+  panels: readonly PanelSlot[],
   options: BuildDefaultTreeOptions = {}
 ): ZoneTree {
   const byOrder = (a: PanelSlot, b: PanelSlot) => (a.order ?? 0) - (b.order ?? 0)
@@ -71,7 +71,7 @@ export function buildDefaultTree(
   const nodes: Record<string, ZoneNode> = {}
   nodes[RESERVED_STAGE_ID] = makeReservedLeaf(RESERVED_STAGE_ID)
 
-  const column = (list: PanelSlot[]): string | null => {
+  const column = (list: readonly PanelSlot[]): string | null => {
     if (list.length === 0) return null
     const leaves = list.map((p) => makeLeaf([p.id]))
     for (const leaf of leaves) nodes[leaf.id] = leaf

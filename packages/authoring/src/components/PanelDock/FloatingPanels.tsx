@@ -25,7 +25,7 @@ const MIN_WIDTH = 120
 const MIN_HEIGHT = 60
 
 export interface FloatingPanelsProps {
-  panels: PanelRegistrant[]
+  panels: readonly PanelRegistrant[]
   floating: FloatingPanelState[]
   panelMeta: Map<string, PanelMeta>
   dragId: string | null

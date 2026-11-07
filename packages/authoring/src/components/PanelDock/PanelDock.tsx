@@ -36,7 +36,7 @@ const COLLAPSED_SIZE = 36
 
 export interface PanelDockProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** The panels the editor offers. Panels in the layout but not here are dropped from it. */
-  panels: PanelRegistrant[]
+  panels: readonly PanelRegistrant[]
   /** Whether the workspace has a timeline leaf. @default false */
   hasTimeline?: boolean
   /**
