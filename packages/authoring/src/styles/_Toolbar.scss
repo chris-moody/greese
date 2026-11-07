@@ -1,0 +1,81 @@
+@layer greese.components {
+  // An editor's tool palette.
+  // Sized to its tools, so a separator spans the bar, not the page.
+  .greese-Toolbar {
+    display: inline-flex;
+    gap: var(--greese-space-1);
+    align-items: center;
+    padding: var(--greese-space-1);
+  }
+
+  .greese-Toolbar--vertical {
+    flex-direction: column;
+  }
+
+  .greese-Toolbar-separator {
+    align-self: stretch;
+    margin: 0;
+  }
+
+  .greese-ToolbarItem {
+    position: relative;
+    display: flex;
+  }
+
+  // The active tool, the way ToggleButton draws a pressed one.
+  .greese-ToolbarItem-button[aria-pressed='true'] {
+    --greese-button-fg: var(--greese-color-primary);
+    --greese-button-bg: color-mix(in oklab, var(--greese-color-primary) 14%, transparent);
+    --greese-button-bg-hover: color-mix(
+      in oklab,
+      var(--greese-color-primary) 22%,
+      transparent
+    );
+
+    box-shadow: inset 0 0 0 1px var(--greese-color-primary);
+  }
+
+  // A group's flyout arrow, small at its button's corner: just outside the
+  // pressed outline, so it stays readable over it.
+  .greese-ToolbarItem-flyout {
+    position: absolute;
+    inset-block-end: -2px;
+    inset-inline-end: -2px;
+    z-index: 1;
+    display: flex;
+    padding: 0;
+    font-size: 0.625rem;
+    color: var(--greese-color-fg-muted);
+    cursor: pointer;
+    background: none;
+    border: 0;
+
+    &:hover {
+      color: var(--greese-color-fg);
+    }
+  }
+
+  .greese-Toolbar--horizontal .greese-ToolbarItem-flyout {
+    rotate: 90deg;
+  }
+
+  // The Tool Options panel's body.
+  .greese-ToolOptionsPanel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--greese-space-3);
+    padding: var(--greese-space-2);
+  }
+
+  .greese-ToolOptionsPanel-header {
+    display: flex;
+    gap: var(--greese-space-1);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .greese-ToolOptionsPanel-about {
+    max-inline-size: 25rem;
+    padding: var(--greese-space-3);
+  }
+}

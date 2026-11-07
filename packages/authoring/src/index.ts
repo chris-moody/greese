@@ -67,6 +67,7 @@ export { PanelDock, type PanelDockProps } from './components/PanelDock/PanelDock
 export {
   AuthoringBreadcrumbs,
   type AuthoringBreadcrumbsProps,
+  type BreadcrumbAccent,
 } from './components/Stage/Breadcrumbs.tsx'
 export { RulerToggle, type RulerToggleProps } from './components/Stage/RulerToggle.tsx'
 export { StageContext, type StageContextProps } from './components/Stage/StageContext.tsx'
@@ -116,3 +117,27 @@ export {
   useSymbolCreateNaming,
   type SymbolCreateNaming,
 } from './hooks/useSymbolCreateNaming.ts'
+export { Toolbar, type ToolbarProps } from './components/Toolbar/Toolbar.tsx'
+export {
+  ToolbarItem,
+  type ToolbarItemProps,
+  type ToolDefinition,
+} from './components/Toolbar/ToolbarItem.tsx'
+export {
+  ToolOptionsPanel,
+  type ToolOptionsPanelProps,
+} from './components/ToolOptions/ToolOptionsPanel.tsx'
+export { useToolHotkeys, type UseToolHotkeysOptions } from './hooks/useToolHotkeys.ts'
+export { createToolCursors, type ToolCursor } from './environment/toolCursors.ts'
+export { AccentIcon, type AccentIconProps } from './components/Navigation/AccentIcon.tsx'
+export {
+  EnvironmentSelect,
+  type EnvironmentOption,
+  type EnvironmentSelectProps,
+} from './components/Navigation/EnvironmentSelect.tsx'
+export { NavBar, type NavBarProps } from './components/Navigation/NavBar.tsx'
+export {
+  NavHistory,
+  type NavHistoryEntry,
+  type NavHistoryProps,
+} from './components/Navigation/NavHistory.tsx'

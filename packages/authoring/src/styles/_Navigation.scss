@@ -1,0 +1,57 @@
+@layer greese.components {
+  // An environment's accent: the theme's primary color, turned to the hue
+  // the element sets (`--greese-authoring-accent-hue`, an OKLCH hue). It keeps
+  // the primary's lightness and chroma, so it follows the theme and scheme.
+  // It's declared on each element that sets a hue because a custom
+  // property's `var()` resolves where it's declared: on `:root` every element
+  // would get the root's hue.
+  .greese-AccentIcon,
+  .greese-EnvironmentSelect,
+  .greese-AuthoringBreadcrumbs-step[data-accent] {
+    // stylelint-disable-next-line function-disallowed-list -- the hue is a per-instance parameter; the color is the theme's token
+    --greese-authoring-accent: oklch(
+      from var(--greese-color-primary) l c var(--greese-authoring-accent-hue, h)
+    );
+  }
+
+  .greese-AccentIcon {
+    display: inline-flex;
+    color: var(--greese-authoring-accent);
+  }
+
+  .greese-EnvironmentSelect {
+    min-inline-size: 10rem;
+    border-color: var(--greese-authoring-accent);
+  }
+
+  .greese-AuthoringBreadcrumbs-step {
+    display: inline-flex;
+    gap: var(--greese-space-1);
+    align-items: center;
+
+    &[data-accent] {
+      filter: drop-shadow(
+        0 0 3px color-mix(in oklab, var(--greese-authoring-accent) 45%, transparent)
+      );
+    }
+  }
+
+  .greese-NavBar {
+    display: flex;
+    gap: var(--greese-space-2);
+    align-items: center;
+    padding-block: var(--greese-space-1);
+    padding-inline: var(--greese-space-2);
+  }
+
+  .greese-NavBar-trail {
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  .greese-NavHistory {
+    display: flex;
+    gap: calc(var(--greese-space-1) / 2);
+    align-items: center;
+  }
+}

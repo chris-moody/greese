@@ -15,17 +15,27 @@ It has:
   remembers how the user arranged each workspace.
 - **A store per editor:** `createAuthoringEnvironment` gives each editor its
   own Redux store and provider, so editors can share a page or nest.
+- **Layers and the library:** `HierarchicalList`, a keyboard tree to select,
+  rename, reorder and nest; `LayerTree` binds it to the editor's layers, and
+  `LibraryPanel` keeps its reusable symbols.
+- **The stage:** `StageHost` mounts a media's renderer; `StageContext`,
+  `StageBar`, `StageRulers` and `GuidesOverlay` go around it.
+- **Tools:** one list (`ToolDefinition`) draws the `Toolbar`, picks tools by
+  hotkey (`useToolHotkeys`) and builds their stage cursors
+  (`createToolCursors`); `ToolOptionsPanel` holds the active tool's settings.
+- **Navigation:** `NavBar` arranges `NavHistory`, `AuthoringBreadcrumbs` and
+  `EnvironmentSelect`.
 
-The timeline, layers, library, stage and property fields follow, moved from
-Glop's authoring framework (see the ADRs).
+The timeline and property fields follow, moved from Glop's authoring
+framework (see the ADRs).
 
 ## Install
 
 ```sh
-npm install @greese/authoring @greese/react @reduxjs/toolkit react-redux
+npm install @greese/authoring @greese/react @reduxjs/toolkit react-redux immer
 ```
 
-`@reduxjs/toolkit` and `react-redux` are peer dependencies, so an app that
+`@reduxjs/toolkit`, `react-redux` and `immer` are peer dependencies, so an app that
 hosts several editors has one copy of each.
 
 ## Use

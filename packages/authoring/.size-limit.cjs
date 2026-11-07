@@ -112,6 +112,40 @@ module.exports = [
     limit: '13.6 kB',
   },
   {
+    name: '@greese/authoring: Toolbar, hotkeys and cursors',
+    path: 'dist/index.js',
+    import: '{ Toolbar, useToolHotkeys, createToolCursors }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+    ],
+    // The toolbar, its buttons and flyouts, the hotkey table and the cursor
+    // builder: no store (2.1 kB).
+    limit: '2.3 kB',
+  },
+  {
+    name: '@greese/authoring: the nav bar parts',
+    path: 'dist/index.js',
+    import: '{ NavBar, NavHistory, EnvironmentSelect, AccentIcon }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+    ],
+    // The nav bar's slots, Back and its history menu, the environment
+    // picker and the accent: no store (646 B).
+    limit: '750 B',
+  },
+  {
     name: '@greese/authoring/styles.css',
     path: 'dist/styles.css',
     rolldown: false,
@@ -121,6 +155,8 @@ module.exports = [
     // breadcrumbs (1.8 kB).
     // 2 → 2.25 kB (2026-11-06): the stage bar's controls and the guides'
     // lines, grab areas and position tip (2.05 kB).
-    limit: '2.25 kB',
+    // 2.25 → 2.6 kB (2026-11-07): the toolbar and its flyout arrow, the Tool
+    // Options panel, the nav bar, and the environment accent (2.42 kB).
+    limit: '2.6 kB',
   },
 ]

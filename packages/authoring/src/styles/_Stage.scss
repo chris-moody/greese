@@ -37,8 +37,10 @@
     font-size: var(--greese-type-caption-font-size);
   }
 
-  // A step back up the trail: a button that reads as part of the trail.
-  .greese-AuthoringBreadcrumbs-crumb {
+  // A step back up the trail: a button that reads as part of the trail. A
+  // host's `leading` button gets the same look.
+  .greese-AuthoringBreadcrumbs-crumb,
+  .greese-AuthoringBreadcrumbs button {
     padding: 0;
     font: inherit;
     color: inherit;
