@@ -62,7 +62,7 @@ const meta = {
   title: 'Motion/PageShare',
   component: PageShare,
   args: { id: ['template', 'Finance'], children: null },
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'padded', tryIt: { scope: { Gallery } } },
   render: () => <Gallery />,
 } satisfies Meta<typeof PageShare>
 export default meta

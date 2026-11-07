@@ -97,7 +97,7 @@ const meta = {
       ],
     },
   },
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'padded', tryIt: { scope: { Pages } } },
   render: (args) => <Pages {...args} />,
 } satisfies Meta<typeof PageTransition>
 export default meta

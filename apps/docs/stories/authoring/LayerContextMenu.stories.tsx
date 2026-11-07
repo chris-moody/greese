@@ -7,6 +7,7 @@ import {
   layersActions,
   makeLayer,
 } from '@greese/authoring'
+import { contextMenuPoint } from '@greese/authoring/core'
 import '@greese/authoring/styles.css'
 
 /** One layer for the menu to act on. */
@@ -33,7 +34,9 @@ type Story = StoryObj<typeof meta>
 
 /**
  * A layer row's right-click menu, which `LayerTree` opens: add a layer or a
- * folder, duplicate, hide, lock, paste keyframes into it, delete.
+ * folder, duplicate, hide, lock, paste keyframes into it, delete. Right-click
+ * the button (or focus it and press Shift+F10): `contextMenuPoint` cancels the
+ * browser's menu and opens this one there.
  */
 export const Playground: Story = {
   render: function Playground(args) {
@@ -43,8 +46,12 @@ export const Playground: Story = {
     return (
       <env.Provider>
         <Stack gap={2} align="start">
-          <Button onClick={(event) => setAt({ top: event.clientY, left: event.clientX })}>
-            Open the menu
+          {/* Right-click it, or focus it and press Shift+F10 or the Menu key. */}
+          <Button
+            variant="outline"
+            onContextMenu={(event) => setAt(contextMenuPoint(event))}
+          >
+            Right-click the Ball layer
           </Button>
           <Text variant="caption" tone="muted">
             {count} {count === 1 ? 'layer' : 'layers'}
