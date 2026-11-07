@@ -6,14 +6,17 @@
     margin: 0;
   }
 
+  // Doubled with `.greese-Text` to beat the type variant every Text carries
+  // (`greese-Type--p1` when none is named), which comes later and sets weight
+  // and colour too. Text only renders a weight with no variant named.
   @each $weight in (regular, medium, semibold, bold) {
-    .greese-Text--#{$weight} {
+    .greese-Text.greese-Text--#{$weight} {
       font-weight: var(--greese-font-weight-#{$weight});
     }
   }
 
   @each $tone, $pair in tones.$tones {
-    .greese-Text--#{$tone} {
+    .greese-Text.greese-Text--#{$tone} {
       color: list.nth($pair, 1);
     }
   }
