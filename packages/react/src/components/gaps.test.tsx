@@ -390,6 +390,15 @@ describe('Combobox', () => {
     expect(onValueChange).toHaveBeenLastCalledWith('mx')
     expect(input.value).toBe('México')
   })
+
+  it('keeps free text on Enter when no option matches, and closes', async () => {
+    const onValueChange = vi.fn()
+    setup({ allowCustomValue: true, onValueChange })
+    const input = screen.getByRole<HTMLInputElement>('combobox')
+    await userEvent.type(input, 'Atlantis{Enter}')
+    expect(onValueChange).toHaveBeenLastCalledWith('Atlantis')
+    expect(input).toHaveAttribute('aria-expanded', 'false')
+  })
 })
 
 describe('Drawer swipe-to-dismiss', () => {

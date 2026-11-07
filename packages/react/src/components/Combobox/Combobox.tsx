@@ -252,6 +252,12 @@ export const Combobox = ({
               if (open && active >= 0 && visible[active]) {
                 event.preventDefault()
                 select(visible[active])
+              } else if (allowCustomValue && text.trim()) {
+                // Typed text no option matches is the value, as on leaving.
+                event.preventDefault()
+                setValue(text.trim())
+                setFiltering(false)
+                setOpen(false)
               }
               break
             case 'Tab':

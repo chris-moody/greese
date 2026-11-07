@@ -111,7 +111,9 @@ module.exports = [
     // copyToClipboard with its execCommand fallback, about 0.5 kB (38.53 kB, of which 80 B was over before).
     // 38.45 kB → 38.55 kB (2026-11-06): the 80 B over from before, Input's
     // `htmlSize`, which af6e1778 budgeted everywhere but here (38.52 kB).
-    limit: '38.55 kB',
+    // 38.55 kB → 38.6 kB (2026-11-06): Combobox keeps free text on Enter
+    // with `allowCustomValue`, as it did on blur (38.554 kB).
+    limit: '38.6 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -170,7 +172,9 @@ module.exports = [
     // type style (43.79 kB).
     // 43.8 kB → 44.3 kB (2026-11-06): CopyToClipboard, useCopyToClipboard and @greese/ui's
     // copyToClipboard with its execCommand fallback, about 0.5 kB (44.29 kB).
-    limit: '44.3 kB',
+    // 44.3 kB → 44.35 kB (2026-11-06): Combobox keeps free text on Enter with
+    // `allowCustomValue` (44.32 kB).
+    limit: '44.35 kB',
     modifyRolldownConfig: external,
   },
   {
