@@ -186,6 +186,24 @@ module.exports = [
     limit: '3.1 kB',
   },
   {
+    name: '@greese/authoring: CodeEditor',
+    path: 'dist/index.js',
+    import: '{ CodeEditor }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+      '@greese/js',
+    ],
+    // The code box and its highlighter (CSS, SCSS, JavaScript, TypeScript
+    // and XML), with no dependency: no store (2.57 kB).
+    limit: '2.8 kB',
+  },
+  {
     name: '@greese/authoring: Timeline and an environment',
     path: 'dist/index.js',
     import: '{ Timeline, createAuthoringEnvironment }',

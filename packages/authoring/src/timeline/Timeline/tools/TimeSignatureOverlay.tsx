@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useMemo, type MouseEvent, type JSX } from 'react'
 import {
   useAuthoringDispatch,

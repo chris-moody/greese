@@ -1,3 +1,4 @@
+'use client'
 import type { JSX } from 'react'
 import { Button, Divider } from '@greese/react'
 import { EditableField, type EditableFieldOption as Option } from '@greese/react'

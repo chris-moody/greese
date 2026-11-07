@@ -1,3 +1,4 @@
+'use client'
 import type { ReactNode, JSX } from 'react'
 import { ButtonGroup, ToggleButton, Tooltip } from '@greese/react'
 import {
@@ -32,8 +33,7 @@ export const TimelineToolbar = (): JSX.Element => {
 
   /*
    * Selecting a tool only ever sets one: pressing the active tool again is a
-   * no-op, which is what the MUI exclusive group's `null` case did too (it
-   * discarded the deselection).
+   * no-op, so there's always a tool.
    */
   const select = (tool: TimelineToolId) => () =>
     dispatch(timelineToolsActions.setTool({ scope, tool }))

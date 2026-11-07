@@ -1,7 +1,11 @@
+'use client'
 import type { JSX } from 'react'
 import { uid } from '../../core/uid.ts'
 import { ContextMenu, MenuItem, MenuSeparator } from '@greese/react'
-import { useAuthoringEnvironment } from '../../environment/environment.tsx'
+import {
+  useAuthoringEnvironment,
+  useAuthoringSelector,
+} from '../../environment/environment.tsx'
 import { layersActions } from '../../state/layers.slice.ts'
 import { isFolder } from '../../core/types/tree.types.ts'
 import type { AuthoringRootState } from '../../state/createAuthoringStore.ts'
@@ -41,9 +45,13 @@ export const LayerContextMenu = ({
     onClose()
   }
 
-  const layer = layerId
-    ? (store.getState() as AuthoringRootState).layers.layers.get(layerId)
-    : undefined
+  // Subscribed, so Hide/Show and Lock/Unlock say what they'll do now.
+  const layer = useAuthoringSelector((state: AuthoringRootState) =>
+    layerId ? state.layers.layers.get(layerId) : undefined
+  )
+  const hasClipboard = useAuthoringSelector(
+    (state: AuthoringRootState) => !!state.timeline.clipboard
+  )
   const open = position !== null && !!layer
   const layerType = config.layerTypes?.[0]?.layerType ?? DEFAULT_LAYER_TYPE
   const parentId = layer && isFolder(layer) ? layer.id : layer?.parent
@@ -61,6 +69,9 @@ export const LayerContextMenu = ({
     : new Set()
   const extraActions =
     layer && !isStructural ? (config.extraContextMenuActions?.(layer, store) ?? []) : []
+  // A folder holds layers, not frames: it isn't duplicated as a layer, and
+  // keyframes don't paste into it.
+  const folder = !!layer && isFolder(layer)
 
   const duplicate = () => {
     if (!layer) return
@@ -115,7 +126,7 @@ export const LayerContextMenu = ({
           New Folder
         </MenuItem>
       )}
-      {!isStructural && !hiddenActions.has('duplicate') && (
+      {!isStructural && !folder && !hiddenActions.has('duplicate') && (
         <MenuItem onSelect={run(duplicate)}>Duplicate</MenuItem>
       )}
       {extraActions.length > 0 && <MenuSeparator />}
@@ -145,23 +156,30 @@ export const LayerContextMenu = ({
           {layer?.hidden ? 'Show' : 'Hide'}
         </MenuItem>
       )}
-      <MenuItem
-        onSelect={run(
-          () =>
-            layer &&
-            dispatch(
-              layersActions.updateLayer({
-                id: layer.id,
-                updates: { locked: !layer.locked },
-              })
-            )
-        )}
-      >
-        {layer?.locked ? 'Unlock' : 'Lock'}
-      </MenuItem>
-      <MenuItem onSelect={run(() => layer && pasteIntoLayer(layer.id))}>
-        Paste Into Layer
-      </MenuItem>
+      {!hiddenActions.has('lock') && (
+        <MenuItem
+          onSelect={run(
+            () =>
+              layer &&
+              dispatch(
+                layersActions.updateLayer({
+                  id: layer.id,
+                  updates: { locked: !layer.locked },
+                })
+              )
+          )}
+        >
+          {layer?.locked ? 'Unlock' : 'Lock'}
+        </MenuItem>
+      )}
+      {!folder && !hiddenActions.has('paste') && (
+        <MenuItem
+          disabled={!hasClipboard || !!layer?.locked}
+          onSelect={run(() => layer && pasteIntoLayer(layer.id))}
+        >
+          Paste Into Layer
+        </MenuItem>
+      )}
       <MenuSeparator />
       {!isStructural && (
         <MenuItem

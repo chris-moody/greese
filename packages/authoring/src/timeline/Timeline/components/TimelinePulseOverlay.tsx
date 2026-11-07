@@ -1,4 +1,6 @@
+'use client'
 import { useEffect, useState, type JSX } from 'react'
+import { prefersReducedMotion } from '@greese/js'
 import {
   PULSE_DECAY_MS,
   type PulseClockHandle,
@@ -9,7 +11,7 @@ import { PulseLayerId } from '../../../core/timeline/resolutions/pulseBoundaries
 /**
  * Which Temporal Guide pulse layer a flash belongs to, and so which token
  * colors it. `measure` and `loop` share the heavier accent; see
- * `pulse.module.scss`.
+ * `_TimelinePulse.scss`.
  */
 export type PulseFlashLayer = 'measure' | 'subdivision' | 'frame' | 'loop'
 
@@ -44,6 +46,8 @@ export const TimelinePulseOverlay = ({
   const [pulses, setPulses] = useState<readonly PulseEntry[]>([])
 
   useEffect(() => {
+    // Flashes on every beat are motion: under reduced motion, there are none.
+    if (prefersReducedMotion()) return
     let raf = 0
     let running = false
     const animate = () => {

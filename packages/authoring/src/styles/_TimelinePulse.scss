@@ -1,8 +1,6 @@
-// Ported from Glop's pulse.module.scss.
-
 @layer greese.components {
   // Temporal Guide overlay, driven by `usePulseClock`: the transient pulse-flash
-  // layer and the playhead's fading echo ring. See `layout.module.scss` for the
+  // layer and the playhead's fading echo ring. See `_Timeline.scss` for the
   // convention on inline vs attribute-driven geometry that governs every file in
   // this family.
 

@@ -1,6 +1,18 @@
-import { useEffect, useState, type PointerEvent, type JSX } from 'react'
-import { useAuthoringSelector } from '../../../environment/environment.tsx'
-import { selectPlayback } from '../../../state/selectors.ts'
+'use client'
+import {
+  useEffect,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+  type JSX,
+} from 'react'
+import {
+  useAuthoringDispatch,
+  useAuthoringSelector,
+} from '../../../environment/environment.tsx'
+import { playbackActions } from '../../../state/playback.slice.ts'
+import { selectFrameCount, selectPlayback } from '../../../state/selectors.ts'
+import { prefersReducedMotion } from '@greese/js'
 import { PulseLayerId } from '../../../core/timeline/resolutions/pulseBoundaries.helpers.ts'
 import type { PulseClockHandle } from '../../usePulseClock.ts'
 
@@ -26,6 +38,8 @@ const PlayheadBeatEcho = ({
   const [phase, setPhase] = useState(1)
 
   useEffect(() => {
+    // The ring is decoration: under reduced motion the beat shows without it.
+    if (prefersReducedMotion()) return
     let raf = 0
     let running = false
     const animate = () => {
@@ -81,6 +95,30 @@ export const Playhead = ({
   pulseClock,
 }: PlayheadProps): JSX.Element | null => {
   const { currentFrame } = useAuthoringSelector(selectPlayback)
+  const count = useAuthoringSelector(selectFrameCount)
+  const dispatch = useAuthoringDispatch()
+
+  // The tab is a slider (WAI-ARIA APG): arrows step a frame, Page keys ten,
+  // Home and End go to the ends.
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const last = Math.max(0, count - 1)
+    const by: Record<string, number> = {
+      ArrowLeft: -1,
+      ArrowDown: -1,
+      ArrowRight: 1,
+      ArrowUp: 1,
+      PageDown: -10,
+      PageUp: 10,
+    }
+    let next: number | undefined
+    if (event.key === 'Home') next = 0
+    else if (event.key === 'End') next = last
+    else if (by[event.key] !== undefined)
+      next = currentFrame + by[event.key]! * (event.shiftKey ? 10 : 1)
+    if (next === undefined) return
+    event.preventDefault()
+    dispatch(playbackActions.setCurrentFrame(Math.max(0, Math.min(last, next))))
+  }
 
   return (
     <div
@@ -89,8 +127,17 @@ export const Playhead = ({
     >
       <div
         className={'greese-TimelinePlayhead-playheadTab'}
+        role="slider"
+        tabIndex={0}
+        aria-label="Playhead"
+        aria-orientation="horizontal"
+        aria-valuemin={0}
+        aria-valuemax={Math.max(0, count - 1)}
+        aria-valuenow={currentFrame}
+        aria-valuetext={`Frame ${currentFrame + 1} of ${count}`}
         onPointerDown={onScrubStart}
-        style={{ width: frameWidth, marginLeft: 0 }}
+        onKeyDown={onKeyDown}
+        style={{ width: frameWidth }}
       />
       <div className={'greese-TimelinePlayhead-playheadLine'} />
       <div

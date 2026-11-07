@@ -1,3 +1,4 @@
+'use client'
 import { useCallback } from 'react'
 import { layersActions } from '../state/layers.slice.ts'
 import {

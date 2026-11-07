@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useState, type JSX } from 'react'
 import { Button, Select } from '@greese/react'
 import { Dialog } from '@greese/react'

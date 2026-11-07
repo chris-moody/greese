@@ -1,3 +1,4 @@
+'use client'
 import type { JSX } from 'react'
 import { Button } from '@greese/react'
 import { EditableField } from '@greese/react'

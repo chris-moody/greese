@@ -1,8 +1,8 @@
-// Ported from Glop's playhead.module.scss.
+@use 'pkg:@greese/ui/scss/mixins';
 
 @layer greese.components {
   // Playhead: the full-height line and its draggable ruler tab. See
-  // `layout.module.scss` for the convention on inline vs attribute-driven
+  // `_Timeline.scss` for the convention on inline vs attribute-driven
   // geometry that governs every file in this family.
 
   // Playhead: vertical line + draggable tab, spanning the frames column.
@@ -25,15 +25,27 @@
     opacity: 0.75;
   }
 
+  // Its width is the frame's, set inline.
   .greese-TimelinePlayhead-playheadTab {
     position: sticky;
     top: 0;
-    margin-left: -6px;
-    width: 12px;
     height: var(--greese-timeline-ruler-height);
     background-color: var(--greese-color-negative);
     opacity: 0.75;
     cursor: ew-resize;
     pointer-events: all;
+    touch-action: none;
+
+    @include mixins.focus-ring;
+
+    // A finger needs 44px: the hit area grows past the tab.
+    @media (pointer: coarse) {
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0 calc(min(0px, (100% - 44px) / 2));
+        min-block-size: 44px;
+      }
+    }
   }
 }

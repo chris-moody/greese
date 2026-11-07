@@ -1,5 +1,5 @@
 'use client'
-import { useCallback, useEffect, useRef, type MouseEvent } from 'react'
+import { useCallback, useEffect, useRef, type MouseEvent, type PointerEvent } from 'react'
 
 export interface HoldRepeatOptions {
   /** Milliseconds held before it starts repeating. @default 400 */
@@ -12,8 +12,7 @@ export interface HoldRepeatOptions {
  * Handlers for a button that repeats while held: once on press, then every
  * `interval` after `initialDelay`, until it's released or the pointer
  * leaves. Pointer events, so touch repeats too; a keyboard press (a click
- * with no pointer) runs it once. Glop's took only mouse down, so neither the
- * keyboard nor touch could use it.
+ * with no pointer) runs it once.
  */
 export const useHoldRepeat = (
   callback: () => void,
@@ -43,7 +42,10 @@ export const useHoldRepeat = (
   useEffect(() => stop, [stop])
 
   return {
-    onPointerDown: start,
+    // The primary button only: a right-click opens a menu, it doesn't repeat.
+    onPointerDown: (event: PointerEvent) => {
+      if (event.button === 0) start()
+    },
     onPointerUp: stop,
     onPointerLeave: stop,
     onPointerCancel: stop,

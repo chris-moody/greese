@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import {
   AuthoringView,
   createAuthoringEnvironment,
   layersActions,
+  makeFolder,
   makeLayer,
   MarkerPanel,
   PanelArea,
@@ -78,6 +79,42 @@ describe('Timeline', () => {
     await expectNoAxeViolations(container)
     // axe over the whole timeline is slow in jsdom.
   }, 20_000)
+
+  it('leaves Escape to the page with nothing selected, and keys a dialog owns alone', () => {
+    const { env } = animated()
+    render(
+      <env.Provider>
+        <Timeline />
+        <div role="dialog" aria-label="Elsewhere">
+          <button type="button">Inside</button>
+        </div>
+      </env.Provider>
+    )
+    const escape = () => fireEvent.keyDown(window, { key: 'Escape' })
+    expect(escape()).toBe(true)
+    const frames = env.store.getState().layers.layers.values().next().value!.timeline
+      .frames
+    act(() => {
+      env.store.dispatch(timelineActions.setTimelineSelection([frames[0]!.id]))
+    })
+    expect(escape()).toBe(false)
+    expect(env.store.getState().timeline.selection.size).toBe(0)
+    // An arrow inside a dialog is the dialog's: the playhead stays.
+    act(() => {
+      env.store.dispatch(playbackActions.setCurrentFrame(5))
+    })
+    fireEvent.keyDown(screen.getByRole('button', { name: 'Inside' }), {
+      key: 'ArrowRight',
+    })
+    expect(env.store.getState().playback.currentFrame).toBe(5)
+    // One something else handled is left alone too.
+    const handled = new KeyboardEvent('keydown', { key: 'ArrowRight', cancelable: true })
+    handled.preventDefault()
+    act(() => {
+      window.dispatchEvent(handled)
+    })
+    expect(env.store.getState().playback.currentFrame).toBe(5)
+  })
 })
 
 describe('usePlaybackClock', () => {
@@ -85,6 +122,13 @@ describe('usePlaybackClock', () => {
     usePlaybackClock()
     return null
   }
+
+  // A clock left looping would hold greese.js's shared ticker into the next
+  // test: unmount, then let a frame pass so it stops.
+  afterEach(() => {
+    cleanup()
+    vi.advanceTimersByTime(50)
+  })
 
   it('advances the playhead on greese.js, and stops at the end', async () => {
     vi.useFakeTimers({
@@ -134,6 +178,35 @@ describe('usePlaybackClock', () => {
     expect(env.store.getState().playback.playing).toBe(true)
     // 0.7 s at 24 fps is frame 16: a lap of 12 frames on, frame 4.
     expect(env.store.getState().playback.currentFrame).toBeLessThan(8)
+  })
+
+  it('plays on from a frame set elsewhere while playing', async () => {
+    vi.useFakeTimers({
+      toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],
+    })
+    const { env } = animated(48)
+    render(
+      <env.Provider>
+        <Clock />
+      </env.Provider>
+    )
+    act(() => {
+      env.store.dispatch(playbackActions.setLoop(false))
+      env.store.dispatch(playbackActions.play())
+    })
+    await act(async () => {
+      vi.advanceTimersByTime(100)
+    })
+    act(() => {
+      env.store.dispatch(playbackActions.setCurrentFrame(30))
+    })
+    await act(async () => {
+      vi.advanceTimersByTime(250)
+    })
+    // A quarter second on from 30, at 24 fps: about 36, not about 8.
+    const frame = env.store.getState().playback.currentFrame
+    expect(frame).toBeGreaterThanOrEqual(34)
+    expect(frame).toBeLessThanOrEqual(38)
   })
 })
 
@@ -266,5 +339,44 @@ describe('the layer menu', () => {
     fireEvent.contextMenu(screen.getByRole('treeitem', { name: /Ball/ }))
     fireEvent.click(screen.getByRole('menuitem', { name: /Duplicate/, hidden: true }))
     expect(env.store.getState().layers.layers.size).toBe(2)
+  })
+
+  it('offers paste only with something copied, and says what Hide will do now', () => {
+    const { env, layer } = animated()
+    render(
+      <env.Provider>
+        <Timeline />
+      </env.Provider>
+    )
+    fireEvent.contextMenu(screen.getByRole('treeitem', { name: /Ball/ }))
+    const paste = screen.getByRole('menuitem', { name: 'Paste Into Layer', hidden: true })
+    expect(paste).toHaveAttribute('aria-disabled', 'true')
+    // The menu follows the layer while open.
+    act(() => {
+      env.store.dispatch(
+        layersActions.updateLayer({ id: layer.id, updates: { hidden: true } })
+      )
+    })
+    expect(
+      screen.getByRole('menuitem', { name: 'Show', hidden: true })
+    ).toBeInTheDocument()
+  })
+
+  it('has no Duplicate or Paste for a folder', () => {
+    const { env } = animated()
+    env.store.dispatch(layersActions.addLayer({ layer: makeFolder('Group') }))
+    render(
+      <env.Provider>
+        <Timeline />
+      </env.Provider>
+    )
+    fireEvent.contextMenu(screen.getByRole('treeitem', { name: /Group/ }))
+    expect(
+      screen.getByRole('menuitem', { name: 'New Layer', hidden: true })
+    ).toBeInTheDocument()
+    for (const name of ['Duplicate', 'Paste Into Layer'])
+      expect(
+        screen.queryByRole('menuitem', { name, hidden: true })
+      ).not.toBeInTheDocument()
   })
 })

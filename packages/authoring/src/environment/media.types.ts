@@ -244,7 +244,7 @@ export interface MediaConfig<
    */
   hiddenContextMenuActions?(
     layer: L
-  ): Set<'duplicate' | 'newLayer' | 'newFolder' | 'showHide'>
+  ): Set<'duplicate' | 'newLayer' | 'newFolder' | 'showHide' | 'lock' | 'paste'>
   /**
    * Extra layer-context-menu items beyond the shared built-in set (New Layer/
    * Folder, Duplicate, Show/Hide, Lock, Paste Into Layer, Delete) — e.g.

@@ -12,6 +12,7 @@ import type { AuthoringLayer } from '../../core/types/layer.types.ts'
 import { useAuthoringEnvironment } from '../../environment/environment.tsx'
 import { useLayerTreeController } from '../../hooks/useLayerTreeController.ts'
 import { HierarchicalList } from '../HierarchicalList/HierarchicalList.tsx'
+import { HierarchicalListFolder } from '../HierarchicalList/HierarchicalListFolder.tsx'
 import { LayerTreeItem, type LayerTreeItemProps } from './LayerTreeItem.tsx'
 
 import { LayerContextMenu } from './LayerContextMenu.tsx'
@@ -146,6 +147,14 @@ export const LayerTree = memo(function LayerTree({
         label={label}
         className="greese-LayerTree"
         renderItem={renderRow}
+        // Folders take the same menu as layers.
+        renderFolder={(data, props) => (
+          <HierarchicalListFolder
+            data={data}
+            {...props}
+            onContextMenu={contextMenu(data.id)}
+          />
+        )}
         disableScroll={disableScroll}
         flat={flat}
         disableRename={disableRename}

@@ -1,3 +1,4 @@
+'use client'
 import { useMemo } from 'react'
 import { useAuthoringEnvironment } from '../environment/environment.tsx'
 import { useClipboardEditing } from './useClipboardEditing.ts'

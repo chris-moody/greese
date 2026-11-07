@@ -1,3 +1,4 @@
+'use client'
 import { ChevronRightIcon as ArrowRightIcon } from '@greese/icons'
 import { useState, type MouseEvent, type JSX } from 'react'
 import { ContextMenu, MenuItem, MenuSeparator } from '@greese/react'

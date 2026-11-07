@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useRef, type JSX } from 'react'
 import type { TimelineResolution } from '../../../core/types/resolution.types.ts'
 import { snapTick } from '../snap.ts'

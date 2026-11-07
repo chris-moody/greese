@@ -83,6 +83,32 @@ describe('CodeEditor', () => {
     expect(reported.at(-1)).toEqual({ start: 1, end: 3 })
   })
 
+  it('is read-only without onChange', () => {
+    render(<CodeEditor aria-label="Markup" language="xml" value="<svg/>" />)
+    expect(screen.getByRole('textbox', { name: 'Markup' })).toHaveAttribute('readonly')
+  })
+
+  it('doesn’t pull the caret back to a span that hasn’t changed as you type', () => {
+    const Editor = () => {
+      const [value, setValue] = useState(svg)
+      return (
+        <CodeEditor
+          aria-label="SVG"
+          language="xml"
+          value={value}
+          onChange={setValue}
+          selection={{ start: 5, end: 12 }}
+        />
+      )
+    }
+    render(<Editor />)
+    const box = screen.getByRole<HTMLTextAreaElement>('textbox')
+    expect([box.selectionStart, box.selectionEnd]).toEqual([5, 12])
+    box.setSelectionRange(box.value.length, box.value.length)
+    fireEvent.change(box, { target: { value: `${box.value}\n` } })
+    expect(box.selectionStart).not.toBe(5)
+  })
+
   it('colours read-only code', () => {
     const { container } = render(
       <pre className="greese-CodeEditor-static">

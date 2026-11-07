@@ -1,4 +1,11 @@
-import { useCallback, useState, type PointerEvent, type JSX } from 'react'
+'use client'
+import {
+  useCallback,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+  type JSX,
+} from 'react'
 import {
   useAuthoringDispatch,
   useAuthoringEnvironment,
@@ -47,6 +54,7 @@ export const PlaybackBoundHandle = ({
   const activeTool = useAuthoringSelector(selectActiveTimelineTool)
   const scope = useAuthoringSelector(selectActiveTimelineScope)
   const bounds = useAuthoringSelector(selectPlaybackBounds)
+  const count = useAuthoringSelector(selectFrameCount)
   // Local drag preview instead of a per-pointermove dispatch — mirrors
   // useMarkerInteractions' pattern (see sound-studio-timeline-perf-plan.md
   // Phase 3). Only the dragged handle previews; the other bracket in a
@@ -113,6 +121,36 @@ export const PlaybackBoundHandle = ({
     else commit({ start: bounds.start, end: Math.max(0, count - 1) })
   }, [store, side, bounds, commit])
 
+  // A slider (WAI-ARIA APG): arrows move the bound a frame, Page keys ten,
+  // Home and End as far as it goes. It keeps a frame's gap from the other.
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const min = side === 'start' ? 0 : bounds.start + 1
+    const max = side === 'start' ? bounds.end - 1 : Math.max(0, count - 1)
+    const value = side === 'start' ? bounds.start : bounds.end
+    const by: Record<string, number> = {
+      ArrowLeft: -1,
+      ArrowDown: -1,
+      ArrowRight: 1,
+      ArrowUp: 1,
+      PageDown: -10,
+      PageUp: 10,
+    }
+    let next: number | undefined
+    if (event.key === 'Home') next = min
+    else if (event.key === 'End') next = max
+    else if (by[event.key] !== undefined)
+      next = value + by[event.key]! * (event.shiftKey ? 10 : 1)
+    if (next === undefined) return
+    event.preventDefault()
+    next = Math.max(min, Math.min(max, next))
+    if (next === value) return
+    commit(
+      side === 'start'
+        ? { start: next, end: bounds.end }
+        : { start: bounds.start, end: next }
+    )
+  }
+
   if (activeTool !== TimelineToolId.frame && activeTool !== TimelineToolId.marker)
     return null
 
@@ -128,6 +166,15 @@ export const PlaybackBoundHandle = ({
         className={'greese-TimelineRuler-boundHandleFlag'}
         data-side={side}
         data-active={previewBounds !== null ? 'true' : undefined}
+        role="slider"
+        tabIndex={0}
+        aria-label={side === 'start' ? 'Playback start' : 'Playback end'}
+        aria-orientation="horizontal"
+        aria-valuemin={side === 'start' ? 0 : shown.start + 1}
+        aria-valuemax={side === 'start' ? shown.end - 1 : Math.max(0, count - 1)}
+        aria-valuenow={side === 'start' ? shown.start : shown.end}
+        aria-valuetext={`Frame ${(side === 'start' ? shown.start : shown.end) + 1}`}
+        onKeyDown={onKeyDown}
         onPointerDown={onPointerDown}
         onDoubleClick={onDoubleClick}
       />

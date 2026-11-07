@@ -1,3 +1,4 @@
+'use client'
 /**
  * `useTimelineResolution` — the seam between the tick-space {@link TimelineResolution}
  * contract and environments that never adopt one. When `config.resolution` is

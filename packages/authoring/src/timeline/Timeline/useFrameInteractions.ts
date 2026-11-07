@@ -1,3 +1,4 @@
+'use client'
 import { useMemo, type PointerEvent, type MouseEvent, type RefObject } from 'react'
 import { useAuthoringSelector } from '../../environment/environment.tsx'
 import { selectActiveTimelineTool } from '../../state/selectors.ts'

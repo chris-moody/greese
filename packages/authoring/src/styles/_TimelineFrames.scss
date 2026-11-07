@@ -1,9 +1,7 @@
-// Ported from Glop's frames.module.scss.
-
 @layer greese.components {
   // Frame-grid styles: rows, grid lines, keyframes, holds/tweens/spans, cell
   // selection, the rubber-band marquee, and the pointer-snap cursor line. See
-  // `layout.module.scss` for the convention on inline vs attribute-driven
+  // `_Timeline.scss` for the convention on inline vs attribute-driven
   // geometry that governs every file in this family.
   // The row proportions below (`calc(var(--greese-timeline-row-height) * 0.2)` and friends) were
   // arithmetic in JavaScript against `ROW_HEIGHT`. They are the same fractions,

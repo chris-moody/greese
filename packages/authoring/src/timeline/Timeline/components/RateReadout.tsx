@@ -1,3 +1,4 @@
+'use client'
 import type { JSX } from 'react'
 import { useAuthoringSelector } from '../../../environment/environment.tsx'
 import { selectActiveRateCurve } from '../../../state/selectors.ts'

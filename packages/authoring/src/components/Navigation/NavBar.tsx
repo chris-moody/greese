@@ -11,7 +11,7 @@ export interface NavBarProps extends Omit<ComponentPropsWithRef<'div'>, 'childre
 }
 
 /**
- * An editor's nav bar: the parts every Glop studio's had, in their places.
+ * An editor's nav bar: back, the breadcrumbs, the environment, in their places.
  * Each slot takes the editor's own part, so only the arrangement is shared.
  *
  * ```tsx

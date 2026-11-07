@@ -10,7 +10,7 @@
  * external DOM overlay is always painted over by the backend's own next
  * `style.cursor` write.
  *
- * The icon itself renders as a MUI `SvgIcon` — i.e. its own `<svg>` — so
+ * The icon itself renders its own `<svg>` (`createIcon`), so
  * naively embedding the rendered element would nest an `<svg>` inside our
  * outer `<svg>`. Browsers' cursor-image decoders are far stricter than a
  * normal document renderer and don't reliably support that nesting (this
@@ -18,10 +18,10 @@
  * single flat `<svg>`, no nesting) — so the icon's own `<svg>` wrapper is
  * stripped and its inner markup spliced directly into our outer document,
  * with `fill`/`stroke` applied via inheritance from a wrapping `<g>` rather
- * than relying on the icon's `currentColor`/MUI stylesheet class, which
- * isn't available to a standalone cursor image anyway. A handful of custom
+ * than relying on the icon's `currentColor` and stylesheet class, which
+ * aren't available to a standalone cursor image anyway. A handful of custom
  * tool icons (e.g. `EllipseToolIcon`) draw themselves with an explicit
- * `stroke="currentColor"` rather than relying on the MUI stylesheet class —
+ * `stroke="currentColor"` rather than relying on the stylesheet —
  * that explicit attribute would otherwise win over our wrapper's inherited
  * `stroke`, so it's stripped too (its `fill="none"`/`stroke-width` are left
  * alone — those shape the glyph itself, e.g. Ellipse's hollow-outline look).

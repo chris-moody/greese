@@ -1,3 +1,4 @@
+'use client'
 import { useCallback, useRef, useState, type PointerEvent } from 'react'
 import { useAuthoringEnvironment } from '../../environment/environment.tsx'
 import { beginPointerDrag } from '../../core/pointerDrag.ts'

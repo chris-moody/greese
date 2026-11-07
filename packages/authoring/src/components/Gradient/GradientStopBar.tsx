@@ -35,7 +35,7 @@ const percent = (offset: number) => Math.round(offset * 100)
  * A gradient's stops on a preview of it. Click the track to add a stop
  * there; drag a stop, or focus it and use the arrows (Shift for 10%), Home
  * and End, to move it; Delete removes it. The chosen stop's color and an Add
- * button sit below. Glop's stops were mouse-only sliders with no value.
+ * button sit below. Each stop is a slider with its offset as its value.
  *
  * ```tsx
  * <GradientStopBar stops={gradient.stops} onChange={(stops) => setGradient({ ...gradient, stops })} />

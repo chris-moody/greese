@@ -1,3 +1,4 @@
+'use client'
 import type { JSX } from 'react'
 import { Segment, SegmentedControl, Tooltip } from '@greese/react'
 import { FilmIcon, MusicNoteIcon, TimerIcon, type IconComponent } from '@greese/icons'
@@ -35,8 +36,7 @@ const MODE_ICON: Record<TimeMode, IconComponent> = {
  *
  * A segmented control rather than a pair of toggle buttons: the choice is
  * exclusive, and this one is built on native radios, so the arrow keys move
- * between the two modes. The MUI group it replaces also allowed deselecting to
- * nothing, which this component never wanted — it discarded that case.
+ * between the two modes, and one is always chosen.
  */
 export const TimeModeToggle = ({ domain }: TimeModeToggleProps): JSX.Element => {
   const dispatch = useAuthoringDispatch()

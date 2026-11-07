@@ -1,3 +1,4 @@
+'use client'
 import { useCallback } from 'react'
 import { timelineActions, type ClipboardMarker } from '../state/timeline.slice.ts'
 import { coalesce } from '../state/commandsMiddleware.ts'

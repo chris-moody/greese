@@ -1,3 +1,4 @@
+'use client'
 import { memo, useState, type PointerEvent, type JSX } from 'react'
 import { useAuthoringSelector } from '../../../environment/environment.tsx'
 import { selectMarkers, selectMarkerSelection } from '../../../state/selectors.ts'

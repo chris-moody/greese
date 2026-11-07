@@ -22,12 +22,12 @@ const secondsAt = (resolution: TimelineResolution, unit: number) =>
  * between the playback bounds (`bounds()`, looping with the overshoot
  * carried, so laps keep exact time against a continuous clock). Its time maps
  * back to a frame through the resolution, which is where a rate curve or
- * tempo lives, so the clock itself runs at a constant `speed`. It replaces
- * Glop's hand-rolled `requestAnimationFrame` loop.
+ * tempo lives, so the clock itself runs at a constant `speed`.
  *
  * It subscribes to `playing`, `loop`, `speed` and the bounds, not the
  * frame, reading that from the store when play starts, so advancing the
- * playhead doesn't re-render the timeline's host.
+ * playhead doesn't re-render the timeline's host. While playing, it listens
+ * to the store for a frame set from elsewhere and seeks there.
  */
 export const usePlaybackClock = (): void => {
   const { store } = useAuthoringEnvironment()
@@ -79,7 +79,18 @@ export const usePlaybackClock = (): void => {
       .call(() => {}, end)
       .bounds(start, end, { loop })
     clock.play(Math.min(end, Math.max(start, secondsAt(resolution, shown))))
+    // A frame set from elsewhere while playing (a scrub, a ruler click, a
+    // key) moves the clock there, rather than being overwritten next tick.
+    const unsubscribe = (
+      store as unknown as { subscribe: (listener: () => void) => () => void }
+    ).subscribe(() => {
+      const frame = (store.getState() as AuthoringRootState).playback.currentFrame
+      if (frame === shown) return
+      shown = frame
+      clock.seek(Math.min(end, Math.max(start, secondsAt(resolution, frame))))
+    })
     return () => {
+      unsubscribe()
       clock.kill()
     }
   }, [playing, loop, speed, bounds, resolution, dispatch, store])

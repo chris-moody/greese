@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useRef } from 'react'
 import { ownsDeleteKey } from '../core/keyboard.ts'
 import { useAuthoringEnvironment } from '../environment/environment.tsx'
@@ -38,6 +39,19 @@ const isTypingTarget = (target: EventTarget | null): boolean => {
   return (
     !!el &&
     (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable === true)
+  )
+}
+
+/**
+ * True inside a control or layer that owns its keys: a dialog, popover or
+ * menu, a select, a slider, a listbox. Arrows, Escape and Space are theirs.
+ */
+const ownsKeys = (target: EventTarget | null): boolean => {
+  const el = target as Element | null
+  return (
+    !!el?.closest?.(
+      'dialog, [popover], [role="dialog"], [role="menu"], [role="menubar"], [role="listbox"], [role="slider"], [role="spinbutton"], select'
+    ) || el?.tagName === 'SELECT'
   )
 }
 
@@ -129,7 +143,8 @@ export const useTimelineKeymap = (hideRecording?: boolean): void => {
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (isTypingTarget(event.target)) return
+      if (event.defaultPrevented) return
+      if (isTypingTarget(event.target) || ownsKeys(event.target)) return
       const state = store.getState() as AuthoringRootState
       const count = selectFrameCount(state)
       const current = state.playback.currentFrame
@@ -312,10 +327,19 @@ export const useTimelineKeymap = (hideRecording?: boolean): void => {
           event.preventDefault()
           seek(current + 1)
           return
-        case 'Escape':
+        case 'Escape': {
+          // Only when there's something to clear: otherwise Escape is the page's.
+          const { timeline } = state
+          if (
+            !hasSelection &&
+            timeline.selectedTweens.size === 0 &&
+            timeline.cellSelection.size === 0
+          )
+            return
           event.preventDefault()
           dispatch(timelineActions.clearTimelineSelection())
           return
+        }
         case 'Home':
           event.preventDefault()
           seek(0)

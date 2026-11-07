@@ -1,3 +1,4 @@
+'use client'
 import { useCallback, useState, type PointerEvent, type JSX } from 'react'
 import {
   useAuthoringEnvironment,

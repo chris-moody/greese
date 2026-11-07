@@ -1,3 +1,4 @@
+'use client'
 import { memo, type MouseEvent, type PointerEvent, type ReactNode, type JSX } from 'react'
 import { useAuthoringSelector } from '../../../environment/environment.tsx'
 import { selectPlayback } from '../../../state/selectors.ts'

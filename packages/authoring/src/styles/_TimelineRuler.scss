@@ -1,8 +1,8 @@
-// Ported from Glop's ruler.module.scss.
+@use 'pkg:@greese/ui/scss/mixins';
 
 @layer greese.components {
   // Frame ruler, its ticks, and the playback in/out bound handles that pin to
-  // it. See `layout.module.scss` for the convention on inline vs attribute-driven
+  // it. See `_Timeline.scss` for the convention on inline vs attribute-driven
   // geometry that governs every file in this family.
 
   // Frame ruler — first in the frames column's flow, sticky at the top so it
@@ -125,10 +125,20 @@
       transform: translateX(-100%);
     }
 
+    touch-action: none;
+
+    @include mixins.focus-ring;
+
     &::before {
       content: '';
       position: absolute;
       inset: 0 -6px;
+
+      // A finger needs 44px.
+      @media (pointer: coarse) {
+        inset: 0 -18px;
+        min-block-size: 44px;
+      }
     }
   }
 }

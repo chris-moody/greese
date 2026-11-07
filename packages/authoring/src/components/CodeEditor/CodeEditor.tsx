@@ -51,7 +51,7 @@ export const Highlighted = ({ value, language }: HighlightedProps): JSX.Element 
 export interface CodeEditorProps {
   /** The code. */
   value: string
-  /** Called with the new code as it's typed. Without it, the box is read-only in effect. */
+  /** Called with the new code as it's typed. Without it, the box is read-only. */
   onChange?: (value: string) => void
   /** How to colour it: `css`, `scss`, `js` (and JSON), `ts` or `xml` (and SVG). */
   language: CodeLanguage
@@ -61,7 +61,7 @@ export interface CodeEditorProps {
   invalid?: boolean
   /** Stops editing and dims it. */
   disabled?: boolean
-  /** Lets the code be selected and copied, not changed. */
+  /** Lets the code be selected and copied, not changed. Without `onChange` it always is. */
   readOnly?: boolean
   /** A line to mark, from 1, such as where a compile error is. */
   markLine?: number
@@ -111,9 +111,9 @@ export const CodeEditor = ({
   const input = useRef<HTMLTextAreaElement>(null)
   const tokens = useMemo(() => highlightCode(value, language), [value, language])
 
-  // Select the span the owner asked for and bring it into view. Only when it
-  // differs from what's selected, so typing (which reports the selection back)
-  // never fights the caret.
+  // Select the span the owner asked for and bring it into view. Only when the
+  // span itself changes, and differs from what's selected: typing changes the
+  // value, and a stale span mustn't pull the caret back.
   const selectionStart = selection?.start
   const selectionEnd = selection?.end
   useLayoutEffect(() => {
@@ -121,14 +121,14 @@ export const CodeEditor = ({
     if (!box || selectionStart === undefined || selectionEnd === undefined) return
     if (box.selectionStart === selectionStart && box.selectionEnd === selectionEnd) return
     box.setSelectionRange(selectionStart, selectionEnd)
-    const line = value.slice(0, selectionStart).split('\n').length - 1
+    const line = box.value.slice(0, selectionStart).split('\n').length - 1
     const lineHeight = parseFloat(getComputedStyle(box).lineHeight) || 18
     const top = line * lineHeight
     if (top < box.scrollTop || top > box.scrollTop + box.clientHeight - lineHeight) {
       box.scrollTop = Math.max(0, top - box.clientHeight / 3)
     }
     if (layer.current) layer.current.scrollTop = box.scrollTop
-  }, [selectionStart, selectionEnd, value])
+  }, [selectionStart, selectionEnd])
 
   const reportSelection = (event: SyntheticEvent<HTMLTextAreaElement>) => {
     const { selectionStart: start, selectionEnd: end } = event.currentTarget
@@ -166,7 +166,8 @@ export const CodeEditor = ({
         rows={rows}
         value={value}
         disabled={disabled}
-        readOnly={readOnly}
+        // No onChange is nothing to type into: a controlled box would undo each key.
+        readOnly={readOnly || !onChange}
         aria-label={label}
         // Textarea sets `aria-invalid` from this; one passed directly is
         // overwritten, so the docs' copy never announced an error.

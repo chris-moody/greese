@@ -1,3 +1,4 @@
+'use client'
 import {
   useCallback,
   useEffect,
@@ -110,11 +111,6 @@ export interface TimelineProps {
    * or a single grid unit spans the whole viewport.
    */
   zoom?: { min?: number; max?: number; initial?: number }
-  /**
-   * Deprecated: use onAddFrame/onAddMeasure instead. Overrides the header's
-   * Add Frame button (default appends one frame unit).
-   */
-  onAddFrames?: () => void
   /** Appends a single frame unit (animation shells) or beat (musical shells). */
   onAddFrame?: () => void
   /** Removes the last frame/beat, clamped to a minimum of 1. */
@@ -167,7 +163,6 @@ export const Timeline = ({
   frameRateUnits: frameRateUnitsProp,
   resolution = 1,
   zoom,
-  onAddFrames,
   onAddFrame,
   onRemoveFrame,
   onAddMeasure,
@@ -305,7 +300,7 @@ export const Timeline = ({
       className={'greese-Timeline'}
       /*
        * The shared layout constants, handed to the stylesheets. Every
-       * `.module.scss` in this family reads them, including through `calc()`
+       * stylesheet in this family reads them, including through `calc()`
        * for the row proportions, so they are set once here on the root rather
        * than written down a second time in CSS. They are inherited custom
        * properties, so the ruler, rows and markers all see them wherever they
@@ -328,7 +323,6 @@ export const Timeline = ({
         <TimelineHeader
           onZoomIn={zoomIn}
           onZoomOut={zoomOut}
-          onAddFrames={onAddFrames}
           onAddFrame={onAddFrame}
           onRemoveFrame={onRemoveFrame}
           onAddMeasure={onAddMeasure}

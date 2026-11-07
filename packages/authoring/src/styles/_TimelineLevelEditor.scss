@@ -1,11 +1,9 @@
-// Ported from Glop's levelEditor.module.scss.
-
 @layer greese.components {
   // The level editor's overlay: a dimming backdrop, the value graph (an SVG
   // polyline with draggable points), its grid lines and the floating y-axis.
   // Every size and position the consumer computes — the backdrop's width/height,
   // the axis's scroll offset, each grid line's `top` — stays on the inline
-  // `style` prop; see `../Timeline/layout.module.scss` for why.
+  // `style` prop; see `_Timeline.scss` for why.
 
   // Semi-transparent backdrop, separating the overlay from the frame grid below.
   // Consumers size it explicitly, and offset its `top` when pinning the chart to

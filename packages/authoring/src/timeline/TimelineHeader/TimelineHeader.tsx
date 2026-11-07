@@ -1,3 +1,4 @@
+'use client'
 import {
   PlusSquareIcon as AddIcon,
   WandIcon as AutoFixHigh,
@@ -96,13 +97,10 @@ const TEMPORAL_GUIDE_LAYERS: {
  * record mode toggles, and timeline manipulation buttons (add/remove frame/measure).
  */
 export interface TimelineHeaderProps {
+  /** Called by the Zoom in button: widen the frames. */
   onZoomIn: () => void
+  /** Called by the Zoom out button: narrow the frames. */
   onZoomOut: () => void
-  /**
-   * Deprecated: use onAddFrame instead. Overrides the Add Frame button
-   * (default appends a single frame unit).
-   */
-  onAddFrames?: () => void
   /**
    * Called when the user clicks the **Add Frame** button (first of three frame controls).
    *
@@ -159,7 +157,6 @@ export interface TimelineHeaderProps {
 export const TimelineHeader = ({
   onZoomIn,
   onZoomOut,
-  onAddFrames,
   onAddFrame,
   onRemoveFrame,
   onAddMeasure,
@@ -192,10 +189,8 @@ export const TimelineHeader = ({
     () =>
       onAddFrame
         ? onAddFrame()
-        : onAddFrames
-          ? onAddFrames()
-          : dispatch(playbackActions.setFrameCount(baseFrameCount + 1)),
-    [onAddFrame, onAddFrames, dispatch, baseFrameCount]
+        : dispatch(playbackActions.setFrameCount(baseFrameCount + 1)),
+    [onAddFrame, dispatch, baseFrameCount]
   )
   const removeFrame = useCallback(
     () =>
@@ -261,7 +256,7 @@ export const TimelineHeader = ({
         <ToggleButton
           size="sm"
           variant="ghost"
-          // Named, not only tooltipped: Glop's had no accessible name.
+          // Named, not only tooltipped: a tooltip isn't a name.
           aria-label="Loop"
           pressed={loop}
           onPressedChange={() => dispatch(playbackActions.setLoop(!loop))}
@@ -273,7 +268,7 @@ export const TimelineHeader = ({
         <ToggleButton
           size="sm"
           variant="ghost"
-          // Named, not only tooltipped: Glop's had no accessible name.
+          // Named, not only tooltipped: a tooltip isn't a name.
           aria-label="Snapping"
           pressed={snapping}
           onPressedChange={() => dispatch(timelineActions.toggleSnapping())}
@@ -286,7 +281,7 @@ export const TimelineHeader = ({
         <ToggleButton
           size="sm"
           variant="ghost"
-          // Named, not only tooltipped: Glop's had no accessible name.
+          // Named, not only tooltipped: a tooltip isn't a name.
           aria-label="Automatic keyframes"
           pressed={keyframeMode === KeyframeMode.AUTOMATIC}
           onPressedChange={() =>

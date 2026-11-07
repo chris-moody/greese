@@ -11,9 +11,13 @@ import { memo, type JSX } from 'react'
 import type { SpanChartGeometry } from './spanChartGeometry.ts'
 
 export interface SpanActivityChartProps {
+  /** `lines`: a polyline per series over the span; `rows`: a band per row, its active segments filled. */
   variant: 'lines' | 'rows'
+  /** What to draw, in span-local pixels (`useSpanChartGeometry`). */
   geometry: SpanChartGeometry
+  /** The chart's width in pixels: the span's. Nothing renders at 0. */
   width: number
+  /** The chart's height in pixels. Nothing renders at 0. */
   height: number
 }
 

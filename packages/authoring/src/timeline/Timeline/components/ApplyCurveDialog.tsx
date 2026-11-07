@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useState, type JSX } from 'react'
 import { Button, Dialog } from '@greese/react'
 import { EditableField } from '@greese/react'

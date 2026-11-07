@@ -9,8 +9,7 @@ export interface AccentIconProps extends ComponentPropsWithRef<'span'> {
 
 /**
  * Tints an icon with an environment's accent, through `currentColor`. The
- * color is derived from the hue in CSS, per scheme; every Glop studio had a
- * copy of this.
+ * color is derived from the hue in CSS, per scheme.
  *
  * ```tsx
  * <AccentIcon hue={210}><FilmIcon /></AccentIcon>

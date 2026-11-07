@@ -13,9 +13,9 @@ export interface ToolOptionsPanelProps extends ComponentPropsWithRef<'div'> {
 /**
  * The Tool Options panel's body: the active tool's name, an About button for
  * its description, and its settings, which the editor supplies (or a note
- * that it has none). Glop's studios put the About button in the panel's tab,
- * but a tab is a button, and a button can't hold another; the tab shows the
- * tool's name instead: `renderTabContent: () => tool.label`.
+ * that it has none). The About button isn't in the panel's tab: a tab is a
+ * button, and a button can't hold another. The tab shows the tool's name
+ * instead: `renderTabContent: () => tool.label`.
  *
  * ```tsx
  * <ToolOptionsPanel tool={star}>

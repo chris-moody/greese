@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useMemo, useRef, type PointerEvent, type JSX } from 'react'
 import { ownsDeleteKey } from '../../core/keyboard.ts'
 import { useAuthoringSelector } from '../../environment/environment.tsx'
@@ -19,18 +20,23 @@ const isTypingTarget = (target: EventTarget | null): boolean => {
 }
 
 export interface TimelineLevelEditorProps {
+  /** The curve's points, by tick and value, in time order. */
   points: LevelPoint[]
+  /** The value at the graph's bottom edge. */
   min: number
+  /** The value at the graph's top edge. */
   max: number
   /** Pixel width of the graph area — the full timeline content width. */
   width: number
   /** Pixel height of the graph — the scroll VIEWPORT height (values normalize to it). */
   height: number
+  /** How wide a tick is on screen, so points line up with the frames. */
   pixelsPerTick: number
   /** Current horizontal scroll offset — the floating y-axis pins to this edge. */
   scrollLeft?: number
   /** Vertical inset (px) at the top/bottom of the graph — see `LevelEditorScale.paddingY`. */
   paddingY?: number
+  /** Called with the new points when one is added, dragged or deleted. */
   onPointsChange: (points: LevelPoint[]) => void
 }
 

@@ -1,3 +1,4 @@
+'use client'
 /**
  * The Temporal Guide's own lightweight clock — separate from `usePlaybackClock`
  * (which owns `currentFrame`), since the guide only needs to know "how long ago

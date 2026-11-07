@@ -1,9 +1,7 @@
-// Ported from Glop's markers.module.scss.
-
 @layer greese.components {
   // Timeline markers: the full-height line, its ruler tab, the invisible hit
   // strip, the Marker-tool input backdrop, and the hover label. See
-  // `layout.module.scss` for the convention on inline vs attribute-driven
+  // `_Timeline.scss` for the convention on inline vs attribute-driven
   // geometry that governs every file in this family.
 
   // Root of one marker — a single object spanning the whole frames column, like

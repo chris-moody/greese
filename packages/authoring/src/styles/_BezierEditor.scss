@@ -1,22 +1,5 @@
-// Ported from Glop's bezierEditor.module.scss.
-
 @layer greese.components {
-  // The bezier editor's SVG parts.
-  // Converted from `bezierEditor.styles.ts` (5 × emotion `styled()`). Every
-  // value it read off the MUI theme is a greese token here, so it renders
-  // identically — see `packages/ui/src/theme/designValues.ts` for the mapping
-  // these came from:
-  // theme.palette.action.hover     -> --greese-color-action-hover  (extended)
-  // theme.palette.divider          -> --greese-color-border
-  // theme.palette.text.disabled    -> --greese-color-fg-disabled   (extended)
-  // theme.palette.primary.main     -> --greese-color-primary
-  // theme.palette.secondary.main   -> --greese-color-secondary
-  // theme.palette.background.paper -> --greese-color-surface
-  // theme.shape.borderRadius       -> --greese-radius-sm
-  // No `@use '@greese/ui/scss/kit'` here: this file only reads custom
-  // properties, which need no Sass at all. Import the kit when you want its
-  // mixins (`responsive-prop`, tones, floating) or a Sass-time token.
-
+  // The bezier editor's SVG parts: colours from tokens only.
   .greese-BezierEditor-editorSvg {
     touch-action: none;
     background: color-mix(in oklab, var(--greese-color-fg) 8%, transparent);
@@ -44,5 +27,12 @@
     stroke: var(--greese-color-surface);
     stroke-width: 1.5;
     cursor: grab;
+    outline: none;
+
+    // An SVG circle takes no outline in every engine: its stroke shows focus.
+    &:focus-visible {
+      stroke: var(--greese-color-focus-ring);
+      stroke-width: 3;
+    }
   }
 }
