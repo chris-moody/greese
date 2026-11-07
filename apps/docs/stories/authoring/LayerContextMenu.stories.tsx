@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import { Button, Text } from '@greese/react'
+import { Button, Stack, Text } from '@greese/react'
 import {
   createAuthoringEnvironment,
   LayerContextMenu,
@@ -42,12 +42,14 @@ export const Playground: Story = {
     const [count, setCount] = useState(1)
     return (
       <env.Provider>
-        <Button onClick={(event) => setAt({ top: event.clientY, left: event.clientX })}>
-          Open the menu
-        </Button>
-        <Text variant="caption" tone="muted">
-          {count} {count === 1 ? 'layer' : 'layers'}
-        </Text>
+        <Stack gap={2} align="start">
+          <Button onClick={(event) => setAt({ top: event.clientY, left: event.clientX })}>
+            Open the menu
+          </Button>
+          <Text variant="caption" tone="muted">
+            {count} {count === 1 ? 'layer' : 'layers'}
+          </Text>
+        </Stack>
         <LayerContextMenu
           {...args}
           layerId={layerId}
