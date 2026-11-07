@@ -1,9 +1,11 @@
+'use client'
 import { useCallback, useEffect } from 'react'
 import {
   useAuthoringDispatch,
   useAuthoringSelector,
 } from '../environment/environment.tsx'
 import { redo, undo } from '../state/commandsMiddleware.ts'
+import { isEditableTarget } from '../core/tools/tools.ts'
 
 export interface HistoryControls {
   canUndo: boolean
@@ -26,23 +28,35 @@ export const useHistory = (): HistoryControls => {
   }
 }
 
-/** Global ⌘/Ctrl+Z (undo) and ⌘/Ctrl+Shift+Z or ⌘/Ctrl+Y (redo) shortcuts. */
-export const useUndoRedoKeymap = (): void => {
+export interface UseUndoRedoKeymapOptions {
+  /** Where key presses are heard: an editor's root, so the page keeps its own. @default window */
+  target?: EventTarget | null
+}
+
+/**
+ * ⌘/Ctrl+Z (undo) and ⌘/Ctrl+Shift+Z or ⌘/Ctrl+Y (redo). A text field keeps
+ * its own undo, and a key something else handled is left alone.
+ */
+export const useUndoRedoKeymap = ({ target }: UseUndoRedoKeymapOptions = {}): void => {
   const dispatch = useAuthoringDispatch()
 
   useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (!(event.metaKey || event.ctrlKey)) return
-      const key = event.key.toLowerCase()
-      if (key === 'z') {
-        event.preventDefault()
-        dispatch(event.shiftKey ? redo() : undo())
-      } else if (key === 'y') {
-        event.preventDefault()
+    const source = target === undefined ? window : target
+    if (!source) return
+    const onKeyDown = (event: Event) => {
+      const key = event as KeyboardEvent
+      if (key.defaultPrevented || !(key.metaKey || key.ctrlKey)) return
+      if (isEditableTarget(key.target)) return
+      const name = key.key.toLowerCase()
+      if (name === 'z') {
+        key.preventDefault()
+        dispatch(key.shiftKey ? redo() : undo())
+      } else if (name === 'y') {
+        key.preventDefault()
         dispatch(redo())
       }
     }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [dispatch])
+    source.addEventListener('keydown', onKeyDown)
+    return () => source.removeEventListener('keydown', onKeyDown)
+  }, [dispatch, target])
 }
