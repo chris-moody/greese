@@ -233,3 +233,4 @@ export {
 } from './timeline/levelEditor/useLevelEditorInteractions.ts'
 export { useLevelEditorEditing } from './timeline/levelEditor/useLevelEditorEditing.ts'
 export { useHoldRepeat, type HoldRepeatOptions } from './hooks/useHoldRepeat.ts'
+export { useSearchProvider } from './hooks/useSearchProvider.ts'
