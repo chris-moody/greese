@@ -109,7 +109,9 @@ module.exports = [
     // describing nothing (37.82 kB).
     // 37.9 kB → 38.45 kB (2026-11-06): CopyToClipboard, useCopyToClipboard and @greese/ui's
     // copyToClipboard with its execCommand fallback, about 0.5 kB (38.53 kB, of which 80 B was over before).
-    limit: '38.45 kB',
+    // 38.45 kB → 38.55 kB (2026-11-06): the 80 B over from before, Input's
+    // `htmlSize`, which af6e1778 budgeted everywhere but here (38.52 kB).
+    limit: '38.55 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -333,7 +335,9 @@ module.exports = [
     // left, so a controlled parent declining what was committed no longer leaves
     // the typed text sitting there (3701 B — one byte over, and the fix is
     // correctness, not a feature).
-    limit: '3.75 kB',
+    // 3.75 kB → 3.85 kB (2026-11-06): Input's `htmlSize`, which NumberField is
+    // built on and af6e1778 didn't budget here (3.83 kB).
+    limit: '3.85 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -696,7 +700,9 @@ module.exports = [
     // 53.4 kB → 53.7 kB (2026-11-05): the same slider bubble and Slot merge fix (53.55 kB).
     // 53.7 kB → 54.3 kB (2026-11-06): CopyToClipboard, useCopyToClipboard and @greese/ui's
     // copyToClipboard with its execCommand fallback, about 0.5 kB (54.37 kB, of which 46 B was over before).
-    limit: '54.3 kB',
+    // 54.3 kB → 54.4 kB (2026-11-06): the 46 B over from before, Input's
+    // `htmlSize`, which af6e1778 budgeted everywhere but here (54.37 kB).
+    limit: '54.4 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.
