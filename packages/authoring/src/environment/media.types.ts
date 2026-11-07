@@ -147,8 +147,6 @@ export interface MediaConfig<
   tools?: ToolRegistrant[]
   panels?: PanelRegistrant[]
   propertySchema?: PropertyField<P>[]
-  /** Media-specific slices merged into the store. */
-  reducers?: Record<string, Reducer>
   /** Optional custom clock (e.g. Web Audio time for a DAW). */
   timing_model?: TimingModel
   /**

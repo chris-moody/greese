@@ -163,11 +163,11 @@ export const createAuthoringStore = <
 }
 
 /** An authoring store whose state includes `TState`, an editor's own slices. */
-export type AuthoringStore<TState = Record<string, never>> = ReturnType<
+export type AuthoringStore<TState extends object = object> = ReturnType<
   typeof createAuthoringStore
 > & {
   getState(): AuthoringRootState & TState
 }
 
 /** A store's whole state, framework slices and the editor's own. */
-export type AuthoringState<TState = Record<string, never>> = AuthoringRootState & TState
+export type AuthoringState<TState extends object = object> = AuthoringRootState & TState
