@@ -34,5 +34,11 @@
     "path": "dist/index.js",
     "import": "{ linearGradient, radialGradient, filter, glow, toMarkup }",
     "limit": "1.05 kB"
+  },
+  {
+    "name": "@greese/svg/markup: everything",
+    "path": "dist/markup/index.js",
+    "import": "*",
+    "limit": "3.2 kB"
   }
 ]

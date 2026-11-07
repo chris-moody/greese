@@ -34,6 +34,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./markup": {
+      "types": "./dist/markup/index.d.ts",
+      "default": "./dist/markup/index.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
