@@ -133,3 +133,65 @@ describe('uid', () => {
     expect(uid(8)).toHaveLength(8)
   })
 })
+
+describe('PanelDock layoutKey', () => {
+  const code = panel('code', 'Code')
+  const codeLayout: LayoutSpec = {
+    kind: 'row',
+    children: [
+      { spec: { kind: 'stage' } },
+      { size: 300, spec: { kind: 'panel', id: 'code' } },
+    ],
+  }
+  const stage = (id: string) => (id === RESERVED_STAGE_ID ? <div>The stage</div> : null)
+
+  it('seeds its own layout when the store holds another workspace’s', () => {
+    const env = createAuthoringEnvironment()
+    const { rerender } = render(
+      <env.Provider>
+        <PanelDock
+          layoutKey="design"
+          panels={[layers, library, properties]}
+          initialWorkspace={buildFromSpec(layout)}
+          renderReserved={stage}
+        />
+      </env.Provider>
+    )
+    expect(env.store.getState().panels.layoutKey).toBe('design')
+
+    rerender(
+      <env.Provider>
+        <PanelDock
+          layoutKey="code"
+          panels={[code]}
+          initialWorkspace={buildFromSpec(codeLayout)}
+          renderReserved={stage}
+        />
+      </env.Provider>
+    )
+    expect(screen.getByRole('tab', { name: 'Code' })).toBeInTheDocument()
+    expect(screen.queryByRole('tab', { name: 'Layers' })).not.toBeInTheDocument()
+    const { panels } = env.store.getState()
+    expect(panels.layoutKey).toBe('code')
+    // The code layout's own tree: one split, the panel 300px at the end.
+    const splits = Object.values(panels.workspace.nodes).filter((n) => n.kind === 'split')
+    expect(splits.map((s) => s.primarySize)).toEqual([300])
+  })
+
+  it('keeps the stored layout without a key, as before', () => {
+    const env = createAuthoringEnvironment()
+    const props = { panels: [layers, library, properties], renderReserved: stage }
+    const { rerender } = render(
+      <env.Provider>
+        <PanelDock {...props} initialWorkspace={buildFromSpec(layout)} />
+      </env.Provider>
+    )
+    const before = env.store.getState().panels.workspace
+    rerender(
+      <env.Provider>
+        <PanelDock {...props} initialWorkspace={buildFromSpec(codeLayout)} />
+      </env.Provider>
+    )
+    expect(env.store.getState().panels.workspace).toBe(before)
+  })
+})

@@ -46,6 +46,7 @@ export const selectBaseFrameCount = (state: AuthoringRootState) =>
 export const selectPanelsState = (state: AuthoringRootState) => state.panels
 export const selectPanelWorkspace = (state: AuthoringRootState) => state.panels.workspace
 export const selectPanelFloating = (state: AuthoringRootState) => state.panels.floating
+export const selectPanelLayoutKey = (state: AuthoringRootState) => state.panels.layoutKey
 export const selectShowRulers = (state: AuthoringRootState) => state.panels.showRulers
 export const selectTimelineSelection = (state: AuthoringRootState) =>
   state.timeline.selection

@@ -24,7 +24,11 @@ import {
   useAuthoringSelector,
 } from '../../environment/environment.tsx'
 import { panelsActions } from '../../state/panels.slice.ts'
-import { selectPanelFloating, selectPanelWorkspace } from '../../state/selectors.ts'
+import {
+  selectPanelFloating,
+  selectPanelLayoutKey,
+  selectPanelWorkspace,
+} from '../../state/selectors.ts'
 import { SplitPane } from '../SplitPane/SplitPane.tsx'
 import { FloatingPanels } from './FloatingPanels.tsx'
 import { DropHighlight, PanelGroup, type PanelMeta } from './PanelGroup.tsx'
@@ -45,6 +49,14 @@ export interface PanelDockProps extends Omit<ComponentPropsWithRef<'div'>, 'chil
    * (an editor with no canvas registers its stage as an ordinary panel).
    */
   renderReserved?: (reservedId: string) => ReactNode
+  /**
+   * Which workspace this dock shows, when one editor has several (design,
+   * code; pose, animation). When the store holds another workspace's layout,
+   * the dock seeds its own from `initialWorkspace` instead of reconciling the
+   * foreign one. Pair it with `useLayoutCache` to bring back each workspace's
+   * arrangement.
+   */
+  layoutKey?: string
   /**
    * The workspace to start with when the store has none, usually
    * `buildFromSpec(layout)`. Without it, one is built from the panels' areas.
@@ -159,6 +171,7 @@ export const PanelDock = ({
   hasTimeline = false,
   renderReserved,
   initialWorkspace,
+  layoutKey,
   className,
   ref,
   ...props
@@ -166,6 +179,9 @@ export const PanelDock = ({
   const dispatch = useAuthoringDispatch()
   const stored = useAuthoringSelector(selectPanelWorkspace)
   const floating = useAuthoringSelector(selectPanelFloating)
+  const storedKey = useAuthoringSelector(selectPanelLayoutKey)
+  // Another workspace's layout: rendered from the seed until it's replaced.
+  const foreign = layoutKey !== undefined && storedKey !== layoutKey
 
   // Keyed by the ids alone, so moving a floating panel doesn't rebuild the workspace.
   const floatingKey = floating.map((f) => f.id).join('\0')
@@ -174,19 +190,21 @@ export const PanelDock = ({
     [floatingKey]
   )
 
-  // Puts a workspace in the store on mount, so every reducer has a tree to edit.
+  // Puts a workspace in the store on mount (and when the key changes), so
+  // every reducer has a tree to edit, and this dock's own tree at that.
   useEffect(() => {
-    if (stored.rootId === null && panels.length > 0) {
+    if ((stored.rootId === null || foreign) && panels.length > 0) {
       dispatch(
         panelsActions.hydrate({
           workspace: initialWorkspace ?? buildDefaultTree(panels, { hasTimeline }),
-          floating,
+          floating: foreign ? [] : floating,
+          ...(layoutKey !== undefined && { layoutKey }),
         })
       )
     }
-    // Once, on mount: later changes to these props don't reseed the layout.
+    // On mount and per key: later changes to the other props don't reseed.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [layoutKey])
 
   // The tree as rendered: the stored one reconciled with the current panels,
   // without touching the store. Reserved leaves are reconciled only when the
@@ -194,7 +212,9 @@ export const PanelDock = ({
   // tree in a new split (a new id, so a remount) on every change.
   const workspace = useMemo<ZoneTree>(() => {
     const base =
-      stored.rootId !== null ? stored : buildDefaultTree(panels, { hasTimeline })
+      stored.rootId !== null && !foreign
+        ? stored
+        : (initialWorkspace ?? buildDefaultTree(panels, { hasTimeline }))
     const withReserved = renderReserved
       ? ensureReservedLeaves(base, { hasTimeline })
       : base
@@ -203,7 +223,15 @@ export const PanelDock = ({
       floatingIds,
       panels
     )
-  }, [stored, panels, floatingIds, hasTimeline, renderReserved])
+  }, [
+    stored,
+    foreign,
+    initialWorkspace,
+    panels,
+    floatingIds,
+    hasTimeline,
+    renderReserved,
+  ])
 
   const panelMeta = useMemo(
     () =>

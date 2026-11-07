@@ -16,6 +16,12 @@ export interface PanelsState {
   workspace: ZoneTree
   floating: FloatingPanelState[]
   showRulers: boolean
+  /**
+   * Which workspace this layout is (a `PanelDock`'s `layoutKey`), or null.
+   * A dock with another key seeds its own layout rather than reconcile this
+   * one, so a store shared by several workspaces never shows a foreign tree.
+   */
+  layoutKey: string | null
 }
 
 /** The JSON-safe form saved in layout presets and documents. */
@@ -23,12 +29,14 @@ export interface SerializedPanels {
   workspace: ZoneTree
   floating: FloatingPanelState[]
   showRulers?: boolean
+  layoutKey?: string | null
 }
 
 const initialState: PanelsState = {
   workspace: EMPTY_TREE,
   floating: [],
   showRulers: false,
+  layoutKey: null,
 }
 
 type Edge = 'top' | 'bottom' | 'left' | 'right'
@@ -170,6 +178,7 @@ export const panelsSlice = createSlice({
       if (next.workspace) state.workspace = { ...next.workspace }
       if (next.floating) state.floating = [...next.floating]
       if (next.showRulers !== undefined) state.showRulers = next.showRulers
+      if (next.layoutKey !== undefined) state.layoutKey = next.layoutKey
     },
   },
 })
@@ -179,6 +188,7 @@ export const serializePanels = (panels: PanelsState): SerializedPanels => ({
   workspace: { ...panels.workspace, nodes: { ...panels.workspace.nodes } },
   floating: [...panels.floating],
   showRulers: panels.showRulers,
+  layoutKey: panels.layoutKey,
 })
 
 export const panelsActions = panelsSlice.actions
