@@ -242,6 +242,22 @@ if (!html.includes('role="img"') || !html.includes('stop-color="red"') || !html.
   run('node', ['svg.mjs'], work)
   ok('@greese/svg runs without a DOM; @greese/react/svg renders on the server')
 
+  // 4d'. @greese/svg's editor entries run in Node with no DOM (ADR 0031
+  // addendum, 2026-11-07).
+  writeFileSync(
+    join(work, 'svg-editor.mjs'),
+    `import { parseMarkup, serializeMarkup, sanitizeMarkup } from '@greese/svg/markup'
+import { attributeSpec, canContain } from '@greese/svg/schema'
+import { convertSegment, freehandPath } from '@greese/svg/edit'
+const { root } = sanitizeMarkup(parseMarkup('<svg onload="x()"><rect width="2"/></svg>'))
+if (serializeMarkup(root, { pretty: false }) !== '<svg><rect width="2"/></svg>') throw new Error('markup')
+if (attributeSpec('rect', 'rx')?.type !== 'length' || !canContain('g', 'rect')) throw new Error('schema')
+if (convertSegment('M0 0L30 0', 1, 'C')?.[1]?.[0] !== 'C' || !freehandPath([[0, 0], [5, 1], [10, 0]]).startsWith('M0 0C')) throw new Error('edit')
+`
+  )
+  run('node', ['svg-editor.mjs'], work)
+  ok('@greese/svg/markup, /schema and /edit run without a DOM')
+
   // 4e. @greese/authoring: core and state run in Node with no React or DOM,
   // its peers are peers, and the dock renders on the server (ADR 0035).
   writeFileSync(
@@ -266,6 +282,7 @@ if (!html.includes('greese-PanelDock') || !html.includes('role="tab"')) throw ne
 const pkg = JSON.parse(readFileSync('node_modules/@greese/authoring/package.json', 'utf8'))
 if (pkg.dependencies?.['@reduxjs/toolkit'] || !pkg.peerDependencies?.['@reduxjs/toolkit'] || !pkg.peerDependencies?.['react-redux']) throw new Error('Redux must be a peer')
 if (!readFileSync('node_modules/@greese/authoring/dist/styles.css', 'utf8').includes('@layer greese.components')) throw new Error('styles.css')
+if (!readFileSync('node_modules/@greese/authoring/src/styles/_code.scss', 'utf8').includes('@mixin tokens')) throw new Error('scss/code')
 `
   )
   run('node', ['authoring.mjs'], work)
