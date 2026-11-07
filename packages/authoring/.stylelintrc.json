@@ -1,0 +1,44 @@
+{
+  "extends": ["stylelint-config-standard-scss"],
+  "rules": {
+    "selector-class-pattern": [
+      "^greese-[A-Z][A-Za-z]*(-[a-z][A-Za-z]*)?(--[a-z0-9-]+)?$",
+      {
+        "message": "Use greese-Block, greese-Block-element or greese-Block--modifier (got \"%s\")"
+      }
+    ],
+    "custom-property-pattern": [
+      "^greese-[a-z0-9-]+$",
+      {
+        "message": "Custom properties are --greese-kebab-case (got \"%s\")"
+      }
+    ],
+    "color-no-hex": [
+      true,
+      {
+        "message": "Use a --greese-color-* token, not a raw color"
+      }
+    ],
+    "color-named": [
+      "never",
+      {
+        "message": "Use a --greese-color-* token, not a raw color"
+      }
+    ],
+    "function-disallowed-list": [
+      ["rgb", "rgba", "hsl", "hsla", "hwb", "lab", "lch", "oklab", "oklch", "color"],
+      {
+        "message": "Use a --greese-color-* token, not a raw color"
+      }
+    ],
+    "property-no-vendor-prefix": [
+      true,
+      {
+        "ignoreProperties": ["tap-highlight-color", "font-smoothing"]
+      }
+    ],
+    "scss/dollar-variable-pattern": "^_?[a-z][a-z0-9-]*$",
+    "scss/at-function-pattern": "^_?[a-z][a-z0-9-]*$",
+    "scss/at-mixin-pattern": "^_?[a-z][a-z0-9-]*$"
+  }
+}

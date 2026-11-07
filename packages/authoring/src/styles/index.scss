@@ -1,0 +1,6 @@
+// @greese/authoring's stylesheet (dist/styles.css). Every rule is in
+// `greese.components`, so it takes the same place in the cascade as greese
+// ui's components; import it after greese ui's stylesheet (ADR 0035).
+@use 'PanelDock';
+@use 'PanelGroup';
+@use 'SplitPane';

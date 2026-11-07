@@ -1,0 +1,84 @@
+@use 'pkg:@greese/ui/scss/mixins';
+
+@layer greese.components {
+  .greese-SplitPane {
+    display: flex;
+    flex-direction: row;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: hidden;
+  }
+
+  .greese-SplitPane--col {
+    flex-direction: column;
+  }
+
+  // The primary at the far end; the component measures its size from there.
+  .greese-SplitPane--reversed {
+    flex-direction: row-reverse;
+
+    &.greese-SplitPane--col {
+      flex-direction: column-reverse;
+    }
+  }
+
+  // Both panes lay out along the axis, so the node inside fills its slot.
+  .greese-SplitPane-primary,
+  .greese-SplitPane-secondary {
+    display: flex;
+    flex-direction: row;
+    min-inline-size: 0;
+    min-block-size: 0;
+    overflow: hidden;
+
+    .greese-SplitPane--col > & {
+      flex-direction: column;
+    }
+  }
+
+  // Fixed along the axis (the inline size the drag writes), unless the
+  // secondary collapsed and it fills instead.
+  .greese-SplitPane-primary {
+    flex: 0 0 auto;
+
+    &[data-fill] {
+      flex: 1 1 auto;
+    }
+  }
+
+  .greese-SplitPane-secondary {
+    flex: 1 1 auto;
+
+    &[data-shrink] {
+      flex: 0 0 auto;
+    }
+  }
+
+  .greese-SplitPane-divider {
+    @include mixins.touch-target;
+
+    position: relative;
+    flex: 0 0 auto;
+    inline-size: 6px;
+    cursor: col-resize;
+    touch-action: none;
+    background-color: var(--greese-color-border);
+    transition: background-color var(--greese-duration-fast) var(--greese-easing-standard);
+
+    @include mixins.hover {
+      background-color: var(--greese-color-primary);
+    }
+
+    &:focus-visible {
+      background-color: var(--greese-color-primary);
+      outline: 2px solid var(--greese-color-focus-ring);
+      outline-offset: 0;
+    }
+
+    .greese-SplitPane--col > & {
+      block-size: 6px;
+      inline-size: auto;
+      cursor: row-resize;
+    }
+  }
+}
