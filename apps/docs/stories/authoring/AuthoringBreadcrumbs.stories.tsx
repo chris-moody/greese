@@ -6,6 +6,7 @@ import {
   NavMode,
   navigationActions,
 } from '@greese/authoring'
+import { FilmIcon, HomeIcon } from '@greese/icons'
 import '@greese/authoring/styles.css'
 
 /** An editor two symbols deep: a button opened inside a toolbar. */
@@ -47,6 +48,33 @@ export const Playground: Story = {
     return (
       <env.Provider>
         <AuthoringBreadcrumbs {...args} />
+      </env.Provider>
+    )
+  },
+}
+
+/**
+ * Each step marked with its environment's icon and hue (`accent`), after a
+ * step the host supplies (`leading`): here, back to the page that opened the
+ * editor.
+ */
+export const Accents: Story = {
+  render: function Accents(args) {
+    const [env] = useState(nestedEnvironment)
+    const [opened, setOpened] = useState(0)
+    return (
+      <env.Provider>
+        <AuthoringBreadcrumbs
+          {...args}
+          accent={(assetId) =>
+            assetId ? { icon: <FilmIcon />, hue: 300 } : { icon: <HomeIcon />, hue: 150 }
+          }
+          leading={
+            <button type="button" onClick={() => setOpened(opened + 1)}>
+              Library{opened > 0 && ` (${opened})`}
+            </button>
+          }
+        />
       </env.Provider>
     )
   },
