@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import { Chip, Stack } from '@greese/react'
+import { Button, Chip, Stack } from '@greese/react'
 
 const meta = {
   title: 'Content/Chip',
@@ -120,5 +120,15 @@ export const Sizes: Story = {
 
 /** The remove button scales with the chip, so a small one still fits it. */
 export const SmallRemovable: Story = {
-  args: { size: 'xs', children: 'Design', onRemove: () => {} },
+  args: { size: 'xs', children: 'Design' },
+  render: function SmallRemovable(args) {
+    const [removed, setRemoved] = useState(false)
+    return removed ? (
+      <Button size="xs" variant="ghost" onClick={() => setRemoved(false)}>
+        Put Design back
+      </Button>
+    ) : (
+      <Chip {...args} onRemove={() => setRemoved(true)} />
+    )
+  },
 }
