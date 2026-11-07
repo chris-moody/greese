@@ -46,6 +46,17 @@ export interface ContextMenuProps
 const isPoint = (anchor: ContextMenuProps['anchor']): anchor is ContextMenuPoint =>
   anchor !== null && anchor !== undefined && !(anchor instanceof HTMLElement)
 
+/*
+ * Whether a pointer is pressed anywhere in the document right now. macOS fires
+ * `contextmenu` on mousedown and a touch long-press fires it while the finger
+ * is down, and the browser light-dismisses an open popover on a pointerup
+ * outside it, so a menu shown then would close again on release. Every context
+ * menu adds the same listener, which the browser keeps only once.
+ */
+let pressed = false
+const trackPointer = (event: Event) => (pressed = event.type === 'pointerdown')
+const POINTER = ['pointerdown', 'pointerup', 'pointercancel']
+
 /**
  * A menu opened at the pointer, or hung off an element as a submenu.
  *
@@ -95,24 +106,58 @@ export const ContextMenu = ({
   // in for the pointer position. Telling the hook which is the only thing
   // point-anchoring needs; everything after it is shared.
   const { triggerRef } = positioned
+  const { anchorName } = positioned.anchorStyle as { anchorName: string }
   useEffect(() => {
     triggerRef(isPoint(anchor) ? point.current : anchor)
-  }, [triggerRef, anchor])
+    if (!(anchor instanceof HTMLElement)) return
+    // An element anchor is the caller's, so it gets the anchor name here,
+    // added to any it has inline (a Menu trigger has its own).
+    const { style } = anchor
+    const previous = style.getPropertyValue('anchor-name')
+    style.setProperty('anchor-name', previous ? `${previous}, ${anchorName}` : anchorName)
+    return () => style.setProperty('anchor-name', previous)
+  }, [triggerRef, anchor, anchorName])
+
+  useEffect(() => {
+    for (const type of POINTER) document.addEventListener(type, trackPointer, true)
+  }, [])
 
   /*
    * Shown and hidden from `anchor`, because the caller owns that state. Both
    * popover methods throw when the popover is already in the state asked for,
-   * hence the checks.
+   * hence the checks. Opened while a pointer is pressed, it waits for the
+   * release (see `pressed`).
    */
   useEffect(() => {
     const element = menu.current
     if (!element) return
     const showing = element.matches(':popover-open')
-    if (open && !showing) {
+    if (!open) {
+      if (showing) element.hidePopover()
+      return
+    }
+    if (showing) return
+    const show = () => {
+      if (element.matches(':popover-open')) return
       returnTo.current = document.activeElement as HTMLElement | null
       element.showPopover()
-    } else if (!open && showing) {
-      element.hidePopover()
+    }
+    if (!pressed) return show()
+    const release = new AbortController()
+    let timer = 0
+    for (const type of POINTER.slice(1))
+      addEventListener(
+        type,
+        () => {
+          release.abort()
+          // After the release's own dispatch, which is when it light-dismisses.
+          timer = window.setTimeout(show)
+        },
+        { capture: true, signal: release.signal }
+      )
+    return () => {
+      release.abort()
+      clearTimeout(timer)
     }
   }, [open, anchor])
 

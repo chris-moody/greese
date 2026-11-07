@@ -113,7 +113,8 @@ module.exports = [
     // `htmlSize`, which af6e1778 budgeted everywhere but here (38.52 kB).
     // 38.55 kB → 38.6 kB (2026-11-06): Combobox keeps free text on Enter
     // with `allowCustomValue`, as it did on blur (38.554 kB).
-    limit: '38.6 kB',
+    // 38.6 kB → 38.8 kB (2026-11-07): ContextMenu waits for the press that opened it to be released (the release light-dismissed it in Firefox and Safari, and on macOS), and names an element anchor, which it never did, about 0.17 kB (38.69 kB).
+    limit: '38.8 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -175,7 +176,8 @@ module.exports = [
     // 44.3 kB → 44.35 kB (2026-11-06): Combobox keeps free text on Enter with
     // `allowCustomValue` (44.32 kB).
     // 44.35 kB → 44.6 kB (2026-11-07): greese.js's editor playback (ADR 0036): `fps` frame snapping, `bounds()` in and out points, and `ticker: false` for a host's clock, about 0.2 kB (44.53 kB).
-    limit: '44.6 kB',
+    // 44.6 kB → 44.8 kB (2026-11-07): ContextMenu waits for the press that opened it to be released (the release light-dismissed it in Firefox and Safari, and on macOS), and names an element anchor, which it never did, about 0.17 kB (44.73 kB).
+    limit: '44.8 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -710,7 +712,8 @@ module.exports = [
     // 54.3 kB → 54.4 kB (2026-11-06): the 46 B over from before, Input's
     // `htmlSize`, which af6e1778 budgeted everywhere but here (54.37 kB).
     // 54.4 kB → 54.65 kB (2026-11-07): greese.js's editor playback (ADR 0036): `fps` frame snapping, `bounds()` in and out points, and `ticker: false` for a host's clock, about 0.2 kB (54.6 kB).
-    limit: '54.65 kB',
+    // 54.65 kB → 54.9 kB (2026-11-07): ContextMenu waits for the press that opened it to be released (the release light-dismissed it in Firefox and Safari, and on macOS), and names an element anchor, which it never did, about 0.17 kB (54.86 kB).
+    limit: '54.9 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.

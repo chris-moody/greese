@@ -478,6 +478,18 @@ describe('ContextMenu', () => {
     element.remove()
   })
 
+  it('names an element anchor as its anchor, and gives the name back on close', () => {
+    const element = document.createElement('button')
+    document.body.append(element)
+    const { rerender } = render(<Example anchor={element} />)
+    const name = element.style.getPropertyValue('anchor-name')
+    expect(name).toMatch(/^--greese-anchor-/)
+    expect(screen.getByRole('menu').style.getPropertyValue('position-anchor')).toBe(name)
+    rerender(<Example anchor={null} />)
+    expect(element.style.getPropertyValue('anchor-name')).toBe('')
+    element.remove()
+  })
+
   it('carries the Menu surface class as well as its own', () => {
     render(<Example />)
     const menu = screen.getByRole('menu')
