@@ -27,10 +27,11 @@ const secondsAt = (resolution: TimelineResolution, unit: number) =>
  * It subscribes to `playing`, `loop`, `speed` and the bounds, not the
  * frame, reading that from the store when play starts, so advancing the
  * playhead doesn't re-render the timeline's host. While playing, it listens
- * to the store for a frame set from elsewhere and seeks there.
+ * to the store for a frame set from elsewhere and seeks there. With a
+ * `playbackClock` in the config, the host's clock advances it instead.
  */
 export const usePlaybackClock = (): void => {
-  const { store } = useAuthoringEnvironment()
+  const { store, config } = useAuthoringEnvironment()
   const dispatch = useAuthoringDispatch()
   const resolution = useTimelineResolution()
   const playing = useAuthoringSelector(
@@ -55,6 +56,8 @@ export const usePlaybackClock = (): void => {
     let shown = (store.getState() as AuthoringRootState).playback.currentFrame
     const clock = timeline({
       paused: true,
+      // A host's clock (an audio context) drives it, not the screen's frames.
+      ticker: !config.playbackClock,
       // The editor's playhead moves for any user: it's the tool, not decoration.
       reducedMotion: 'ignore',
       timeScale: Math.max(1e-6, speed),
@@ -89,9 +92,11 @@ export const usePlaybackClock = (): void => {
       shown = frame
       clock.seek(Math.min(end, Math.max(start, secondsAt(resolution, frame))))
     })
+    const stopTicks = config.playbackClock?.subscribe((dt) => clock.tick(dt))
     return () => {
+      stopTicks?.()
       unsubscribe()
       clock.kill()
     }
-  }, [playing, loop, speed, bounds, resolution, dispatch, store])
+  }, [playing, loop, speed, bounds, resolution, dispatch, store, config])
 }

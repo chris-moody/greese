@@ -15,6 +15,12 @@ import type { PanelRegistrant } from '../components/PanelDock/panel.types.ts'
 import type { AuthoringStore } from '../state/createAuthoringStore.ts'
 import type { AuthoringConfig, LayerTypeInfo } from '../core/types/config.types.ts'
 
+/** A host's own clock for playback: see `MediaConfig.playbackClock`. */
+export interface PlaybackClock {
+  /** Calls `onTick` with the seconds since its last call, until the returned function is called. */
+  subscribe(onTick: (dtSeconds: number) => void): () => void
+}
+
 /** Context handed to a media backend when the stage mounts. */
 export interface StageMountContext {
   /** DOM node the backend renders into. */
@@ -148,6 +154,14 @@ export interface MediaConfig<
   propertySchema?: PropertyField<P>[]
   /** Optional custom clock (e.g. Web Audio time for a DAW). */
   timing_model?: TimingModel
+  /**
+   * A clock of the host's own (an audio context's time) to drive playback,
+   * instead of the screen's frames: `subscribe` calls back with the seconds
+   * elapsed since its last call, and returns how to stop. The playhead's
+   * greese.js timeline then leaves the shared ticker (`ticker: false`) and
+   * advances on these (ADR 0036).
+   */
+  playbackClock?: PlaybackClock
   /**
    * Tick-space resolution for ruler/zoom/labeling/snapping. Additive — when
    * absent, `useTimelineResolution` derives a pass-through resolution from

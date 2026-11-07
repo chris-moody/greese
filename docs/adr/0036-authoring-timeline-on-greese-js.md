@@ -126,3 +126,11 @@ Cost, together: about 0.2 kB brotli (ADR 0008 addendum).
   the tool, not decoration.
 - **Time runs left to right** on a right-to-left page (`direction: ltr` on the
   timeline).
+
+## Addendum (2026-11-07): a host's clock
+
+`MediaConfig.playbackClock` lets a host drive playback from its own clock,
+as Amp does from its audio context: `subscribe(onTick)` calls back with the
+seconds since its last call. With one set, the playhead's timeline leaves the
+shared ticker (`ticker: false`) and advances by `tick(dt)` on those calls, so
+the playhead keeps the audio's time, not the screen's.

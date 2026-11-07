@@ -158,6 +158,44 @@ describe('usePlaybackClock', () => {
     expect(env.store.getState().playback.currentFrame).toBe(23)
   })
 
+  it('runs on a host’s clock instead of the screen’s frames when given one', async () => {
+    vi.useFakeTimers({
+      toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],
+    })
+    let onTick: ((dt: number) => void) | null = null
+    const stop = vi.fn()
+    const env = createAuthoringEnvironment({
+      config: {
+        timing: { mode: 'fps', frameRate: 24, frameCount: 24 } as never,
+        playbackClock: {
+          subscribe: (fn) => {
+            onTick = fn
+            return stop
+          },
+        },
+      },
+    })
+    env.store.dispatch(playbackActions.setFrameCount(24))
+    render(
+      <env.Provider>
+        <Clock />
+      </env.Provider>
+    )
+    act(() => {
+      env.store.dispatch(playbackActions.setLoop(false))
+      env.store.dispatch(playbackActions.play())
+    })
+    // The screen's frames pass, but the host's clock hasn't ticked.
+    await act(async () => {
+      vi.advanceTimersByTime(500)
+    })
+    expect(env.store.getState().playback.currentFrame).toBe(0)
+    act(() => onTick!(0.5))
+    expect(env.store.getState().playback.currentFrame).toBe(12)
+    act(() => env.store.dispatch(playbackActions.pause()))
+    expect(stop).toHaveBeenCalled()
+  })
+
   it('loops when asked', async () => {
     vi.useFakeTimers({
       toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],
