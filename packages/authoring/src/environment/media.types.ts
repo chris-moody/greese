@@ -5,7 +5,6 @@
  * ≈90% filling this object in; the factory composes everything shared.
  */
 import type { ComponentType } from 'react'
-import type { Reducer } from '@reduxjs/toolkit'
 import type { AuthoringLayer } from '../core/types/layer.types.ts'
 import type { FrameBase, FrameKind, LayerTimeline } from '../core/types/frame.types.ts'
 import type { TimingConfig, TimingModel } from '../core/types/timing.types.ts'
