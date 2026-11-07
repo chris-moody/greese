@@ -685,6 +685,24 @@ describe('EditableField', () => {
     expect(inferEditableFieldType(null)).toBe('number')
   })
 
+  it('takes a handler of the value alone where the field can’t be cleared', async () => {
+    // Type-checked: a `(value: number) => void` fits a number field's
+    // `onValueChange`, which reports `null` only with `allowEmpty`.
+    const seen: number[] = []
+    const onWidth = (value: number) => seen.push(value)
+    const onColor = (value: string) => value.toUpperCase()
+    render(
+      <>
+        <EditableField label="Width" value={4} onValueChange={onWidth} />
+        <EditableField label="Ink" type="color" value="#ff0000" onValueChange={onColor} />
+      </>
+    )
+    const width = screen.getByRole('spinbutton', { name: 'Width' })
+    await userEvent.clear(width)
+    await userEvent.type(width, '7{Enter}')
+    expect(seen.at(-1)).toBe(7)
+  })
+
   it('keeps enough decimals for its own step', () => {
     expect(resolveDecimals(undefined)).toBe(2)
     expect(resolveDecimals(1)).toBe(2)

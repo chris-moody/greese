@@ -56,3 +56,7 @@
   it. `EditableField` enters at 14 kB (10.87 kB measured): it reaches eleven
   controls, and a panel built from it would have imported most of them anyway.
   The whole-library budgets and `greese.css` rise by the new component.
+
+A number or color field reports `null` only with `allowEmpty`, and its
+`onValueChange` is declared as a method, so a handler that takes the value
+alone (`(value: number) => void`) fits where the field can't be cleared.

@@ -102,8 +102,12 @@ export interface NumberFieldVariantProps extends EntryProps {
   value?: number | null
   /** The number it starts with, when it keeps its own state. */
   defaultValue?: number | null
-  /** Called with the committed number, or `null` when cleared. */
-  onValueChange?: (value: number | null) => void
+  /**
+   * Called with the committed number, or `null` when cleared, which only
+   * `allowEmpty` allows. A method, so a handler that takes a `number` alone
+   * fits where the field can't be cleared.
+   */
+  onValueChange?(value: number | null): void
   /** The lowest value the field accepts. */
   min?: number
   /** The highest value the field accepts. */
@@ -146,8 +150,12 @@ export interface ColorFieldVariantProps extends CommonProps {
   value?: string | null
   /** The color it starts with, when it keeps its own state. */
   defaultValue?: string | null
-  /** Called with the new hex color, or `null` when it is cleared. */
-  onValueChange?: (value: string | null) => void
+  /**
+   * Called with the new hex color, or `null` when it is cleared, which only
+   * `allowEmpty` allows. A method, so a handler that takes a `string` alone
+   * fits where the color can't be cleared.
+   */
+  onValueChange?(value: string | null): void
   /** Offer a "No color" button, which reports `null`. */
   allowEmpty?: boolean
   /** Colors offered as one-tap swatches in the picker. */
