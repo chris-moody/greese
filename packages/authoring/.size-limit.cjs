@@ -186,6 +186,25 @@ module.exports = [
     limit: '3.1 kB',
   },
   {
+    name: '@greese/authoring: NodeGraph',
+    path: 'dist/index.js',
+    import: '{ NodeGraph }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+      '@greese/js',
+    ],
+    // The graph (ADR 0039): computed columns, measured edges, roving focus,
+    // each port's menu of valid origins, and a wire dragged from an output
+    // with beginPointerDrag: no store (2.54 kB).
+    limit: '2.8 kB',
+  },
+  {
     name: '@greese/authoring: CodeEditor',
     path: 'dist/index.js',
     import: '{ CodeEditor }',
@@ -268,6 +287,8 @@ module.exports = [
     // 5.7 → 5.8 kB (2026-11-07): 24px boxes for the playhead, the playback
     // bounds and the bezier points (WCAG 2.5.8), their drawings unchanged
     // (5.71 kB).
-    limit: '5.8 kB',
+    // 5.8 → 6.3 kB (2026-11-07): NodeGraph's nodes, sources, ports, output
+    // handles and their touch-sized hit areas, and its edges (6.18 kB).
+    limit: '6.3 kB',
   },
 ]

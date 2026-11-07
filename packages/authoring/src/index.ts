@@ -117,6 +117,15 @@ export {
   useSymbolCreateNaming,
   type SymbolCreateNaming,
 } from './hooks/useSymbolCreateNaming.ts'
+export { NodeGraph, type NodeGraphProps } from './components/NodeGraph/NodeGraph.tsx'
+export {
+  isNodeGraphEdge,
+  nodeGraphColumns,
+  nodeGraphOrigins,
+  type NodeGraphEdge,
+  type NodeGraphNode,
+  type NodeGraphSource,
+} from './components/NodeGraph/nodeGraphLayout.ts'
 export { Toolbar, type ToolbarProps } from './components/Toolbar/Toolbar.tsx'
 export {
   ToolbarItem,

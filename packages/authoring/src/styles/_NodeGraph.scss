@@ -1,0 +1,184 @@
+@use 'pkg:@greese/ui/scss/mixins';
+
+@layer greese.components {
+  // Columns by depth from the sources, rows in the graph's order: the
+  // component sets each item's cell (`--greese-nodegraph-col` and `-row`).
+  // Wires run left to right in every writing direction.
+  .greese-NodeGraph {
+    @include mixins.component-root;
+
+    position: relative;
+    display: grid;
+    grid-auto-columns: max-content;
+    gap: var(--greese-space-3) var(--greese-nodegraph-column-gap, var(--greese-space-8));
+    align-items: start;
+    justify-content: start;
+    padding: var(--greese-space-3);
+    overflow: auto;
+    direction: ltr;
+
+    --greese-nodegraph-header-height: 2rem;
+
+    @media (pointer: coarse) {
+      --greese-nodegraph-header-height: 44px;
+    }
+  }
+
+  // Behind the nodes, the size of the scrolled content.
+  .greese-NodeGraph-edges {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .greese-NodeGraph-edge {
+    fill: none;
+    stroke: var(--greese-color-border-strong);
+    stroke-width: 2;
+  }
+
+  .greese-NodeGraph-edge--pending {
+    stroke: var(--greese-color-primary);
+    stroke-dasharray: 4 4;
+  }
+
+  .greese-NodeGraph-source,
+  .greese-NodeGraph-node {
+    position: relative;
+    grid-row: var(--greese-nodegraph-row, 1);
+    grid-column: var(--greese-nodegraph-col, 1);
+    color: var(--greese-color-fg);
+    background-color: var(--greese-color-surface);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-radius-md);
+  }
+
+  .greese-NodeGraph-source {
+    padding: var(--greese-space-1) var(--greese-space-3) var(--greese-space-1)
+      var(--greese-space-2);
+    font-family: var(--greese-font-mono);
+    font-size: var(--greese-type-caption-font-size);
+    color: var(--greese-color-fg-muted);
+  }
+
+  .greese-NodeGraph-node {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 10rem;
+    padding-block-end: var(--greese-space-1);
+
+    &[data-selected] {
+      border-color: var(--greese-color-primary);
+      box-shadow: 0 0 0 1px var(--greese-color-primary);
+    }
+
+    // Passes its input through: dimmed, but still editable.
+    &[data-bypassed] {
+      border-style: dashed;
+      opacity: 0.6;
+    }
+  }
+
+  .greese-NodeGraph-header {
+    @include mixins.focus-ring(-2px);
+
+    min-block-size: var(--greese-nodegraph-header-height);
+    padding: var(--greese-space-1) var(--greese-space-3) var(--greese-space-1)
+      var(--greese-space-2);
+    font: inherit;
+    font-weight: var(--greese-font-weight-semibold);
+    color: inherit;
+    text-align: start;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-block-end: 1px solid var(--greese-color-border);
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+
+    [data-selected] > & {
+      color: var(--greese-color-primary);
+    }
+
+    @media (pointer: coarse) {
+      font-size: 1rem;
+    }
+  }
+
+  // The drag handle on the right edge, centred on the header (or the
+  // source's box). A finger gets 44px around it.
+  .greese-NodeGraph-output {
+    position: absolute;
+    inset-block-start: calc(var(--greese-nodegraph-header-height) / 2 - 0.375rem);
+    inset-inline-end: calc(-0.375rem - 1px);
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    touch-action: none;
+    cursor: crosshair;
+    background-color: var(--greese-color-surface);
+    border: 2px solid var(--greese-color-primary);
+    border-radius: 50%;
+
+    @include mixins.touch-target;
+  }
+
+  .greese-NodeGraph-source > .greese-NodeGraph-output {
+    inset-block-start: calc(50% - 0.375rem);
+  }
+
+  // An input: its left edge is where a wire arrives.
+  .greese-NodeGraph-port {
+    position: relative;
+    display: flex;
+
+    &::before {
+      position: absolute;
+      inset-block-start: calc(50% - 0.25rem);
+      inset-inline-start: calc(-0.25rem - 1px);
+      inline-size: 0.5rem;
+      block-size: 0.5rem;
+      content: '';
+      background-color: var(--greese-color-border-strong);
+      border-radius: 50%;
+    }
+
+    &[data-from]::before {
+      background-color: var(--greese-color-primary);
+    }
+
+    // While a wire is dragged, the ports it can reach.
+    &[data-droppable] {
+      background-color: color-mix(in oklab, var(--greese-color-primary) 14%, transparent);
+    }
+  }
+
+  .greese-NodeGraph-portButton {
+    @include mixins.focus-ring(-2px);
+
+    flex: 1 1 auto;
+    padding: var(--greese-space-1) var(--greese-space-2);
+    font-family: var(--greese-font-mono);
+    font-size: var(--greese-type-caption-font-size);
+    color: var(--greese-color-fg-muted);
+    text-align: start;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+
+    @include mixins.hover {
+      color: var(--greese-color-fg);
+    }
+
+    // A finger's row, and text iOS won't zoom into.
+    @media (pointer: coarse) {
+      min-block-size: 44px;
+      font-size: 1rem;
+    }
+  }
+
+  .greese-NodeGraph-body {
+    padding: var(--greese-space-1) var(--greese-space-2) 0;
+  }
+}

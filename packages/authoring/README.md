@@ -34,6 +34,11 @@ It has:
   with no dependency, lights a span, and keeps its selection in step with a
   canvas. Its palette is `pkg:@greese/authoring/scss/code`.
 
+- **Graphs:** `NodeGraph` draws nodes, their input ports and the edges
+  between them in columns by depth from its sources, such as an SVG
+  filter's primitives. Connect from a port's menu or by dragging from an
+  output.
+
 - **The timeline:** `Timeline` (frames, keyframes, tweens, spans, markers,
   playback bounds, the rate and time-signature tools), played on greese.js,
   with `TweenPanel`, `MarkerPanel` and `AuthoringView`, a whole editor.
