@@ -33,6 +33,8 @@ export interface FloatingPanelsProps {
   startDrag: (panelId: string) => (event: PointerEvent<HTMLElement>) => void
   renderBody: (panelId: string) => ReactNode
   isHeadlessPanel: (panelId: string) => boolean
+  /** Panels placed in the workspace tree: a docked `FREE` panel no longer floats. */
+  docked: ReadonlySet<string>
 }
 
 const noop = () => undefined
@@ -49,7 +51,7 @@ interface Float {
 
 /**
  * The floating panels: those the store lists, and `FREE` panels not yet
- * moved, at their registered position. Moving and resizing write to the DOM
+ * moved (or docked), at their registered position. Moving and resizing write to the DOM
  * each frame and dispatch once on release, so the workspace never re-renders
  * mid-gesture. A fresh panel is added to the store on release, not on press:
  * a remount mid-drag would release the pointer capture.
@@ -63,6 +65,7 @@ const FloatingPanelsView = ({
   startDrag,
   renderBody,
   isHeadlessPanel,
+  docked,
 }: FloatingPanelsProps): JSX.Element => {
   const dispatch = useAuthoringDispatch()
   const elements = useRef<Record<string, HTMLDivElement>>({})
@@ -123,7 +126,12 @@ const FloatingPanelsView = ({
       fresh: false,
     })),
     ...panels
-      .filter((p) => p.area === PanelArea.FREE && !floating.some((f) => f.id === p.id))
+      .filter(
+        (p) =>
+          p.area === PanelArea.FREE &&
+          !docked.has(p.id) &&
+          !floating.some((f) => f.id === p.id)
+      )
       .map((p) => ({
         id: p.id,
         x: p.x ?? 16,

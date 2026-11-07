@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {
   buildFromSpec,
   createAuthoringEnvironment,
+  DropZone,
   PanelArea,
   PanelDock,
+  panelsActions,
   RESERVED_STAGE_ID,
   uid,
   type LayoutSpec,
@@ -193,5 +195,44 @@ describe('PanelDock layoutKey', () => {
       </env.Provider>
     )
     expect(env.store.getState().panels.workspace).toBe(before)
+  })
+})
+
+describe('PanelDock FREE panels', () => {
+  const notes: PanelRegistrant = {
+    ...panel('notes', 'Notes'),
+    area: PanelArea.FREE,
+    x: 40,
+    y: 40,
+  }
+
+  it('shows a docked FREE panel once: docked, no longer floating', () => {
+    const env = createAuthoringEnvironment()
+    render(
+      <env.Provider>
+        <PanelDock
+          panels={[layers, library, properties, notes]}
+          initialWorkspace={buildFromSpec(layout)}
+          renderReserved={(id) =>
+            id === RESERVED_STAGE_ID ? <div>The stage</div> : null
+          }
+        />
+      </env.Provider>
+    )
+    expect(screen.getAllByText('Notes body')).toHaveLength(1)
+    const target = Object.values(env.store.getState().panels.workspace.nodes).find(
+      (n) => n.kind === 'leaf' && n.tabs.includes('properties')
+    )!
+    act(() =>
+      env.store.dispatch(
+        panelsActions.movePanel({
+          panelId: 'notes',
+          targetLeafId: target.id,
+          zone: DropZone.Bottom,
+        })
+      )
+    )
+    expect(screen.getAllByText('Notes body')).toHaveLength(1)
+    expect(screen.getAllByRole('tab', { name: 'Notes' })).toHaveLength(1)
   })
 })

@@ -17,7 +17,7 @@ import {
   mergeUnknownPanels,
   pruneUnknownPanels,
 } from '../../core/layoutTree.mutations.ts'
-import { isReservedLeaf } from '../../core/layoutTree.queries.ts'
+import { collectPanelIds, isReservedLeaf } from '../../core/layoutTree.queries.ts'
 import type { DropTarget, ZoneTree } from '../../core/layoutTree.types.ts'
 import {
   useAuthoringDispatch,
@@ -233,6 +233,10 @@ export const PanelDock = ({
     renderReserved,
   ])
 
+  // A FREE panel floats from its registration until it's moved; once docked,
+  // it's in the tree and must not float as well.
+  const docked = useMemo(() => new Set(collectPanelIds(workspace)), [workspace])
+
   const panelMeta = useMemo(
     () =>
       new Map<string, PanelMeta>(
@@ -357,6 +361,7 @@ export const PanelDock = ({
         startDrag={startDrag}
         renderBody={renderBody}
         isHeadlessPanel={isHeadlessPanel}
+        docked={docked}
       />
       {dragId && (
         <div ref={registerGhost} className="greese-PanelDock-ghost" aria-hidden="true">
