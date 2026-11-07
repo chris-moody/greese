@@ -20,6 +20,7 @@ import {
   selectFrameCount,
 } from '../../state/selectors.ts'
 import { TimelineToolId } from '../../state/timelineTools.slice.ts'
+import { TimingMode } from '../../core/types/timing.types.ts'
 import { nativeTimeModeForDomain } from '../../core/types/resolution.types.ts'
 import { usePlaybackClock } from '../usePlaybackClock.ts'
 import { usePulseClock } from '../usePulseClock.ts'
@@ -90,7 +91,9 @@ export interface TimelineProps {
   canDrop?: LayerTreeProps['canDrop']
   /** When true, deleting a layer-tree folder with children opens a confirmation dialog first. */
   confirmNonEmptyFolderDelete?: boolean
+  /** The rate the corner shows. @default the config's `timing.fps`, or `timing.bpm` */
   frameRate?: number
+  /** The rate's units. @default 'fps', or 'bpm' for a musical timing */
   frameRateUnits?: string
   /**
    * Ticks-per-frame-grid-unit — how many real ticks one raw `FrameBase.frame`
@@ -160,8 +163,8 @@ export const Timeline = ({
   disableRename,
   canDrop,
   confirmNonEmptyFolderDelete,
-  frameRate,
-  frameRateUnits = 'fps',
+  frameRate: frameRateProp,
+  frameRateUnits: frameRateUnitsProp,
   resolution = 1,
   zoom,
   onAddFrames,
@@ -184,6 +187,12 @@ export const Timeline = ({
   // consumers below (overlay, playhead echo), never this component.
   const pulseClock = usePulseClock()
   const { config } = useAuthoringEnvironment()
+  // The editor's own rate unless the shell shows another: Glop's shells
+  // always passed one, and without it the corner read "0 fps".
+  const musical = config.timing.mode === TimingMode.BPM
+  const frameRate =
+    frameRateProp ?? (musical ? config.timing.bpm : config.timing.fps) ?? 0
+  const frameRateUnits = frameRateUnitsProp ?? (musical ? 'bpm' : 'fps')
   const timelineResolution = useTimelineResolution()
   const storedTimeMode = useAuthoringSelector(selectActiveTimeMode)
   const timeMode = storedTimeMode ?? nativeTimeModeForDomain(timelineResolution.domain)

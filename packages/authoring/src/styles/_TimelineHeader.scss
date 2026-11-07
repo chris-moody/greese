@@ -11,6 +11,9 @@
     flex: 0 0 auto;
     border-bottom: 1px solid var(--greese-color-border);
     background-color: var(--greese-color-surface);
+
+    // A narrow timeline scrolls its tools rather than cutting them off.
+    overflow: auto hidden;
   }
 
   .greese-TimelineHeader-readout {

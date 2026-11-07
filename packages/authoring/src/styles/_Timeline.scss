@@ -1,6 +1,13 @@
 // Ported from Glop's layout.module.scss.
 
 @layer greese.components {
+  // The timeline as a panel: it fills the panel.
+  .greese-TimelinePanel {
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: hidden;
+  }
+
   // Timeline region chrome: the root, the fixed tools header, the scroll body,
   // and the sticky label column/corner.
   // ── The convention that governs this whole family ──────────────────────────

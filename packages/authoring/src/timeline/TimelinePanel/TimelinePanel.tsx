@@ -1,16 +1,19 @@
 import type { JSX } from 'react'
-import { Box } from '@greese/react'
 import { Timeline, type TimelineProps } from '../Timeline/Timeline.tsx'
 
 export type TimelinePanelProps = TimelineProps
 
 /**
- * TimelinePanel — a named, panel-registrant-ready wrapper around {@link Timeline}.
- * Use as `PanelRegistrant.component` in studio shells so the timeline can be
- * docked like any other panel (full-width, top-docked by default).
+ * The timeline as a panel: a `Timeline` that fills its panel, for an editor
+ * that docks it like any other (`PanelRegistrant.component`) rather than in
+ * the dock's reserved timeline leaf.
+ *
+ * ```tsx
+ * const timelinePanel = { id: 'timeline', title: 'Timeline', area: PanelArea.LEFT, component: TimelinePanel }
+ * ```
  */
 export const TimelinePanel = (props: TimelinePanelProps): JSX.Element => (
-  <Box className="w-full h-full overflow-hidden">
+  <div className="greese-TimelinePanel">
     <Timeline {...props} />
-  </Box>
+  </div>
 )
