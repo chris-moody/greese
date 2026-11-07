@@ -28,7 +28,8 @@
   ],
   "files": [
     "LICENSE",
-    "dist"
+    "dist",
+    "src/styles/_code.scss"
   ],
   "exports": {
     ".": {
@@ -42,6 +43,9 @@
     "./state": {
       "types": "./dist/state/index.d.ts",
       "default": "./dist/state/index.js"
+    },
+    "./scss/code": {
+      "sass": "./src/styles/_code.scss"
     },
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"

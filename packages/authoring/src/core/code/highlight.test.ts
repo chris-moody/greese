@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { highlight, type Language } from '../../docs/stories/_shared/code/highlight.ts'
+import { highlightCode, splitTokens, type CodeLanguage as Language } from './highlight.ts'
+
+const highlight = highlightCode
 
 const kinds = (text: string, language: Language) =>
   highlight(text, language)
@@ -119,5 +121,61 @@ describe('highlight', () => {
     expect(kinds('@sealed class A {}', 'ts')).toContainEqual(['at', '@sealed'])
     // JavaScript doesn't know TypeScript's words.
     expect(kinds('let type = 1', 'js')).not.toContainEqual(['keyword', 'type'])
+  })
+
+  it('reads xml: tags, attributes, values, comments, declarations and entities', () => {
+    const source = [
+      '<?xml version="1.0"?>',
+      '<!-- a star -->',
+      '<svg viewBox="0 0 24 24" xmlns:x="u">',
+      '  <path d=\'M0 0Z\' fill="none"/>',
+      '  <text>A &amp; B<![CDATA[ <raw> ]]></text>',
+      '</svg>',
+    ].join('\n')
+    expect(
+      highlight(source, 'xml')
+        .map((t) => t.text)
+        .join('')
+    ).toBe(source)
+    const found = kinds(source, 'xml')
+    expect(found).toContainEqual(['at', '<?xml version="1.0"?>'])
+    expect(found).toContainEqual(['comment', '<!-- a star -->'])
+    expect(found).toContainEqual(['tag', 'svg'])
+    expect(found).toContainEqual(['attribute', 'viewBox'])
+    expect(found).toContainEqual(['attribute', 'xmlns:x'])
+    expect(found).toContainEqual(['string', '"0 0 24 24"'])
+    expect(found).toContainEqual(['string', "'M0 0Z'"])
+    expect(found).toContainEqual(['punctuation', '/>'])
+    expect(found).toContainEqual(['number', '&amp;'])
+    expect(found).toContainEqual(['string', '<![CDATA[ <raw> ]]>'])
+    expect(found).toContainEqual(['punctuation', '</'])
+  })
+
+  it('keeps unclosed xml whole', () => {
+    for (const text of ['<svg width="1', '<!-- open', '<a b', 'a < b & c'])
+      expect(
+        highlight(text, 'xml')
+          .map((t) => t.text)
+          .join('')
+      ).toBe(text)
+  })
+})
+
+describe('splitTokens', () => {
+  it('cuts runs at a range’s edges', () => {
+    const tokens = highlightCode('<a b="1"/>', 'xml')
+    const [before, inside, after] = splitTokens(tokens, { start: 3, end: 8 })
+    const join = (list: { text: string }[]) => list.map((t) => t.text).join('')
+    expect([join(before), join(inside), join(after)]).toEqual(['<a ', 'b="1"', '/>'])
+    expect(inside).toEqual([
+      { text: 'b', kind: 'attribute' },
+      { text: '=', kind: 'punctuation' },
+      { text: '"1"', kind: 'string' },
+    ])
+  })
+
+  it('clamps a range past the text', () => {
+    const [before, inside, after] = splitTokens([{ text: 'abc' }], { start: 1, end: 99 })
+    expect([before, inside, after]).toEqual([[{ text: 'a' }], [{ text: 'bc' }], []])
   })
 })

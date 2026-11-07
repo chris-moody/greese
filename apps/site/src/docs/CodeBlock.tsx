@@ -8,7 +8,10 @@ import { type JSX } from 'react'
 import { Highlight, Prism } from 'prism-react-renderer'
 import { Code, IconButton, toast } from '@greese/react'
 import { CopyIcon } from '@greese/icons'
-import { highlight, type Language } from '../../../docs/stories/_shared/code/highlight.ts'
+import {
+  highlightCode as highlight,
+  type CodeLanguage as Language,
+} from '@greese/authoring/core'
 
 const PRISM: Record<string, string> = {
   ts: 'tsx',
@@ -70,7 +73,7 @@ const Tokens = ({ code, language }: { code: string; language: string }): JSX.Ele
       <>
         {highlight(code, language as Language).map((token, i) =>
           token.kind ? (
-            <span key={i} className={`tok-${token.kind}`}>
+            <span key={i} className={`greese-CodeToken--${token.kind}`}>
               {token.text}
             </span>
           ) : (
@@ -94,7 +97,7 @@ const Tokens = ({ code, language }: { code: string; language: string }): JSX.Ele
                   .filter(Boolean)
                   .pop()
                 return kind ? (
-                  <span key={t} className={`tok-${kind}`}>
+                  <span key={t} className={`greese-CodeToken--${kind}`}>
                     {token.content}
                   </span>
                 ) : (

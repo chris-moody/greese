@@ -1,11 +1,12 @@
 /**
- * Syntax highlighting for the studio's and the docs' code boxes, with no
- * dependency: a small tokenizer for CSS, SCSS, the JavaScript object literals
- * effects are written in, and TypeScript (with JSON as JavaScript). It splits text into runs, each with a kind that the stylesheet
- * colours (`.tok-<kind>`); the runs always join back into the exact text.
+ * Syntax highlighting for code boxes, with no dependency: a small tokenizer
+ * for CSS, SCSS, JavaScript (and JSON), TypeScript, and XML (SVG markup). It
+ * splits text into runs, each with a kind the stylesheet colours
+ * (`.greese-CodeToken--<kind>`); the runs always join back into the exact
+ * text.
  */
 
-export type TokenKind =
+export type CodeTokenKind =
   | 'comment'
   | 'string'
   | 'number'
@@ -20,20 +21,22 @@ export type TokenKind =
   | 'keyword'
   | 'punctuation'
 
-export interface Token {
+/** A run of text, and what it is. */
+export interface CodeToken {
   text: string
-  kind?: TokenKind
+  kind?: CodeTokenKind
 }
 
-export type Language = 'css' | 'scss' | 'js' | 'ts'
+/** The languages `highlightCode` reads. */
+export type CodeLanguage = 'css' | 'scss' | 'js' | 'ts' | 'xml'
 
 /** Splits `text` with a prioritised list of patterns; what none match is plain. */
 const split = (
   text: string,
-  rules: ReadonlyArray<readonly [RegExp, TokenKind | undefined]>
-): Token[] => {
-  const out: Token[] = []
-  const push = (chunk: string, kind?: TokenKind) => {
+  rules: ReadonlyArray<readonly [RegExp, CodeTokenKind | undefined]>
+): CodeToken[] => {
+  const out: CodeToken[] = []
+  const push = (chunk: string, kind?: CodeTokenKind) => {
     if (!chunk) return
     const last = out.at(-1)
     if (last && last.kind === kind) last.text += chunk
@@ -62,7 +65,7 @@ const STRING = sticky(`"(?:\\\\.|[^"\\\\\\n])*"?|'(?:\\\\.|[^'\\\\\\n])*'?`)
 const BLOCK_COMMENT = sticky('/\\*[\\s\\S]*?(?:\\*/|$)')
 const LINE_COMMENT = sticky('(?<![:\\w])//[^\\n]*')
 
-const selectorTokens = (text: string): Token[] =>
+const selectorTokens = (text: string): CodeToken[] =>
   split(text, [
     [BLOCK_COMMENT, 'comment'],
     [LINE_COMMENT, 'comment'],
@@ -77,7 +80,7 @@ const selectorTokens = (text: string): Token[] =>
     [sticky('[a-zA-Z][\\w-]*'), 'tag'],
   ])
 
-const valueTokens = (text: string, scss: boolean): Token[] =>
+const valueTokens = (text: string, scss: boolean): CodeToken[] =>
   split(text, [
     [BLOCK_COMMENT, 'comment'],
     ...(scss ? ([[LINE_COMMENT, 'comment']] as const) : []),
@@ -113,9 +116,9 @@ const statementEnd = (text: string, from: number, scss: boolean): number => {
   return text.length
 }
 
-const highlightCss = (text: string, scss: boolean): Token[] => {
-  const out: Token[] = []
-  const add = (tokens: Token[]) => out.push(...tokens)
+const highlightCss = (text: string, scss: boolean): CodeToken[] => {
+  const out: CodeToken[] = []
+  const add = (tokens: CodeToken[]) => out.push(...tokens)
   let i = 0
   while (i < text.length) {
     const rest = text.slice(i)
@@ -178,7 +181,7 @@ const JS_KEYWORDS =
 const TS_KEYWORDS =
   'type|interface|enum|declare|namespace|module|implements|readonly|keyof|infer|is|asserts|satisfies|abstract|private|protected|public|override|unique|never|unknown|any|string|number|boolean|bigint|symbol|object'
 
-const highlightJs = (text: string, ts = false): Token[] =>
+const highlightJs = (text: string, ts = false): CodeToken[] =>
   split(text, [
     [BLOCK_COMMENT, 'comment'],
     [LINE_COMMENT, 'comment'],
@@ -199,7 +202,130 @@ const highlightJs = (text: string, ts = false): Token[] =>
     [sticky('[{}[\\](),:;=>]'), 'punctuation'],
   ])
 
-export const highlight = (text: string, language: Language): Token[] =>
-  language === 'js' || language === 'ts'
-    ? highlightJs(text, language === 'ts')
-    : highlightCss(text, language === 'scss')
+/** Where `close` ends, from `from`, or the text's end: what an unclosed construct runs to. */
+const through = (text: string, from: number, close: string): number => {
+  const end = text.indexOf(close, from)
+  return end < 0 ? text.length : end + close.length
+}
+
+/**
+ * XML: comments, CDATA, declarations and processing instructions, then tags
+ * (their names, attributes and quoted values) and entities. Text between
+ * tags is plain.
+ */
+const highlightXml = (text: string): CodeToken[] => {
+  const out: CodeToken[] = []
+  const push = (chunk: string, kind?: CodeTokenKind) => {
+    if (!chunk) return
+    const last = out.at(-1)
+    if (last && last.kind === kind) last.text += chunk
+    else out.push({ text: chunk, kind })
+  }
+  let i = 0
+  while (i < text.length) {
+    const at = (prefix: string) => text.startsWith(prefix, i)
+    let end: number
+    if (at('<!--')) {
+      end = through(text, i + 4, '-->')
+      push(text.slice(i, end), 'comment')
+    } else if (at('<![CDATA[')) {
+      end = through(text, i + 9, ']]>')
+      push(text.slice(i, end), 'string')
+    } else if (at('<?') || at('<!')) {
+      end = through(text, i + 2, '>')
+      push(text.slice(i, end), 'at')
+    } else if (text[i] === '<' && /[\w/:]/.test(text[i + 1] ?? '')) {
+      const open = text[i + 1] === '/' ? '</' : '<'
+      push(open, 'punctuation')
+      end = i + open.length
+      const name = /^[\w:.-]+/.exec(text.slice(end))?.[0] ?? ''
+      push(name, 'tag')
+      end += name.length
+      // The attributes, to the tag's end.
+      while (end < text.length && text[end] !== '>') {
+        const rest = text.slice(end)
+        const piece =
+          /^\s+/.exec(rest) ??
+          /^[\w:.-]+/.exec(rest) ??
+          /^"[^"]*"?|^'[^']*'?/.exec(rest) ??
+          /^\/(?=>)|^=/.exec(rest)
+        if (!piece) {
+          push(rest[0]!)
+          end++
+          continue
+        }
+        const chunk = piece[0]
+        push(
+          chunk,
+          /^\s/.test(chunk)
+            ? undefined
+            : /^["']/.test(chunk)
+              ? 'string'
+              : /^[/=]$/.test(chunk)
+                ? 'punctuation'
+                : 'attribute'
+        )
+        end += chunk.length
+      }
+      if (text[end] === '>') {
+        push('>', 'punctuation')
+        end++
+      }
+    } else if (text[i] === '&') {
+      const entity = /^&(?:#x?[\da-fA-F]+|\w+);/.exec(text.slice(i))?.[0]
+      end = i + (entity?.length ?? 1)
+      push(text.slice(i, end), entity ? 'number' : undefined)
+    } else {
+      const next = text.slice(i + 1).search(/[<&]/)
+      end = next < 0 ? text.length : i + 1 + next
+      push(text.slice(i, end))
+    }
+    i = end
+  }
+  return out
+}
+
+/**
+ * Splits `text` into runs a stylesheet colours by kind. They always join back
+ * into the text, so a highlighted layer lines up with what was typed.
+ */
+export const highlightCode = (text: string, language: CodeLanguage): CodeToken[] =>
+  language === 'xml'
+    ? highlightXml(text)
+    : language === 'js' || language === 'ts'
+      ? highlightJs(text, language === 'ts')
+      : highlightCss(text, language === 'scss')
+
+/** A span of text by character offsets: `start` in, `end` out. */
+export interface CodeRange {
+  start: number
+  end: number
+}
+
+/**
+ * Tokens cut at a range's edges: those before it, inside it and after it,
+ * each list still joining into its part of the text. A range past the text
+ * is clamped to it.
+ */
+export const splitTokens = (
+  tokens: readonly CodeToken[],
+  { start, end }: CodeRange
+): [CodeToken[], CodeToken[], CodeToken[]] => {
+  const parts: [CodeToken[], CodeToken[], CodeToken[]] = [[], [], []]
+  let at = 0
+  for (const token of tokens) {
+    const from = at
+    at += token.text.length
+    const cuts = [
+      from,
+      Math.max(from, Math.min(start, at)),
+      Math.max(from, Math.min(end, at)),
+      at,
+    ]
+    for (let part = 0; part < 3; part++) {
+      const text = token.text.slice(cuts[part]! - from, cuts[part + 1]! - from)
+      if (text) parts[part]!.push({ text, kind: token.kind })
+    }
+  }
+  return parts
+}

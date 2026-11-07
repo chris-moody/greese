@@ -37,7 +37,7 @@ const scope = Object.fromEntries(
 // Several top-level elements are fine: they render as a fragment.
 const transformCode = (code: string) => `<>\n${code}\n</>`
 
-// The editor's colours come from the page's code palette (`_palette.scss` in apps/docs/stories/_shared/code).
+// The editor's colours come from the page's code palette (`pkg:@greese/authoring/scss/code`).
 const THEME = { plain: {}, styles: [] }
 
 export const LiveCode = ({

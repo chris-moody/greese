@@ -18,6 +18,6 @@ test('the Output tab colours its code', async ({ page }) => {
   await page.goto('/studio')
   await page.getByRole('tab', { name: 'Output' }).click()
   const scss = page.locator('.studio-highlighted').first()
-  await expect(scss.locator('.tok-at').first()).toBeVisible()
+  await expect(scss.locator('.greese-CodeToken--at').first()).toBeVisible()
   await expect(scss).toContainText('@use')
 })

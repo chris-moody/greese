@@ -162,3 +162,9 @@ export {
   type ToggleSelectOption,
   type ToggleSelectProps,
 } from './components/ToggleSelect/ToggleSelect.tsx'
+export {
+  CodeEditor,
+  Highlighted,
+  type CodeEditorProps,
+  type HighlightedProps,
+} from './components/CodeEditor/CodeEditor.tsx'

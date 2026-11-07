@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type JSX } from 'react'
 import { Badge, Button, Checkbox, Heading, Popover, Stack, Text } from '@greese/react'
-import { CodeEditor } from '../../../../docs/stories/_shared/code/CodeEditor.tsx'
+import { CodeEditor } from '@greese/authoring'
 import { setIn } from '../edit.ts'
 import { familyOf } from '../family.ts'
 import { familySource } from '../copySource.ts'

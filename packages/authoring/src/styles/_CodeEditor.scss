@@ -1,0 +1,119 @@
+@use 'code';
+
+@layer greese.components {
+  // A code box: the coloured text sits under a transparent textarea that
+  // shares its font, padding and scroll. Its rules are scoped under the box,
+  // so they win over greese's Textarea in the same layer.
+  .greese-CodeEditor {
+    position: relative;
+    font: 0.75rem / 1.55 var(--greese-font-mono);
+    background: var(--greese-color-surface);
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-corner-panel);
+
+    &:focus-within {
+      outline: 2px solid var(--greese-color-focus-ring);
+      outline-offset: 1px;
+    }
+
+    &[data-invalid] {
+      border-color: var(--greese-color-negative);
+    }
+
+    @include code.tokens;
+  }
+
+  .greese-CodeEditor .greese-CodeEditor-layer,
+  .greese-CodeEditor .greese-CodeEditor-input > .greese-Textarea-control {
+    padding: var(--greese-space-3);
+    margin: 0;
+    font: inherit;
+    letter-spacing: normal;
+    tab-size: 2;
+    white-space: pre;
+    overflow-wrap: normal;
+  }
+
+  .greese-CodeEditor .greese-CodeEditor-layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    color: var(--greese-color-fg);
+    pointer-events: none;
+
+    // Exactly the textarea's text, whatever a page sets on `code`.
+    > code {
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      white-space: inherit;
+      background: none;
+      border: 0;
+    }
+  }
+
+  // A marked line, such as a compile error's. It scrolls with the text,
+  // since the layer is its containing block.
+  .greese-CodeEditor-mark {
+    position: absolute;
+    inset-block-start: calc(
+      var(--greese-space-3) + var(--greese-codeeditor-line, 0) * 1lh
+    );
+    inset-inline: 0;
+    block-size: 1lh;
+    background: color-mix(in srgb, var(--greese-color-negative) 14%, transparent);
+    border-inline-start: 3px solid var(--greese-color-negative);
+  }
+
+  // A lit span: the code for what's selected elsewhere.
+  .greese-CodeEditor-highlight {
+    color: inherit;
+    background: color-mix(in srgb, var(--greese-color-primary) 18%, transparent);
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--greese-color-primary) 40%, transparent);
+  }
+
+  // greese's Textarea frame: none of its own, the code box is the frame.
+  .greese-CodeEditor .greese-CodeEditor-input {
+    position: relative;
+    display: block;
+    font: inherit;
+    color: transparent;
+    caret-color: var(--greese-color-fg);
+    background: transparent;
+    border: 0;
+    border-radius: inherit;
+    outline: 0;
+    box-shadow: none;
+    clip-path: none;
+
+    &::after {
+      display: none;
+    }
+
+    > .greese-Textarea-control {
+      position: relative;
+      display: block;
+      inline-size: 100%;
+      min-block-size: 0;
+      max-block-size: none;
+      overflow: auto;
+      resize: vertical;
+
+      // greese's Textarea grows to its content; the code box keeps its rows
+      // and scrolls, with the layer under it following.
+      field-sizing: fixed;
+
+      &::selection {
+        color: transparent;
+        background: color-mix(in srgb, var(--greese-color-primary) 30%, transparent);
+      }
+    }
+  }
+
+  // Read-only code in the palette: a `pre` holding a `Highlighted`.
+  .greese-CodeEditor-static {
+    @include code.tokens;
+  }
+}

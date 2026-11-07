@@ -40,6 +40,7 @@ import { useCompile } from './useCompile.ts'
 import { usePreviewSync } from './usePreviewSync.ts'
 import { useStudioTab, type StudioTab } from './useStudioTab.ts'
 import { useThemeFile } from './useThemeFile.ts'
+import '@greese/authoring/styles.css'
 import './studio.scss'
 
 /**

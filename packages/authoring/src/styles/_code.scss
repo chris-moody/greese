@@ -1,8 +1,11 @@
 @use 'sass:list';
 @use 'sass:map';
 
-// The colours of highlighted code, light and dark: one palette for the
-// studio's code boxes, the docs' code blocks and the docs' live editor.
+// The colours of highlighted code, light and dark: one palette for
+// CodeEditor, the docs' code blocks and their live editor, and Theme Studio.
+// Published as `pkg:@greese/authoring/scss/code`. The colours are literal: a
+// syntax palette is its own, not the theme's.
+/* stylelint-disable color-no-hex */
 $palette: (
   comment: (
     #6a737d,
@@ -58,8 +61,9 @@ $palette: (
   ),
 );
 
-@mixin -colour($kind) {
+@mixin _colour($kind) {
   $pair: map.get($palette, $kind);
+
   color: light-dark(list.nth($pair, 1), list.nth($pair, 2));
 
   @if $kind == comment {
@@ -67,11 +71,11 @@ $palette: (
   }
 }
 
-// The tokens `highlight()` (and the docs' code blocks) mark: `.tok-<kind>`.
+// The runs `highlightCode()` marks: `.greese-CodeToken--<kind>`.
 @mixin tokens {
   @each $kind, $_ in $palette {
-    .tok-#{$kind} {
-      @include -colour($kind);
+    .greese-CodeToken--#{$kind} {
+      @include _colour($kind);
     }
   }
 }
@@ -102,7 +106,7 @@ $prism: (
 @mixin prism {
   @each $type, $kind in $prism {
     .token.#{$type} {
-      @include -colour($kind);
+      @include _colour($kind);
     }
   }
 }

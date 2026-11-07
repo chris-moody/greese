@@ -55,7 +55,7 @@ test('a library path copied from a component’s source is made portable, and an
   await expect(box).toHaveValue(/@use 'pkg:@greese\/ui\/scss\/mixins';/)
   await expect(page.getByText(/Rewritten for your project/)).toBeVisible()
   await expect(page.getByText(/^Line 4: Undefined variable/)).toBeVisible()
-  await expect(page.locator('.code-editor-mark')).toHaveCount(1)
+  await expect(page.locator('.greese-CodeEditor-mark')).toHaveCount(1)
 })
 
 test('the box starts as the family’s own SCSS; an edit applies inside the component only', async ({
@@ -127,7 +127,9 @@ test('the code box draws its text where you type and select it, scrolled or not'
       let n = from
       while (!lines[n - 1]!.trim()) n++
       const column = lines[n - 1]!.search(/\S/)
-      const code = ta.closest('.code-editor')!.querySelector('.code-editor-layer code')!
+      const code = ta
+        .closest('.greese-CodeEditor')!
+        .querySelector('.greese-CodeEditor-layer code')!
       const walker = document.createTreeWalker(code, NodeFilter.SHOW_TEXT)
       let line = 1
       let col = 0

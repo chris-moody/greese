@@ -1,8 +1,8 @@
 import { useMemo, useState, type JSX } from 'react'
 import { Accordion, AccordionItem, Text } from '@greese/react'
 import { DocumentIcon, FolderFilledIcon, FolderIcon } from '@greese/icons'
-import { CodeEditor } from './code/CodeEditor.tsx'
-import type { Language } from './code/highlight.ts'
+import { CodeEditor, type CodeLanguage as Language } from '@greese/authoring'
+import '@greese/authoring/styles.css'
 import { sampleFiles } from './themeLayoutSample.ts'
 import './themeFiles.css'
 
@@ -129,6 +129,9 @@ export const ThemeFiles = ({
         </Text>
         {text !== undefined && (
           <CodeEditor
+            // Storybook's docs style every div and `code` they hold; the box
+            // must keep exactly the textarea's font and padding.
+            className="sb-unstyled"
             key={chosen}
             value={text}
             language={languageOf(chosen)}

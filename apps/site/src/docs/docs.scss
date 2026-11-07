@@ -1,5 +1,5 @@
 @use 'pkg:@greese/ui/scss/kit' as greese;
-@use '../../../docs/stories/_shared/code/palette' as code;
+@use 'pkg:@greese/authoring/scss/code';
 
 /*
  * The docs (src/docs), on greese ui tokens like the rest of the app: every

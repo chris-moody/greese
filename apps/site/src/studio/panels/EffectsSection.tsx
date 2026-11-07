@@ -9,7 +9,7 @@ import {
   Text,
   TextField,
 } from '@greese/react'
-import { CodeEditor } from '../../../../docs/stories/_shared/code/CodeEditor.tsx'
+import { CodeEditor } from '@greese/authoring'
 import { GROUPS, type GreeseLab } from '../greeseLab.ts'
 
 /** One effect: its name, state, Play, and its keyframes as editable code. */

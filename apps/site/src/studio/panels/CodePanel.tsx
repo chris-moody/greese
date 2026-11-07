@@ -1,8 +1,7 @@
 import { useState, type JSX } from 'react'
 import { Button, Code, Field, Heading, Select, Stack, Text } from '@greese/react'
 import { DownloadIcon } from '@greese/icons'
-import { Highlighted } from '../../../../docs/stories/_shared/code/CodeEditor.tsx'
-import type { Language } from '../../../../docs/stories/_shared/code/highlight.ts'
+import { Highlighted, type CodeLanguage as Language } from '@greese/authoring'
 import type { ThemeSpec } from '../spec.ts'
 import { zip } from '../zip.ts'
 

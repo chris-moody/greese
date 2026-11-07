@@ -1,5 +1,5 @@
 @use 'pkg:@greese/ui/scss/kit' as greese;
-@use '../../../docs/stories/_shared/code/palette' as code;
+@use 'pkg:@greese/authoring/scss/code';
 
 /* The editor's own layout. The editor wears the theme being chosen, like
    every page; the preview iframe shows it with your edits too. */
@@ -478,7 +478,7 @@ code.studio-row-label {
   padding-inline: var(--greese-space-2);
 }
 
-// The colours of `highlight()`'s tokens in read-only code. The code box
+// The colours of `highlightCode()`'s runs in read-only code. The code box
 // (CodeEditor) brings its own.
 .studio-highlighted {
   @include code.tokens;

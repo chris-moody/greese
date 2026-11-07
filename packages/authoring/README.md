@@ -30,8 +30,11 @@ It has:
   rows; `ComplexColorField`, `GradientEditor` and `ToggleSelect` cover what
   `EditableField` doesn't.
 
-The timeline and a code editor follow, moved from Glop's authoring framework
-(see the ADRs).
+- **Code:** `CodeEditor` colours CSS, SCSS, JavaScript, TypeScript and XML
+  with no dependency, lights a span, and keeps its selection in step with a
+  canvas. Its palette is `pkg:@greese/authoring/scss/code`.
+
+The timeline follows, moved from Glop's authoring framework (see the ADRs).
 
 ## Install
 
