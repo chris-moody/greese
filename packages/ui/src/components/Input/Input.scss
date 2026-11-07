@@ -63,6 +63,14 @@
   .greese-Input.greese-Input--measured {
     inline-size: fit-content;
     flex-grow: 0;
+
+    // `size` alone measures in the font's average character, narrower than
+    // its digits, so seven of them overflow `size="7"`. `--greese-input-size`
+    // (set by the React component) measures in `ch`; without it, `size` rules.
+    .greese-Input-control {
+      flex: none;
+      inline-size: calc(var(--greese-input-size) * 1ch);
+    }
   }
 
   @each $size, $spec in controls.$sizes {
