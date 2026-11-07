@@ -27,6 +27,16 @@ import type {
 } from './spec.ts'
 import { kebab } from './naming.ts'
 
+/**
+ * What createTheme() writes on every theme scope besides tokens: the scheme,
+ * the loaded flag, and the body font a wrapper scope applies to its own text.
+ * Not the theme's own CSS, so an import neither keeps nor reports it.
+ */
+const SCOPE_BOILERPLATE = (property: string, value: string): boolean =>
+  property === 'color-scheme' ||
+  property === '--greese-loaded' ||
+  (property === 'font-family' && value === 'var(--greese-font-body)')
+
 export interface Skipped {
   /** Where it came from: a selector, an at-rule. */
   where: string
@@ -498,8 +508,7 @@ export const importCss = (css: string, prefer?: string): ImportResult => {
         } else if (token) tokens[scheme].set(`${token.group}\u0000${token.key}`, value)
         else if (motion && MOTION_DEFAULTS.has(motion))
           motionDefaults[motion] = motion === 'ease' ? easeName(value) : value
-        else if (property !== 'color-scheme' && property !== '--greese-loaded')
-          rest.push([property, value])
+        else if (!SCOPE_BOILERPLATE(property, value)) rest.push([property, value])
       }
       for (const [role, decls] of Object.entries(roleExits)) {
         const exit = EXITS.get(exitKey(decls))
