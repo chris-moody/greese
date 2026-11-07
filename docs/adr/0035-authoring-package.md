@@ -63,7 +63,11 @@ The split keeps each layer honest:
   - `nanoid` → `uid()` in `core`, built on `crypto.getRandomValues`, which
     also works in insecure contexts (a phone testing over LAN);
   - `fuzzysort` → a small subsequence scorer, when search is extracted.
-- `immer` arrives with RTK, so it is not a separate dependency.
+- `immer` is a peer too (`^10.0.3 || ^11.0.0`, what RTK 2 uses).
+  - **Why:** the slices that hold Sets and Maps enable its MapSet plugin
+    themselves, so their reducers also work outside `createAuthoringStore`.
+  - **Same copy:** the plugin must be enabled on the copy RTK drafts with, so
+    an app must resolve one immer. Glop dedupes it with React and Redux.
 
 ### Styles live in the package
 
@@ -114,6 +118,14 @@ The split keeps each layer honest:
   component has no page, and that gap is known.
 - **Size:** `.size-limit.cjs` budgets the entries. Editor UI is bigger than a
   button, but every budget is still raised only deliberately.
+
+### Graphics' slices stay with graphics
+
+Glop's `swatches` and `textStyles` slices carry Pixels' own types
+(`GradientFill`, `RunStyle`), and no framework component reads them. They are
+not framework slices here. Glop's graphics editors add them as their own
+reducers with `createAuthoringEnvironment({ reducers })`, and the selectors
+that read them (`selectTextStyles`) go with them.
 
 ### Moved as-is, unless greese conventions require a change
 
