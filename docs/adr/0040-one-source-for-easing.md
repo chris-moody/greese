@@ -55,6 +55,8 @@ hold these names, so they have to keep drawing what they drew.
   1.05 kB, and gets its own budget of 1.3 kB). `@greese/svg`'s "everything"
   goes from 9.4 to 9.95 kB, because it now includes greese.js's ease parser.
   Its per-function entries are unchanged, since only `tween` eases.
+  `@greese/react/svg` carries the parser too: `Morph` goes from 3.95 to
+  4.65 kB and the whole subpath from 12.6 to 13.25 kB.
 - **Pixels' `elastic`, `bounce` and `back`** play their real curves in Glop
   too, not straight lines: what the tween picker shows is what plays.
 - **The one difference left is deliberate:** Pixels' `easeIn` names are

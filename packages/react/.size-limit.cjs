@@ -743,7 +743,8 @@ module.exports = [
     modifyRolldownConfig: external,
     // 3.8 kB → 3.81 kB (2026-11-01): tween() also reads the root's data-greese-motion (ADR 0033) (3.80 kB).
     // 3.81 kB → 3.95 kB (2026-11-01): the `vars` prop (ADR 0031): custom properties by name, color tokens by their names (3.92 kB).
-    limit: '3.95 kB',
+    // 3.95 kB → 4.65 kB (2026-11-07): @greese/svg takes its eases from greese.js (ADR 0040), so its ease parser comes along (4.59 kB).
+    limit: '4.65 kB',
   },
   {
     name: 'JS: @greese/react/svg (everything)',
@@ -756,6 +757,7 @@ module.exports = [
     // 12.2 kB → 12.5 kB (2026-11-01): a component per filter primitive and preset
     // (ADR 0031 §7), sixteen thin wrappers over the builders (12.45 kB).
     // 12.5 kB → 12.6 kB (2026-11-01): the `vars` prop (ADR 0031): custom properties by name, color tokens by their names (12.57 kB).
-    limit: '12.6 kB',
+    // 12.6 kB → 13.25 kB (2026-11-07): @greese/svg takes its eases from greese.js (ADR 0040), so its ease parser comes along (13.21 kB).
+    limit: '13.25 kB',
   },
 ]
