@@ -6,6 +6,7 @@ import {
   layersActions,
   makeFolder,
   makeLayer,
+  LayerPropertiesPanel,
   MarkerPanel,
   PanelArea,
   playbackActions,
@@ -278,6 +279,41 @@ describe('TimelineHeader', () => {
     expect(onAddFrame).toHaveBeenCalledTimes(4)
     vi.useRealTimers()
     await expectNoAxeViolations(container)
+  })
+})
+
+describe('LayerPropertiesPanel', () => {
+  it('renames, hides and locks the selected layer, and shows its type', async () => {
+    const { env, layer } = animated()
+    env.store.dispatch(layersActions.setSelection([layer.id]))
+    const { container } = render(
+      <env.Provider>
+        <LayerPropertiesPanel />
+      </env.Provider>
+    )
+    const name = screen.getByRole('textbox', { name: 'Name' })
+    expect(name).toHaveValue('Ball')
+    expect(container).toHaveTextContent(layer.layerType)
+    fireEvent.change(name, { target: { value: 'Bounce' } })
+    fireEvent.blur(name)
+    fireEvent.click(screen.getByRole('switch', { name: 'Visible' }))
+    fireEvent.click(screen.getByRole('switch', { name: 'Locked' }))
+    const saved = env.store.getState().layers.layers.get(layer.id)!
+    expect(saved).toMatchObject({ name: 'Bounce', hidden: true, locked: true })
+    await expectNoAxeViolations(container)
+  })
+
+  it('says when nothing, or more than one layer, is selected', () => {
+    const { env } = animated()
+    act(() => {
+      env.store.dispatch(layersActions.setSelection([]))
+    })
+    const { container } = render(
+      <env.Provider>
+        <LayerPropertiesPanel />
+      </env.Provider>
+    )
+    expect(container).toHaveTextContent('No layer selected')
   })
 })
 

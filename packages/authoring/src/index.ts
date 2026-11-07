@@ -203,6 +203,7 @@ export {
 } from './timeline/spanChart/spanChartGeometry.ts'
 export { TweenPanel } from './panels/TweenPanel/TweenPanel.tsx'
 export { MarkerPanel } from './panels/MarkerPanel/MarkerPanel.tsx'
+export { LayerPropertiesPanel } from './panels/LayerPropertiesPanel/LayerPropertiesPanel.tsx'
 export {
   AuthoringView,
   type AuthoringViewProps,
