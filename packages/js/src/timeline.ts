@@ -104,6 +104,18 @@ export interface TimelineOptions {
   reducedMotion?: 'reduce' | 'ignore'
   /** Selector strings passed to this timeline match only inside this element. */
   scope?: ParentNode
+  /**
+   * Draws only whole frames at this rate: the playhead moves smoothly, but
+   * every track is sampled at the last frame boundary, as a frame-based
+   * editor previews it. `time()` stays in seconds.
+   */
+  fps?: number
+  /**
+   * `false` keeps a playing timeline off the shared ticker: the host advances
+   * it with `tick(dt)` from its own clock (an audio clock, a test).
+   * @default true
+   */
+  ticker?: boolean
   onUpdate?: (timeline: Timeline) => void
   onComplete?: (timeline: Timeline) => void
 }
@@ -322,6 +334,7 @@ export class Timeline implements PromiseLike<void> {
   #parent?: Timeline
   #settle?: () => void
   #done?: Promise<void>
+  #bounds?: { start: number; end: number; loop: boolean }
 
   constructor(options: TimelineOptions = {}) {
     this.#options = options
@@ -509,6 +522,45 @@ export class Timeline implements PromiseLike<void> {
     )
   }
 
+  /**
+   * Plays only between two times or labels, looping there or stopping at the
+   * end: an editor's in and out points, changed without rebuilding the
+   * timeline. A playhead outside them moves to the nearer one. `null` plays
+   * the whole timeline again.
+   *
+   * ```ts
+   * tl.bounds('walk', 'walkEnd', { loop: true }).play()
+   * ```
+   */
+  bounds(): { start: number; end: number; loop: boolean } | undefined
+  bounds(start: Position, end: Position, options?: { loop?: boolean }): this
+  bounds(clear: null): this
+  bounds(
+    start?: Position | null,
+    end?: Position,
+    options: { loop?: boolean } = {}
+  ): { start: number; end: number; loop: boolean } | undefined | this {
+    if (start === undefined) return this.#bounds && { ...this.#bounds }
+    if (start === null) {
+      this.#bounds = undefined
+      return this
+    }
+    const at = (position: Position) =>
+      typeof position === 'number' ? position : this.#resolve(position, false)
+    const [from, to] = [at(start), at(end ?? this.totalDuration())].sort((a, b) => a - b)
+    this.#bounds = { start: from!, end: to!, loop: !!options.loop }
+    if (this.#time_ < from! || this.#time_ > to!)
+      this.render(Math.min(to!, Math.max(from!, this.#time_)), true)
+    return this
+  }
+
+  /** Where playback runs between: the bounds, or the whole timeline. */
+  #range(): [number, number] {
+    if (this.#bounds) return [this.#bounds.start, this.#bounds.end]
+    const end = this.totalDuration()
+    return [0, end === Infinity && this.#direction < 0 ? this.duration() : end]
+  }
+
   // --- playback ---------------------------------------------------------
 
   /** Plays forwards, optionally from a time or label. */
@@ -520,9 +572,10 @@ export class Timeline implements PromiseLike<void> {
   /** Plays backwards from the playhead (from the end if at the start). */
   reverse(from?: Position): this {
     if (from !== undefined) this.seek(from)
-    else if (this.#time_ === 0)
+    else if (this.#time_ === (this.#bounds?.start ?? 0))
       this.seek(
-        this.totalDuration() === Infinity ? this.duration() : this.totalDuration()
+        this.#bounds?.end ??
+          (this.totalDuration() === Infinity ? this.duration() : this.totalDuration())
       )
     return this.#start(-1)
   }
@@ -605,7 +658,8 @@ export class Timeline implements PromiseLike<void> {
     onfulfilled?: ((value: void) => A | PromiseLike<A>) | null,
     onrejected?: ((reason: unknown) => B | PromiseLike<B>) | null
   ): PromiseLike<A | B> {
-    const finished = this.#direction > 0 ? this.totalDuration() : 0
+    const [lo, hi] = this.#range()
+    const finished = this.#direction > 0 ? hi : lo
     if (!this.#playing && this.#controlled && this.#time_ === finished) {
       return Promise.resolve().then(onfulfilled, onrejected)
     }
@@ -624,27 +678,49 @@ export class Timeline implements PromiseLike<void> {
     const reduce =
       this.#options.reducedMotion !== 'ignore' &&
       (prefersReducedMotion() || [...this.#tracks.keys()].some(appReducesMotion))
+    const [lo, hi] = this.#range()
     if (reduce) {
-      this.render(direction > 0 ? (end === Infinity ? this.duration() : end) : 0, true)
+      this.render(
+        direction > 0
+          ? this.#bounds
+            ? hi
+            : end === Infinity
+              ? this.duration()
+              : end
+          : lo,
+        true
+      )
       this.#complete()
       return this
     }
+    // Start inside the bounds, from the end they play away from.
+    if (this.#time_ < lo || this.#time_ > hi) this.render(direction > 0 ? lo : hi, true)
     this.#playing = true
-    addToTicker(this)
+    if (this.#options.ticker !== false) addToTicker(this)
     return this
   }
 
-  /** Advances by `dt` real seconds. Called by the ticker. */
+  /**
+   * Advances a playing timeline by `dt` real seconds. The shared ticker calls
+   * it; with `ticker: false`, the host does, from its own clock.
+   */
   tick(dt: number): void {
-    const end = this.totalDuration()
+    if (!this.#playing) return
+    const [lo, hi] = this.#range()
     const next = this.#time_ + dt * this.#scale * this.#direction
-    if (this.#direction > 0 && next >= end) {
-      this.render(end)
-      this.#complete()
-    } else if (this.#direction < 0 && next <= 0) {
-      this.render(0)
-      this.#complete()
-    } else this.render(next)
+    const past = this.#direction > 0 ? next - hi : lo - next
+    if (past < 0) return this.render(next)
+    const edge = this.#direction > 0 ? hi : lo
+    this.render(edge)
+    if (this.#bounds?.loop && hi > lo) {
+      // Carry the overshoot into the next lap, so laps keep exact time
+      // against a continuous clock (a metronome) instead of each running long.
+      const into = past % (hi - lo)
+      this.render(this.#direction > 0 ? lo : hi, true)
+      this.render(this.#direction > 0 ? lo + into : hi - into)
+      return
+    }
+    this.#complete()
   }
 
   #complete() {
@@ -672,6 +748,10 @@ export class Timeline implements PromiseLike<void> {
     const raw = Math.min(length, time - iteration * period)
     const mapped = (t: number, i: number) => (yoyo && i % 2 === 1 ? length - t : t)
     const local = mapped(raw, iteration)
+    // Tracks and children see whole frames; the end stays exact, so the last
+    // frame is the final values.
+    const { fps } = this.#options
+    const drawn = fps && local < length ? Math.floor(local * fps + 1e-9) / fps : local
     const from = { iteration: this.#iteration, raw: this.#raw }
     this.#time_ = time
     this.#iteration = iteration
@@ -679,7 +759,7 @@ export class Timeline implements PromiseLike<void> {
 
     for (const props of this.#tracks.values()) {
       for (const track of props.values()) {
-        const value = track.sample(local)
+        const value = track.sample(drawn)
         if (value !== undefined) track.adapter.set(track.prop, value)
       }
     }
@@ -702,7 +782,7 @@ export class Timeline implements PromiseLike<void> {
     for (const child of this.#children) {
       if (child.timeline) {
         const t = child.timeline
-        t.render(Math.max(0, (local - child.start) * t.#scale), seeking)
+        t.render(Math.max(0, (drawn - child.start) * t.#scale), seeking)
       } else {
         for (const [a, b] of spans) {
           const crossed =

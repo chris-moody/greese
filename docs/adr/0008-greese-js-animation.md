@@ -361,3 +361,29 @@ sprite killed mid-squash should not snap back before the next animation takes
 over. The old behavior (put everything back, remove added inline styles) is
 `Timeline.revert()`, and the React runtime (`Motion`, `useGreese`) uses it for
 its own cleanups, where leaving no trace on unmount is the point.
+
+## Addendum (2026-11-07): editor playback
+
+For the authoring timeline (ADR 0036, whose audit chose these three):
+
+- **`fps`** (a `TimelineOptions` field): tracks and nested timelines are
+  sampled at the last frame boundary, so a frame-based animation draws whole
+  frames. Rendering stays a pure function of time: the quantizing happens
+  inside `render`, the playhead keeps real seconds, and the end is exact.
+- **`bounds(start, end, { loop })`**: in and out points, as times or labels,
+  changed without rebuilding. Playing starts inside them; past the out point a
+  timeline stops, or loops back carrying its overshoot. A wrap renders to the
+  edge (firing cues), seeks to the other edge without firing, then renders on.
+  `then()` resolves at the bounds' end.
+- **`ticker: false`**: `play()` doesn't join the shared ticker, and `tick(dt)`
+  is the documented way for a host's clock to advance it.
+
+- **Cost:** everything 7.03 → 7.31 kB, `animate` 6.03 → 6.32 kB and the
+  `<script>` build 7.44 → 7.75 kB; budgets raised to 7.4, 6.4 and 7.8 kB. In
+  `@greese/react`: the library with greese.js 44.53 kB (44.6), `useGreese`
+  6.65 kB (6.7), the `greese` prop's runtime 11.81 kB (11.85), the library with
+  svg 54.6 kB (54.65).
+- **Tests:** six in `src/greese.test.ts`: frames with the end exact, nested
+  timelines snapped, bounds stopping at the out point, looping with the
+  overshoot and cues each lap (both directions), reversing from the out
+  point, and `ticker: false` advancing only by `tick`.

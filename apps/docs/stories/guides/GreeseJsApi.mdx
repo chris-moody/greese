@@ -131,6 +131,8 @@ const intro = timeline({ scope: document.getElementById('hero')! })
 | `timeScale`     | `number`                       | `1`        | Speed multiplier: `2` is twice as fast                                                                                                                                   |
 | `reducedMotion` | `'reduce' \| 'ignore'`         | `'reduce'` | When motion is reduced (the system setting, or `data-greese-motion="reduce"` on an animated element or its ancestor), `play()` jumps to the end. `'ignore'` plays anyway |
 | `scope`         | `ParentNode`                   | `document` | Selector strings passed to this timeline match only inside this element                                                                                                  |
+| `fps`           | `number`                       | —          | Draws only whole frames at this rate, as a frame-based editor previews them; `time()` stays in seconds and the end is exact                                              |
+| `ticker`        | `boolean`                      | `true`     | `false` keeps a playing timeline off the shared ticker: your own clock (an audio clock, a test) advances it with `tick(dt)`                                              |
 | `onUpdate`      | `(timeline: Timeline) => void` | —          | Runs after every render: each frame, and each seek                                                                                                                       |
 | `onComplete`    | `(timeline: Timeline) => void` | —          | Runs when playback reaches the end, or the start when reversed                                                                                                           |
 
@@ -210,14 +212,15 @@ A label that doesn't exist yet is created at the end of the timeline.
 
 ### Timing
 
-| Method                           | Returns           | Description                                                                 |
-| -------------------------------- | ----------------- | --------------------------------------------------------------------------- |
-| `.duration()`                    | `number`          | Seconds in one play-through, without repeats                                |
-| `.totalDuration()`               | `number`          | Seconds including repeats and repeat delays; `Infinity` with `repeat: -1`   |
-| `.time()` / `.time(seconds)`     | `number` / `this` | Gets the playhead, or moves it without firing callbacks                     |
-| `.progress()` / `.progress(p)`   | `number` / `this` | Gets or sets progress through the whole timeline, `0`–`1`                   |
-| `.timeScale()` / `.timeScale(n)` | `number` / `this` | Gets or sets the speed multiplier                                           |
-| `.seek(position)`                | `this`            | Moves the playhead to a time or an existing label, without firing callbacks |
+| Method                           | Returns           | Description                                                                                                                     |
+| -------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `.duration()`                    | `number`          | Seconds in one play-through, without repeats                                                                                    |
+| `.totalDuration()`               | `number`          | Seconds including repeats and repeat delays; `Infinity` with `repeat: -1`                                                       |
+| `.time()` / `.time(seconds)`     | `number` / `this` | Gets the playhead, or moves it without firing callbacks                                                                         |
+| `.progress()` / `.progress(p)`   | `number` / `this` | Gets or sets progress through the whole timeline, `0`–`1`                                                                       |
+| `.timeScale()` / `.timeScale(n)` | `number` / `this` | Gets or sets the speed multiplier                                                                                               |
+| `.seek(position)`                | `this`            | Moves the playhead to a time or an existing label, without firing callbacks                                                     |
+| `.bounds(start, end, { loop })`  | `this`            | Plays only between two times or labels, looping there or stopping at `end`; `.bounds()` reads them, `.bounds(null)` clears them |
 
 ```ts
 const tl = timeline({ paused: true }).to('.bar', { scaleX: 1, duration: 2 })
@@ -258,8 +261,17 @@ Don't return a _paused_ timeline from an `async` function, a `then`
 callback or a React effect: anything that waits for a promise waits for the
 timeline to complete.
 
-`render(totalTime, seeking?)` and `tick(dt)` are public for the ticker and
-for nested timelines. Use `time()`, `seek()` and `progress()` instead.
+`tick(dt)` advances a playing timeline by `dt` seconds. The shared ticker
+calls it; with `ticker: false`, your clock does:
+
+```ts
+const song = timeline({ ticker: false, fps: 24 }).to(sprite, { x: 300, duration: 4 })
+song.bounds('verse', 'chorus', { loop: true }).play()
+audio.onFrame((dt) => song.tick(dt))
+```
+
+`render(totalTime, seeking?)` is public for nested timelines. Use `time()`,
+`seek()` and `progress()` instead.
 
 ### AnimateOptions
 

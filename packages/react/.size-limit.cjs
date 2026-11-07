@@ -174,7 +174,8 @@ module.exports = [
     // copyToClipboard with its execCommand fallback, about 0.5 kB (44.29 kB).
     // 44.3 kB → 44.35 kB (2026-11-06): Combobox keeps free text on Enter with
     // `allowCustomValue` (44.32 kB).
-    limit: '44.35 kB',
+    // 44.35 kB → 44.6 kB (2026-11-07): greese.js's editor playback (ADR 0036): `fps` frame snapping, `bounds()` in and out points, and `ticker: false` for a host's clock, about 0.2 kB (44.53 kB).
+    limit: '44.6 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -611,7 +612,8 @@ module.exports = [
     // 6.1 kB → 6.15 kB (2026-11-01): reduced motion an app asks for (ADR 0033): greese.js's prefersReducedMotion and its check of what a timeline moves (6.11 kB).
     // 6.15 kB → 6.3 kB (2026-11-02): greese.js animates an element's text nodes: `text` types into them and splitText splits them where they are, keeping markup (ADR 0008 addendum) (6.24 kB).
     // +greese.js's killTweensOf target registry (ADR 0008 addendum, 2026-11-03): 6.37 kB.
-    limit: '6.5 kB',
+    // 6.5 kB → 6.7 kB (2026-11-07): greese.js's editor playback (ADR 0036): `fps` frame snapping, `bounds()` in and out points, and `ticker: false` for a host's clock, about 0.2 kB (6.65 kB).
+    limit: '6.7 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -668,7 +670,8 @@ module.exports = [
     // 11.15 kB → 11.25 kB (2026-11-01): reduced motion an app asks for (ADR 0033): greese.js's prefersReducedMotion and its check of what a timeline moves, read per element by the runtime (11.21 kB).
     // 11.25 kB → 11.4 kB (2026-11-02): greese.js animates an element's text nodes: `text` types into them and splitText splits them where they are, keeping markup (ADR 0008 addendum), and the runtime's text effects take markup (11.39 kB).
     // +greese.js's killTweensOf target registry, which Timeline's track bookkeeping writes (ADR 0008 addendum, 2026-11-03).
-    limit: '11.6 kB',
+    // 11.6 kB → 11.85 kB (2026-11-07): greese.js's editor playback (ADR 0036): `fps` frame snapping, `bounds()` in and out points, and `ticker: false` for a host's clock, about 0.2 kB (11.81 kB).
+    limit: '11.85 kB',
   },
   // @greese/react/svg (ADR 0031) is an add-on, not part of the library: the
   // whole library with greese.js, as above, plus every SVG component and all
@@ -706,7 +709,8 @@ module.exports = [
     // copyToClipboard with its execCommand fallback, about 0.5 kB (54.37 kB, of which 46 B was over before).
     // 54.3 kB → 54.4 kB (2026-11-06): the 46 B over from before, Input's
     // `htmlSize`, which af6e1778 budgeted everywhere but here (54.37 kB).
-    limit: '54.4 kB',
+    // 54.4 kB → 54.65 kB (2026-11-07): greese.js's editor playback (ADR 0036): `fps` frame snapping, `bounds()` in and out points, and `ticker: false` for a host's clock, about 0.2 kB (54.6 kB).
+    limit: '54.65 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.

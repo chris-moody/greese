@@ -791,3 +791,102 @@ describe('killTweensOf', () => {
     expect(o.y).toBe(10)
   })
 })
+
+describe('editor playback (ADR 0036)', () => {
+  it('draws whole frames with fps, keeping time in seconds and the end exact', () => {
+    const o = { v: 0 }
+    const tl = timeline({ paused: true, fps: 10 }).to(o, {
+      v: 100,
+      duration: 1,
+      ease: 'linear',
+    })
+    tl.seek(0.25)
+    expect(tl.time()).toBe(0.25)
+    expect(o.v).toBeCloseTo(20)
+    tl.seek(0.29)
+    expect(o.v).toBeCloseTo(20)
+    tl.seek(0.3)
+    expect(o.v).toBeCloseTo(30)
+    tl.seek(1)
+    expect(o.v).toBe(100)
+  })
+
+  it('snaps nested timelines to the parent’s frames', () => {
+    const o = { v: 0 }
+    const child = timeline({ paused: true }).to(o, { v: 10, duration: 1, ease: 'linear' })
+    const parent = timeline({ paused: true, fps: 2 }).add(child)
+    parent.seek(0.9)
+    expect(o.v).toBeCloseTo(5)
+  })
+
+  it('plays between bounds, stopping at the out point', () => {
+    const o = { v: 0 }
+    const done = vi.fn()
+    const tl = timeline({ paused: true, ticker: false, onComplete: done })
+      .to(o, { v: 10, duration: 1, ease: 'linear' })
+      .label('in', 0.2)
+      .label('out', 0.6)
+    tl.bounds('in', 'out')
+    // The playhead was outside: it moved to the in point.
+    expect(tl.time()).toBeCloseTo(0.2)
+    tl.play()
+    tl.tick(0.3)
+    expect(o.v).toBeCloseTo(5)
+    tl.tick(0.3)
+    expect(tl.time()).toBeCloseTo(0.6)
+    expect(done).toHaveBeenCalledOnce()
+    expect(tl.isActive()).toBe(false)
+    expect(tl.bounds()).toEqual({ start: 0.2, end: 0.6, loop: false })
+  })
+
+  it('loops between bounds, carrying the overshoot, and fires cues each lap', () => {
+    const o = { v: 0 }
+    const cue = vi.fn()
+    const tl = timeline({ paused: true, ticker: false })
+      .to(o, { v: 10, duration: 1, ease: 'linear' })
+      .call(cue, 0.5)
+    tl.bounds(0.4, 0.8, { loop: true }).play()
+    tl.tick(0.5) // 0.4 + 0.5 = 0.9: past 0.8 by 0.1, so 0.5
+    expect(tl.time()).toBeCloseTo(0.5)
+    expect(tl.isActive()).toBe(true)
+    expect(cue).toHaveBeenCalledTimes(2)
+    tl.tick(0.1)
+    expect(cue).toHaveBeenCalledTimes(2)
+    // Backwards, it wraps the other way.
+    tl.reverse()
+    tl.tick(0.2) // 0.6 - 0.2 = 0.4: the in point, so it wraps to the out point, 0.8
+    tl.tick(0.1)
+    expect(tl.time()).toBeCloseTo(0.7)
+    tl.bounds(null)
+    expect(tl.bounds()).toBeUndefined()
+  })
+
+  it('reverses from the out point when at the in point', () => {
+    const o = { v: 0 }
+    const tl = timeline({ paused: true, ticker: false }).to(o, {
+      v: 10,
+      duration: 1,
+      ease: 'linear',
+    })
+    tl.bounds(0.2, 0.6).reverse()
+    expect(tl.time()).toBeCloseTo(0.6)
+  })
+
+  it('stays off the shared ticker with ticker: false', async () => {
+    vi.useFakeTimers({
+      toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'],
+    })
+    const o = { v: 0 }
+    const tl = timeline({ ticker: false }).to(o, { v: 10, duration: 1, ease: 'linear' })
+    await flushMicrotasks()
+    expect(tl.isActive()).toBe(true)
+    vi.advanceTimersByTime(500)
+    expect(o.v).toBe(0)
+    tl.tick(0.5)
+    expect(o.v).toBeCloseTo(5)
+    tl.tick(1)
+    expect(o.v).toBe(10)
+    await tl
+    vi.useRealTimers()
+  })
+})

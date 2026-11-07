@@ -275,7 +275,7 @@ running. There is a free function of the same name for when you don't hold the
 timeline — see below.
 
 Options: `paused`, `repeat` (`-1` is forever), `yoyo`, `repeatDelay`,
-`timeScale`, `reducedMotion`, `scope` (selector strings match inside that element), `onUpdate`, `onComplete`.
+`timeScale`, `reducedMotion`, `scope` (selector strings match inside that element), `fps` (whole frames only), `ticker` (`false` for your own clock), `onUpdate`, `onComplete`.
 
 A timeline is awaitable: `await animate(el, …)` resolves when it completes. It
 resolves with no value, so returning a timeline from an `async` function or a

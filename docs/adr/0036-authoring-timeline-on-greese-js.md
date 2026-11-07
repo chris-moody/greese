@@ -1,7 +1,8 @@
 # ADR 0036: The authoring timeline runs on greese.js
 
-- **Status:** Accepted (the decision). The additions it lists are built in
-  Phase 3, and each one adds an addendum to ADR 0008 when it lands.
+- **Status:** Accepted. The audit (2026-11-07, below) kept three of the five
+  additions and struck two; the three landed in greese.js the same day (ADR
+  0008 addendum).
 - **Date:** 2026-11-06
 - **Amends:** ADR 0008 (greese.js gains a few timeline features for editors)
 
@@ -71,3 +72,26 @@ Each is dependency-free, tested and measured against greese.js's budget:
   struck from this ADR.
 - **Amp's audio-driven transport** depends on the external clock. Until that
   lands, Amp keeps its own clock.
+
+## Addendum (2026-11-07): the audit
+
+Each Glop helper, against greese.js:
+
+| Glop                                   | greese.js                                                                                                                                                                                  | Verdict                    |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------- |
+| `tween.helpers` `cubicBezier`          | `cubicBezier`, the same Newton-Raphson with a bisection fallback                                                                                                                           | Replaced                   |
+| `evaluateFrame`, `sampleTweened*`      | The document model's own logic (key, tween, hold, empty frames). It stays in authoring, easing through greese.js's `ease` and `cubicBezier`                                                | Stays, re-based            |
+| `usePlaybackClock`'s frame grid        | Nothing: greese.js renders continuous time, and Glop samples tweens on whole frames, so an editor's preview and the game would differ                                                      | **Added: `fps`**           |
+| Hold keyframes                         | A hold is a value that steps at the next key: `set()` at that time, or a segment eased `steps(1)`                                                                                          | **Struck**                 |
+| `playbackBounds`, the loop's overshoot | `repeat` loops the whole timeline, not a span of it                                                                                                                                        | **Added: `bounds()`**      |
+| `rateCurve`                            | Not a clock rate: a piecewise ticks-to-seconds table in authoring's resolutions. The clock adds `dt × speed` in seconds and the mapping does the rest, so a constant `timeScale` is enough | **Struck**                 |
+| `usePulseClock`, Amp's audio transport | `tick(dt)` and `render(t)` were public, but `play()` always joined the shared ticker                                                                                                       | **Added: `ticker: false`** |
+
+- **`fps`** quantizes what tracks and nested timelines are sampled at; the
+  playhead, `time()` and callbacks keep real seconds, and the end is exact.
+- **`bounds(start, end, { loop })`** takes times or labels. A looping lap
+  carries its overshoot into the next, as Glop's clock did, so laps keep
+  exact time against a continuous clock; cues in the lap fire each time.
+- **`ticker: false`** leaves a playing timeline for the host to `tick(dt)`.
+
+Cost, together: about 0.2 kB brotli (ADR 0008 addendum).
