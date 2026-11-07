@@ -25,12 +25,24 @@
     opacity: 0.75;
   }
 
-  // Its width is the frame's, set inline.
+  // The tab spans the frame, but the box you can press
+  // is at least 24px (WCAG 2.5.8), centred on it: the fill is the content
+  // box, the frame's width, so the drawing doesn't change at narrow zooms.
   .greese-TimelinePlayhead-playheadTab {
+    --greese-timeline-playhead-box: max(24px, var(--greese-timeline-frame-width));
+
     position: sticky;
     top: 0;
+    inline-size: var(--greese-timeline-playhead-box);
+    margin-inline-start: calc(
+      (var(--greese-timeline-frame-width) - var(--greese-timeline-playhead-box)) / 2
+    );
     height: var(--greese-timeline-ruler-height);
-    background-color: var(--greese-color-negative);
+    box-sizing: border-box;
+    padding-inline: calc(
+      (var(--greese-timeline-playhead-box) - var(--greese-timeline-frame-width)) / 2
+    );
+    background: var(--greese-color-negative) content-box;
     opacity: 0.75;
     cursor: ew-resize;
     pointer-events: all;
@@ -43,7 +55,7 @@
       &::before {
         content: '';
         position: absolute;
-        inset: 0 calc(min(0px, (100% - 44px) / 2));
+        inset: 0 -10px;
         min-block-size: 44px;
       }
     }

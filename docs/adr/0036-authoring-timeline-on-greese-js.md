@@ -106,8 +106,11 @@ Cost, together: about 0.2 kB brotli (ADR 0008 addendum).
   on the next tick.
 - **The playhead, the playback bounds and the bezier editor's points are
   sliders** (WAI-ARIA APG): focusable, with arrows, Page keys, Home and End.
-  Their hit areas are 44px on coarse pointers, and they take no browser
-  panning (`touch-action: none`).
+  The box you press is at least 24px (WCAG 2.5.8) with the drawing
+  unchanged inside it, 44px on coarse pointers, and they take no browser
+  panning (`touch-action: none`). A playhead standing on a bound is partly
+  covered by the bound's bracket, which stays on top; the ruler still scrubs
+  from anywhere, so axe's `target-size` flags only that overlap.
 - **The keyframes have no keyboard path yet: a known gap.** Frames and
   keyframes are picked and dragged by pointer. The timeline's keymap acts on a
   selection (copy, paste, delete, tweens, splits), and the playhead moves by

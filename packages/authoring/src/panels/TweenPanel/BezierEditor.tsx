@@ -23,7 +23,7 @@ export const BezierEditor = ({ value, onChange }: BezierEditorProps): JSX.Elemen
   const sx = (x: number) => PAD + x * W
   const sy = (y: number) => PAD + (1 - y) * H
 
-  const startDrag = (point: 1 | 2) => (event: PointerEvent<SVGCircleElement>) => {
+  const startDrag = (point: 1 | 2) => (event: PointerEvent<SVGGElement>) => {
     event.preventDefault()
     beginPointerDrag(event, {
       onMove: (e) => {
@@ -45,7 +45,7 @@ export const BezierEditor = ({ value, onChange }: BezierEditorProps): JSX.Elemen
   // Each point is a slider (there's no two-dimensional one in WAI-ARIA):
   // left and right move its time, up and down its value, by 0.01, or 0.1
   // with Shift.
-  const onKeyDown = (point: 1 | 2) => (event: KeyboardEvent<SVGCircleElement>) => {
+  const onKeyDown = (point: 1 | 2) => (event: KeyboardEvent<SVGGElement>) => {
     const step = event.shiftKey ? 0.1 : 0.01
     const by: Record<string, [number, number]> = {
       ArrowLeft: [-step, 0],
@@ -61,18 +61,27 @@ export const BezierEditor = ({ value, onChange }: BezierEditorProps): JSX.Elemen
     const [nx, ny] = clamp(round(x + move[0]), round(y + move[1]))
     onChange(point === 1 ? [nx, ny, x2, y2] : [x1, y1, nx, ny])
   }
-  const pointProps = (point: 1 | 2) => {
+  // What you press is 24px, and 44px on touch (in the stylesheet).
+  const handle = (point: 1 | 2) => {
     const [x, y] = point === 1 ? [x1, y1] : [x2, y2]
-    return {
-      role: 'slider',
-      tabIndex: 0,
-      'aria-label': point === 1 ? 'First control point' : 'Second control point',
-      'aria-valuemin': 0,
-      'aria-valuemax': 1,
-      'aria-valuenow': x,
-      'aria-valuetext': `time ${x.toFixed(2)}, value ${y.toFixed(2)}`,
-      onKeyDown: onKeyDown(point),
-    }
+    return (
+      <g
+        className={'greese-BezierEditor-handle'}
+        transform={`translate(${sx(x)} ${sy(y)})`}
+        role="slider"
+        tabIndex={0}
+        aria-label={point === 1 ? 'First control point' : 'Second control point'}
+        aria-valuemin={0}
+        aria-valuemax={1}
+        aria-valuenow={x}
+        aria-valuetext={`time ${x.toFixed(2)}, value ${y.toFixed(2)}`}
+        onKeyDown={onKeyDown(point)}
+        onPointerDown={startDrag(point)}
+      >
+        <circle className={'greese-BezierEditor-hit'} r={12} />
+        <circle className={'greese-BezierEditor-dot'} r={6} />
+      </g>
+    )
   }
 
   const path = `M ${sx(0)} ${sy(0)} C ${sx(x1)} ${sy(y1)} ${sx(x2)} ${sy(y2)} ${sx(1)} ${sy(1)}`
@@ -108,22 +117,8 @@ export const BezierEditor = ({ value, onChange }: BezierEditorProps): JSX.Elemen
         y2={sy(y2)}
       />
       <path className={'greese-BezierEditor-curvePath'} d={path} />
-      <circle
-        className={'greese-BezierEditor-handle'}
-        cx={sx(x1)}
-        cy={sy(y1)}
-        r={6}
-        {...pointProps(1)}
-        onPointerDown={startDrag(1)}
-      />
-      <circle
-        className={'greese-BezierEditor-handle'}
-        cx={sx(x2)}
-        cy={sy(y2)}
-        r={6}
-        {...pointProps(2)}
-        onPointerDown={startDrag(2)}
-      />
+      {handle(1)}
+      {handle(2)}
     </svg>
   )
 }

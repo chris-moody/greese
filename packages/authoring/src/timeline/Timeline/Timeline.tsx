@@ -316,6 +316,7 @@ export const Timeline = ({
           '--greese-timeline-row-height': `${ROW_HEIGHT}px`,
           '--greese-timeline-label-width': `${LABEL_WIDTH}px`,
           '--greese-timeline-ruler-height': `${RULER_HEIGHT}px`,
+          '--greese-timeline-frame-width': `${frameWidth}px`,
         } as CSSProperties
       }
     >

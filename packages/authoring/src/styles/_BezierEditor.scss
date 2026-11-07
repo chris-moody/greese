@@ -1,6 +1,8 @@
 @layer greese.components {
   // The bezier editor's SVG parts: colours from tokens only.
   .greese-BezierEditor-editorSvg {
+    // A point near an edge keeps its whole hit circle.
+    overflow: visible;
     touch-action: none;
     background: color-mix(in oklab, var(--greese-color-fg) 8%, transparent);
     border-radius: var(--greese-radius-sm);
@@ -23,16 +25,28 @@
   }
 
   .greese-BezierEditor-handle {
+    cursor: grab;
+    outline: none;
+  }
+
+  .greese-BezierEditor-hit {
+    fill: transparent;
+
+    // A finger needs 44px.
+    @media (pointer: coarse) {
+      r: 22px;
+    }
+  }
+
+  .greese-BezierEditor-dot {
     fill: var(--greese-color-secondary);
     stroke: var(--greese-color-surface);
     stroke-width: 1.5;
-    cursor: grab;
-    outline: none;
+  }
 
-    // An SVG circle takes no outline in every engine: its stroke shows focus.
-    &:focus-visible {
-      stroke: var(--greese-color-focus-ring);
-      stroke-width: 3;
-    }
+  // An SVG shape takes no outline in every engine: the dot's stroke shows focus.
+  .greese-BezierEditor-handle:focus-visible .greese-BezierEditor-dot {
+    stroke: var(--greese-color-focus-ring);
+    stroke-width: 3;
   }
 }

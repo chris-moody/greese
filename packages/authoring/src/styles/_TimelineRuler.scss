@@ -77,13 +77,13 @@
 
   // A playback in/out bracket handle on the ruler — `[` for the start bound, `]`
   // for the end, built from borders rather than a glyph so its color comes from
-  // a token, not a font. The `::before` extends the pointer hit area well past
-  // the 8px visual bracket. `position: sticky` (own top-pinning, like
+  // a token, not a font, and drawn by `::after` inside a larger box you press.
+  // `position: sticky` (own top-pinning, like
   // `.playheadTab`) rather than relying on a sticky ancestor — see
   // `.boundHandleRoot` above for why it is no longer nested inside `.ruler`.
   .greese-TimelineRuler-boundHandleFlag {
     // The handle's color in its three states. Declaring it once as a local
-    // custom property is what lets the four border declarations below stay a
+    // custom property is what lets the border declarations below stay a
     // single rule each: the state selectors only reassign this.
     --greese-timeline-bound-handle-color: var(
       --greese-authoring-timeline-bound-handle,
@@ -93,12 +93,24 @@
     position: sticky;
     top: 0;
     height: var(--greese-timeline-ruler-height);
-    width: 8px;
-    box-sizing: border-box;
+
+    // The box you press is 24px (WCAG 2.5.8): the 8px bracket and 16px
+    // outside the range, so it covers the frames it bounds as little as it can.
+    width: 24px;
+    margin-inline-start: -16px;
     cursor: ew-resize;
     pointer-events: all;
-    border-top: 2px solid var(--greese-timeline-bound-handle-color);
-    border-bottom: 2px solid var(--greese-timeline-bound-handle-color);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: 0;
+      width: 8px;
+      box-sizing: border-box;
+      border: 2px solid var(--greese-timeline-bound-handle-color);
+      border-right-width: 0;
+    }
 
     &:hover {
       --greese-timeline-bound-handle-color: var(
@@ -116,27 +128,25 @@
       );
     }
 
-    &[data-side='start'] {
-      border-left: 2px solid var(--greese-timeline-bound-handle-color);
-    }
-
     &[data-side='end'] {
-      border-right: 2px solid var(--greese-timeline-bound-handle-color);
-      transform: translateX(-100%);
+      margin-inline-start: -8px;
+
+      &::after {
+        inset-inline: 0 auto;
+        border-width: 2px 2px 2px 0;
+      }
     }
 
     touch-action: none;
 
     @include mixins.focus-ring;
 
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0 -6px;
-
-      // A finger needs 44px.
-      @media (pointer: coarse) {
-        inset: 0 -18px;
+    // A finger needs 44px.
+    @media (pointer: coarse) {
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0 -10px;
         min-block-size: 44px;
       }
     }

@@ -137,7 +137,6 @@ export const Playhead = ({
         aria-valuetext={`Frame ${currentFrame + 1} of ${count}`}
         onPointerDown={onScrubStart}
         onKeyDown={onKeyDown}
-        style={{ width: frameWidth }}
       />
       <div className={'greese-TimelinePlayhead-playheadLine'} />
       <div

@@ -240,7 +240,10 @@ module.exports = [
     ],
     // The editor shell: the dock, the stage (host, context bar, rulers) and
     // the timeline, with undo and redo keys (36.94 kB).
-    limit: '37.5 kB',
+    // 37.5 → 37.6 kB (2026-11-07): the frame width as a CSS variable, so the
+    // playhead's box can be 24px (WCAG 2.5.8) while it draws the frame
+    // (37.54 kB).
+    limit: '37.6 kB',
   },
   {
     name: '@greese/authoring/styles.css',
@@ -262,6 +265,9 @@ module.exports = [
     // chart), its header and toolbar, the tween and marker panels and the
     // authoring view, about 2.4 kB (5.49 kB). One stylesheet still: most
     // editors have a timeline, and a second import is one to forget.
-    limit: '5.7 kB',
+    // 5.7 → 5.8 kB (2026-11-07): 24px boxes for the playhead, the playback
+    // bounds and the bezier points (WCAG 2.5.8), their drawings unchanged
+    // (5.71 kB).
+    limit: '5.8 kB',
   },
 ]
