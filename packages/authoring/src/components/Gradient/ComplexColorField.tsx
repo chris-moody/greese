@@ -1,6 +1,6 @@
 'use client'
 import { useId, type JSX } from 'react'
-import { cx, EditableField, type ColorChannelSet } from '@greese/react'
+import { ColorPicker, cx, EditableField, type ColorChannelSet } from '@greese/react'
 import { withPaintType, type ComplexColorValue } from '../../core/paint/gradient.ts'
 import { GradientEditor } from './GradientEditor.tsx'
 
@@ -21,6 +21,15 @@ export interface ComplexColorFieldProps {
   onSwatchesChange?: (swatches: readonly string[]) => void
   /** Numeric channel fields in the picker. @default ['hsb', 'rgb'] */
   channels?: readonly ColorChannelSet[]
+  /**
+   * Shows the solid color's picker in place, not behind a swatch: for a field
+   * that already sits in a popover, which shouldn't open another.
+   */
+  inlinePicker?: boolean
+  /** The kinds' names, translated or shortened. @default { solid: 'Solid', gradient: 'Gradient', none: 'None' } */
+  kindLabels?: { solid?: string; gradient?: string; none?: string }
+  /** Keeps `label` as the group's name but doesn't show it: for a row that names it already. */
+  hideLabel?: boolean
   /** Classes for the field's root. */
   className?: string
 }
@@ -45,13 +54,16 @@ export const ComplexColorField = ({
   swatches,
   onSwatchesChange,
   channels = CHANNELS,
+  inlinePicker,
+  kindLabels,
+  hideLabel,
   className,
 }: ComplexColorFieldProps): JSX.Element => {
   const id = useId()
   const kinds = [
-    { value: 'solid', label: 'Solid' },
-    { value: 'gradient', label: 'Gradient' },
-    ...(allowNone ? [{ value: 'none', label: 'None' }] : []),
+    { value: 'solid', label: kindLabels?.solid ?? 'Solid' },
+    { value: 'gradient', label: kindLabels?.gradient ?? 'Gradient' },
+    ...(allowNone ? [{ value: 'none', label: kindLabels?.none ?? 'None' }] : []),
   ]
 
   return (
@@ -60,7 +72,7 @@ export const ComplexColorField = ({
       aria-labelledby={id}
       className={cx('greese-ComplexColorField', className)}
     >
-      <span id={id} className="greese-ComplexColorField-label">
+      <span id={id} className="greese-ComplexColorField-label" hidden={hideLabel}>
         {label}
       </span>
       <EditableField
@@ -73,7 +85,19 @@ export const ComplexColorField = ({
           onChange(withPaintType(value, kind as ComplexColorValue['type']))
         }
       />
-      {value.type === 'solid' && (
+      {value.type === 'solid' && inlinePicker && (
+        <ColorPicker
+          label={`${label} color`}
+          value={value.color}
+          disabled={disabled}
+          eyedropper
+          channels={channels}
+          swatches={swatches}
+          onSwatchesChange={onSwatchesChange}
+          onValueChange={(color) => onChange({ type: 'solid', color })}
+        />
+      )}
+      {value.type === 'solid' && !inlinePicker && (
         <EditableField
           type="color"
           aria-label={`${label} color`}

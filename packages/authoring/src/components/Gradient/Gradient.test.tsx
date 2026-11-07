@@ -180,6 +180,27 @@ describe('ComplexColorField', () => {
     )
     expect(screen.queryByRole('radio', { name: 'None' })).not.toBeInTheDocument()
   })
+
+  it('shows the picker in place, with its own kind names and a hidden label', async () => {
+    const onChange = vi.fn()
+    const { container } = render(
+      <ComplexColorField
+        label="Ink"
+        value={{ type: 'solid', color: '#ff0000' }}
+        onChange={onChange}
+        inlinePicker
+        hideLabel
+        kindLabels={{ solid: 'Flat', gradient: 'Blend' }}
+      />
+    )
+    expect(screen.getByRole('group', { name: 'Ink' })).toBeInTheDocument()
+    expect(screen.getByText('Ink')).not.toBeVisible()
+    expect(screen.getByRole('radio', { name: 'Flat' })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'Blend' })).toBeInTheDocument()
+    // No swatch that opens a popover: the picker's fields are already here.
+    expect(container.querySelector('.greese-ColorPicker')).toBeInTheDocument()
+    await expectNoAxeViolations(container)
+  })
 })
 
 describe('PropertyGrid and ToggleSelect', () => {
