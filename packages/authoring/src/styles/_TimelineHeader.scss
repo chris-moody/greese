@@ -14,8 +14,11 @@
     overflow: auto hidden;
   }
 
+  // One line each: a rate, a signature or a position split over two reads
+  // as two values, and spills out of the ruler's height.
   .greese-TimelineHeader-readout {
     margin-left: var(--greese-space-2);
+    white-space: nowrap;
     font-family: var(--greese-font-mono);
     font-size: var(--greese-type-caption-font-size);
     color: var(--greese-color-fg-muted);

@@ -87,11 +87,18 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    gap: var(--greese-space-1);
     padding: 0 var(--greese-space-2);
     box-sizing: border-box;
     height: var(--greese-timeline-ruler-height);
     background-color: var(--greese-color-surface);
     border-bottom: 1px solid var(--greese-color-border);
+
+    // The corner spaces its readouts itself; their header margin would push
+    // four of them (rate, signature, mode, position) past its width.
+    .greese-TimelineHeader-readout {
+      margin-left: 0;
+    }
   }
 
   // Zero-height sticky slot for tool overlays (rate chart, time signature),
