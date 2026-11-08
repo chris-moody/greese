@@ -56,6 +56,49 @@ test('dragging a tab onto another group joins it as a tab', async ({ page }) => 
   await expect(group(page, 'Layers').getByRole('tab')).toHaveText(['Layers'])
 })
 
+test('dropping a tab on another tab puts it in front; on a tab’s trailing half, after it', async ({
+  page,
+}) => {
+  const tab = (name: string) => page.getByRole('tab', { name })
+  // Library onto Properties' trailing half: into that group, after it.
+  let properties = await box(tab('Properties'))
+  await drag(page, tab('Library'), {
+    x: properties.x + (properties.width * 3) / 4,
+    y: properties.y + properties.height / 2,
+  })
+  await expect(group(page, 'Properties').getByRole('tab')).toHaveText([
+    'Properties',
+    'Library',
+  ])
+  // Layers onto Properties' leading half: in front of it. The narrow group's
+  // tab row scrolls; Properties, first, is brought back into view.
+  await tab('Properties').scrollIntoViewIfNeeded()
+  properties = await box(tab('Properties'))
+  await drag(page, tab('Layers'), {
+    x: properties.x + properties.width / 4,
+    y: properties.y + properties.height / 2,
+  })
+  await expect(group(page, 'Properties').getByRole('tab')).toHaveText([
+    'Layers',
+    'Properties',
+    'Library',
+  ])
+})
+
+test('dropping a tab in the middle of its own group’s body floats it', async ({
+  page,
+}) => {
+  const body = await box(group(page, 'Layers').locator('.greese-PanelGroup-body'))
+  await drag(page, page.getByRole('tab', { name: 'Library' }), {
+    x: body.x + body.width / 2,
+    y: body.y + body.height / 2,
+  })
+  await expect(group(page, 'Layers').getByRole('tab')).toHaveText(['Layers'])
+  await expect(
+    page.locator('.greese-PanelDock-float').getByRole('tab', { name: 'Library' })
+  ).toBeVisible()
+})
+
 test('dragging a tab to the stage’s bottom splits the stage, with the panel below', async ({
   page,
 }) => {

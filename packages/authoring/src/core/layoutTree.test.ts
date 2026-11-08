@@ -12,6 +12,7 @@ import {
   insertPanel,
   insertAtContainerEdge,
   reorderTab,
+  moveTab,
   appendToZone,
   setLeafActiveTab,
   setLeafCollapsed,
@@ -512,6 +513,39 @@ describe('reorderTab', () => {
   it('is a no-op for an unknown leaf id', () => {
     const tree = leafTree(['a'])
     expect(reorderTab(tree, 'ghost', 'a', 0)).toBe(tree)
+  })
+})
+
+// ── moveTab ─────────────────────────────────────────────────────────────────
+
+describe('moveTab', () => {
+  it('reorders within the group, counting its other tabs, and selects the tab', () => {
+    const tree = leafTree(['a', 'b', 'c'])
+    const leafId = tree.rootId!
+    // In front of b: 'c' at index 1 of [a, b].
+    const { tree: result, changed } = moveTab(tree, 'c', leafId, 1)
+    expect(changed).toBe(true)
+    expect((result.nodes[leafId] as ZoneLeaf).tabs).toEqual(['a', 'c', 'b'])
+    expect((result.nodes[leafId] as ZoneLeaf).activeTab).toBe('c')
+  })
+
+  it('moves a tab from another group into place, and the emptied group goes', () => {
+    const left = makeLeaf(['a', 'b'])
+    const right = makeLeaf(['c'])
+    const split = makeSplit('row', left.id, right.id)
+    const tree: ZoneTree = {
+      rootId: split.id,
+      nodes: { [left.id]: left, [right.id]: right, [split.id]: split },
+    }
+    const { tree: result } = moveTab(tree, 'c', left.id, 0)
+    expect(result.rootId).toBe(left.id)
+    expect((result.nodes[left.id] as ZoneLeaf).tabs).toEqual(['c', 'a', 'b'])
+  })
+
+  it('refuses headless panels and unknown groups', () => {
+    const tree = leafTree(['a', 'b'])
+    expect(moveTab(tree, 'a', tree.rootId!, 1, true).changed).toBe(false)
+    expect(moveTab(tree, 'a', 'ghost', 0).changed).toBe(false)
   })
 })
 

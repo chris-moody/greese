@@ -115,6 +115,11 @@ const NodeView = memo(function NodeView(props: NodeViewProps) {
               ? dropTarget.zone
               : null
           }
+          dropTabIndex={
+            dropTarget?.kind === 'tab' && dropTarget.leafId === node.id
+              ? dropTarget.index
+              : null
+          }
           onSelectTab={props.onSelectTab}
           onToggleCollapsed={props.onToggleCollapsed}
           startDrag={props.startDrag}
@@ -149,8 +154,10 @@ const NodeView = memo(function NodeView(props: NodeViewProps) {
 
 /**
  * The editor's workspace: stage, timeline and panels in one split tree. Drag
- * a tab to any edge of any group, onto a group to join it, to the
- * workspace's outer edge, or onto empty space to float it. The layout lives
+ * a tab to any edge of any group, onto a group to join it, onto a tab row to
+ * put it there (in front of a tab, or after it from its right half), to the
+ * workspace's outer edge, or onto empty space or its own group's body to
+ * float it. The layout lives
  * in the store's `panels` slice, so it can be saved, cached per workspace and
  * restored. Splits, drags and floating moves write to the DOM while the
  * pointer moves and dispatch once on release, so panels and the stage never
@@ -282,6 +289,15 @@ export const PanelDock = ({
         const x = rect ? Math.max(0, at.x - rect.left - 60) : 40
         const y = rect ? Math.max(0, at.y - rect.top - 10) : 40
         dispatch(panelsActions.floatPanel({ panelId, x, y }))
+      } else if (target.kind === 'tab') {
+        dispatch(
+          panelsActions.moveTab({
+            panelId,
+            targetLeafId: target.leafId,
+            index: target.index,
+            headless,
+          })
+        )
       } else if (target.kind === 'leaf') {
         dispatch(
           panelsActions.movePanel({

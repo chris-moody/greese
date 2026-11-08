@@ -19,6 +19,7 @@ export {
   insertAtContainerEdge,
   insertPanel,
   mergeUnknownPanels,
+  moveTab,
   pruneUnknownPanels,
   removePanel,
   removeTabFromLeaf,

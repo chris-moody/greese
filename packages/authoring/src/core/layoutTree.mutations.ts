@@ -203,6 +203,43 @@ export function reorderTab(
   return { ...tree, nodes: { ...tree.nodes, [leafId]: { ...leaf, tabs } } }
 }
 
+/**
+ * Puts a panel among a group's tabs at `index` (counting the group's other
+ * tabs), and selects it: a reorder within its own group, or a move from
+ * another group or from floating. Reserved and headless groups, and headless
+ * panels, take no tabs; `changed` is false then, or when the group's gone.
+ */
+export function moveTab(
+  tree: ZoneTree,
+  panelId: string,
+  targetLeafId: string,
+  index: number,
+  headless = false
+): { tree: ZoneTree; changed: boolean } {
+  const target = tree.nodes[targetLeafId]
+  if (
+    !target ||
+    target.kind !== 'leaf' ||
+    isReservedLeaf(target) ||
+    target.headless ||
+    headless
+  )
+    return { tree, changed: false }
+  // Leaving its own group never empties the target, so the target stays.
+  const removed = target.tabs.includes(panelId) ? tree : removePanel(tree, panelId)
+  const leaf = removed.nodes[targetLeafId]
+  if (!leaf || leaf.kind !== 'leaf') return { tree, changed: false }
+  const tabs = leaf.tabs.filter((t) => t !== panelId)
+  tabs.splice(Math.max(0, Math.min(index, tabs.length)), 0, panelId)
+  return {
+    tree: {
+      ...removed,
+      nodes: { ...removed.nodes, [targetLeafId]: { ...leaf, tabs, activeTab: panelId } },
+    },
+    changed: true,
+  }
+}
+
 /** Adds a panel in a new leaf at the bottom of the tree. */
 export function appendToZone(tree: ZoneTree, panelId: string): ZoneTree {
   const leaf = makeLeaf([panelId])

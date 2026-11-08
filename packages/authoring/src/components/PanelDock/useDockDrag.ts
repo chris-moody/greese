@@ -10,18 +10,31 @@ const DRAG_THRESHOLD = 4
 /** How close to the workspace's outer edge docks a panel along it, in pixels. */
 const EDGE_BAND = 32
 
+/** A tab's hit-test data: its panel, and where it is. */
+interface TabHit {
+  panelId: string
+  rect: DOMRect
+}
+
 /** A leaf's hit-test data, measured once when a drag starts. */
 interface LeafHit {
   leafId: string
   solePanelId: string | undefined
   /** Takes edge drops only: a headless group, or the stage or timeline. */
   edgesOnly: boolean
+  /** A floating group: over the workspace, and outside its tree. */
+  floating: boolean
   rect: DOMRect
+  /** Its tab row, where a drop lands among the tabs; none for a headless group or a reserved leaf. */
+  header: DOMRect | null
+  tabs: TabHit[]
 }
 
 interface Hits {
   container: DOMRect
   leaves: LeafHit[]
+  /** Tabs run right to left: a tab's leading half is its right one. */
+  rtl: boolean
 }
 
 export interface DockDrag {
@@ -47,6 +60,10 @@ const nearestEdgeZone = (rect: DOMRect, x: number, y: number): DropZone => {
 
 const sameTarget = (a: DropTarget, b: DropTarget): boolean =>
   a === b ||
+  (a?.kind === 'tab' &&
+    b?.kind === 'tab' &&
+    a.leafId === b.leafId &&
+    a.index === b.index) ||
   (a?.kind === 'leaf' &&
     b?.kind === 'leaf' &&
     a.leafId === b.leafId &&
@@ -54,7 +71,9 @@ const sameTarget = (a: DropTarget, b: DropTarget): boolean =>
   (a?.kind === 'container-edge' && b?.kind === 'container-edge' && a.edge === b.edge)
 
 /**
- * Drag-to-dock. Leaf rects (`[data-leaf-id]`) and the workspace's rect are
+ * Drag-to-dock. A drop on a tab row places the panel among its tabs (in
+ * front of a tab, or after it from its right half); in the middle of its own
+ * group's body, or on its lone group, it floats. Leaf rects (`[data-leaf-id]`) and the workspace's rect are
  * measured once when a drag starts, since the layout can't change mid-drag, so
  * each move is arithmetic with no DOM reads. On release, `commit` gets the
  * target: a leaf's zone, a workspace edge, or `null` (outside everything) to
@@ -96,20 +115,57 @@ export const useDockDrag = (
     const container = containerRef.current
     if (!container) return null
     const leaves = [...container.querySelectorAll<HTMLElement>('[data-leaf-id]')].map(
-      (el) => ({
-        leafId: el.dataset.leafId!,
-        solePanelId: el.dataset.solePanelId,
-        edgesOnly:
-          el.dataset.headless !== undefined || el.dataset.reservedId !== undefined,
-        rect: el.getBoundingClientRect(),
-      })
+      (el): LeafHit => {
+        const header = el.querySelector<HTMLElement>(':scope > .greese-PanelGroup-header')
+        return {
+          leafId: el.dataset.leafId!,
+          solePanelId: el.dataset.solePanelId,
+          edgesOnly:
+            el.dataset.headless !== undefined || el.dataset.reservedId !== undefined,
+          floating: !!el.closest('.greese-PanelDock-float'),
+          rect: el.getBoundingClientRect(),
+          header: header?.getBoundingClientRect() ?? null,
+          tabs: [...(header?.querySelectorAll<HTMLElement>('[data-panel-id]') ?? [])].map(
+            (tab) => ({
+              panelId: tab.dataset.panelId!,
+              rect: tab.getBoundingClientRect(),
+            })
+          ),
+        }
+      }
     )
-    return { container: container.getBoundingClientRect(), leaves }
+    return {
+      container: container.getBoundingClientRect(),
+      leaves,
+      rtl: getComputedStyle(container).direction === 'rtl',
+    }
   }, [containerRef])
 
   const resolveTarget = useCallback(
     (dragging: string, hits: Hits, x: number, y: number): DropTarget => {
-      // The workspace's edges first, so a drop near the outer wall docks along
+      const headlessDrag = isHeadlessPanel(dragging)
+      const inside = (rect: DOMRect) =>
+        x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+      // A tab row first, even at the workspace's wall: a place among its
+      // tabs. On a tab's leading half, in front of it; on its trailing half,
+      // after it; past the last, at the end.
+      if (!headlessDrag)
+        for (const leaf of hits.leaves) {
+          if (!leaf.header || leaf.floating || !inside(leaf.header)) continue
+          if (leaf.solePanelId === dragging) break
+          const others = leaf.tabs.filter((t) => t.panelId !== dragging)
+          const before = others.findIndex((t) =>
+            hits.rtl
+              ? x > t.rect.left + t.rect.width / 2
+              : x < t.rect.left + t.rect.width / 2
+          )
+          return {
+            kind: 'tab',
+            leafId: leaf.leafId,
+            index: before === -1 ? others.length : before,
+          }
+        }
+      // Then the workspace's edges, so a drop near the outer wall docks along
       // it rather than splitting the leaf there. The side bands reach outside
       // the workspace too, so dragging into an app's sidebar still docks left.
       const r = hits.container
@@ -127,13 +183,17 @@ export const useDockDrag = (
       }
       if (x < r.left || x > r.right || y < r.top || y > r.bottom) return null
 
-      const headlessDrag = isHeadlessPanel(dragging)
       for (const leaf of hits.leaves) {
         const { rect } = leaf
-        if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) continue
-        // Dropping a lone panel on its own leaf would do nothing.
+        // A floating group takes no drops (it's outside the tree): the
+        // workspace under it does.
+        if (!inside(rect) || leaf.floating) continue
+        // A lone panel's own group would change nothing: what's under it counts.
         if (leaf.solePanelId === dragging) continue
+        const own = leaf.tabs.some((t) => t.panelId === dragging)
+        // Dropped in the middle of its own group's body, a tab tears off and floats.
         let zone = resolveDropZone(rect, x, y)
+        if (own && zone === DropZone.Center) return null
         if (zone === DropZone.Center && (leaf.edgesOnly || headlessDrag)) {
           zone = nearestEdgeZone(rect, x, y)
         }

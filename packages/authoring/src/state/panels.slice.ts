@@ -3,6 +3,7 @@ import { EMPTY_TREE } from '../core/layoutTree.construction.ts'
 import {
   insertAtContainerEdge,
   insertPanel,
+  moveTab,
   removePanel,
   reorderTab,
   resizeSplitNode,
@@ -69,6 +70,29 @@ export const panelsSlice = createSlice({
       )
       // A refused drop (a tab drop on the stage) leaves the layout as it was,
       // rather than the panel taken out and put nowhere.
+      if (!changed) return
+      state.workspace = tree
+      state.floating = state.floating.filter((fp) => fp.id !== panelId)
+    },
+
+    /** Puts a panel at a place in a group's tab row: a reorder, or a move into the group. */
+    moveTab: (
+      state,
+      action: PayloadAction<{
+        panelId: string
+        targetLeafId: string
+        index: number
+        headless?: boolean
+      }>
+    ) => {
+      const { panelId, targetLeafId, index, headless } = action.payload
+      const { tree, changed } = moveTab(
+        state.workspace,
+        panelId,
+        targetLeafId,
+        index,
+        headless
+      )
       if (!changed) return
       state.workspace = tree
       state.floating = state.floating.filter((fp) => fp.id !== panelId)

@@ -34,6 +34,15 @@
     overflow-wrap: normal;
   }
 
+  // Wrapped, both copies break the same lines: the same width, a gutter kept
+  // for the textarea's scrollbar in each.
+  .greese-CodeEditor[data-wrap] .greese-CodeEditor-layer,
+  .greese-CodeEditor[data-wrap] .greese-CodeEditor-input > .greese-Textarea-control {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    scrollbar-gutter: stable;
+  }
+
   .greese-CodeEditor .greese-CodeEditor-layer {
     position: absolute;
     inset: 0;

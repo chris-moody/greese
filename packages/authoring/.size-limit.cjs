@@ -55,7 +55,8 @@ module.exports = [
     ],
     // 6.4 → 12 kB (2026-11-06): an environment's store now has every
     // framework slice, so a dock costs the whole state layer (11.1 kB).
-    limit: '12 kB',
+    // 12 → 12.1 kB (2026-11-08): docking by tab row and tearing a tab off its own group, with the panels slice's `moveTab` (12.07 kB).
+    limit: '12.1 kB',
   },
   {
     name: '@greese/authoring: HierarchicalList',
@@ -95,7 +96,8 @@ module.exports = [
     // hook (its clipboard and edit helpers), the step-8 work the menu waited
     // for (15.39 kB). Loading it lazily measured worse: size-limit counts the
     // chunk, plus its overhead.
-    limit: '15.6 kB',
+    // 15.6 → 15.7 kB (2026-11-08): the panels slice's `moveTab` and the guides' hidden state (15.66 kB).
+    limit: '15.7 kB',
   },
   {
     name: '@greese/authoring: StageHost and StageContext',
@@ -267,7 +269,8 @@ module.exports = [
     // 37.6 → 37.9 kB (2026-11-08): the context bar's guides toggle and the
     // guides' hidden state, the rulers' automatic ticks, and tooltips on the
     // layer rows', panels' and gradient stops' icon buttons (37.84 kB).
-    limit: '37.9 kB',
+    // 37.9 → 38.3 kB (2026-11-08): docking by tab row (a place among a group's tabs, measured at the drag's start) and tearing a tab off its own group, `moveTab`, and the code box's line wrapping (38.24 kB).
+    limit: '38.3 kB',
   },
   {
     name: '@greese/authoring/styles.css',
@@ -294,6 +297,7 @@ module.exports = [
     // (5.71 kB).
     // 5.8 → 6.3 kB (2026-11-07): NodeGraph's nodes, sources, ports, output
     // handles and their touch-sized hit areas, and its edges (6.18 kB).
-    limit: '6.3 kB',
+    // 6.3 → 6.35 kB (2026-11-08): the bar showing where a dragged tab lands in a tab row, and the code box's wrapped lines (6.30 kB).
+    limit: '6.35 kB',
   },
 ]

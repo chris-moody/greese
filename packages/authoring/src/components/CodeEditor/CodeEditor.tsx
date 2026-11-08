@@ -76,6 +76,12 @@ export interface CodeEditorProps {
   onSelectionChange?: (selection: CodeRange) => void
   /** The box's accessible name, when no `Field` labels it. */
   'aria-label'?: string
+  /**
+   * Wraps long lines at the box's edge instead of scrolling sideways. A
+   * marked line (`markLine`) is placed by line number, so with wrapping on
+   * it sits where that line would be unwrapped.
+   */
+  wrap?: boolean
   /** Classes for the box. */
   className?: string
 }
@@ -105,6 +111,7 @@ export const CodeEditor = ({
   selection,
   onSelectionChange,
   'aria-label': label,
+  wrap = false,
   className,
 }: CodeEditorProps): JSX.Element => {
   const layer = useRef<HTMLPreElement>(null)
@@ -144,6 +151,7 @@ export const CodeEditor = ({
     <div
       className={cx('greese-CodeEditor', className)}
       data-invalid={invalid || undefined}
+      data-wrap={wrap || undefined}
     >
       <pre ref={layer} className="greese-CodeEditor-layer" aria-hidden="true">
         {markLine !== undefined && (
@@ -177,7 +185,7 @@ export const CodeEditor = ({
         spellCheck={false}
         autoCapitalize="off"
         autoCorrect="off"
-        wrap="off"
+        wrap={wrap ? 'soft' : 'off'}
         data-language={language}
         onChange={(event) => onChange?.(event.currentTarget.value)}
         onSelect={onSelectionChange && reportSelection}

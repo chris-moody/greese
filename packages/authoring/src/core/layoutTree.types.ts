@@ -94,6 +94,11 @@ export interface FloatingPanelState {
 /** Where a dragged panel would land. `null` floats it. */
 export type DropTarget =
   | { kind: 'leaf'; leafId: string; zone: DropZone }
+  /**
+   * A place in a group's tab row: `index` counts the group's other tabs, so
+   * 0 is first and their count is last.
+   */
+  | { kind: 'tab'; leafId: string; index: number }
   | { kind: 'container-edge'; edge: 'top' | 'bottom' | 'left' | 'right' }
   | null
 

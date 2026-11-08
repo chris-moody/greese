@@ -25,6 +25,13 @@
     > .greese-EditableField--row > .greese-EditableField-control:only-child {
       grid-column: 1 / -1;
     }
+
+    // A switch or checkbox keeps its size at the row's far end, as in a field
+    // of its own, so the row reads across the whole panel.
+    > .greese-EditableField--switch > .greese-EditableField-control,
+    > .greese-EditableField--checkbox > .greese-EditableField-control {
+      justify-self: end;
+    }
   }
 
   .greese-GradientEditor,

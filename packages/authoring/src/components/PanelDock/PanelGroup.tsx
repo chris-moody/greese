@@ -18,6 +18,8 @@ export interface PanelGroupProps {
   dragId: string | null
   /** The zone to highlight when this group is the current drop target. */
   activeDropZone: DropZone | null
+  /** Where a dragged tab would land in the tab row, counting the other tabs. */
+  dropTabIndex?: number | null
   onSelectTab: (leafId: string, tabId: string) => void
   onToggleCollapsed: (leafId: string, collapsed: boolean) => void
   startDrag: (panelId: string) => (event: PointerEvent<HTMLElement>) => void
@@ -51,6 +53,7 @@ export const PanelGroup = memo(function PanelGroup({
   panelMeta,
   dragId,
   activeDropZone,
+  dropTabIndex = null,
   onSelectTab,
   onToggleCollapsed,
   startDrag,
@@ -64,6 +67,11 @@ export const PanelGroup = memo(function PanelGroup({
   const collapsed = !headless && leaf.collapsed
   const beingDragged = leaf.tabs.length === 1 && dragId === leaf.tabs[0]
   const tabId = (panelId: string) => `${baseId}-tab-${panelId}`
+  // The tab a dragged one would land in front of, or the last one it would follow.
+  const others = dragId ? leaf.tabs.filter((t) => t !== dragId) : leaf.tabs
+  const dropBefore = dropTabIndex === null ? undefined : others[dropTabIndex]
+  const dropAfter =
+    dropTabIndex !== null && dropTabIndex >= others.length ? others.at(-1) : undefined
   const bodyId = `${baseId}-body`
 
   const onTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -125,7 +133,15 @@ export const PanelGroup = memo(function PanelGroup({
                   aria-selected={selected}
                   aria-controls={bodyId}
                   tabIndex={selected ? 0 : -1}
+                  data-panel-id={panelId}
                   data-dragging={dragId === panelId ? '' : undefined}
+                  data-drop={
+                    panelId === dropBefore
+                      ? 'before'
+                      : panelId === dropAfter
+                        ? 'after'
+                        : undefined
+                  }
                   onPointerDown={startDrag(panelId)}
                   onClick={() => onSelectTab(leaf.id, panelId)}
                   onKeyDown={onTabKeyDown}

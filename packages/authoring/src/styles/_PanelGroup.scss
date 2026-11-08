@@ -72,6 +72,20 @@
     &[data-dragging] {
       opacity: 0.4;
     }
+
+    // Where a dragged tab would land: a bar on this tab's leading or trailing edge.
+    &[data-drop='before'] {
+      box-shadow: inset 2px 0 0 var(--greese-color-primary);
+    }
+
+    &[data-drop='after'],
+    &[data-drop='before']:dir(rtl) {
+      box-shadow: inset -2px 0 0 var(--greese-color-primary);
+    }
+
+    &[data-drop='after']:dir(rtl) {
+      box-shadow: inset 2px 0 0 var(--greese-color-primary);
+    }
   }
 
   // A headless group's drag handle: a short bar of grip dots instead of tabs.
