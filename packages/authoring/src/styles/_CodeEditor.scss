@@ -39,7 +39,7 @@
     margin: 0;
     font: inherit;
     letter-spacing: normal;
-    tab-size: 2;
+    tab-size: var(--greese-codeeditor-tab-size, 2);
     white-space: pre;
     overflow-wrap: normal;
   }
@@ -217,11 +217,14 @@
 
   // Where the caret is: the line and column, or a selection's spans.
   .greese-CodeEditor-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--greese-space-1) var(--greese-space-4);
+    justify-content: flex-end;
     padding-block: var(--greese-space-1);
     padding-inline: var(--greese-space-3);
     font-variant-numeric: tabular-nums;
     color: var(--greese-color-fg-muted);
-    text-align: end;
     border-block-start: 1px solid var(--greese-color-border);
   }
 

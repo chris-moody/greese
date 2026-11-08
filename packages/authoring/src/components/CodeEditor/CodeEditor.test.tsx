@@ -100,6 +100,10 @@ describe('CodeEditor', () => {
     )
     const status = container.querySelector('.greese-CodeEditor-status')!
     expect(status).toHaveTextContent('Ln 1, Col 1')
+    // No selection, no selection details.
+    expect(status).not.toHaveTextContent('selected')
+    expect(status).toHaveTextContent('Spaces: 2')
+    expect(status).toHaveTextContent('XML')
     const box = screen.getByRole<HTMLTextAreaElement>('textbox')
     const path = svg.indexOf('<path')
     box.setSelectionRange(path, path)
@@ -108,9 +112,11 @@ describe('CodeEditor', () => {
     box.setSelectionRange(path, path + 5)
     fireEvent.select(box)
     expect(status).toHaveTextContent('Ln 2, Col 3–8')
+    expect(status).toHaveTextContent('1 line, 5 characters selected')
     box.setSelectionRange(2, svg.length)
     fireEvent.select(box)
     expect(status).toHaveTextContent('Ln 1–3, Col 3–7')
+    expect(status).toHaveTextContent(`3 lines, ${svg.length - 2} characters selected`)
   })
 
   it('lights a span across lines, cut into each', () => {

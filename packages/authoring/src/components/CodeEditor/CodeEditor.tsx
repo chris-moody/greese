@@ -51,11 +51,37 @@ const lineAndColumn = (text: string, offset: number): [number, number] => [
 const span = (from: number, to: number): string =>
   from === to ? String(from) : `${from}–${to}`
 
-/** The status line: where the caret is, or what the selection spans. */
-const caretStatus = (text: string, start: number, end: number): string => {
+/** Each language's name in the status line. */
+const LANGUAGE_NAMES: Record<CodeLanguage, string> = {
+  css: 'CSS',
+  scss: 'SCSS',
+  js: 'JavaScript',
+  ts: 'TypeScript',
+  xml: 'XML',
+}
+
+const count = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`
+
+/**
+ * The status line's parts: where the caret is, or what the selection spans
+ * and how much it holds; then the tab size and the language.
+ */
+const caretStatus = (
+  text: string,
+  start: number,
+  end: number,
+  tabSize: number,
+  language: CodeLanguage
+): string[] => {
   const [fromLine, fromColumn] = lineAndColumn(text, start)
   const [toLine, toColumn] = lineAndColumn(text, end)
-  return `Ln ${span(fromLine, toLine)}, Col ${span(fromColumn, toColumn)}`
+  const parts = [`Ln ${span(fromLine, toLine)}, Col ${span(fromColumn, toColumn)}`]
+  if (end > start)
+    parts.push(
+      `${count(toLine - fromLine + 1, 'line')}, ${count(end - start, 'character')} selected`
+    )
+  parts.push(`Spaces: ${tabSize}`, LANGUAGE_NAMES[language])
+  return parts
 }
 
 /**
@@ -142,9 +168,12 @@ export interface CodeEditorProps {
   lineNumbers?: boolean
   /**
    * Adds a status line under the code: the caret's line and column, or the
-   * lines and columns a selection spans.
+   * lines and columns a selection spans with how many lines and characters
+   * it holds; then the tab size and the language.
    */
   status?: boolean
+  /** How many spaces a tab is wide. @default 2 */
+  tabSize?: number
   /** Classes for the box. */
   className?: string
 }
@@ -179,6 +208,7 @@ export const CodeEditor = ({
   wrap = false,
   lineNumbers = false,
   status = false,
+  tabSize = 2,
   className,
 }: CodeEditorProps): JSX.Element => {
   const layer = useRef<HTMLPreElement>(null)
@@ -247,6 +277,7 @@ export const CodeEditor = ({
         {
           // The gutter fits the last line's number, two digits at least.
           '--greese-codeeditor-digits': Math.max(2, String(lines.length).length),
+          '--greese-codeeditor-tab-size': tabSize,
         } as CSSProperties
       }
     >
@@ -300,7 +331,9 @@ export const CodeEditor = ({
       </div>
       {status && (
         <div className="greese-CodeEditor-status">
-          {caretStatus(value, caretStart, caretEnd)}
+          {caretStatus(value, caretStart, caretEnd, tabSize, language).map((part) => (
+            <span key={part}>{part}</span>
+          ))}
         </div>
       )}
     </div>

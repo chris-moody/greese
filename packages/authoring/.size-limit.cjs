@@ -230,7 +230,9 @@ module.exports = [
     // memoised (2.86 kB).
     // 2.9 → 3.1 kB (2026-11-08): the status line, the caret's line and
     // column or a selection's spans (3.04 kB).
-    limit: '3.1 kB',
+    // 3.1 → 3.2 kB (2026-11-08): the status line's selection counts, tab size
+    // and language (3.17 kB).
+    limit: '3.2 kB',
   },
   {
     name: '@greese/authoring: Timeline and an environment',
@@ -308,6 +310,8 @@ module.exports = [
     // stays put scrolled sideways, the caret's line and the marked line as a
     // line's tint (6.52 kB).
     // 6.55 → 6.6 kB (2026-11-08): the code box's status line (6.59 kB).
-    limit: '6.6 kB',
+    // 6.6 → 6.65 kB (2026-11-08): the status line's parts laid out in a row
+    // that wraps (6.62 kB).
+    limit: '6.65 kB',
   },
 ]
