@@ -17,6 +17,10 @@
     padding-inline: var(--greese-select-padding)
       calc(var(--greese-select-padding) + 1.5em);
     font: inherit;
+
+    // A line no taller than the text, so the frame's height is the size's on
+    // every pointer, not the font's default line.
+    line-height: 1.25;
     color: inherit;
     cursor: pointer;
     background: none;

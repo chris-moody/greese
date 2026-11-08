@@ -173,7 +173,7 @@ $blocks: (
     parts: ('empty', 'list', 'option', 'popup', 'toggle',),
     modifiers: (),
     part-modifiers: (),
-    variables: (),
+    variables: ('--greese-input-height',),
   ),
   'Container': (
     parts: (),
@@ -237,9 +237,9 @@ $blocks: (
   ),
   'EditableField': (
     parts: ('control', 'dial', 'dialDot', 'knob', 'label', 'none', 'number', 'picker', 'range', 'swatch', 'unit', 'value',),
-    modifiers: ('checkbox', 'column', 'radio', 'row', 'segmented', 'switch',),
+    modifiers: ('checkbox', 'column', 'radio', 'row', 'segmented', 'size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs', 'switch',),
     part-modifiers: (),
-    variables: ('--greese-editablefield-angle', '--greese-editablefield-dial', '--greese-editablefield-swatch',),
+    variables: ('--greese-editablefield-angle', '--greese-editablefield-dial', '--greese-editablefield-height', '--greese-editablefield-swatch',),
   ),
   'Embed': (
     parts: (),

@@ -1,3 +1,5 @@
+@use 'sass:map';
+@use '../../styles/controls';
 @use '../../styles/mixins';
 
 // A color picker's swatch paints literal colors, whatever the theme: the
@@ -95,8 +97,6 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.5rem 0.5
   // no content, so nothing else would stop it collapsing to a sliver.
   .greese-EditableField-swatch {
     inline-size: 100%;
-    min-inline-size: 1.75rem;
-    block-size: 1.75rem;
     padding: 0;
     cursor: pointer;
     background:
@@ -109,10 +109,13 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.5rem 0.5
     border-radius: var(--greese-corner-inset);
     box-shadow: inset 0 0 0 1px var(--greese-color-border-strong);
 
-    @media (pointer: coarse) {
-      min-inline-size: 2.25rem;
-      block-size: 2.25rem;
-    }
+    // As tall as the field's other controls at its size, on every pointer;
+    // a coarse pointer gets a 44px hit area around it instead.
+    position: relative;
+    min-inline-size: var(--greese-editablefield-height, 1.75rem);
+    block-size: var(--greese-editablefield-height, 1.75rem);
+
+    @include mixins.touch-target;
 
     &:focus-visible {
       outline: 2px solid var(--greese-color-focus-ring);
@@ -218,6 +221,12 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.5rem 0.5
       background: var(--greese-color-primary);
       border-radius: var(--greese-corner-round);
       translate: -50% 0;
+    }
+  }
+
+  @each $size, $spec in controls.$sizes {
+    .greese-EditableField--size-#{$size} {
+      --greese-editablefield-height: #{map.get($spec, height)};
     }
   }
 }

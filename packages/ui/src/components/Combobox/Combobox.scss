@@ -8,8 +8,10 @@
     position: relative;
     display: inline-grid;
     place-items: center;
-    inline-size: 1.75rem;
-    block-size: 1.75rem;
+
+    // Never taller than the field it sits in, so an xs field stays xs.
+    inline-size: min(1.75rem, var(--greese-input-height, 1.75rem) - 2px);
+    block-size: min(1.75rem, var(--greese-input-height, 1.75rem) - 2px);
     padding: 0;
     margin-inline-end: calc(-1 * var(--greese-space-2));
     color: var(--greese-color-fg-muted);

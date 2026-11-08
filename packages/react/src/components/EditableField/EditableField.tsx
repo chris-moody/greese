@@ -368,6 +368,7 @@ export const EditableField = (props: EditableFieldProps): JSX.Element | null => 
         'greese-EditableField',
         `greese-EditableField--${layout}`,
         `greese-EditableField--${type}`,
+        `greese-EditableField--size-${props.size ?? 'sm'}`,
         props.indeterminate && 'greese-EditableField--mixed',
         className
       )}

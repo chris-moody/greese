@@ -66,7 +66,11 @@ module.exports = [
     // 26.85 kB → 27.1 kB (2026-11-05): a size scale on Checkbox, Radio,
     // RadioGroup, Switch, Slider and ColorPicker — five classes each, setting
     // the shared control variables — plus NumberStepper's one rule (27.02 kB).
-    limit: '27.1 kB',
+    // 27.1 kB → 27.2 kB (2026-11-08): xs controls the same height everywhere:
+    // EditableField's size classes for its colour swatch, the swatch's touch
+    // area, Select's line height and Combobox's toggle fitting its field
+    // (27.15 kB).
+    limit: '27.2 kB',
   },
   {
     name: 'CSS: css/PageTransition.css',
