@@ -228,7 +228,9 @@ module.exports = [
     // and XML), with no dependency: no store (2.57 kB).
     // 2.8 → 2.9 kB (2026-11-08): line numbers and the caret's line, each line
     // memoised (2.86 kB).
-    limit: '2.9 kB',
+    // 2.9 → 3.1 kB (2026-11-08): the status line, the caret's line and
+    // column or a selection's spans (3.04 kB).
+    limit: '3.1 kB',
   },
   {
     name: '@greese/authoring: Timeline and an environment',
@@ -305,6 +307,7 @@ module.exports = [
     // 6.35 → 6.55 kB (2026-11-08): the code box's line-number gutter, which
     // stays put scrolled sideways, the caret's line and the marked line as a
     // line's tint (6.52 kB).
-    limit: '6.55 kB',
+    // 6.55 → 6.6 kB (2026-11-08): the code box's status line (6.59 kB).
+    limit: '6.6 kB',
   },
 ]

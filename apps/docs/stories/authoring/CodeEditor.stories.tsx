@@ -27,6 +27,8 @@ const meta = {
     invalid: false,
     disabled: false,
     readOnly: false,
+    lineNumbers: false,
+    status: false,
   },
   argTypes: {
     value: { control: false },
@@ -84,6 +86,18 @@ export const Synced: Story = {
         />
       </div>
     )
+  },
+}
+
+/**
+ * Numbered lines, and a status line saying where the caret is: its line and
+ * column, or the lines and columns a selection spans.
+ */
+export const LineNumbersAndStatus: Story = {
+  args: { lineNumbers: true, status: true },
+  render: function LineNumbersAndStatus(args) {
+    const [code, setCode] = useState(star)
+    return <CodeEditor {...args} value={code} onChange={setCode} />
   },
 }
 

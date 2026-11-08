@@ -45,9 +45,10 @@
   }
 
   // The numbers sit in the layer's lines, so the textarea starts its text
-  // past them.
+  // past them. The lines hold the inline padding, so a lit one runs edge to
+  // edge.
   .greese-CodeEditor .greese-CodeEditor-layer {
-    padding-inline-start: 0;
+    padding-inline: 0;
   }
 
   .greese-CodeEditor .greese-CodeEditor-input > .greese-Textarea-control {
@@ -61,6 +62,18 @@
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     scrollbar-gutter: stable;
+  }
+
+  // The code's own box, which the layer covers: the status line sits under
+  // it.
+  .greese-CodeEditor-body {
+    position: relative;
+    border-radius: inherit;
+
+    .greese-CodeEditor[data-status] > & {
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+    }
   }
 
   .greese-CodeEditor .greese-CodeEditor-layer {
@@ -94,7 +107,7 @@
   // code, not under the number.
   .greese-CodeEditor-line {
     display: block;
-    padding-inline-start: var(--greese-codeeditor-gutter);
+    padding-inline: var(--greese-codeeditor-gutter) var(--greese-space-3);
     background: var(--greese-codeeditor-line-bg, transparent);
     counter-increment: greese-code-line;
 
@@ -200,6 +213,16 @@
         background: color-mix(in srgb, var(--greese-color-primary) 30%, transparent);
       }
     }
+  }
+
+  // Where the caret is: the line and column, or a selection's spans.
+  .greese-CodeEditor-status {
+    padding-block: var(--greese-space-1);
+    padding-inline: var(--greese-space-3);
+    font-variant-numeric: tabular-nums;
+    color: var(--greese-color-fg-muted);
+    text-align: end;
+    border-block-start: 1px solid var(--greese-color-border);
   }
 
   // Read-only code in the palette: a `pre` holding a `Highlighted`.

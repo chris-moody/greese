@@ -35,8 +35,9 @@ It has:
   `EditableField` doesn't.
 
 - **Code:** `CodeEditor` colours CSS, SCSS, JavaScript, TypeScript and XML
-  with no dependency, numbers its lines, lights the caret's line and a span,
-  and keeps its selection in step with a canvas. Its palette is `pkg:@greese/authoring/scss/code`.
+  with no dependency, lights the caret's line and a span, can number its
+  lines and say where the caret is, and keeps its selection in step with a
+  canvas. Its palette is `pkg:@greese/authoring/scss/code`.
 
 - **Graphs:** `NodeGraph` draws nodes, their input ports and the edges
   between them in columns by depth from its sources, such as an SVG

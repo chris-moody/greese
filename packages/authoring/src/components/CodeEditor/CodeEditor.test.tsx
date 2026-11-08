@@ -59,7 +59,13 @@ describe('CodeEditor', () => {
 
   it('numbers its lines, and follows the caret’s line', () => {
     const { container } = render(
-      <CodeEditor aria-label="SVG" language="xml" value={svg} onChange={() => {}} />
+      <CodeEditor
+        aria-label="SVG"
+        language="xml"
+        value={svg}
+        onChange={() => {}}
+        lineNumbers
+      />
     )
     const editor = container.querySelector<HTMLElement>('.greese-CodeEditor')!
     expect(editor).toHaveAttribute('data-line-numbers')
@@ -78,13 +84,33 @@ describe('CodeEditor', () => {
     expect(lines[0]).not.toHaveAttribute('data-current')
   })
 
-  it('leaves the numbers out when asked', () => {
+  it('leaves the numbers and the status line out unless asked', () => {
     const { container } = render(
-      <CodeEditor aria-label="SVG" language="xml" value={svg} lineNumbers={false} />
+      <CodeEditor aria-label="SVG" language="xml" value={svg} />
     )
     expect(container.querySelector('.greese-CodeEditor')).not.toHaveAttribute(
       'data-line-numbers'
     )
+    expect(container.querySelector('.greese-CodeEditor-status')).toBeNull()
+  })
+
+  it('says where the caret is, or what the selection spans', () => {
+    const { container } = render(
+      <CodeEditor aria-label="SVG" language="xml" value={svg} status />
+    )
+    const status = container.querySelector('.greese-CodeEditor-status')!
+    expect(status).toHaveTextContent('Ln 1, Col 1')
+    const box = screen.getByRole<HTMLTextAreaElement>('textbox')
+    const path = svg.indexOf('<path')
+    box.setSelectionRange(path, path)
+    fireEvent.select(box)
+    expect(status).toHaveTextContent('Ln 2, Col 3')
+    box.setSelectionRange(path, path + 5)
+    fireEvent.select(box)
+    expect(status).toHaveTextContent('Ln 2, Col 3–8')
+    box.setSelectionRange(2, svg.length)
+    fireEvent.select(box)
+    expect(status).toHaveTextContent('Ln 1–3, Col 3–7')
   })
 
   it('lights a span across lines, cut into each', () => {

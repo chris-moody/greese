@@ -40,6 +40,24 @@ const lineAt = (text: string, offset: number): number => {
   return line
 }
 
+/** A character offset as a line and a column, both from 1. */
+const lineAndColumn = (text: string, offset: number): [number, number] => [
+  lineAt(text, offset) + 1,
+  // `lastIndexOf` reads a negative start as 0, which could find a newline at 0.
+  offset === 0 ? 1 : offset - text.lastIndexOf('\n', offset - 1),
+]
+
+/** `from` alone when it's `to`, else `from–to`. */
+const span = (from: number, to: number): string =>
+  from === to ? String(from) : `${from}–${to}`
+
+/** The status line: where the caret is, or what the selection spans. */
+const caretStatus = (text: string, start: number, end: number): string => {
+  const [fromLine, fromColumn] = lineAndColumn(text, start)
+  const [toLine, toColumn] = lineAndColumn(text, end)
+  return `Ln ${span(fromLine, toLine)}, Col ${span(fromColumn, toColumn)}`
+}
+
 /**
  * One line of the coloured layer. Its number is the stylesheet's (a counter),
  * so the layer's text stays the code's. Memoised: moving the caret re-renders
@@ -120,12 +138,13 @@ export interface CodeEditorProps {
   'aria-label'?: string
   /** Wraps long lines at the box's edge instead of scrolling sideways. */
   wrap?: boolean
-  /**
-   * Numbers the lines in a gutter that stays put as the code scrolls
-   * sideways. While the box has focus, the caret's line is lit softly.
-   * @default true
-   */
+  /** Numbers the lines in a gutter that stays put as the code scrolls sideways. */
   lineNumbers?: boolean
+  /**
+   * Adds a status line under the code: the caret's line and column, or the
+   * lines and columns a selection spans.
+   */
+  status?: boolean
   /** Classes for the box. */
   className?: string
 }
@@ -135,8 +154,9 @@ export interface CodeEditorProps {
  * twice, coloured underneath (`highlightCode`), and as a transparent textarea
  * on top, which is what you type in, select and tab to. The two share one
  * font, padding and scroll position. It's greese's `Textarea`, so a `Field`
- * labels and describes it as usual. Lines are numbered, and the caret's
- * line is lit while it has focus. `highlight` lights a span, and
+ * labels and describes it as usual. The caret's line is lit while it has
+ * focus; `lineNumbers` numbers the lines, and `status` says where the caret
+ * is. `highlight` lights a span, and
  * `selection` and `onSelectionChange` keep the code and a canvas in step.
  *
  * ```tsx
@@ -157,12 +177,14 @@ export const CodeEditor = ({
   onSelectionChange,
   'aria-label': label,
   wrap = false,
-  lineNumbers = true,
+  lineNumbers = false,
+  status = false,
   className,
 }: CodeEditorProps): JSX.Element => {
   const layer = useRef<HTMLPreElement>(null)
   const input = useRef<HTMLTextAreaElement>(null)
-  const [caretLine, setCaretLine] = useState(0)
+  // The selection as the box last reported it: its ends, and which one moves.
+  const [caret, setCaret] = useState({ start: 0, end: 0, backward: false })
   const tokens = useMemo(() => highlightCode(value, language), [value, language])
   const highlightStart = highlight?.start ?? 0
   const highlightEnd = highlight?.end ?? 0
@@ -187,7 +209,7 @@ export const CodeEditor = ({
     if (box.selectionStart === selectionStart && box.selectionEnd === selectionEnd) return
     box.setSelectionRange(selectionStart, selectionEnd)
     const line = lineAt(box.value, selectionStart)
-    setCaretLine(lineAt(box.value, selectionEnd))
+    setCaret({ start: selectionStart, end: selectionEnd, backward: false })
     const lineHeight = parseFloat(getComputedStyle(box).lineHeight) || 18
     const top = line * lineHeight
     if (top < box.scrollTop || top > box.scrollTop + box.clientHeight - lineHeight) {
@@ -196,14 +218,17 @@ export const CodeEditor = ({
     if (layer.current) layer.current.scrollTop = box.scrollTop
   }, [selectionStart, selectionEnd])
 
-  // The caret's line: where the selection's moving end is.
   const followCaret = (box: HTMLTextAreaElement) =>
-    setCaretLine(
-      lineAt(
-        box.value,
-        box.selectionDirection === 'backward' ? box.selectionStart : box.selectionEnd
-      )
-    )
+    setCaret({
+      start: box.selectionStart,
+      end: box.selectionEnd,
+      backward: box.selectionDirection === 'backward',
+    })
+  // The code may have changed since the selection was reported: clamp to it.
+  const caretStart = Math.min(caret.start, value.length)
+  const caretEnd = Math.min(caret.end, value.length)
+  // The caret's line: where the selection's moving end is.
+  const caretLine = lineAt(value, caret.backward ? caretStart : caretEnd)
 
   const reportSelection = (event: SyntheticEvent<HTMLTextAreaElement>) => {
     const { selectionStart: start, selectionEnd: end } = event.currentTarget
@@ -217,6 +242,7 @@ export const CodeEditor = ({
       data-invalid={invalid || undefined}
       data-wrap={wrap || undefined}
       data-line-numbers={lineNumbers || undefined}
+      data-status={status || undefined}
       style={
         {
           // The gutter fits the last line's number, two digits at least.
@@ -224,49 +250,59 @@ export const CodeEditor = ({
         } as CSSProperties
       }
     >
-      <pre ref={layer} className="greese-CodeEditor-layer" aria-hidden="true">
-        <code>
-          {lines.map((parts, i) => (
-            <Line
-              key={i}
-              parts={parts}
-              current={i === caretLine}
-              marked={markLine === i + 1}
-            />
-          ))}
-        </code>
-      </pre>
-      <Textarea
-        ref={input}
-        className="greese-CodeEditor-input"
-        rows={rows}
-        value={value}
-        disabled={disabled}
-        // No onChange is nothing to type into: a controlled box would undo each key.
-        readOnly={readOnly || !onChange}
-        aria-label={label}
-        // Textarea sets `aria-invalid` from this; one passed directly is
-        // overwritten, so the docs' copy never announced an error.
-        invalid={invalid}
-        // The box keeps its rows and scrolls, with the layer following.
-        autosize={false}
-        spellCheck={false}
-        autoCapitalize="off"
-        autoCorrect="off"
-        wrap={wrap ? 'soft' : 'off'}
-        data-language={language}
-        onChange={(event) => onChange?.(event.currentTarget.value)}
-        onSelect={reportSelection}
-        onFocus={(event) => followCaret(event.currentTarget)}
-        onScroll={(event) => {
-          if (!layer.current) return
-          const { scrollTop, scrollLeft } = event.currentTarget
-          layer.current.scrollTop = scrollTop
-          layer.current.scrollLeft = scrollLeft
-          // The gutter moves back by as much, so the numbers stay put.
-          layer.current.style.setProperty('--greese-codeeditor-scroll', `${scrollLeft}px`)
-        }}
-      />
+      <div className="greese-CodeEditor-body">
+        <pre ref={layer} className="greese-CodeEditor-layer" aria-hidden="true">
+          <code>
+            {lines.map((parts, i) => (
+              <Line
+                key={i}
+                parts={parts}
+                current={i === caretLine}
+                marked={markLine === i + 1}
+              />
+            ))}
+          </code>
+        </pre>
+        <Textarea
+          ref={input}
+          className="greese-CodeEditor-input"
+          rows={rows}
+          value={value}
+          disabled={disabled}
+          // No onChange is nothing to type into: a controlled box would undo each key.
+          readOnly={readOnly || !onChange}
+          aria-label={label}
+          // Textarea sets `aria-invalid` from this; one passed directly is
+          // overwritten, so the docs' copy never announced an error.
+          invalid={invalid}
+          // The box keeps its rows and scrolls, with the layer following.
+          autosize={false}
+          spellCheck={false}
+          autoCapitalize="off"
+          autoCorrect="off"
+          wrap={wrap ? 'soft' : 'off'}
+          data-language={language}
+          onChange={(event) => onChange?.(event.currentTarget.value)}
+          onSelect={reportSelection}
+          onFocus={(event) => followCaret(event.currentTarget)}
+          onScroll={(event) => {
+            if (!layer.current) return
+            const { scrollTop, scrollLeft } = event.currentTarget
+            layer.current.scrollTop = scrollTop
+            layer.current.scrollLeft = scrollLeft
+            // The gutter moves back by as much, so the numbers stay put.
+            layer.current.style.setProperty(
+              '--greese-codeeditor-scroll',
+              `${scrollLeft}px`
+            )
+          }}
+        />
+      </div>
+      {status && (
+        <div className="greese-CodeEditor-status">
+          {caretStatus(value, caretStart, caretEnd)}
+        </div>
+      )}
     </div>
   )
 }
