@@ -108,6 +108,7 @@ export {
 } from './node.ts'
 export {
   absolutize,
+  arcCenter,
   arcToCubics,
   cubicsToPath,
   parsePath,
@@ -117,6 +118,7 @@ export {
   transformPath,
   type AbsoluteCommand,
   type AbsoluteSegment,
+  type ArcCenter,
   type Command,
   type Cubic,
   type CubicSubpath,

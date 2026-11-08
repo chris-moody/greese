@@ -178,11 +178,26 @@ const lineCubic = (a: Point, b: Point): Cubic => [
   b,
 ]
 
+/** An elliptical arc in center form: where its ellipse is, and the turn it draws. */
+export interface ArcCenter {
+  cx: number
+  cy: number
+  /** The radii, scaled up where the written ones can't reach the endpoints. */
+  rx: number
+  ry: number
+  /** The ellipse's rotation, in radians. */
+  phi: number
+  /** The start angle and the signed turn, in radians, on the unrotated ellipse. */
+  theta: number
+  delta: number
+}
+
 /**
- * An elliptical arc as cubics: the SVG spec's endpoint-to-center conversion
- * (appendix B.2.4), then one cubic per quarter turn or less.
+ * An arc segment's ellipse and turn: the SVG spec's endpoint-to-center
+ * conversion (appendix B.2.4). `null` when the arc draws a straight line or
+ * nothing (equal endpoints, a zero radius).
  */
-export const arcToCubics = (
+export const arcCenter = (
   from: Point,
   rxIn: number,
   ryIn: number,
@@ -190,11 +205,11 @@ export const arcToCubics = (
   largeArc: number,
   sweep: number,
   to: Point
-): Cubic[] => {
-  if (from[0] === to[0] && from[1] === to[1]) return []
+): ArcCenter | null => {
+  if (from[0] === to[0] && from[1] === to[1]) return null
   let rx = Math.abs(rxIn)
   let ry = Math.abs(ryIn)
-  if (!rx || !ry) return [lineCubic(from, to)]
+  if (!rx || !ry) return null
   const phi = (rotation * Math.PI) / 180
   const cos = Math.cos(phi)
   const sin = Math.sin(phi)
@@ -221,6 +236,25 @@ export const arcToCubics = (
   let delta = angle((x1 - cx1) / rx, (y1 - cy1) / ry, (-x1 - cx1) / rx, (-y1 - cy1) / ry)
   if (!sweep && delta > 0) delta -= 2 * Math.PI
   if (sweep && delta < 0) delta += 2 * Math.PI
+  return { cx, cy, rx, ry, phi, theta, delta }
+}
+
+/** An elliptical arc as cubics: its center form (`arcCenter`), then one cubic per quarter turn or less. */
+export const arcToCubics = (
+  from: Point,
+  rxIn: number,
+  ryIn: number,
+  rotation: number,
+  largeArc: number,
+  sweep: number,
+  to: Point
+): Cubic[] => {
+  if (from[0] === to[0] && from[1] === to[1]) return []
+  const arc = arcCenter(from, rxIn, ryIn, rotation, largeArc, sweep, to)
+  if (!arc) return [lineCubic(from, to)]
+  const { cx, cy, rx, ry, theta, delta } = arc
+  const cos = Math.cos(arc.phi)
+  const sin = Math.sin(arc.phi)
   const count = Math.max(1, Math.ceil(Math.abs(delta) / (Math.PI / 2) - 1e-9))
   const step = delta / count
   const t = (4 / 3) * Math.tan(step / 4)

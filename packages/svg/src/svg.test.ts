@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   absolutize,
+  arcCenter,
   bounds,
   clipPath,
   convertElement,
@@ -109,6 +110,17 @@ describe('path data', () => {
     expect(quad!.curves).toHaveLength(2)
     // T reflects the control point: the second hump dips below.
     expect(quad!.curves[1]![1][1]).toBeLessThan(0)
+  })
+
+  it('finds an arc’s ellipse and turn, scaling radii too small to reach', () => {
+    // A half circle from (0,0) to (20,0), clockwise: centred between them.
+    const half = arcCenter([0, 0], 10, 10, 0, 0, 1, [20, 0])!
+    expect(half.cx).toBeCloseTo(10)
+    expect(half.cy).toBeCloseTo(0)
+    expect(half.delta).toBeCloseTo(Math.PI)
+    // Radius 5 can't span 20: scaled to 10, as browsers draw it.
+    expect(arcCenter([0, 0], 5, 5, 0, 0, 1, [20, 0])!.rx).toBeCloseTo(10)
+    expect(arcCenter([0, 0], 0, 5, 0, 0, 1, [20, 0])).toBeNull()
   })
 
   it('turns arcs into cubics that end where the arc does', () => {
