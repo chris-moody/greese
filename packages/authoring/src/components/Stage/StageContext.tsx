@@ -6,8 +6,10 @@ import {
   useAuthoringEnvironment,
   useAuthoringSelector,
 } from '../../environment/environment.tsx'
+import { guidesActions } from '../../state/guides.slice.ts'
 import { panelsActions } from '../../state/panels.slice.ts'
-import { selectShowRulers } from '../../state/selectors.ts'
+import { selectGuidesHidden, selectShowRulers } from '../../state/selectors.ts'
+import { GuidesToggle } from './GuidesToggle.tsx'
 import { RulerToggle } from './RulerToggle.tsx'
 
 export interface StageContextProps extends Omit<
@@ -20,7 +22,7 @@ export interface StageContextProps extends Omit<
 
 /**
  * The bar above the stage: a breadcrumb slot, the media's own controls
- * (`MediaConfig.stageBarSlot`) and the rulers' toggle. It runs in the editor's
+ * (`MediaConfig.stageBarSlot`) and the rulers' and guides' toggles. It runs in the editor's
  * provider, so the slot can read and change the store.
  *
  * ```tsx
@@ -35,6 +37,7 @@ export const StageContext = ({
   const { config } = useAuthoringEnvironment()
   const dispatch = useAuthoringDispatch()
   const showRulers = useAuthoringSelector(selectShowRulers)
+  const guidesHidden = useAuthoringSelector(selectGuidesHidden)
   const Slot = config.stageBarSlot
   return (
     <div {...props} className={cx('greese-StageContext', className)}>
@@ -44,6 +47,10 @@ export const StageContext = ({
       <RulerToggle
         showRulers={showRulers}
         onToggle={() => dispatch(panelsActions.setShowRulers(!showRulers))}
+      />
+      <GuidesToggle
+        showGuides={!guidesHidden}
+        onToggle={() => dispatch(guidesActions.setGuidesHidden(!guidesHidden))}
       />
     </div>
   )

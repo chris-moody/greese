@@ -1,6 +1,6 @@
 'use client'
 import type { JSX, MouseEvent } from 'react'
-import { IconButton } from '@greese/react'
+import { IconButton, Tooltip } from '@greese/react'
 import { ExternalLinkIcon } from '@greese/icons'
 import type { LibraryAsset } from '../../core/types/library.types.ts'
 import { HierarchicalListItem } from '../HierarchicalList/HierarchicalListItem.tsx'
@@ -30,18 +30,20 @@ export const LibraryAssetItem = ({
     {...props}
     iconPosition="end"
     icon={
-      <IconButton
-        className="greese-LibraryPanel-open"
-        size="sm"
-        tabIndex={-1}
-        label={`Open ${data.name}`}
-        onClick={(event: MouseEvent) => {
-          event.stopPropagation()
-          onOpen?.(data.id)
-        }}
-      >
-        <ExternalLinkIcon />
-      </IconButton>
+      <Tooltip content="Open" placement="bottom">
+        <IconButton
+          className="greese-LibraryPanel-open"
+          size="sm"
+          tabIndex={-1}
+          label={`Open ${data.name}`}
+          onClick={(event: MouseEvent) => {
+            event.stopPropagation()
+            onOpen?.(data.id)
+          }}
+        >
+          <ExternalLinkIcon />
+        </IconButton>
+      </Tooltip>
     }
   />
 )

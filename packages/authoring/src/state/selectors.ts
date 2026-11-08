@@ -90,6 +90,8 @@ export const selectActiveGuideScope = (state: AuthoringRootState) =>
   state.guides.activeScope
 export const selectDraggingGuide = (state: AuthoringRootState) => state.guides.dragging
 export const selectPendingGuide = (state: AuthoringRootState) => state.guides.pendingGuide
+/** Whether the guides are hidden: the stage bar's Guides toggle. */
+export const selectGuidesHidden = (state: AuthoringRootState) => !!state.guides.hidden
 export const selectActiveTimelineScope = (state: AuthoringRootState) =>
   state.timelineScope.activeScope
 export const selectTimelineToolByScope = (state: AuthoringRootState) =>

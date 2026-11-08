@@ -17,6 +17,7 @@ import { beginPointerDrag } from '../../core/pointerDrag.ts'
 import { guidesActions, type AuthoringGuide } from '../../state/guides.slice.ts'
 import {
   selectDraggingGuide,
+  selectGuidesHidden,
   selectPendingGuide,
   selectVisibleGuides,
 } from '../../state/selectors.ts'
@@ -59,7 +60,10 @@ export const GuidesOverlay = ({
   scale,
 }: GuidesOverlayProps): JSX.Element => {
   const dispatch = useAuthoringDispatch()
-  const guides = useAuthoringSelector(selectVisibleGuides)
+  const all = useAuthoringSelector(selectVisibleGuides)
+  // Hidden guides are kept, just not drawn or grabbed.
+  const hidden = useAuthoringSelector(selectGuidesHidden)
+  const guides = hidden ? [] : all
   const pending = useAuthoringSelector(selectPendingGuide)
   const dragging = useAuthoringSelector(selectDraggingGuide)
   const svgRef = useRef<SVGSVGElement>(null)

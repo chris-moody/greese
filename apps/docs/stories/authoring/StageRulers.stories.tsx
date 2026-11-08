@@ -45,3 +45,25 @@ export const Playground: Story = {
     )
   },
 }
+
+/**
+ * `ticks="auto"` spaces the ticks for the zoom: a 24-unit icon at 1600% gets
+ * a label every 5 units and a tick per unit, where the fixed spacing (25 and
+ * 100 units) would show one tick.
+ */
+export const AutoTicks: Story = {
+  args: { scale: 16, ticks: 'auto', offsetX: -192, offsetY: -80 },
+  render: function AutoTicks(args) {
+    return (
+      <div
+        style={{
+          position: 'relative',
+          blockSize: '14rem',
+          border: '1px solid var(--greese-color-border)',
+        }}
+      >
+        <StageRulers {...args} />
+      </div>
+    )
+  },
+}

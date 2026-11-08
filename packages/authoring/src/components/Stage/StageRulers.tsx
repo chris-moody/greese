@@ -11,8 +11,30 @@ import {
 import { cx, useTokenColors } from '@greese/react'
 import { beginPointerDrag } from '../../core/pointerDrag.ts'
 
-const TICK_MINOR = 25 // stage units between minor ticks
-const TICK_MAJOR = 100 // stage units between major ticks (labelled)
+/** Stage units between a ruler's ticks: every minor one is drawn, every major one labelled. */
+export interface RulerTicks {
+  minor: number
+  major: number
+}
+
+const FIXED_TICKS: RulerTicks = { minor: 25, major: 100 }
+
+/**
+ * Tick spacing that suits a zoom: labels at least 40px apart on a 1, 2, 5
+ * step, and minor ticks dividing them in fives (or tens, twos) at least 6px
+ * apart. A 24-unit icon at 1600% gets a label every 5 units and a tick per
+ * unit; a 1000px scene at 100% a label every 50 and a tick every 10.
+ */
+export const rulerTicks = (scale: number): RulerTicks => {
+  const power = 10 ** Math.floor(Math.log10(40 / scale))
+  const major =
+    [1, 2, 5, 10].map((n) => n * power).find((m) => m * scale >= 40) ?? 10 * power
+  const parts = [5, 10, 2].find((n) => (major / n) * scale >= 6) ?? 1
+  return { minor: major / parts, major }
+}
+
+/** A label without float noise: 0.30000000000000004 is 0.3. */
+const label = (n: number) => String(Number(n.toFixed(6)))
 
 /**
  * Thickness of each ruler strip, in CSS pixels. It is both the canvas's
@@ -42,9 +64,16 @@ export interface StageRulersProps extends Omit<ComponentPropsWithRef<'div'>, 'ch
   onCreateGuide?: (type: 'horizontal' | 'vertical', position: number) => void
   /** Called when a ruler drag is cancelled before release. */
   onCancelGuide?: () => void
+  /**
+   * The ticks' spacing in stage units, or `'auto'` to suit the zoom
+   * (`rulerTicks`): for a drawing measured in a few units, like an icon.
+   * @default { minor: 25, major: 100 }
+   */
+  ticks?: RulerTicks | 'auto'
 }
 
 function drawHorizontal(
+  ticks: RulerTicks,
   ctx: CanvasRenderingContext2D,
   w: number,
   h: number,
@@ -68,8 +97,8 @@ function drawHorizontal(
   ctx.font = '9px system-ui, sans-serif'
   ctx.textBaseline = 'top'
 
-  // Iterate over integer TICK_MINOR multiples that are visible
-  const stepPx = TICK_MINOR * scale
+  // Every visible multiple of the minor spacing
+  const stepPx = ticks.minor * scale
   if (stepPx < 1) return // too dense to draw meaningfully
 
   const kMin = Math.floor(-originPx / stepPx)
@@ -81,18 +110,19 @@ function drawHorizontal(
   for (let k = kMin; k <= kMax; k++) {
     const cx = originPx + k * stepPx
     if (cx < 0 || cx > w) continue
-    const stageX = k * TICK_MINOR
-    const isMajor = stageX % TICK_MAJOR === 0
+    const stageX = k * ticks.minor
+    const isMajor = k % Math.round(ticks.major / ticks.minor) === 0
     const tickH = isMajor ? 10 : 5
     ctx.beginPath()
     ctx.moveTo(cx + 0.5, h - tickH)
     ctx.lineTo(cx + 0.5, h)
     ctx.stroke()
-    if (isMajor) ctx.fillText(String(stageX), cx + 3, 1)
+    if (isMajor) ctx.fillText(label(stageX), cx + 3, 1)
   }
 }
 
 function drawVertical(
+  ticks: RulerTicks,
   ctx: CanvasRenderingContext2D,
   w: number,
   h: number,
@@ -116,7 +146,7 @@ function drawVertical(
   ctx.font = '9px system-ui, sans-serif'
   ctx.textBaseline = 'middle'
 
-  const stepPx = TICK_MINOR * scale
+  const stepPx = ticks.minor * scale
   if (stepPx < 1) return
 
   const kMin = Math.floor(-originPy / stepPx)
@@ -128,8 +158,8 @@ function drawVertical(
   for (let k = kMin; k <= kMax; k++) {
     const cy = originPy + k * stepPx
     if (cy < 0 || cy > h) continue
-    const stageY = k * TICK_MINOR
-    const isMajor = stageY % TICK_MAJOR === 0
+    const stageY = k * ticks.minor
+    const isMajor = k % Math.round(ticks.major / ticks.minor) === 0
     const tickLen = isMajor ? 10 : 5
     ctx.beginPath()
     ctx.moveTo(w - tickLen, cy + 0.5)
@@ -139,7 +169,7 @@ function drawVertical(
       ctx.save()
       ctx.translate(w / 2 - 1, cy - 1)
       ctx.rotate(-Math.PI / 2)
-      ctx.fillText(String(stageY), 2, 0)
+      ctx.fillText(label(stageY), 2, 0)
       ctx.restore()
     }
   }
@@ -162,10 +192,13 @@ export const StageRulers = ({
   onPreviewGuide,
   onCreateGuide,
   onCancelGuide,
+  ticks: tickOption = FIXED_TICKS,
   className,
   style,
   ...props
 }: StageRulersProps): JSX.Element => {
+  const ticks = tickOption === 'auto' ? rulerTicks(scale) : tickOption
+  const { minor, major } = ticks
   const wrapperRef = useRef<HTMLDivElement>(null)
   const hRef = useRef<HTMLCanvasElement>(null)
   const vRef = useRef<HTMLCanvasElement>(null)
@@ -214,6 +247,7 @@ export const StageRulers = ({
       const hCtx = h.getContext('2d')
       if (hCtx)
         drawHorizontal(
+          { minor, major },
           hCtx,
           hw,
           RULER_SIZE,
@@ -231,6 +265,7 @@ export const StageRulers = ({
       const vCtx = v.getContext('2d')
       if (vCtx)
         drawVertical(
+          { minor, major },
           vCtx,
           RULER_SIZE,
           vh,
@@ -246,7 +281,7 @@ export const StageRulers = ({
     const ro = new ResizeObserver(draw)
     ro.observe(h.parentElement!)
     return () => ro.disconnect()
-  }, [offsetX, offsetY, scale, fg, bg, divider])
+  }, [offsetX, offsetY, scale, fg, bg, divider, minor, major])
 
   // Drag-from-ruler → create guide.
   // Horizontal ruler (top)  → horizontal guide (fixed Y line): drag down to set Y.

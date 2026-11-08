@@ -52,6 +52,8 @@ export interface GuidesState {
    * symbol, a pose, an animation) so guides never leak across contexts.
    */
   activeScope: string
+  /** Whether the guides are hidden: kept, but not drawn (the stage bar's Guides toggle). */
+  hidden?: boolean
 }
 
 const initialState: GuidesState = {
@@ -59,6 +61,7 @@ const initialState: GuidesState = {
   dragging: null,
   pendingGuide: null,
   activeScope: ROOT_GUIDE_SCOPE,
+  hidden: false,
 }
 
 export const guidesSlice = createSlice({
@@ -84,6 +87,8 @@ export const guidesSlice = createSlice({
       const name = nextGuideName(state.guides.map((g) => g.name ?? ''))
       state.guides.push({ id, scope: state.activeScope, name, ...action.payload })
       state.pendingGuide = null
+      // A new guide is one you want to see.
+      state.hidden = false
     },
 
     /** Rename a guide — set via the guide-properties dialog (double-click on a guide). */
@@ -114,6 +119,11 @@ export const guidesSlice = createSlice({
     moveGuide: (state, action: PayloadAction<{ id: string; pos: number }>) => {
       const g = state.guides.find((g) => g.id === action.payload.id)
       if (g) g.pos = action.payload.pos
+    },
+
+    /** Show or hide the guides; hidden ones are kept. */
+    setGuidesHidden: (state, action: PayloadAction<boolean>) => {
+      state.hidden = action.payload
     },
 
     /** Set the live drag state (id + current position) while dragging. */

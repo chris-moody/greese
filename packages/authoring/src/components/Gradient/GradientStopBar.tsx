@@ -8,7 +8,7 @@ import {
   type MouseEvent,
   type PointerEvent,
 } from 'react'
-import { EditableField, IconButton } from '@greese/react'
+import { EditableField, IconButton, Tooltip } from '@greese/react'
 import { PlusIcon, TrashIcon } from '@greese/icons'
 import { beginPointerDrag } from '../../core/pointerDrag.ts'
 import {
@@ -168,17 +168,21 @@ export const GradientStopBar = ({
             disabled={disabled}
             onValueChange={(color) => color && commit(index, { ...current, color })}
           />
-          <IconButton size="sm" label="Add stop" disabled={disabled} onClick={onAdd}>
-            <PlusIcon />
-          </IconButton>
-          <IconButton
-            size="sm"
-            label={`Delete stop ${index + 1}`}
-            disabled={!canDelete}
-            onClick={() => commit(index, null)}
-          >
-            <TrashIcon />
-          </IconButton>
+          <Tooltip content="Add stop" placement="bottom">
+            <IconButton size="sm" label="Add stop" disabled={disabled} onClick={onAdd}>
+              <PlusIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip content="Delete stop" placement="bottom">
+            <IconButton
+              size="sm"
+              label={`Delete stop ${index + 1}`}
+              disabled={!canDelete}
+              onClick={() => commit(index, null)}
+            >
+              <TrashIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       )}
     </div>

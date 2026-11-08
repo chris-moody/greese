@@ -1,6 +1,6 @@
 'use client'
 import type { JSX, MouseEvent, ReactNode } from 'react'
-import { IconButton, Stack, type SpaceValue } from '@greese/react'
+import { IconButton, Stack, Tooltip, type SpaceValue } from '@greese/react'
 import {
   EyeIcon,
   EyeOffIcon,
@@ -68,26 +68,30 @@ export const LayerTreeItem = ({
         <Stack direction="row" gap={iconGap} className="greese-LayerTree-toggles">
           {startAdornment}
           {onToggleMuted && (
-            <IconButton
-              size="sm"
-              tabIndex={-1}
-              aria-pressed={!!muted}
-              label={`Mute ${name}`}
-              onClick={act(onToggleMuted)}
-            >
-              {muted ? <VolumeOffIcon /> : <VolumeIcon />}
-            </IconButton>
+            <Tooltip content={muted ? 'Unmute' : 'Mute'} placement="bottom">
+              <IconButton
+                size="sm"
+                tabIndex={-1}
+                aria-pressed={!!muted}
+                label={`Mute ${name}`}
+                onClick={act(onToggleMuted)}
+              >
+                {muted ? <VolumeOffIcon /> : <VolumeIcon />}
+              </IconButton>
+            </Tooltip>
           )}
           {onToggleHidden && (
-            <IconButton
-              size="sm"
-              tabIndex={-1}
-              aria-pressed={!!hidden}
-              label={`Hide ${name}`}
-              onClick={act(onToggleHidden)}
-            >
-              {hidden ? <EyeOffIcon /> : <EyeIcon />}
-            </IconButton>
+            <Tooltip content={hidden ? 'Show' : 'Hide'} placement="bottom">
+              <IconButton
+                size="sm"
+                tabIndex={-1}
+                aria-pressed={!!hidden}
+                label={`Hide ${name}`}
+                onClick={act(onToggleHidden)}
+              >
+                {hidden ? <EyeOffIcon /> : <EyeIcon />}
+              </IconButton>
+            </Tooltip>
           )}
           {structural ? (
             <IconButton size="sm" tabIndex={-1} label={`${name} is locked`} disabled>
@@ -95,15 +99,17 @@ export const LayerTreeItem = ({
             </IconButton>
           ) : (
             onToggleLocked && (
-              <IconButton
-                size="sm"
-                tabIndex={-1}
-                aria-pressed={!!locked}
-                label={`Lock ${name}`}
-                onClick={act(onToggleLocked)}
-              >
-                {locked ? <LockIcon /> : <LockOpenIcon />}
-              </IconButton>
+              <Tooltip content={locked ? 'Unlock' : 'Lock'} placement="bottom">
+                <IconButton
+                  size="sm"
+                  tabIndex={-1}
+                  aria-pressed={!!locked}
+                  label={`Lock ${name}`}
+                  onClick={act(onToggleLocked)}
+                >
+                  {locked ? <LockIcon /> : <LockOpenIcon />}
+                </IconButton>
+              </Tooltip>
             )
           )}
           {endAdornment}

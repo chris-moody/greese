@@ -84,15 +84,18 @@ export const GridControl = ({
   intervalOptions = GRID_INTERVAL_PRESETS,
 }: GridControlProps): JSX.Element => (
   <div className="greese-StageBar-group">
-    <IconButton
-      size="xs"
-      label="Grid"
-      aria-pressed={showGrid}
-      tone={showGrid ? 'primary' : 'neutral'}
-      onClick={onToggleGrid}
-    >
-      <GridIcon />
-    </IconButton>
+    <Tooltip content={showGrid ? 'Hide grid' : 'Show grid'} placement="bottom">
+      <IconButton
+        size="xs"
+        label="Grid"
+        aria-pressed={showGrid}
+        variant={showGrid ? 'soft' : 'ghost'}
+        tone={showGrid ? 'primary' : 'neutral'}
+        onClick={onToggleGrid}
+      >
+        <GridIcon />
+      </IconButton>
+    </Tooltip>
     <EditableSelect
       label="Grid spacing"
       className="greese-StageBar-value"

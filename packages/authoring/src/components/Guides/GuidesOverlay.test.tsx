@@ -40,6 +40,16 @@ const setup = () => {
 }
 
 describe('GuidesOverlay', () => {
+  it('draws nothing while the guides are hidden, and keeps them', () => {
+    const { env } = setup()
+    expect(screen.getAllByRole('slider').length).toBeGreaterThan(0)
+    act(() => {
+      env.store.dispatch(guidesActions.setGuidesHidden(true))
+    })
+    expect(screen.queryByRole('slider')).toBeNull()
+    expect(env.store.getState().guides.guides.length).toBeGreaterThan(0)
+  })
+
   it('draws each guide as a named slider at its position, and passes axe', async () => {
     const { container } = setup()
     const slider = screen.getByRole('slider', { name: /horizontal/ })

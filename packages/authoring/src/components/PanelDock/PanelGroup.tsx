@@ -1,6 +1,6 @@
 'use client'
 import { memo, useId, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
-import { IconButton } from '@greese/react'
+import { IconButton, Tooltip } from '@greese/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@greese/icons'
 import type { DropZone, ZoneLeaf } from '../../core/layoutTree.types.ts'
 
@@ -138,15 +138,17 @@ export const PanelGroup = memo(function PanelGroup({
             })}
           </div>
           {active?.collapsible !== false && (
-            <IconButton
-              size="sm"
-              label={collapsed ? `Expand ${title}` : `Collapse ${title}`}
-              aria-expanded={!collapsed}
-              aria-controls={bodyId}
-              onClick={() => onToggleCollapsed(leaf.id, !leaf.collapsed)}
-            >
-              {collapsed ? <ChevronDownIcon /> : <ChevronUpIcon />}
-            </IconButton>
+            <Tooltip content={collapsed ? 'Expand' : 'Collapse'} placement="bottom">
+              <IconButton
+                size="sm"
+                label={collapsed ? `Expand ${title}` : `Collapse ${title}`}
+                aria-expanded={!collapsed}
+                aria-controls={bodyId}
+                onClick={() => onToggleCollapsed(leaf.id, !leaf.collapsed)}
+              >
+                {collapsed ? <ChevronDownIcon /> : <ChevronUpIcon />}
+              </IconButton>
+            </Tooltip>
           )}
         </div>
       )}

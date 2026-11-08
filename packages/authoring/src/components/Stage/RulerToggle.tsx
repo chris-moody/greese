@@ -31,7 +31,7 @@ export const RulerToggle = ({
       {...props}
       label="Rulers"
       aria-pressed={showRulers}
-      size="sm"
+      size="xs"
       variant={showRulers ? 'soft' : 'ghost'}
       tone={showRulers ? 'primary' : 'neutral'}
       onClick={onToggle}

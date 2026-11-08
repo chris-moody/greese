@@ -69,12 +69,15 @@ export {
   type AuthoringBreadcrumbsProps,
   type BreadcrumbAccent,
 } from './components/Stage/Breadcrumbs.tsx'
+export { GuidesToggle, type GuidesToggleProps } from './components/Stage/GuidesToggle.tsx'
 export { RulerToggle, type RulerToggleProps } from './components/Stage/RulerToggle.tsx'
 export { StageContext, type StageContextProps } from './components/Stage/StageContext.tsx'
 export { StageHost, type StageHostProps } from './components/Stage/StageHost.tsx'
 export {
   RULER_SIZE,
+  rulerTicks,
   StageRulers,
+  type RulerTicks,
   type StageRulersProps,
 } from './components/Stage/StageRulers.tsx'
 export type { PanelRegistrant } from './components/PanelDock/panel.types.ts'

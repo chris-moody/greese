@@ -3,10 +3,12 @@ import { act, fireEvent, render, screen } from '@testing-library/react'
 import {
   AuthoringBreadcrumbs,
   createAuthoringEnvironment,
+  guidesActions,
   layersActions,
   makeLayer,
   NavMode,
   navigationActions,
+  rulerTicks,
   StageContext,
   StageHost,
   type RenderObject,
@@ -88,6 +90,29 @@ describe('StageContext and AuthoringBreadcrumbs', () => {
     )
   })
 
+  it('hides and shows the guides, keeping them, and a new guide shows them again', () => {
+    const env = createAuthoringEnvironment()
+    env.store.dispatch(guidesActions.addGuide({ axis: 'h', pos: 10 }))
+    render(
+      <env.Provider>
+        <StageContext />
+      </env.Provider>
+    )
+    const toggle = screen.getByRole('button', { name: 'Guides' })
+    expect(toggle).toHaveAttribute('aria-pressed', 'true')
+    fireEvent.click(toggle)
+    expect(env.store.getState().guides.hidden).toBe(true)
+    expect(env.store.getState().guides.guides).toHaveLength(1)
+    expect(screen.getByRole('button', { name: 'Guides' })).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    )
+    act(() => {
+      env.store.dispatch(guidesActions.addGuide({ axis: 'v', pos: 4 }))
+    })
+    expect(env.store.getState().guides.hidden).toBe(false)
+  })
+
   it('shows the subview trail, and steps back up it', () => {
     const env = createAuthoringEnvironment()
     render(
@@ -112,5 +137,15 @@ describe('StageContext and AuthoringBreadcrumbs', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Root' }))
     expect(env.store.getState().navigation.stack).toEqual([])
+  })
+})
+
+describe('rulerTicks', () => {
+  it('labels on a 1, 2, 5 step at least 40px apart, with ticks between', () => {
+    // An icon at 1600%: a label every 5 units, a tick per unit.
+    expect(rulerTicks(16)).toEqual({ minor: 1, major: 5 })
+    // A scene at 100% and at 50%.
+    expect(rulerTicks(1)).toEqual({ minor: 10, major: 50 })
+    expect(rulerTicks(0.5)).toEqual({ minor: 20, major: 100 })
   })
 })

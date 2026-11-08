@@ -19,7 +19,11 @@ It has:
   rename, reorder and nest; `LayerTree` binds it to the editor's layers, and
   `LibraryPanel` keeps its reusable symbols.
 - **The stage:** `StageHost` mounts a media's renderer; `StageContext`,
-  `StageBar`, `StageRulers` and `GuidesOverlay` go around it.
+  `StageBar`, `StageRulers` and `GuidesOverlay` go around it. The context
+  bar's `RulerToggle` and `GuidesToggle` show and hide them, and the rulers'
+  `ticks="auto"` suits a drawing measured in a few units.
+- **Marking side by side:** `distinguishingColor(index)` gives thirty colours
+  told apart at a glance, for a path's nodes or segments.
 - **Tools:** one list (`ToolDefinition`) draws the `Toolbar`, picks tools by
   hotkey (`useToolHotkeys`) and builds their stage cursors
   (`createToolCursors`); `ToolOptionsPanel` holds the active tool's settings.

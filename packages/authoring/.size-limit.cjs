@@ -25,7 +25,9 @@ module.exports = [
     // 8): frame evaluation and tween sampling, curve and bezier presets, the
     // level editor's curve, span playback and the ruler's label tiers
     // (12.44 kB, greese.js's cubicBezier left out as an app's anyway).
-    limit: '12.7 kB',
+    // 12.7 → 12.8 kB (2026-11-08): Pixels' thirty node colours
+    // (`distinguishingColor`), shared with Shaper (12.73 kB).
+    limit: '12.8 kB',
   },
   {
     name: '@greese/authoring/state: everything',
@@ -262,7 +264,10 @@ module.exports = [
     // 37.5 → 37.6 kB (2026-11-07): the frame width as a CSS variable, so the
     // playhead's box can be 24px (WCAG 2.5.8) while it draws the frame
     // (37.54 kB).
-    limit: '37.6 kB',
+    // 37.6 → 37.9 kB (2026-11-08): the context bar's guides toggle and the
+    // guides' hidden state, the rulers' automatic ticks, and tooltips on the
+    // layer rows', panels' and gradient stops' icon buttons (37.84 kB).
+    limit: '37.9 kB',
   },
   {
     name: '@greese/authoring/styles.css',
