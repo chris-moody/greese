@@ -29,7 +29,11 @@ module.exports = [
     // (`distinguishingColor`), shared with Shaper (12.73 kB).
     // 12.8 → 12.9 kB (2026-11-08): `splitLines`, the highlighter's tokens cut
     // into the code box's numbered lines (12.87 kB).
-    limit: '12.9 kB',
+    // 12.9 → 13.8 kB (2026-11-08): box editing for text tools shared by Pixels
+    // and Shaper: drawing a box from a drag, resizing with the opposite edge
+    // kept, moving by the outline, fitting a group, and the caret at a click
+    // (13.76 kB).
+    limit: '13.8 kB',
   },
   {
     name: '@greese/authoring/state: everything',
@@ -235,6 +239,24 @@ module.exports = [
     limit: '3.2 kB',
   },
   {
+    name: '@greese/authoring: TextBoxEditor',
+    path: 'dist/index.js',
+    import: '{ TextBoxEditor }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+      '@greese/js',
+    ],
+    // Words edited where they're drawn: a plain-text editable box with the
+    // caret at a click, no store (671 B).
+    limit: '750 B',
+  },
+  {
     name: '@greese/authoring: Timeline and an environment',
     path: 'dist/index.js',
     import: '{ Timeline, createAuthoringEnvironment }',
@@ -312,6 +334,8 @@ module.exports = [
     // 6.55 → 6.6 kB (2026-11-08): the code box's status line (6.59 kB).
     // 6.6 → 6.65 kB (2026-11-08): the status line's parts laid out in a row
     // that wraps (6.62 kB).
-    limit: '6.65 kB',
+    // 6.65 → 6.7 kB (2026-11-08): TextBoxEditor, words edited on a stage
+    // (6.67 kB).
+    limit: '6.7 kB',
   },
 ]

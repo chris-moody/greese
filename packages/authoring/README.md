@@ -39,6 +39,13 @@ It has:
   lines and say where the caret is, and keeps its selection in step with a
   canvas. Its palette is `pkg:@greese/authoring/scss/code`.
 
+- **Text boxes:** `TextBoxEditor` edits a text box's words where they're
+  drawn, the caret where the click was. The core's box editing (`beginBoxDrag`,
+  `dragBox`, `resizeBox`, `fitBoxTo`, `boxPressAt`) is what a text tool does
+  with a press: a handle resizes with the opposite edge kept, the outline
+  moves, the inside edits, and outside draws a new box. `caretRangeAt` finds
+  the caret at a click. Pixels and Shaper share them.
+
 - **Graphs:** `NodeGraph` draws nodes, their input ports and the edges
   between them in columns by depth from its sources, such as an SVG
   filter's primitives. Connect from a port's menu or by dragging from an

@@ -180,6 +180,10 @@ export {
   type CodeEditorProps,
   type HighlightedProps,
 } from './components/CodeEditor/CodeEditor.tsx'
+export {
+  TextBoxEditor,
+  type TextBoxEditorProps,
+} from './components/TextBoxEditor/TextBoxEditor.tsx'
 export { Timeline, type TimelineProps } from './timeline/Timeline/Timeline.tsx'
 export {
   TimelineHeader,

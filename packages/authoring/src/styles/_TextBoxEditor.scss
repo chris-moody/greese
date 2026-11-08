@@ -1,0 +1,17 @@
+@layer greese.components {
+  // Words edited where they're drawn: the stage sets the font, the colour and
+  // the box, and the text wraps inside it as the drawing wraps it.
+  .greese-TextBoxEditor {
+    position: absolute;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    cursor: text;
+    caret-color: var(--greese-color-primary);
+    outline: 1px dashed var(--greese-color-primary);
+    outline-offset: 0;
+  }
+}
