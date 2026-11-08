@@ -303,6 +303,14 @@ export const GripIcon = /* @__PURE__ */ createIcon(
   'Grip',
   'M6 4h.01|M6 8h.01|M6 12h.01|M10 4h.01|M10 8h.01|M10 12h.01'
 )
+export const GuidesIcon = /* @__PURE__ */ createIcon(
+  'Guides',
+  'M1.5 1.5h13v3h-10v10h-3z|M10 4.5v10|M4.5 10h10'
+)
+export const HandIcon = /* @__PURE__ */ createIcon(
+  'Hand',
+  'M4.75 9V4.25a1 1 0 0 1 2 0V8|M6.75 7.5V2.75a1 1 0 0 1 2 0V7.5|M8.75 7.5V3.5a1 1 0 0 1 2 0V8|M10.75 8V5.25a1 1 0 0 1 2 0v4.5a4.75 4.75 0 0 1-4.75 4.75h-.5a4 4 0 0 1-3-1.35L2.3 10.4a1 1 0 0 1 1.5-1.3L4.75 10V9'
+)
 export const HeartIcon = /* @__PURE__ */ createIcon(
   'Heart',
   'M8 13.5S2 10 2 5.75A2.75 2.75 0 0 1 8 4.5a2.75 2.75 0 0 1 6 1.25C14 10 8 13.5 8 13.5z'
