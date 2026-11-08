@@ -1,8 +1,10 @@
 'use client'
 import {
+  memo,
   useLayoutEffect,
   useMemo,
   useRef,
+  useState,
   type CSSProperties,
   type JSX,
   type ReactNode,
@@ -11,8 +13,10 @@ import {
 import { cx, Textarea } from '@greese/react'
 import {
   highlightCode,
+  splitLines,
   splitTokens,
   type CodeLanguage,
+  type CodeLine,
   type CodeRange,
   type CodeToken,
 } from '../../core/code/highlight.ts'
@@ -27,6 +31,44 @@ const colour = (tokens: readonly CodeToken[]): ReactNode[] =>
       token.text
     )
   )
+
+/** The line, from 0, that a character offset is on. */
+const lineAt = (text: string, offset: number): number => {
+  let line = 0
+  for (let i = text.indexOf('\n'); i !== -1 && i < offset; i = text.indexOf('\n', i + 1))
+    line++
+  return line
+}
+
+/**
+ * One line of the coloured layer. Its number is the stylesheet's (a counter),
+ * so the layer's text stays the code's. Memoised: moving the caret re-renders
+ * only the lines it leaves and enters.
+ */
+const Line = memo(function Line({
+  parts: [before, inside, after],
+  current,
+  marked,
+}: {
+  parts: CodeLine
+  current: boolean
+  marked: boolean
+}) {
+  return (
+    <span
+      className="greese-CodeEditor-line"
+      data-current={current || undefined}
+      data-mark={marked || undefined}
+    >
+      {colour(before)}
+      {inside.length > 0 && (
+        <mark className="greese-CodeEditor-highlight">{colour(inside)}</mark>
+      )}
+      {colour(after)}
+      {'\n'}
+    </span>
+  )
+})
 
 export interface HighlightedProps {
   /** The code. */
@@ -76,12 +118,14 @@ export interface CodeEditorProps {
   onSelectionChange?: (selection: CodeRange) => void
   /** The box's accessible name, when no `Field` labels it. */
   'aria-label'?: string
-  /**
-   * Wraps long lines at the box's edge instead of scrolling sideways. A
-   * marked line (`markLine`) is placed by line number, so with wrapping on
-   * it sits where that line would be unwrapped.
-   */
+  /** Wraps long lines at the box's edge instead of scrolling sideways. */
   wrap?: boolean
+  /**
+   * Numbers the lines in a gutter that stays put as the code scrolls
+   * sideways. While the box has focus, the caret's line is lit softly.
+   * @default true
+   */
+  lineNumbers?: boolean
   /** Classes for the box. */
   className?: string
 }
@@ -91,7 +135,8 @@ export interface CodeEditorProps {
  * twice, coloured underneath (`highlightCode`), and as a transparent textarea
  * on top, which is what you type in, select and tab to. The two share one
  * font, padding and scroll position. It's greese's `Textarea`, so a `Field`
- * labels and describes it as usual. `highlight` lights a span, and
+ * labels and describes it as usual. Lines are numbered, and the caret's
+ * line is lit while it has focus. `highlight` lights a span, and
  * `selection` and `onSelectionChange` keep the code and a canvas in step.
  *
  * ```tsx
@@ -112,11 +157,24 @@ export const CodeEditor = ({
   onSelectionChange,
   'aria-label': label,
   wrap = false,
+  lineNumbers = true,
   className,
 }: CodeEditorProps): JSX.Element => {
   const layer = useRef<HTMLPreElement>(null)
   const input = useRef<HTMLTextAreaElement>(null)
+  const [caretLine, setCaretLine] = useState(0)
   const tokens = useMemo(() => highlightCode(value, language), [value, language])
+  const highlightStart = highlight?.start ?? 0
+  const highlightEnd = highlight?.end ?? 0
+  const lines = useMemo(
+    () =>
+      splitLines(
+        highlightEnd > highlightStart
+          ? splitTokens(tokens, { start: highlightStart, end: highlightEnd })
+          : [tokens]
+      ),
+    [tokens, highlightStart, highlightEnd]
+  )
 
   // Select the span the owner asked for and bring it into view. Only when the
   // span itself changes, and differs from what's selected: typing changes the
@@ -128,7 +186,8 @@ export const CodeEditor = ({
     if (!box || selectionStart === undefined || selectionEnd === undefined) return
     if (box.selectionStart === selectionStart && box.selectionEnd === selectionEnd) return
     box.setSelectionRange(selectionStart, selectionEnd)
-    const line = box.value.slice(0, selectionStart).split('\n').length - 1
+    const line = lineAt(box.value, selectionStart)
+    setCaretLine(lineAt(box.value, selectionEnd))
     const lineHeight = parseFloat(getComputedStyle(box).lineHeight) || 18
     const top = line * lineHeight
     if (top < box.scrollTop || top > box.scrollTop + box.clientHeight - lineHeight) {
@@ -137,35 +196,44 @@ export const CodeEditor = ({
     if (layer.current) layer.current.scrollTop = box.scrollTop
   }, [selectionStart, selectionEnd])
 
+  // The caret's line: where the selection's moving end is.
+  const followCaret = (box: HTMLTextAreaElement) =>
+    setCaretLine(
+      lineAt(
+        box.value,
+        box.selectionDirection === 'backward' ? box.selectionStart : box.selectionEnd
+      )
+    )
+
   const reportSelection = (event: SyntheticEvent<HTMLTextAreaElement>) => {
     const { selectionStart: start, selectionEnd: end } = event.currentTarget
+    followCaret(event.currentTarget)
     onSelectionChange?.({ start, end })
   }
-
-  const lit = highlight && highlight.end > highlight.start
-  const [before, inside, after] = lit
-    ? splitTokens(tokens, highlight)
-    : [tokens, [] as CodeToken[], [] as CodeToken[]]
 
   return (
     <div
       className={cx('greese-CodeEditor', className)}
       data-invalid={invalid || undefined}
       data-wrap={wrap || undefined}
+      data-line-numbers={lineNumbers || undefined}
+      style={
+        {
+          // The gutter fits the last line's number, two digits at least.
+          '--greese-codeeditor-digits': Math.max(2, String(lines.length).length),
+        } as CSSProperties
+      }
     >
       <pre ref={layer} className="greese-CodeEditor-layer" aria-hidden="true">
-        {markLine !== undefined && (
-          <span
-            className="greese-CodeEditor-mark"
-            style={{ '--greese-codeeditor-line': markLine - 1 } as CSSProperties}
-          />
-        )}
         <code>
-          {colour(before)}
-          {lit && <mark className="greese-CodeEditor-highlight">{colour(inside)}</mark>}
-          {colour(after)}
-          {/* A last empty line keeps the layer as tall as the textarea. */}
-          {'\n'}
+          {lines.map((parts, i) => (
+            <Line
+              key={i}
+              parts={parts}
+              current={i === caretLine}
+              marked={markLine === i + 1}
+            />
+          ))}
         </code>
       </pre>
       <Textarea
@@ -188,11 +256,15 @@ export const CodeEditor = ({
         wrap={wrap ? 'soft' : 'off'}
         data-language={language}
         onChange={(event) => onChange?.(event.currentTarget.value)}
-        onSelect={onSelectionChange && reportSelection}
+        onSelect={reportSelection}
+        onFocus={(event) => followCaret(event.currentTarget)}
         onScroll={(event) => {
           if (!layer.current) return
-          layer.current.scrollTop = event.currentTarget.scrollTop
-          layer.current.scrollLeft = event.currentTarget.scrollLeft
+          const { scrollTop, scrollLeft } = event.currentTarget
+          layer.current.scrollTop = scrollTop
+          layer.current.scrollLeft = scrollLeft
+          // The gutter moves back by as much, so the numbers stay put.
+          layer.current.style.setProperty('--greese-codeeditor-scroll', `${scrollLeft}px`)
         }}
       />
     </div>

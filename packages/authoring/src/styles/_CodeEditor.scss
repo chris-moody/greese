@@ -5,6 +5,10 @@
   // shares its font, padding and scroll. Its rules are scoped under the box,
   // so they win over greese's Textarea in the same layer.
   .greese-CodeEditor {
+    // The space before the code: the numbers' column with a space each side,
+    // or only the padding without numbers.
+    --greese-codeeditor-gutter: var(--greese-space-3);
+
     position: relative;
     font: 0.75rem / 1.55 var(--greese-font-mono);
     background: var(--greese-color-surface);
@@ -20,6 +24,12 @@
       border-color: var(--greese-color-negative);
     }
 
+    &[data-line-numbers] {
+      --greese-codeeditor-gutter: calc(
+        var(--greese-codeeditor-digits, 2) * 1ch + 2 * var(--greese-space-3)
+      );
+    }
+
     @include code.tokens;
   }
 
@@ -32,6 +42,16 @@
     tab-size: 2;
     white-space: pre;
     overflow-wrap: normal;
+  }
+
+  // The numbers sit in the layer's lines, so the textarea starts its text
+  // past them.
+  .greese-CodeEditor .greese-CodeEditor-layer {
+    padding-inline-start: 0;
+  }
+
+  .greese-CodeEditor .greese-CodeEditor-input > .greese-Textarea-control {
+    padding-inline-start: var(--greese-codeeditor-gutter);
   }
 
   // Wrapped, both copies break the same lines: the same width, a gutter kept
@@ -50,8 +70,12 @@
     color: var(--greese-color-fg);
     pointer-events: none;
 
-    // Exactly the textarea's text, whatever a page sets on `code`.
+    // Exactly the textarea's text, whatever a page sets on `code`. As wide
+    // as its longest line, so a lit line spans the whole scroll.
     > code {
+      display: block;
+      min-inline-size: 100%;
+      inline-size: max-content;
       padding: 0;
       margin: 0;
       font: inherit;
@@ -62,17 +86,74 @@
     }
   }
 
-  // A marked line, such as a compile error's. It scrolls with the text,
-  // since the layer is its containing block.
-  .greese-CodeEditor-mark {
-    position: absolute;
-    inset-block-start: calc(
-      var(--greese-space-3) + var(--greese-codeeditor-line, 0) * 1lh
+  .greese-CodeEditor[data-wrap] .greese-CodeEditor-layer > code {
+    inline-size: auto;
+  }
+
+  // A line: its number hangs in the gutter, so wrapped rows start under the
+  // code, not under the number.
+  .greese-CodeEditor-line {
+    display: block;
+    padding-inline-start: var(--greese-codeeditor-gutter);
+    background: var(--greese-codeeditor-line-bg, transparent);
+    counter-increment: greese-code-line;
+
+    .greese-CodeEditor[data-line-numbers] &::before {
+      position: relative;
+      z-index: 1;
+      display: inline-block;
+      box-sizing: border-box;
+      inline-size: var(--greese-codeeditor-gutter);
+      padding-inline: var(--greese-space-3);
+      margin-inline-start: calc(-1 * var(--greese-codeeditor-gutter));
+      color: var(--greese-color-fg-muted);
+      text-align: end;
+      content: counter(greese-code-line);
+
+      // Covers the code scrolled under it, in the line's own tint.
+      background:
+        linear-gradient(
+          var(--greese-codeeditor-line-bg, transparent),
+          var(--greese-codeeditor-line-bg, transparent)
+        ),
+        var(--greese-color-surface);
+
+      // Scrolled sideways, the layer moves the numbers back by as much.
+      translate: var(--greese-codeeditor-scroll, 0) 0;
+    }
+  }
+
+  .greese-CodeEditor-layer > code {
+    counter-reset: greese-code-line;
+  }
+
+  // The caret's line, lit softly while the box has focus.
+  .greese-CodeEditor:focus-within .greese-CodeEditor-line[data-current] {
+    --greese-codeeditor-line-bg: color-mix(
+      in srgb,
+      var(--greese-color-fg) 6%,
+      transparent
     );
-    inset-inline: 0;
-    block-size: 1lh;
-    background: color-mix(in srgb, var(--greese-color-negative) 14%, transparent);
-    border-inline-start: 3px solid var(--greese-color-negative);
+
+    &::before {
+      color: var(--greese-color-fg);
+    }
+  }
+
+  // A marked line, such as a compile error's, with a bar at its start that
+  // stays put with the numbers.
+  .greese-CodeEditor .greese-CodeEditor-line[data-mark] {
+    --greese-codeeditor-line-bg: color-mix(
+      in srgb,
+      var(--greese-color-negative) 14%,
+      transparent
+    );
+
+    box-shadow: inset 3px 0 var(--greese-color-negative);
+
+    .greese-CodeEditor[data-line-numbers] &::before {
+      box-shadow: inset 3px 0 var(--greese-color-negative);
+    }
   }
 
   // A lit span: the code for what's selected elsewhere.

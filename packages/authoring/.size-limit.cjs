@@ -27,7 +27,9 @@ module.exports = [
     // (12.44 kB, greese.js's cubicBezier left out as an app's anyway).
     // 12.7 → 12.8 kB (2026-11-08): Pixels' thirty node colours
     // (`distinguishingColor`), shared with Shaper (12.73 kB).
-    limit: '12.8 kB',
+    // 12.8 → 12.9 kB (2026-11-08): `splitLines`, the highlighter's tokens cut
+    // into the code box's numbered lines (12.87 kB).
+    limit: '12.9 kB',
   },
   {
     name: '@greese/authoring/state: everything',
@@ -224,7 +226,9 @@ module.exports = [
     ],
     // The code box and its highlighter (CSS, SCSS, JavaScript, TypeScript
     // and XML), with no dependency: no store (2.57 kB).
-    limit: '2.8 kB',
+    // 2.8 → 2.9 kB (2026-11-08): line numbers and the caret's line, each line
+    // memoised (2.86 kB).
+    limit: '2.9 kB',
   },
   {
     name: '@greese/authoring: Timeline and an environment',
@@ -298,6 +302,9 @@ module.exports = [
     // 5.8 → 6.3 kB (2026-11-07): NodeGraph's nodes, sources, ports, output
     // handles and their touch-sized hit areas, and its edges (6.18 kB).
     // 6.3 → 6.35 kB (2026-11-08): the bar showing where a dragged tab lands in a tab row, and the code box's wrapped lines (6.30 kB).
-    limit: '6.35 kB',
+    // 6.35 → 6.55 kB (2026-11-08): the code box's line-number gutter, which
+    // stays put scrolled sideways, the caret's line and the marked line as a
+    // line's tint (6.52 kB).
+    limit: '6.55 kB',
   },
 ]

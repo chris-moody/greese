@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { highlightCode, splitTokens, type CodeLanguage as Language } from './highlight.ts'
+import {
+  highlightCode,
+  splitLines,
+  splitTokens,
+  type CodeLanguage as Language,
+} from './highlight.ts'
 
 const highlight = highlightCode
 
@@ -177,5 +182,27 @@ describe('splitTokens', () => {
   it('clamps a range past the text', () => {
     const [before, inside, after] = splitTokens([{ text: 'abc' }], { start: 1, end: 99 })
     expect([before, inside, after]).toEqual([[{ text: 'a' }], [{ text: 'bc' }], []])
+  })
+})
+
+describe('splitLines', () => {
+  it('cuts tokens at newlines, keeping their kind and part', () => {
+    const lines = splitLines([
+      [{ text: 'a\nb', kind: 'comment' }],
+      [{ text: 'c\n' }],
+      [{ text: 'd' }],
+    ])
+    expect(lines).toEqual([
+      [[{ text: 'a', kind: 'comment' }], [], []],
+      [[{ text: 'b', kind: 'comment' }], [{ text: 'c' }], []],
+      [[], [], [{ text: 'd' }]],
+    ])
+  })
+
+  it('has a line more than newlines', () => {
+    expect(splitLines([[{ text: '\n' }]])).toEqual([
+      [[], [], []],
+      [[], [], []],
+    ])
   })
 })

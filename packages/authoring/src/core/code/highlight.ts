@@ -329,3 +329,24 @@ export const splitTokens = (
   }
   return parts
 }
+
+/** One line of code: its tokens before, inside and after a lit range. */
+export type CodeLine = [CodeToken[], CodeToken[], CodeToken[]]
+
+/**
+ * `splitTokens`' three parts cut into lines at each newline, the newlines
+ * dropped: a token across lines becomes one per line, keeping its kind.
+ * There's always one line more than there are newlines, as in a textarea.
+ */
+export const splitLines = (parts: readonly (readonly CodeToken[])[]): CodeLine[] => {
+  const lines: CodeLine[] = [[[], [], []]]
+  parts.forEach((tokens, part) => {
+    for (const token of tokens) {
+      token.text.split('\n').forEach((text, i) => {
+        if (i > 0) lines.push([[], [], []])
+        if (text) lines.at(-1)![part]!.push({ text, kind: token.kind })
+      })
+    }
+  })
+  return lines
+}

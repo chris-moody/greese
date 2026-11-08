@@ -47,9 +47,57 @@ describe('CodeEditor', () => {
     const { container } = render(
       <CodeEditor aria-label="CSS" language="css" value=".a {" markLine={3} invalid />
     )
-    const mark = container.querySelector<HTMLElement>('.greese-CodeEditor-mark')!
-    expect(mark.style.getPropertyValue('--greese-codeeditor-line')).toBe('2')
-    expect(screen.getByRole('textbox')).toHaveAttribute('aria-invalid', 'true')
+    expect(container.querySelector('.greese-CodeEditor-line[data-mark]')).toBeNull()
+    const { container: three } = render(
+      <CodeEditor aria-label="CSS" language="css" value={'.a {\n\n  b'} markLine={3} />
+    )
+    const lines = three.querySelectorAll('.greese-CodeEditor-line')
+    expect(lines).toHaveLength(3)
+    expect(lines[2]).toHaveAttribute('data-mark')
+    expect(screen.getAllByRole('textbox')[0]).toHaveAttribute('aria-invalid', 'true')
+  })
+
+  it('numbers its lines, and follows the caret’s line', () => {
+    const { container } = render(
+      <CodeEditor aria-label="SVG" language="xml" value={svg} onChange={() => {}} />
+    )
+    const editor = container.querySelector<HTMLElement>('.greese-CodeEditor')!
+    expect(editor).toHaveAttribute('data-line-numbers')
+    expect(editor.style.getPropertyValue('--greese-codeeditor-digits')).toBe('2')
+    const lines = container.querySelectorAll('.greese-CodeEditor-line')
+    // A token across lines is cut in two, each keeping its colour.
+    expect([...lines].map((line) => line.textContent)).toEqual(
+      svg.split('\n').map((l) => `${l}\n`)
+    )
+    expect(lines[0]).toHaveAttribute('data-current')
+
+    const box = screen.getByRole<HTMLTextAreaElement>('textbox')
+    box.setSelectionRange(svg.indexOf('<path'), svg.indexOf('<path'))
+    fireEvent.select(box)
+    expect(lines[1]).toHaveAttribute('data-current')
+    expect(lines[0]).not.toHaveAttribute('data-current')
+  })
+
+  it('leaves the numbers out when asked', () => {
+    const { container } = render(
+      <CodeEditor aria-label="SVG" language="xml" value={svg} lineNumbers={false} />
+    )
+    expect(container.querySelector('.greese-CodeEditor')).not.toHaveAttribute(
+      'data-line-numbers'
+    )
+  })
+
+  it('lights a span across lines, cut into each', () => {
+    const { container } = render(
+      <CodeEditor
+        aria-label="SVG"
+        language="xml"
+        value={svg}
+        highlight={{ start: 2, end: 30 }}
+      />
+    )
+    const marks = container.querySelectorAll('.greese-CodeEditor-highlight')
+    expect([...marks].map((m) => m.textContent).join('\n')).toBe(svg.slice(2, 30))
   })
 
   it('selects the span it’s given, and reports the reader’s selection', () => {
