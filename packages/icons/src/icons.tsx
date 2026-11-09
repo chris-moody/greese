@@ -69,7 +69,7 @@ export const BlockIcon = /* @__PURE__ */ createIcon(
 )
 export const BoxingIcon = /* @__PURE__ */ createIcon(
   'Boxing',
-  'M4.5 4.5a3 3 0 0 1 3-3h1.5A3.5 3.5 0 0 1 12.5 5v2a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2z|M4.5 9v2.5A1.5 1.5 0 0 0 6 13h4a1.5 1.5 0 0 0 1.5-1.5V9|M4.5 5.5h-1a1.5 1.5 0 0 0 0 3h1'
+  'M4.758 6.078A3 3 0 0 1 7.39 1.944H9.867A3.5 3.5 0 0 1 13.367 6.125V8.125A2 2 0 0 1 11.367 10.125H3.559A2 2 0 0 1 4.787 6.052Z|M4.799 10.229v2.5A1.5 1.5 0 0 0 6.299 14.229h4a1.5 1.5 0 0 0 1.5 -1.5V10.229'
 )
 export const BracesIcon = /* @__PURE__ */ createIcon(
   'Braces',
@@ -97,7 +97,7 @@ export const CameraIcon = /* @__PURE__ */ createIcon(
 )
 export const CartIcon = /* @__PURE__ */ createIcon(
   'Cart',
-  'M1.5 2h2l1.6 8h7.4l1.5-5.5H4.3|M6.5 13.5h.01|M11.5 13.5h.01'
+  'M1.5 2h2l1.6 8h7.4l1.5 -5.5H4.3|M11.657 12A1 1 0 0 1 11.657 14A1 1 0 0 1 11.657 12Z|M6.38 12A1 1 0 0 1 6.38 14A1 1 0 0 1 6.38 12Z'
 )
 export const CheckIcon = /* @__PURE__ */ createIcon('Check', 'M3.5 8.5l3 3 6-7')
 export const CheckCircleIcon = /* @__PURE__ */ createIcon(
@@ -148,7 +148,7 @@ export const ColumnsIcon = /* @__PURE__ */ createIcon(
 )
 export const CommitIcon = /* @__PURE__ */ createIcon(
   'Commit',
-  'M2 8h4|M10 8h4|M8 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z'
+  'M2 8H5.386|M10.786 8.043H14|M8 10.5a2.5 2.5 0 1 0 0 -5a2.5 2.5 0 0 0 0 5z'
 )
 export const ContrastIcon = /* @__PURE__ */ createIcon(
   'Contrast',
@@ -160,7 +160,7 @@ export const CopyIcon = /* @__PURE__ */ createIcon(
 )
 export const CopyPlusIcon = /* @__PURE__ */ createIcon(
   'CopyPlus',
-  'M6.5 6.5h7v7h-7z|M9.5 3.5v-1h-7v7h1|M10 8.5v3|M8.5 10h3'
+  'M6.5 6.5h7v7h-7z|M10.024 6.28V2.5H2.5V9.5H6.154|M10 8.5v3|M8.5 10h3'
 )
 export const DocumentIcon = /* @__PURE__ */ createIcon(
   'Document',
@@ -181,7 +181,7 @@ export const DownloadIcon = /* @__PURE__ */ createIcon(
 )
 export const EarIcon = /* @__PURE__ */ createIcon(
   'Ear',
-  'M5.5 6.6a2.5 2.5 0 0 1 5 0c0 1.5-1.2 2-1.7 3-.4.8-.3 1.6-1.3 1.6a1.2 1.2 0 0 1-1.2-1.3|M4 7a4 4 0 0 1 8 0c0 3-2 4-2 5.6v1.1'
+  'M5.69 6.019A2.5 2.5 0 0 1 10.69 6.019C10.69 7.519 9.49 8.019 8.99 9.019C8.59 9.819 8.833 11.133 7.833 11.133A1.2 1.2 0 0 1 6.49 9.319|M4.198 2.941A4.95 4.568 0 0 1 12.993 4.197C13.572 5.069 13.77 7.934 12.668 8.99C10.322 11.115 12.607 11.511 9.914 13.634C7.498 15.642 3.061 13.162 3.932 9.663'
 )
 export const ExternalLinkIcon = /* @__PURE__ */ createIcon(
   'ExternalLink',
@@ -193,7 +193,7 @@ export const EyeIcon = /* @__PURE__ */ createIcon(
 )
 export const EyeOffIcon = /* @__PURE__ */ createIcon(
   'EyeOff',
-  'M6.4 4a6.3 6.3 0 0 1 1.6-.2c4 0 6.5 4.2 6.5 4.2a13 13 0 0 1-2 2.5|M4 5.3A12.6 12.6 0 0 0 1.5 8s2.5 4.2 6.5 4.2a6 6 0 0 0 2-.3|M2 2l12 12'
+  'M8 10a2 2 0 1 0 0 -4a2 2 0 0 0 0 4z|M1.5 8S4 3.5 8 3.5S14.5 8 14.5 8S12 12.5 8 12.5S1.5 8 1.5 8z|M2 2l12 12'
 )
 export const EyedropperIcon = /* @__PURE__ */ createIcon(
   'Eyedropper',
@@ -209,7 +209,7 @@ export const FaceSadIcon = /* @__PURE__ */ createIcon(
 )
 export const FeatherIcon = /* @__PURE__ */ createIcon(
   'Feather',
-  'M10.333 0.333c-5.6 2.2 -8 2.867 -8 7.533l-2.133 2.333M2.4 8.267c3.333 0 6 -2 8 -8M2.467 7.733c0.333 0.667 1.333 -3.333 5.333 -4.667M4.667 5.333L5.333 2.667'
+  'M13.369 2.517C6.373 3.566 3.834 5.077 5.369 10.05L3.236 12.383M5.436 10.45C10.173 10.746 11.575 10.551 13.436 2.45M5.503 9.917C5.836 10.583 5.153 6.215 11.206 5.011M7.027 6.993L8.174 3.996'
 )
 export const FilmIcon = /* @__PURE__ */ createIcon(
   'Film',
@@ -252,7 +252,7 @@ export const FolderPlusIcon = /* @__PURE__ */ createIcon(
 )
 export const ForkIcon = /* @__PURE__ */ createIcon(
   'Fork',
-  'M5.5 13.5V8.5a2.5 2.5 0 0 1 2.5-2.5h3|M9 3.5l2.5 2.5L9 8.5'
+  'M7.213 14.703V11.624A2.5 2.5 0 0 1 9.942 9.103H13.396|M10.948 6.597l2.5 2.5L10.948 11.597|M7.213 14.703V1.982|M4.694 4.372l2.5 -2.5L9.694 4.372'
 )
 export const FullscreenIcon = /* @__PURE__ */ createIcon(
   'Fullscreen',
@@ -264,11 +264,11 @@ export const FullscreenExitIcon = /* @__PURE__ */ createIcon(
 )
 export const GamepadIcon = /* @__PURE__ */ createIcon(
   'Gamepad',
-  'M4.5 5.5h7a3 3 0 0 1 0 6 2 2 0 0 1-1.6-.8l-.4-.7H6.5l-.4.7A2 2 0 0 1 4.5 11.5a3 3 0 0 1 0-6z|M6 7.5h1.5|M6.75 6.75v1.5|M10.2 8h.01'
+  'M4.514 4.771H11.392A3 3 0 0 1 11.5 11.5A2 2 0 0 1 9.9 10.7L9.5 10H6.5L6.1 10.7A2 2 0 0 1 4.5 11.5A3 3 0 0 1 4.514 4.745Z|M3.656 8.2h1.5|M4.406 7.45v1.5|M11.797 8.161h0.01'
 )
 export const GavelIcon = /* @__PURE__ */ createIcon(
   'Gavel',
-  'M9.5 2.5l4 4-2 2-4-4z|M8.5 5.5L3 11l2 2 5.5-5.5|M2 14.5h6'
+  'M4.959 4.774l4.204 5.797l-2.707 2.344l-4.204 -5.797z|M8.272 8.323L14.535 3.711l-1.677 -2.278l-6.263 4.612|M3.109 14.51h6'
 )
 export const GiftIcon = /* @__PURE__ */ createIcon(
   'Gift',
@@ -338,7 +338,7 @@ export const ImageIcon = /* @__PURE__ */ createIcon(
 )
 export const ImagesIcon = /* @__PURE__ */ createIcon(
   'Images',
-  'M5.5 2.5h8v8h-8z|M2.5 5.5v8h8'
+  'M5.5 2.5h8v8h-8z|M5.526 5.543H2.283V13.5H10.5V10.655'
 )
 export const ImportIcon = /* @__PURE__ */ createIcon(
   'Import',
@@ -359,7 +359,7 @@ export const InspectIcon = /* @__PURE__ */ createIcon(
 )
 export const IntersectIcon = /* @__PURE__ */ createIcon(
   'Intersect',
-  'M6 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z|M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'
+  'M5.914 11.945a4 4 0 1 0 0 -8a4 4 0 0 0 0 8z|M9.914 11.945a4 4 0 1 0 0 -8a4 4 0 0 0 0 8z'
 )
 export const ItalicIcon = /* @__PURE__ */ createIcon(
   'Italic',
@@ -379,11 +379,11 @@ export const LineChartIcon = /* @__PURE__ */ createIcon(
 )
 export const LinkIcon = /* @__PURE__ */ createIcon(
   'Link',
-  'M6.3 9.7l3.4-3.4|M9.2 4.8l1-1a2.4 2.4 0 0 1 3.4 3.4l-1 1|M6.8 11.2l-1 1a2.4 2.4 0 0 1-3.4-3.4l1-1'
+  'M6.355 9.863l3.4 -3.4|M8.477 4.406l1 -1a2.4 2.4 0 0 1 3.4 3.4l-1 1|M7.954 11.564l-1 1a2.4 2.4 0 0 1 -3.4 -3.4l1 -1'
 )
 export const LinkOffIcon = /* @__PURE__ */ createIcon(
   'LinkOff',
-  'M9.2 4.8l1-1a2.4 2.4 0 0 1 3.4 3.4l-1 1|M6.8 11.2l-1 1a2.4 2.4 0 0 1-3.4-3.4l1-1|M2 2l12 12'
+  'M8.477 4.406l1 -1a2.4 2.4 0 0 1 3.4 3.4l-1 1|M7.954 11.564l-1 1a2.4 2.4 0 0 1 -3.4 -3.4l1 -1|M2 2l12 12|M6.355 9.863l3.4 -3.4'
 )
 export const LockIcon = /* @__PURE__ */ createIcon(
   'Lock',
@@ -399,7 +399,7 @@ export const LogoutIcon = /* @__PURE__ */ createIcon(
 )
 export const LoopIcon = /* @__PURE__ */ createIcon(
   'Loop',
-  'M3 6.5A2.5 2.5 0 0 1 5.5 4h5A2.5 2.5 0 0 1 13 6.5|M11 2.2L13.3 4.2 11 6.2|M13 9.5A2.5 2.5 0 0 1 10.5 12h-5A2.5 2.5 0 0 1 3 9.5|M5 13.8L2.7 11.8 5 9.8'
+  'M3 6.5A2.5 2.5 0 0 1 5.5 4H12.966|M11 2.014L13.3 4.014L11 6.014|M13 9.5A2.5 2.5 0 0 1 10.5 12H3.497|M4.971 13.943L2.671 11.943L4.971 9.943'
 )
 export const MenuIcon = /* @__PURE__ */ createIcon(
   'Menu',
@@ -424,7 +424,7 @@ export const MotionIcon = /* @__PURE__ */ createIcon(
 )
 export const MotorcycleIcon = /* @__PURE__ */ createIcon(
   'Motorcycle',
-  'M4 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z|M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z|M4 10h3l2.5-3.5H12|M7 6.5h2.5|M11 4h2'
+  'M13.124 12.548a1.954 1.845 0 1 0 0 -3.69a1.954 1.845 0 0 0 0 3.69z|M3.155 12.572a1.954 1.845 0 1 0 0 -3.69a1.954 1.845 0 0 0 0 3.69z|M10.794 7.204L9.105 11.014L7.19 11L4.217 7.199H1.244|M13.042 8.686L9.671 4.309H7.245|M11.386 6.957H8.482L6.006 8.785'
 )
 export const MountainIcon = /* @__PURE__ */ createIcon(
   'Mountain',
@@ -444,11 +444,11 @@ export const NavigateIcon = /* @__PURE__ */ createIcon(
 )
 export const PaintBucketIcon = /* @__PURE__ */ createIcon(
   'PaintBucket',
-  'M7 2.2L2.2 7l4.8 4.8L11.8 7z|M9.5 4.7L4.7 9.5|M13 10c.7 1 1 1.6 1 2a1 1 0 0 1-2 0c0-.4.3-1 1-2z'
+  'M7.619 3.358L2.21 8.931l5.409 5.573L13.027 8.931z|M13.06 9.409c0.968 1.352 1.383 2.162 1.383 2.703a1.383 1.352 0 0 1 -2.767 0c0 -0.541 0.415 -1.352 1.383 -2.703z|M8.117 7.104A1.005 1.005 0 0 1 8.117 9.114A1.005 1.005 0 0 1 8.117 7.104Z|M1.443 1.196L7.219 7.377'
 )
 export const PaintBucketOffIcon = /* @__PURE__ */ createIcon(
   'PaintBucketOff',
-  'M7 2.2L2.2 7l4.8 4.8L11.8 7z|M9.5 4.7L4.7 9.5|M1.5 1.5l13 13'
+  'M7.619 3.358L2.21 8.931l5.409 5.573L13.027 8.931z|M13.06 9.409c0.968 1.352 1.383 2.162 1.383 2.703a1.383 1.352 0 0 1 -2.767 0c0 -0.541 0.415 -1.352 1.383 -2.703z|M8.117 7.104A1.005 1.005 0 0 1 8.117 9.114A1.005 1.005 0 0 1 8.117 7.104Z|M1.443 1.196L7.219 7.377|M14.5 1.5l-13 13'
 )
 export const PaletteIcon = /* @__PURE__ */ createIcon(
   'Palette',
@@ -456,7 +456,7 @@ export const PaletteIcon = /* @__PURE__ */ createIcon(
 )
 export const PartyIcon = /* @__PURE__ */ createIcon(
   'Party',
-  'M2.5 13.5l4-9 5.5 5.5z|M9 2.5V4|M12.2 4.3l-1 1|M13.5 8H12|M11 2l-.7.7'
+  'M2.5 13.5l4 -9l5.5 5.5z|M8.053 1.791L7.957 3.287|M13.057 4.64l-1 1|M14.46 8.075H12.96|M11.636 2.427l-1.427 1.765'
 )
 export const PauseIcon = /* @__PURE__ */ createIcon('Pause', 'M6 3.5v9|M10 3.5v9')
 export const PencilIcon = /* @__PURE__ */ createIcon(
@@ -500,7 +500,7 @@ export const PlusSquareIcon = /* @__PURE__ */ createIcon(
 )
 export const RadioIcon = /* @__PURE__ */ createIcon(
   'Radio',
-  'M2 6.5h12v7H2z|M4.5 2.5l7-1.2|M5.5 11.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5z|M9.5 9h3|M9.5 11.5h3'
+  'M2 6.5h12v7H2z|M4.902 6.582l5.453 -4.55|M5.5 11.5a1.75 1.75 0 1 0 0 -3.5a1.75 1.75 0 0 0 0 3.5z|M9.5 9h3|M9.5 11.5h3'
 )
 export const RectangleIcon = /* @__PURE__ */ createIcon('Rectangle', 'M2 4.5h12v7H2z')
 export const RedoIcon = /* @__PURE__ */ createIcon(
@@ -509,7 +509,7 @@ export const RedoIcon = /* @__PURE__ */ createIcon(
 )
 export const RefreshIcon = /* @__PURE__ */ createIcon(
   'Refresh',
-  'M13.5 8a5.5 5.5 0 1 1-1.7-4|M13.8 2.2v3.6h-3.6'
+  'M13.5 8A5.5 5.5 0 1 1 13.44 5.325|M13.8 2.2v3.6h-3.6'
 )
 export const ReplayIcon = /* @__PURE__ */ createIcon(
   'Replay',
@@ -525,7 +525,7 @@ export const RotateRightIcon = /* @__PURE__ */ createIcon(
 )
 export const RouteIcon = /* @__PURE__ */ createIcon(
   'Route',
-  'M4.5 5.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z|M11.5 14.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z|M4.5 5.5v2.5a2 2 0 0 0 2 2h3a2 2 0 0 1 2 2v.5'
+  'M5.029 5.343a2 2 0 1 0 0 -4a2 2 0 0 0 0 4z|M11.327 14.6a2 2 0 1 0 0 -4a2 2 0 0 0 0 4z|M5.029 5.343V7.171A2 2.338 0 0 0 6.817 8.174H9.277A2 2 0 0 1 11.32 9.505V10.554'
 )
 export const RowsIcon = /* @__PURE__ */ createIcon(
   'Rows',
@@ -537,7 +537,7 @@ export const RulerIcon = /* @__PURE__ */ createIcon(
 )
 export const RunIcon = /* @__PURE__ */ createIcon(
   'Run',
-  'M9.8 3.4a1.4 1.4 0 1 0 0-2.8 1.4 1.4 0 0 0 0 2.8z|M7.2 5l2.6-.6 1.8 2.6 2 .6|M9.8 7l-.6 3 2 4|M9.2 10l-3 1-1.6 3|M6.4 6.4l-3 .6'
+  'M7.481 3.732a1.266 1.266 0 1 0 0 -2.532a1.266 1.266 0 0 0 0 2.532z|M2.424 5.516L4.71 7.701L7.838 5.579L11.716 6.742L10.679 9.818|M8.381 9.87L9.139 12.835L12.43 12.505|M8.054 9.789L4.17 11.462L3.349 14.711|M7.881 6.53L8.393 10.098'
 )
 export const SaveIcon = /* @__PURE__ */ createIcon(
   'Save',
@@ -634,11 +634,11 @@ export const SunIcon = /* @__PURE__ */ createIcon(
 )
 export const SwapHorizontalIcon = /* @__PURE__ */ createIcon(
   'SwapHorizontal',
-  'M3 6h10|M10.5 3.5L13 6l-2.5 2.5|M13 11H3|M5.5 8.5L3 11l2.5 2.5'
+  'M3 5h10|M10.5 2.5L13 5l-2.5 2.5|M13 11H3|M5.5 8.5L3 11l2.5 2.5'
 )
 export const SwapVerticalIcon = /* @__PURE__ */ createIcon(
   'SwapVertical',
-  'M6 13V3|M3.5 5.5L6 3l2.5 2.5|M10 3v10|M7.5 10.5L10 13l2.5-2.5'
+  'M5 13V3|M2.5 5.5L5 3l2.5 2.5|M11 3v10|M8.5 10.5L11 13l2.5 -2.5'
 )
 export const TargetIcon = /* @__PURE__ */ createIcon(
   'Target',
@@ -684,7 +684,7 @@ export const TrendUpIcon = /* @__PURE__ */ createIcon(
 export const TriangleIcon = /* @__PURE__ */ createIcon('Triangle', 'M8 2.8l5.5 10.4h-11z')
 export const TrophyIcon = /* @__PURE__ */ createIcon(
   'Trophy',
-  'M5 2.5h6V6a3 3 0 0 1-6 0z|M5 3.5H3a1.5 1.5 0 0 0 2 2.8|M11 3.5h2a1.5 1.5 0 0 1-2 2.8|M8 9v2|M5.5 13.5h5'
+  'M5 2.5h6V6a3 3 0 0 1 -6 0z|M5 3.5H3a1.5 1.5 0 0 0 2 2.8|M11 3.5h2a1.5 1.5 0 0 1 -2 2.8|M8 9V13.387|M5.5 13.5h5'
 )
 export const UnderlineIcon = /* @__PURE__ */ createIcon(
   'Underline',
@@ -721,7 +721,7 @@ export const VolumeOffIcon = /* @__PURE__ */ createIcon(
 )
 export const WandIcon = /* @__PURE__ */ createIcon(
   'Wand',
-  'M2.5 13.5l8.5-8.5|M9.5 3.5l3 3|M13 1l.6 1.4 1.4.6-1.4.6L13 5l-.6-1.4L11 3l1.4-.6z'
+  'M1.357 14.5L6.802 9.585|M5.67 7.726l3 3|M14.999 5.494l-2.927 1.274l-1.24 2.939l-1.274 -2.927L6.619 5.545l2.927 -1.274L10.783 1.33l1.274 2.927z'
 )
 export const WarningIcon = /* @__PURE__ */ createIcon(
   'Warning',
@@ -745,7 +745,7 @@ export const WrapTextIcon = /* @__PURE__ */ createIcon(
 )
 export const WrenchIcon = /* @__PURE__ */ createIcon(
   'Wrench',
-  'M11 2a3.2 3.2 0 0 0-2.2 5.4L2.9 13.3a1.4 1.4 0 0 0 2 2l5.9-5.9A3.2 3.2 0 0 0 14 4.1l-1.7 1.7-1.6-1.6z'
+  'M11.631 2.197A2.794 2.901 0 0 0 6.565 7.042L2.088 11.731A1.222 1.269 0 0 0 4.133 14.451L9.329 9.147A2.794 2.901 0 0 0 13.328 3.467L10.983 6.276L9.423 4.933Z'
 )
 export const ZoomInIcon = /* @__PURE__ */ createIcon(
   'ZoomIn',
