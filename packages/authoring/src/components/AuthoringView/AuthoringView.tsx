@@ -21,12 +21,14 @@ export interface AuthoringViewProps extends Omit<
   stageContext?: ReactNode
   /** Classes for the view's root. */
   className?: string
+  /** Whether the stage's wheel zooms and pans, as in Pixels (`StageHost`'s `wheelZoom`). @default true */
+  wheelZoom?: boolean
 }
 
 /**
  * A whole editor: the docked workspace, with the stage (its context bar,
- * renderer and rulers) and the timeline in their reserved places, and undo
- * and redo on the keyboard. Every editor built on the package had this shell.
+ * renderer and rulers) and the timeline in their reserved places, undo and
+ * redo on the keyboard, and wheel zoom on the stage. Every editor built on the package had this shell.
  *
  * ```tsx
  * <env.Provider>
@@ -38,6 +40,7 @@ export const AuthoringView = ({
   timeline = {},
   stageContext,
   className,
+  wheelZoom = true,
   ...dock
 }: AuthoringViewProps): JSX.Element => {
   const showRulers = useAuthoringSelector(selectShowRulers)
@@ -49,7 +52,7 @@ export const AuthoringView = ({
         <div className="greese-AuthoringView-stage">
           {stageContext ?? <StageContext />}
           <div className="greese-AuthoringView-canvas">
-            <StageHost />
+            <StageHost wheelZoom={wheelZoom} />
             {showRulers && <StageRulers />}
           </div>
         </div>

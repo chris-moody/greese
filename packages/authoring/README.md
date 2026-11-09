@@ -21,12 +21,16 @@ It has:
 - **The stage:** `StageHost` mounts a media's renderer; `StageContext`,
   `StageBar`, `StageRulers` and `GuidesOverlay` go around it. The context
   bar's `RulerToggle` and `GuidesToggle` show and hide them, and the rulers'
-  `ticks="auto"` suits a drawing measured in a few units.
+  `ticks="auto"` suits a drawing measured in a few units. `GridOverlay`
+  draws a reference grid, set with `GridControl`. The wheel zooms at the
+  pointer and a sideways swipe or Shift pans, as in Pixels: `StageHost` does
+  it by default (`wheelZoom`), and `useWheelZoom` gives any stage the same.
 - **Marking side by side:** `distinguishingColor(index)` gives thirty colours
   told apart at a glance, for a path's nodes or segments.
 - **Tools:** one list (`ToolDefinition`) draws the `Toolbar`, picks tools by
   hotkey (`useToolHotkeys`) and builds their stage cursors
-  (`createToolCursors`); `ToolOptionsPanel` holds the active tool's settings.
+  (`createToolCursors`); `ToolOptionsPanel` holds the active tool's settings,
+  and `ColorTool` the fill and stroke new shapes get.
 - **Navigation:** `NavBar` arranges `NavHistory`, `AuthoringBreadcrumbs` and
   `EnvironmentSelect`.
 

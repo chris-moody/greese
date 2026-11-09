@@ -150,6 +150,20 @@ export const withPaintType = (
 export const sortStops = (stops: readonly GradientColorStop[]): GradientColorStop[] =>
   [...stops].sort((a, b) => a.offset - b.offset)
 
+/**
+ * A paint as a CSS background, for a swatch: the color, or the gradient's
+ * stops left to right (a radial's from the middle out). None is `null`: a
+ * swatch shows it its own way.
+ */
+export const paintCss = (value: ComplexColorValue): string | null => {
+  if (value.type === 'none') return null
+  if (value.type === 'solid') return value.color
+  if (value.gradient.type === 'linear') return gradientStopsCss(value.gradient.stops)
+  return `radial-gradient(closest-side, ${sortStops(value.gradient.stops)
+    .map((stop) => `${stop.color} ${Math.round(stop.offset * 1000) / 10}%`)
+    .join(', ')})`
+}
+
 /** A CSS preview of the stops, left to right. */
 export const gradientStopsCss = (stops: readonly GradientColorStop[]): string =>
   `linear-gradient(to right, ${sortStops(stops)

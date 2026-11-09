@@ -72,6 +72,46 @@ describe('StageHost', () => {
   })
 })
 
+describe('StageHost wheel', () => {
+  const mount = (wheelZoom?: boolean) => {
+    const backend = { ...fakeBackend('a'), zoomBy: vi.fn(), panBy: vi.fn() }
+    const env = createAuthoringEnvironment({ config: { createStage: () => backend } })
+    render(
+      <env.Provider>
+        <StageHost wheelZoom={wheelZoom} />
+      </env.Provider>
+    )
+    return { backend, stage: screen.getByRole('region', { name: 'Stage' }) }
+  }
+
+  it('zooms at the pointer and pans sideways or with Shift, as in Pixels', () => {
+    const { backend, stage } = mount()
+    const zoomIn = new WheelEvent('wheel', {
+      deltaY: -100,
+      clientX: 30,
+      clientY: 40,
+      cancelable: true,
+    })
+    stage.dispatchEvent(zoomIn)
+    expect(zoomIn.defaultPrevented).toBe(true)
+    expect(backend.zoomBy).toHaveBeenCalledWith(1.1, { x: 30, y: 40 })
+    fireEvent.wheel(stage, { deltaY: 100 })
+    expect(backend.zoomBy).toHaveBeenLastCalledWith(1 / 1.1, { x: 0, y: 0 })
+    fireEvent.wheel(stage, { deltaX: 12 })
+    expect(backend.panBy).toHaveBeenCalledWith(12, 0)
+    fireEvent.wheel(stage, { deltaY: 20, shiftKey: true })
+    expect(backend.panBy).toHaveBeenLastCalledWith(0, 20)
+  })
+
+  it('leaves the wheel to the browser when turned off', () => {
+    const { backend, stage } = mount(false)
+    const event = new WheelEvent('wheel', { deltaY: -100, cancelable: true })
+    stage.dispatchEvent(event)
+    expect(event.defaultPrevented).toBe(false)
+    expect(backend.zoomBy).not.toHaveBeenCalled()
+  })
+})
+
 describe('StageContext and AuthoringBreadcrumbs', () => {
   it('toggles the rulers, pressed while they show', () => {
     const env = createAuthoringEnvironment()

@@ -6,6 +6,7 @@ import {
   clampZoom,
   MIN_ZOOM,
   MAX_ZOOM,
+  wheelGesture,
 } from './viewportMath.ts'
 
 describe('viewportMath.helpers', () => {
@@ -136,5 +137,32 @@ describe('viewportMath.helpers', () => {
       expect(clampZoom(0.5)).toBe(0.5)
       expect(clampZoom(2.5)).toBe(2.5)
     })
+  })
+})
+
+describe('wheelGesture', () => {
+  it('zooms one step at a plain wheel, in when it rolls away', () => {
+    expect(wheelGesture({ deltaX: 0, deltaY: -3, shiftKey: false })).toEqual({
+      kind: 'zoom',
+      factor: 1.1,
+    })
+    expect(wheelGesture({ deltaX: 0, deltaY: 40, shiftKey: false })).toEqual({
+      kind: 'zoom',
+      factor: 1 / 1.1,
+    })
+  })
+
+  it('pans for a sideways swipe or Shift, and does nothing for no travel', () => {
+    expect(wheelGesture({ deltaX: 5, deltaY: 0, shiftKey: false })).toEqual({
+      kind: 'pan',
+      x: 5,
+      y: 0,
+    })
+    expect(wheelGesture({ deltaX: 0, deltaY: 7, shiftKey: true })).toEqual({
+      kind: 'pan',
+      x: 0,
+      y: 7,
+    })
+    expect(wheelGesture({ deltaX: 0, deltaY: 0, shiftKey: false })).toBeNull()
   })
 })

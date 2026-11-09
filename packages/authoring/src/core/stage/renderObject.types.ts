@@ -182,6 +182,15 @@ export interface StageBackend<TObject extends RenderObject = RenderObject> {
    * which is only correct for a backend with no deeper composed transform.
    */
   worldToScreen?(point: Point): Point
+  /**
+   * Zooms by `factor` (above 1 is in) keeping the world point under `point`
+   * (container-relative, as {@link screenToWorld}) where it is: what
+   * `StageHost` does with the wheel. Optional: without it the wheel zooms
+   * nothing.
+   */
+  zoomBy?(factor: number, point: Point): void
+  /** Pans the view by screen pixels, as scrolling would: the wheel's horizontal and Shift travel. Optional. */
+  panBy?(dx: number, dy: number): void
   /** Release all resources held by the backend. */
   destroy(options?: unknown): void
 }

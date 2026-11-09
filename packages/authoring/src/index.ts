@@ -59,6 +59,7 @@ export {
   GuidePropertiesDialog,
   type GuidePropertiesDialogProps,
 } from './components/Guides/GuidePropertiesDialog.tsx'
+export { GridOverlay, type GridOverlayProps } from './components/Guides/GridOverlay.tsx'
 export {
   GuidesOverlay,
   type GuidesOverlayProps,
@@ -116,6 +117,7 @@ export {
 export { useCreateInstance } from './hooks/useCreateInstance.ts'
 export { useNavigation } from './hooks/useNavigation.ts'
 export { useStageDriver } from './hooks/useStageDriver.ts'
+export { useWheelZoom, type WheelZoomOptions } from './hooks/useWheelZoom.ts'
 export {
   useSymbolCreateNaming,
   type SymbolCreateNaming,
@@ -165,6 +167,7 @@ export {
   GradientEditor,
   type GradientEditorProps,
 } from './components/Gradient/GradientEditor.tsx'
+export { ColorTool, type ColorToolProps } from './components/ColorTool/ColorTool.tsx'
 export {
   ComplexColorField,
   type ComplexColorFieldProps,

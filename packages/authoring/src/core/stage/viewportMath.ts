@@ -88,3 +88,27 @@ export function wheelPanDelta(event: WheelEvent): { x: number; y: number } | nul
   if (event.deltaX !== 0) return { x: event.deltaX, y: 0 }
   return null
 }
+
+/** How much one wheel notch zooms, in or out. */
+export const WHEEL_ZOOM_STEP = 1.1
+
+/** What a wheel event does to a stage: pan it, or zoom it about the pointer. */
+export type WheelGesture =
+  | { kind: 'pan'; x: number; y: number }
+  /** `factor` multiplies the zoom: above 1 zooms in. */
+  | { kind: 'zoom'; factor: number }
+
+/**
+ * A wheel event as every stage reads it, Pixels' rules: a horizontal swipe
+ * or Shift pans (see `wheelPanDelta`), and a plain wheel zooms one step at
+ * the pointer, in when it rolls away. A wheel that moves nothing does nothing.
+ */
+export function wheelGesture(
+  event: Pick<WheelEvent, 'deltaX' | 'deltaY' | 'shiftKey'>,
+  step = WHEEL_ZOOM_STEP
+): WheelGesture | null {
+  const pan = wheelPanDelta(event as WheelEvent)
+  if (pan) return { kind: 'pan', ...pan }
+  if (event.deltaY === 0) return null
+  return { kind: 'zoom', factor: event.deltaY < 0 ? step : 1 / step }
+}

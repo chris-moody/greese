@@ -118,6 +118,25 @@
 @layer greese.components {
   // The guides drawn over the stage. Their colors come from tokens and can be
   // set per editor: `--greese-guide-color`, `--greese-guide-global-color`.
+  // Under the guides: a reference, not something to grab.
+  .greese-GridOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    inline-size: 100%;
+    block-size: 100%;
+    pointer-events: none;
+  }
+
+  .greese-GridOverlay-lines {
+    fill: none;
+    stroke: var(
+      --greese-grid-color,
+      color-mix(in oklab, var(--greese-color-fg-muted) 45%, transparent)
+    );
+    stroke-width: 1;
+  }
+
   .greese-GuidesOverlay {
     position: absolute;
     inset: 0;

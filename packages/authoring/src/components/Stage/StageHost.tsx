@@ -11,6 +11,7 @@ import { selectNavigationStack } from '../../state/selectors.ts'
 import { useNavigation } from '../../hooks/useNavigation.ts'
 import { useCreateInstance } from '../../hooks/useCreateInstance.ts'
 import { useStageDriver } from '../../hooks/useStageDriver.ts'
+import { useWheelZoom } from '../../hooks/useWheelZoom.ts'
 import type { StageBackend } from '../../core/stage/renderObject.types.ts'
 
 export interface StageHostProps {
@@ -21,13 +22,20 @@ export interface StageHostProps {
   onBackendChange?: (backend: StageBackend | null) => void
   /** The stage's accessible name. @default 'Stage' */
   label?: string
+  /**
+   * Whether the wheel zooms at the pointer and a horizontal swipe or Shift
+   * pans, as in Pixels (through the backend's `zoomBy` and `panBy`). Off, the
+   * wheel is the browser's. @default true
+   */
+  wheelZoom?: boolean
 }
 
 /**
  * The stage: mounts the media's backend (`MediaConfig.createStage`) and turns
  * pointer input into editing. A click selects the topmost object under the
  * pointer; a double-click on a symbol instance opens its symbol in place; a
- * library asset dropped here becomes an instance where it lands. The backend
+ * library asset dropped here becomes an instance where it lands; the wheel
+ * zooms and pans (`wheelZoom`). The backend
  * draws and hit-tests, so this works with any renderer: Pixi, SVG, a canvas.
  * With no backend, a placeholder says so.
  *
@@ -38,6 +46,7 @@ export interface StageHostProps {
 export const StageHost = ({
   onBackendChange,
   label = 'Stage',
+  wheelZoom = true,
 }: StageHostProps): JSX.Element => {
   const { config, store } = useAuthoringEnvironment()
   const dispatch = useAuthoringDispatch()
@@ -47,6 +56,18 @@ export const StageHost = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const backendRef = useStageDriver(containerRef)
   const live = !!config.createStage
+  useWheelZoom(containerRef, {
+    enabled: wheelZoom && live,
+    onZoom: (factor, clientX, clientY) => {
+      const rect = containerRef.current?.getBoundingClientRect()
+      if (rect)
+        backendRef.current?.zoomBy?.(factor, {
+          x: clientX - rect.left,
+          y: clientY - rect.top,
+        })
+    },
+    onPan: (dx, dy) => backendRef.current?.panBy?.(dx, dy),
+  })
 
   // The raster ghost behind an opened symbol goes once it's no longer open in place.
   useEffect(() => {

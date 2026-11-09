@@ -33,7 +33,10 @@ module.exports = [
     // and Shaper: drawing a box from a drag, resizing with the opposite edge
     // kept, moving by the outline, fitting a group, and the caret at a click
     // (13.76 kB).
-    limit: '13.8 kB',
+    // 13.8 → 13.9 kB (2026-11-08): `wheelGesture`, Pixels' wheel (zoom at
+    // the pointer, pan sideways or with Shift) for every stage, and
+    // `paintCss`, a paint as a swatch's background (13.88 kB).
+    limit: '13.9 kB',
   },
   {
     name: '@greese/authoring/state: everything',
@@ -257,6 +260,24 @@ module.exports = [
     limit: '750 B',
   },
   {
+    name: '@greese/authoring: ColorTool',
+    path: 'dist/index.js',
+    import: '{ ColorTool }',
+    ignore: [
+      'react',
+      'react-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'immer',
+      '@greese/react',
+      '@greese/icons',
+      '@greese/js',
+    ],
+    // The new shapes' paint: two swatches, swap and reset, and a popover
+    // with the paint field and its gradient editor (3.38 kB).
+    limit: '3.5 kB',
+  },
+  {
     name: '@greese/authoring: Timeline and an environment',
     path: 'dist/index.js',
     import: '{ Timeline, createAuthoringEnvironment }',
@@ -300,7 +321,9 @@ module.exports = [
     // guides' hidden state, the rulers' automatic ticks, and tooltips on the
     // layer rows', panels' and gradient stops' icon buttons (37.84 kB).
     // 37.9 → 38.3 kB (2026-11-08): docking by tab row (a place among a group's tabs, measured at the drag's start) and tearing a tab off its own group, `moveTab`, and the code box's line wrapping (38.24 kB).
-    limit: '38.3 kB',
+    // 38.3 → 38.5 kB (2026-11-08): wheel zoom and pan on the stage, on by
+    // default, through the backend's `zoomBy` and `panBy` (38.49 kB).
+    limit: '38.5 kB',
   },
   {
     name: '@greese/authoring/styles.css',
@@ -336,6 +359,9 @@ module.exports = [
     // that wraps (6.62 kB).
     // 6.65 → 6.7 kB (2026-11-08): TextBoxEditor, words edited on a stage
     // (6.67 kB).
-    limit: '6.7 kB',
+    // 6.7 → 7 kB (2026-11-08): ColorTool, Pixels' fill and stroke swatches
+    // with swap and reset, now shared with Shaper, and GridOverlay's lines
+    // (6.98 kB).
+    limit: '7 kB',
   },
 ]

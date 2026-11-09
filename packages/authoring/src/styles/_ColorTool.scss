@@ -1,0 +1,128 @@
+@layer greese.components {
+  // The fill over the stroke, as Pixels draws them: two overlapping swatches,
+  // with reset above and swap below, in a 40px square.
+  .greese-ColorTool {
+    position: relative;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    margin-inline: auto;
+    flex-shrink: 0;
+  }
+
+  .greese-ColorTool-swatch,
+  .greese-ColorTool-reset,
+  .greese-ColorTool-swap {
+    position: absolute;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    cursor: pointer;
+    background: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--greese-color-focus-ring);
+      outline-offset: 1px;
+    }
+  }
+
+  .greese-ColorTool-swatch {
+    inline-size: 62%;
+    block-size: 62%;
+    border: 1px solid var(--greese-color-border);
+    border-radius: var(--greese-radius-sm);
+
+    // currentColor paints in the text's color, as the drawing does.
+    color: var(--greese-color-fg);
+    background: var(--greese-colortool-paint, transparent);
+
+    &:hover {
+      box-shadow: var(--greese-shadow-sm);
+    }
+
+    &[data-which='primary'] {
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      z-index: 2;
+    }
+
+    &[data-which='secondary'] {
+      inset-block-end: 0;
+      inset-inline-end: 0;
+      z-index: 1;
+    }
+
+    // None: struck through.
+    &[data-none] {
+      background:
+        linear-gradient(
+          to top right,
+          transparent calc(50% - 1px),
+          var(--greese-color-negative) calc(50% - 1px),
+          var(--greese-color-negative) calc(50% + 1px),
+          transparent calc(50% + 1px)
+        ),
+        var(--greese-color-surface);
+    }
+  }
+
+  .greese-ColorTool-reset {
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    z-index: 3;
+    inline-size: 34%;
+    block-size: 34%;
+
+    > span {
+      position: absolute;
+      inline-size: 65%;
+      block-size: 65%;
+      border: 1px solid var(--greese-color-border);
+    }
+
+    > span:first-child {
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      z-index: 1;
+      background: var(--greese-color-fg);
+    }
+
+    > span:last-child {
+      inset-block-end: 0;
+      inset-inline-end: 0;
+      background: var(--greese-color-surface);
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .greese-ColorTool-swap {
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 34%;
+    block-size: 34%;
+    font-size: 0.75rem;
+    color: var(--greese-color-fg-muted);
+
+    &:hover {
+      color: var(--greese-color-fg);
+    }
+  }
+
+  // What the picker hangs off: the square, which never changes.
+  .greese-ColorTool-anchor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .greese-ColorTool-popover {
+    min-inline-size: 17.5rem;
+    padding: var(--greese-space-4);
+  }
+}
