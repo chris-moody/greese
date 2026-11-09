@@ -87,6 +87,7 @@ The phase numbers other ADRs cite:
 | —     | greese.js as the one source of easing curves           | 2026-11-07 | ADR 0040          |
 | —     | Path subtraction that keeps curves; Shaper's Cutout    | 2026-11-09 | ADR 0041          |
 | —     | Panel breakpoints and resize status bar                | 2026-11-09 | ADR 0043          |
+| —     | Authoring theme; Shaper's tabs; strips; clearable      | 2026-11-09 | ADR 0044          |
 
 When a new body of work lands, add a row here; that's the status record the
 skills and agents keep up to date.

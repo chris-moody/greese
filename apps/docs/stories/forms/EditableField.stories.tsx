@@ -194,3 +194,49 @@ export const ColorOptions: Story = {
 
 /** Every type dims and stops taking input when the field is disabled. */
 export const Disabled: Story = { args: { disabled: true } }
+
+/**
+ * `clearable` puts an × inside a text, number or textarea field while it holds
+ * something; a select gets a first option for its own cleared value
+ * (`clearValue`, `''` unless you say) instead.
+ */
+export const Clearable: Story = {
+  render: function Render() {
+    const [name, setName] = useState('Ada')
+    const [width, setWidth] = useState<number | null>(24)
+    const [notes, setNotes] = useState('Two\nlines')
+    const [cap, setCap] = useState<string | number>('round')
+    return (
+      <Stack gap={2} style={{ maxInlineSize: '20rem' }}>
+        <EditableField label="Name" clearable value={name} onValueChange={setName} />
+        <EditableField
+          type="number"
+          label="Width"
+          clearable
+          value={width}
+          onValueChange={setWidth}
+        />
+        <EditableField
+          type="textarea"
+          label="Notes"
+          layout="column"
+          clearable
+          value={notes}
+          onValueChange={setNotes}
+        />
+        <EditableField
+          type="select"
+          label="Line cap"
+          clearable
+          clearLabel="No cap"
+          value={cap}
+          onValueChange={setCap}
+          options={[
+            { value: 'round', label: 'Round' },
+            { value: 'square', label: 'Square' },
+          ]}
+        />
+      </Stack>
+    )
+  },
+}

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
+  Button,
   Card,
   ScrollCarousel,
   ScrollCarouselSlide,
@@ -52,4 +53,34 @@ export const Looping: Story = { args: { loop: true, indicators: false } }
 /** A column that scrolls and snaps on y; the buttons sit above and below. */
 export const Vertical: Story = {
   args: { orientation: 'vertical', style: { maxInlineSize: '24rem' } },
+}
+
+/**
+ * `strip`: a row of controls that scrolls when it overflows, each as wide as
+ * its content. The controls keep their own roles; the buttons scroll a view
+ * along, for the pointer, as keys move through the controls.
+ */
+export const Strip: Story = {
+  args: {
+    label: 'tools',
+    strip: true,
+    style: { maxInlineSize: '20rem' },
+    children: [
+      'Select',
+      'Direct select',
+      'Rectangle',
+      'Ellipse',
+      'Polygon',
+      'Pen',
+      'Pencil',
+      'Text',
+      'Cutout',
+    ].map((tool) => (
+      <ScrollCarouselSlide key={tool}>
+        <Button size="sm" variant="outline">
+          {tool}
+        </Button>
+      </ScrollCarouselSlide>
+    )),
+  },
 }
