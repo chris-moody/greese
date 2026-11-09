@@ -36,7 +36,7 @@ export const AlignRightIcon = /* @__PURE__ */ createIcon(
 )
 export const AnchorIcon = /* @__PURE__ */ createIcon(
   'Anchor',
-  'M8 5.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5z|M8 5.5V14|M5.5 8h5|M2.5 9.5a5.5 5.5 0 0 0 11 0'
+  'M8 4.918a1.75 1.75 0 1 0 0 -3.5a1.75 1.75 0 0 0 0 3.5z|M8 4.918V13.418|M5.5 7.418h5|M2.5 8.918a5.5 5.5 0 0 0 11 0'
 )
 export const ArchiveIcon = /* @__PURE__ */ createIcon(
   'Archive',
@@ -85,7 +85,7 @@ export const BrainIcon = /* @__PURE__ */ createIcon(
 )
 export const BrushIcon = /* @__PURE__ */ createIcon(
   'Brush',
-  'M10.5 2.2l3.3 3.3-6 6-3.3-3.3z|M4.5 8.2L2.2 13.8l5.6-2.3'
+  'M12.944 1.506l1.636 1.636l-7.552 7.552l-1.636 -1.636z|M1.749 14.261c0.272 -1.64 0.551 -2.507 0.933 -2.889a1.383 1.352 -135 0 1 1.957 1.957c-0.383 0.383 -1.249 0.663 -2.889 0.933z'
 )
 export const BugIcon = /* @__PURE__ */ createIcon(
   'Bug',
@@ -542,6 +542,10 @@ export const RunIcon = /* @__PURE__ */ createIcon(
 export const SaveIcon = /* @__PURE__ */ createIcon(
   'Save',
   'M2.5 2.5h9l2 2v9h-11z|M5 2.5v3.5h5V2.5|M5 13.5v-4h6v4'
+)
+export const ScissorsIcon = /* @__PURE__ */ createIcon(
+  'Scissors',
+  'M4 6.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z|M4 13.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z|M5.6 5.7L14 13|M5.6 10.3L14 3'
 )
 export const ScribbleIcon = /* @__PURE__ */ createIcon(
   'Scribble',
