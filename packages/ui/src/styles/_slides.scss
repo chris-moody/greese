@@ -32,7 +32,9 @@
     @include mixins.focus-ring;
     @include mixins.touch-target;
 
+    // Gone at an end: invisible, and clicks pass through to what's under it.
     &:disabled {
+      pointer-events: none;
       cursor: default;
       opacity: 0;
     }
