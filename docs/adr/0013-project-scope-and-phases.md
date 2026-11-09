@@ -85,6 +85,7 @@ The phase numbers other ADRs cite:
 | —     | Editor UI, `@greese/authoring`                         | 2026-11-06 | ADR 0035, 0036    |
 | —     | Shaper's filter editor on authoring's `NodeGraph`      | 2026-11-07 | ADR 0039          |
 | —     | greese.js as the one source of easing curves           | 2026-11-07 | ADR 0040          |
+| —     | Path subtraction that keeps curves; Shaper's Cutout    | 2026-11-09 | ADR 0041          |
 
 When a new body of work lands, add a row here; that's the status record the
 skills and agents keep up to date.

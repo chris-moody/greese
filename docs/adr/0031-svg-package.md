@@ -162,7 +162,8 @@ untouched:
   which covers the main entry. Only `Drawing` draws a box, and it takes the
   prop.
 - Not done:
-  - path boolean operations (union, intersection);
+  - path boolean operations (union, intersection); subtraction landed in
+    `@greese/svg/boolean` (ADR 0041);
   - text on a path;
   - shape-preserving morphs (which keep the area);
   - SMIL.
