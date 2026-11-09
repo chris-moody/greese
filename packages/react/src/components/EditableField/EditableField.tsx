@@ -19,6 +19,7 @@ import { Select } from '../Select/Select.tsx'
 import { Slider } from '../Slider/Slider.tsx'
 import { Switch } from '../Switch/Switch.tsx'
 import { Textarea } from '../Textarea/Textarea.tsx'
+import { Tooltip } from '../Tooltip/Tooltip.tsx'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { CloseIcon } from '@greese/icons'
 import { Dial } from './Dial.tsx'
@@ -417,14 +418,41 @@ export const EditableField = (props: EditableFieldProps): JSX.Element | null => 
         label or `aria-label`, so repeating it here as a real `<label>` would
         have screen readers announce the name twice.
       */}
-      {label !== undefined && !hideLabel && (
-        <span className="greese-EditableField-label" aria-hidden="true">
-          {label}
-        </span>
-      )}
+      {label !== undefined && !hideLabel && <FieldLabel>{label}</FieldLabel>}
       {control}
     </div>,
     greese
+  )
+}
+
+/**
+ * The field's name. A long one is cut off with an ellipsis in a narrow row;
+ * hovering it then shows the whole name in a tooltip. Only then: one that
+ * fits needs none. The tooltip doesn't describe the control, which already
+ * has the name.
+ */
+const FieldLabel = ({ children }: { children: string }): JSX.Element => {
+  const [clipped, setClipped] = useState(false)
+  const label = (
+    <span
+      className="greese-EditableField-label"
+      aria-hidden="true"
+      onPointerEnter={(event) =>
+        setClipped(event.currentTarget.scrollWidth > event.currentTarget.clientWidth)
+      }
+      onPointerLeave={() => setClipped(false)}
+    >
+      {children}
+    </span>
+  )
+  // Mounted only while it shows, so a page of fields doesn't carry a hidden
+  // copy of every name.
+  return clipped ? (
+    <Tooltip content={children} describe={false} open>
+      {label}
+    </Tooltip>
+  ) : (
+    label
   )
 }
 

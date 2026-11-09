@@ -675,6 +675,28 @@ describe('native forms', () => {
 })
 
 describe('EditableField', () => {
+  it('shows a cut-off name whole in a tooltip on hover, and only then', async () => {
+    const { container } = render(
+      <EditableField label="stroke-miterlimit" defaultValue="4" />
+    )
+    const label = container.querySelector<HTMLElement>('.greese-EditableField-label')!
+    // jsdom has no layout: the name fits until told otherwise.
+    fireEvent.pointerEnter(label)
+    expect(container.querySelector('.greese-Tooltip')).toBeNull()
+    fireEvent.pointerLeave(label)
+    vi.spyOn(label, 'scrollWidth', 'get').mockReturnValue(140)
+    vi.spyOn(label, 'clientWidth', 'get').mockReturnValue(90)
+    fireEvent.pointerEnter(label)
+    const tip = container.querySelector('.greese-Tooltip')
+    expect(tip).toHaveTextContent('stroke-miterlimit')
+    // It names nothing new: the control is already called that.
+    expect(
+      screen.getByRole('textbox', { name: 'stroke-miterlimit' })
+    ).not.toHaveAttribute('aria-describedby')
+    fireEvent.pointerLeave(container.querySelector('.greese-EditableField-label')!)
+    expect(container.querySelector('.greese-Tooltip')).toBeNull()
+  })
+
   describe('clearable', () => {
     it('is off by default', () => {
       render(<EditableField label="Name" defaultValue="Ada" />)

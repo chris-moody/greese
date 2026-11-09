@@ -187,7 +187,9 @@ module.exports = [
     // 44.8 kB → 45.45 kB (2026-11-09): the panel breakpoints' container keys
     // and the clearable fields and strip above, about 0.63 kB. It was already
     // about 40 B over before them, for a reason not yet found: that remains.
-    limit: '45.45 kB',
+    // 45.45 kB → 45.58 kB (2026-11-09): EditableField shows a cut-off name
+    // whole in a tooltip, about 130 B. The earlier ~20 B overrun remains.
+    limit: '45.58 kB',
     modifyRolldownConfig: external,
   },
   {
