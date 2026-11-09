@@ -7,6 +7,7 @@
 /** Which control an EditableField renders. */
 export type EditableFieldType =
   | 'text'
+  | 'textarea'
   | 'number'
   | 'range'
   | 'color'

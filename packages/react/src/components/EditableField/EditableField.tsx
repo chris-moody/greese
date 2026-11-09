@@ -18,7 +18,9 @@ import { Segment, SegmentedControl } from '../SegmentedControl/SegmentedControl.
 import { Select } from '../Select/Select.tsx'
 import { Slider } from '../Slider/Slider.tsx'
 import { Switch } from '../Switch/Switch.tsx'
+import { Textarea } from '../Textarea/Textarea.tsx'
 import { useControllableState } from '../../hooks/useControllableState.ts'
+import { CloseIcon } from '@greese/icons'
 import { Dial } from './Dial.tsx'
 import {
   inferEditableFieldType,
@@ -80,6 +82,15 @@ interface EntryProps extends CommonProps {
    * the row.
    */
   htmlSize?: number
+  /**
+   * An × inside the field, while it holds something, that empties it: text
+   * becomes `''` and a number `null` (so a number field can then be empty,
+   * as with `allowEmpty`). For the pointer: the keyboard selects and deletes.
+   * @default false
+   */
+  clearable?: boolean
+  /** Accessible name of the clear button. @default 'Clear' */
+  clearLabel?: string
 }
 
 /** A line of text. What a string value renders as when no `type` is given. */
@@ -92,6 +103,22 @@ export interface TextFieldVariantProps extends EntryProps {
   defaultValue?: string
   /** Called with the new text on every keystroke. */
   onValueChange?: (value: string) => void
+}
+
+/** Several lines of text, growing with them. */
+export interface TextareaFieldVariantProps extends Omit<EntryProps, 'unit' | 'htmlSize'> {
+  /** Renders a textarea. */
+  type: 'textarea'
+  /** The text, when you control it. Pair with `onValueChange`. */
+  value?: string
+  /** The text it starts with, when it keeps its own state. */
+  defaultValue?: string
+  /** Called with the new text on every keystroke. */
+  onValueChange?: (value: string) => void
+  /** Lines it shows at first. @default 2 */
+  rows?: number
+  /** Lines it grows to before it scrolls. */
+  maxRows?: number
 }
 
 /** A number with stepper buttons. What a number value renders as. */
@@ -230,6 +257,15 @@ export interface RadioFieldVariantProps extends OptionsProps {
 export interface SelectFieldVariantProps extends OptionsProps {
   /** Renders a dropdown. */
   type: 'select'
+  /**
+   * A first option that empties the choice: choosing it reports `clearValue`,
+   * and it shows while the value is that (or unset). @default false
+   */
+  clearable?: boolean
+  /** The emptying option's text. @default 'None' */
+  clearLabel?: string
+  /** What the emptying option reports: the select's own "cleared" value. @default '' */
+  clearValue?: string | number
 }
 
 /** Radios for a few options, a dropdown for more: whichever suits the count. */
@@ -249,6 +285,7 @@ export interface SegmentedFieldVariantProps extends OptionsProps {
 /** Every shape EditableField takes. `type` narrows `value` and `onValueChange`. */
 export type EditableFieldProps =
   | TextFieldVariantProps
+  | TextareaFieldVariantProps
   | NumberFieldVariantProps
   | RangeFieldVariantProps
   | ColorFieldVariantProps
@@ -427,11 +464,13 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
             min={field.min}
             max={field.max}
             step={field.step}
+            clearable={field.clearable}
+            clearLabel={field.clearLabel}
             onValueChange={(next) => {
               // An emptied field only means `null` where the caller said so;
               // otherwise the value it had stands.
               if (next === null) {
-                if (field.allowEmpty) commit(null)
+                if (field.allowEmpty || field.clearable) commit(null)
                 return
               }
               commit(roundTo(next, decimals))
@@ -585,7 +624,18 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
 
     case 'select': {
       const field = props as SelectFieldVariantProps
-      const chosen = value === null ? '' : String(value)
+      const list = field.clearable
+        ? [
+            { value: field.clearValue ?? '', label: field.clearLabel ?? 'None' },
+            ...field.options,
+          ]
+        : field.options
+      const chosen =
+        value === null
+          ? field.clearable
+            ? String(field.clearValue ?? '')
+            : ''
+          : String(value)
       return (
         <Select
           className="greese-EditableField-control"
@@ -594,9 +644,9 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
           disabled={disabled}
           value={indeterminate ? '' : chosen}
           placeholder={indeterminate ? indeterminateLabel : undefined}
-          onChange={(event) => commit(reselect(field.options, event.target.value))}
+          onChange={(event) => commit(reselect(list, event.target.value))}
         >
-          {asOptions(field.options)}
+          {asOptions(list)}
         </Select>
       )
     }
@@ -652,8 +702,31 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
       })
     }
 
+    case 'textarea': {
+      const field = props as TextareaFieldVariantProps
+      const text = indeterminate || typeof value !== 'string' ? '' : value
+      return (
+        <div className="greese-EditableField-control greese-EditableField-textarea">
+          <Textarea
+            aria-label={name || undefined}
+            size={size === 'xs' ? 'sm' : size}
+            rows={field.rows ?? 2}
+            maxRows={field.maxRows}
+            disabled={disabled}
+            placeholder={indeterminate ? indeterminateLabel : field.placeholder}
+            value={text}
+            onChange={(event) => commit(event.target.value)}
+          />
+          {field.clearable && !disabled && text !== '' && clearButton(field, commit)}
+        </div>
+      )
+    }
+
     default: {
       const field = props as TextFieldVariantProps
+      const text = indeterminate || typeof value !== 'string' ? '' : value
+      const clear =
+        field.clearable && !disabled && text !== '' && clearButton(field, commit)
       return (
         <Input
           className="greese-EditableField-control"
@@ -661,9 +734,16 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
           size={size}
           htmlSize={field.htmlSize}
           disabled={disabled}
-          endAdornment={field.unit}
+          endAdornment={
+            clear || field.unit ? (
+              <>
+                {clear}
+                {field.unit}
+              </>
+            ) : undefined
+          }
           placeholder={indeterminate ? indeterminateLabel : field.placeholder}
-          value={indeterminate || typeof value !== 'string' ? '' : value}
+          value={text}
           onChange={(event) => commit(event.target.value)}
           onFocus={selectAll}
         />
@@ -671,3 +751,30 @@ const renderControl = (props: EditableFieldProps, context: Context): ReactNode =
     }
   }
 }
+
+/**
+ * The × that empties a text field. Pointer-only, like a search field's: the
+ * keyboard selects and deletes, so it stays out of the tab order and keeps
+ * focus in the field.
+ */
+const clearButton = (
+  field: { clearLabel?: string },
+  commit: (value: EditableFieldValue) => void
+): ReactNode => (
+  <button
+    type="button"
+    tabIndex={-1}
+    aria-label={field.clearLabel ?? 'Clear'}
+    className="greese-EditableField-clear"
+    onMouseDown={(event) => event.preventDefault()}
+    onClick={(event) => {
+      commit('')
+      event.currentTarget
+        .closest('.greese-EditableField')
+        ?.querySelector<HTMLElement>('input, textarea')
+        ?.focus()
+    }}
+  >
+    <CloseIcon />
+  </button>
+)

@@ -10,7 +10,13 @@ import {
 } from 'react'
 import { useControllableState } from '../../hooks/useControllableState.ts'
 import { cx } from '../../utils/cx.ts'
-import { ChevronDownIcon, ChevronUpIcon, MinusIcon, PlusIcon } from '@greese/icons'
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  CloseIcon,
+  MinusIcon,
+  PlusIcon,
+} from '@greese/icons'
 import { composeRefs } from '../Slot/Slot.tsx'
 import { TextField, type TextFieldProps } from '../TextField/TextField.tsx'
 import { withGreese, type GreeseProps } from '../../utils/greese.ts'
@@ -59,6 +65,14 @@ export interface NumberFieldProps
   incrementLabel?: string
   /** Accessible name of the minus button. @default 'Decrease' */
   decrementLabel?: string
+  /**
+   * An × inside the field, while it holds a number, that empties it: the
+   * value becomes `null`. For the pointer: the keyboard selects and deletes.
+   * @default false
+   */
+  clearable?: boolean
+  /** Accessible name of the clear button. @default 'Clear' */
+  clearLabel?: string
 }
 
 const decimalsOf = (n: number) => (String(n).split('.')[1] ?? '').length
@@ -95,6 +109,8 @@ export const NumberField = ({
   steppers = 'stacked',
   incrementLabel = 'Increase',
   decrementLabel = 'Decrease',
+  clearable = false,
+  clearLabel = 'Clear',
   className,
   onKeyDown,
   onBlur,
@@ -177,6 +193,32 @@ export const NumberField = ({
     </button>
   )
 
+  const clear = clearable && !locked && text !== '' && (
+    <button
+      type="button"
+      tabIndex={-1}
+      aria-label={clearLabel}
+      className="greese-NumberField-clear"
+      // Keep focus in the input while clicking.
+      onMouseDown={(event) => event.preventDefault()}
+      onClick={() => {
+        apply(null)
+        input.current?.focus()
+      }}
+    >
+      <CloseIcon />
+    </button>
+  )
+  const ends =
+    steppers === 'split' ? (
+      stepper(step, incrementLabel, atMax, <PlusIcon />)
+    ) : steppers === 'stacked' ? (
+      <span className="greese-NumberField-steppers">
+        {stepper(step, incrementLabel, atMax, <ChevronUpIcon />)}
+        {stepper(-step, decrementLabel, atMin, <ChevronDownIcon />)}
+      </span>
+    ) : undefined
+
   return withGreese(
     <TextField
       {...props}
@@ -225,13 +267,11 @@ export const NumberField = ({
           : undefined
       }
       endAdornment={
-        steppers === 'split' ? (
-          stepper(step, incrementLabel, atMax, <PlusIcon />)
-        ) : steppers === 'stacked' ? (
-          <span className="greese-NumberField-steppers">
-            {stepper(step, incrementLabel, atMax, <ChevronUpIcon />)}
-            {stepper(-step, decrementLabel, atMin, <ChevronDownIcon />)}
-          </span>
+        clear || ends ? (
+          <>
+            {clear}
+            {ends}
+          </>
         ) : undefined
       }
     />,

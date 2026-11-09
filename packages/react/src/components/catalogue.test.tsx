@@ -12,6 +12,7 @@ import {
   CarouselSlide,
 } from './Carousel/Carousel.tsx'
 import { ScrollCarousel, ScrollCarouselSlide } from './ScrollCarousel/ScrollCarousel.tsx'
+import { Tab, TabList, TabPanel, Tabs } from './Tabs/Tabs.tsx'
 import { ChatBubble } from './ChatBubble/ChatBubble.tsx'
 import { Countdown, durationText, splitDuration } from './Countdown/Countdown.tsx'
 import { Diff } from './Diff/Diff.tsx'
@@ -923,6 +924,50 @@ describe('ScrollCarousel', () => {
       <ScrollCarouselSlide label="The last">Three</ScrollCarouselSlide>
     </>
   )
+
+  it('as a strip, leaves its controls their own roles: a tab list stays one', async () => {
+    const scrollBy = vi.fn()
+    HTMLElement.prototype.scrollBy = scrollBy as typeof HTMLElement.prototype.scrollBy
+    const { container } = render(
+      <Tabs defaultValue="a">
+        <TabList aria-label="Documents">
+          <ScrollCarousel label="documents" strip>
+            {['a', 'b', 'c'].map((v) => (
+              <ScrollCarouselSlide key={v}>
+                <Tab value={v}>{v.toUpperCase()}</Tab>
+              </ScrollCarouselSlide>
+            ))}
+          </ScrollCarousel>
+        </TabList>
+        {['a', 'b', 'c'].map((v) => (
+          <TabPanel key={v} value={v}>
+            {v}
+          </TabPanel>
+        ))}
+      </Tabs>
+    )
+    // No region, slide groups, dots, live region or extra tab stop.
+    expect(screen.queryByRole('region')).toBeNull()
+    expect(screen.queryByRole('group')).toBeNull()
+    expect(container.querySelector('[aria-live]')).toBeNull()
+    expect(container.querySelector('.greese-ScrollCarousel-indicators')).toBeNull()
+    expect(
+      container.querySelector('.greese-ScrollCarousel-viewport')
+    ).not.toHaveAttribute('tabindex')
+    expect(
+      screen.getAllByRole('tab', { hidden: false }).map((t) => t.textContent)
+    ).toEqual(['A', 'B', 'C'])
+    // Its buttons are the pointer's, and page along.
+    const next = container.querySelector<HTMLButtonElement>(
+      '.greese-ScrollCarousel-control--next'
+    )!
+    expect(next).toHaveAttribute('aria-hidden', 'true')
+    expect(next).toHaveAttribute('tabindex', '-1')
+    expect(next).toHaveAttribute('aria-label', 'Scroll documents forward')
+    fireEvent.click(next)
+    expect(scrollBy).toHaveBeenCalledWith(expect.objectContaining({ left: 240 }))
+    await expectNoAxeViolations(container)
+  })
 
   it('is a named carousel of labelled slides', async () => {
     const { container } = render(

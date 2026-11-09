@@ -675,6 +675,89 @@ describe('native forms', () => {
 })
 
 describe('EditableField', () => {
+  describe('clearable', () => {
+    it('is off by default', () => {
+      render(<EditableField label="Name" defaultValue="Ada" />)
+      expect(screen.queryByRole('button', { name: 'Clear' })).toBeNull()
+    })
+
+    it('empties text, and shows only while there is something to clear', async () => {
+      const onValueChange = vi.fn()
+      render(
+        <EditableField
+          label="Name"
+          defaultValue="Ada"
+          clearable
+          onValueChange={onValueChange}
+        />
+      )
+      const input = screen.getByRole('textbox', { name: 'Name' })
+      await userEvent.click(screen.getByRole('button', { name: 'Clear' }))
+      expect(onValueChange).toHaveBeenLastCalledWith('')
+      expect(input).toHaveValue('')
+      expect(input).toHaveFocus()
+      expect(screen.queryByRole('button', { name: 'Clear' })).toBeNull()
+    })
+
+    it('empties a number to null, even without allowEmpty', async () => {
+      const onValueChange = vi.fn()
+      render(
+        <EditableField
+          type="number"
+          label="Width"
+          defaultValue={12}
+          clearable
+          clearLabel="Clear width"
+          onValueChange={onValueChange}
+        />
+      )
+      await userEvent.click(screen.getByRole('button', { name: 'Clear width' }))
+      expect(onValueChange).toHaveBeenLastCalledWith(null)
+      expect(screen.getByRole('spinbutton', { name: 'Width' })).toHaveValue('')
+    })
+
+    it('empties a textarea', async () => {
+      const onValueChange = vi.fn()
+      render(
+        <EditableField
+          type="textarea"
+          label="Notes"
+          defaultValue={'two\nlines'}
+          clearable
+          onValueChange={onValueChange}
+        />
+      )
+      await userEvent.click(screen.getByRole('button', { name: 'Clear' }))
+      expect(onValueChange).toHaveBeenLastCalledWith('')
+      expect(screen.getByRole('textbox', { name: 'Notes' })).toHaveValue('')
+    })
+
+    it('gives a select an option for its own cleared value', async () => {
+      const onValueChange = vi.fn()
+      const { container } = render(
+        <EditableField
+          type="select"
+          label="Cap"
+          clearable
+          clearLabel="No cap"
+          clearValue="none"
+          options={[
+            { value: 'round', label: 'Round' },
+            { value: 'square', label: 'Square' },
+          ]}
+          onValueChange={onValueChange}
+        />
+      )
+      const select = screen.getByRole('combobox', { name: 'Cap' })
+      expect(select).toHaveDisplayValue('No cap')
+      await userEvent.selectOptions(select, 'Round')
+      expect(onValueChange).toHaveBeenLastCalledWith('round')
+      await userEvent.selectOptions(select, 'No cap')
+      expect(onValueChange).toHaveBeenLastCalledWith('none')
+      await expectNoAxeViolations(container)
+    })
+  })
+
   it('infers a control from the value when no type is given', () => {
     expect(inferEditableFieldType('hello')).toBe('text')
     expect(inferEditableFieldType('#ff0000')).toBe('color')

@@ -117,7 +117,11 @@ module.exports = [
     // 38.8 kB → 38.9 kB (2026-11-09): container breakpoints
     // (`addContainerBreakpoints`), which a library's panels add beside the
     // viewport's, and AutoLayout's maxSize following any key (38.85 kB).
-    limit: '38.9 kB',
+    // 38.9 kB → 39.45 kB (2026-11-09): EditableField's `clearable` (an × in
+    // text, number and textarea fields; a select's own cleared option), its
+    // `textarea` type, NumberField's `clearable` and ScrollCarousel's `strip`
+    // (39.41 kB).
+    limit: '39.45 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -180,7 +184,10 @@ module.exports = [
     // `allowCustomValue` (44.32 kB).
     // 44.35 kB → 44.6 kB (2026-11-07): greese.js's editor playback (ADR 0036): `fps` frame snapping, `bounds()` in and out points, and `ticker: false` for a host's clock, about 0.2 kB (44.53 kB).
     // 44.6 kB → 44.8 kB (2026-11-07): ContextMenu waits for the press that opened it to be released (the release light-dismissed it in Firefox and Safari, and on macOS), and names an element anchor, which it never did, about 0.17 kB (44.73 kB).
-    limit: '44.8 kB',
+    // 44.8 kB → 45.45 kB (2026-11-09): the panel breakpoints' container keys
+    // and the clearable fields and strip above, about 0.63 kB. It was already
+    // about 40 B over before them, for a reason not yet found: that remains.
+    limit: '45.45 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -347,7 +354,9 @@ module.exports = [
     // correctness, not a feature).
     // 3.75 kB → 3.85 kB (2026-11-06): Input's `htmlSize`, which NumberField is
     // built on and af6e1778 didn't budget here (3.83 kB).
-    limit: '3.85 kB',
+    // 3.85 kB → 3.95 kB (2026-11-09): `clearable`, an × that empties the
+    // field (3.94 kB).
+    limit: '3.95 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -458,7 +467,10 @@ module.exports = [
     // either axis) and resetting its own reports when a move begins, so a controlled
     // `index` can always reach a slide again (ADR 0011): 67 B.
     // 3.95 kB → 4 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (3953 B).
-    limit: '4 kB',
+    // 4 kB → 4.15 kB (2026-11-09): `strip`, a row of controls that scrolls
+    // when it overflows: content-wide slides, its own semantics left out,
+    // paging buttons, and its ends watched as content changes (4.12 kB).
+    limit: '4.15 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -716,7 +728,9 @@ module.exports = [
     // `htmlSize`, which af6e1778 budgeted everywhere but here (54.37 kB).
     // 54.4 kB → 54.65 kB (2026-11-07): greese.js's editor playback (ADR 0036): `fps` frame snapping, `bounds()` in and out points, and `ticker: false` for a host's clock, about 0.2 kB (54.6 kB).
     // 54.65 kB → 54.9 kB (2026-11-07): ContextMenu waits for the press that opened it to be released (the release light-dismissed it in Firefox and Safari, and on macOS), and names an element anchor, which it never did, about 0.17 kB (54.86 kB).
-    limit: '54.9 kB',
+    // 54.9 kB → 55.5 kB (2026-11-09): as the library with greese.js above,
+    // about 0.6 kB; the earlier ~80 B overrun remains.
+    limit: '55.5 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.

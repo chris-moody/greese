@@ -31,7 +31,11 @@ const C = 'greese-ScrollCarousel'
 // count and breakpoint cost 1.8 kB of CSS for no gain (ADR 0011).
 const PER_VIEW: ResponsiveConfig = { block: C, prop: 'per-view', isToken: neverToken }
 
-const SlideContext = createContext<{ index: number; count: number } | null>(null)
+const SlideContext = createContext<{
+  index: number
+  count: number
+  strip: boolean
+} | null>(null)
 
 export interface ScrollCarouselProps
   extends GreeseProps, Omit<ComponentPropsWithRef<'section'>, 'onChange'> {
@@ -66,6 +70,17 @@ export interface ScrollCarouselProps
    * below. @default 'horizontal'
    */
   orientation?: ScrollCarouselOrientation
+  /**
+   * A strip of controls rather than slides: a tab row or a toolbar that
+   * scrolls when it overflows. Each slide is as wide as its content, the
+   * carousel's own roles, live region and focusable viewport are left out so
+   * the controls inside keep theirs (tabs stay a tab list's), there are no
+   * dots, and the buttons scroll by most of a view. The buttons are for the
+   * pointer only: keys move through the controls, and the one focused scrolls
+   * into view. `label` names the buttons: "Scroll <label> back".
+   * @default false
+   */
+  strip?: boolean
 }
 
 export type ScrollCarouselOrientation = 'horizontal' | 'vertical'
@@ -102,8 +117,9 @@ export const ScrollCarousel = ({
   controls = true,
   indicators = true,
   loop,
-  previousLabel = 'Previous slide',
-  nextLabel = 'Next slide',
+  strip = false,
+  previousLabel = strip ? `Scroll ${label} back` : 'Previous slide',
+  nextLabel = strip ? `Scroll ${label} forward` : 'Next slide',
   orientation = 'horizontal',
   className,
   children,
@@ -257,12 +273,23 @@ export const ScrollCarousel = ({
       el.style.scrollSnapType = ''
     }
     onScroll()
+    // Content or room changing (a tab added, the window narrowed) moves the ends.
+    const resized = new (globalThis.ResizeObserver ?? NoObserver)(() => {
+      const at = Math.abs(position(el, vertical))
+      const [size, length] = vertical
+        ? [el.clientHeight, el.scrollHeight]
+        : [el.clientWidth, el.scrollWidth]
+      setEdges({ start: at <= 1, end: at + size >= length - 1 })
+    })
+    resized.observe(el)
+    for (const item of items) resized.observe(item)
     el.addEventListener('scroll', onScroll, { passive: true })
     for (const type of ['pointerdown', 'wheel', 'keydown'])
       el.addEventListener(type, release, { passive: true })
     return () => {
       clearTimeout(settle)
       observer.disconnect()
+      resized.disconnect()
       el.removeEventListener('scroll', onScroll)
       for (const type of ['pointerdown', 'wheel', 'keydown'])
         el.removeEventListener(type, release)
@@ -295,6 +322,18 @@ export const ScrollCarousel = ({
     if (indexProp === undefined && defaultIndex) scrollToSlide(defaultIndex)
   }, [indexProp, defaultIndex, scrollToSlide])
 
+  /** A strip's buttons: most of a view along, toward the start or the end. */
+  const page = (toward: 1 | -1) => {
+    const el = viewport.current
+    if (!el) return
+    const rtl = getComputedStyle(el).direction === 'rtl'
+    const by = (vertical ? el.clientHeight : el.clientWidth) * 0.8 * toward
+    el.scrollBy({
+      [vertical ? 'top' : 'left']: rtl && !vertical ? -by : by,
+      behavior: getComputedStyle(el).scrollBehavior === 'smooth' ? 'smooth' : 'instant',
+    })
+  }
+
   const go = (target: number) => {
     const next = loop
       ? (target + count) % count
@@ -312,22 +351,23 @@ export const ScrollCarousel = ({
 
   return withGreese(
     <section
-      aria-roledescription="carousel"
-      aria-label={label}
+      aria-roledescription={strip ? undefined : 'carousel'}
+      aria-label={strip ? undefined : label}
       {...props}
-      className={cx(C, vertical && `${C}--vertical`, className)}
+      className={cx(C, vertical && `${C}--vertical`, strip && `${C}--strip`, className)}
     >
       <div
         id={viewportId}
         ref={viewport}
         // Focusable, so arrow keys scroll it; polite, so a new slide is read.
-        tabIndex={0}
-        aria-live="polite"
+        // A strip's controls are focusable themselves, and aren't news.
+        tabIndex={strip ? undefined : 0}
+        aria-live={strip ? undefined : 'polite'}
         className={cx('greese-ScrollCarousel-viewport', resolved.className)}
         style={resolved.style}
       >
         {slides.map((slide, i) => (
-          <SlideContext key={i} value={{ index: i, count }}>
+          <SlideContext key={i} value={{ index: i, count, strip }}>
             {slide as ReactNode}
           </SlideContext>
         ))}
@@ -339,8 +379,10 @@ export const ScrollCarousel = ({
             className="greese-ScrollCarousel-control greese-ScrollCarousel-control--previous"
             aria-label={previousLabel}
             aria-controls={viewportId}
+            aria-hidden={strip || undefined}
+            tabIndex={strip ? -1 : undefined}
             disabled={!loop && edges.start}
-            onClick={() => go(index - 1)}
+            onClick={() => (strip ? page(-1) : go(index - 1))}
           >
             <ChevronLeftIcon />
           </button>
@@ -349,14 +391,16 @@ export const ScrollCarousel = ({
             className="greese-ScrollCarousel-control greese-ScrollCarousel-control--next"
             aria-label={nextLabel}
             aria-controls={viewportId}
+            aria-hidden={strip || undefined}
+            tabIndex={strip ? -1 : undefined}
             disabled={!loop && edges.end}
-            onClick={() => go(edges.end && loop ? 0 : index + 1)}
+            onClick={() => (strip ? page(1) : go(edges.end && loop ? 0 : index + 1))}
           >
             <ChevronLeftIcon />
           </button>
         </>
       )}
-      {indicators && count > 1 && (
+      {indicators && !strip && count > 1 && (
         <div className="greese-ScrollCarousel-indicators">
           {slides.map((_, i) => (
             <button
@@ -390,11 +434,17 @@ export const ScrollCarouselSlide = ({
   ...props
 }: ScrollCarouselSlideProps): JSX.Element => {
   const slide = use(SlideContext)
+  // A strip's slide only holds a control, which speaks for itself.
+  const plain = slide?.strip
   return withGreese(
     <div
-      role="group"
-      aria-roledescription="slide"
-      aria-label={label ?? (slide ? `${slide.index + 1} of ${slide.count}` : undefined)}
+      role={plain ? undefined : 'group'}
+      aria-roledescription={plain ? undefined : 'slide'}
+      aria-label={
+        plain
+          ? label
+          : (label ?? (slide ? `${slide.index + 1} of ${slide.count}` : undefined))
+      }
       {...props}
       className={cx('greese-ScrollCarouselSlide', className)}
     />,
