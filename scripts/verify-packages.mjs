@@ -249,14 +249,16 @@ if (!html.includes('role="img"') || !html.includes('stop-color="red"') || !html.
     `import { parseMarkup, serializeMarkup, sanitizeMarkup } from '@greese/svg/markup'
 import { attributeSpec, canContain } from '@greese/svg/schema'
 import { convertSegment, freehandPath } from '@greese/svg/edit'
+import { subtractPath } from '@greese/svg/boolean'
 const { root } = sanitizeMarkup(parseMarkup('<svg onload="x()"><rect width="2"/></svg>'))
 if (serializeMarkup(root, { pretty: false }) !== '<svg><rect width="2"/></svg>') throw new Error('markup')
 if (attributeSpec('rect', 'rx')?.type !== 'length' || !canContain('g', 'rect')) throw new Error('schema')
 if (convertSegment('M0 0L30 0', 1, 'C')?.[1]?.[0] !== 'C' || !freehandPath([[0, 0], [5, 1], [10, 0]]).startsWith('M0 0C')) throw new Error('edit')
+if (subtractPath('M0 0H10V10H0Z', 'M5 5H15V15H5Z').d !== 'M0 0L10 0L10 5L5 5L5 10L0 10Z') throw new Error('boolean')
 `
   )
   run('node', ['svg-editor.mjs'], work)
-  ok('@greese/svg/markup, /schema and /edit run without a DOM')
+  ok('@greese/svg/markup, /schema, /edit and /boolean run without a DOM')
 
   // 4e. @greese/authoring: core and state run in Node with no React or DOM,
   // its peers are peers, and the dock renders on the server (ADR 0035).

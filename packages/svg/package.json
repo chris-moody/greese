@@ -46,6 +46,10 @@
       "types": "./dist/edit/index.d.ts",
       "default": "./dist/edit/index.js"
     },
+    "./boolean": {
+      "types": "./dist/boolean/index.d.ts",
+      "default": "./dist/boolean/index.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {

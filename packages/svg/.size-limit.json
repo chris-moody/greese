@@ -52,5 +52,11 @@
     "path": "dist/edit/index.js",
     "import": "*",
     "limit": "4.2 kB"
+  },
+  {
+    "name": "@greese/svg/boolean: subtractPath",
+    "path": "dist/boolean/index.js",
+    "import": "{ subtractPath }",
+    "limit": "4.8 kB"
   }
 ]

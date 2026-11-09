@@ -55,7 +55,7 @@ animate(strokeControl(el), { end: [0, 100] })
 The built-in `tween()` is there for pages without one. It respects
 `prefers-reduced-motion`.
 
-**For editors**, three more entries, each with its own budget so the main
+**For editors**, four more entries, each with its own budget so the main
 one doesn't carry them:
 
 - **`@greese/svg/markup`** (3 kB): a parser that records where every node and
@@ -67,6 +67,10 @@ one doesn't carry them:
 - **`@greese/svg/edit`** (4 kB): segment conversion (lines, quadratics and
   arcs to cubics and back, shorthands, absolute and relative), corner, smooth
   and symmetric nodes, and freehand fitting (Schneider's method).
+- **`@greese/svg/boolean`** (4.8 kB): `subtractPath`, which cuts one path's
+  area out of another and keeps the curves, giving back one path with holes
+  and separate pieces as subpaths. It can also trim open lines where the
+  cutter covers them (`openPaths: 'trim'`).
 
 ```ts
 import { parseMarkup, serializeMarkup, sanitizeMarkup } from '@greese/svg/markup'
@@ -76,6 +80,10 @@ import { convertSegment, freehandPath } from '@greese/svg/edit'
 const { root, notices } = sanitizeMarkup(parseMarkup(file))
 attributeSpec('rect', 'rx') // { name: 'rx', type: 'length' }
 convertSegment('M0 0L30 0', 1, 'C') // [['M', 0, 0], ['C', 10, 0, 20, 0, 30, 0]]
+
+import { subtractPath } from '@greese/svg/boolean'
+
+subtractPath('M0 0H10V10H0Z', 'M5 5H15V15H5Z').d // 'M0 0L10 0L10 5L5 5L5 10L0 10Z'
 ```
 
 **React:** `@greese/react/svg` has the components: `Drawing`, `Path`,
