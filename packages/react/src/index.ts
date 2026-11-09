@@ -1,9 +1,11 @@
 export * from './components/index.ts'
 export * from './hooks/index.ts'
 export {
+  addContainerBreakpoints,
   configureBreakpoints,
   getBreakpointKeys,
   getBreakpoints,
+  getContainerBreakpoints,
   resetBreakpoints,
 } from './utils/breakpoints.ts'
 export { cx, type ClassDictionary, type ClassValue } from './utils/cx.ts'

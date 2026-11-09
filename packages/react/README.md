@@ -393,6 +393,10 @@ keys stay `xs`–`xl`:
 configureBreakpoints()
 ```
 
+Breakpoints measured against a container rather than the window (a panel) are
+added with `addContainerBreakpoints({ panelmd: 320 })` beside the stylesheet's
+`pkg:@greese/ui/scss/breakpoints`; Stack, Grid and AutoLayout take them.
+
 ## Utilities
 
 - `Slot` and `composeRefs` power `asChild`.

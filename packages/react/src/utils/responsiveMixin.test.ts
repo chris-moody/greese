@@ -146,3 +146,35 @@ describe('configurable breakpoints', () => {
     ).toContain('--tablet-gap')
   })
 })
+
+describe('container breakpoint sets', () => {
+  const set = (keys: string) =>
+    compileScss(`@use 'public/breakpoints';
+@include breakpoints.container-set((${keys}), greese-panel);`)
+
+  it('writes the layout props for each key, under the named container', () => {
+    const css = set('panelsm: 240px, panelmd: 360px')
+    const within = ['@container greese-panel (width >= 360px)']
+    expect(rules(css, '.greese-AutoLayoutItem--panelmd-size')).toEqual([
+      {
+        within,
+        declarations: [
+          ['--greese-autolayoutitem-s', 'var(--greese-autolayoutitem-size-panelmd)'],
+        ],
+      },
+    ])
+    expect(rules(css, '.greese-Stack--panelsm-direction-row')[0]?.within).toEqual([
+      '@container greese-panel (width >= 240px)',
+    ])
+    expect(rules(css, '.greese-Grid--panelmd-columns-2')).toHaveLength(1)
+    // No viewport queries, and no Grid query-scope copy.
+    expect(css).not.toContain('@media')
+    expect(css).not.toContain('greese-Grid--queries')
+  })
+
+  it('refuses a viewport key, a dashed key and keys out of order', () => {
+    expect(() => set('md: 300px')).toThrow(/already a viewport breakpoint/)
+    expect(() => set("'panel-md': 300px")).toThrow(/one word/)
+    expect(() => set('panelmd: 360px, panelsm: 240px')).toThrow(/must increase/)
+  })
+})

@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 import { space, type Breakpoint, type SpaceToken } from '@greese/ui'
-import { getBreakpointKeys } from './breakpoints.ts'
+import { getResponsiveKeys } from './breakpoints.ts'
 
 /**
  * A prop that takes one value, or a value per breakpoint (mobile-first: each
@@ -146,7 +146,7 @@ export const resolveResponsive = (
     // Safe: each entry pairs a value with the config written for its type.
     const config = entryConfig as unknown as ResponsiveConfig
     if (isPerBreakpoint(value)) {
-      for (const bp of getBreakpointKeys()) {
+      for (const bp of getResponsiveKeys()) {
         const v = value[bp]
         if (v != null) add(config, bp, v)
       }

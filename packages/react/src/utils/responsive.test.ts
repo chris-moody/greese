@@ -10,7 +10,14 @@ import {
   responsiveVar,
   spaceToCss,
   type ResponsiveConfig,
+  type SpaceValue,
 } from './responsive.ts'
+import {
+  addContainerBreakpoints,
+  getBreakpointKeys,
+  getContainerBreakpoints,
+  resetBreakpoints,
+} from './breakpoints.ts'
 
 const gap: ResponsiveConfig = {
   block: 'greese-Stack',
@@ -146,5 +153,31 @@ describe('resolveResponsive', () => {
         '--greese-box-p-md': '2rem',
       },
     })
+  })
+})
+
+describe('container breakpoints', () => {
+  it('writes their classes after the viewport’s, and leaves the viewport’s alone', () => {
+    addContainerBreakpoints({ testsm: 240, testmd: 360 })
+    const { className, style } = resolveResponsive([
+      [{ testmd: '13px', xs: 2, testsm: 3 } as Record<string, SpaceValue>, gap],
+    ])
+    expect(className).toBe(
+      'greese-Stack--xs-gap-2 greese-Stack--testsm-gap-3 greese-Stack--testmd-gap'
+    )
+    expect(style).toEqual({ '--greese-stack-gap-testmd': '13px' })
+    expect(getContainerBreakpoints()).toMatchObject({ testsm: 240, testmd: 360 })
+    expect(getBreakpointKeys()).not.toContain('testsm')
+    // A viewport change keeps them.
+    resetBreakpoints()
+    expect(resolveResponsive([[{ testsm: 1 } as never, gap]]).className).toBe(
+      'greese-Stack--testsm-gap-1'
+    )
+  })
+
+  it('refuses a viewport key, a dashed key and a shared value', () => {
+    expect(() => addContainerBreakpoints({ md: 300 })).toThrow(/viewport breakpoint/)
+    expect(() => addContainerBreakpoints({ 'panel-md': 300 })).toThrow(/one word/)
+    expect(() => addContainerBreakpoints({ testlg: 240 })).toThrow(/its own value/)
   })
 })

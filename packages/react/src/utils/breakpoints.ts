@@ -68,15 +68,65 @@ export const configureBreakpoints = (
   }
   current = next
   keys = ordered as Breakpoint[]
+  responsiveKeys = [...keys, ...containerKeys()]
   listeners.forEach((listener) => listener())
 }
 
-/** Back to the defaults, added keys dropped (an editor that changes breakpoints live uses it). */
+/**
+ * Back to the defaults, added keys dropped (an editor that changes breakpoints
+ * live uses it). Container breakpoints stay: a library added them.
+ */
 export const resetBreakpoints = (): void => {
   current = { ...defaults }
   keys = Object.keys(current) as Breakpoint[]
+  responsiveKeys = [...keys, ...containerKeys()]
   listeners.forEach((listener) => listener())
 }
+
+let container: Record<string, number> = {}
+/** Every key `resolveResponsive()` writes classes for: the viewport's, then the containers'. */
+let responsiveKeys: readonly Breakpoint[] = keys
+
+/**
+ * Breakpoints measured against a container rather than the viewport, which a
+ * library adds with stylesheet rules of its own (`pkg:@greese/ui/scss/breakpoints`):
+ * `resolveResponsive()` writes their classes, so a prop takes them beside the
+ * viewport's (`size={{ xs: 12, panelmd: 6 }}`), while `useBreakpoint()` and
+ * `useBreakpointValue()`, which follow the viewport, leave them out. Keys are
+ * one word, never a viewport breakpoint's, and each needs its own value. Adding
+ * a key again changes its value. For TypeScript, add the keys to
+ * `BreakpointKeys` as for any added breakpoint.
+ *
+ * ```ts
+ * addContainerBreakpoints({ panelsm: 240, panelmd: 360 })
+ * ```
+ */
+export const addContainerBreakpoints = (values: Record<string, number>): void => {
+  const next = { ...container, ...values }
+  const ordered = Object.keys(next).sort((a, b) => next[a]! - next[b]!)
+  if (
+    ordered.some(
+      (key, i) =>
+        Object.hasOwn(current, key) ||
+        !/^\w+$/.test(key) ||
+        next[key] === next[ordered[i - 1]!]
+    )
+  )
+    throw new Error(
+      `addContainerBreakpoints: each key is one word, not a viewport breakpoint, with its own value; got ${JSON.stringify(next)}`
+    )
+  container = next
+  responsiveKeys = [...keys, ...(ordered as Breakpoint[])]
+}
+
+/** The container breakpoints added, by key: min-widths in px. */
+export const getContainerBreakpoints = (): Readonly<Record<string, number>> => container
+
+/** Internal: the keys a responsive prop's classes are written for, viewport first. */
+export const getResponsiveKeys = (): readonly Breakpoint[] => responsiveKeys
+
+const containerKeys = () =>
+  Object.keys(container).sort((a, b) => container[a]! - container[b]!) as Breakpoint[]
 
 /** Internal: lets caches (e.g. media query lists) reset when values change. */
 export const onBreakpointsChange = (listener: () => void): void => {

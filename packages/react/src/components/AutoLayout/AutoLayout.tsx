@@ -90,7 +90,6 @@ const I = 'greese-AutoLayoutItem'
 const SIZE: ResponsiveConfig = { block: I, prop: 'size', isToken: neverToken }
 const MAX: ResponsiveConfig = { block: I, prop: 'max', isToken: neverToken }
 
-const order: readonly Breakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl']
 const perBreakpoint = (v: Size): Partial<Record<Breakpoint, number>> =>
   typeof v === 'number' ? { xs: v } : v
 
@@ -103,7 +102,11 @@ export const resolveMaxSize = (size: Size | undefined, maxSize: Size | undefined
   const sizes = perBreakpoint(size)
   const maxes = maxSize === undefined ? {} : perBreakpoint(maxSize)
   const out: Partial<Record<Breakpoint, number>> = {}
-  for (const bp of order) {
+  // Every key either sets, added and container breakpoints included.
+  for (const bp of new Set([
+    ...Object.keys(sizes),
+    ...Object.keys(maxes),
+  ]) as Set<Breakpoint>) {
     const v = maxes[bp] ?? sizes[bp]
     if (v !== undefined) out[bp] = v
   }

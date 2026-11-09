@@ -114,7 +114,10 @@ module.exports = [
     // 38.55 kB → 38.6 kB (2026-11-06): Combobox keeps free text on Enter
     // with `allowCustomValue`, as it did on blur (38.554 kB).
     // 38.6 kB → 38.8 kB (2026-11-07): ContextMenu waits for the press that opened it to be released (the release light-dismissed it in Firefox and Safari, and on macOS), and names an element anchor, which it never did, about 0.17 kB (38.69 kB).
-    limit: '38.8 kB',
+    // 38.8 kB → 38.9 kB (2026-11-09): container breakpoints
+    // (`addContainerBreakpoints`), which a library's panels add beside the
+    // viewport's, and AutoLayout's maxSize following any key (38.85 kB).
+    limit: '38.9 kB',
     modifyRolldownConfig: external,
   },
   {
