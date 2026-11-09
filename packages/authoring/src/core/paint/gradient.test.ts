@@ -4,6 +4,7 @@ import {
   defaultGradient,
   gradientDirection,
   gradientStopsCss,
+  gradientFromSvg,
   gradientToSvg,
   withGradientDirection,
   withGradientType,
@@ -136,5 +137,58 @@ describe('gradientToSvg', () => {
     expect(
       gradientToSvg({ ...radial, rotation: 0, scaleY: 1, innerRadius: 0 }).attrs
     ).toEqual({ cx: '0.5', cy: '0.5', r: '0.5', fx: '0.4', fy: '0.4' })
+  })
+})
+
+describe('gradientFromSvg', () => {
+  it('reads back what gradientToSvg wrote', () => {
+    const radial: GradientFill = {
+      type: 'radial',
+      cx: 0.4,
+      cy: 0.4,
+      innerRadius: 0.1,
+      outerCx: 0.5,
+      outerCy: 0.5,
+      outerRadius: 0.5,
+      rotation: 30,
+      scaleY: 0.5,
+      stops: [
+        { offset: 0, color: '#ffffff' },
+        { offset: 1, color: '#000000' },
+      ],
+    }
+    for (const value of [linear, radial]) {
+      const svg = gradientToSvg(value)
+      expect(gradientFromSvg(svg.tag, svg.attrs, svg.stops)).toEqual({
+        ...value,
+        stops: [...value.stops].sort((a, b) => a.offset - b.offset),
+      })
+    }
+  })
+
+  it('takes SVG’s defaults, percentages and stop opacity', () => {
+    expect(
+      gradientFromSvg('linearGradient', { y2: '100%' }, [
+        { offset: '0%', 'stop-color': '#ff0000', 'stop-opacity': '0.5' },
+        { offset: '100%', 'stop-color': 'blue' },
+      ])
+    ).toEqual({
+      type: 'linear',
+      x0: 0,
+      y0: 0,
+      x1: 1,
+      y1: 1,
+      stops: [
+        { offset: 0, color: '#ff000080' },
+        { offset: 1, color: 'blue' },
+      ],
+    })
+    expect(gradientFromSvg('radialGradient', {}, [])).toMatchObject({
+      type: 'radial',
+      cx: 0.5,
+      outerRadius: 0.5,
+      stops: defaultGradient().stops,
+    })
+    expect(gradientFromSvg('pattern', {}, [])).toBeNull()
   })
 })

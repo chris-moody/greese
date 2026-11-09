@@ -281,3 +281,72 @@ export const gradientToSvg = (value: GradientFill): SvgGradient => {
     stops,
   }
 }
+
+/** A length as a fraction: `'50%'` is 0.5, `'0.3'` is 0.3; `fallback` when unset or unreadable. */
+const fraction = (value: string | undefined, fallback: number): number => {
+  if (value === undefined || value.trim() === '') return fallback
+  const n = parseFloat(value)
+  if (Number.isNaN(n)) return fallback
+  return value.trim().endsWith('%') ? n / 100 : n
+}
+
+/** A stop's color with its `stop-opacity` folded in, where it's a hex color. */
+const stopColor = (color: string, opacity: string | undefined): string => {
+  const alpha = opacity === undefined ? 1 : Math.max(0, Math.min(1, fraction(opacity, 1)))
+  if (alpha >= 1 || !/^#[0-9a-f]{6}$/i.test(color)) return color
+  return `${color}${Math.round(alpha * 255)
+    .toString(16)
+    .padStart(2, '0')}`
+}
+
+/**
+ * An SVG `<linearGradient>` or `<radialGradient>` read back for the gradient
+ * editor: the inverse of `gradientToSvg`, with SVG's defaults where an
+ * attribute is unset (a linear runs left to right, a radial is centred). A
+ * `gradientTransform` `gradientToSvg` wrote is read back as rotation and
+ * squash; any other is left out. A stop's `stop-opacity` joins its color. With
+ * fewer than two stops of its own (one that borrows another's by `href`), it
+ * gets `defaultGradient`'s.
+ *
+ * ```ts
+ * gradientFromSvg('linearGradient', { x2: '1' }, [{ offset: '0', 'stop-color': '#fff' }, …])
+ * ```
+ */
+export const gradientFromSvg = (
+  tag: string,
+  attrs: Readonly<Record<string, string | undefined>>,
+  stops: ReadonlyArray<Readonly<Record<string, string | undefined>>>
+): GradientFill | null => {
+  if (tag !== 'linearGradient' && tag !== 'radialGradient') return null
+  const read = stops.map((s) => ({
+    offset: Math.max(0, Math.min(1, fraction(s.offset, 0))),
+    color: stopColor(s['stop-color'] ?? '#000000', s['stop-opacity']),
+  }))
+  const own = read.length >= MIN_GRADIENT_STOPS ? read : defaultGradient().stops
+  if (tag === 'linearGradient')
+    return {
+      type: 'linear',
+      x0: fraction(attrs.x1, 0),
+      y0: fraction(attrs.y1, 0),
+      x1: fraction(attrs.x2, 1),
+      y1: fraction(attrs.y2, 0),
+      stops: own,
+    }
+  const cx = fraction(attrs.cx, 0.5)
+  const cy = fraction(attrs.cy, 0.5)
+  const transform = attrs.gradientTransform ?? ''
+  const rotation = parseFloat(/rotate\(\s*(-?[\d.]+)/.exec(transform)?.[1] ?? '0')
+  const scaleY = parseFloat(/scale\(\s*1[\s,]+(-?[\d.]+)/.exec(transform)?.[1] ?? '1')
+  return {
+    type: 'radial',
+    cx: fraction(attrs.fx, cx),
+    cy: fraction(attrs.fy, cy),
+    innerRadius: fraction(attrs.fr, 0),
+    outerCx: cx,
+    outerCy: cy,
+    outerRadius: fraction(attrs.r, 0.5),
+    rotation,
+    scaleY,
+    stops: own,
+  }
+}

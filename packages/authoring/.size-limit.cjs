@@ -39,7 +39,9 @@ module.exports = [
     // 13.9 → 14.3 kB (2026-11-09): `dropSize`, a docked pane as deep as the
     // drop was from the edge, and `gradientToSvg`, the gradient editor's
     // value as SVG for Shaper's New gradient (14.25 kB).
-    limit: '14.3 kB',
+    // 14.3 → 14.6 kB (2026-11-09): `gradientFromSvg`, an SVG gradient read
+    // back for the gradient editor, so Shaper edits the library's (14.57 kB).
+    limit: '14.6 kB',
   },
   {
     name: '@greese/authoring/state: everything',
