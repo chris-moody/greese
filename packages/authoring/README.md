@@ -120,6 +120,23 @@ Panels read and change the editor's store with `useAuthoringSelector` and
 `useAuthoringDispatch`. An editor adds its own slices with
 `createAuthoringEnvironment({ reducers })`.
 
+### Panel breakpoints
+
+A panel is as wide as it's dragged, whatever the window, so what's inside it
+answers to the panel. Stack, Grid and AutoLayout take three more keys in any
+responsive prop, measured against the panel's body (the `greese-panel`
+container): `panelsm` (240px), `panelmd` (320px) and `panellg` (480px).
+
+```tsx
+<AutoLayout gap={2}>
+  <AutoLayoutItem size={{ xs: 12, panelsm: 6 }}>…</AutoLayoutItem>
+  <AutoLayoutItem size={{ xs: 12, panelsm: 6 }}>…</AutoLayoutItem>
+</AutoLayout>
+```
+
+While a panel is resized (a divider, a floating panel's grip), a status bar
+along its foot shows its width × height and the key in effect (ADR 0043).
+
 ## Entry points
 
 | Entry                          | What                                                     | Needs        |

@@ -1,8 +1,16 @@
 'use client'
-import { memo, useId, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
+import {
+  memo,
+  useId,
+  useRef,
+  type KeyboardEvent,
+  type PointerEvent,
+  type ReactNode,
+} from 'react'
 import { IconButton, Tooltip } from '@greese/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@greese/icons'
 import type { DropZone, ZoneLeaf } from '../../core/layoutTree.types.ts'
+import { PanelStatusBar } from './PanelStatusBar.tsx'
 
 export interface PanelMeta {
   title: string
@@ -45,7 +53,9 @@ export const DropHighlight = ({ zone }: { zone: DropZone }) => (
  * A dock leaf: a tab row and the active panel, or, for a headless group, a
  * drag bar and the panel. The tabs are a WAI-ARIA tab list (the arrow keys,
  * Home and End move between them) and double as drag handles. The root
- * carries `data-leaf-id` for the drag's hit testing. Memoized, so a drag
+ * carries `data-leaf-id` for the drag's hit testing. Resized, it shows its
+ * size in a status bar. Its body is the `greese-panel` container, which the
+ * panel breakpoints measure. Memoized, so a drag
  * re-renders only the groups whose highlight changes.
  */
 export const PanelGroup = memo(function PanelGroup({
@@ -73,6 +83,7 @@ export const PanelGroup = memo(function PanelGroup({
   const dropAfter =
     dropTabIndex !== null && dropTabIndex >= others.length ? others.at(-1) : undefined
   const bodyId = `${baseId}-body`
+  const bodyRef = useRef<HTMLDivElement>(null)
 
   const onTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     const index = leaf.tabs.indexOf(leaf.activeTab)
@@ -170,6 +181,7 @@ export const PanelGroup = memo(function PanelGroup({
       )}
 
       <div
+        ref={bodyRef}
         id={bodyId}
         className="greese-PanelGroup-body"
         role={headless ? 'region' : 'tabpanel'}
@@ -180,6 +192,8 @@ export const PanelGroup = memo(function PanelGroup({
       >
         {renderBody(leaf.activeTab)}
       </div>
+
+      <PanelStatusBar target={bodyRef} />
 
       {activeDropZone && !beingDragged && <DropHighlight zone={activeDropZone} />}
     </div>

@@ -1,4 +1,14 @@
+@use 'pkg:@greese/ui/scss/breakpoints';
 @use 'pkg:@greese/ui/scss/mixins';
+
+// The panel breakpoints (panelBreakpoints.ts holds the same values; a test
+// keeps them equal): Stack, Grid and AutoLayout inside a panel answer to the
+// width of its body, the `greese-panel` container.
+$panel-breakpoints: (
+  panelsm: 240px,
+  panelmd: 320px,
+  panellg: 480px,
+);
 
 @layer greese.components {
   .greese-PanelGroup {
@@ -114,6 +124,7 @@
   // itself (`scrollable: false`). It must be the group's direct flex child to
   // get a bounded height.
   .greese-PanelGroup-body {
+    container: greese-panel / inline-size;
     flex: 1 1 auto;
     min-block-size: 0;
     overflow: hidden auto;
@@ -127,4 +138,41 @@
       display: none;
     }
   }
+
+  // A resized panel's size along its foot, over the body: in on resize, out a
+  // moment after, on the theme's motion (collapsed where motion is reduced).
+  .greese-PanelGroup-status {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline: 0;
+    z-index: 1;
+    display: flex;
+    gap: var(--greese-space-2);
+    justify-content: space-between;
+    padding-block: calc(var(--greese-space-1) / 2);
+    padding-inline: var(--greese-space-2);
+    font-family: var(--greese-font-mono);
+    font-size: var(--greese-type-caption-font-size);
+    font-variant-numeric: tabular-nums;
+    color: var(--greese-color-fg-muted);
+    pointer-events: none;
+    background-color: var(--greese-color-surface);
+    border-block-start: 1px solid var(--greese-color-border);
+    transition:
+      opacity var(--greese-duration-fast) var(--greese-easing-enter),
+      translate var(--greese-duration-fast) var(--greese-easing-enter);
+
+    @starting-style {
+      opacity: 0;
+      translate: 0 100%;
+    }
+
+    &[data-leaving] {
+      opacity: 0;
+      transition-timing-function: var(--greese-easing-exit);
+      translate: 0 100%;
+    }
+  }
+
+  @include breakpoints.container-set($panel-breakpoints, greese-panel);
 }

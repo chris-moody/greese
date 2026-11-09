@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { cx } from '@greese/react'
 import { beginPointerDrag } from '../../core/pointerDrag.ts'
+import { markResizing } from '../PanelDock/PanelStatusBar.tsx'
 
 /** How far one arrow key moves the divider, in pixels (four times that with Shift). */
 const KEY_STEP = 16
@@ -53,6 +54,7 @@ export const SplitPane = ({
 }: SplitPaneProps): JSX.Element => {
   const rootRef = useRef<HTMLDivElement>(null)
   const paneRef = useRef<HTMLDivElement>(null)
+  const keyTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const [size, setSize] = useState(initialPrimarySize)
   const vertical = orientation === 'col'
   const shown = controlledPrimarySize ?? size
@@ -78,6 +80,8 @@ export const SplitPane = ({
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     event.preventDefault()
     let latest = 0
+    // The panels on both sides show their size while it changes.
+    markResizing(rootRef.current, true)
     beginPointerDrag(event, {
       captureTarget: event.currentTarget,
       suppressUserSelect: true,
@@ -92,6 +96,7 @@ export const SplitPane = ({
         write(latest)
       },
       onEnd: () => {
+        markResizing(rootRef.current, false)
         if (latest > 0) commit(latest)
       },
     })
@@ -105,6 +110,10 @@ export const SplitPane = ({
     const toward = event.key === more ? 1 : -1
     const step = (event.shiftKey ? 4 : 1) * KEY_STEP * (reversed ? -toward : toward)
     const next = clamp(shown + step)
+    // A run of presses is one resize, which ends a moment after the last.
+    markResizing(rootRef.current, true)
+    clearTimeout(keyTimer.current)
+    keyTimer.current = setTimeout(() => markResizing(rootRef.current, false), 300)
     write(next)
     commit(next)
   }

@@ -65,7 +65,10 @@ module.exports = [
     // 6.4 → 12 kB (2026-11-06): an environment's store now has every
     // framework slice, so a dock costs the whole state layer (11.1 kB).
     // 12 → 12.1 kB (2026-11-08): docking by tab row and tearing a tab off its own group, with the panels slice's `moveTab` (12.07 kB).
-    limit: '12.1 kB',
+    // 12.1 → 12.5 kB (2026-11-09): the panel breakpoints, registered where
+    // the dock renders, and each panel's status bar: its size and breakpoint
+    // while a divider or a floating panel's grip resizes it (12.47 kB).
+    limit: '12.5 kB',
   },
   {
     name: '@greese/authoring: HierarchicalList',
@@ -323,7 +326,9 @@ module.exports = [
     // 37.9 → 38.3 kB (2026-11-08): docking by tab row (a place among a group's tabs, measured at the drag's start) and tearing a tab off its own group, `moveTab`, and the code box's line wrapping (38.24 kB).
     // 38.3 → 38.5 kB (2026-11-08): wheel zoom and pan on the stage, on by
     // default, through the backend's `zoomBy` and `panBy` (38.49 kB).
-    limit: '38.5 kB',
+    // 38.5 → 38.9 kB (2026-11-09): the dock's panel breakpoints and resize
+    // status bar, as above, and zoom read as a percentage (38.85 kB).
+    limit: '38.9 kB',
   },
   {
     name: '@greese/authoring/styles.css',
@@ -362,6 +367,11 @@ module.exports = [
     // 6.7 → 7 kB (2026-11-08): ColorTool, Pixels' fill and stroke swatches
     // with swap and reset, now shared with Shaper, and GridOverlay's lines
     // (6.98 kB).
-    limit: '7 kB',
+    // 7 → 8.65 kB (2026-11-09): the panel breakpoints (ADR 0043): Stack's,
+    // Grid's and AutoLayout's responsive classes again for panelsm, panelmd
+    // and panellg under the `greese-panel` container query, a third each,
+    // about 1.55 kB; and the resize status bar (8.58 kB). Measured per
+    // component, none was worth leaving out: a panel lays out with all three.
+    limit: '8.65 kB',
   },
 ]

@@ -66,6 +66,12 @@ export {
 } from './components/Guides/GuidesOverlay.tsx'
 export { PanelDock, type PanelDockProps } from './components/PanelDock/PanelDock.tsx'
 export {
+  PANEL_CONTAINER,
+  panelBreakpointAt,
+  panelBreakpoints,
+  type PanelBreakpoint,
+} from './components/PanelDock/panelBreakpoints.ts'
+export {
   AuthoringBreadcrumbs,
   type AuthoringBreadcrumbsProps,
   type BreadcrumbAccent,

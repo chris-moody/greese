@@ -17,6 +17,7 @@ import {
 import { useAuthoringDispatch } from '../../environment/environment.tsx'
 import { panelsActions } from '../../state/panels.slice.ts'
 import { PanelGroup, type PanelMeta } from './PanelGroup.tsx'
+import { markResizing } from './PanelStatusBar.tsx'
 import type { PanelRegistrant } from './panel.types.ts'
 
 const DEFAULT_WIDTH = 240
@@ -101,6 +102,7 @@ const FloatingPanelsView = ({
       width: Math.max(MIN_WIDTH, f.width + dx),
       height: Math.max(MIN_HEIGHT, f.height + dy),
     })
+    markResizing(elements.current[f.id], true)
     beginPointerDrag(event, {
       captureTarget: event.currentTarget,
       suppressUserSelect: true,
@@ -111,8 +113,10 @@ const FloatingPanelsView = ({
         el.style.width = `${width}px`
         el.style.height = `${height}px`
       },
-      onEnd: (_e, { dx, dy }) =>
-        dispatch(panelsActions.setFloatSize({ panelId: f.id, ...sizeAt(dx, dy) })),
+      onEnd: (_e, { dx, dy }) => {
+        markResizing(elements.current[f.id], false)
+        dispatch(panelsActions.setFloatSize({ panelId: f.id, ...sizeAt(dx, dy) }))
+      },
     })
   }
 
