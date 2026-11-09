@@ -99,13 +99,21 @@ $breakpoints: config.$breakpoints;
 /// With `$container-scope`, the same rules are emitted again under
 /// `@container`, prefixed with the scope so they win inside it.
 ///
+/// With `$breakpoint-set` and `$container`, the rules are for other
+/// breakpoints, measured against the nearest container of that name instead
+/// of the viewport: a library's own keys, such as @greese/authoring's panel
+/// breakpoints (`panelmd`), whose classes `resolveResponsive()` writes once
+/// they're registered with `addContainerBreakpoints()`.
+///
 /// @param $block           component root class, without the dot: 'greese-Stack'
 /// @param $prop            prop segment in class and variable names: 'gap'
 /// @param $properties      CSS property, or list of them, to set
 /// @param $tokens          map of token key to CSS value, one class each
 /// @param $template        wraps each value: 'repeat(auto-fill, minmax(VALUE, 1fr))'
 /// @param $container-scope selector prefix whose container-query variant
-///                         applies: '.greese-Grid--container >'
+///                         applies: '.greese-Grid--queries >'
+/// @param $breakpoint-set  the breakpoints to write: the configured ones
+/// @param $container       a container name: the set's queries are its width
 ///
 /// Use it at the top level of a layer block, not nested in a selector.
 @mixin responsive-prop(
@@ -114,24 +122,54 @@ $breakpoints: config.$breakpoints;
   $properties,
   $tokens: (),
   $template: null,
-  $container-scope: null
+  $container-scope: null,
+  $breakpoint-set: $breakpoints,
+  $container: null
 ) {
-  @each $bp, $min in $breakpoints {
-    @include up($bp) {
-      @include _breakpoint-rules(
-        $block,
-        $prop,
-        $bp,
-        $properties,
-        $tokens,
-        $template,
-        null
-      );
+  @each $bp, $min in $breakpoint-set {
+    @if $container {
+      @if $min <= 0 {
+        @include _breakpoint-rules(
+          $block,
+          $prop,
+          $bp,
+          $properties,
+          $tokens,
+          $template,
+          null
+        );
+      } @else {
+        // A name the caller gives, interpolated: the pattern can't see it.
+        // stylelint-disable-next-line container-name-pattern
+        @container #{$container} (width >= #{$min}) {
+          @include _breakpoint-rules(
+            $block,
+            $prop,
+            $bp,
+            $properties,
+            $tokens,
+            $template,
+            null
+          );
+        }
+      }
+    } @else {
+      @include up($bp) {
+        @include _breakpoint-rules(
+          $block,
+          $prop,
+          $bp,
+          $properties,
+          $tokens,
+          $template,
+          null
+        );
+      }
     }
   }
 
-  @if $container-scope {
-    @each $bp, $min in $breakpoints {
+  @if $container-scope and not $container {
+    @each $bp, $min in $breakpoint-set {
       @if $min <= 0 {
         @include _breakpoint-rules(
           $block,

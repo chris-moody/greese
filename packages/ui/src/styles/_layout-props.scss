@@ -1,0 +1,197 @@
+// The layout components' responsive props, defined once: Stack, Grid and
+// AutoLayout include them for the configured breakpoints, and
+// `pkg:@greese/ui/scss/breakpoints` writes them again for a set measured
+// against a container (@greese/authoring's panels). Writes no CSS until
+// included.
+@use 'sass:map';
+@use 'config';
+@use 'mixins';
+
+$_column-counts: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+
+@function _column-tokens() {
+  $map: ();
+
+  @each $n in $_column-counts {
+    $map: map.set($map, $n, repeat(#{$n}, minmax(0, 1fr)));
+  }
+
+  @return $map;
+}
+
+@function _size-tokens() {
+  $map: (
+    full: #{'1 / -1'},
+  );
+
+  @each $n in $_column-counts {
+    $map: map.set($map, $n, span #{$n} / span #{$n});
+  }
+
+  @return $map;
+}
+
+@mixin stack($set: config.$breakpoints, $container: null) {
+  @include mixins.responsive-prop(
+    'greese-Stack',
+    'direction',
+    flex-direction,
+    (
+      row: row,
+      column: column,
+      row-reverse: row-reverse,
+      column-reverse: column-reverse,
+    ),
+    $breakpoint-set: $set,
+    $container: $container
+  );
+  @include mixins.responsive-prop(
+    'greese-Stack',
+    'gap',
+    gap,
+    mixins.space-tokens(),
+    $breakpoint-set: $set,
+    $container: $container
+  );
+  @include mixins.responsive-prop(
+    'greese-Stack',
+    'align',
+    align-items,
+    (
+      start: flex-start,
+      center: center,
+      end: flex-end,
+      stretch: stretch,
+      baseline: baseline,
+    ),
+    $breakpoint-set: $set,
+    $container: $container
+  );
+  @include mixins.responsive-prop(
+    'greese-Stack',
+    'justify',
+    justify-content,
+    (
+      start: flex-start,
+      center: center,
+      end: flex-end,
+      between: space-between,
+      around: space-around,
+      evenly: space-evenly,
+    ),
+    $breakpoint-set: $set,
+    $container: $container
+  );
+  @include mixins.responsive-prop(
+    'greese-Stack',
+    'wrap',
+    flex-wrap,
+    (
+      wrap: wrap,
+      nowrap: nowrap,
+      wrap-reverse: wrap-reverse,
+    ),
+    $breakpoint-set: $set,
+    $container: $container
+  );
+}
+
+@mixin grid($set: config.$breakpoints, $container: null) {
+  @include mixins.responsive-prop(
+    'greese-Grid',
+    'columns',
+    grid-template-columns,
+    _column-tokens(),
+    $breakpoint-set: $set,
+    $container: $container
+  );
+
+  // After `columns`, so it wins where both apply.
+  @include mixins.responsive-prop(
+    'greese-Grid',
+    'min-child',
+    grid-template-columns,
+    $template: 'repeat(auto-fill, minmax(min(VALUE, 100%), 1fr))',
+    $breakpoint-set: $set,
+    $container: $container
+  );
+  @include mixins.responsive-prop(
+    'greese-Grid',
+    'gap',
+    gap,
+    mixins.space-tokens(),
+    $breakpoint-set: $set,
+    $container: $container
+  );
+  @include mixins.responsive-prop(
+    'greese-Grid',
+    'align',
+    align-items,
+    (
+      start: start,
+      center: center,
+      end: end,
+      stretch: stretch,
+    ),
+    $breakpoint-set: $set,
+    $container: $container
+  );
+  @include mixins.responsive-prop(
+    'greese-Grid',
+    'justify',
+    justify-items,
+    (
+      start: start,
+      center: center,
+      end: end,
+      stretch: stretch,
+    ),
+    $breakpoint-set: $set,
+    $container: $container
+  );
+  @include mixins.responsive-prop(
+    'greese-Grid',
+    'size',
+    grid-column,
+    _size-tokens(),
+    $container-scope: '.greese-Grid--queries >',
+    $breakpoint-set: $set,
+    $container: $container
+  );
+}
+
+@mixin autolayout($set: config.$breakpoints, $container: null) {
+  // `gap` sets both gaps and tells the items the column gap.
+  @include mixins.responsive-prop(
+    'greese-AutoLayout',
+    'gap',
+    (column-gap, row-gap, --greese-autolayout-column-gap),
+    mixins.space-tokens(),
+    $breakpoint-set: $set,
+    $container: $container
+  );
+
+  // After `gap`, so it wins where both apply.
+  @include mixins.responsive-prop(
+    'greese-AutoLayout',
+    'row-gap',
+    row-gap,
+    mixins.space-tokens(),
+    $breakpoint-set: $set,
+    $container: $container
+  );
+  @include mixins.responsive-prop(
+    'greese-AutoLayoutItem',
+    'size',
+    --greese-autolayoutitem-s,
+    $breakpoint-set: $set,
+    $container: $container
+  );
+  @include mixins.responsive-prop(
+    'greese-AutoLayoutItem',
+    'max',
+    --greese-autolayoutitem-m,
+    $breakpoint-set: $set,
+    $container: $container
+  );
+}

@@ -1,4 +1,4 @@
-@use '../../styles/mixins';
+@use '../../styles/layout-props';
 
 @layer greese.components {
   .greese-Stack {
@@ -7,51 +7,5 @@
     min-inline-size: 0;
   }
 
-  @include mixins.responsive-prop(
-    'greese-Stack',
-    'direction',
-    flex-direction,
-    (
-      row: row,
-      column: column,
-      row-reverse: row-reverse,
-      column-reverse: column-reverse,
-    )
-  );
-  @include mixins.responsive-prop('greese-Stack', 'gap', gap, mixins.space-tokens());
-  @include mixins.responsive-prop(
-    'greese-Stack',
-    'align',
-    align-items,
-    (
-      start: flex-start,
-      center: center,
-      end: flex-end,
-      stretch: stretch,
-      baseline: baseline,
-    )
-  );
-  @include mixins.responsive-prop(
-    'greese-Stack',
-    'justify',
-    justify-content,
-    (
-      start: flex-start,
-      center: center,
-      end: flex-end,
-      between: space-between,
-      around: space-around,
-      evenly: space-evenly,
-    )
-  );
-  @include mixins.responsive-prop(
-    'greese-Stack',
-    'wrap',
-    flex-wrap,
-    (
-      wrap: wrap,
-      nowrap: nowrap,
-      wrap-reverse: wrap-reverse,
-    )
-  );
+  @include layout-props.stack;
 }

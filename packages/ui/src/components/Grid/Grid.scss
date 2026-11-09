@@ -1,29 +1,4 @@
-@use 'sass:map';
-@use '../../styles/mixins';
-
-$column-counts: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-
-@function column-tokens() {
-  $map: ();
-
-  @each $n in $column-counts {
-    $map: map.set($map, $n, repeat(#{$n}, minmax(0, 1fr)));
-  }
-
-  @return $map;
-}
-
-@function size-tokens() {
-  $map: (
-    full: #{'1 / -1'},
-  );
-
-  @each $n in $column-counts {
-    $map: map.set($map, $n, span #{$n} / span #{$n});
-  }
-
-  @return $map;
-}
+@use '../../styles/layout-props';
 
 @layer greese.components {
   // Every Grid can be a cell; `container` makes it a grid too.
@@ -39,48 +14,5 @@ $column-counts: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
     container-type: inline-size;
   }
 
-  @include mixins.responsive-prop(
-    'greese-Grid',
-    'columns',
-    grid-template-columns,
-    column-tokens()
-  );
-
-  // After `columns`, so it wins where both apply.
-  @include mixins.responsive-prop(
-    'greese-Grid',
-    'min-child',
-    grid-template-columns,
-    $template: 'repeat(auto-fill, minmax(min(VALUE, 100%), 1fr))'
-  );
-  @include mixins.responsive-prop('greese-Grid', 'gap', gap, mixins.space-tokens());
-  @include mixins.responsive-prop(
-    'greese-Grid',
-    'align',
-    align-items,
-    (
-      start: start,
-      center: center,
-      end: end,
-      stretch: stretch,
-    )
-  );
-  @include mixins.responsive-prop(
-    'greese-Grid',
-    'justify',
-    justify-items,
-    (
-      start: start,
-      center: center,
-      end: end,
-      stretch: stretch,
-    )
-  );
-  @include mixins.responsive-prop(
-    'greese-Grid',
-    'size',
-    grid-column,
-    size-tokens(),
-    $container-scope: '.greese-Grid--queries >'
-  );
+  @include layout-props.grid;
 }

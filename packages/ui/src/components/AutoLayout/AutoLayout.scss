@@ -1,4 +1,4 @@
-@use '../../styles/mixins';
+@use '../../styles/layout-props';
 
 // Registered so they never inherit: a nested item without a size must not
 // pick up its parent item's.
@@ -62,29 +62,5 @@
     );
   }
 
-  // `gap` sets both gaps and tells the items the column gap.
-  @include mixins.responsive-prop(
-    'greese-AutoLayout',
-    'gap',
-    (column-gap, row-gap, --greese-autolayout-column-gap),
-    mixins.space-tokens()
-  );
-
-  // After `gap`, so it wins where both apply.
-  @include mixins.responsive-prop(
-    'greese-AutoLayout',
-    'row-gap',
-    row-gap,
-    mixins.space-tokens()
-  );
-  @include mixins.responsive-prop(
-    'greese-AutoLayoutItem',
-    'size',
-    --greese-autolayoutitem-s
-  );
-  @include mixins.responsive-prop(
-    'greese-AutoLayoutItem',
-    'max',
-    --greese-autolayoutitem-m
-  );
+  @include layout-props.autolayout;
 }

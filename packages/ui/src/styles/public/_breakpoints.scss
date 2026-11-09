@@ -1,0 +1,43 @@
+// `pkg:@greese/ui/scss/breakpoints`: more breakpoints for the layout
+// components, measured against a container instead of the viewport. A library
+// whose components live in boxes of their own size (@greese/authoring's
+// panels) names its container and its keys, and gets Stack's, Grid's and
+// AutoLayout's responsive classes for them:
+//   @use 'pkg:@greese/ui/scss/breakpoints';
+//   @layer greese.components {
+//     @include breakpoints.container-set((panelmd: 360px), greese-panel);
+//   }
+// Keys follow `$breakpoints`' rules (one word, no dashes, increasing), and
+// mustn't be one of its own. JavaScript learns them through
+// `addContainerBreakpoints()` from @greese/react, so `resolveResponsive()`
+// writes their classes. Writes no CSS until included.
+@use 'sass:map';
+@use 'sass:string';
+@use '../config';
+@use '../layout-props';
+
+/// Stack's, Grid's and AutoLayout's responsive props for `$set`, each key
+/// applying where the nearest `$container` is at least that wide.
+@mixin container-set($set, $container) {
+  $previous: -1px;
+
+  @each $key, $min in $set {
+    @if map.has-key(config.$breakpoints, $key) {
+      @error 'container-set: `#{$key}` is already a viewport breakpoint; give the container\'s its own name.';
+    }
+
+    @if string.index('#{$key}', '-') {
+      @error 'container-set: key `#{$key}` must be one word, without dashes.';
+    }
+
+    @if $min <= $previous {
+      @error 'container-set: breakpoints must increase, but `#{$key}` (#{$min}) does not exceed the one before it.';
+    }
+
+    $previous: $min;
+  }
+
+  @include layout-props.stack($set, $container);
+  @include layout-props.grid($set, $container);
+  @include layout-props.autolayout($set, $container);
+}

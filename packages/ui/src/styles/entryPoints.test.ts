@@ -7,6 +7,7 @@ const compile = compileAsProject
 
 const AUTHORING = [
   'mixins',
+  'breakpoints',
   'tones',
   'floating',
   'controls',

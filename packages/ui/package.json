@@ -96,6 +96,9 @@
     "./scss/mixins": {
       "sass": "./src/styles/public/_mixins.scss"
     },
+    "./scss/breakpoints": {
+      "sass": "./src/styles/public/_breakpoints.scss"
+    },
     "./scss/tones": {
       "sass": "./src/styles/public/_tones.scss"
     },
