@@ -54,9 +54,16 @@ describe('the stage bar controls', () => {
   it('zooms by percentage, clamped, and resets the view', () => {
     const onZoomChange = vi.fn()
     const onResetView = vi.fn()
-    render(<ZoomControl zoom={1} onZoomChange={onZoomChange} onResetView={onResetView} />)
+    const { rerender } = render(
+      <ZoomControl zoom={1} onZoomChange={onZoomChange} onResetView={onResetView} />
+    )
     commit(screen.getByRole('combobox', { name: 'Zoom' }), '250')
     expect(onZoomChange).toHaveBeenLastCalledWith(2.5)
+    // A zoom that isn't a preset still reads as a percentage.
+    rerender(
+      <ZoomControl zoom={1.37} onZoomChange={onZoomChange} onResetView={onResetView} />
+    )
+    expect(screen.getByRole('combobox', { name: 'Zoom' })).toHaveValue('137%')
     fireEvent.click(screen.getByRole('button', { name: 'Reset view' }))
     expect(onResetView).toHaveBeenCalled()
   })

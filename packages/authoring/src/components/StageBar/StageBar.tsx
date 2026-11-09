@@ -15,6 +15,8 @@ import { EditableSelect, unitOptions } from '../EditableSelect/EditableSelect.ts
 /** Zoom presets, in percent. */
 export const ZOOM_PRESETS = [10, 25, 50, 75, 100, 150, 200, 400]
 
+const percent = (value: number) => `${value}%`
+
 /** Grid interval presets, in pixels. */
 export const GRID_INTERVAL_PRESETS = [1, 5, 10, 25, 50, 100]
 
@@ -46,6 +48,8 @@ export const ZoomControl = ({
       className="greese-StageBar-value"
       value={Math.round(zoom * 100)}
       options={unitOptions(ZOOM_PRESETS, '%')}
+      // Every value reads as a percentage, not only the presets: 137%.
+      format={percent}
       onChange={(percent) => onZoomChange(Math.max(1, Math.min(10000, percent)) / 100)}
     />
     <Tooltip content="Reset view (100%, centered)" placement="bottom">
