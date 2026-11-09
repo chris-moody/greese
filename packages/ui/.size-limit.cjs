@@ -70,7 +70,9 @@ module.exports = [
     // EditableField's size classes for its colour swatch, the swatch's touch
     // area, Select's line height and Combobox's toggle fitting its field
     // (27.15 kB).
-    limit: '27.2 kB',
+    // 27.2 kB → 27.35 kB (2026-11-09): the clear buttons of EditableField and
+    // NumberField, the textarea field's, and ScrollCarousel's strip (27.32 kB).
+    limit: '27.35 kB',
   },
   {
     name: 'CSS: css/PageTransition.css',

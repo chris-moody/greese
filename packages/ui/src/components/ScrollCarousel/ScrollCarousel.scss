@@ -86,6 +86,47 @@
     }
   }
 
+  // A strip of controls (tabs, a toolbar): each as wide as its content, no
+  // snapping, and small buttons over the ends that scroll it a view along.
+  .greese-ScrollCarousel--strip {
+    gap: 0;
+
+    > .greese-ScrollCarousel-viewport {
+      --greese-scrollcarousel-gap: var(--greese-space-1);
+
+      align-items: center;
+      scroll-snap-type: none;
+      border-radius: 0;
+    }
+
+    > .greese-ScrollCarousel-control {
+      inset-block-start: 50%;
+      inline-size: 1.5rem;
+      block-size: 1.5rem;
+      box-shadow: var(--greese-shadow-sm);
+
+      > svg {
+        inline-size: 0.875rem;
+        block-size: 0.875rem;
+      }
+    }
+
+    > .greese-ScrollCarousel-control--previous {
+      inset-inline-start: 0;
+    }
+
+    > .greese-ScrollCarousel-control--next {
+      inset-inline-end: 0;
+    }
+  }
+
+  .greese-ScrollCarousel--strip
+    > .greese-ScrollCarousel-viewport
+    > .greese-ScrollCarouselSlide {
+    flex: none;
+    scroll-snap-align: none;
+  }
+
   // Phones swipe; the buttons come back where a pointer can hover.
   @media (hover: none) {
     .greese-ScrollCarousel-control {

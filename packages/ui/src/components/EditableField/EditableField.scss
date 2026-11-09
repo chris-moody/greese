@@ -79,6 +79,49 @@ $checker: repeating-conic-gradient(#c8ccd2 0% 25%, #fff 0% 50%) 0 0 / 0.5rem 0.5
     min-inline-size: 0;
   }
 
+  // The × that empties the field: a small, muted target inside its end.
+  .greese-EditableField-clear {
+    @include mixins.touch-target;
+
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    padding: 0;
+    color: var(--greese-color-fg-muted);
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-radius: var(--greese-corner-round);
+
+    @include mixins.hover {
+      color: var(--greese-color-fg);
+      background-color: color-mix(in oklab, var(--greese-color-fg) 8%, transparent);
+    }
+
+    > svg {
+      inline-size: 0.75rem;
+      block-size: 0.75rem;
+    }
+  }
+
+  // A textarea's × sits in its top end corner, over the text's margin.
+  .greese-EditableField-textarea {
+    position: relative;
+
+    > .greese-EditableField-clear {
+      position: absolute;
+      inset-block-start: var(--greese-space-1);
+      inset-inline-end: var(--greese-space-1);
+    }
+
+    &:has(> .greese-EditableField-clear) .greese-Textarea-control {
+      padding-inline-end: 1.75rem;
+    }
+  }
+
   .greese-EditableField-unit,
   .greese-EditableField-value {
     flex: none;

@@ -236,7 +236,7 @@ $blocks: (
     variables: ('--greese-drawer-dir', '--greese-drawer-edge',),
   ),
   'EditableField': (
-    parts: ('control', 'dial', 'dialDot', 'knob', 'label', 'none', 'number', 'picker', 'range', 'swatch', 'unit', 'value',),
+    parts: ('clear', 'control', 'dial', 'dialDot', 'knob', 'label', 'none', 'number', 'picker', 'range', 'swatch', 'textarea', 'unit', 'value',),
     modifiers: ('checkbox', 'column', 'radio', 'row', 'segmented', 'size-lg', 'size-md', 'size-sm', 'size-xl', 'size-xs', 'switch',),
     part-modifiers: (),
     variables: ('--greese-editablefield-angle', '--greese-editablefield-dial', '--greese-editablefield-height', '--greese-editablefield-swatch',),
@@ -374,7 +374,7 @@ $blocks: (
     variables: ('--greese-ease-ease', '--greese-ease-ease-in', '--greese-ease-ease-in-out', '--greese-ease-ease-out', '--greese-ease-in', '--greese-ease-in-out', '--greese-ease-linear', '--greese-ease-out', '--greese-motion-content', '--greese-motion-content-duration', '--greese-motion-delay', '--greese-motion-dir', '--greese-motion-distance', '--greese-motion-duration', '--greese-motion-ease', '--greese-motion-enter-ease', '--greese-motion-exit-mask-from', '--greese-motion-exit-mask-image', '--greese-motion-exit-mask-position', '--greese-motion-exit-mask-repeat', '--greese-motion-exit-mask-size', '--greese-motion-exit-opacity', '--greese-motion-exit-scale', '--greese-motion-exit-transform', '--greese-motion-exit-transform-origin', '--greese-motion-exit-translate', '--greese-motion-index', '--greese-motion-name', '--greese-motion-offset', '--greese-motion-scope', '--greese-motion-stagger', '--greese-motion-theme', '--greese-motion-wait',),
   ),
   'NumberField': (
-    parts: ('step', 'steppers',),
+    parts: ('clear', 'step', 'steppers',),
     modifiers: ('split',),
     part-modifiers: (),
     variables: (),
@@ -435,7 +435,7 @@ $blocks: (
   ),
   'ScrollCarousel': (
     parts: ('control', 'indicator', 'indicators', 'viewport',),
-    modifiers: ('vertical',),
+    modifiers: ('strip', 'vertical',),
     part-modifiers: ('control': ('next', 'previous',)),
     variables: ('--greese-scrollcarousel-dots', '--greese-scrollcarousel-gap', '--greese-scrollcarousel-gaps', '--greese-scrollcarousel-per-view', '--greese-scrollcarousel-size',),
   ),
