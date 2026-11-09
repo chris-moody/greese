@@ -1,0 +1,50 @@
+// The default authoring theme (ADR 0044): what every authoring app shares
+// beyond the components' own styles. Inside `.greese-AuthoringTheme`
+// (`<AuthoringTheme>`, and Shaper's root), text controls are dense: a field
+// asked for at `md` or larger is drawn at `sm`, so a panel's comboboxes,
+// selects and inputs all match, whichever size each was given. A field's
+// name reads as data, in the code face at caption size; its value keeps the
+// control's own type.
+@use 'sass:map';
+@use 'pkg:@greese/ui/scss/controls';
+
+$_dense: map.get(controls.$sizes, sm);
+$_larger: (md, lg, xl);
+
+@layer greese.components {
+  // The wrapper component renders no box of its own, so a shell's flex or
+  // grid layout is untouched. (A root that carries the scope itself, as
+  // Shaper's does, keeps its own display.)
+  .greese-AuthoringTheme--contents {
+    display: contents;
+  }
+}
+
+@layer greese.overrides {
+  .greese-AuthoringTheme .greese-EditableField-label {
+    font-family: var(--greese-font-mono);
+    font-size: var(--greese-type-caption-font-size);
+  }
+
+  @each $size in $_larger {
+    .greese-AuthoringTheme .greese-Input--size-#{$size} {
+      --greese-input-height: #{map.get($_dense, height)};
+      --greese-input-padding: #{map.get($_dense, padding)};
+
+      @include controls.no-zoom-font(map.get($_dense, font));
+    }
+
+    .greese-AuthoringTheme .greese-Select--size-#{$size} {
+      --greese-select-height: #{map.get($_dense, height)};
+      --greese-select-padding: #{map.get($_dense, padding)};
+
+      @include controls.no-zoom-font(map.get($_dense, font));
+    }
+
+    .greese-AuthoringTheme .greese-Textarea--size-#{$size} {
+      --greese-textarea-padding: #{map.get($_dense, padding)};
+
+      @include controls.no-zoom-font(map.get($_dense, font));
+    }
+  }
+}

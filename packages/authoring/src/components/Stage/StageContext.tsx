@@ -1,6 +1,6 @@
 'use client'
 import type { ComponentPropsWithRef, JSX, ReactNode } from 'react'
-import { cx } from '@greese/react'
+import { cx, ScrollCarousel, ScrollCarouselSlide } from '@greese/react'
 import {
   useAuthoringDispatch,
   useAuthoringEnvironment,
@@ -39,19 +39,31 @@ export const StageContext = ({
   const showRulers = useAuthoringSelector(selectShowRulers)
   const guidesHidden = useAuthoringSelector(selectGuidesHidden)
   const Slot = config.stageBarSlot
+  // One strip, so the bar scrolls sideways when the stage is narrower than
+  // its controls, rather than squeezing or wrapping them.
   return (
     <div {...props} className={cx('greese-StageContext', className)}>
-      {breadcrumbs}
-      <div className="greese-StageContext-spacer" />
-      {Slot && <Slot />}
-      <RulerToggle
-        showRulers={showRulers}
-        onToggle={() => dispatch(panelsActions.setShowRulers(!showRulers))}
-      />
-      <GuidesToggle
-        showGuides={!guidesHidden}
-        onToggle={() => dispatch(guidesActions.setGuidesHidden(!guidesHidden))}
-      />
+      <ScrollCarousel label="stage controls" strip className="greese-StageContext-strip">
+        {breadcrumbs && <ScrollCarouselSlide>{breadcrumbs}</ScrollCarouselSlide>}
+        <ScrollCarouselSlide className="greese-StageContext-spacer" />
+        {Slot && (
+          <ScrollCarouselSlide>
+            <Slot />
+          </ScrollCarouselSlide>
+        )}
+        <ScrollCarouselSlide>
+          <RulerToggle
+            showRulers={showRulers}
+            onToggle={() => dispatch(panelsActions.setShowRulers(!showRulers))}
+          />
+        </ScrollCarouselSlide>
+        <ScrollCarouselSlide>
+          <GuidesToggle
+            showGuides={!guidesHidden}
+            onToggle={() => dispatch(guidesActions.setGuidesHidden(!guidesHidden))}
+          />
+        </ScrollCarouselSlide>
+      </ScrollCarousel>
     </div>
   )
 }

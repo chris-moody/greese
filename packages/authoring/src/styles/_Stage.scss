@@ -29,8 +29,17 @@
     border-block-end: 1px solid var(--greese-color-border);
   }
 
-  .greese-StageContext-spacer {
+  // Its controls in one strip that scrolls sideways when they overflow; the
+  // spacer pushes them to the end while they fit.
+  .greese-StageContext-strip {
     flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  .greese-StageContext-strip
+    > .greese-ScrollCarousel-viewport
+    > .greese-StageContext-spacer {
+    flex: 1 0 0;
   }
 
   .greese-AuthoringBreadcrumbs {
@@ -107,6 +116,11 @@
     display: flex;
     gap: var(--greese-space-1);
     align-items: center;
+  }
+
+  // A field's tooltip wrapper: no box of its own in the row.
+  .greese-StageBar-tip {
+    display: inline-flex;
   }
 
   // A number with presets: wide enough for "10000" and the toggle.

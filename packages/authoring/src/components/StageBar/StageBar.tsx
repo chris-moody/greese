@@ -1,21 +1,31 @@
 'use client'
 import type { ComponentPropsWithRef, JSX } from 'react'
-import {
-  Button,
-  cx,
-  EditableField,
-  IconButton,
-  Select,
-  Text,
-  Tooltip,
-} from '@greese/react'
-import { FocusIcon, GridIcon } from '@greese/icons'
+import type { ReactNode } from 'react'
+import { cx, EditableField, IconButton, Select, Text, Tooltip } from '@greese/react'
+import { FocusIcon, GridIcon, SaveIcon } from '@greese/icons'
 import { EditableSelect, unitOptions } from '../EditableSelect/EditableSelect.tsx'
 
 /** Zoom presets, in percent. */
 export const ZOOM_PRESETS = [10, 25, 50, 75, 100, 150, 200, 400]
 
 const percent = (value: number) => `${value}%`
+
+/**
+ * A tooltip for a field in the bar (a select, a combobox), whose own name it
+ * repeats, so it shows without describing. On a wrapper, which takes the
+ * field's hover and focus as they bubble.
+ */
+export const BarTip = ({
+  content,
+  children,
+}: {
+  content: ReactNode
+  children: ReactNode
+}): JSX.Element => (
+  <Tooltip content={content} placement="bottom" describe={false}>
+    <span className="greese-StageBar-tip">{children}</span>
+  </Tooltip>
+)
 
 /** Grid interval presets, in pixels. */
 export const GRID_INTERVAL_PRESETS = [1, 5, 10, 25, 50, 100]
@@ -43,15 +53,17 @@ export const ZoomControl = ({
   onResetView,
 }: ZoomControlProps): JSX.Element => (
   <div className="greese-StageBar-group">
-    <EditableSelect
-      label="Zoom"
-      className="greese-StageBar-value"
-      value={Math.round(zoom * 100)}
-      options={unitOptions(ZOOM_PRESETS, '%')}
-      // Every value reads as a percentage, not only the presets: 137%.
-      format={percent}
-      onChange={(percent) => onZoomChange(Math.max(1, Math.min(10000, percent)) / 100)}
-    />
+    <BarTip content="Zoom">
+      <EditableSelect
+        label="Zoom"
+        className="greese-StageBar-value"
+        value={Math.round(zoom * 100)}
+        options={unitOptions(ZOOM_PRESETS, '%')}
+        // Every value reads as a percentage, not only the presets: 137%.
+        format={percent}
+        onChange={(percent) => onZoomChange(Math.max(1, Math.min(10000, percent)) / 100)}
+      />
+    </BarTip>
     <Tooltip content="Reset view (100%, centered)" placement="bottom">
       <IconButton size="xs" label="Reset view" onClick={onResetView}>
         <FocusIcon />
@@ -100,13 +112,15 @@ export const GridControl = ({
         <GridIcon />
       </IconButton>
     </Tooltip>
-    <EditableSelect
-      label="Grid spacing"
-      className="greese-StageBar-value"
-      value={gridInterval}
-      options={unitOptions(intervalOptions, 'px')}
-      onChange={onIntervalChange}
-    />
+    <BarTip content="Grid spacing">
+      <EditableSelect
+        label="Grid spacing"
+        className="greese-StageBar-value"
+        value={gridInterval}
+        options={unitOptions(intervalOptions, 'px')}
+        onChange={onIntervalChange}
+      />
+    </BarTip>
   </div>
 )
 
@@ -118,7 +132,8 @@ export interface StageColorControlProps {
 }
 
 /**
- * The stage's background color: a swatch that opens a picker.
+ * The stage's background color: a swatch that opens a picker, named by its
+ * tooltip rather than a label beside it.
  *
  * ```tsx
  * <StageColorControl color="#ffffff" onChange={setColor} />
@@ -128,14 +143,17 @@ export const StageColorControl = ({
   color,
   onChange,
 }: StageColorControlProps): JSX.Element => (
-  <EditableField
-    className="greese-StageBar-color"
-    type="color"
-    label="Stage color"
-    size="xs"
-    value={color}
-    onValueChange={(next) => next && onChange(next)}
-  />
+  <BarTip content="Stage color">
+    <EditableField
+      className="greese-StageBar-color"
+      type="color"
+      label="Stage color"
+      hideLabel
+      size="xs"
+      value={color}
+      onValueChange={(next) => next && onChange(next)}
+    />
+  </BarTip>
 )
 
 /** A saved panel layout to choose. */
@@ -180,22 +198,31 @@ export const LayoutBar = ({
     <Text variant="caption" tone="muted" aria-hidden="true">
       Layout
     </Text>
-    <Select
-      size="xs"
-      aria-label="Panel layout"
-      value={activeLayoutId}
-      onChange={(event) => onSelectLayout(event.target.value)}
-    >
-      {layouts.map((layout) => (
-        <option key={layout.id} value={layout.id}>
-          {layout.name}
-        </option>
-      ))}
-    </Select>
+    <BarTip content="Panel layout">
+      <Select
+        size="xs"
+        aria-label="Panel layout"
+        value={activeLayoutId}
+        onChange={(event) => onSelectLayout(event.target.value)}
+      >
+        {layouts.map((layout) => (
+          <option key={layout.id} value={layout.id}>
+            {layout.name}
+          </option>
+        ))}
+      </Select>
+    </BarTip>
     {canSave && (
-      <Button size="xs" variant="outline" onClick={onSaveLayout} disabled={saving}>
-        {saving ? 'Saving…' : 'Save'}
-      </Button>
+      <Tooltip content={saving ? 'Saving the layout…' : 'Save layout'} placement="bottom">
+        <IconButton
+          size="xs"
+          label={saving ? 'Saving the layout' : 'Save layout'}
+          onClick={onSaveLayout}
+          disabled={saving}
+        >
+          <SaveIcon />
+        </IconButton>
+      </Tooltip>
     )}
   </div>
 )

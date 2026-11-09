@@ -64,6 +64,10 @@ export {
   GuidesOverlay,
   type GuidesOverlayProps,
 } from './components/Guides/GuidesOverlay.tsx'
+export {
+  AuthoringTheme,
+  type AuthoringThemeProps,
+} from './components/AuthoringTheme/AuthoringTheme.tsx'
 export { PanelDock, type PanelDockProps } from './components/PanelDock/PanelDock.tsx'
 export {
   PANEL_CONTAINER,

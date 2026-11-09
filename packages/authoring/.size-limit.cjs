@@ -372,6 +372,9 @@ module.exports = [
     // and panellg under the `greese-panel` container query, a third each,
     // about 1.55 kB; and the resize status bar (8.58 kB). Measured per
     // component, none was worth leaving out: a panel lays out with all three.
-    limit: '8.65 kB',
+    // 8.65 → 8.95 kB (2026-11-09): the default authoring theme (ADR 0044):
+    // greese's layer order first, dense text controls and field names in the
+    // code face; and the stage bar's strip and tooltip wrappers (8.93 kB).
+    limit: '8.95 kB',
   },
 ]

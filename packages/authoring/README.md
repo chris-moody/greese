@@ -120,6 +120,20 @@ Panels read and change the editor's store with `useAuthoringSelector` and
 `useAuthoringDispatch`. An editor adds its own slices with
 `createAuthoringEnvironment({ reducers })`.
 
+### The authoring theme
+
+Wrap an editor app in `<AuthoringTheme>` (it renders no box of its own) so it
+draws its controls as every authoring app does: dense text fields, selects and
+comboboxes, and field names in the code face (ADR 0044).
+
+```tsx
+<ThemeProvider>
+  <AuthoringTheme>
+    <Editor />
+  </AuthoringTheme>
+</ThemeProvider>
+```
+
 ### Panel breakpoints
 
 A panel is as wide as it's dragged, whatever the window, so what's inside it
