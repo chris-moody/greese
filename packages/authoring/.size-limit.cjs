@@ -41,7 +41,10 @@ module.exports = [
     // value as SVG for Shaper's New gradient (14.25 kB).
     // 14.3 → 14.6 kB (2026-11-09): `gradientFromSvg`, an SVG gradient read
     // back for the gradient editor, so Shaper edits the library's (14.57 kB).
-    limit: '14.6 kB',
+    // 14.6 → 14.75 kB (2026-11-09): the edit-in-place transforms Pixels,
+    // Rigatron and Shaper share: `composeStageTransform`, its inverse, and
+    // `toEditSceneLocal`/`fromEditSceneLocal` (14.74 kB).
+    limit: '14.75 kB',
   },
   {
     name: '@greese/authoring/state: everything',
