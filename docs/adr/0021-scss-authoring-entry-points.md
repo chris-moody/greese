@@ -27,6 +27,10 @@ inside `component(Name) { }`, so it couldn't `@use` anything at all.
 | `pkg:@greese/ui/scss/controls` | `src/styles/_controls` | nothing                                             |
 | `pkg:@greese/ui/scss/slides`   | `src/styles/_slides`   | nothing                                             |
 
+Added 2026-11-09 (ADR 0043): `pkg:@greese/ui/scss/breakpoints`, whose
+`container-set` writes Stack's, Grid's and AutoLayout's responsive props
+for breakpoints measured against a named container.
+
 They join `scss`, `scss/kit`, `scss/config`, `scss/tokens`, `scss/layers` and
 `scss/maps`. Each is a one-line file in `src/styles/public/` that `@forward`s the
 library's own partial, so:

@@ -125,6 +125,41 @@ declare module '@greese/ui' {
 }
 ```
 
+Breakpoints can also measure a container instead of the window: a panel, a
+card, a pane of an editor. `pkg:@greese/ui/scss/breakpoints` writes Stack's,
+Grid's and AutoLayout's responsive classes again for keys of your own, under a
+container query on a container you name. `addContainerBreakpoints()` tells the
+JavaScript, so a prop takes them beside the viewport's:
+
+```scss
+@use 'pkg:@greese/ui/scss/breakpoints';
+
+.my-pane {
+  container: my-pane / inline-size;
+}
+
+@layer greese.components {
+  @include breakpoints.container-set(
+    (
+      panesm: 280px,
+      panemd: 420px,
+    ),
+    my-pane
+  );
+}
+```
+
+```ts
+import { addContainerBreakpoints } from '@greese/react'
+
+addContainerBreakpoints({ panesm: 280, panemd: 420 })
+// <AutoLayoutItem size={{ xs: 12, panesm: 6 }}> inside .my-pane
+```
+
+`useBreakpoint()` still follows the window and leaves these keys out.
+@greese/authoring's panels come with three (`panelsm`, `panelmd`, `panellg`;
+ADR 0043).
+
 A named theme applies inside `data-greese-theme="<name>"`. Its CSS is
 already in your bundle, so `ThemeProvider` only stamps the attributes:
 
