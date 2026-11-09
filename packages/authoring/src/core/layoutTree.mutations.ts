@@ -115,15 +115,17 @@ export function removePanel(tree: ZoneTree, panelId: string): ZoneTree {
 /**
  * Puts a panel next to a leaf: as a tab (center), or in a new leaf that splits
  * it (an edge). Reserved and headless leaves take no tab drops, and a headless
- * panel joins no group. `changed` is false when the drop was refused or the
- * leaf wasn't found.
+ * panel joins no group. `size` is the new leaf's size along the split (see
+ * `dropSize`); without it, the first pane of the split takes the default.
+ * `changed` is false when the drop was refused or the leaf wasn't found.
  */
 export function insertPanel(
   tree: ZoneTree,
   targetLeafId: string,
   panelId: string,
   zone: DropZone,
-  headless = false
+  headless = false,
+  size?: number
 ): { tree: ZoneTree; changed: boolean } {
   const target = tree.nodes[targetLeafId]
   if (!target || target.kind !== 'leaf') return { tree, changed: false }
@@ -144,9 +146,13 @@ export function insertPanel(
   const leaf = makeLeaf([panelId], undefined, false, headless)
   const orientation = zone === 'left-split' || zone === 'right-split' ? 'row' : 'col'
   const leafFirst = zone === 'top' || zone === 'left-split'
-  const split = leafFirst
-    ? makeSplit(orientation, leaf.id, target.id)
-    : makeSplit(orientation, target.id, leaf.id)
+  // The new leaf is the split's primary, so it keeps `size`: at the end, a
+  // reversed split puts it there.
+  const split: ZoneSplit = leafFirst
+    ? makeSplit(orientation, leaf.id, target.id, size)
+    : size === undefined
+      ? makeSplit(orientation, target.id, leaf.id)
+      : { ...makeSplit(orientation, leaf.id, target.id, size), reversed: true }
 
   const parent = findParent(tree, targetLeafId)
   const nodes = { ...tree.nodes, [leaf.id]: leaf, [split.id]: split }

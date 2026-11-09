@@ -36,7 +36,10 @@ module.exports = [
     // 13.8 → 13.9 kB (2026-11-08): `wheelGesture`, Pixels' wheel (zoom at
     // the pointer, pan sideways or with Shift) for every stage, and
     // `paintCss`, a paint as a swatch's background (13.88 kB).
-    limit: '13.9 kB',
+    // 13.9 → 14.3 kB (2026-11-09): `dropSize`, a docked pane as deep as the
+    // drop was from the edge, and `gradientToSvg`, the gradient editor's
+    // value as SVG for Shaper's New gradient (14.25 kB).
+    limit: '14.3 kB',
   },
   {
     name: '@greese/authoring/state: everything',
@@ -68,7 +71,9 @@ module.exports = [
     // 12.1 → 12.5 kB (2026-11-09): the panel breakpoints, registered where
     // the dock renders, and each panel's status bar: its size and breakpoint
     // while a divider or a floating panel's grip resizes it (12.47 kB).
-    limit: '12.5 kB',
+    // 12.5 → 12.7 kB (2026-11-09): a drop on a group's edge measures the
+    // group, sizing the new pane by the drop (12.65 kB).
+    limit: '12.7 kB',
   },
   {
     name: '@greese/authoring: HierarchicalList',
@@ -328,7 +333,8 @@ module.exports = [
     // default, through the backend's `zoomBy` and `panBy` (38.49 kB).
     // 38.5 → 38.9 kB (2026-11-09): the dock's panel breakpoints and resize
     // status bar, as above, and zoom read as a percentage (38.85 kB).
-    limit: '38.9 kB',
+    // 38.9 → 39.1 kB (2026-11-09): the dock's drop sizing, as above (39.09 kB).
+    limit: '39.1 kB',
   },
   {
     name: '@greese/authoring/styles.css',

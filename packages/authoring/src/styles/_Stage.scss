@@ -36,6 +36,16 @@
     min-inline-size: 0;
   }
 
+  // Each slide is a row: a media's slot may be several controls side by side
+  // (Pixels' zoom, grid and stage color), which a block would stack.
+  .greese-StageContext-strip
+    > .greese-ScrollCarousel-viewport
+    > .greese-ScrollCarouselSlide {
+    display: flex;
+    gap: var(--greese-space-3);
+    align-items: center;
+  }
+
   .greese-StageContext-strip
     > .greese-ScrollCarousel-viewport
     > .greese-StageContext-spacer {

@@ -18,6 +18,7 @@ import {
   setLeafCollapsed,
   resizeSplitNode,
   resolveDropZone,
+  dropSize,
   mergeUnknownPanels,
   pruneUnknownPanels,
   ensureReservedLeaves,
@@ -262,6 +263,41 @@ describe('removePanel', () => {
 // ── insertPanel ───────────────────────────────────────────────────────────────
 
 describe('insertPanel', () => {
+  it('gives a docked pane the size it was dropped at, at either end', () => {
+    const tree = leafTree(['a'])
+    const leafId = tree.rootId!
+    const split = (zone: DropZone) => {
+      const { tree: next } = insertPanel(tree, leafId, 'b', zone, false, 120)
+      return next.nodes[next.rootId!] as ZoneSplit
+    }
+    const top = split(DropZone.Top)
+    expect(top).toMatchObject({ orientation: 'col', primarySize: 120 })
+    expect(top.reversed).toBeUndefined()
+    // At the bottom (or right) the new leaf is still the primary, put at the end.
+    const bottom = insertPanel(tree, leafId, 'b', DropZone.Bottom, false, 120).tree
+    const node = bottom.nodes[bottom.rootId!] as ZoneSplit
+    expect(node).toMatchObject({ orientation: 'col', primarySize: 120, reversed: true })
+    expect((bottom.nodes[node.children[0]] as ZoneLeaf).tabs).toEqual(['b'])
+    expect(split(DropZone.RightSplit)).toMatchObject({
+      orientation: 'row',
+      primarySize: 120,
+      reversed: true,
+    })
+  })
+
+  it('sizes a drop by its distance from the edge, keeping both panes their minimum', () => {
+    const rect = { left: 0, top: 100, right: 400, bottom: 700, width: 400, height: 600 }
+    expect(dropSize(rect, DropZone.Top, 200, 250)).toBe(150)
+    expect(dropSize(rect, DropZone.Bottom, 200, 550)).toBe(150)
+    expect(dropSize(rect, DropZone.LeftSplit, 90, 400)).toBe(90)
+    expect(dropSize(rect, DropZone.RightSplit, 300, 400)).toBe(100)
+    // Right at the edge: the minimum, not a sliver.
+    expect(dropSize(rect, DropZone.Top, 200, 101)).toBe(80)
+    // Deep into a small leaf: what leaves the other pane its minimum.
+    expect(dropSize({ ...rect, bottom: 250, height: 150 }, DropZone.Top, 0, 240)).toBe(80)
+    expect(dropSize(rect, DropZone.Center, 200, 400)).toBeUndefined()
+  })
+
   it('center: adds panel as a new tab on the target leaf', () => {
     const tree = leafTree(['a'])
     const leafId = tree.rootId!

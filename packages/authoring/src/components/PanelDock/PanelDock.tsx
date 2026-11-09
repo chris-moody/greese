@@ -17,7 +17,11 @@ import {
   mergeUnknownPanels,
   pruneUnknownPanels,
 } from '../../core/layoutTree.mutations.ts'
-import { collectPanelIds, isReservedLeaf } from '../../core/layoutTree.queries.ts'
+import {
+  collectPanelIds,
+  dropSize,
+  isReservedLeaf,
+} from '../../core/layoutTree.queries.ts'
 import type { DropTarget, ZoneTree } from '../../core/layoutTree.types.ts'
 import {
   useAuthoringDispatch,
@@ -299,12 +303,20 @@ export const PanelDock = ({
           })
         )
       } else if (target.kind === 'leaf') {
+        // A new row or column is as deep as the drop was from the edge.
+        const leaf = containerRef.current?.querySelector(
+          `[data-leaf-id="${CSS.escape(target.leafId)}"]`
+        )
+        const size = leaf
+          ? dropSize(leaf.getBoundingClientRect(), target.zone, at.x, at.y)
+          : undefined
         dispatch(
           panelsActions.movePanel({
             panelId,
             targetLeafId: target.leafId,
             zone: target.zone,
             headless,
+            size,
           })
         )
       } else {

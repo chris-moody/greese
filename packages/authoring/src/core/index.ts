@@ -36,6 +36,8 @@ export {
   findNodeById,
   findParent,
   isReservedLeaf,
+  dropSize,
+  MIN_DOCK_SIZE,
   resolveDropZone,
 } from './layoutTree.queries.ts'
 export {

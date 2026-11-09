@@ -57,16 +57,19 @@ export const panelsSlice = createSlice({
         targetLeafId: string
         zone: DropZone
         headless?: boolean
+        /** The new pane's size along its split: how far from the edge it was dropped. */
+        size?: number
       }>
     ) => {
-      const { panelId, targetLeafId, zone, headless } = action.payload
+      const { panelId, targetLeafId, zone, headless, size } = action.payload
       const removed = removePanel(state.workspace, panelId)
       const { tree, changed } = insertPanel(
         removed,
         targetLeafId,
         panelId,
         zone,
-        headless
+        headless,
+        size
       )
       // A refused drop (a tab drop on the stage) leaves the layout as it was,
       // rather than the panel taken out and put nowhere.

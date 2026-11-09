@@ -214,3 +214,70 @@ export const colorAtOffset = (
   const [r2, g2, b2] = rgb(b.color)
   return hex([r1 + (r2 - r1) * t, g1 + (g2 - g1) * t, b1 + (b2 - b1) * t])
 }
+
+/** A gradient as SVG writes it: the element, its attributes and its stops. */
+export interface SvgGradient {
+  tag: 'linearGradient' | 'radialGradient'
+  attrs: Record<string, string>
+  stops: Array<{ offset: string; 'stop-color': string }>
+}
+
+const svgNumber = (n: number) => String(Math.round(n * 1e4) / 1e4)
+
+/**
+ * The gradient as an SVG `<linearGradient>` or `<radialGradient>`, in the
+ * shape's own box (`objectBoundingBox`, SVG's default), as the editor reads
+ * its coordinates. A radial's outer circle is SVG's `cx`/`cy`/`r` and its
+ * inner circle the focal `fx`/`fy`/`fr`; its rotation and squash become a
+ * `gradientTransform` about the outer centre. Stops are sorted, as SVG
+ * reads them in order.
+ *
+ * ```ts
+ * gradientToSvg(defaultGradient('#38bdf8'))
+ * // { tag: 'linearGradient', attrs: { x1: '0', y1: '0.5', x2: '1', y2: '0.5' }, stops: [...] }
+ * ```
+ */
+export const gradientToSvg = (value: GradientFill): SvgGradient => {
+  const stops = sortStops(value.stops).map((s) => ({
+    offset: svgNumber(s.offset),
+    'stop-color': s.color,
+  }))
+  if (value.type === 'linear')
+    return {
+      tag: 'linearGradient',
+      attrs: {
+        x1: svgNumber(value.x0),
+        y1: svgNumber(value.y0),
+        x2: svgNumber(value.x1),
+        y2: svgNumber(value.y1),
+      },
+      stops,
+    }
+  const { outerCx: cx, outerCy: cy } = value
+  const turned = value.rotation % 360 !== 0
+  const squashed = value.scaleY !== 1
+  const transform =
+    turned || squashed
+      ? [
+          `translate(${svgNumber(cx)} ${svgNumber(cy)})`,
+          turned && `rotate(${svgNumber(value.rotation)})`,
+          squashed && `scale(1 ${svgNumber(value.scaleY)})`,
+          `translate(${svgNumber(-cx)} ${svgNumber(-cy)})`,
+        ]
+          .filter(Boolean)
+          .join(' ')
+      : undefined
+  return {
+    tag: 'radialGradient',
+    attrs: {
+      cx: svgNumber(cx),
+      cy: svgNumber(cy),
+      r: svgNumber(value.outerRadius),
+      fx: svgNumber(value.cx),
+      fy: svgNumber(value.cy),
+      ...(value.innerRadius ? { fr: svgNumber(value.innerRadius) } : {}),
+      ...(transform ? { gradientTransform: transform } : {}),
+    },
+    stops,
+  }
+}

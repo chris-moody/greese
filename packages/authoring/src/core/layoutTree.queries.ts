@@ -55,6 +55,36 @@ export function findParent(tree: ZoneTree, nodeId: string): ZoneSplit | null {
 /** How much of a leaf, from each edge, splits it rather than joining it as a tab. */
 const EDGE_STRIP = 0.28
 
+/** The least a docked pane may be along its split, as SplitPane allows. */
+export const MIN_DOCK_SIZE = 80
+
+/**
+ * How big a panel docked on a leaf's edge starts: as far as the drop was from
+ * that edge, so the pointer marks the new pane's other side. Dropped near a
+ * leaf's top, a new row is shallow; further in, deeper. Clamped so both panes
+ * keep `MIN_DOCK_SIZE`. `undefined` for a tab drop (center).
+ */
+export function dropSize(
+  rect: Pick<DOMRect, 'left' | 'right' | 'top' | 'bottom' | 'width' | 'height'>,
+  zone: DropZone,
+  clientX: number,
+  clientY: number
+): number | undefined {
+  const [distance, extent] =
+    zone === DropZone.Top
+      ? [clientY - rect.top, rect.height]
+      : zone === DropZone.Bottom
+        ? [rect.bottom - clientY, rect.height]
+        : zone === DropZone.LeftSplit
+          ? [clientX - rect.left, rect.width]
+          : zone === DropZone.RightSplit
+            ? [rect.right - clientX, rect.width]
+            : [NaN, NaN]
+  if (Number.isNaN(distance)) return undefined
+  const most = Math.max(MIN_DOCK_SIZE, extent - MIN_DOCK_SIZE)
+  return Math.round(Math.min(most, Math.max(MIN_DOCK_SIZE, distance)))
+}
+
 /** Which drop zone of a leaf the pointer is over. Top and bottom win over the sides. */
 export function resolveDropZone(
   rect: Pick<DOMRect, 'left' | 'right' | 'top' | 'bottom' | 'width' | 'height'>,
