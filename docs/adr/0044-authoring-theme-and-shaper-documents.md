@@ -100,3 +100,43 @@
   `.size-limit.cjs`.
 - **Memory:** all open drawings stay mounted. Many open drawings cost a dock
   each, which is the price of switching without remounting.
+
+## Addendum (2026-11-09): docking sizes, field names, Shaper's library
+
+- **A docked row or column is as deep as the drop was from the edge.**
+  - A drop on a group's top or bottom zone makes a row, and one on its left
+    or right zone a column. The pointer marks the new pane's far side:
+    `dropSize`, clamped so both panes keep SplitPane's 80px.
+  - The new pane is the split's primary, so it keeps that size. At the
+    bottom or right, a reversed split puts it there.
+  - The workspace's own edge bands are a few pixels deep, so their drops
+    keep the 180px default.
+- **A strip's slides are rows.** A media's stage bar slot may be several
+  controls side by side (Pixels' zoom, grid and stage color), which a
+  block-level slide had stacked.
+- **A carousel's button at an end** is invisible and takes no pointer
+  events, so clicks reach what it covers.
+- **A cut-off EditableField name** shows whole in a tooltip on hover, and
+  only then. The tooltip mounts only while it shows, so a page of fields
+  doesn't carry a hidden copy of every name. Shaper's custom-control fields
+  do the same.
+- **Shaper's stylesheet is in `greese.overrides`.** The icon editor loads it
+  before greese ui's sheets, so in `greese.components` a rule restyling a
+  greese component at equal specificity lost. The Library's headings were
+  one. A host's unlayered CSS still wins.
+- **Shaper's overlay covers the canvas margin.** WebKit won't hit-test an
+  svg's overflow, so a handle just past the drawing's edge couldn't be
+  grabbed.
+- **Shaper's Library:**
+  - every section always shows, with "None yet" when it's empty. Other, a
+    catch-all, shows only when something is in it;
+  - Gradients and Filters each start a new one from their heading;
+  - a gradient is made in a dialog: a name, authoring's GradientEditor, and
+    a star over a checkerboard painted with it. `gradientToSvg` (authoring's
+    paint module) writes it as SVG, in the shape's own box;
+  - the filter editor names its filter, and previews it on a blue star when
+    nothing is selected.
+- **The Code panel wraps lines by default.** The setting carries across
+  tabs.
+- **Changes to Shaper apply to the icon editor too,** unless they say
+  otherwise.
