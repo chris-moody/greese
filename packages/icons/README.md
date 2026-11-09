@@ -22,9 +22,9 @@ import { SearchIcon } from '@greese/icons'
 - **Decorative by default** (`aria-hidden`): name the control around the
   icon. Give one a `title` when it stands alone and means something.
 - **Tree-shakable:** one export per icon.
-- **Make your own** with `createIcon(name, d)`, from 16 × 16 line art (or
-  `createIcon(name, d, { viewBox: 24, strokeWidth: 1.8 })` for another grid,
-  `{ filled: true }` for a solid shape).
+- **Make your own** with `createIcon(name, d)`, from 16 × 16 line art
+  (`{ filled: true }` for a solid shape). Every icon here is drawn on that
+  grid; `{ viewBox: 24, strokeWidth: 1.8 }` is for art drawn elsewhere.
 - **Every icon lives here.** greese ui's own (close, chevron, sort…) and its
   apps' are exports of this package; to add one, add it to `src/icons.tsx`.
   Don't inline an `<svg>` or write a one-off component.

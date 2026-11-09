@@ -39,10 +39,32 @@ describe('icons', () => {
     expect(svg.getAttribute('fill')).toBe('currentColor')
   })
 
-  it('can be drawn on another grid, or solid', () => {
+  it('are all drawn on the 16 grid', () => {
     const { container } = render(
       <>
-        <icons.GithubIcon />
+        {Object.values(icons)
+          .filter(
+            (v): v is icons.IconComponent => typeof v === 'function' && 'displayName' in v
+          )
+          .map((Icon) => (
+            <Icon key={Icon.displayName} />
+          ))}
+      </>
+    )
+    const boxes = new Set(
+      [...container.querySelectorAll('svg')].map((s) => s.getAttribute('viewBox'))
+    )
+    expect([...boxes]).toEqual(['0 0 16 16'])
+  })
+
+  it('can be drawn on another grid, or solid', () => {
+    const OnTwentyFour = createIcon('OnTwentyFour', 'M2 2h20', {
+      viewBox: 24,
+      strokeWidth: 1.8,
+    })
+    const { container } = render(
+      <>
+        <OnTwentyFour />
         <icons.StarFilledIcon />
       </>
     )

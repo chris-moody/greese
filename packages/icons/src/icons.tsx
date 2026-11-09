@@ -12,8 +12,7 @@ import { createIcon } from './createIcon.tsx'
 
 export const AccessibilityIcon = /* @__PURE__ */ createIcon(
   'Accessibility',
-  'M10.4 5a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0 -3.2 0|M5 9h14M12 9v5l-3 6M12 14l3 6',
-  { viewBox: 24, strokeWidth: 1.8 }
+  'M6.933 3.333a1.067 1.067 0 1 0 2.133 0a1.067 1.067 0 1 0 -2.133 0|M3.333 6h9.333M8 6v3.333l-2 4M8 9.333l2 4'
 )
 export const AlertCircleIcon = /* @__PURE__ */ createIcon(
   'AlertCircle',
@@ -157,8 +156,7 @@ export const ContrastIcon = /* @__PURE__ */ createIcon(
 )
 export const CopyIcon = /* @__PURE__ */ createIcon(
   'Copy',
-  'M10 8h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z|M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2',
-  { viewBox: 24, strokeWidth: 1.8 }
+  'M6.667 5.333h5.333a1.333 1.333 0 0 1 1.333 1.333v5.333a1.333 1.333 0 0 1 -1.333 1.333h-5.333a1.333 1.333 0 0 1 -1.333 -1.333v-5.333a1.333 1.333 0 0 1 1.333 -1.333z|M10.667 5.333V4a1.333 1.333 0 0 0 -1.333 -1.333H4a1.333 1.333 0 0 0 -1.333 1.333v5.333a1.333 1.333 0 0 0 1.333 1.333h1.333'
 )
 export const CopyPlusIcon = /* @__PURE__ */ createIcon(
   'CopyPlus',
@@ -170,8 +168,7 @@ export const DocumentIcon = /* @__PURE__ */ createIcon(
 )
 export const DotsIcon = /* @__PURE__ */ createIcon(
   'Dots',
-  'M5 12h.01M12 12h.01M19 12h.01',
-  { viewBox: 24, strokeWidth: 1.8 }
+  'M3.333 8h0.007M8 8h0.007M12.667 8h0.007'
 )
 // The Import glyph as it was: an arrow down into a tray.
 export const DotsVerticalIcon = /* @__PURE__ */ createIcon(
@@ -212,8 +209,7 @@ export const FaceSadIcon = /* @__PURE__ */ createIcon(
 )
 export const FeatherIcon = /* @__PURE__ */ createIcon(
   'Feather',
-  'M15.5 0.5c-8.4 3.3-12 4.3-12 11.3l-3.2 3.5 M3.6 12.4 c5 0 9-3 12-12 M3.7 11.6 c0.5 1 2-5 8-7 M7 8 L 8 4',
-  { viewBox: 24, strokeWidth: 1.8 }
+  'M10.333 0.333c-5.6 2.2 -8 2.867 -8 7.533l-2.133 2.333M2.4 8.267c3.333 0 6 -2 8 -8M2.467 7.733c0.333 0.667 1.333 -3.333 5.333 -4.667M4.667 5.333L5.333 2.667'
 )
 export const FilmIcon = /* @__PURE__ */ createIcon(
   'Film',
@@ -280,8 +276,7 @@ export const GiftIcon = /* @__PURE__ */ createIcon(
 )
 export const GithubIcon = /* @__PURE__ */ createIcon(
   'Github',
-  'M9 19c-4 1.5-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.6 11.6 0 0 0-6.2 0C6.6 2.8 5.6 3.1 5.6 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4.2 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21',
-  { viewBox: 24, strokeWidth: 1.8 }
+  'M6 12.667c-2.667 1 -2.667 -1.333 -4 -1.667M10 14v-2.333c0 -0.667 0.067 -0.933 -0.333 -1.333c1.867 -0.2 3.667 -0.933 3.667 -4a3.067 3.067 0 0 0 -0.867 -2.133a2.8 2.8 0 0 0 -0.067 -2.133s-0.667 -0.2 -2.267 0.867a7.733 7.733 0 0 0 -4.133 0C4.4 1.867 3.733 2.067 3.733 2.067a2.8 2.8 0 0 0 -0.067 2.133A3.067 3.067 0 0 0 2.8 6.333c0 3.067 1.8 3.8 3.667 4c-0.4 0.4 -0.4 0.8 -0.333 1.333V14'
 )
 export const GlobeIcon = /* @__PURE__ */ createIcon(
   'Globe',
@@ -372,8 +367,7 @@ export const ItalicIcon = /* @__PURE__ */ createIcon(
 )
 export const LayersIcon = /* @__PURE__ */ createIcon(
   'Layers',
-  'm12 3 9 5-9 5-9-5 9-5Z|m3 13 9 5 9-5',
-  { viewBox: 24, strokeWidth: 1.8 }
+  'm8 2l6 3.333l-6 3.333l-6 -3.333l6 -3.333Z|m2 8.667l6 3.333l6 -3.333'
 )
 export const LightbulbIcon = /* @__PURE__ */ createIcon(
   'Lightbulb',
@@ -426,8 +420,7 @@ export const MoonIcon = /* @__PURE__ */ createIcon(
 )
 export const MotionIcon = /* @__PURE__ */ createIcon(
   'Motion',
-  'M4 17c3 0 4-10 8-10s5 10 8 10|M4 21h16',
-  { viewBox: 24, strokeWidth: 1.8 }
+  'M2.667 11.333c2 0 2.667 -6.667 5.333 -6.667s3.333 6.667 5.333 6.667|M2.667 14h10.667'
 )
 export const MotorcycleIcon = /* @__PURE__ */ createIcon(
   'Motorcycle',
@@ -472,8 +465,7 @@ export const PencilIcon = /* @__PURE__ */ createIcon(
 )
 export const PhoneIcon = /* @__PURE__ */ createIcon(
   'Phone',
-  'M9 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2z|M11 18h2',
-  { viewBox: 24, strokeWidth: 1.8 }
+  'M6 2h4a1.333 1.333 0 0 1 1.333 1.333v9.333a1.333 1.333 0 0 1 -1.333 1.333h-4a1.333 1.333 0 0 1 -1.333 -1.333v-9.333a1.333 1.333 0 0 1 1.333 -1.333z|M7.333 12h1.333'
 )
 export const PianoIcon = /* @__PURE__ */ createIcon(
   'Piano',
@@ -521,8 +513,7 @@ export const RefreshIcon = /* @__PURE__ */ createIcon(
 )
 export const ReplayIcon = /* @__PURE__ */ createIcon(
   'Replay',
-  'M3 12a9 9 0 1 0 3-6.7L3 8|M3 3v5h5',
-  { viewBox: 24, strokeWidth: 1.8 }
+  'M2 8a6 6 0 1 0 2 -4.467L2 5.333|M2 2v3.333h3.333'
 )
 export const RobotIcon = /* @__PURE__ */ createIcon(
   'Robot',
@@ -574,8 +565,7 @@ export const SendIcon = /* @__PURE__ */ createIcon(
 )
 export const ServerIcon = /* @__PURE__ */ createIcon(
   'Server',
-  'M5.5 4h13a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1 -1.5 1.5h-13a1.5 1.5 0 0 1 -1.5 -1.5v-3a1.5 1.5 0 0 1 1.5 -1.5z|M5.5 14h13a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1 -1.5 1.5h-13a1.5 1.5 0 0 1 -1.5 -1.5v-3a1.5 1.5 0 0 1 1.5 -1.5z|M8 7h.01M8 17h.01',
-  { viewBox: 24, strokeWidth: 1.8 }
+  'M3.667 2.667h8.667a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-8.667a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1z|M3.667 9.333h8.667a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-8.667a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1z|M5.333 4.667h0.007M5.333 11.333h0.007'
 )
 // Shape themes: a circle and a square side by side over a triangle, outlined,
 // or solid when one is chosen.
@@ -626,8 +616,8 @@ export const StarIcon = /* @__PURE__ */ createIcon(
 )
 export const StarFilledIcon = /* @__PURE__ */ createIcon(
   'StarFilled',
-  'M12 2.5l2.94 6.08 6.56.82-4.83 4.6 1.22 6.5L12 17.27 6.11 20.5l1.22-6.5-4.83-4.6 6.56-.82z',
-  { viewBox: 24, filled: true }
+  'M8 1.667l1.96 4.053l4.373 0.547l-3.22 3.067l0.813 4.333L8 11.513L4.073 13.667l0.813 -4.333l-3.22 -3.067l4.373 -0.547z',
+  { filled: true }
 )
 export const StopIcon = /* @__PURE__ */ createIcon('Stop', 'M3.5 3.5h9v9h-9z')
 export const StopCircleIcon = /* @__PURE__ */ createIcon(
