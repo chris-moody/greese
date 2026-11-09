@@ -116,6 +116,44 @@ test('dragging a tab to the stage’s bottom splits the stage, with the panel be
   expect(after.height).toBeLessThan(stage.height)
 })
 
+test('a docked row or column is as deep as the drop was from the edge', async ({
+  page,
+}) => {
+  const stage = await box(page.getByTestId('stage'))
+  // A new row along the stage's bottom: the drop marks its top.
+  const rowTop = stage.y + stage.height * 0.8
+  await drag(page, page.getByRole('tab', { name: 'Library' }), {
+    x: stage.x + stage.width / 2,
+    y: rowTop,
+  })
+  const row = await box(group(page, 'Library'))
+  expect(Math.abs(row.y - rowTop)).toBeLessThanOrEqual(8)
+  expect(Math.abs(row.y + row.height - (stage.y + stage.height))).toBeLessThanOrEqual(2)
+
+  // A new column on the stage's right: the drop marks its left side.
+  const now = await box(page.getByTestId('stage'))
+  const columnLeft = now.x + now.width * 0.8
+  await drag(page, page.getByRole('tab', { name: 'Layers' }), {
+    x: columnLeft,
+    y: now.y + now.height / 2,
+  })
+  const column = await box(group(page, 'Layers'))
+  // A narrow stage (a phone's) holds it at SplitPane's 80px minimum.
+  const wanted = Math.max(80, now.x + now.width - columnLeft)
+  expect(Math.abs(column.width - wanted)).toBeLessThanOrEqual(8)
+})
+
+test('a drop right at a pane’s edge still leaves the new pane room', async ({ page }) => {
+  const stage = await box(page.getByTestId('stage'))
+  // The stage's left edge meets the Layers column, not the workspace's wall.
+  await drag(page, page.getByRole('tab', { name: 'Library' }), {
+    x: stage.x + 6,
+    y: stage.y + stage.height / 2,
+  })
+  // At least SplitPane's minimum, not a sliver.
+  expect((await box(group(page, 'Library'))).width).toBeGreaterThanOrEqual(78)
+})
+
 test('dragging a tab to the workspace’s bottom edge docks it across the whole width', async ({
   page,
 }) => {
