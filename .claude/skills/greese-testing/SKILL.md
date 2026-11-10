@@ -151,8 +151,9 @@ npm run lighthouse -w playground   # or -w site for the homepage
 ```
 
 The budgets are fixed (performance, accessibility and best practices ≥ 0.95;
-LCP < 2 s, TBT < 100 ms, CLS < 0.05). Don't change them to get green; find
-the cost (`greese-lightweight`).
+LCP < 2.5 s, TBT < 100 ms, CLS < 0.05; two pages' exceptions are in
+`lighthouserc.cjs`, ADR 0006). Don't change them to get green; find the cost
+(`greese-lightweight`).
 
 ## 6. Check your tests before calling them done
 

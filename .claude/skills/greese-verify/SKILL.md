@@ -38,7 +38,7 @@ VERIFY_TMP=<scratch dir> npm run verify:packages
 | `size`            | Budgets (`packages/react/.size-limit.cjs`, `packages/ui/.size-limit.cjs`, `packages/js/.size-limit.json`)                                   | See `greese-lightweight`                                                                                    |
 | `test:e2e`        | Real layout, focus, top layer, touch, in 5 projects                                                                                         | If many unrelated tests hang for the same minutes at once, it was the machine (sleep), not the code; re-run |
 | `test:visual`     | Every story × light/dark × phone/desktop, against baselines                                                                                 | A story changed: re-record and _look_                                                                       |
-| Lighthouse        | Perf/a11y/best practices ≥ 0.95, LCP < 2 s, TBT < 100 ms, CLS < 0.05 on every playground page                                               | New playground pages must be added to `lighthouserc.cjs`                                                    |
+| Lighthouse        | Perf/a11y/best practices ≥ 0.95, LCP < 2.5 s, TBT < 100 ms, CLS < 0.05 on every playground page (exceptions in `lighthouserc.cjs`)          | New playground pages must be added to `lighthouserc.cjs`                                                    |
 | `verify:packages` | The packed tarballs work as a consumer installs them (Node ESM/SSR, types, SCSS, per-component CSS, Vite bundling, greese.js without a DOM) | A new package not added to the pack list                                                                    |
 
 ## Visual baselines
