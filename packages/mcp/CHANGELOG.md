@@ -1,5 +1,39 @@
 # @greese/mcp
 
+## 0.1.2
+
+### Patch Changes
+
+- d01af8c: - **Carousel** and **CarouselSlide**: one slide at a time, changing with greese effects (`enter`, `exit`, `back`, or the theme's new `carousel` motion roles). It shows the slide it opens on from the first paint, with no transition, so a page that renders the slide its route names (`defaultIndex`, or a controlled `index` that follows the route, writing the address in `onIndexChange`) deep-links to it, server-rendered or not. Its own controls and dots: `controls` and `indicators` also take a node that uses **CarouselPrevious**, **CarouselNext** and **CarouselIndicator**, each a named button or, with `asChild`, your element (a router link) with the wiring, `aria-disabled` at the end, and its own look. Every name it reads out can be translated: `previousLabel`, `nextLabel`, `slideLabel` and `indicatorLabel`. `announce={false}` quiets the viewport for a page that announces slide changes itself.
+  - **ScrollCarousel** is the scroll-snapping carousel: slides in a row, several in view. It runs vertically with `orientation="vertical"` (`ScrollCarouselOrientation`). A controlled `index` now always reaches a slide the user had scrolled past, and the buttons follow an app's reduced motion.
+  - **Reduced motion an app asks for**: `<ThemeProvider motion="reduce">` (or `data-greese-motion="reduce"` on any element) reduces motion for its subtree whatever the system says. `prefersReducedMotion(el)` from `@greese/js` answers for your own code, and `MOTION_ATTR` from `@greese/ui` names the attribute.
+  - **SVG styling**: `fill-*`, `stroke-*` and `stroke-width-*` utility classes, and a `vars` prop on every drawing component that sets custom properties, color tokens by name (`varsStyle`, `SvgVars` and `VarsProps` for your own).
+  - Collapsible's content keeps its children's margins, so opening and closing no longer jumps at the end.
+  - `pkg:@greese/ui/scss/slides`: the buttons and dots both carousels share, for theme authors.
+  - `@greese/ui/style-manifest.json` is version 4: per block, each class's parent and the properties its rules set (`classes`), each state attribute's classes (`states`), and each variable's default, setters, the properties it ends up in and its type (`variableInfo`). Existing fields are unchanged.
+  - **@greese/mcp** knows the new Carousel, ScrollCarousel's orientation, ThemeProvider's `motion` and the svg styling.
+- Updated dependencies [d01af8c]
+- Updated dependencies [0a4281e]
+- Updated dependencies [ab9793d]
+- Updated dependencies [2023ebd]
+- Updated dependencies [43294bc]
+- Updated dependencies [3598681]
+- Updated dependencies [8e6c274]
+- Updated dependencies [6a70a7e]
+- Updated dependencies [0e921ad]
+- Updated dependencies [a0e71e0]
+- Updated dependencies [6f5cba2]
+- Updated dependencies [3cb005c]
+- Updated dependencies [538a019]
+- Updated dependencies [ecbc037]
+- Updated dependencies [6516f27]
+- Updated dependencies [c0c4381]
+- Updated dependencies [dc360d4]
+- Updated dependencies [998e63f]
+- Updated dependencies [4f43cc9]
+- Updated dependencies [c069414]
+  - @greese/ui@1.2.0
+
 ## 0.1.1
 
 ### Patch Changes

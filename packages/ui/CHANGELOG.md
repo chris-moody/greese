@@ -1,5 +1,385 @@
 # @greese/ui
 
+## 1.2.0
+
+### Minor Changes
+
+- d01af8c: - **Carousel** and **CarouselSlide**: one slide at a time, changing with greese effects (`enter`, `exit`, `back`, or the theme's new `carousel` motion roles). It shows the slide it opens on from the first paint, with no transition, so a page that renders the slide its route names (`defaultIndex`, or a controlled `index` that follows the route, writing the address in `onIndexChange`) deep-links to it, server-rendered or not. Its own controls and dots: `controls` and `indicators` also take a node that uses **CarouselPrevious**, **CarouselNext** and **CarouselIndicator**, each a named button or, with `asChild`, your element (a router link) with the wiring, `aria-disabled` at the end, and its own look. Every name it reads out can be translated: `previousLabel`, `nextLabel`, `slideLabel` and `indicatorLabel`. `announce={false}` quiets the viewport for a page that announces slide changes itself.
+  - **ScrollCarousel** is the scroll-snapping carousel: slides in a row, several in view. It runs vertically with `orientation="vertical"` (`ScrollCarouselOrientation`). A controlled `index` now always reaches a slide the user had scrolled past, and the buttons follow an app's reduced motion.
+  - **Reduced motion an app asks for**: `<ThemeProvider motion="reduce">` (or `data-greese-motion="reduce"` on any element) reduces motion for its subtree whatever the system says. `prefersReducedMotion(el)` from `@greese/js` answers for your own code, and `MOTION_ATTR` from `@greese/ui` names the attribute.
+  - **SVG styling**: `fill-*`, `stroke-*` and `stroke-width-*` utility classes, and a `vars` prop on every drawing component that sets custom properties, color tokens by name (`varsStyle`, `SvgVars` and `VarsProps` for your own).
+  - Collapsible's content keeps its children's margins, so opening and closing no longer jumps at the end.
+  - `pkg:@greese/ui/scss/slides`: the buttons and dots both carousels share, for theme authors.
+  - `@greese/ui/style-manifest.json` is version 4: per block, each class's parent and the properties its rules set (`classes`), each state attribute's classes (`states`), and each variable's default, setters, the properties it ends up in and its type (`variableInfo`). Existing fields are unchanged.
+  - **@greese/mcp** knows the new Carousel, ScrollCarousel's orientation, ThemeProvider's `motion` and the svg styling.
+- ab9793d: - **`Chip` takes a `size`**: `xs` through `xl`, setting the height, the inline
+  padding and the text size together, and scaling the remove button with them
+  so a small chip still fits one.
+
+  ```tsx
+  <Chip size="sm" tone="secondary">
+    Featured
+  </Chip>
+  ```
+
+  A chip's scale is its own, not the shared control scale: a chip is a label
+  rather than something you type in, so it runs smaller than an input of the
+  same name and needs no 44px floor (its toggle and remove buttons keep
+  theirs). `md` is the size every chip already was, so nothing moves.
+
+  The four values arrive as per-instance variables —
+  `--greese-chip-height`, `--greese-chip-padding`, `--greese-chip-font` and
+  `--greese-chip-remove` — so one of them can be overridden on a chip, or
+  across an area, without picking a different size.
+
+  Every chip now carries a `greese-Chip--size-*` class. A test asserting that a
+  plain chip had no modifier class at all needs to say "only its size" instead.
+
+- 2023ebd: Styles for EditableField's and NumberField's clear buttons, the textarea field, and ScrollCarousel's strip.
+- 3598681: `pkg:@greese/ui/scss/breakpoints`: `container-set($set, $container)` writes Stack's, Grid's and AutoLayout's responsive props again for breakpoints measured against a named container instead of the viewport. `responsive-prop` takes a breakpoint set and a container name for it; the built CSS is unchanged.
+- 8e6c274: - **`ContextMenu`**: a menu opened at the pointer, or hung off an element as a
+  submenu. `Menu` is a menu _button_ — it owns a trigger and its own open
+  state, and has nowhere to put a right-click — so this takes the other shape:
+  the caller decides when and where it opens, and `anchor` carries both.
+
+  ```tsx
+  const [at, setAt] = useState<ContextMenuPoint | null>(null)
+
+  <div onContextMenu={(e) => { e.preventDefault(); setAt({ top: e.clientY, left: e.clientX }) }}>…</div>
+  <ContextMenu anchor={at} onClose={() => setAt(null)}>
+    <MenuItem onSelect={rename}>Rename</MenuItem>
+    <MenuSeparator />
+    <MenuItem tone="negative" onSelect={remove}>Delete</MenuItem>
+  </ContextMenu>
+  ```
+
+  Pass coordinates for a menu at the pointer, an element for a submenu, or
+  `null` to close it — one prop, because where it opens and whether it is open
+  are the same question. Point anchoring works by putting a zero-size element
+  at the coordinates and anchoring to that, so there is no second positioning
+  path: it is the same CSS anchor positioning, flip-to-fit included, that every
+  other overlay uses.
+
+  The items are `MenuItem` and `MenuSeparator`, unchanged — they close the menu
+  they were chosen in, whichever of the two it is. The keyboard pattern is
+  shared with `Menu`: arrows and Home/End move, type-ahead jumps, Tab and
+  Escape close. It is a popover, so it draws above any dialog or panel and
+  light-dismisses; focus moves to the first item on open and returns to where
+  it was on close.
+
+  - **`useTokenColors`**: resolved values for color tokens, for the one case that
+    cannot use `var()` — drawing to a `<canvas>`.
+
+    ```tsx
+    const canvas = useRef<HTMLCanvasElement>(null)
+    const [line, grid] = useTokenColors(canvas, 'primary', 'border')
+    ```
+
+    Everywhere else, naming the token in CSS is better and this hook is the wrong
+    tool: the browser resolves it, nothing reads the palette in JavaScript, and a
+    scheme change re-paints without a re-render. SVG counts as CSS — `fill` and
+    `stroke` take a `var()` directly. A canvas has no CSS, and its context wants
+    a real color string.
+
+    Values are read from a live element, so they are whatever the cascade
+    resolved there, a `ThemeProvider scheme` on an ancestor included, and they
+    are re-read when the scheme changes. Roles a theme added through `extend`
+    work alongside the built-in ones. The result is a tuple in the order given,
+    stable while the values are, so it is safe in a dependency list.
+
+  - `@greese/ui` gains the `greese-ContextMenu` block: a `greese-Menu` surface
+    that sizes to its own items, since it has no trigger whose width to match.
+
+- 6a70a7e: - **`NumberField`'s steppers stack.** Two buttons side by side cost about
+  3.5rem of a field's width, which is most of a row in a dense panel; a caret
+  above a caret costs one button's width. `steppers` picks the layout:
+  `stacked` (the default), `split`, or `none` for a field changed only by
+  typing and the keyboard.
+
+  - **`NumberStepper`**: a minus at one end, a plus at the other, the value
+    between them — the quantity-picker shape, where the two directions are far
+    enough apart to hit without looking.
+
+    ```tsx
+    <NumberStepper label="Guests" min={1} max={12} defaultValue={2} />
+    ```
+
+    It is a `NumberField` throughout: same parsing, clamping, snapping and
+    keyboard. Only the layout differs, so there is one implementation to keep
+    right.
+
+  - **`size` reaches every form control.** `Checkbox`, `Radio`, `RadioGroup`,
+    `Switch`, `Slider` and `ColorPicker` take the same `xs`–`xl` scale that
+    `Input`, `Select` and `Button` already did, setting font size, padding and
+    the control's own box. A `RadioGroup`'s size reaches its radios through a
+    custom property, so a radio inside needs none of its own.
+
+    This is what `EditableField size` was missing: it passed its size to the
+    text controls and silently dropped it for the rest, so a column of mixed
+    fields came out ragged. Every control it renders now takes it.
+
+  - **`Dialog` and `Drawer` take `hideClose`.** For a dialog dismissed some
+    other visible way — a navigation drawer with its own toggle. Escape, a click
+    outside and a swipe still close it; none of those is discoverable on its
+    own, so a dialog that asks something keeps its button.
+
+  - **`--greese-dialog-padding`** sets a dialog's inset, beside the
+    `--greese-dialog-width` that was already there, so a drawer whose rows run
+    edge to edge can say so.
+
+  - **Buttons take the bold weight** (700, was 600): a button's label is the
+    thing you act on, and it now reads as such against the semibold headings.
+
+- 0e921ad: Copy text from anything. `copyToClipboard(text)` in `@greese/ui` uses the Clipboard API and falls back to a selected textarea where it's missing or refused, rejecting only when both fail. `useCopyToClipboard()` in `@greese/react` copies and holds the outcome (`status`, `copied`) for a moment, and `CopyToClipboard` puts it on any element: its one child copies on click, gets `data-copy-status`, and the outcome is announced. A function child gets the state, to show a check once copied.
+- 6f5cba2: - **`EditableField`**: one field that renders whichever control a value asks
+  for — `text`, `number`, `range`, `color`, `knob`, `checkbox`, `switch`,
+  `radio`, `select`, `choice` (radios while the options are few, a dropdown
+  when they are many) or `segmented`. It is for a panel built from data, where
+  what is being edited decides the control: a property inspector, a settings
+  sheet. Leave `type` out and a string, number or boolean picks its own, a hex
+  string included.
+
+  It is a row by default — the name on one side, the control on the other — so
+  a column of them lines up down a panel; `layout="column"` stacks instead. It
+  adds the things such a panel needs and a single control does not:
+
+  - **`indeterminate`**, for a field standing in for several things that
+    disagree: the control shows a placeholder instead of a value, and choosing
+    one still reports it normally.
+  - **`unit`**, the `px` or `%` or `°` after the number.
+  - **`numDecimals`**, with a `step` finer than it widening the limit instead
+    of rounding away the values the field's own arrows produce.
+  - **focus selects the value**, because a field in a panel of them is read far
+    more often than edited, and the edit is usually a replacement.
+  - **`allowEmpty`**, so an emptied number or a cleared color reports `null`
+    rather than being forced to a number.
+
+  Controlled or uncontrolled, like every other greese input. The dial is a part
+  of it rather than a component of its own.
+
+  - **ColorPicker** gains three parts a working picker needs:
+
+    - **`channels`** — numeric fields for the formats you name (`rgb`, `hsl`,
+      `hsb`), so a known value can be typed rather than hunted for. They all
+      edit one color, and a grey keeps the hue it came in with.
+    - **`eyedropper`** — samples any pixel on screen. The button appears only
+      where the browser has the EyeDropper API, so the hex field stays the way
+      to enter a color you already know.
+    - **`onSwatchesChange`** — makes the swatches a collection the reader keeps,
+      with buttons that save the current color and clear the row.
+
+    Its own small buttons are plain `<button>`s rather than IconButton, so a
+    picker showing none of them does not carry Button's variants: 0.65 kB.
+
+  - **NumberField fix:** a controlled field whose parent declines what was
+    committed — a cleared field where empty means nothing, a value the parent
+    clamps itself — was left showing the text that was typed rather than the
+    value still in force. It now re-reads the value the moment the field is
+    left. Found while giving EditableField's number type its `allowEmpty`
+    default, where clearing a field left it looking empty while it still held
+    a number.
+
+  - **Budgets raised deliberately:** `ColorPicker` 4.35 → 5.45 kB (5.38 kB
+    measured), the channel fields' HSL math and field table being the bulk of
+    it. `EditableField` enters at 14 kB (10.87 kB measured): it reaches eleven
+    controls, and a panel built from it would have imported most of them anyway.
+    The whole-library budgets and `greese.css` rise by the new component.
+
+  A number or color field reports `null` only with `allowEmpty`, and its
+  `onValueChange` is declared as a method, so a handler that takes the value
+  alone (`(value: number) => void`) fits where the field can't be cleared.
+
+- 538a019: - **138 icons**, taking `@greese/icons` from 52 to 190. They come from porting a
+  real app off another icon set, so they are the ones an application interface
+  actually reaches for rather than a guess at a useful set: arrows and chevrons
+  in all four directions, playback (`Play`, `Pause`, `Stop`, `PlayCircle`,
+  `StopCircle`, `SkipBack`, `Volume`, `VolumeOff`, `Timer`, `Hourglass`),
+  status (`CheckCircle`, `CloseCircle`, `AlertCircle`, `Warning`, `Block`,
+  `PlusCircle`, `MinusCircle`), shapes (`Circle`, `CircleFilled`, `Rectangle`,
+  `Triangle`, `Hexagon`, `PlusSquare`, `MinusSquare`), text formatting
+  (`Italic`, `Underline`, `Strikethrough`, `AlignLeft`, `AlignCenter`,
+  `AlignRight`, `AlignJustify`), layout (`Grid`, `GridOff`, `Columns`, `Rows`,
+  `Fullscreen`, `FullscreenExit`, `ZoomIn`, `ZoomOut`), and
+  `Eye`, `EyeOff`, `Lock`, `LockOpen`, `Link`, `LinkOff`, `ExternalLink`,
+  `Code`, `Braces`, `Brackets`, `DotsVertical`, `Grip`, `SwapHorizontal`,
+  `SwapVertical`, `SearchOff`, `ChevronUp` — and the rest of what an app's
+  chrome needs: `Pencil`, `Share`, `Users`, `Image`, `Palette`, `Brush`,
+  `Refresh`, `Undo`, `Redo`, `Loop`, `History`, `Flag`, `Flask`, `Ruler`,
+  `Move`, `Target`, `Globe`, `Camera`, `Film`, `MusicNote`, `Playlist`,
+  `BarChart`, `LineChart`, `Timeline`, `Gradient`, `PaintBucket`, `Eyedropper`,
+  `Wand`, `Sparkle`, `Pin`, `PinFilled`, `HeartFilled`, `ThumbUp`, `ThumbDown`,
+  `Trophy`, `Fire`, `Gift`, `Robot`, `Brain`, `Face`, `FaceSad`, `Gamepad`,
+  `Wrench`, `Bug`, `Anchor`, `Chip`, `Coin` and more.
+
+  All line art on the existing 16 × 16 grid at the set's own stroke, so they sit
+  beside the originals. The docs' icon gallery is built from the exports, so
+  they appear there with no page to write.
+
+  - **A test over the whole set**: every icon renders, draws at least one path,
+    and its path data starts with a move and holds only path syntax. The file is
+    hand-authored, and a typo makes a path the browser silently drops.
+
+  - **`touch-action-*` and `scrollbar-width-*` utility classes** (`@greese/ui`),
+    in the effects group beside `cursor` and `user-select`. Both are whole-element
+    concerns a dense interface needs and had to reach for a stylesheet for: a tool
+    surface that pans and zooms has to stop the browser scrolling it, and a panel
+    that scrolls inside a packed layout needs its scrollbar out of the way.
+
+  - **Budget raised deliberately:** `icons: every icon` 2.35 → 7 kB (6.66 kB
+    measured), because the set nearly quadrupled. `icons: one icon, tree-shaken`
+    is unchanged at 400 B (386 B measured), which is the budget that matters to a
+    consumer — importing one icon still costs one icon, and the PURE marks keep
+    it that way.
+
+- ecbc037: Stop `Input` forcing a twenty-character minimum width, and add `htmlSize`.
+
+  A text field could never be narrower than about twenty characters, however
+  little room the layout had for it. The cause was the frame's flex automatic
+  minimum size: a flex item's minimum is its content's min-content width, and an
+  `<input>`'s min-content width is whatever `size` says — twenty characters by
+  default, a number nobody chose. `.greese-Input` set no `min-inline-size`, so
+  that default became a floor every ancestor had to honour. A field holding three
+  digits took as much room as one holding a sentence.
+
+  `.greese-Input` now sets `min-inline-size: 0`. It still fills its container —
+  a Field, a table cell, a flex row — but it imposes no floor of its own and
+  shrinks to whatever the layout can give it.
+
+  `htmlSize` is the native `size` attribute, renamed because `size` here is the
+  control scale (`sm`/`md`/`lg`). Set it and the field is that many characters
+  wide and the frame hugs it, overriding a container's `flex: 1`:
+
+  ```tsx
+  <Input htmlSize={7} defaultValue="#4f46e5" />
+  <EditableField label="Degrees" type="number" htmlSize={3} />
+  ```
+
+  It reaches `TextField`, `NumberField`, `NumberStepper`, `MaskedInput` and
+  `Combobox` through `InputProps`, and `EditableField`'s text and number rows take
+  it directly.
+
+  `Textarea` and `Select` have the same missing `min-inline-size: 0` on their
+  frames; they are untouched here.
+
+  The measure is in `ch` as well (`--greese-input-size`, which the React
+  component sets): `size` alone measures in the font's average character, which
+  is narrower than its digits, so `htmlSize={7}` clipped `#4f46e5`. A measured
+  field doesn't shrink below its measure in a crowded row either.
+
+- 6516f27: - **`Slider` can show its value**: `valueLabel="auto"` puts it in a bubble
+  above the thumb while the slider is hovered, focused or dragged, `always`
+  keeps it up, and `unit` goes after the number.
+
+  ```tsx
+  <Field label="Blend weight">
+    <Slider value={weight} onValueChange={setWeight} valueLabel="auto" unit="%" />
+  </Field>
+  ```
+
+  The bubble is a `Tooltip`, so it is the same surface, placement, flip-to-fit
+  and motion as every other floating thing — not a second implementation. It
+  hangs off a zero-size anchor sitting at the thumb rather than off the input,
+  so it follows the value instead of floating over the middle of the track; the
+  thumb's travel is inset by half its width at each end, which the anchor's
+  `calc()` accounts for.
+
+  It is **off by default**, and deliberately: the filled part of the track is a
+  custom property written straight to the element, so an uncontrolled slider
+  does not re-render as it moves, and showing the number gives that up. You opt
+  into the cost.
+
+  The bubble is presentational (`role="presentation"`, no `aria-describedby`).
+  A range input already announces its value, so a bubble repeating it would be
+  announced twice; with a `unit` the slider sets `aria-valuetext` instead, which
+  is the one place a unit can be spoken.
+
+  - **`Tooltip` takes `open` and `describe`.** `open` drives it from outside —
+    `true` keeps it up, `false` turns it off entirely — and replaces the hover,
+    focus and tap behaviour, so the tooltip shows exactly when you say. A
+    controlled tooltip shows and hides at once rather than through the hover
+    delay, because a delay belongs to hovering. `describe={false}` makes it
+    presentational, for a trigger that already exposes the same thing.
+
+  - **Fix: `Slot` no longer lets a child's `undefined` clobber the Slot's own
+    prop.** A prop the child did not set is not an override, but spreading it
+    overwrote the value anyway. Every greese control passes
+    `useFieldControl()`'s `aria-describedby` straight through, and it is
+    `undefined` outside a `Field` — so a `Tooltip` around a `Switch`, a `Slider`
+    or any other control wrote its id onto the trigger and then erased it, and
+    described nothing at all. Costs about 10 B in every component.
+
+  - `@greese/ui` gains `greese-Slider-wrap` and `greese-Slider-thumbAnchor`,
+    present only when a slider shows its value, so a plain slider's markup is
+    unchanged.
+
+- 998e63f: Keep a theme in your source as a folder of SCSS modules, take a theme's layers back from part of a page, and build utilities from Sass (ADR 0034).
+
+  - `@greese/ui/theme-files`: a theme as data (Theme Studio's JSON) and the SCSS it becomes. `specToLayout()` writes the documented layout: `main.scss`, `_settings.scss`, a module per token group, per component, for motion, shapes and utilities, each editable alone. `specToScss()` still writes one file. Theme Studio writes the layout by default (`GREESE_THEME_OUTPUT=layout,scss,css` chooses), and leaves alone any layout file whose first line you deleted.
+  - Every setting has a place in the layout. `_settings.scss` always holds the breakpoints, and builds greese ui's stylesheet (`_library.scss`) and utility classes (`utilities/_index.scss`) with them whenever they differ from the library's (`$library`, `$utilities`), so changing one moves every media query. Every token group's file and the type system's list the defaults the theme leaves alone, commented, and the motion file its options. A shape's sizes are a `$shapes` map at the top of its file (`shapesCss()` takes a size writer). `specToLayout(spec, source, { components })` keeps loading component files of your own, and Theme Studio passes them.
+  - The kit: `tokens()` calls add up, so a second call writes only what it changes instead of restating the theme. A `tokens()`, `typography()`, `motion-defaults()` or `page-transitions()` call that sets nothing writes nothing. `scope($name)` is `theme($name)`, or the page for `null`, `false` or `''`.
+  - The stylesheet declares its breakpoints once, from the ones it's built with, and their keys in order (`--greese-breakpoint-keys`). `configureBreakpoints()` in `@greese/react` reads them when called with no argument.
+  - Theme layers can be taken back. `.greese-reset-color`, `-shape` and `-motion`, and `.greese-reset` for all three, work on any element (defaults in the opt-in `css/resets.css`, also `@greese/react/css/resets.css`). The kit's `reset(…)` declares a layer's defaults in any rule, and inside `component()` leaves that component out of the layer's theme rules for the rest of the build. Every theme rule the kit writes carries a zero-specificity guard for its layer (`reset-guard()`, `themed()`). `component(Name, $layer: …)` files styles under a layer other than shape.
+  - `pkg:@greese/ui/scss/utilities`: `utilities.classes($groups, $only, $prefix)` writes the utility classes from Sass, with the build's breakpoints, from the same table as `utilities.css`.
+  - `pkg:@greese/ui/scss/core` and `pkg:@greese/ui/scss/components/<Name>`, for a Sass build that picks its components.
+  - The shape themes are regenerated with the guards (about 4% larger).
+
+### Patch Changes
+
+- 0a4281e: A ScrollCarousel's or Carousel's button at an end, already invisible, no longer takes pointer events, so clicks reach what it covers.
+- 43294bc: **Fix: `EditableField`'s colour picker took clicks while closed.** Its popover
+  declared `display: grid` unconditionally, and an author `display` beats the
+  user agent's `[popover]:not(:popover-open) { display: none }` — so the closed
+  popover stayed laid out and hit-testable. Invisible, because the overlay exit
+  sets `opacity: 0`, and sitting over the controls, taking the presses meant for
+  them: pickers appeared to open themselves. `display` is scoped to
+  `:popover-open` now.
+
+  A test guards the whole kit against the same mistake. It finds the classes that
+  land on a popover from two sources that can't drift — the `:not(:popover-open)`
+  rule `floating.enter-exit` emits for each overlay root, and the `className` a
+  component hands an overlay — and fails on any `display` declared on one of them
+  without its open state. The docked `Sidebar` is the one exception, and it is
+  qualified by its layout class so it can never match an off-canvas sidebar.
+
+  If you set `display` on a popover of your own, scope it to `:popover-open`.
+
+- a0e71e0: Let `--greese-dialog-padding` set a dialog's or drawer's inset. The base rule
+  already read it, but every drawer placement and the full-size dialog set
+  `padding-block` separately from the raw `--greese-space-5`, so the variable had
+  no effect on exactly the surfaces that most often want to run edge to edge — a
+  navigation drawer whose rows are full-width targets. Each of those now reads the
+  variable too.
+
+  Set, it is the padding verbatim; unset, the default still keeps a full-height
+  drawer's content clear of a notch or a home indicator, so an app that opts into
+  `0` is opting out of that floor as well.
+
+- 3cb005c: Let an `EditableField` color swatch fill its row, like every other control.
+
+  The swatch was a 1.75rem square pinned to the end of the row while the text,
+  number and select rows beside it took all the slack. In a panel of fields that
+  read as a mistake: the one field whose whole job is to show a value you can
+  only see — the color itself — showed the least of it, and was the smallest
+  thing to hit.
+
+  It now stretches like a text field, with its old square size as a floor: the
+  button has no content of its own, so nothing else would stop it collapsing to
+  a sliver in a narrow panel.
+
+- c0c4381: A checked Switch's thumb stays inside its track at every size (a fixed 1rem overshot the small one by 2px, which a scrolling container clipped), and a Dialog's body leaves room for focus rings at its edges.
+- dc360d4: `Text` with no `variant` is body copy (`p1`), and its `tone` and `weight` show again.
+
+  `Text` now always carries a type variant, `greese-Type--p1` when none is named.
+  The variant classes come after `Text`'s in the stylesheet and set `color` and
+  `font-weight` themselves, so they beat `.greese-Text--<tone>` and
+  `.greese-Text--<weight>`: `<Text tone="muted">` rendered in the body colour and
+  `<Text weight="bold">` at the variant's weight. The tone and weight classes are
+  now doubled with `.greese-Text`, so they win. A `tone` also wins over a named
+  variant (`<Text variant="caption" tone="muted">` is muted), which it never did.
+
+- 4f43cc9: A theme now applies its `font.body` to its own scope. `body` reads `--greese-font-body` from `:root`, so a theme on a `ThemeProvider` wrapper set the variable but text kept inheriting the default font from `<body>`.
+- c069414: The `xs` control size is 1.5rem (24px) on every control and every pointer: Button, IconButton, ToggleButton, Select, Input, Combobox and ActionSelect all line up at it, where it was 1rem and each grew to its own content (19 to 30px). Its inline padding is `--greese-space-2`. A Select's line no longer grows it on touch, a Combobox's toggle fits inside an `xs` field, and EditableField's colour swatch is its size's height on every pointer (it gets a `greese-EditableField--size-*` class), with a 44px hit area on touch.
+
 ## 1.1.0
 
 ### Minor Changes

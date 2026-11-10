@@ -1,6 +1,6 @@
 {
   "name": "@greese/svg",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Type-safe SVG drawing and animation: build paths and shapes, convert between them, morph one into another, draw, fill, drain and run strokes as marquees, and build gradients, filters, clip paths and masks. One dependency (greese.js, for its eases), no framework.",
   "keywords": [
     "svg",
@@ -65,7 +65,7 @@
     "size": "size-limit"
   },
   "dependencies": {
-    "@greese/js": "0.1.0"
+    "@greese/js": "0.2.0"
   },
   "devDependencies": {
     "@greese/eslint-config": "*",

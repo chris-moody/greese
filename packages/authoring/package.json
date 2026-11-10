@@ -1,6 +1,6 @@
 {
   "name": "@greese/authoring",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Editor UI for greese: docking panels, layout specs and per-editor Redux state, for building graphics, animation and sound authoring tools.",
   "keywords": [
     "editor",
@@ -63,10 +63,10 @@
     "size": "size-limit"
   },
   "dependencies": {
-    "@greese/icons": "0.1.0",
-    "@greese/js": "0.1.0",
-    "@greese/react": "1.1.0",
-    "@greese/ui": "1.1.0"
+    "@greese/icons": "0.2.0",
+    "@greese/js": "0.2.0",
+    "@greese/react": "1.2.0",
+    "@greese/ui": "1.2.0"
   },
   "peerDependencies": {
     "@reduxjs/toolkit": "^2.8.0",
