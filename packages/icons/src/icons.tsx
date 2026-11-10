@@ -85,7 +85,7 @@ export const BrainIcon = /* @__PURE__ */ createIcon(
 )
 export const BrushIcon = /* @__PURE__ */ createIcon(
   'Brush',
-  'M12.944 1.506l1.636 1.636l-7.552 7.552l-1.636 -1.636z|M1.749 14.261c0.272 -1.64 0.551 -2.507 0.933 -2.889a1.383 1.352 -135 0 1 1.957 1.957c-0.383 0.383 -1.249 0.663 -2.889 0.933z'
+  'M13.048 1.122l1.883 1.883l-6.474 6.474l-1.883 -1.883z|M2.158 13.007C2.465 11.661 2.529 10.505 3.013 10.021A1.752 1.713 -135 0 1 6.007 12.931C5.512 13.547 4.772 14.667 1.08 14.664Z'
 )
 export const BugIcon = /* @__PURE__ */ createIcon(
   'Bug',
@@ -197,7 +197,7 @@ export const EyeOffIcon = /* @__PURE__ */ createIcon(
 )
 export const EyedropperIcon = /* @__PURE__ */ createIcon(
   'Eyedropper',
-  'M9.5 2.5l4 4|M11.5 4.5l-5 5v2.5H4L9 7z'
+  'M4.853 11.193c0.846 1.181 1.208 1.889 1.208 2.362a1.208 1.181 0 0 1 -2.418 0c0 -0.473 0.363 -1.181 1.208 -2.362z|M11.913 4.088L13.327 1.26L14.741 2.673L11.913 4.088M9.792 1.967L14.034 6.209M11.206 3.38L5.549 9.038L4.842 11.159L6.963 10.452L6.963 10.452L12.62 4.795'
 )
 export const FaceIcon = /* @__PURE__ */ createIcon(
   'Face',
@@ -643,6 +643,10 @@ export const SwapHorizontalIcon = /* @__PURE__ */ createIcon(
 export const SwapVerticalIcon = /* @__PURE__ */ createIcon(
   'SwapVertical',
   'M5 13V3|M2.5 5.5L5 3l2.5 2.5|M11 3v10|M8.5 10.5L11 13l2.5 -2.5'
+)
+export const SwordIcon = /* @__PURE__ */ createIcon(
+  'Sword',
+  'M11.522 9.844L14.35 12.673L12.936 14.087L10.107 11.259M12.936 8.43L8.693 12.673M12.229 9.137L6.572 3.48L2.329 2.066L3.743 6.309L9.4 11.966L10.814 10.551L6.572 6.309'
 )
 export const TargetIcon = /* @__PURE__ */ createIcon(
   'Target',
