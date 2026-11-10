@@ -32,6 +32,14 @@ export const copySource = (
 ): string => {
   let text = rewriteLibraryUrls(source).text
   text = removeCalls(text, /@include\s+(mixins\.responsive-prop|tones\.classes)\s*\(/g)
+  // The layout components' responsive props (Stack, Grid, AutoLayout) are the
+  // same kind of call, taking no arguments, from a partial with no `pkg:` entry.
+  text = text
+    .replace(/^@use\s+(['"])(?:\.\.\/)+styles\/layout-props\1\s*;\n?/m, '')
+    .replace(
+      /@include\s+(layout-props\.[\w-]+)\s*;/g,
+      "// $1 left out: it writes the library's own classes"
+    )
   text = unwrapLayers(text)
   if (family) text = keepFamily(text, family)
   const escaped = rootClass.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
