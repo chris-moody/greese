@@ -11,6 +11,11 @@ type Recorded = { types: string[]; played: Array<[string, string]> | null }
 declare global {
   interface Window {
     transitions?: Recorded[]
+    /**
+     * Each live member's first inline animation by test id, its computed name
+     * then (`<id>:name`), and `page`: the heading then.
+     */
+    exits?: Record<string, string>
   }
 }
 
@@ -383,17 +388,38 @@ test.describe('route rules and navigation options', () => {
   })
 
   test.describe('live members', () => {
-    const animation = (page: Page, id: string) =>
-      page.getByTestId(id).evaluate((el) => (el as HTMLElement).style.animation)
+    /**
+     * The exit a member was given, as it was written: a fast exit can be over,
+     * and the next page's members (the same test ids) there, before a read
+     * after the click arrives.
+     */
+    const animation = async (page: Page, id: string) => {
+      const written = () => page.evaluate((id) => window.exits?.[id] ?? '', id)
+      await expect.poll(written).not.toBe('')
+      return written()
+    }
 
     const leaving = async (page: Page, link: string) => {
       await page.goto('/pt/user/1?page=pages&variant=routes-live')
       await page.getByTestId('member-own').waitFor()
       // Let the entrances finish first.
       await page.waitForTimeout(700)
+      await page.evaluate(() => {
+        const exits: Record<string, string> = (window.exits = {})
+        for (const el of document.querySelectorAll<HTMLElement>(
+          '[data-testid^="member-"]'
+        ))
+          new MutationObserver(() => {
+            const id = el.dataset.testid!
+            if (!el.style.animation || exits[id]) return
+            exits[id] = el.style.animation
+            exits[`${id}:name`] ||= getComputedStyle(el).animationName
+            exits.page ||= document.querySelector('h1')!.textContent!
+          }).observe(el, { attributeFilter: ['style'] })
+      })
       await page.getByRole('link', { name: link, exact: true }).click()
       // The old page is still there while its members leave.
-      await expect(page.getByRole('heading')).toHaveText('/pt/user/1')
+      await expect.poll(() => page.evaluate(() => window.exits?.page)).toBe('/pt/user/1')
     }
 
     test('a route’s exit reaches the member with none, and the member’s own exit wins', async ({
@@ -402,11 +428,7 @@ test.describe('route rules and navigation options', () => {
       await leaving(page, 'Settings profile')
       expect(await animation(page, 'member-plain')).toContain('--greese-page-exit')
       expect(await animation(page, 'member-own')).toMatch(/^greese-scale-out /)
-      expect(
-        await page
-          .getByTestId('member-plain')
-          .evaluate((el) => getComputedStyle(el).animationName)
-      ).toBe('greese-wipe-out-left')
+      expect(await animation(page, 'member-plain:name')).toBe('greese-wipe-out-left')
       await expect(page.getByRole('heading')).toHaveText('/pt/settings/profile')
     })
 
