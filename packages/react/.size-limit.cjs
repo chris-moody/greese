@@ -121,7 +121,8 @@ module.exports = [
     // text, number and textarea fields; a select's own cleared option), its
     // `textarea` type, NumberField's `clearable` and ScrollCarousel's `strip`
     // (39.41 kB).
-    limit: '39.45 kB',
+    // 39.45 kB → 39.55 kB (2026-11-10): the icons it draws were redrawn (2026-11-10): EyedropperIcon gained a bulb, tube and drop, BrushIcon a rounded tip (39.48 kB).
+    limit: '39.55 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -412,7 +413,8 @@ module.exports = [
     // 4.25 kB → 4.3 kB (2026-10-24): the three-dimensional effects (ADR 0025 addendum): ten more names of what CSS plays, which every component's static part carries (4265 B).
     // 4.3 kB → 4.35 kB (2026-11-03): cx takes class dictionaries and arrays of them, which every component carries (4314 B).
     // 4.35 kB → 5.45 kB (2026-11-04): three opt-in parts of a working color picker — the eyedropper, numeric channel fields for rgb/hsl/hsb, and swatches the reader saves. The channel fields' HSL math and field table are the bulk of it (5.38 kB). Their buttons are plain `<button>`s, not IconButton, so a picker that shows none of them does not carry Button's variants: that alone was 0.65 kB.
-    limit: '5.45 kB',
+    // 5.45 kB → 5.6 kB (2026-11-10): the icons it draws were redrawn (2026-11-10): EyedropperIcon gained a bulb, tube and drop, BrushIcon a rounded tip (5.55 kB).
+    limit: '5.6 kB',
     modifyRolldownConfig: external,
   },
   {
@@ -732,7 +734,8 @@ module.exports = [
     // 54.65 kB → 54.9 kB (2026-11-07): ContextMenu waits for the press that opened it to be released (the release light-dismissed it in Firefox and Safari, and on macOS), and names an element anchor, which it never did, about 0.17 kB (54.86 kB).
     // 54.9 kB → 55.5 kB (2026-11-09): as the library with greese.js above,
     // about 0.6 kB; the earlier ~80 B overrun remains.
-    limit: '55.5 kB',
+    // 55.5 kB → 55.6 kB (2026-11-10): the icons it draws were redrawn (2026-11-10): EyedropperIcon gained a bulb, tube and drop, BrushIcon a rounded tip (55.53 kB).
+    limit: '55.6 kB',
   },
   // @greese/react/svg (ADR 0031): measured with @greese/svg in the bundle,
   // since it is what the components cost an app.
