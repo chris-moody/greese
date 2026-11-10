@@ -1,7 +1,7 @@
 /**
  * `@greese/svg/schema`: what every SVG 2 element is, may hold and takes. One
  * table drives an editor's properties panel, its layer icons, validation and
- * code hints (ADR 0037). Pure data and lookups; no DOM.
+ * code hints (Shaper's ADR 0037). Pure data and lookups; no DOM.
  */
 
 /** What kind of thing an element is. */

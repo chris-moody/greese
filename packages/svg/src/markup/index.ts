@@ -1,5 +1,5 @@
 /**
- * `@greese/svg/markup`: SVG as data (ADR 0037). A parser that records where
+ * `@greese/svg/markup`: SVG as data (Shaper's ADR 0037). A parser that records where
  * every node and attribute is, a canonical serializer, the sanitizer, defs
  * hoisting, id renaming with reference rewriting, and id adoption across
  * reparses. Pure, and Node-safe: no DOM.

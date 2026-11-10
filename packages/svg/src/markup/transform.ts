@@ -1,6 +1,6 @@
 import { walkMarkup, type MarkupNode } from './parse.ts'
 
-/** Something an import changed or flagged: the notice ADR 0037 shows. */
+/** Something an import changed or flagged: the notice Shaper's ADR 0037 shows. */
 export interface MarkupNotice {
   /** `removed` was taken out; `moved` was hoisted or renamed; `warning` was kept but flagged. */
   kind: 'removed' | 'moved' | 'warning'
