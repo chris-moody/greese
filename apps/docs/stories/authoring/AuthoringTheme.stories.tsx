@@ -30,6 +30,7 @@ const meta = {
   component: AuthoringTheme,
   args: { children: <Fields /> },
   argTypes: { children: { control: false } },
+  parameters: { tryIt: { scope: { Fields } } },
 } satisfies Meta<typeof AuthoringTheme>
 export default meta
 

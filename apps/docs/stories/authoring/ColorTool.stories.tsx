@@ -3,7 +3,9 @@ import { useState } from 'react'
 import { ColorTool, type ComplexColorValue } from '@greese/authoring'
 import '@greese/authoring/styles.css'
 
-const meta = {
+// Annotated rather than `satisfies`, so a story needn't pass the handlers:
+// each story's render supplies them, keeping the paint in state.
+const meta: Meta<typeof ColorTool> = {
   title: 'Authoring/ColorTool',
   component: ColorTool,
   args: {
@@ -13,12 +15,8 @@ const meta = {
     secondaryLabel: 'Stroke',
     allowGradient: true,
     allowCurrentColor: false,
-    onPrimaryChange: () => {},
-    onSecondaryChange: () => {},
-    onSwap: () => {},
-    onReset: () => {},
   },
-} satisfies Meta<typeof ColorTool>
+}
 export default meta
 
 type Story = StoryObj<typeof meta>

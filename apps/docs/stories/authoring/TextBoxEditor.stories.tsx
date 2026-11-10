@@ -29,7 +29,7 @@ type Story = StoryObj<typeof meta>
  */
 export const Playground: Story = {
   render: function Playground(args) {
-    const [text, setText] = useState(args.defaultValue)
+    const [text, setText] = useState<string>(args.defaultValue ?? '')
     const [caret, setCaret] = useState<{ x: number; y: number }>()
     const [open, setOpen] = useState(true)
     const font = { font: '20px/1.2 sans-serif' }
