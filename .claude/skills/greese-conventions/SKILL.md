@@ -56,8 +56,14 @@ the ADR wins: fix this file in the same change.
 | 0034 theme layout and resets        | `@greese/ui/theme-files`, the SCSS layout, `tokens()` adding up, `scope()`, resets, Sass utilities |
 | 0035 authoring package              | `@greese/authoring`: entries, Redux peers, its own layered CSS, no `greese-Dock*` names            |
 | 0036 authoring timeline             | the editor timeline plays and tweens on greese.js; what moves into greese.js                       |
-| 0039 filter editor                  | authoring's `NodeGraph`; Shaper's filter editor and its pure model                                 |
+| 0039 node graph                     | authoring's `NodeGraph`, which Shaper's filter editor draws with                                   |
 | 0040 one source for easing          | curves only in greese.js; `tweenEase` for editor tween names; svg's one dependency                 |
+
+Shaper, the SVG editor on `@greese/authoring`, lives in its own repository
+(https://github.com/chris-moody/shaper) with its dev-only icon editor, which
+edits `packages/icons/src/icons.tsx` in a greese checkout beside it. Its ADRs
+keep greese's numbers: 0037, 0038, 0042, 0045, and the Shaper halves of 0039,
+0041 and 0044.
 
 ## Workspace
 

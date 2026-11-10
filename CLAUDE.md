@@ -19,6 +19,10 @@ animation library, greese.js (`@greese/js`), and framework packages such as
 | e2e, visual, Lighthouse                                 | `apps/playground`    |
 | Web app: `/`, `/docs`, `/studio`, `/templates`          | `apps/site`          |
 
+Shaper, the SVG editor on `@greese/authoring`, and its icon editor (which
+edits `packages/icons/src/icons.tsx` here) live in their own repository,
+[chris-moody/shaper](https://github.com/chris-moody/shaper).
+
 ## Before changing anything
 
 Load the **`greese-conventions`** skill. It's the rule set, and it links the
