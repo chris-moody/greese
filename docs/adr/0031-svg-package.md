@@ -172,7 +172,8 @@ untouched:
 
 ## Addendum (2026-11-07): entries for editors
 
-Shaper (ADR 0037, 0038) needs SVG as data and path editing. Three entries,
+Shaper (its own ADRs 0037 and 0038, in
+[its repository](https://github.com/chris-moody/shaper)) needs SVG as data and path editing. Three entries,
 each pure, Node-safe and budgeted on its own, so `@greese/svg`'s main entry,
 and `@greese/react/svg` with it, doesn't move:
 
@@ -180,7 +181,7 @@ and `@greese/react/svg` with it, doesn't move:
   attribute's source range and throws `MarkupError` with a line and column;
   `serializeMarkup` is canonical and `serializeMarkupWithRanges` reports
   where each node lands; `sanitizeMarkup`, `hoistDefs`, `renameIds` and
-  `adoptIds` are ADR 0037's import rules and its reparse identity.
+  `adoptIds` are Shaper's ADR 0037 import rules and its reparse identity.
 - **`@greese/svg/schema`** (2.95 kB): one table of every SVG 2 element and
   filter primitive, attributes written in a compact shorthand and expanded
   on lookup, with the shared groups (core, presentation, text, primitive,

@@ -2,8 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-11-09
-- **Builds on:** ADR 0031 (`@greese/svg`), ADR 0037 (Shaper's document
-  model), ADR 0038 (Shaper)
+- **Builds on:** ADR 0031 (`@greese/svg`)
 
 ## Context
 
@@ -69,31 +68,9 @@ contour, so a cut could leave nowhere for a hole to go.
 
   So a 16-unit icon and a 2000-unit poster behave alike.
 
-- **Shaper's Cutout tool** (`x`):
-  - **What it cuts:** a click chooses a shape, and Shift adds. With nothing
-    chosen, a cut goes through every visible, unlocked shape it touches.
-    Chosen groups give the shapes inside them. Text, images and `<use>` are
-    left alone.
-  - **Picking the cutter:** Tool Options picks its shape, and its settings
-    are the matching drawing tool's: corner radius, star points, sides,
-    smoothing.
-  - **Drawing the cutter:**
-    - Drag shapes cut on release.
-    - Polygon and Path are placed a node at a time. Path drags a node to
-      curve through it. A cut is finished by clicking the first node,
-      double-clicking or pressing Enter, and Escape cancels one.
-    - Once something is chosen, every click places a node wherever it
-      lands; Cmd or Ctrl-click still chooses. Otherwise a corner landing on
-      another shape would choose it.
-  - The cutter is the overlay's until it cuts, so drawing it is no edit.
-  - **Closed and open shapes:** a closed shape loses the cutter's area, filled
-    or not, and its outline follows the cut. An open subpath with no fill,
-    and any `<line>`, is trimmed.
-  - **The result:** each cut shape becomes one `<path>` with the same id,
-    paint and `transform`, in one undo step, and stays chosen. The cutter is
-    mapped into each shape's own coordinates, through its transforms. A
-    shape the cutter covers goes. The new `reshape` action drops the shape's
-    parameters and node marks, which no longer fit.
+- **Shaper's Cutout tool** (`x`) is the first user: choose shapes, draw a
+  cutter, and each comes back as one `<path>`, with curves kept. The tool is
+  recorded in Shaper's own ADR 0041, in [Shaper's repository](https://github.com/chris-moody/shaper/tree/main/docs/adr).
 - **The icon editor** gets the tool with Shaper, and `ScissorsIcon` is new
   in `@greese/icons`.
 - **Pixels doesn't get it**, by the user's choice. Its single-contour path

@@ -22,7 +22,7 @@ navbars, toolbars, tool hotkeys and cursors, and stage bars, two or three
 copies of each.
 
 Glop's framework already renders `@greese/react` controls and no longer uses
-MUI. Shaper, greese's SVG editor (ADR 0038), needs the same furniture. Both
+MUI. Shaper, an SVG editor ([its own repository](https://github.com/chris-moody/shaper)), needs the same furniture. Both
 want one home for it, outside an app.
 
 ## Decision

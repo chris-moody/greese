@@ -1,9 +1,8 @@
-# ADR 0039: Shaper's filter editor, on a generic NodeGraph
+# ADR 0039: A generic NodeGraph, first for Shaper's filter editor
 
 - **Status:** Accepted
 - **Date:** 2026-11-07
-- **Builds on:** ADR 0035 (`@greese/authoring`), ADR 0037 (Shaper's document
-  model), ADR 0038 (Shaper)
+- **Builds on:** ADR 0035 (`@greese/authoring`)
 
 ## Context
 
@@ -52,27 +51,12 @@ each change it reports.
 - **Rendering:** `renderNode(node)` puts a host's own body under the node's
   header (Amp's parameter card later); edges are one SVG behind the nodes.
 
-### The filter editor in Shaper
+### Shaper's filter editor
 
-- **A dialog**, opened from a filter's Edit button in the library, from an
-  Edit button beside a `filter` attribute in Properties, or by New filter.
-  The view slice holds which filter is open (`filterEditor`), so any panel
-  can open it.
-- **The model is pure** (`apps/shaper/src/model/filter.ts`): read a
-  `<filter>` into nodes and edges (an omitted `in` is the previous
-  primitive's result, or `SourceGraphic` for the first), connect (naming a
-  `result` where one is needed), add, remove (rewiring what read the removed
-  primitive to what it read), insert a preset from `@greese/svg`, and cut
-  the filter at a primitive for its preview.
-- **Fields come from the schema** (`@greese/svg/schema`): the selected
-  primitive's own attributes, and the filter's region (`x`, `y`, `width`,
-  `height`, `filterUnits`, `primitiveUnits`).
-- **The preview** draws the selected element, or a sample shape, through the
-  filter in a small SVG built the way the stage builds the drawing (DOM
-  nodes, never markup). With a primitive selected, it shows the result up to
-  that primitive.
-- **Edits are undoable,** one step per gesture or field visit, like the
-  rest of Shaper.
+Shaper's filter editor, a dialog over `NodeGraph` with a pure model of the
+`<filter>`, schema fields and a preview cut at the selected primitive, is
+the graph's first user. It is recorded in Shaper's own ADR 0039, in
+[Shaper's repository](https://github.com/chris-moody/shaper/tree/main/docs/adr).
 
 ## Consequences
 
@@ -82,5 +66,3 @@ each change it reports.
 - Free node positions (dragging a node anywhere) are left out: computed
   columns are enough for filters of a dozen primitives, and positions would
   need storing somewhere a `<filter>` has no room for.
-- `feImage`, `feTile`, lighting primitives and `feComponentTransfer`'s
-  function children get the schema's generic fields only.

@@ -1,9 +1,8 @@
-# ADR 0044: The default authoring theme, Shaper's documents in tabs, and strips
+# ADR 0044: The default authoring theme, and strips
 
 - **Status:** Accepted
 - **Date:** 2026-11-09
-- **Builds on:** ADR 0035 (the authoring package), ADR 0038 (Shaper and the
-  icon editor), ADR 0042 (Shaper's clipboard), ADR 0011 (ScrollCarousel)
+- **Builds on:** ADR 0035 (the authoring package), ADR 0011 (ScrollCarousel)
 
 ## Context
 
@@ -17,8 +16,6 @@
   default `md` stood taller than the panel's `sm` fields. Pixels' inputs were
   taller still. Each app set field styles of its own, Glop in its own
   stylesheet.
-- **Shaper edited one drawing at a time.** Copying between drawings meant the
-  icon editor's list or a second page.
 
 ## Decision
 
@@ -40,30 +37,9 @@
 
 ### 2. Shaper's documents in tabs
 
-- **Each drawing is an editor of its own:** its own store, undo history,
-  selection and view. All of them stay mounted, each in a `TabPanel`, so a
-  switch keeps zoom, scroll and the code's caret. A switch carries the dock's
-  arrangement, the tool and the panel layout across, so only the drawing
-  changes.
-- **The tab strip:** greese `Tabs` in a `ScrollCarousel` strip (§3), then a
-  New button.
-- **New** opens a New SVG dialog: a name, and "Copy <current>", on by
-  default. A copy takes the tree and its editor state.
-- **Open** puts each file in a tab named after it. Import still goes into the
-  current drawing.
-- **Modified marking:** a tab shows a dot (and "modified" to a screen reader)
-  while its tree differs from the last save or open.
-- **Closing:** a ×, a middle click, or Delete on a focused tab. A modified
-  drawing asks first, and the last tab can't close.
-- **Copy and paste between tabs** use the one clipboard (ADR 0042). A paste
-  into another drawing lands in place.
-- **Hosts:** `tabs={false}` keeps one drawing, for the icon editor. There,
-  New replaces the drawing unless it's a copy, which renames it, and Open
-  replaces it. `onNew` takes New over, so the bar's New in the icon editor
-  opens the icon editor's own New icon dialog.
-- **A move snaps to whole screen pixels.** Under the strip, the stage sits at
-  a fractional offset, and engines report a press and a move in slightly
-  different steps. Without this, a move wrote `5.001` for `5`.
+Shaper keeps each drawing in a tab of its own, and its tab strip is the first
+`ScrollCarousel` strip (§3). That is recorded in Shaper's own ADR 0044, in
+[Shaper's repository](https://github.com/chris-moody/shaper/tree/main/docs/adr).
 
 ### 3. Strips, clearable fields and the stage bar
 
@@ -98,10 +74,8 @@
 - **Size:** authoring's CSS budget goes to 8.95 kB, greese.css to 27.35 kB,
   and greese react's whole library to 39.45 kB, each with its reason in
   `.size-limit.cjs`.
-- **Memory:** all open drawings stay mounted. Many open drawings cost a dock
-  each, which is the price of switching without remounting.
 
-## Addendum (2026-11-09): docking sizes, field names, Shaper's library
+## Addendum (2026-11-09): docking sizes, strips and field names
 
 - **A docked row or column is as deep as the drop was from the edge.**
   - A drop on a group's top or bottom zone makes a row, and one on its left
@@ -120,23 +94,5 @@
   only then. The tooltip mounts only while it shows, so a page of fields
   doesn't carry a hidden copy of every name. Shaper's custom-control fields
   do the same.
-- **Shaper's stylesheet is in `greese.overrides`.** The icon editor loads it
-  before greese ui's sheets, so in `greese.components` a rule restyling a
-  greese component at equal specificity lost. The Library's headings were
-  one. A host's unlayered CSS still wins.
-- **Shaper's overlay covers the canvas margin.** WebKit won't hit-test an
-  svg's overflow, so a handle just past the drawing's edge couldn't be
-  grabbed.
-- **Shaper's Library:**
-  - every section always shows, with "None yet" when it's empty. Other, a
-    catch-all, shows only when something is in it;
-  - Gradients and Filters each start a new one from their heading;
-  - a gradient is made in a dialog: a name, authoring's GradientEditor, and
-    a star over a checkerboard painted with it. `gradientToSvg` (authoring's
-    paint module) writes it as SVG, in the shape's own box;
-  - the filter editor names its filter, and previews it on a blue star when
-    nothing is selected.
-- **The Code panel wraps lines by default.** The setting carries across
-  tabs.
-- **Changes to Shaper apply to the icon editor too,** unless they say
-  otherwise.
+- **Shaper's** stylesheet layer, canvas overlay, Library and Code panel
+  changes from the same day are in Shaper's own ADR 0044.
