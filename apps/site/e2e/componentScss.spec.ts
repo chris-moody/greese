@@ -55,7 +55,7 @@ test('a library path copied from a component’s source is made portable, and an
   await expect(box).toHaveValue(/@use 'pkg:@greese\/ui\/scss\/mixins';/)
   await expect(page.getByText(/Rewritten for your project/)).toBeVisible()
   await expect(page.getByText(/^Line 4: Undefined variable/)).toBeVisible()
-  await expect(page.locator('.greese-CodeEditor-mark')).toHaveCount(1)
+  await expect(page.locator('.greese-CodeEditor-line[data-mark]')).toHaveCount(1)
 })
 
 test('the box starts as the family’s own SCSS; an edit applies inside the component only', async ({
